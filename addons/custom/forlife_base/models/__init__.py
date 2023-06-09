@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+from . import hr_team
+from . import res_users
 from . import res_company
 from . import hr_department
 from . import forlife_model_mixin
@@ -20,3 +21,6 @@ from . import account_analytic_account
 from . import product_config
 from . import base_import
 from . import res_ward
+from . import pos_order
+from . import pos_session
+from . import pos_payment

@@ -1,0 +1,27 @@
+.button-set-partner {
+    background: #fff;
+    font-size: 16px;
+    padding: map-get($spacers, 3);
+    border: solid 3px #6db0b3;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+    max-width: 25%;
+    transition: background-color, border-color, color 150ms linear;
+    box-sizing: border-box;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    grid-column: span 2;
+    margin-bottom: 5px
+}
+
+.button-set-partner.highlight {
+    background: #017e84 !important;
+    color: white !important;
+}
