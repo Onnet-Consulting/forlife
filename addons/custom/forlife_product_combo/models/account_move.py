@@ -14,6 +14,11 @@ class AccountMove(models.Model):
                 record.amount_total = abs(record.amount_total)
         return super(AccountMove, self)._post(soft)
 
+    def _get_unbalanced_moves(self, container):
+        if self.origin_invoice_id:
+            return []
+        else:
+            return super(AccountMove, self)._get_unbalanced_moves(container)
 
     def button_increase_decrease_invoice(self, default=None):
 
@@ -80,13 +85,56 @@ class AccountMove(models.Model):
                             'credit': int(credit),
                             'balance': balance
                         })
+            if rec.invoice_type == 'decrease':
+                self.env.context = self.with_context(noonchange=True).env.context
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    # @api.depends('balance', 'move_id.is_storno')
-    # def _compute_debit_credit(self):
-    #     res = super(AccountMoveLine, self)._compute_debit_credit()
-    #     for move in self.move_id:
-    #         move.onchange_view_invoice_type()
-    #     return res
+    @api.depends('balance', 'move_id.is_storno')
+    def _compute_debit_credit(self):
+        if self.move_id[0].invoice_type == 'decrease' and self.move_id[0].origin_invoice_id and not self.env.context.get('noonchange'):
+            for line in self:
+                if abs(line.debit - line.credit) != abs(line.balance):
+                    if line.display_type in ['product', 'tax']:
+                        debit = -line.balance if line.balance < 0.0 else 0.0
+                        credit = line.balance if line.balance > 0.0 else 0.0
+                        self.env.context = self.with_context(noonchange=True).env.context
+                        line.update({
+                            'debit': int(debit),
+                            'credit': int(credit),
+                            'balance': debit - credit
+                        })
+                    else:
+                        debit = line.balance if line.balance > 0.0 else 0.0
+                        credit = -line.balance if line.balance < 0.0 else 0.0
+                        self.env.context = self.with_context(noonchange=True).env.context
+                        line.update({
+                            'debit': int(debit),
+                            'credit': int(credit),
+                            'balance': debit - credit
+                        })
+                elif abs(line.debit - line.credit) == abs(line.balance):
+                    if line.display_type in ['product', 'tax']:
+                        debit = line.balance if line.balance > 0.0 else 0.0
+                        credit = -line.balance if line.balance < 0.0 else 0.0
+                        self.env.context = self.with_context(noonchange=True).env.context
+                        line.update({
+                            'debit': int(debit),
+                            'credit': int(credit),
+                            'balance': debit - credit
+                        })
+                    else:
+                        debit = -line.balance if line.balance < 0.0 else 0.0
+                        credit = line.balance if line.balance > 0.0 else 0.0
+                        self.env.context = self.with_context(noonchange=True).env.context
+                        line.update({
+                            'debit': int(debit),
+                            'credit': int(credit),
+                            'balance': debit - credit
+                        })
+
+        else:
+            if self.move_id[0].invoice_type != 'decrease' and not self.env.context.get('noonchange'):
+                return super(AccountMoveLine, self)._compute_debit_credit()
+        return True

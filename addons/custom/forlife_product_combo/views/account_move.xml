@@ -33,6 +33,7 @@
                 <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
                     <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)]}</attribute>
                 </xpath>
+
                 <xpath expr="//page[@id='invoice_tab']" position="attributes">
                     <attribute name="attrs">{'invisible': [('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
                 </xpath>
