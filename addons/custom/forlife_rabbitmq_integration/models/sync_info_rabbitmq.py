@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 import pika
 import json
-import copy
 
 
 class SyncInfoRabbitmqCore(models.AbstractModel):
@@ -13,10 +12,10 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _routing_key = ''
 
     def get_sync_info_value(self):
-        ...
+        return []
 
     def action_sync_info_data(self, action):
-        data = [line.get_sync_info_value() for line in self]
+        data = self.get_sync_info_value()
         if data:
             self.push_message_to_rabbitmq(data, action, self._name)
         return True
@@ -117,14 +116,13 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
     _update_action = 'update'
 
     def get_sync_info_value(self):
-        self.ensure_one()
-        return {
-            'id': self.id,
-            'created_at': self.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'updated_at': self.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'code': self.code,
-            'name': self.name
-        }
+        return [{
+            'id': line.id,
+            'created_at': line.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'code': line.code,
+            'name': line.name
+        } for line in self]
 
     def get_field_update(self):
         return ['code', 'name']
