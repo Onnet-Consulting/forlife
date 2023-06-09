@@ -225,9 +225,9 @@ class StockPicking(models.Model):
                              self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
 
         # purchase order line info
-        line_discount = purchase_order_line.discount / purchase_order_line.purchase_quantity if purchase_order_line.purchase_quantity else 0
-        line_price = purchase_order_line.vendor_price
         exchange_rate = purchase_order.exchange_rate
+        vendor_price = purchase_order_line.vendor_price
+        original_discount = purchase_order_line.discount / purchase_order_line.purchase_quantity if purchase_order_line.purchase_quantity else 0
 
         journal_value = {
             "CompanyCode": picking.company_id.code,
@@ -240,18 +240,28 @@ class StockPicking(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
-            "Description": picking.note,
+            "Description": picking.note or "nhập mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": picking.user_id.employee_id.code,
-            "PriceUnit": line_price,
-            "Discount": line_discount,
-            "OriginalUnitCost": line_price - line_discount,
-            "UnitCostCode": (line_price - line_discount) * exchange_rate,
+            "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
+            "CreditAccount": ...,
+            "BuiltinOrder": line_count,
             "ItemCode": product.barcode,
             "ItemName": product.name,
+            "UnitPurCode": purchase_order_line.purchase_uom.code,
+            "DebitAccount": ...,
+            "Quantity": stock_move.quantity_done,
+            "OriginalPriceUnit": vendor_price,
+            "PriceUnit": vendor_price * exchange_rate,
+            "OriginalDiscount": original_discount,
+            "Discount": original_discount * exchange_rate,
+            "OriginalUnitCost": vendor_price - original_discount,
+            "UnitCost": (vendor_price - original_discount) * exchange_rate,
+            "DocNo_PO": picking.origin,
             "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
-            "DocNo_PO": purchase_order.name,
+            "JobCode": stock_move.occasion_code_id.code,
             "RowId": stock_move.id,
-            "BuiltinOrder": line_count,
+            "DocNo_WO": stock_move.work_production.code,
+            "DeptCode": stock_move.account_analytic_id.code
         }
 
         for move_line in account_move.line_ids:
