@@ -83,11 +83,13 @@ class MainController(http.Controller):
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
-            location_id = request.env['stock.location'].search([('nhanh_id', '=', int(order['depotId']))], limit=1)
+            location_id = request.env['stock.location'].sudo().search([('nhanh_id', '=', int(order['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
                 product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
                                                                              limit=1)
+                if not product:
+                    raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('id'))
                 order_line.append((
                     0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
@@ -99,21 +101,21 @@ class MainController(http.Controller):
                                item.get('quantity')) if item.get('discount') else 0}))
 
             status = 'draft'
-            if data['status'] == 'confirmed':
+            if data['status'] == 'Confirmed':
                 status = 'draft'
             elif data['status'] in ['Packing', 'Pickup']:
                 status = 'sale'
             elif data['status'] in ['Shipping', 'Returning']:
                 status = 'sale'
-            elif data['status'] == 'success':
+            elif data['status'] == 'Success':
                 status = 'done'
-            elif data['status'] == 'canceled':
+            elif data['status'] == 'Canceled':
                 status = 'cancel'
 
             # nhân viên kinh doanh
-            user_id = request.env['res.users'].search([('partner_id.name', '=', order['saleName'])], limit=1)
+            user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
             # đội ngũ bán hàng
-            team_id = request.env['crm.team'].search([('name', '=', order['trafficSourceName'])], limit=1)
+            team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
             default_company_id = request.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
             # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             # if not warehouse_id:
@@ -153,15 +155,15 @@ class MainController(http.Controller):
         elif event_type == 'orderUpdate':
             if data.get('status'):
                 status = 'draft'
-                if data['status'] == 'confirmed':
+                if data['status'] == 'Confirmed':
                     status = 'draft'
                 elif data['status'] in ['Packing', 'Pickup']:
                     status = 'sale'
                 elif data['status'] in ['Shipping', 'Returning']:
                     status = 'sale'
-                elif data['status'] == 'success':
+                elif data['status'] == 'Success':
                     status = 'done'
-                elif data['status'] == 'canceled':
+                elif data['status'] == 'Canceled':
                     status = 'cancel'
                 order.sudo().write({
                     'state': status,
