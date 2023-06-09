@@ -199,7 +199,7 @@ class StockPicking(models.Model):
     def bravo_get_picking_purchase_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount", "PushDate",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount",
             "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity", "OriginalPriceUnit",
             "PriceUnit", "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "DocNo_PO", "WarehouseCode",
             "JobCode", "RowId", "DocNo_WO", "DeptCode",
