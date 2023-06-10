@@ -170,7 +170,9 @@ class AccountMovePurchaseProduct(models.Model):
                 "RowId": invoice_line.id,
                 "JobCode": invoice_line.occasion_code_id.code,
                 "DeptCode": invoice_line.analytic_account_id.code,
-                "DocNo_WO": invoice_line.work_order.code
+                "DocNo_WO": invoice_line.work_order.code,
+                "OriginalAmount3": invoice_line.tax_amount,
+                "Amount3": invoice_line.tax_amount * exchange_rate,
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
@@ -181,8 +183,6 @@ class AccountMovePurchaseProduct(models.Model):
                     "DebitAccount3": tax_line.account_id.code,
                     "CreditAccount3": payable_account_code,
                     "TaxCode": tax_line.tax_line_id.code,
-                    "OriginalAmount3": tax_line.tax_amount,
-                    "Amount3": tax_line.tax_amount * exchange_rate,
                 })
 
             values.append(journal_value_line)
@@ -394,7 +394,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
                 "OriginalAmount": line.debit,
                 "Amount": line.debit,
                 "DocNo_PO": self.reference,
-                "WarehouseCode": picking.location_dest_id.code,
+                "WarehouseCode": picking.location_dest_id.warehouse_id.code,
                 "JobCode": line.occasion_code_id.code,
                 "RowId": line.id,
                 "DeptCode": line.analytic_account_id.code
