@@ -183,7 +183,6 @@ class AccountMovePurchaseProduct(models.Model):
                     "TaxCode": tax_line.tax_line_id.code,
                     "OriginalAmount3": tax_line.tax_amount,
                     "Amount3": tax_line.tax_amount * exchange_rate,
-
                 })
 
             values.append(journal_value)
@@ -336,3 +335,71 @@ class StockPickingPurchaseProduct(models.Model):
                 })
 
         return journal_value
+
+
+class AccountMovePurchaseCostingAllocation(models.Model):
+    _inherit = 'account.move'
+
+    def bravo_get_picking_purchase_costing_values(self):
+        res = []
+        columns = self.bravo_get_picking_purchase_costing_columns()
+        for record in self:
+            res.extend(record.bravo_get_picking_purchase_costing_value())
+        return columns, res
+
+    @api.model
+    def bravo_get_picking_purchase_costing_columns(self):
+        return [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount",
+            "BuiltinOrder", "ItemCode", "ItemName", "DebitAccount", "OriginalAmount", "Amount", "DocNo_PO",
+            "WarehouseCode", "JobCode", "RowId", "DeptCode",
+        ]
+
+    def bravo_get_picking_purchase_costing_value(self):
+        self.ensure_one()
+        picking = self.env['stock.picking'].search([('name', '=', self.ref)], limit=1)
+        if not picking:
+            return []
+        values = []
+        lines = self.line_ids
+        credit_lines = lines.filtered(lambda l: l.credit > 0)
+        debit_lines = lines - credit_lines
+        credit_account_code = credit_lines[0].account_id.code if credit_lines else None
+        partner = picking.partner_id
+        purchase = self.env['purchase.order'].sudo().search([('name', '=', self.reference)], limit=1)
+        journal_value = {
+            "CompanyCode": self.company_id.code,
+            "Stt": self.name,
+            "DocCode": "CP",
+            "DocNo": self.name,
+            "DocDate": self.date,
+            "CurrencyCode": self.currency_id.name,
+            "ExchangeRate": self.exchange_rate,
+            "CustomerCode": partner.ref,
+            "CustomerName": partner.name,
+            "Address": partner.contact_address_complete,
+            "Description": self.ref,
+            "EmployeeCode": self.env.user.employee_id.code,
+            "IsTransfer": 1 if purchase.has_contract_commerce else 0,
+            "CreditAccount": credit_account_code,
+        }
+        for idx, line in enumerate(debit_lines, start=1):
+            line_value = journal_value.copy()
+            line_value.update({
+                "BuiltinOrder": idx,
+                "ItemCode": line.product_id.barcode,
+                "ItemName": line.product_id.name,
+                "DebitAccount": line.account_id.code,
+                "OriginalAmount": line.debit,
+                "Amount": line.debit,
+                "DocNo_PO": self.reference,
+                "WarehouseCode": self.ref,
+                "JobCode": line.occasion_code_id.code,
+                "RowId": line.id,
+                "DeptCode": line.analytic_account_id.code
+            })
+
+            values.append(line_value)
+
+        return values

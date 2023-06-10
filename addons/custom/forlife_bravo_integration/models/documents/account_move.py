@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import re
 
 CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
 
@@ -26,6 +27,8 @@ class AccountMove(models.Model):
             bravo_table = 'B30AccDocOther'
         elif journal_data == "purchase_bill_vendor_back":
             bravo_table = 'B30AccDocAtchDoc'
+        elif journal_data == "purchase_product_cost_picking":
+            bravo_table = "B30AccDocPurchase"
         return bravo_table
 
     @api.model
@@ -45,6 +48,14 @@ class AccountMove(models.Model):
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
                 lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0 and len(m.vendor_back_ids) > 0)
+        # FIXME: switch ^CD -> ^972
+        if journal_data == "purchase_product_cost_picking":
+            return self.filtered(
+                lambda m: bool(self.env['stock.picking'].sudo().search_count([('name', '=', m.ref)], limit=1))
+                          and
+                          re.match('^CD', m.name)
+                # re.match('^972', m.name)
+            )
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -55,6 +66,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_product_values()
         if journal_data == 'purchase_bill_vendor_back':
             return self.bravo_get_purchase_bill_vendor_back_values()
+        if journal_data == 'purchase_product_cost_picking':
+            return self.bravo_get_picking_purchase_costing_values()
         return [], []
 
     def bravo_get_insert_sql_by_journal_action(self):
@@ -79,6 +92,13 @@ class AccountMove(models.Model):
         purchase_bill_vendor_back_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_bill_vendor_back_queries:
             queries.extend(purchase_bill_vendor_back_queries)
+
+        # Purchase Product Cost From Picking
+        current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_product_cost_picking'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_product_cost_picking_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_product_cost_picking_queries:
+            queries.extend(purchase_product_cost_picking_queries)
 
         return queries
 
