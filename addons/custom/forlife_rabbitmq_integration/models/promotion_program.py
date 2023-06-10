@@ -54,6 +54,10 @@ class PromotionProgram(models.Model):
             'reward_type': line.reward_type or None,
             'apply_online': line.apply_online or False,
             'for_new_customer': line.for_new_customer or False,
+            'product_ids': [{'id': p.id, 'sku': p.barcode} for p in line.product_ids],
+            'combo_line_ids': [{'quantity': combo.quantity,
+                                'product': [{'id': p.id, 'sku': p.barcode} for p in combo.product_ids]
+                                } for combo in line.combo_line_ids],
         } for line in self]
 
     def get_field_update(self):
@@ -63,5 +67,6 @@ class PromotionProgram(models.Model):
             'with_code', 'voucher_price', 'max_usage_per_program', 'min_quantity', 'order_amount_min', 'reward_quantity',
             'disc_amount', 'disc_percent', 'disc_fixed_price', 'disc_max_amount', 'max_usage_per_order', 'name', 'apply_online',
             'max_usage_per_customer', 'tax_from_date', 'tax_to_date', 'code', 'applicability', 'discount_apply_on', 'for_new_customer',
-            'state', 'promotion_type', 'combo_code', 'combo_name', 'discount_based_on', 'product_domain', 'reward_type'
+            'state', 'promotion_type', 'combo_code', 'combo_name', 'discount_based_on', 'product_domain', 'reward_type', 'product_ids',
+            'combo_line_ids',
         ]
