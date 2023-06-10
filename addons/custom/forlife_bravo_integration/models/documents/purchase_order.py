@@ -379,7 +379,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
-            "Description": self.ref,
+            "Description": picking.note or "Phân bổ chi phí mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": self.env.user.employee_id.code,
             "IsTransfer": 1 if purchase.has_contract_commerce else 0,
             "CreditAccount": credit_account_code,
