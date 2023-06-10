@@ -34,7 +34,7 @@ class StockPickingOtherImport(models.Model):
         stock_move = account_move.stock_move_id
         product = stock_move.product_id
         picking = stock_move.picking_id
-        employee = picking.user_id.employee_id
+        employee = self.env.user.employee_id
         partner = picking.partner_id or employee.partner_id
         journal_value = {
             "CompanyCode": picking.company_id.code,
