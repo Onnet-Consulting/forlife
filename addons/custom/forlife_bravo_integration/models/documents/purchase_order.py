@@ -177,7 +177,7 @@ class AccountMovePurchaseProduct(models.Model):
             journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
             if journal_tax_lines:
                 tax_line = journal_tax_lines[0]
-                journal_value.update({
+                journal_value_line.update({
                     "DebitAccount3": tax_line.account_id.code,
                     "CreditAccount3": payable_account_code,
                     "TaxCode": tax_line.tax_line_id.code,
@@ -185,7 +185,7 @@ class AccountMovePurchaseProduct(models.Model):
                     "Amount3": tax_line.tax_amount * exchange_rate,
                 })
 
-            values.append(journal_value)
+            values.append(journal_value_line)
 
         return values
 
