@@ -121,20 +121,14 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_purchase_product_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "CreditAccount",
-            "BuiltinOrder", "DebitAccount", "Amount", "OriginalAmount", "RowId", "TaxCode", "OriginalAmount3",
-            "Amount3", "DebitAccount3", "CreditAccount3",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder",
+            "DebitAccount", "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount",
+            "Amount", "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
         ]
 
     def bravo_get_purchase_product_value(self):
         self.ensure_one()
         values = []
-        column_names = [
-            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "CreditAccount",
-            "BuiltinOrder", "DebitAccount", "Amount", "OriginalAmount", "RowId", "TaxCode", "OriginalAmount3",
-            "Amount3", "DebitAccount3", "CreditAccount3",
-        ]
         journal_lines = self.line_ids
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
@@ -157,34 +151,39 @@ class AccountMovePurchaseProduct(models.Model):
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "Description": self.invoice_description,
-            "EmployeeCode": self.user_id.employee_id.code,
-            "IsTransfer": 1 if self.x_asset_fin else 0,
+            "EmployeeCode": self.env.user.employee_id.code,
+            "IsTransfer": 1 if self.x_asset_fin == 'TC' else 0,
             "DueDate": self.invoice_date_due,
-            "CreditAccount": payable_account_code,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
             purchase_order = invoice_line.purchase_order_id
             if not purchase_order:
                 continue
-            journal_value.update({
+            journal_value_line = journal_value.copy()
+            journal_value_line.update({
                 "BuiltinOrder": idx,
                 "DebitAccount": invoice_line.account_id.code,
-                "Amount": invoice_line.price_subtotal * exchange_rate,
+                "CreditAccount": payable_account_code,
                 "OriginalAmount": invoice_line.price_subtotal,
-                "RowId": invoice_line.id
+                "Amount": invoice_line.price_subtotal * exchange_rate,
+                "RowId": invoice_line.id,
+                "JobCode": invoice_line.occasion_code_id.code,
+                "DeptCode": invoice_line.analytic_account_id.code,
+                "DocNo_WO": invoice_line.work_order.code
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id & invoice_tax_ids)
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
             if journal_tax_lines:
                 tax_line = journal_tax_lines[0]
                 journal_value.update({
+                    "DebitAccount3": tax_line.account_id.code,
+                    "CreditAccount3": payable_account_code,
                     "TaxCode": tax_line.tax_line_id.code,
                     "OriginalAmount3": tax_line.tax_amount,
                     "Amount3": tax_line.tax_amount * exchange_rate,
-                    "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code
+
                 })
 
             values.append(journal_value)
