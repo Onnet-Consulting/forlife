@@ -30,6 +30,7 @@
         'security/forlife_permission_management_security.xml',
         'security/ir.model.access.csv',
         'security/forlife_permission_rule.xml',
+        'data/action.xml',
         'data/menu.xml',
         'data/groups.xml',
         'views/product_product_views.xml',
