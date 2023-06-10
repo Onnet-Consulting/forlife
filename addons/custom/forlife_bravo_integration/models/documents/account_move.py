@@ -48,6 +48,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_asset_service_values()
         if journal_data == 'purchase_product':
             return self.bravo_get_purchase_product_values()
+        if journal_data == 'purchase_bill_vendor_back':
+            return self.bravo_get_purchase_bill_vendor_back_values()
         return [], []
 
     def bravo_get_insert_sql_by_journal_action(self):
@@ -65,6 +67,13 @@ class AccountMove(models.Model):
         purchase_product_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_product_queries:
             queries.extend(purchase_product_queries)
+
+        # Vendor Back in Purchase Bill
+        current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_bill_vendor_back'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_bill_vendor_back_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_bill_vendor_back_queries:
+            queries.extend(purchase_bill_vendor_back_queries)
 
         return queries
 

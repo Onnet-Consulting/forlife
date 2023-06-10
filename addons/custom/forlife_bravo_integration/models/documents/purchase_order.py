@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 
 
-class AccountMove(models.Model):
+class AccountMovePurchaseAsset(models.Model):
     _inherit = 'account.move'
 
     def bravo_get_purchase_asset_service_values(self):
@@ -105,6 +105,10 @@ class AccountMove(models.Model):
 
         return values
 
+
+class AccountMovePurchaseProduct(models.Model):
+    _inherit = 'account.move'
+
     def bravo_get_purchase_product_values(self):
         res = []
         columns = self.bravo_get_purchase_product_columns()
@@ -186,7 +190,18 @@ class AccountMove(models.Model):
         return column_names, values
 
 
-class StockPicking(models.Model):
+class AccountMoveVendorBack(models.Model):
+    def bravo_get_purchase_bill_vendor_back_values(self):
+        res = []
+
+    def bravo_get_purchase_bill_vendor_back_columns(self):
+        return []
+
+    def bravo_get_purchase_bill_vendor_back_value(self):
+        pass
+
+
+class StockPickingPurchaseProduct(models.Model):
     _inherit = 'stock.picking'
 
     def bravo_get_picking_purchase_values(self):
