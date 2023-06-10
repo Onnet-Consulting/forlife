@@ -60,7 +60,7 @@ class StockPickingOtherExport(models.Model):
             "OriginalAmount": stock_move.price_unit * stock_move.quantity_done,
             "Amount": stock_move.price_unit * stock_move.quantity_done,
             "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
-            "DocNo_WO": picking.work_production.code,
+            "DocNo_WO": stock_move.work_production.code,
             'DeptCode': stock_move.account_analytic_id.code,
             "RowId": stock_move.id,
         }

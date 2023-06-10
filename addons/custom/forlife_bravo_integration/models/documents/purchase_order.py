@@ -13,6 +13,7 @@ class AccountMovePurchaseAsset(models.Model):
             res.extend(record.bravo_get_purchase_asset_service_value())
         return columns, res
 
+    @api.model
     def bravo_get_purchase_asset_service_columns(self):
         return [
             "CompanyCode", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
@@ -116,6 +117,7 @@ class AccountMovePurchaseProduct(models.Model):
             res.extend(record.bravo_get_purchase_product_value())
         return columns, res
 
+    @api.model
     def bravo_get_purchase_product_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
@@ -193,12 +195,23 @@ class AccountMovePurchaseProduct(models.Model):
 class AccountMoveVendorBack(models.Model):
     def bravo_get_purchase_bill_vendor_back_values(self):
         res = []
+        columns = self.bravo_get_purchase_bill_vendor_back_columns()
+        for record in self:
+            res.extend(record.bravo_get_purchase_bill_vendor_back_value())
+        return columns, res
 
+    @api.model
     def bravo_get_purchase_bill_vendor_back_columns(self):
-        return []
+        return [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "AtchDocNo", "TaxRegName", "TaxRegNo", "DebitAccount",
+            "CreditAccount", "OriginalAmount", "Amount", "OriginalAmount3", "Amount3", "RowId",
+        ]
 
     def bravo_get_purchase_bill_vendor_back_value(self):
-        pass
+        self.ensure_one()
+        values = []
+        return values
 
 
 class StockPickingPurchaseProduct(models.Model):
@@ -211,6 +224,7 @@ class StockPickingPurchaseProduct(models.Model):
             res.extend(record.bravo_get_picking_purchase_value())
         return columns, res
 
+    @api.model
     def bravo_get_picking_purchase_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
