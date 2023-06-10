@@ -220,6 +220,21 @@
             <field name="sequence">50</field>
         </record>
 
+        <record id="group_purchase_department_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng phòng</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_product_code" model="res.groups">
+            <field name="name">Mua hàng-Tem mã sản phẩm</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_group_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng nhóm-Chuyên viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
         <record id="group_purchase_request_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu mua hàng Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
