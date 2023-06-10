@@ -43,7 +43,8 @@ class AccountMove(models.Model):
             return self.filtered(lambda m: m.invoice_line_ids.mapped('purchase_order_id').
                                  filtered(lambda order: order.purchase_type == 'product'))
         if journal_data == "purchase_bill_vendor_back":
-            return self.filtered(lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0)
+            return self.filtered(
+                lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0 and len(m.vendor_back_ids) > 0)
         return self
 
     def bravo_get_insert_values(self, **kwargs):

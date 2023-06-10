@@ -7,6 +7,7 @@ PICKING_PURCHASE_VALUE = 'picking_purchase'
 PICKING_OTHER_IMPORT_VALUE = 'picking_other_import'
 PICKING_OTHER_EXPORT_VALUE = 'picking_other_export'
 
+
 class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = ['stock.picking', 'bravo.model.insert.action']
@@ -39,7 +40,8 @@ class StockPicking(models.Model):
     def bravo_filter_record_by_context(self, **kwargs):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == PICKING_PURCHASE_VALUE:
-            return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.move_ids.mapped('purchase_line_id'))
+            return self.filtered(
+                lambda m: m.move_ids.mapped('account_move_ids') and m.move_ids.mapped('purchase_line_id'))
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:

@@ -189,7 +189,7 @@ class AccountMovePurchaseProduct(models.Model):
 
             values.append(journal_value)
 
-        return column_names, values
+        return values
 
 
 class AccountMoveVendorBack(models.Model):
@@ -213,6 +213,37 @@ class AccountMoveVendorBack(models.Model):
     def bravo_get_purchase_bill_vendor_back_value(self):
         self.ensure_one()
         values = []
+        vendor_back_ids = self.vendor_back_ids
+        value = {
+            "DocCode": "NM",
+            "DocNo": self.name,
+            "DocDate": self.date,
+            "CurrencyCode": self.currency_id.name,
+            "ExchangeRate": self.exchange_rate,
+            "CustomerCode": self.partner_id.ref,
+            "CustomerName": self.partner_id.name,
+            "Address": self.partner_id.contact_address_complete,
+            "Description": self.invoice_description
+        }
+
+        for record in vendor_back_ids:
+            line_value = value.copy()
+            line_value.update({
+                "CompanyCode": record.company_id.code,
+                "Stt": record.id,
+                "AtchDocNo": record.invoice_reference,
+                "TaxRegName": record.vendor,
+                "TaxRegNo": record.code_tax,
+                "DebitAccount": False,
+                "CreditAccount": False,
+                "OriginalAmount": record.price_subtotal_back,
+                "Amount": record.price_subtotal_back,
+                "OriginalAmount3": record.tax_back,
+                "Amount3": record.tax_back,
+                "RowId": record.id
+            })
+            values.append(line_value)
+
         return values
 
 
