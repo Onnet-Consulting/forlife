@@ -193,6 +193,8 @@ class AccountMovePurchaseProduct(models.Model):
 
 
 class AccountMoveVendorBack(models.Model):
+    _inherit = 'account.move'
+
     def bravo_get_purchase_bill_vendor_back_values(self):
         res = []
         columns = self.bravo_get_purchase_bill_vendor_back_columns()
