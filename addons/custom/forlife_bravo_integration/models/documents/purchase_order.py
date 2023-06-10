@@ -91,7 +91,7 @@ class AccountMovePurchaseAsset(models.Model):
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id & invoice_tax_ids)
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
             if journal_tax_lines:
                 tax_line = journal_tax_lines[0]
                 journal_value_line.update({
@@ -394,7 +394,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
                 "OriginalAmount": line.debit,
                 "Amount": line.debit,
                 "DocNo_PO": self.reference,
-                "WarehouseCode": self.ref,
+                "WarehouseCode": picking.location_dest_id.code,
                 "JobCode": line.occasion_code_id.code,
                 "RowId": line.id,
                 "DeptCode": line.analytic_account_id.code
