@@ -793,7 +793,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 price: l.price,
                 full_product_name: l.full_product_name,
                 tax_ids: [...(l.tax_ids || [])],
-                selectedReward: l.selectedReward
+                selectedReward: l.selectedReward,
+                discount: l.discount,
+                point: l.point,
+                is_product_defective: l.is_product_defective
             });
         })
         return lines;
@@ -1533,6 +1536,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let max_reward_quantity = program.reward_quantity;
             let required_order_amount_min = program.order_amount_min;
             let required_min_quantity = program.min_quantity;
+            let floor = 1;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1585,17 +1589,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 if (program.order_amount_min > 0 && program.min_quantity > 0 && is_required_check_products) {
                     let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
                     let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
-                    let floor = Math.min(amountOrderFloor, qtyFloor);
+                    floor = Math.min(amountOrderFloor, qtyFloor);
 
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
                     required_min_quantity       = floor * program.min_quantity;
                 } else if (program.order_amount_min > 0) {
-                    let floor = Math.floor(amountCheck/program.order_amount_min);
+                    floor = Math.floor(amountCheck/program.order_amount_min);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
                 } else if (program.min_quantity > 0 && is_required_check_products) {
-                    let floor = Math.floor(qty_taken/program.min_quantity);
+                    floor = Math.floor(qty_taken/program.min_quantity);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_min_quantity       = floor * program.min_quantity;
                 }
@@ -1616,19 +1620,83 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             } else {
                 to_discount_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.discount_product_ids.has(l.product.id));
             };
-            result.push({
-                id: program.id,
-                program: program,
-                max_reward_quantity: max_reward_quantity,
-                required_order_amount_min: required_order_amount_min,
-                required_min_quantity: required_min_quantity,
-                voucher_program_id,
-                to_reward_lines,
-                to_discount_lines,
-                isSelected,
-                reward_line_vals: []
-            });
+            if ((program.reward_type == 'cart_get_x_free' && to_reward_lines.length > 0)
+                || (program.reward_type != 'cart_get_x_free' &&  to_discount_lines.length > 0)) {
+                let reward_lines = program.reward_type == 'cart_get_x_free' ? to_reward_lines : to_discount_lines;
+                let multi = floor;
+                let is_valid = false;
+                while (multi >= 1) {
+                    let check_max_reward_quantity         = multi * program.reward_quantity;
+                    let check_required_order_amount_min   = multi * program.order_amount_min;
+                    let check_required_min_quantity       = multi * program.min_quantity;
+                    let check_to_reward_lines = reward_lines.sort((a, b) => a.id - b.id );
+                    let check_data = {};
+                    for (let line of reward_lines) {
+                        let taken = Math.min(line.quantity, check_max_reward_quantity);
+                        check_data[line.cid] = taken;
+                        check_max_reward_quantity -= taken;
+                        if (check_max_reward_quantity <= 0) break;
+                    };
+                    let check_orderLines = this._get_clone_order_lines(this.get_orderlines_to_check());
+                    let [to_apply_lines, remaining] = this.computeForListOfCartProgram(check_orderLines, {[program.str_id]: check_data});
+
+                    let no_incl_line_total_amount = 0;
+                    let discount_total = to_apply_lines[program.str_id].reduce((acc, line) => {
+                        let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
+                        if (program.incl_reward_in_order_type == 'no_incl') {
+                            no_incl_line_total_amount += line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.original_price * line.quantity;}, 0.0);
+                        };
+                        return acc + amountPerLine;
+                    }, 0.0);
+                    let amount_total_after_discount = 0.0;
+                    if (program.incl_reward_in_order_type == 'no_incl') {
+                        amount_total_after_discount = totalTaxed - no_incl_line_total_amount;
+                    } else if (program.incl_reward_in_order_type == 'discounted_price') {
+                        amount_total_after_discount = totalTaxed - discount_total;
+                    };
+                    let check = program.incl_reward_in_order_type == 'unit_price'
+                                || program.order_amount_min == 0
+                                || (program.order_amount_min > 0 && check_required_order_amount_min <= amount_total_after_discount);
+                    if (check) {
+                        floor = multi;
+                        is_valid = true;
+                        break;
+                    };
+                    multi--;
+                };
+                if (!is_valid) {
+                    floor = 0;
+                };
+            } else floor = 1;
+
+            if (floor) {
+                result.push({
+                    id: program.id,
+                    program: program,
+                    max_reward_quantity: program.reward_quantity * floor,
+                    required_order_amount_min: program.order_amount_min * floor,
+                    required_min_quantity: program.min_quantity * floor,
+                    voucher_program_id,
+                    to_reward_lines,
+                    to_discount_lines,
+                    isSelected,
+                    reward_line_vals: []
+                });
+            };
         };
+//            result.push({
+//                id: program.id,
+//                program: program,
+//                max_reward_quantity: max_reward_quantity,
+//                required_order_amount_min: required_order_amount_min,
+//                required_min_quantity: required_min_quantity,
+//                voucher_program_id,
+//                to_reward_lines,
+//                to_discount_lines,
+//                isSelected,
+//                reward_line_vals: []
+//            });
+//        };
         return result
     }
 
