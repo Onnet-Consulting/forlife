@@ -6,6 +6,7 @@
             <field name="code">1381</field>
             <field name="type_other">incoming</field>
             <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
 <!--            <field name="reason_type_id" ref="forlife_stock.reason_type_6"/>-->
         </record>
         <record id="export_product_division" model="stock.location">
@@ -13,6 +14,7 @@
             <field name="code">1382</field>
             <field name="type_other">outcoming</field>
             <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
 <!--            <field name="reason_type_id" ref="forlife_stock.reason_type_6"/>-->
         </record>
     </data>
