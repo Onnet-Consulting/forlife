@@ -92,7 +92,7 @@
 
         <record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
         <!--Tồn kho/Sản phẩm-->
         <record model="ir.ui.menu" id="stock.menu_stock_inventory_control">
