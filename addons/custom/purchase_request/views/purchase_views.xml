@@ -30,6 +30,7 @@
                            attrs="{'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"
                            widget="many2many_tags"/>
                     <field name="production_id"
+                           widget="many2many_tags"
                            attrs="{'invisible': [('purchase_type', '=', 'asset')], 'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
 <!--                    <field name="event_id"-->
 <!--                           attrs="{'invisible': [('purchase_type', '!=', 'product')], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>-->
