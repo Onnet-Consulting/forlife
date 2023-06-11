@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_invoice_not_exists_bkav,invoice_not_exists_bkav,model_invoice_not_exists_bkav,account.group_account_user,1,1,1,1
+access_invoice_not_exists_bkav_line,invoice_not_exists_bkav_line,model_invoice_not_exists_bkav_line,account.group_account_user,1,1,1,1
+access_invoice_not_exists_bkav_negative_line,invoice_not_exists_bkav_negative_line,model_invoice_not_exists_bkav_negative_line,account.group_account_user,1,1,1,1
