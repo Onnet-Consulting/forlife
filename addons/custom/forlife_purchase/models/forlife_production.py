@@ -38,12 +38,17 @@ class ForlifeProduction(models.Model):
     to_date = fields.Date(string="To Date", required=True)
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('open', 'Open'),
-        ('confirm', 'Confirm'),
+        ('wait_confirm', 'Wait Confirm'),
         ('approved', 'Approved'),
-        ('done', 'Done'),
     ], default='draft')
+    status = fields.Selection([
+        ('assigned', 'Assigned'),
+        ('in_approved', 'In Approved'),
+        ('done', 'Done'),
+    ], default='assigned')
 
+    quantity_order_line = fields.Many2many('quantity.production.order')
+    quantity_lines = fields.One2many('quantity.production.order', 'production_id', string='')
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
     @api.depends('forlife_production_finished_product_ids')

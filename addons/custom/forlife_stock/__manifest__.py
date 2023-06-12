@@ -30,6 +30,7 @@
         'views/stock_transfer_request_view.xml',
         'views/stock_picking_type.xml',
         'views/stock_transfer_view.xml',
+        'views/quantity_production_order_view.xml',
         'views/stock_location_type_view.xml',
         'views/stock_location_view.xml',
         'views/stock_custom_location_view.xml',

@@ -24,6 +24,7 @@
             <form string="">
                 <header>
                     <field name="state" widget="statusbar"/>
+                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>

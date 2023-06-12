@@ -1,0 +1,22 @@
+<odoo>
+    <record id="quantity_production_order_tree" model="ir.ui.view">
+        <field name="name">quantity.production.order.tree</field>
+        <field name="model">quantity.production.order</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Stock Transfer Request" default_order="create_date desc" limit="25">
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="production_id"/>
+                <field name="quantity"/>
+                <field name="quantity_order_line"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="quantity_production_order_action" model="ir.actions.act_window">
+        <field name="name">Hâha</field>
+        <field name="res_model">quantity.production.order</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

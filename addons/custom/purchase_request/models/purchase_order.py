@@ -91,6 +91,22 @@ class PurchaseOrder(models.Model):
                             'price_unit': production_line.price,
                             'is_from_po': True,
                         })
+                # quantity = rec.order_line.filtered(lambda p: p.product_id == 'done')
+                quantity = self.env['quantity.production.order'].search(
+                    [('product_id', '=', item.product_id.id),
+                     ('location_id', '=', item.location_id.id),
+                     ('production_id', '=', item.production_id.id)])
+                if quantity:
+                    quantity.write({
+                        'quantity': quantity.quantity + item.purchase_quantity
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': item.product_id.id,
+                        'location_id': item.location_id.id,
+                        'production_id': item.production_id.id,
+                        'quantity': item.purchase_quantity
+                    })
         return res
 
 
