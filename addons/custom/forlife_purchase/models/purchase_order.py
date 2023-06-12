@@ -1593,8 +1593,8 @@ class PurchaseOrderLine(models.Model):
     @api.onchange("discount")
     def _onchange_discount(self):
         if not self.readonly_discount:
-            if self.discount:
-                self.discount_percent = (self.discount / self.price_unit) * 100 if self.price_unit else 0
+            if self.discount and self.price_unit > 0 and self.product_qty > 0:
+                self.discount_percent = self.discount / (self.price_unit * self.product_qty * 0.01)
                 self.readonly_discount_percent = True
             else:
                 self.readonly_discount_percent = False
@@ -2271,8 +2271,9 @@ class Synthetic(models.Model):
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost = 0
                 for item in rec.synthetic_id.cost_line:
-                    total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
-                    rec.after_tax = total_cost
+                    if rec.price_subtotal > 0:
+                        total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+                        rec.after_tax = total_cost
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:
