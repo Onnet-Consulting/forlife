@@ -416,7 +416,7 @@
             <field name="name">pos_order_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -428,7 +428,7 @@
             <field name="name">pos_order_write_create</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -440,7 +440,7 @@
             <field name="name">pos_order_unlink</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -452,7 +452,7 @@
             <field name="name">pos_session_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_session"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -464,7 +464,7 @@
             <field name="name">pos_session_write_create</field>
             <field name="model_id" ref="point_of_sale.model_pos_session"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -476,7 +476,7 @@
             <field name="name">pos_session_unlink</field>
             <field name="model_id" ref="point_of_sale.model_pos_session"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -488,7 +488,7 @@
             <field name="name">pos_payment_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_payment"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -500,7 +500,7 @@
             <field name="name">pos_payment_write_create</field>
             <field name="model_id" ref="point_of_sale.model_pos_payment"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -512,7 +512,7 @@
             <field name="name">pos_payment_unlink</field>
             <field name="model_id" ref="point_of_sale.model_pos_payment"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -524,7 +524,7 @@
             <field name="name">handle_change_refund_read</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_handle_change_refund"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -536,7 +536,7 @@
             <field name="name">handle_change_refund_write_create</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_handle_change_refund"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -548,7 +548,7 @@
             <field name="name">handle_change_refund_unlink</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_handle_change_refund"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -560,7 +560,7 @@
             <field name="name">pos_config_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -572,7 +572,7 @@
             <field name="name">pos_config_write_create</field>
             <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -584,7 +584,7 @@
             <field name="name">pos_config_unlink</field>
             <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
+            <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
