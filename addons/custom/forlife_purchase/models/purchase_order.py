@@ -1879,7 +1879,7 @@ class StockPicking(models.Model):
                             'product_id': item.product_id.id,
                             'name': item.name,
                             'text_check_cp_normal': rec.product_id.name,
-                            'debit': int((total / total_money * item.order_id.exchange_rate) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
+                            'debit': int((total / total_money) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
                             'credit': 0,
                         })
                         credit_cp = (0, 0, {
@@ -1889,7 +1889,7 @@ class StockPicking(models.Model):
                             'name': rec.product_id.name,
                             'text_check_cp_normal': rec.product_id.name,
                             'debit': 0,
-                            'credit': int((total / total_money * item.order_id.exchange_rate) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
+                            'credit': int((total / total_money) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
                         })
                         lines_cp_before_tax = [credit_cp, debit_cp]
                         list_cp_after_tax.extend(lines_cp_before_tax)
@@ -1960,7 +1960,7 @@ class StockPicking(models.Model):
                     'sequence': 9,
                     'account_id': account_1561,
                     'name': ex_l.name,
-                    'debit': (pk_l.quantity_done / ex_l.qty_product * ex_l.tax_amount) * ex_l.purchase_order_id.exchange_rate,
+                    'debit': (pk_l.quantity_done / ex_l.qty_product * ex_l.tax_amount),
                     'credit': 0,
                 })
                 credit_nk = (0, 0, {
@@ -1968,7 +1968,7 @@ class StockPicking(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id.id,
                     'name': self.env.ref('forlife_purchase.product_import_tax_default').name,
                     'debit': 0,
-                    'credit': (pk_l.quantity_done / ex_l.qty_product * ex_l.tax_amount) * ex_l.purchase_order_id.exchange_rate,
+                    'credit': (pk_l.quantity_done / ex_l.qty_product * ex_l.tax_amount),
                 })
                 lines_nk = [debit_nk, credit_nk]
                 list_nk.extend(lines_nk)
@@ -1976,7 +1976,7 @@ class StockPicking(models.Model):
                     'sequence': 9,
                     'account_id': account_1561,
                     'name': ex_l.name,
-                    'debit': (pk_l.quantity_done / ex_l.qty_product * ex_l.special_consumption_tax_amount) * ex_l.purchase_order_id.exchange_rate,
+                    'debit': (pk_l.quantity_done / ex_l.qty_product * ex_l.special_consumption_tax_amount),
                     'credit': 0,
                 })
                 credit_db = (0, 0, {
@@ -1984,7 +1984,7 @@ class StockPicking(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id.id,
                     'name': self.env.ref('forlife_purchase.product_excise_tax_default').name,
                     'debit': 0,
-                    'credit': (pk_l.quantity_done / ex_l.qty_product * ex_l.special_consumption_tax_amount) * ex_l.purchase_order_id.exchange_rate,
+                    'credit': (pk_l.quantity_done / ex_l.qty_product * ex_l.special_consumption_tax_amount),
                 })
                 lines_db = [debit_db, credit_db]
                 list_db.extend(lines_db)
@@ -2229,7 +2229,7 @@ class Synthetic(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs', 'before_tax')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
             cost_line = rec.synthetic_id.cost_line

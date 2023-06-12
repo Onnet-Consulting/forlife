@@ -80,16 +80,17 @@ class PurchaseOrder(models.Model):
             for item in rec.order_line:
                 production_order = self.env['production.order'].search(
                     [('product_id', '=', item.product_id.id), ('type', '=', 'normal')], limit=1)
-                for production_line in production_order.order_line_ids:
-                    self.env['purchase.order.line.material.line'].create({
-                        'purchase_order_line_id': item.id,
-                        'product_id': production_line.product_id.id,
-                        'uom': production_line.uom_id.id,
-                        'production_order_product_qty': production_order.product_qty,
-                        'production_line_product_qty': production_line.product_qty,
-                        'price_unit': production_line.price,
-                        'is_from_po': True,
-                    })
+                if not item.purchase_order_line_material_line_ids:
+                    for production_line in production_order.order_line_ids:
+                        self.env['purchase.order.line.material.line'].create({
+                            'purchase_order_line_id': item.id,
+                            'product_id': production_line.product_id.id,
+                            'uom': production_line.uom_id.id,
+                            'production_order_product_qty': production_order.product_qty,
+                            'production_line_product_qty': production_line.product_qty,
+                            'price_unit': production_line.price,
+                            'is_from_po': True,
+                        })
         return res
 
 
@@ -174,12 +175,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
     price_unit = fields.Float(compute='_compute_price_unit', store=1)
 
-    # @api.constrains('product_qty', 'product_plan_qty')
-    # def _constraint_product_qty(self):
-    #     for rec in self:
-    #         if rec.product_qty > rec.product_plan_qty:
-    #             raise ValidationError('Số lượng điều chuyển không được lớn hơn số lượng điều chuyển theo kế hoạch')
-
     @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
     def _compute_product_plan_qty(self):
         for rec in self:
@@ -196,10 +191,4 @@ class PurchaseOrderLineMaterialLine(models.Model):
 
     def _inverse_product_plan_qty(self):
         pass
-
-    # @api.depends('product_plan_qty', 'product_qty')
-    # def _compute_product_remain_qty(self):
-    #     for rec in self:
-    #         rec.product_remain_qty = max((rec.product_plan_qty - rec.product_qty), 0)
-
 
