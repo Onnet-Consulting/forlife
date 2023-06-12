@@ -149,7 +149,7 @@ class InheritPosOrder(models.Model):
             'pos_order_line_id': order_line.id,
             'account_analytic_id': self.session_id.config_id.store_id.analytic_account_id.id,
             'partner_id': order_line.order_id.partner_id.id,
-            'price_unit': order_line.original_price
+            'price_unit': order_line.original_price if not order_line.is_reward_line else 0
         })
         if order_line.refunded_orderline_id:
             invoice_line.update({
@@ -237,7 +237,7 @@ class InheritPosOrderLine(models.Model):
 
     def _compute_subtotal_paid(self):
         for pol in self:
-            pol.subtotal_paid = 0 if pol.is_reward_line else (pol.original_price - pol.money_is_reduced) * pol.qty
+            pol.subtotal_paid = 0 if pol.is_reward_line else pol.price_subtotal_incl - pol.money_is_reduced
 
     @api.onchange('product_id')
     def _onchange_is_state_registration(self):
