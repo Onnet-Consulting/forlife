@@ -99,6 +99,7 @@ class PurchaseOrder(models.Model):
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
 
     rejection_reason = fields.Char(string="Lý do từ chối")
+    cancel_reason = fields.Char(string="Lý do huỷ")
     origin = fields.Char('Source Document', copy=False,
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
