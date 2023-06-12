@@ -480,29 +480,7 @@ class PurchaseOrder(models.Model):
         # Nếu Tồn kho = 0 : cho phép nhập giá mới trên line, xác nhận PO và tiến hành nhập kho.
         for rec in self:
             if rec.order_line:
-                cost_total = 0
-                count_ccdc_product = 0
-                if rec.cost_line:
-                    cost_total = rec.cost_total
-                for line in rec.order_line:
-                    if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
-                        count_ccdc_product = count_ccdc_product + line.product_qty
-                if count_ccdc_product > 0:
-                    for line in rec.order_line:
-                        if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
-                            # kiểm tra tồn kho
-                            number_product = self.env['stock.quant'].search(
-                                [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_id.id)])
-                            if number_product and sum(number_product.mapped('quantity')) > 0:
-                                if line.product_id.standard_price != line.price_unit + cost_total / count_ccdc_product:
-                                    raise UserError("Giá của sản phẩm công cụ dụng cụ này này khác giá nhập vào đợt trước. Yêu cầu người dùng tạo sản phẩm mới.")
-
-    def check_purchase_tool_and_equipment(self):
-        # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
-        # kiểm tra Đơn Giá mua trên PO + Giá trị chi phí được phân bổ  <> giá trung bình kho của sản phẩm, thì thông báo Hiển thị thông báo cho người dùng: Giá của sản phẩm CCDC này # giá nhập vào đợt trước.Yêu cầu người dùng tạo sản phẩm mới.
-        # Nếu Tồn kho = 0 : cho phép nhập giá mới trên line, xác nhận PO và tiến hành nhập kho.
-        for rec in self:
-            if rec.order_line:
+                location_id = rec.location_id
                 cost_total = 0
                 count_ccdc_product = 0
                 if rec.cost_line:
@@ -515,8 +493,12 @@ class PurchaseOrder(models.Model):
                     for line in rec.order_line:
                         if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code.startswith("153"):
                             # kiểm tra tồn kho
-                            number_product = self.env['stock.quant'].search(
-                                [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_id.id)])
+                            if line.location_id:
+                                number_product = self.env['stock.quant'].search(
+                                    [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_id.id)])
+                            else:
+                                number_product = self.env['stock.quant'].search(
+                                    [('location_id', '=', location_id.id), ('product_id', '=', line.product_id.id)])
                             if number_product and sum(number_product.mapped('quantity')) > 0:
                                 if line.product_id.standard_price != line.price_unit + cost_total / count_ccdc_product:
                                     product_ccdc_diff_price.append(line.product_id.display_name)
