@@ -2,6 +2,7 @@
 from . import hr_team
 from . import res_users
 from . import res_company
+from . import res_currency
 from . import hr_department
 from . import forlife_model_mixin
 from . import res_utility

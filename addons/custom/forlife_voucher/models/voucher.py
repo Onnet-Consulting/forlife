@@ -148,7 +148,9 @@ class Voucher(models.Model):
                             'using_limit': vourcher.program_voucher_id.using_limit,
                             'program_voucher_id': vourcher.program_voucher_id.id,
                             'product_voucher_name': vourcher.program_voucher_id.name,
-                            'derpartment_name': vourcher.derpartment_id.name
+                            'derpartment_name': vourcher.derpartment_id.name,
+                            'state_app': vourcher.state_app,
+                            'apply_many_times': vourcher.apply_many_times
                         }
                     })
                 if not vourcher:
