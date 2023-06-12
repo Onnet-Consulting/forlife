@@ -518,3 +518,13 @@ msgstr "Sản phẩm được tiêu điểm"
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.points_promotion_view_form_extend
 msgid "Consumption Point"
 msgstr "Tiêu điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__product_defective
+msgid "Product Defective"
+msgstr "Hàng lỗi"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__handle
+msgid "Handle"
+msgstr "Thủ công"

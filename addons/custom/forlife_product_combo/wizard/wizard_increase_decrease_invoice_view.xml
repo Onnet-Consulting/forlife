@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="wizard_increase_decrease_invoice_view_form" model="ir.ui.view">
+        <field name="name">wizard.increase.decrease.invoice.form</field>
+        <field name="model">wizard.increase.decrease.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Wizard increase decrease invoice">
+                <group>
+                    <group>
+                        <field name="origin_invoice_id" invisible="1"/>
+                        <field name="invoice_type" required="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page name="line" string="Detail">
+                        <field name="line_ids" widget="one2many" nolabel="1">
+                            <tree string="Account Mapping" editable="bottom" create="0">
+                                <field name="parent_id" invisible="1" force_save="1"/>
+                                <field name="invoice_line_id" invisible="1" force_save="1"/>
+                                <field name="product_id" readonly="1" force_save="1"/>
+                                <field name="uom_id" readonly="1" force_save="1"/>
+                                <field name="currency_id" readonly="1" invisible="1" force_save="1"/>
+                                <field name="quantity" readonly="1" force_save="1"/>
+                                <field name="discount" readonly="1" force_save="1"/>
+                                <field name="price_unit"/>
+                                <field name="price_subtotal" readonly="1" force_save="1"/>
+                                <field name="tax_ids" readonly="1" invisible="1" force_save="1"/>
+                                <field name="tax_amount" readonly="1"  force_save="1"/>
+                                <field name="price_total" readonly="1" force_save="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="wizard_increase_decrease_invoice_action" model="ir.actions.act_window">
+        <field name="name">Wizard increase decrease invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.increase.decrease.invoice</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_increase_decrease_invoice_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>
