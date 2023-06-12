@@ -7,7 +7,7 @@ class SplitProduct(models.Model):
     _name = 'split.product'
     _description = 'Nghiệp vụ phân tách mã'
 
-    name = fields.Char(default='New')
+    name = fields.Char(default='New', copy=False)
 
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
     date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
@@ -170,7 +170,7 @@ class SplitProduct(models.Model):
                 'product_uom': record.product_id.uom_id.id,
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
-                'location_id': record.warehouse_in_id.lot_stock_id.id,
+                'location_id': record.warehouse_out_id.lot_stock_id.id,
                 'location_dest_id': location_id.id,
             })]
             pickings |= self.env['stock.picking'].with_company(company).create({
@@ -179,7 +179,7 @@ class SplitProduct(models.Model):
                 'picking_type_id': pk_type.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
-                'location_id': record.warehouse_in_id.lot_stock_id.id,
+                'location_id': record.warehouse_out_id.lot_stock_id.id,
                 'location_dest_id': location_id.id,
             })
         return pickings
