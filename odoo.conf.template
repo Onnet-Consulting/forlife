@@ -4,8 +4,8 @@ admin_passwd = jYcBQvl8t)
 csv_internal_sep = ,
 data_dir = /var/lib/odoo
 import_data_dir = /mnt/data-import/data
-db_host = database
-db_maxconn = 128
+db_host = 58.186.205.87
+db_maxconn = 10
 db_name = False
 db_password = zuiv34#@j1
 db_port = 5432
@@ -21,8 +21,8 @@ http_enable = True
 http_interface =
 http_port = 8069
 import_partial =
-limit_memory_hard = 2684354560
-limit_memory_soft = 2147483648
+limit_memory_hard = 86843545600
+limit_memory_soft = 81474836480
 limit_request = 8192
 limit_time_cpu = 60000
 limit_time_real = 120000
@@ -32,7 +32,7 @@ log_db = False
 log_db_level = warning
 log_handler = :INFO
 log_level = info
-logfile = /var/log/odoo/odoo-gromed.log
+logfile = /var/log/odoo/odoo.log
 logrotate = True
 longpolling_port = 8072
 max_cron_threads = 2
@@ -54,6 +54,12 @@ test_report_directory = False
 translate_modules = ['all']
 unaccent = False
 without_demo = False
-workers = 8
+workers = 64
+
+;[session_redis]
+;active=true
+;redis_host=10.254.253.10
+;password=forlife@123
+
 [queue_job]
-channels = root:2
+channels = root:42, import:20, validate_stock_valuation_2:20
