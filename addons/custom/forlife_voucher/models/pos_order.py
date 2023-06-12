@@ -121,6 +121,7 @@ class PosOrder(models.Model):
                 'start_date': line.order_id.date_order,
                 'state': 'sold',
                 'price': line.product_id.price,
+                'notification_id': line.product_id.notification_id,
                 'price_used': 0,
                 'price_residual': line.product_id.price - 0,
                 'derpartment_id': program_voucher_id.derpartment_id.id if program_voucher_id.derpartment_id else None,

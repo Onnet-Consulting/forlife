@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-3">
                             <field name="brand_ids" widget="many2many_checkboxes"/>
-<!--                            <button name="print_xlsx" type="object" string="Export Excel" icon="fa-download" class="btn-secondary oe_right"/>-->
+                            <button name="print_xlsx" type="object" string="Export Excel" icon="fa-download" class="btn-secondary oe_right"/>
                             <button name="btn_reset_searching" string=" Reset" icon="fa-refresh" class="oe_highlight oe_right" type="object" context="{'pop_colum': True}"/>
                         </div>
                     </div>
