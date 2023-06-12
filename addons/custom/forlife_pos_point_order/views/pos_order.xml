@@ -42,7 +42,7 @@
                             <field name="type"/>
                             <field name="name"/>
                             <field name="listed_price"/>
-                            <field name="recipe"/>
+                            <field name="recipe" attrs="{'invisible':[('type','in',['product_defective','handle'])]}"/>
                             <field name="money_reduced"/>
                             <field name="currency_id" invisible="1"/>
                         </tree>
@@ -51,7 +51,7 @@
                                 <group>
                                     <field name="type"/>
                                     <field name="name"/>
-                                    <field name="listed_price"/>
+                                    <field name="listed_price" attrs="{'invisible':[('type','in',['product_defective','handle'])]}"/>
                                 </group>
                                 <group>
                                     <field name="recipe"/>

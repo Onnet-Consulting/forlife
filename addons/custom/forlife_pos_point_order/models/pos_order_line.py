@@ -24,7 +24,7 @@ class PosOrderLine(models.Model):
                 vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
                     (0, 0, {
                         'type': 'point',
-                        'listed_price': line['price_unit'],
+                        'listed_price': line['original_price'],
                         'recipe': -line['point']/1000,
                     })
                 ]
@@ -33,7 +33,7 @@ class PosOrderLine(models.Model):
                     (0, 0, {
                         'type': 'product_defective',
                         'recipe': line['money_reduce_from_product_defective'],
-                        'listed_price': line['price_unit']
+                        'listed_price': line['original_price']
                     })
                 ]
             if 'discount' in line and line['discount']:
@@ -41,7 +41,7 @@ class PosOrderLine(models.Model):
                     (0, 0, {
                         'type': 'handle',
                         'recipe': line['discount'],
-                        'listed_price': line['price_unit']
+                        'listed_price': line['original_price']
                     })
                 ]
         return super(PosOrderLine, self).create(vals_list)
