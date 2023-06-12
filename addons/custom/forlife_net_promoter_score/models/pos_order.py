@@ -12,14 +12,16 @@ class PosOrder(models.Model):
         return res
 
     def create_forlife_comment(self):
-        self.env['forlife.comment'].sudo().create(self.prepare_comment_data())
+        value = self.prepare_comment_data()
+        if value:
+            self.env['forlife.comment'].sudo().create(value)
 
     def prepare_comment_data(self):
         current_date = fields.Datetime.now()
         brand_id = self.config_id.store_id.brand_id
         question_id = self.env['forlife.question'].search([('company_id', '=', self.env.company.id), ('brand_id', '=', brand_id.id), ('start_date', '<=', current_date), ('finish_date', '>=', current_date)], limit=1)
         if not question_id:
-            raise ValueError(_('Question not found !'))
+            return False
         return dict({
             'question_id': question_id.id,
             'customer_code': self.partner_id.phone,

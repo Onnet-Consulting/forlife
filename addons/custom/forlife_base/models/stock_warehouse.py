@@ -78,4 +78,3 @@ class StockWarehouseGroup(models.Model):
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code_level_1)', 'Mã phải là duy nhất!')
     ]
-

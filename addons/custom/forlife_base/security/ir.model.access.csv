@@ -58,3 +58,9 @@ access_bank_level_group_system,bank_level system,model_bank_level,base.group_sys
 
 access_warehouse_group,warehouse_group user,model_warehouse_group,base.group_user,1,0,0,0
 access_warehouse_group,warehouse_group system,model_warehouse_group,base.group_system,1,1,1,1
+
+
+access_hr_team_group_user,access_hr_team_group_user,forlife_base.model_hr_team,base.group_user,1,0,0,0
+
+access_forlife_app_api_link_manager,forlife.app.api.link manager,model_forlife_app_api_link,base.group_system,1,1,1,0
+access_forlife_app_api_link_view,forlife.app.api.link view,model_forlife_app_api_link,base.group_user,1,0,0,0

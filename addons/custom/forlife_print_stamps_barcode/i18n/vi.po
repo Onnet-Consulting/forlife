@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-03 08:00+0000\n"
-"PO-Revision-Date: 2023-02-03 15:13+0700\n"
+"POT-Creation-Date: 2023-06-08 06:55+0000\n"
+"PO-Revision-Date: 2023-06-08 06:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: vi\n"
-"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_print_stamps_barcode
 #: model:ir.actions.report,print_report_name:forlife_print_stamps_barcode.print_stamps_barcode_report
@@ -123,13 +121,6 @@ msgstr "Dòng"
 #: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
 msgid "Màu:"
 msgstr ""
-
-#. module: forlife_print_stamps_barcode
-#. odoo-python
-#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
-#, python-format
-msgid "Only %s codes can be printed if starting from %s position"
-msgstr "Chỉ có thể in %s mã nếu bắt đầu từ vị trí %s"
 
 #. module: forlife_print_stamps_barcode
 #: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form

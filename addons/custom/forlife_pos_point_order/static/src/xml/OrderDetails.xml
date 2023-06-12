@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<t t-inherit="forlife_pos_layout.CustomOrderSummary" t-inherit-mode="extension">
+<t t-inherit="forlife_pos_layout.CustomOrderSummary" t-inherit-mode="extension" owl="1">
     <xpath expr="//div[hasclass('custom-line')]" position="inside">
-        <div>
+        <div class="custom-summary">
             <span>
                 <table style="border: 1px solid black;width:100%">
                     <!-- row 1 -->
@@ -21,7 +21,7 @@
                         </th>
                         <t t-set="_totalQuantity" t-value="getTotalQuantity()" />
                         <th style="border: 1px solid black;width:25%">Tổng số lượng</th>
-                        <th>
+                        <th class="total-quantity">
                             <t t-esc="_totalQuantity" />
                         </th>
                     </tr>
@@ -39,7 +39,7 @@
                         </th>
                         <t t-set="_totalPriceTax" t-value="getTotalPriceWithTax()" />
                         <th style="border: 1px solid black;width:25%">Tổng tiền hàng</th>
-                        <th>
+                        <th class="total-money-product">
                             <t t-esc="env.pos.format_currency(_totalPriceTax)" />
                         </th>
                     </tr>
@@ -52,7 +52,7 @@
                               <t t-esc="env.pos.selectedOrder.total_order_line_redisual"/>
                         </th>
                         <th style="border: 1px solid black;width:25%">Tổng giảm giá</th>
-                        <th>
+                        <th class="total-money-discount">
                             <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
                         </th>
                     </tr>
@@ -62,7 +62,7 @@
                         <th></th>
                         <th></th>
                         <th style="border: 1px solid black;width:25%">Tổng tiền thanh toán</th>
-                        <th>
+                        <th class="total-money-payment">
                             <t t-esc="env.pos.format_currency(_totalPriceNotFormat)" />
                         </th>
                     </tr>

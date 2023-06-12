@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="product_defective_form_view_custom" model="ir.ui.view">
+            <field name="name">product_defective_form_view_custom</field>
+            <field name="model">product.defective</field>
+            <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_refuse']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_pos_product_change_refund.action_reason_refuse_product_defective)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

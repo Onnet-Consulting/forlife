@@ -254,6 +254,7 @@ class SalaryRecord(models.Model):
                 asset_id=line.asset_id.id,
                 work_order=line.production_id.id,
                 occasion_code_id=line.occasion_code_id.id,
+                expense_item_id=line.expense_item_id.id
             )
             entry = line.entry_id
             entry_id = entry.id

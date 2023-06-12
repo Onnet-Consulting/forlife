@@ -15,8 +15,8 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
-    nhanh_id = fields.Integer(string='Id Nhanh.vn')
-    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
+    nhanh_id = fields.Integer(string='Id Nhanh.vn', copy=False)
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn', copy=False)
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
@@ -30,6 +30,7 @@ class SaleOrderNhanh(models.Model):
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
+        ('new', 'New'),
         ('confirmed', 'Confirmed'),
         ('packing', 'Packing'),
         ('pickup', 'Pickup'),
@@ -155,7 +156,7 @@ class SaleOrderNhanh(models.Model):
                     if not product and item.get('productBarcode'):
                         product = self.search_product(('barcode', '=', item.get('productBarcode')))
                     if not product and item.get('productCode'):
-                        product = self.search_product(('code_product', '=', item.get('productCode')))
+                        product = self.search_product(('barcode', '=', item.get('productCode')))
                     if not product:
                         product = self.env['product.template'].create({
                             'detailed_type': 'asset',
@@ -163,7 +164,7 @@ class SaleOrderNhanh(models.Model):
                             'check_data_odoo': False,
                             'name': item.get('productName'),
                             'barcode': item.get('productBarcode'),
-                            'code_product': item.get('productCode'),
+                            # 'code_product': item.get('productCode'),
                             'list_price': item.get('price'),
                             'uom_id': uom,
                             'weight': item.get('shippingWeight', 0),
@@ -362,14 +363,14 @@ class SaleOrderNhanh(models.Model):
                         if not product and res.get('data').get('products').get(item).get('barcode'):
                             product = self.search_product(('barcode', '=', value_data.get('barcode')))
                         if not product and value_data.get('code'):
-                            product = self.search_product(('code_product', '=', value_data.get('code')))
+                            product = self.search_product(('barcode', '=', value_data.get('code')))
                         if not product:
                             dic_data_product = {
                                 'nhanh_id': value_data.get('idNhanh'),
                                 'check_data_odoo': False,
                                 'name': value_data.get('name'),
                                 'barcode': value_data.get('barcode'),
-                                'code_product': value_data.get('code'),
+                                # 'code_product': value_data.get('code'),
                                 'list_price': value_data.get('price'),
                                 'detailed_type': 'asset',
                             }
