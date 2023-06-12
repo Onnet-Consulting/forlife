@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="split_product_line_sub" model="ir.sequence">
             <field name="name">Sản phẩm phân rã</field>
             <field name="code">split.product.line.sub</field>
