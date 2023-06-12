@@ -92,7 +92,7 @@ class MainController(http.Controller):
                 order_line.append((
                     0, 0, {'product_template_id': product_id.product_tmpl_id.id, 'product_id': product_id.id, 'name': product_id.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
-                           'product_uom': v.uom_id.id if product_id.uom_id else self.uom_unit(),
+                           'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id,
                            'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
                                'discount') else 0,

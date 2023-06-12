@@ -29,20 +29,21 @@
                     <header>
                         <button name="action_send_request_approve" type="object" class="oe_highlight" string="Gửi duyệt" states="new"/>
                         <button name="action_approve" type="object" class="oe_highlight" string="Duyệt" states="waiting approve"/>
-                        <button name="action_refuse" type="object" string="Từ chối" states="waiting approve"/>
+                        <button name="action_refuse" type="object" string="Từ chối (alpha)" states="waiting approve"/>
+                        <button name="%(action_reason_refuse_product_defective)d" type="action" string="Từ chối (beta)" states="waiting approve"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="store_id" required="1"/>
-                                <field name="product_id" required="1"/>
-                                <field name="quantity_defective_approved" required="1" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
+                                <field name="product_id" required="1" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
+                                <field name="quantity_defective_approved" required="1" attrs="{'readonly': [('state','in',['approved','refuse','waiting approve'])]}"/>
                                 <field name="quantity_inventory_store" required="1"/>
                                 <field name="quantity_can_be_sale" required="1" readonly="True"/>
                                 <field name="price"/>
-                                <field name="money_reduce"/>
-                                <field name="percent_reduce"/>
+                                <field name="money_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
+                                <field name="percent_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
                                 <field name="total_reduce" required="1"/>
                                 <field name="defective_type_id" required="1"/>
                                 <field name="detail_defective"/>

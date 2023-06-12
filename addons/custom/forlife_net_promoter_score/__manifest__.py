@@ -16,6 +16,7 @@
     'category': 'Sales/Point of Sale',
 
     'depends': [
+        'forlife_base',
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_telegram_integration',
@@ -26,11 +27,9 @@
         'security/nps_security.xml',
         'security/ir.model.access.csv',
         'data/cron_job_data.xml',
-        'data/forlife_app_api_link_data.xml',
 
         'views/forlife_question_views.xml',
         'views/forlife_comment_views.xml',
-        'views/forlife_app_api_link_views.xml',
         'wizard/net_promoter_score_report_views.xml',
     ]
 }

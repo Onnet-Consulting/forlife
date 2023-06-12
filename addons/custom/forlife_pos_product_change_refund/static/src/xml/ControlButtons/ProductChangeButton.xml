@@ -3,7 +3,7 @@
 
     <t t-name="TakePriceProductButton" owl="1">
         <span class="control-button" id="take-price-button">
-            <span>Lấy giá</span>
+            <span>Giá hàng lỗi</span>
         </span>
     </t>
 

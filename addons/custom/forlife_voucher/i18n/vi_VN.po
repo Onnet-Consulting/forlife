@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 04:27+0000\n"
-"PO-Revision-Date: 2023-03-09 04:27+0000\n"
+"POT-Creation-Date: 2023-06-01 10:54+0000\n"
+"PO-Revision-Date: 2023-06-01 10:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.view_pos_form_voucher_inherit
 msgid "<span class=\"o_stat_text\">Voucher</span>"
 msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_general
+msgid "Account General"
+msgstr "Tài khoản đối tượng chung"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_other_income
+msgid "Account Other Income"
+msgstr "Tài khoản thu nhập khác"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_category__property_price_account_id
@@ -53,6 +63,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__apply_contemp_time
+msgid "Apply Contemp Time"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__store_ids
 msgid "Apply for store"
 msgstr "Cửa hàng áp dụng"
@@ -69,6 +84,7 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__brand_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__brand_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__brand_id
 msgid "Brand"
@@ -104,7 +120,6 @@ msgstr "Số lượng"
 
 #. module: forlife_voucher
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.view_order_form_voucher_inherit
-#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_pos_form_voucher_inherit
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
 msgid "Create Voucher"
 msgstr "Tạo Voucher"
@@ -116,6 +131,8 @@ msgid "Created Voucher Quantity"
 msgstr "SL đã tạo voucher"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__create_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__create_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__create_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__create_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__create_uid
@@ -124,6 +141,8 @@ msgid "Created by"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__create_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__create_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__create_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__create_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__create_date
@@ -132,6 +151,7 @@ msgid "Created on"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__currency_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__currency_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__currency_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__currency_id
@@ -160,6 +180,13 @@ msgid "Department Code"
 msgstr "Mã phòng ban"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__derpartment_name
+msgid "Derpartment Name"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__display_name
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__display_name
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__display_name
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__display_name
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__display_name
@@ -168,8 +195,16 @@ msgid "Display Name"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__details
+msgid "Diễn giải"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__e
-#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__type__e
+#, python-format
 msgid "E-Điện tử"
 msgstr ""
 
@@ -180,6 +215,15 @@ msgid "End date"
 msgstr "Ngày kết thúc"
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#, python-format
+msgid "Error"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__pos_voucher_line__state__expired
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__expired
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__expired
 msgid "Expired"
@@ -206,13 +250,37 @@ msgid "Gift"
 msgstr "Tặng"
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__price_residual
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price_residual
+#, python-format
 msgid "Giá trị còn lại"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__price_residual_no_compute
+msgid "Giá trị còn lại "
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Giá trị sử dụng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__price_used
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price_used
 msgid "Giá trị đã dùng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__using_limit
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__using_limit
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__using_limit
+msgid "Giới hạn sử dụng"
 msgstr ""
 
 #. module: forlife_voucher
@@ -221,6 +289,15 @@ msgid "Has Message"
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#, python-format
+msgid "Hủy"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__id
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__id
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__id
@@ -236,6 +313,21 @@ msgstr ""
 #. module: forlife_voucher
 #: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__activity_exception_icon
 msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__notification_id
+msgid ""
+"Id của thông báo trên trang quản trị app, dùng cho nghiệp vụ đẩy thông báo "
+"thông tin voucher cho khách hàng."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_product_product__notification_id
+msgid ""
+"Id của thông báo trên trang quản trị app, được thiết lập trước khi bán "
+"voucher trên POS, dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho "
+"khách hàng."
 msgstr ""
 
 #. module: forlife_voucher
@@ -255,10 +347,8 @@ msgid "Info of Program Voucher"
 msgstr ""
 
 #. module: forlife_voucher
-#. odoo-python
-#: code:addons/forlife_voucher/models/voucher.py:0
-#, python-format
-msgid "Invalid phone number - %s"
+#: model:ir.model.fields,help:forlife_voucher.field_product_program_import__barcode
+msgid "International Article Number used for product identification."
 msgstr ""
 
 #. module: forlife_voucher
@@ -276,6 +366,15 @@ msgid ""
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Kiểm tra"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line____last_update
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import____last_update
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher____last_update
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line____last_update
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher____last_update
@@ -284,6 +383,8 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__write_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__write_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__write_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__write_uid
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__write_uid
@@ -292,6 +393,8 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__write_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__write_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__write_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__write_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__write_date
@@ -303,6 +406,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__status_latest
 msgid "Latest status"
 msgstr "Trạng thái gần nhất"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__type
+msgid "Loại"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Loại Voucher"
+msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_main_attachment_id
@@ -325,6 +440,13 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Mã Voucher"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__ref
 msgid "Mã viết tắt"
 msgstr ""
@@ -334,6 +456,16 @@ msgstr ""
 #: code:addons/forlife_voucher/models/set_voucher.py:0
 #, python-format
 msgid "Mã viết tắt tối đa chỉ 1 kí tự!"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__voucher_code
+msgid "Mã voucher"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__barcode
+msgid "Mã vạch"
 msgstr ""
 
 #. module: forlife_voucher
@@ -347,6 +479,7 @@ msgid "Mục đích sử dụng"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__pos_voucher_line__state__new
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__new
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__new
 msgid "New"
@@ -368,11 +501,30 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__end_date
+#, python-format
+msgid "Ngày hết hạn"
+msgstr ""
+
+#. module: forlife_voucher
 #. odoo-python
 #: code:addons/forlife_voucher/models/program_voucher.py:0
 #, python-format
 msgid "Ngày kết thúc không được nhỏ hơn ngày bắt đầu! "
 msgstr ""
+
+#. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.product_search_voucher_form_view
+msgid "Not notification id"
+msgstr "Chưa đặt Id thông báo"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_product__notification_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__notification_id
+msgid "Notification ID"
+msgstr "Id thông báo"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_needaction_counter
@@ -395,12 +547,14 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__pos_voucher_line__state__off_value
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__off_value
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__off_value
 msgid "Off Value"
 msgstr "Hết giá trị"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__partner
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__partner_id
 msgid "Partner"
 msgstr "Khách hàng"
@@ -411,16 +565,14 @@ msgid "Pay"
 msgstr "Bán"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__payment_method_id
+msgid "Payment Method"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__phone_number
 msgid "Phone"
 msgstr "Số điện thoại"
-
-#. module: forlife_voucher
-#. odoo-python
-#: code:addons/forlife_voucher/models/program_voucher.py:0
-#, python-format
-msgid "Please set the infomation of Vourcher!"
-msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_pos_order_line
@@ -433,10 +585,30 @@ msgid "Point of Sale Orders"
 msgstr "Đơn bán lẻ"
 
 #. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr "Phương thức thanh toán Điểm bán hàng"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__pos_order_id
+msgid "Pos Order"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_product__price
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__price
 msgid "Price"
 msgstr "Mệnh giá"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__price_change
+msgid "Price Change"
+msgstr ""
 
 #. module: forlife_voucher
 #. odoo-python
@@ -447,9 +619,17 @@ msgstr "Giá bán không được lớn hơn mệnh giá Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_product_template
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__product_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_ids
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.product_search_voucher_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_product_program_import_search
 msgid "Product"
 msgstr "Sản phẩm"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_apply_count
+msgid "Product Apply Count"
+msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_product_category
@@ -462,13 +642,27 @@ msgid "Product Variant"
 msgstr "Biến thể sản phẩm"
 
 #. module: forlife_voucher
+#: model:ir.actions.act_window,name:forlife_voucher.product_voucher_action
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__product_voucher_id
+#: model:ir.ui.menu,name:forlife_voucher.product_voucher_menu
 msgid "Product Voucher"
 msgstr "Sản phẩm voucher"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__product_voucher_name
+msgid "Product Voucher Name"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.constraint,message:forlife_voucher.constraint_product_program_import_unique_product_id
+msgid "Product must be unique!"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__program_voucher_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_product__program_voucher_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_program_import__program_vocher_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_template__program_voucher_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__program_voucher_id
 #: model:ir.ui.menu,name:forlife_voucher.forlife_program_voucher
@@ -538,18 +732,21 @@ msgid "Set Voucher code"
 msgstr "Đặt mã Voucher"
 
 #. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__pos_voucher_line__state__sold
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__sold
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__sold
 msgid "Sold"
 msgstr "Đã bán"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__start_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__start_date
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__start_date
 msgid "Start date"
 msgstr "Ngày bắt đầu"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__state
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__state
 msgid "State"
 msgstr "Trạng thái"
@@ -569,14 +766,58 @@ msgid "Stock Move"
 msgstr "Dịch chuyển kho"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__store_ids
+msgid "Store"
+msgstr ""
+
+#. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
+msgid "Sync Products Apply"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#, python-format
+msgid "Sản phẩm"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_apply_ids
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__product_apply_ids
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
+msgid "Sản phẩm áp dụng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_product_program_import
+msgid "Sản phẩm áp dụng (Customize luồng import)"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#, python-format
+msgid "There is already an electronic payment in progress."
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Thông báo"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__state_app
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__state_app
 msgid "Trạng thái App"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__type
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__type
-#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__type
 msgid "Type"
 msgstr "Loại"
 
@@ -586,32 +827,58 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__voucher_name
+msgid "Tên"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#, python-format
+msgid "Tên phòng ban"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__v
-#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__type__v
+#, python-format
 msgid "V-Giấy"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__pos_voucher_line__state__valid
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__valid
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__valid
 msgid "Valid"
 msgstr "Còn giá trị"
 
 #. module: forlife_voucher
+#. odoo-javascript
 #. odoo-python
 #: code:addons/forlife_voucher/models/program_voucher.py:0
+#: code:addons/forlife_voucher/static/src/js/Popup/VoucherPopups.js:0
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
 #: model:ir.actions.act_window,name:forlife_voucher.forlife_voucher_action
 #: model:ir.model,name:forlife_voucher.model_voucher_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__voucher_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_product__voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_template__voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__program_voucher_line_ids
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__voucher_ids
 #: model:ir.ui.menu,name:forlife_voucher.forlife_voucher
 #: model:ir.ui.menu,name:forlife_voucher.forlife_voucher_menuitem_root
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_pos_form_voucher_inherit
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
 #, python-format
 msgid "Voucher"
 msgstr "Mã Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_order_line__is_voucher_conditional
+msgid "Voucher Conditional"
+msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__voucher_count
@@ -624,10 +891,34 @@ msgid "Voucher Program Code"
 msgstr "Mã chương trình"
 
 #. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_pos_voucher_line
+msgid "Voucher used by Pos Order"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_order__pos_voucher_line_ids
+msgid "Vouchers"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Popup/VoucherPopups.js:0
+#, python-format
+msgid "Vui lòng kiểm tra lại thông tin Voucher"
+msgstr ""
+
+#. module: forlife_voucher
 #. odoo-python
 #: code:addons/forlife_voucher/models/program_voucher.py:0
 #, python-format
 msgid "Vui lòng thêm dòng thông tin cho vourcher!"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Popup/VoucherPopups.js:0
+#, python-format
+msgid "Warning"
 msgstr ""
 
 #. module: forlife_voucher
@@ -638,6 +929,19 @@ msgstr ""
 #. module: forlife_voucher
 #: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/js/Screen/PaymentScreen.js:0
+#, python-format
+msgid "Xác nhận"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__is_full_price_applies
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__is_full_price_applies
+msgid "Áp dụng nguyên giá"
 msgstr ""
 
 #. module: forlife_voucher
@@ -672,11 +976,9 @@ msgid "Đối tượng"
 msgstr ""
 
 #. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_other_income
-msgid "Account Other Income"
-msgstr "Tài khoản thu nhập khác"
-
-#. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_general
-msgid "Account General"
-msgstr "Tài khoản đối tượng chung"
+#. odoo-javascript
+#: code:addons/forlife_voucher/static/src/xml/VoucherPopup.xml:0
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_voucher_line__priority
+#, python-format
+msgid "Ưu tiên"
+msgstr ""

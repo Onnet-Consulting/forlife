@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_transfer_form_view_inherit" model="ir.ui.view">
+            <field name="name">stock_transfer_form_view_inherit</field>
+            <field name="model">stock.transfer</field>
+            <field name="inherit_id" ref="forlife_stock.stock_transfer_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//header" position="inside">
+                    <button name="%(accountant_print_stock_transfer_ingoing)d" string="Print Receive" class="oe_highlight" type="action"/>
+                    <button name="%(warehouse_print_stock_transfer_ingoing)d" string="Print Receive" class="oe_highlight" type="action"/>
+                    <button name="%(accountant_print_stock_transfer_outgoing)d" string="Print Delivery" class="oe_highlight" type="action"/>
+                    <button name="%(warehouse_print_stock_transfer_outgoing)d" string="Print Delivery" class="oe_highlight" type="action"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
