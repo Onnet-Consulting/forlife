@@ -41,7 +41,7 @@
                                     <field name="uom_id"/>
                                     <field name="attachments_count" attrs="{'required': [('parent.type', '=', 'phantom')]}"/>
                                     <field name="product_qty" attrs="{'readonly': [('parent.type', '=', 'phantom')]}"/>
-                                    <field name="price"/>
+                                    <field name="price" string="Giá"/>
                                 </tree>
                             </field>
                         </page>
