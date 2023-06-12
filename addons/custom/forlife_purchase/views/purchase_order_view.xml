@@ -90,7 +90,9 @@
                         <button string="Reject" name="%(forlife_purchase.reject_order_wizard)d"
                                 type="action" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
                                 groups="purchase_request.admin_purchase_request_group" />
-                        <button string="Cancel" name="%(forlife_purchase.cancel_order_wizard)d"
+                        <button string="Cancel (alpha)" name="action_cancel" type="object"
+                                attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>
+                        <button string="Cancel (beta)" name="%(forlife_purchase.cancel_order_wizard)d"
                                 type="action" attrs="{'invisible': [('custom_state', 'in', ('cancel', 'close', 'approved'))]}"/>
                         <button string="Close" name="action_close" type="object"
                                 attrs="{'invisible': [('custom_state', '!=', 'approved')]}"/>

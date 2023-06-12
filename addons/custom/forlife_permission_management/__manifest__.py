@@ -21,6 +21,7 @@
         'forlife_stock',
         'forlife_purchase',
         'forlife_stock_report',
+        'forlife_report',
         'forlife_pos_product_change_refund',
         'point_of_sale',
         'forlife_pos_promotion',
