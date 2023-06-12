@@ -127,6 +127,7 @@ class PurchaseOrderLine(models.Model):
                     # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
+                    'production_line_price_unit': production_line.price,
                     'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
@@ -171,7 +172,8 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
-    price_unit = fields.Float()
+    production_line_price_unit = fields.Float(digits='Product Unit of Measure')
+    price_unit = fields.Float(compute='_compute_price_unit', store=1)
 
     # @api.constrains('product_qty', 'product_plan_qty')
     # def _constraint_product_qty(self):
@@ -186,6 +188,12 @@ class PurchaseOrderLineMaterialLine(models.Model):
                 rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
             else:
                 rec.product_qty = 0
+
+    @api.depends('production_line_price_unit', 'product_qty')
+    def _compute_price_unit(self):
+        for rec in self:
+            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                rec.price_unit = rec.product_qty * rec.production_line_price_unit
 
     def _inverse_product_plan_qty(self):
         pass
