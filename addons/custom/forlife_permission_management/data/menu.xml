@@ -503,7 +503,7 @@
 
         <record model="ir.ui.menu" id="forlife_report.report_menu">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_manufacture')),(4, ref('forlife_permission_management.group_business_manager')),(4, ref('forlife_permission_management.group_business_monitor')),(4, ref('forlife_permission_management.group_marketing')),(4, ref('forlife_permission_management.group_dvkh_1')),(4, ref('forlife_permission_management.group_dvkh_2')),(4, ref('forlife_permission_management.group_dvkh_3')),(4, ref('forlife_permission_management.group_dvkh_4'))]"/>
         </record>
     </data>
 </odoo>
