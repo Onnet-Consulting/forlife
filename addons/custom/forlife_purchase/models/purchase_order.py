@@ -351,6 +351,8 @@ class PurchaseOrder(models.Model):
             if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
                 raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
             for orl in record.order_line:
+                if orl.product_id.id == self.env.ref('forlife_purchase.product_discount_tax').id or orl.free_good:
+                    continue
                 if orl.price_subtotal <= 0:
                     raise UserError(_('Đơn hàng chứa sản phẩm %s có tổng tiền bằng 0!') % orl.product_id.name)
             record.write({'custom_state': 'confirm'})
