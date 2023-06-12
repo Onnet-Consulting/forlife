@@ -33,6 +33,8 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'discount': line.discount,
                         'currency_id': line.currency_id.id or False,
                         'is_refund': line.is_refund,
+                        'tax_amount': line.tax_amount,
+                        'vendor_price': line.vendor_price,
                     }))
             if vals_line:
                 rec.write({
@@ -101,22 +103,24 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                     (0, 0, {
                         'account_id': account_id.id,
                         'product_id': line.product_id.id,
-                        'debit': int(line.price_total),
+                        'debit': int(line.price_subtotal),
                         'credit': 0,
                         'quantity': line.quantity,
                         'price_unit': line.price_unit,
-                        'balance': int(line.price_total),
-                        'tax_ids': line.tax_ids,
+                        'balance': int(line.price_subtotal),
+                        'tax_ids': line.tax_ids.ids or False,
                         'discount': line.discount,
                         'currency_id': line.currency_id.id or False,
                         'is_refund': line.is_refund,
                         'display_type': 'product',
+                        'tax_amount': tax_mount,
+                        'uom_id': line.uom_id,
                     }),
                     (0, 0, {
                         'account_id': account_payable_id.id,
                         'debit': 0,
-                        'credit': int(line.price_total + tax_mount),
-                        'balance': -int(line.price_total + tax_mount),
+                        'credit': int(line.price_subtotal + tax_mount),
+                        'balance': -int(line.price_subtotal + tax_mount),
                         'display_type': 'payment_term',
                     })
                 ]
@@ -149,19 +153,21 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'quantity': line.quantity,
                         'price_unit': line.price_unit,
                         'debit': 0,
-                        'credit': int(line.price_total),
-                        'balance': -int(line.price_total),
+                        'credit': int(line.price_subtotal),
+                        'balance': -int(line.price_subtotal),
                         'display_type': 'product',
                         'tax_ids': line.tax_ids,
                         'discount': line.discount,
                         'currency_id': line.currency_id.id or False,
                         'is_refund': line.is_refund,
+                        'tax_amount': tax_mount,
+                        'uom_id': line.uom_id,
                     }),
                     (0, 0, {
                         'account_id': account_payable_id.id,
-                        'debit': int(line.price_total + tax_mount),
+                        'debit': int(line.price_subtotal + tax_mount),
                         'credit': 0,
-                        'balance': int(line.price_total + tax_mount),
+                        'balance': int(line.price_subtotal + tax_mount),
                         'display_type': 'payment_term',
                     })
                 ]
@@ -191,8 +197,10 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
         string='Currency'
     )
     is_refund = fields.Boolean()
+    tax_amount = fields.Float(string='Tax Amount',)
+    vendor_price = fields.Float(string="Vendor Price")
 
-    @api.depends('quantity', 'discount', 'price_unit', 'tax_ids')
+    @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'tax_amount')
     def _compute_totals(self):
         for line in self:
             line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
@@ -208,6 +216,7 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
                     partner=line.parent_id.origin_invoice_id.partner_id,
                     is_refund=line.is_refund,
                 )
+                line.tax_amount = taxes_res['taxes'][0]['amount']
                 line.price_subtotal = taxes_res['total_excluded']
                 line.price_total = taxes_res['total_included']
             else:
