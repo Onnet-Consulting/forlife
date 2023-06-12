@@ -213,7 +213,7 @@
                            attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}"/>
                     <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                     <field name="invoice_status" invisible="1"/>
+                    <field name="invoice_status" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="active_manual_currency_rate" invisible="1"/>
@@ -359,7 +359,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='invoice_status']" position="before">
-                    <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"/>
+                    <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}" force_save="1"/>
                     <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
 
