@@ -24,9 +24,35 @@
                         <field name="price" class="oe_inline" widget='monetary'
                                options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                     </div>
+                    <field name="voucher" invisible="1"/>
+                    <field name="notification_id" attrs="{'invisible': [('voucher', '!=', True)]}"/>
                 </xpath>
 
             </field>
         </record>
+
+        <record id="product_search_voucher_form_view" model="ir.ui.view">
+            <field name="name">product.product.voucher.search</field>
+            <field name="model">product.product</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Product" filter_domain="['|', '|', ('default_code', 'ilike', self), ('name', 'ilike', self), ('barcode', 'ilike', self)]"/>
+                    <field name="categ_id" filter_domain="[('categ_id', 'child_of', raw_value)]"/>
+                    <field name="price"/>
+                    <field name="notification_id"/>
+                    <filter name="notification_id" string="Not notification id" domain="[('notification_id', 'in', (False, ''))]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="product_voucher_action" model="ir.actions.act_window">
+            <field name="name">Product Voucher</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="product_search_voucher_form_view"/>
+            <field name="domain">[('voucher', '=', True)]</field>
+        </record>
+
     </data>
 </odoo>

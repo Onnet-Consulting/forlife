@@ -46,7 +46,7 @@ class ForlifeComment(models.Model):
             return False
         res = self.env['forlife.app.api.link'].search([('key', '=', brand)])
         if res:
-            url = res[0].value + '&username=%s&notiId=9999' % phone
+            url = res[0].value + 'type=pushNotification&username=%s&notiId=9999' % phone
             result = requests.get(url)
             res = json.loads(result.text)
             self.sudo().write({'status': 0}) if res.get('Result', 0) else self.sudo().unlink()
@@ -77,41 +77,3 @@ class ForlifeComment(models.Model):
             if cmt.comment:
                 self.action_send_message('NPS-%s-CSKH' % cmt.brand, message)
             self.action_send_message('%s-NPS-%s' % (cmt.brand, cmt.areas), message)
-
-    # fixme: xóa phần liên quan đến hàm btn_send_comment_from_app và action_push_notification_manual sau khi dựng xong API kết nối với App
-    def btn_send_comment_from_app(self):
-        ctx = dict(self._context)
-        ctx.update({
-            'default_comment_id': self.id,
-        })
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Comment'),
-            'res_model': 'form.update.comment',
-            'target': 'new',
-            'view_mode': 'form',
-            'views': [[self.env.ref('forlife_net_promoter_score.form_update_comment_view_form').id, 'form']],
-            'context': ctx,
-        }
-
-    def action_push_notification_manual(self):
-        res = self.search([('status', '=', -1)])
-        for line in res:
-            line.push_notification_to_app(line.customer_code, line.brand)
-
-
-class FormUpdateComment(models.TransientModel):
-    _name = 'form.update.comment'
-    _description = 'Form Update Comment'
-
-    comment_id = fields.Many2one('forlife.comment', string='Comments')
-    point = fields.Integer('Point', default=100)
-    comment = fields.Text('Comment NPS')
-
-    def btn_ok(self):
-        self.comment_id.sudo().write({
-            'point': self.point,
-            'comment': self.comment,
-            'comment_date': fields.Datetime.now(),
-            'status': 1,
-        })

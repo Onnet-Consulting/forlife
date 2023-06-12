@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <function name="_push_existing_groups" model="res.partner.group"/>
+    <function name="bravo_push_existing_groups" model="res.partner.group"/>
 </odoo>

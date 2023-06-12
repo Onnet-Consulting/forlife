@@ -7,7 +7,7 @@ class SplitProduct(models.Model):
     _name = 'split.product'
     _description = 'Nghiệp vụ phân tách mã'
 
-    name = fields.Char(default='New')
+    name = fields.Char(default='New', copy=False)
 
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
     date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
@@ -110,7 +110,7 @@ class SplitProduct(models.Model):
             'default_split_product_id': self.id,
         })
         return {
-            'name': _('Phiếp nhập'),
+            'name': _('Phiếp nhập/xuất khác'),
             'domain': [('split_product_id', '=', self.id)],
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
@@ -129,6 +129,9 @@ class SplitProduct(models.Model):
 
     def create_orther_import(self, pk_type, company):
         pickings = self.env['stock.picking']
+        location_id = self.env['stock.location'].search([('code','=','N0301')], limit=1)
+        if not location_id:
+            raise ValidationError(_('Không tìm thấy địa điểm Nhậptách/gộp mã nguyên phụ liệu mã N0301'))
         for record in self.split_product_line_ids:
             data = []
             for rec in self.split_product_line_sub_ids:
@@ -140,21 +143,25 @@ class SplitProduct(models.Model):
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
-                        'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
+                        'location_id':location_id.id,
                         'location_dest_id': rec.warehouse_in_id.lot_stock_id.id
                     }))
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_import': True,
+                'state':'draft',
                 'picking_type_id': pk_type.id,
-                'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
-                'location_dest_id': record.warehouse_in_id.lot_stock_id.id,
                 'split_product_id': self.id,
-                'move_ids_without_package': data
+                'move_ids_without_package': data,
+                'location_id': location_id.id,
+                'location_dest_id': record.warehouse_in_id.lot_stock_id.id
             })
         return pickings
 
     def create_orther_export(self, pk_type, company):
         pickings = self.env['stock.picking']
+        location_id = self.env['stock.location'].search([('code','=','X0301')], limit=1)
+        if not location_id:
+            raise ValidationError(_('Không tìm thấy địa điểm Xuất tách/gộp mã nguyên phụ liệu mã X0301'))
         for record in self.split_product_line_ids:
             data = [(0, 0, {
                 'product_id': record.product_id.id,
@@ -164,15 +171,16 @@ class SplitProduct(models.Model):
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
                 'location_id': record.warehouse_out_id.lot_stock_id.id,
-                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id
+                'location_dest_id': location_id.id,
             })]
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_export': True,
+                'state':'draft',
                 'picking_type_id': pk_type.id,
-                'location_id': record.warehouse_out_id.lot_stock_id.id,
-                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id,
                 'split_product_id': self.id,
-                'move_ids_without_package': data
+                'move_ids_without_package': data,
+                'location_id': record.warehouse_out_id.lot_stock_id.id,
+                'location_dest_id': location_id.id,
             })
         return pickings
 

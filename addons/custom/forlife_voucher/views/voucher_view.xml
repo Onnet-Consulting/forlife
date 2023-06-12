@@ -71,6 +71,7 @@
                             <field name="order_use_ids" widget="many2many_tags" readonly="1"/>
                             <field name="state_app"/>
                             <field name="phone_number"/>
+                            <field name="notification_id"/>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
