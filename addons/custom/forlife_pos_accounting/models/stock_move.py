@@ -18,7 +18,7 @@ class InheritStockMove(models.Model):
                 gift_account = self.product_id.get_product_gift_account()
                 if not gift_account:
                     raise ValidationError(_(
-                        'Product categories "%s" has not configured gift account',
+                        'Product categories "%s" has not configured gift account!',
                         self.product_id.product_tmpl_id.categ_id.display_name
                     ))
                 if self._is_out():
