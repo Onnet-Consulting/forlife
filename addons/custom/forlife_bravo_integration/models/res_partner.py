@@ -38,7 +38,7 @@ class ResPartnerGroup(models.Model):
     br_3 = BravoIntegerField(bravo_default=1, bravo_name="IsGroup")
 
     @api.model
-    def _push_existing_groups(self):
+    def bravo_push_existing_groups(self):
         exist_groups = self.env.ref("forlife_pos_app_member.partner_group_1") + \
                        self.env.ref("forlife_pos_app_member.partner_group_2") + \
                        self.env.ref("forlife_pos_app_member.partner_group_3") + \
