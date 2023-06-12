@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="forlife_app_api_link_tokyolife" model="forlife.app.api.link">
+            <field name="name">TokyoLife</field>
+            <field name="key">TKL</field>
+            <field name="value">http://app.tokyolife.vn/Api/Notification/Notification.ashx?</field>
+        </record>
+
+        <record id="forlife_app_api_link_format" model="forlife.app.api.link">
+            <field name="name">Format</field>
+            <field name="key">FMT</field>
+            <field name="value">http://app.format.vn/Api/Notification/Notification.ashx?</field>
+        </record>
+
+    </data>
+</odoo>

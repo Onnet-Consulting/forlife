@@ -10,6 +10,7 @@
                     <field name="salary_table_id"/>
                     <field name="salary_field_id"/>
                     <field name="title" required="1"/>
+                    <field name="expense_item_id"/>
                     <field name="company_id"/>
                 </tree>
             </field>
@@ -27,6 +28,7 @@
                                 <field name="salary_field_id"/>
                                 <field name="title"/>
                                 <field name="groupable_account_ids" widget="many2many_tags"/>
+                                <field name="expense_item_id"/>
                                 <field name="company_id" readonly="1"/>
                             </group>
                         </group>
