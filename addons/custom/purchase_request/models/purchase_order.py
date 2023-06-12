@@ -80,15 +80,32 @@ class PurchaseOrder(models.Model):
             for item in rec.order_line:
                 production_order = self.env['production.order'].search(
                     [('product_id', '=', item.product_id.id), ('type', '=', 'normal')], limit=1)
-                for production_line in production_order.order_line_ids:
-                    self.env['purchase.order.line.material.line'].create({
-                        'purchase_order_line_id': item.id,
-                        'product_id': production_line.product_id.id,
-                        'uom': production_line.uom_id.id,
-                        'production_order_product_qty': production_order.product_qty,
-                        'production_line_product_qty': production_line.product_qty,
-                        'price_unit': production_line.price,
-                        'is_from_po': True,
+                if not item.purchase_order_line_material_line_ids:
+                    for production_line in production_order.order_line_ids:
+                        self.env['purchase.order.line.material.line'].create({
+                            'purchase_order_line_id': item.id,
+                            'product_id': production_line.product_id.id,
+                            'uom': production_line.uom_id.id,
+                            'production_order_product_qty': production_order.product_qty,
+                            'production_line_product_qty': production_line.product_qty,
+                            'price_unit': production_line.price,
+                            'is_from_po': True,
+                        })
+                # quantity = rec.order_line.filtered(lambda p: p.product_id == 'done')
+                quantity = self.env['quantity.production.order'].search(
+                    [('product_id', '=', item.product_id.id),
+                     ('location_id', '=', item.location_id.id),
+                     ('production_id', '=', item.production_id.id)])
+                if quantity:
+                    quantity.write({
+                        'quantity': quantity.quantity + item.purchase_quantity
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': item.product_id.id,
+                        'location_id': item.location_id.id,
+                        'production_id': item.production_id.id,
+                        'quantity': item.purchase_quantity
                     })
         return res
 
