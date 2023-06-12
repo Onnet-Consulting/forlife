@@ -1,0 +1,19 @@
+# -*- coding:utf-8 -*-
+
+from ..fields import *
+
+
+class ResBrand(models.Model):
+    _name = 'res.brand'
+    _inherit = ['res.brand', 'bravo.model']
+    _bravo_table = 'B20Brand'
+
+    br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
+    br2 = BravoCharField(odoo_name='name', bravo_name='Name')
+
+    @api.model
+    def bravo_push_existing_brands(self):
+        exist_brands = self.env.ref("forlife_point_of_sale.brand_format") + \
+                       self.env.ref("forlife_point_of_sale.brand_tokyolife")
+        exist_brands.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
+        return True

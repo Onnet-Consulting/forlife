@@ -53,6 +53,8 @@ class Voucher(models.Model):
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
     using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
 
+    notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app,'
+                                                          ' dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho khách hàng.')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):

@@ -14,7 +14,8 @@ class SalaryAccounting(models.Model):
     accounting_config_id = fields.Many2one('salary.accounting.config', required=True, ondelete='restrict')
     entry_id = fields.Many2one(related='accounting_config_id.entry_id', store=True)
     purpose_id = fields.Many2one(related='accounting_config_id.purpose_id', store=True)
-
+    expense_item_id = fields.Many2one('expense.item', related='accounting_config_id.entry_id.expense_item_id',
+                                      store=True)
     title = fields.Char(related='accounting_config_id.entry_id.title')
     accounting_type = fields.Selection([('debit', 'Debit'), ('credit', 'Credit')], required=True)
 
