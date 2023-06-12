@@ -28,6 +28,22 @@ class PosOrderLine(models.Model):
                         'recipe': -line['point']/1000,
                     })
                 ]
+            if 'money_reduce_from_product_defective' in line and line['money_reduce_from_product_defective']:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'product_defective',
+                        'recipe': line['money_reduce_from_product_defective'],
+                        'listed_price': line['price_unit']
+                    })
+                ]
+            if 'discount' in line and line['discount']:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'handle',
+                        'recipe': line['discount'],
+                        'listed_price': line['price_unit']
+                    })
+                ]
         return super(PosOrderLine, self).create(vals_list)
 
     def _export_for_ui(self, orderline):

@@ -220,6 +220,21 @@
             <field name="sequence">50</field>
         </record>
 
+        <record id="group_purchase_department_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng phòng</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_product_code" model="res.groups">
+            <field name="name">Mua hàng-Tem mã sản phẩm</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_group_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng nhóm-Chuyên viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
         <record id="group_purchase_request_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu mua hàng Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
@@ -346,6 +361,73 @@
         <record id="group_office_user" model="res.groups">
             <field name="name">Hành chính</field>
             <field name="category_id" ref="forlife_permission_management.module_category_office"/>
+        </record>
+        <!--Group chức năng Sản xuất-->
+
+        <record model="ir.module.category" id="module_category_manufacture">
+            <field name="name">Function Sản xuất</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_manufacture" model="res.groups">
+            <field name="name">Sản xuất</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_manufacture"/>
+        </record>
+
+        <!--Group chức năng Kinh doanh-->
+
+        <record model="ir.module.category" id="module_category_business">
+            <field name="name">Function Kinh doanh</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_business_manager" model="res.groups">
+            <field name="name">QL kinh doanh</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_business"/>
+        </record>
+
+        <record id="group_business_monitor" model="res.groups">
+            <field name="name">GS kinh doanh</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_business"/>
+        </record>
+
+        <!--Group chức năng DVKH-->
+
+        <record model="ir.module.category" id="module_category_mkt">
+            <field name="name">Function Marketing</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_marketing" model="res.groups">
+            <field name="name">Marketing</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_mkt"/>
+        </record>
+
+        <!--Group chức năng DVKH-->
+
+        <record model="ir.module.category" id="module_category_dvkh">
+            <field name="name">Function DVKH</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_dvkh_1" model="res.groups">
+            <field name="name">DVKH 1</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_2" model="res.groups">
+            <field name="name">DVKH 2</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_3" model="res.groups">
+            <field name="name">DVKH 3</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_4" model="res.groups">
+            <field name="name">DVKH 4</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
         </record>
     </data>
 </odoo>

@@ -103,9 +103,9 @@ class PurchaseOrder(models.Model):
     # do function này đã bị override tại module forlife_purchase
     # nên tại module này, kế thừa, dùng lại (copy) và thay đổi không check picking_type_id.code == 'incoming'
     def action_create_invoice(self):
-        if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
-            result = self.create_multi_invoice_vendor()
-        elif not self.is_return:
+        if len(self) > 1 or not self.is_return:
+            #     result = self.create_multi_invoice_vendor()
+            # elif not self.is_return:
             return super(PurchaseOrder, self).action_create_invoice()
         else:
             if self.purchase_type in ('service', 'asset'):
@@ -592,5 +592,4 @@ class AccountMove(models.Model):
                         line[2]['price_unit'] = line[2].pop('return_price_unit')
                     if line[2].get('qty_returned'):
                         line[2]['quantity'] = line[2].get('quantity') - line[2].pop('qty_returned')
-
         return super(AccountMove, self).create(vals_list)
