@@ -2064,7 +2064,6 @@ class StockPicking(models.Model):
                     account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
                 else:
                     raise ValidationError(_("Bạn chưa cấu hình tài khoản định giá tồn kho trong danh mục sản phẩm của sản phẩm có tên %s") % item.product_id.name)
-                debit = 0
                 debit_cost = 0
                 for material_line in material:
                     if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
