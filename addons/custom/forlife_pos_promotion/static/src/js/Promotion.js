@@ -1118,7 +1118,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             for (const ol of able_be_reward_ols) {
                 let taken_reward_qty = Math.min(ol.quantity, to_take_on_reward_qty);
                 ol.quantity = ol.quantity - taken_reward_qty;
-                to_discount_line_vals.push(this.prepare_to_discount_line_val(ol, taken_reward_qty, ol.price));
+                let reward_line = this.prepare_to_discount_line_val(ol, taken_reward_qty, ol.price);
+                reward_line['is_reward_line'] = true;
+                to_discount_line_vals.push(reward_line);
                 ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
                 to_take_on_reward_qty -= taken_reward_qty;
                 if (ol.key_program && to_apply_lines[ol.key_program]) {
