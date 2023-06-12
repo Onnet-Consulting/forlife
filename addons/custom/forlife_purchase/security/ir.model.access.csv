@@ -15,5 +15,5 @@ access_forlife_synthetic,forlife_synthetic,model_forlife_synthetic,,1,1,1,1
 
 access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
 access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_purchase_order,reject_purchase_order,model_reject_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
-access_purchase_order,reject_purchase_order,model_reject_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
+access_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
+access_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
