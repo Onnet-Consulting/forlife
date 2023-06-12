@@ -215,3 +215,26 @@ msgstr "Tìm kiếm hóa đơn"
 #: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_update_einvoice
 msgid "Update e invoice"
 msgstr "Cập nhật hóa đơn"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.bakv_invoice_form_view
+msgid "Preview eInvoice"
+msgstr "Preview HĐĐT"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.bakv_invoice_form_view
+msgid "Dowload eInvoice"
+msgstr "Tải HĐĐT"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_account_move__eivoice_file
+msgid "eInvoice PDF"
+msgstr "Tệp HĐĐT PDF"
+
+#. module: bkav_connector
+#. odoo-python
+#: code:addons/bkav_connector/models/invoice.py:0
+#: code:addons/bkav_connector/models/invoice.py:0
+#, python-format
+msgid "Don't have any eInvoice in this invoice. Please check again!"
+msgstr "Không có HĐĐT ở hóa đơn này. Vui lòng kiểm tra lại!"

@@ -154,6 +154,30 @@ class AccountMoveBKAV(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')])
 
+    eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+
+    def dowload_e_invoice(self):
+        if self.eivoice_file:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
+                       % (self.eivoice_file.id, self.eivoice_file.name),
+                'target': 'self',
+            }
+        else:
+            raise ValidationError(_("Don't have any eInvoice in this invoice. Please check again!"))
+
+    def preview_e_invoice(self):
+        if self.eivoice_file:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s"
+                       % (self.eivoice_file.id, self.eivoice_file.name),
+                'target': 'new',
+            }
+        else:
+            raise ValidationError(_("Don't have any eInvoice in this invoice. Please check again!"))
+
     def create_invoice_bkav(self):
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
