@@ -12,7 +12,7 @@
 <!--                    <field name="quantity"/>-->
                     <field name="forlife_production_id"/>
                     <field name="forlife_production_name"/>
-                    <field name="implementation_department"/>
+                    <field name="implementation_id"/>
                     <field name="management_department"/>
                     <field name="production_department"/>
                     <field name="product_id"/>
@@ -34,7 +34,7 @@
                                 <field name="forlife_production_id" readonly="1"/>
                                 <field name="product_id" readonly="1"/>
                                 <field name="quantity" readonly="1"/>
-                                <field name="implementation_department" readonly="1"/>
+                                <field name="implementation_id" readonly="1"/>
                                 <field name="management_department" readonly="1"/>
                                 <field name="production_department" readonly="1"/>
                             </group>

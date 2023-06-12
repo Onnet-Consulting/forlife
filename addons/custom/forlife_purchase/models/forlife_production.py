@@ -26,6 +26,7 @@ class ForlifeProduction(models.Model):
                                                   ('da_lat', 'Xưởng Đà Lạt'),
                                                   ('gia_cong', 'Gia công'),
                                                   ], default='di_nau', string='Implementation Department')
+    implementation_id = fields.Many2one('account.analytic.account', string='Implementation Department')
     management_department = fields.Selection([('tkl', 'Bộ phận sản xuất TKL'),
                                               ('fm', 'Bộ phận quản lý FM'),
                                               ('mua_hang', 'Phòng mua hàng')
@@ -36,6 +37,7 @@ class ForlifeProduction(models.Model):
                                               ], default='tu_san_xuat', string='Production Department')
     produced_from_date = fields.Date(string="Produced From Date", default=lambda self: fields.datetime.now(), required=True)
     to_date = fields.Date(string="To Date", required=True)
+    brand_id = fields.Many2one('res.brand', string="Nhãn hàng")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('open', 'Open'),
@@ -86,6 +88,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     description = fields.Char(string='Description', related='product_id.name')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
     implementation_department = fields.Selection(related='forlife_production_id.implementation_department')
+    implementation_id = fields.Many2one('account.analytic.account', related='forlife_production_id.implementation_id')
     management_department = fields.Selection(related='forlife_production_id.management_department')
     production_department = fields.Selection(related='forlife_production_id.production_department')
     forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')

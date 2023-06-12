@@ -229,6 +229,8 @@
                                 <field name="price_subtotal_back" force_save="1"/>
                                 <field name="tax_back" force_save="1"/>
                                 <field name="tax_percent_back" force_save="1"/>
+                                <field name="tax_percent" force_save="1"/>
+                                <field name="_x_invoice_date" force_save="1"/>
                                 <field name="totals_back" force_save="1"/>
                             </tree>
                         </field>

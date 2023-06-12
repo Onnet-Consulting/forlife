@@ -32,6 +32,7 @@ class ForlifeBOM(models.Model):
                                                   ('nguyen_van_cu', 'Xưởng Nguyễn Văn Cừ'),
                                                   ('da_lat', 'Xưởng Đà Lạt'),
                                                   ('gia_cong', 'Gia công')], string='Implementation Department')
+    implementation_id = fields.Many2one('account.analytic.account', string='Implementation Department')
     management_department = fields.Selection([('tkl', 'Bộ phận sản xuất TKL'),
                                               ('fm', 'Bộ phận quản lý FM'),
                                               ('mua_hang', 'Phòng mua hàng')], string='Management Department')
