@@ -155,18 +155,18 @@ class NhanhWebhookValue(models.Model):
                     'customer_rank': 1
                 })
             partner = self.env['res.partner'].sudo().search(
-                ['|', ('mobile', '=', odoo_order['customerMobile']), ('phone', '=', odoo_order['customerMobile'])],
+                ['|', ('mobile', '=', order['customerMobile']), ('phone', '=', order['customerMobile'])],
                 limit=1)
             if partner:
-                name_customer = odoo_order['customerName']
+                name_customer = order['customerName']
             if not partner:
                 partner_value = {
-                    'phone': odoo_order['customerMobile'],
-                    'mobile': odoo_order['customerMobile'],
-                    'name': odoo_order['customerName'],
-                    'email': odoo_order['customerEmail'],
-                    'contact_address_complete': odoo_order['customerAddress'],
-                    'customer_nhanh_id': odoo_order['customerId'],
+                    'phone': order['customerMobile'],
+                    'mobile': order['customerMobile'],
+                    'name': order['customerName'],
+                    'email': order['customerEmail'],
+                    'contact_address_complete': order['customerAddress'],
+                    'customer_nhanh_id': order['customerId'],
                 }
                 partner = self.env['res.partner'].sudo().create(partner_value)
             order_line = []
