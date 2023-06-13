@@ -67,6 +67,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
         move_line_vals = []
         account_payable_id = self.origin_invoice_id.partner_id.property_account_payable_id
         amount_payable = int(sum(self.line_ids.mapped('price_subtotal')) + sum(self.line_ids.mapped('tax_amount')))
+        tax_lines = []
         for line in self.line_ids:
             account_id = line.product_id.categ_id.property_stock_account_input_categ_id
             taxes_res = []
@@ -81,26 +82,53 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                     is_refund=line.is_refund,
                 )
             if self.invoice_type == 'increase':
-                tax = []
                 tax_mount = 0
                 if taxes_res:
                     for tax in taxes_res['taxes']:
                         if tax['account_id'] and tax['amount']:
-                            tax_mount += tax['amount']
-                            tax = [(0, 0, {
-                                'name': tax['name'],
-                                'tax_ids': [(6, 0, tax['tax_ids'])],
-                                'tax_tag_ids': [(6, 0, tax['tag_ids'])],
-                                'balance': tax['amount'],
-                                'debit': tax['amount'],
-                                'credit': 0,
-                                'account_id': tax['account_id'] or False,
-                                'amount_currency': tax['amount'],
-                                'tax_base_amount': tax['base'],
-                                'tax_repartition_line_id': tax['tax_repartition_line_id'],
-                                'group_tax_id': tax['group'] and tax['group'].id or False,
-                                'display_type': 'tax',
-                            })]
+                            if tax_lines:
+                                update = False
+                                for tax_line in tax_lines:
+                                    if tax['id'] == tax_line['tax_id']:
+                                        tax_line.update({
+                                            'balance': tax_line['balance'] + tax['amount'],
+                                            'debit': tax_line['debit'] + tax['amount'],
+                                            'amount_currency': tax_line['amount_currency'] + tax['amount'],
+                                            'tax_base_amount': tax_line['tax_base_amount'] + tax['base'],
+                                        })
+                                        update = True
+                                if not update:
+                                    tax_lines.append({
+                                        'tax_id': tax['id'],
+                                        'name': tax['name'],
+                                        'tax_ids': [(6, 0, tax['tax_ids'])],
+                                        'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                                        'balance': tax['amount'],
+                                        'debit': tax['amount'],
+                                        'credit': 0,
+                                        'account_id': tax['account_id'] or False,
+                                        'amount_currency': tax['amount'],
+                                        'tax_base_amount': tax['base'],
+                                        'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                                        'group_tax_id': tax['group'] and tax['group'].id or False,
+                                        'display_type': 'tax',
+                                    })
+                            else:
+                                tax_lines.append({
+                                    'tax_id': tax['id'],
+                                    'name': tax['name'],
+                                    'tax_ids': [(6, 0, tax['tax_ids'])],
+                                    'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                                    'balance': tax['amount'],
+                                    'debit': tax['amount'],
+                                    'credit': 0,
+                                    'account_id': tax['account_id'] or False,
+                                    'amount_currency': tax['amount'],
+                                    'tax_base_amount': tax['base'],
+                                    'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                                    'group_tax_id': tax['group'] and tax['group'].id or False,
+                                    'display_type': 'tax',
+                                })
                 move_line_vals += [
                     (0, 0, {
                         'account_id': account_id.id,
@@ -121,29 +149,60 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'taxes_id': line.tax_ids.id,
                     })
                 ]
-                move_line_vals += tax
+
+                # move_line_vals += tax
             else:
-                tax = []
+                # tax = []
                 tax_mount = 0
                 if taxes_res:
                     for tax in taxes_res['taxes']:
                         if tax['account_id'] and tax['amount']:
-                            tax_mount += tax['amount']
-                            tax = [(0, 0, {
-                                'name': tax['name'],
-                                'tax_ids': [(6, 0, tax['tax_ids'])],
-                                'tax_tag_ids': [(6, 0, tax['tag_ids'])],
-                                'balance': -tax['amount'],
-                                'debit': 0,
-                                'credit': tax['amount'],
-                                'account_id': tax['account_id'] or False,
-                                'amount_currency': -tax['amount'],
-                                'tax_amount': abs(tax['amount']),
-                                'tax_base_amount': tax['base'],
-                                'tax_repartition_line_id': tax['tax_repartition_line_id'],
-                                'group_tax_id': tax['group'] and tax['group'].id or False,
-                                'display_type': 'tax',
-                            })]
+                            if tax_lines:
+                                update = False
+                                for tax_line in tax_lines:
+                                    if tax['id'] == tax_line['tax_id']:
+                                        tax_line.update({
+                                            'balance': tax_line['balance'] - tax['amount'],
+                                            'credit': tax_line['credit'] + tax['amount'],
+                                            'amount_currency': tax_line['amount_currency'] - tax['amount'],
+                                            'tax_base_amount': tax_line['tax_base_amount'] + tax['base'],
+                                            'tax_amount': tax_line['tax_amount'] + abs(tax['amount']),
+                                        })
+                                        update = True
+                                if not update:
+                                    tax_lines.append({
+                                        'tax_id': tax['id'],
+                                        'name': tax['name'],
+                                        'tax_ids': [(6, 0, tax['tax_ids'])],
+                                        'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                                        'balance': -tax['amount'],
+                                        'debit': 0,
+                                        'credit': tax['amount'],
+                                        'account_id': tax['account_id'] or False,
+                                        'amount_currency': -tax['amount'],
+                                        'tax_amount': abs(tax['amount']),
+                                        'tax_base_amount': tax['base'],
+                                        'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                                        'group_tax_id': tax['group'] and tax['group'].id or False,
+                                        'display_type': 'tax',
+                                    })
+                            else:
+                                tax_lines.append({
+                                    'tax_id': tax['id'],
+                                    'name': tax['name'],
+                                    'tax_ids': [(6, 0, tax['tax_ids'])],
+                                    'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                                    'balance': -tax['amount'],
+                                    'debit': 0,
+                                    'credit': tax['amount'],
+                                    'account_id': tax['account_id'] or False,
+                                    'amount_currency': -tax['amount'],
+                                    'tax_amount': abs(tax['amount']),
+                                    'tax_base_amount': tax['base'],
+                                    'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                                    'group_tax_id': tax['group'] and tax['group'].id or False,
+                                    'display_type': 'tax',
+                                })
                 move_line_vals += [
                     (0, 0, {
                         'account_id': account_id.id,
@@ -164,7 +223,15 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'taxes_id': line.tax_ids.id,
                     })
                 ]
-                move_line_vals += tax
+                # move_line_vals += tax
+
+        if tax_lines:
+            for value_tax in tax_lines:
+                del value_tax['tax_id']
+                move_line_vals.append(
+                    (0, 0, value_tax)
+                )
+            # move_line_vals += [(0, 0, del value_tax) for value_tax in tax_lines]
         if self.invoice_type == 'increase':
             move_line_vals.append(
                 (0, 0, {
