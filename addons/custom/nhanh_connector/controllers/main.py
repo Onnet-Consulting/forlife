@@ -58,21 +58,11 @@ class MainController(http.Controller):
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
-                # đổi trả hàng
-                value = {}
-                if order.get('returnFromOrderId', 0):
-                    origin_order_id = request.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
-                    value.update({
-                        'x_is_return': True,
-                        'x_origin': origin_order_id.id if origin_order_id else None,
-                        'nhanh_origin_id': order.get('returnFromOrderId', 0)
-                    })
                 if not (order.get('returnFromOrderId', 0) and data['status'] in ['Returned',
                                                                                  'Success'] or not order.get(
                         'returnFromOrderId', 0)):
                     webhook_value_id.unlink()
-                    return self.result_request(200, 0, _('Update sale order success'))
+                    return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
                 # Add customer if not existed
                 nhanh_partner = self.partner_model().sudo().search(
@@ -152,6 +142,15 @@ class MainController(http.Controller):
                     'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
                     'order_line': order_line
                 }
+                # đổi trả hàng
+                if order.get('returnFromOrderId', 0):
+                    origin_order_id = request.env['sale.order'].sudo().search(
+                        [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+                    value.update({
+                        'x_is_return': True,
+                        'x_origin': origin_order_id.id if origin_order_id else None,
+                        'nhanh_origin_id': order.get('returnFromOrderId', 0)
+                    })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
                 if data['status'] in ['Packing', 'Pickup'] and not webhook_value_id.order_id.picking_ids:
                     webhook_value_id.order_id.action_create_picking()
