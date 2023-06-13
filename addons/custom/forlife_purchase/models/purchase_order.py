@@ -375,6 +375,9 @@ class PurchaseOrder(models.Model):
                         if orl.product_id == pkl.product_id:
                             pkl.write({
                                 'po_l_id': orl.id,
+                                'free_good': orl.free_good,
+                                'quantity_change': orl.exchange_quantity,
+                                'quantity_purchase_done': orl.purchase_quantity,
                                 'quantity_done': orl.product_qty,
                                 'occasion_code_id': orl.occasion_code_id.id,
                                 'work_production': orl.production_id.id,
