@@ -4,6 +4,14 @@ import logging
 NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 
 
+event_type_mapping = {
+    'orderAdd': 'order_add',
+    'orderUpdate': 'order_update',
+    'orderDelete': 'order_delete',
+    'webhooksEnabled': 'webhook_enabled'
+}
+
+
 def get_proxies():
     http_proxy = "http://10.207.210.3:3128"
     https_proxy = "https://10.207.210.3:3128"
@@ -107,4 +115,4 @@ def get_order_from_nhanh_id(self, order_id):
             continue
         order_information = res['data']['orders'].get(str(order_id))
         break
-    return order_information if order_information else res.get("messages", "")
+    return order_information if order_information else res.get("messages", ""), brand_id
