@@ -274,7 +274,7 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="domain_uom" invisible="1"/>
                         <field name="purchase_uom" domain="domain_uom"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
