@@ -37,6 +37,7 @@ class SaleOrderNhanh(models.Model):
         ('returning', 'Returning'),
         ('success', 'Success'),
         ('canceled', 'Canceled'),
+        ('aborted', 'Aborted'),
     ], 'Nhanh status')
 
     # def write(self, vals):
