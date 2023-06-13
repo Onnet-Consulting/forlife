@@ -11,7 +11,7 @@ class Product(models.Model):
     )
     def _compute_quantities(self):
         context = self.env.context
-        if context.get("create_from_ui", False):
+        if context.get("create_from_ui", False) or context.get('job_uuid', False): 
             for product in self:
                 product.qty_available = 0.0
                 product.incoming_qty = 0.0
