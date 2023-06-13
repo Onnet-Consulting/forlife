@@ -209,8 +209,8 @@
                                    attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"
                                    widget="many2many_tags"/>
                             <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
-                                 attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_discount_amount'))]}"/>
-                            <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_discount_amount'))]}">
+                                 attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"/>
+                            <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">
                                 <button name="action_open_discount_product" type="object" string="Import Discount Products" class="btn-secondary">
                                     <span>Import Discount Products</span>
                                 </button>
