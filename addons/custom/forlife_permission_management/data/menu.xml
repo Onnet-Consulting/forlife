@@ -496,10 +496,10 @@
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_stock'))]"/>
         </record>
-
+        <!--Bán hàng/Sản phẩm/Sản phẩm-->
         <record model="ir.ui.menu" id="sale.menu_product_template_action">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier'))]"/>
         </record>
 
 
