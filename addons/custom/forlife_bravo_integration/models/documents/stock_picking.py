@@ -7,6 +7,7 @@ PICKING_PURCHASE_VALUE = 'picking_purchase'
 PICKING_OTHER_IMPORT_VALUE = 'picking_other_import'
 PICKING_OTHER_EXPORT_VALUE = 'picking_other_export'
 CONTEXT_PICKING_UPDATE = 'bravo_picking_update'
+CONTEXT_CANCEL_OTHER_PICKING = 'bravo_cancel_other_picking'
 
 
 class StockPicking(models.Model):
@@ -24,6 +25,7 @@ class StockPicking(models.Model):
     def bravo_get_table(self, **kwargs):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         picking_update = kwargs.get(CONTEXT_PICKING_UPDATE)
+        cancel_other_picking = kwargs.get(CONTEXT_CANCEL_OTHER_PICKING)
         bravo_table = 'DEFAULT'
         if picking_data == PICKING_PURCHASE_VALUE:
             bravo_table = "B30AccDocPurchase"
@@ -33,6 +35,8 @@ class StockPicking(models.Model):
             bravo_table = "B30AccDocItemIssue"
         elif picking_update:
             bravo_table = "B30UpdateData"
+        elif cancel_other_picking:
+            bravo_table = "B30UpdateData2"
         return bravo_table
 
     @api.model
@@ -55,6 +59,7 @@ class StockPicking(models.Model):
     def bravo_get_insert_values(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_PICKING_ACTION)
         picking_update = kwargs.get(CONTEXT_PICKING_UPDATE)
+        cancel_other_picking = kwargs.get(CONTEXT_CANCEL_OTHER_PICKING)
         if journal_data == PICKING_PURCHASE_VALUE:
             return self.bravo_get_picking_purchase_values()
         if journal_data == PICKING_OTHER_IMPORT_VALUE:
@@ -63,6 +68,8 @@ class StockPicking(models.Model):
             return self.bravo_get_picking_other_export_values()
         if picking_update:
             return self.bravo_get_update_picking_values(**kwargs)
+        if cancel_other_picking:
+            return self.bravo_get_cancel_other_picking_values()
         return [], []
 
     def bravo_get_insert_sql_by_picking_action(self):
@@ -92,7 +99,7 @@ class StockPicking(models.Model):
         return queries
 
     def bravo_get_insert_sql(self, **kwargs):
-        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE):
+        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE) or kwargs.get(CONTEXT_CANCEL_OTHER_PICKING):
             return super().bravo_get_insert_sql(**kwargs)
         return self.bravo_get_insert_sql_by_picking_action()
 
@@ -133,3 +140,33 @@ class StockPicking(models.Model):
             self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         vals.pop(CONTEXT_PICKING_UPDATE, None)
         return super().write(vals)
+
+    # ======================= cancel other export, import picking =============================
+    @api.model
+    def bravo_get_cancel_other_picking_columns(self):
+        return [
+            "CompanyCode", "DocCode", "DocNo", "DocDate", "Stt"
+        ]
+
+    def bravo_get_cancel_other_picking_values(self):
+        columns = self.bravo_get_cancel_other_picking_columns()
+        values = []
+        for record in self:
+            value = {
+                "CompanyCode": record.company_id.code,
+                "DocCode": "PN" if record.other_import else "PX",
+                "DocNo": record.name,
+                "DocDate": record.date_done,
+                "Stt": record.name
+            }
+            values.append(value)
+        return columns, values
+
+    def action_cancel(self):
+        records = self.filtered(lambda r: r.state == 'done')
+        res = super().action_cancel()
+        records = records.filtered(lambda r: r.state == 'cancel')
+        if records:
+            queries = records.bravo_get_insert_sql(**{CONTEXT_CANCEL_OTHER_PICKING: True})
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        return res
