@@ -73,7 +73,7 @@
         <!--Tồn kho/Sản phẩm/Số lô/sê-ri-->
         <record model="ir.ui.menu" id="stock.menu_action_production_lot_form">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')), (4, ref('forlife_permission_management.group_stock'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_inventory')), (4, ref('forlife_permission_management.group_mer'))]"/>
         </record>
         <!--Tồn kho/Verslagdoening/Stock-->
         <record model="ir.ui.menu" id="stock.menu_product_stock">
@@ -98,7 +98,7 @@
         <!--Tồn kho/Hoạt động-->
         <record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_daxd_manager')), (4, ref('forlife_permission_management.group_daxd_user')), (4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_invoice_stock_picking')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_daxd_manager')), (4, ref('forlife_permission_management.group_daxd_user')), (4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_inventory')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
         </record>
         <!--Tồn kho/Sản phẩm-->
         <record model="ir.ui.menu" id="stock.menu_stock_inventory_control">
@@ -167,7 +167,7 @@
         <!--Mua hàng-->
         <record model="ir.ui.menu" id="purchase.menu_purchase_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_purchase_purchase_order')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
         </record>
         <!--Mua hàng/Phiếu yêu cầu mua hàng-->
         <record model="ir.ui.menu" id="purchase_request.root_purchase_requests_menu">
@@ -182,7 +182,7 @@
         <!--Mua hàng/Đơn hàng/Đơn mua hàng nội địa-->
         <record model="ir.ui.menu" id="forlife_purchase.menu_purchase_order_not_inter_company_cost">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_purchase_purchase_order')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="forlife_purchase.menu_purchase_order_not_inter_company_tax">
@@ -192,7 +192,7 @@
         <!--Mua hàng/Đơn hàng-->
         <record model="ir.ui.menu" id="purchase.menu_procurement_management">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
         </record>
         <!--Mua hàng/Đơn hàng/Nhà cung cấp-->
         <record model="ir.ui.menu" id="purchase.menu_procurement_management_supplier_name">
@@ -349,7 +349,7 @@
         <!--        Điểm bán lẻ-->
         <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_pos_product_defective')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_business_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_pos_barcode')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_pos_product_defective')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_business_manager'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.pos_config_menu_action_product_pricelist">
@@ -410,7 +410,7 @@
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
         </record>
-
+        <!--In mã vạch-->
         <record model="ir.ui.menu" id="forlife_print_stamps_barcode.menu_print_stamps_barcode">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_pos_barcode')), (4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
@@ -430,10 +430,10 @@
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
-
+        <!--Điểm bán lẻ/Sản phẩm-->
         <record model="ir.ui.menu" id="point_of_sale.pos_config_menu_catalog">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_pos_barcode')), (4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager'))]"/>
         </record>
         <!--Bán hàng/Đơn hàng/Báo giá-->
         <record model="ir.ui.menu" id="sale.menu_sale_quotations">
