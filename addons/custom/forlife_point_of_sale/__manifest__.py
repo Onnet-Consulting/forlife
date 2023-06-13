@@ -39,6 +39,7 @@
         'point_of_sale.assets': [
             'forlife_point_of_sale/static/src/js/*.js',
             'forlife_point_of_sale/static/src/xml/*.xml',
+            'forlife_point_of_sale/static/src/css/*.css',
         ],
     }
 }
