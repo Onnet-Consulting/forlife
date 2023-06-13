@@ -1888,7 +1888,7 @@ class StockPicking(models.Model):
                             'product_id': item.product_id.id,
                             'name': item.name,
                             'text_check_cp_normal': rec.product_id.name,
-                            'debit': int((total / total_money) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
+                            'debit': total / total_money * (rec.vnd_amount * pk_l.quantity_done/item.product_qty),
                             'credit': 0,
                         })
                         credit_cp = (0, 0, {
@@ -1898,7 +1898,7 @@ class StockPicking(models.Model):
                             'name': rec.product_id.name,
                             'text_check_cp_normal': rec.product_id.name,
                             'debit': 0,
-                            'credit': int((total / total_money) * (rec.vnd_amount * pk_l.quantity_done/item.product_qty)),
+                            'credit': total / total_money * (rec.vnd_amount * pk_l.quantity_done/item.product_qty),
                         })
                         lines_cp_before_tax = [credit_cp, debit_cp]
                         list_cp_after_tax.extend(lines_cp_before_tax)
