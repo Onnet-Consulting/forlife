@@ -145,6 +145,9 @@ class NhanhWebhookValue(models.Model):
             order, brand_id = constant.get_order_from_nhanh_id(self, data.get('orderId'))
             if not order:
                 raise ValidationError('Không lấy được thông tin đơn hàng từ Nhanh')
+
+            if not (order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success'] or not order.get('returnFromOrderId', 0)):
+                return
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.env['res.partner'].sudo().search(
