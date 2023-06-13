@@ -154,8 +154,9 @@
                             <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1"/>
                             <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
-                            <field name="event_id"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+<!--                            <field name="event_id"-->
+<!--                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>-->
+                            <field name="occasion_code_id"/>
                             <field name="account_analytic_id"/>
                         </tree>
                     </field>
