@@ -173,7 +173,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
-    price_unit = fields.Float(compute='_compute_price_unit', store=1)
+    price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False)
 
     @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
     def _compute_product_plan_qty(self):

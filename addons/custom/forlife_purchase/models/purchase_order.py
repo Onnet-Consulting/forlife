@@ -345,6 +345,8 @@ class PurchaseOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
+            if not record.partner_id:
+                raise UserError("Bạn chưa chọn nhà cung cấp!!")
             product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
             if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
                 raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
@@ -369,23 +371,23 @@ class PurchaseOrder(models.Model):
                 })
                 picking_in.write({'state': 'assigned'})
                 if picking_in:
-                    for orl in record.order_line:
-                        for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id:
-                                pkl.write({
-                                    'quantity_done': orl.product_qty,
-                                    'occasion_code_id': orl.occasion_code_id.id,
-                                    'work_production': orl.production_id.id,
-                                })
+                    for orl, pkl in zip(record.order_line, picking_in.move_ids_without_package):
+                        if orl.product_id == pkl.product_id:
+                            pkl.write({
+                                'po_l_id': orl.id,
+                                'quantity_done': orl.product_qty,
+                                'occasion_code_id': orl.occasion_code_id.id,
+                                'work_production': orl.production_id.id,
+                            })
 
-                        for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id:
-                                pk.write({
-                                    'po_id': orl.id,
-                                    'purchase_uom': orl.purchase_uom.id,
-                                    'quantity_change': orl.exchange_quantity,
-                                    'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
-                                })
+                    for orl, pk in zip(record.order_line, picking_in.move_line_ids_without_package):
+                        if orl.product_id == pk.product_id:
+                            pk.write({
+                                'po_id': orl.id,
+                                'purchase_uom': orl.purchase_uom.id,
+                                'quantity_change': orl.exchange_quantity,
+                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
+                            })
                 record.write({'custom_state': 'approved'})
             else:
                 data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
@@ -1058,7 +1060,7 @@ class PurchaseOrder(models.Model):
                         'reference': ', '.join(self.mapped('name')),
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
-                        'is_check': True,
+                        # 'is_check': True,
                         'type_inv': self.type_po_cost,
                         'move_type': 'in_invoice',
                         'purchase_order_product_id': [(6, 0, [self.id])],
@@ -1593,8 +1595,8 @@ class PurchaseOrderLine(models.Model):
     @api.onchange("discount")
     def _onchange_discount(self):
         if not self.readonly_discount:
-            if self.discount:
-                self.discount_percent = (self.discount / self.price_unit) * 100 if self.price_unit else 0
+            if self.discount and self.price_unit > 0 and self.product_qty > 0:
+                self.discount_percent = self.discount / (self.price_unit * self.product_qty * 0.01)
                 self.readonly_discount_percent = True
             else:
                 self.readonly_discount_percent = False
@@ -1831,12 +1833,16 @@ class StockPicking(models.Model):
                                       ('state', '=', 'done'),
                                       ('ware_check', '=', False)])
 
-            for line in po.order_line:
-                for item in picking_in.move_line_ids_without_package:
-                    if item.product_id.id == line.product_id.id:
-                        item.write({
-                            'po_id': line.id,
-                        })
+            for line, pk_l_detail in zip(po.order_line, picking_in.move_line_ids_without_package):
+                if line.product_id.id == pk_l_detail.product_id.id:
+                    pk_l_detail.write({
+                        'po_id': line.id,
+                    })
+            for line, pk_l in zip(po.order_line, picking_in.move_ids_without_package):
+                if line.product_id.id == pk_l.product_id.id:
+                    pk_l.write({
+                        'po_l_id': line.id,
+                    })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
@@ -2271,8 +2277,9 @@ class Synthetic(models.Model):
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost = 0
                 for item in rec.synthetic_id.cost_line:
-                    total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
-                    rec.after_tax = total_cost
+                    if rec.price_subtotal > 0:
+                        total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+                        rec.after_tax = total_cost
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:
