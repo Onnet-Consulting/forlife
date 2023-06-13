@@ -6,6 +6,7 @@ CONTEXT_PICKING_ACTION = 'bravo_picking_data'
 PICKING_PURCHASE_VALUE = 'picking_purchase'
 PICKING_OTHER_IMPORT_VALUE = 'picking_other_import'
 PICKING_OTHER_EXPORT_VALUE = 'picking_other_export'
+PICKING_PURCHASE_RETURN_VALUE = 'picking_purchase_return'
 CONTEXT_PICKING_UPDATE = 'bravo_picking_update'
 CONTEXT_CANCEL_OTHER_PICKING = 'bravo_cancel_other_picking'
 
@@ -33,6 +34,8 @@ class StockPicking(models.Model):
             bravo_table = "B30AccDocItemReceipt"
         elif picking_data == PICKING_OTHER_EXPORT_VALUE:
             bravo_table = "B30AccDocItemIssue"
+        elif picking_data == PICKING_PURCHASE_RETURN_VALUE:
+            bravo_table = "B30AccDocPurchaseReturn"
         elif picking_update:
             bravo_table = "B30UpdateData"
         elif cancel_other_picking:
@@ -49,11 +52,16 @@ class StockPicking(models.Model):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == PICKING_PURCHASE_VALUE:
             return self.filtered(
-                lambda m: m.move_ids.mapped('account_move_ids') and m.move_ids.mapped('purchase_line_id'))
+                lambda p: p.move_ids.mapped('account_move_ids') and p.move_ids.mapped('purchase_line_id')
+                          and not p.x_is_check_return and not p.is_return_po)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
             return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.other_export)
+        if picking_data == PICKING_PURCHASE_RETURN_VALUE:
+            return self.filtered(
+                lambda p: p.move_ids.mapped('account_move_ids') and p.move_ids.mapped('purchase_line_id')
+                          and (p.x_is_check_return or p.is_return_po))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -66,6 +74,8 @@ class StockPicking(models.Model):
             return self.bravo_get_picking_other_import_values()
         if journal_data == PICKING_OTHER_EXPORT_VALUE:
             return self.bravo_get_picking_other_export_values()
+        if journal_data == PICKING_PURCHASE_RETURN_VALUE:
+            return self.bravo_get_return_picking_purchase_values()
         if picking_update:
             return self.bravo_get_update_picking_values(**kwargs)
         if cancel_other_picking:
@@ -96,10 +106,18 @@ class StockPicking(models.Model):
         if picking_other_export_queries:
             queries.extend(picking_other_export_queries)
 
+        # Picking Purchase return
+        current_context = {CONTEXT_PICKING_ACTION: PICKING_PURCHASE_RETURN_VALUE}
+        records = self.bravo_filter_record_by_context(**current_context)
+        picking_purchase_return_queries = records.bravo_get_insert_sql(**current_context)
+        if picking_purchase_return_queries:
+            queries.extend(picking_purchase_return_queries)
+
         return queries
 
     def bravo_get_insert_sql(self, **kwargs):
-        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE) or kwargs.get(CONTEXT_CANCEL_OTHER_PICKING):
+        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE)\
+                or kwargs.get(CONTEXT_CANCEL_OTHER_PICKING):
             return super().bravo_get_insert_sql(**kwargs)
         return self.bravo_get_insert_sql_by_picking_action()
 
