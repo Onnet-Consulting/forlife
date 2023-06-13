@@ -526,7 +526,7 @@ class AccountMove(models.Model):
         account_vat = []
         if not self.env.ref('forlife_purchase.product_vat_tax').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí kế toán thuế VAT (Nhập khẩu), trong sản phẩm có tên là Thuế VAT (Nhập khẩu) ở tab kế toán")
-        if not self.env.ref('forlife_purchase.product_vat_tax').with_company(self.company_id).property_stock_account_input_categ_id:
+        if not self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục sản phẩm có tên là Thuế VAT (Nhập khẩu)")
         for line in self.exchange_rate_line:
             account_credit_vat = (0, 0, {
@@ -539,7 +539,7 @@ class AccountMove(models.Model):
             })
             account_debit_vat = (0, 0, {
                 'sequence': 99991,
-                'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
+                'account_id': self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(
                     self.company_id).property_stock_account_input_categ_id.id,
                 'name': line.name,
                 'debit': line.vat_tax_amount * self.exchange_rate,
