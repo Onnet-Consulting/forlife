@@ -66,6 +66,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     def prepare_move_line(self):
         move_line_vals = []
         account_payable_id = self.origin_invoice_id.partner_id.property_account_payable_id
+        amount_payable = int(sum(self.line_ids.mapped('price_subtotal')) + sum(self.line_ids.mapped('tax_amount')))
         for line in self.line_ids:
             account_id = line.product_id.categ_id.property_stock_account_input_categ_id
             taxes_res = []
@@ -118,15 +119,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'tax_amount': tax_mount,
                         'uom_id': line.uom_id.id,
                         'taxes_id': line.tax_ids.id,
-
-                    }),
-                    (0, 0, {
-                        'account_id': account_payable_id.id,
-                        'debit': 0,
-                        'credit': int(line.price_subtotal + tax_mount),
-                        'balance': -int(line.price_subtotal + tax_mount),
-                        'amount_currency': -int(line.price_subtotal + tax_mount),
-                        'display_type': 'payment_term',
                     })
                 ]
                 move_line_vals += tax
@@ -170,18 +162,33 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'tax_amount': tax_mount,
                         'uom_id': line.uom_id.id,
                         'taxes_id': line.tax_ids.id,
-                    }),
-                    (0, 0, {
-                        'account_id': account_payable_id.id,
-                        'debit': int(line.price_subtotal + tax_mount),
-                        'credit': 0,
-                        'balance': int(line.price_subtotal + tax_mount),
-                        'amount_currency': int(line.price_subtotal + tax_mount),
-                        'display_type': 'payment_term',
                     })
                 ]
                 move_line_vals += tax
+        if self.invoice_type == 'increase':
+            move_line_vals.append(
+                (0, 0, {
+                    'account_id': account_payable_id.id,
+                    'debit': 0,
+                    'credit': amount_payable,
+                    'balance': -amount_payable,
+                    'amount_currency': -amount_payable,
+                    'display_type': 'payment_term',
+                })
+            )
+        else:
+            move_line_vals.append(
+                (0, 0, {
+                    'account_id': account_payable_id.id,
+                    'debit': amount_payable,
+                    'credit': 0,
+                    'balance': amount_payable,
+                    'amount_currency': amount_payable,
+                    'display_type': 'payment_term',
+                })
+            )
         return move_line_vals
+
 
 class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     _name = 'wizard.increase.decrease.invoice.line'
@@ -194,8 +201,8 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", )
     invoice_line_id = fields.Many2one('account.move.line', string='Move Line')
     quantity = fields.Float(string='Quantity')
-    price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals',)
-    price_total = fields.Monetary(string='Total', compute='_compute_totals',)
+    price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )
+    price_total = fields.Monetary(string='Total', compute='_compute_totals', )
     discount = fields.Float(
         string='Discount (%)',
         digits='Discount',
@@ -206,7 +213,7 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
         string='Currency'
     )
     is_refund = fields.Boolean()
-    tax_amount = fields.Float(string='Tax Amount',)
+    tax_amount = fields.Float(string='Tax Amount', )
     vendor_price = fields.Float(string="Vendor Price")
 
     @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'tax_amount')
