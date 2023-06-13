@@ -195,9 +195,6 @@ class InheritPosOrder(models.Model):
         order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
-            if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
-                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
-
             price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
             taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
             if not taxes:
@@ -206,6 +203,8 @@ class InheritPosOrder(models.Model):
             else:
                 tax = taxes.compute_all(price, currency_id, line[-1]['qty'], product=self.env['product.product'].browse(line[-1]['product_id']), partner=False)
                 line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
+            if 'refunded_orderline_id' in line[-1] and (line[-1]['refunded_orderline_id'] or 0) > 0:
+                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
         return result
@@ -259,7 +258,7 @@ class InheritPosOrderLine(models.Model):
             'product_src_id': self.id,
             'promotion_id': promotion.id,
             'promotion_model': promotion._name,
-            'qty': 1 if not self.refunded_orderline_id else -1,
+            'qty': -1,
             'price_unit': price,
             'price_subtotal': price,
             'price_subtotal_incl': price,
@@ -301,13 +300,13 @@ class InheritPosOrderLine(models.Model):
         return [
             self._prepare_pol_promotion_line(
                 product_id=promotion.program_id.product_discount_id,
-                price=-promotion.discount_total,
+                price=(-promotion.discount_total if promotion.discount_total > 0 else promotion.discount_total),
                 promotion=promotion.program_id,
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
                 product_id=pol.order_id.card_rank_program_id.product_discount_id if discount.type == 'card' else pol.order_id.program_store_point_id.product_discount_id,
-                price=-discount.money_reduced,
+                price=(-discount.money_reduced if discount.money_reduced > 0 else discount.money_reduced),
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id,
                 is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration(),
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point')
@@ -327,7 +326,6 @@ class InheritPosOrderLine(models.Model):
 
     def generate_promotion_values(self, original_qty=0):
         return {
-            'is_reward_line': self.is_reward_line,
             'promotion_usage_ids': [(0, 0, {
                 'program_id': p.program_id.id,
                 'currency_id': p.currency_id.id,

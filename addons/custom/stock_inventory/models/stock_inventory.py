@@ -398,7 +398,8 @@ class InventoryLine(models.Model):
         index=True, readonly=True, store=True)
     state = fields.Selection(string='Status', related='inventory_id.state')
     theoretical_qty = fields.Float(
-        'Tồn hiện có')
+        'Tồn hiện có',
+        digits='Product Unit of Measure', readonly=True)
     x_first_qty = fields.Float(
         'Đã đếm',
         digits='Product Unit of Measure')
@@ -519,9 +520,14 @@ class InventoryLine(models.Model):
         """
         for values in vals_list:
             if 'theoretical_qty' not in values:
-                check_quant = self.env['stock.quant'].search(
-                    [('product_id', '=', self.product_id.id), ('location_id', '=', self.location_id.id)])
-                theoretical_qty = check_quant.quantity if check_quant else 0
+                theoretical_qty = self.env['product.product'].get_theoretical_quantity(
+                    values['product_id'],
+                    values['location_id'],
+                    lot_id=values.get('prod_lot_id'),
+                    package_id=values.get('package_id'),
+                    owner_id=values.get('partner_id'),
+                    to_uom=values.get('product_uom_id'),
+                )
                 values['theoretical_qty'] = theoretical_qty
             if 'product_id' in values and 'product_uom_id' not in values:
                 values['product_uom_id'] = self.env['product.product'].browse(values['product_id']).uom_id.id

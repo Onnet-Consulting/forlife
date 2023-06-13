@@ -17,21 +17,6 @@ class ProductProduct(models.Model):
     width_product = fields.Float('Width', copy=False)
     height_product = fields.Float('Height', copy=False)
 
-    def get_nhanh_name(self):
-        product_name = f"{self.name} {self.barcode}"
-        # màu và size
-        color_name = ','.join(
-            self.product_template_variant_value_ids.filtered(lambda v: v.name.upper() == 'MÀU').mapped('name'))
-        size_name = ','.join(
-            self.product_template_variant_value_ids.filtered(lambda v: v.name.upper() == 'SIZE').mapped('name'))
-        if color_name and not size_name:
-            product_name = f"{product_name} ({color_name})"
-        elif size_name and not color_name:
-            product_name = f"{product_name} (SIZE {size_name})"
-        elif size_name and color_name:
-            product_name = f"{product_name} ({color_name} / SIZE {size_name})"
-        return product_name
-
     @api.model
     def create(self, vals):
         res = super().create(vals)
@@ -49,7 +34,7 @@ class ProductProduct(models.Model):
 
                 data = [{
                     "id": res.id,
-                    "name": res.get_nhanh_name(),
+                    "name": res.name,
                     "code": res.barcode if res.barcode else '',
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
@@ -100,7 +85,7 @@ class ProductProduct(models.Model):
             data.append({
                 "id": item._origin.id,
                 "idNhanh": item.nhanh_id,
-                "name": item.get_nhanh_name(),
+                "name": item.name,
                 "code": item.barcode if item.barcode else '',
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
