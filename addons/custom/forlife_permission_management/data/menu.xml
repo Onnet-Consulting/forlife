@@ -3,7 +3,7 @@
     <data>
         <record model="ir.ui.menu" id="stock.menu_stock_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking')),(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_marketing')),(4, ref('forlife_permission_management.group_dvkh_1')),(4, ref('forlife_permission_management.group_dvkh_2')),(4, ref('forlife_permission_management.group_dvkh_3')),(4, ref('forlife_permission_management.group_dvkh_4'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_marketing')),(4, ref('forlife_permission_management.group_dvkh_1')),(4, ref('forlife_permission_management.group_dvkh_2')),(4, ref('forlife_permission_management.group_dvkh_3')),(4, ref('forlife_permission_management.group_dvkh_4'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="sale.sale_menu_root">
@@ -53,7 +53,7 @@
         <!--Tồn kho/Hoạt động/Xử lý hàng lỗi-->
         <record model="ir.ui.menu" id="forlife_stock.transfer_stock_inventory_classify_menu">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
         <!--Tồn kho/Hoạt động/Phiếu kiểm kê kho-->
         <record model="ir.ui.menu" id="stock_inventory.menu_action_inventory_form_inherit">
@@ -107,7 +107,7 @@
         </record>
         <!--Tồn kho/Sản phẩm/Tồn kho theo kỳ-->
         <record model="ir.ui.menu" id="forlife_stock_report.stock_quant_period_menu">
-            <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]"/>
+            <field name="groups_id" eval="[(4, ref('stock.group_stock_user')),(4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="account_accountant.menu_accounting">
@@ -227,12 +227,12 @@
 
         <record model="ir.ui.menu" id="purchase.purchase_report_main">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="purchase.purchase_report">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="account.menu_board_journal_1">
@@ -507,7 +507,7 @@
 
         <record model="ir.ui.menu" id="forlife_report.report_menu">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_manufacture')),(4, ref('forlife_permission_management.group_business_manager')),(4, ref('forlife_permission_management.group_business_monitor')),(4, ref('forlife_permission_management.group_marketing')),(4, ref('forlife_permission_management.group_dvkh_1')),(4, ref('forlife_permission_management.group_dvkh_2')),(4, ref('forlife_permission_management.group_dvkh_3')),(4, ref('forlife_permission_management.group_dvkh_4'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_manager')),(4, ref('forlife_permission_management.group_manufacture')),(4, ref('forlife_permission_management.group_business_manager')),(4, ref('forlife_permission_management.group_business_monitor')),(4, ref('forlife_permission_management.group_marketing')),(4, ref('forlife_permission_management.group_dvkh_1')),(4, ref('forlife_permission_management.group_dvkh_2')),(4, ref('forlife_permission_management.group_dvkh_3')),(4, ref('forlife_permission_management.group_dvkh_4')),(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
     </data>
 </odoo>
