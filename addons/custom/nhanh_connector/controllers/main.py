@@ -73,7 +73,7 @@ class MainController(http.Controller):
                 if partner:
                     name_customer = order['customerName']
                 if not partner:
-                    partner_group_id = self.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
+                    partner_group_id = request.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
                     partner_value = {
                         'phone': order['customerMobile'],
                         'mobile': order['customerMobile'],
