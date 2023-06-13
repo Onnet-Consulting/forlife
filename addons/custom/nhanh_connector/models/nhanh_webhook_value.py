@@ -103,7 +103,6 @@ class NhanhWebhookValue(models.Model):
             #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
-                'nhanh_status': data['status'],
                 'partner_id': nhanh_partner.id,
                 'order_partner_id': partner.id,
                 'nhanh_shipping_fee': data['shipFee'],
@@ -198,14 +197,13 @@ class NhanhWebhookValue(models.Model):
             #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
             value = {
                 'nhanh_id': order['orderId'],
-                'nhanh_status': data['status'],
                 'partner_id': nhanh_partner.id,
                 'order_partner_id': partner.id,
                 'nhanh_shipping_fee': order['shipFee'],
                 'source_record': True,
                 'code_coupon': order['couponCode'],
                 'state': 'draft',
-                'nhanh_order_status': order['status'].lower(),
+                'nhanh_order_status': order['statusCode'].lower(),
                 'name_customer': name_customer,
                 'note': order['privateDescription'],
                 'note_customer': order['description'],

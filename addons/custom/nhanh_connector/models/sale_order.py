@@ -25,7 +25,6 @@ class SaleOrderNhanh(models.Model):
     order_partner_id = fields.Many2one('res.partner', 'Khách Order')
     carrier_name = fields.Char('Carrier Name')
 
-    nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
@@ -208,7 +207,7 @@ class SaleOrderNhanh(models.Model):
                                                                       limit=1)
                 value = {
                     'nhanh_id': v['id'],
-                    'nhanh_status': v['statusCode'],
+                    'nhanh_order_status': v['statusCode'].lower(),
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],
