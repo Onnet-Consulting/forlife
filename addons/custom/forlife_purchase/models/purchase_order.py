@@ -2248,7 +2248,7 @@ class Synthetic(models.Model):
                     if rec.synthetic_id.type_po_cost == 'tax':
                         for item in cost_line:
                             if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
-                                if item.vnd_amount and rec.price_subtotal:
+                                if item.vnd_amount and rec.price_subtotal > 0:
                                     before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
                                     total_cost_true += before_tax
                                 rec.before_tax = total_cost_true
