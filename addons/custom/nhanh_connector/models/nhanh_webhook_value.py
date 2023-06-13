@@ -21,6 +21,7 @@ class NhanhWebhookValue(models.Model):
     event_value = fields.Text('Event Value')
     error = fields.Char('Error')
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
+    order_id = fields.Many2one('sale.order', 'Order')
 
     def action_retry(self):
         data = safe_eval(self.event_value)
@@ -130,7 +131,7 @@ class NhanhWebhookValue(models.Model):
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
-            self.self.env['sale.order'].sudo().create(value)
+            self.order_id = self.self.env['sale.order'].sudo().create(value)
         except Exception as ex:
             self.write({
                 'error': f"{ex}"
@@ -144,6 +145,9 @@ class NhanhWebhookValue(models.Model):
             order, brand_id = constant.get_order_from_nhanh_id(self, data.get('orderId'))
             if not order:
                 raise ValidationError('Không lấy được thông tin đơn hàng từ Nhanh')
+
+            if not (order.get('returnFromOrderId', 0) and data['status'] in ['Success'] or not order.get('returnFromOrderId', 0)):
+                return
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.env['res.partner'].sudo().search(
@@ -216,26 +220,37 @@ class NhanhWebhookValue(models.Model):
                 'order_line': order_line
             }
             # đổi trả hàng
-            if order.get('returnFromOrderId', 0):
+            if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
                 origin_order_id = self.env['sale.order'].sudo().search(
-                    [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+                    [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                 value.update({
                     'x_is_return': True,
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
-            self.self.env['sale.order'].sudo().create(value)
+            self.order_id = self.self.env['sale.order'].sudo().create(value)
+
+            if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
+                    order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
+                    not self.order_id.picking_ids:
+                self.order_id.action_create_picking()
+            elif data['status'] in ['Canceled', 'Aborted']:
+                if self.order_id.picking_ids and 'done' not in self.order_id.picking_ids.mapped('state'):
+                    for picking_id in self.order_id.picking_ids:
+                        picking_id.action_cancel()
         else:
             if data.get('status'):
+                self.order_id = odoo_order
                 odoo_order.sudo().write({
                     'nhanh_order_status': data['status'].lower(),
                 })
-                if data['status'] in ['Packing', 'Pickup']:
+                if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
                     odoo_order.action_create_picking()
-                elif data['status'] == 'Canceled':
+                elif data['status'] in ['Canceled', 'Aborted']:
                     if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
+                    odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
 
     def action_order_delete(self, data):
         data = data.get('data', {})

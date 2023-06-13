@@ -30,7 +30,7 @@ class MainController(http.Controller):
             })
             try:
                 data = value.get('data')
-                result_requests = self.handle_order(event_type, data)
+                result_requests = self.handle_order(event_type, data, webhook_value_id)
                 if result_requests.get('code') != 200 and webhook_value_id:
                     webhook_value_id.update({
                         'error': result_requests.get('message')
@@ -49,7 +49,7 @@ class MainController(http.Controller):
             return request.make_response(json.dumps(result_requests),
                                          headers={'Content-Type': 'application/json'})
 
-    def handle_order(self, event_type, data):
+    def handle_order(self, event_type, data, webhook_value_id=None):
         order_id = data.get('orderId')
         odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
         if event_type == 'orderUpdate':
@@ -58,6 +58,9 @@ class MainController(http.Controller):
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
+                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get('returnFromOrderId', 0)):
+                    webhook_value_id.unlink()
+                    return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
                 # Add customer if not existed
                 nhanh_partner = self.partner_model().sudo().search(
@@ -138,27 +141,37 @@ class MainController(http.Controller):
                     'order_line': order_line
                 }
                 # đổi trả hàng
-                if order.get('returnFromOrderId', 0):
+                if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
                     origin_order_id = request.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+                        [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                     value.update({
                         'x_is_return': True,
                         'x_origin': origin_order_id.id if origin_order_id else None,
                         'nhanh_origin_id': order.get('returnFromOrderId', 0)
                     })
-                self.sale_order_model().sudo().create(value)
+                webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
+                if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
+                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
+                        not webhook_value_id.order_id.picking_ids:
+                    webhook_value_id.order_id.action_create_picking()
+                elif data['status'] in ['Canceled', 'Aborted']:
+                    if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
+                            'state'):
+                        for picking_id in odoo_order.picking_ids:
+                            picking_id.action_cancel()
                 return self.result_request(200, 0, _('Create sale order success'))
             else:
                 if data.get('status'):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ['Packing', 'Pickup']:
+                    if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
                         odoo_order.action_create_picking()
-                    elif data['status'] == 'Canceled':
+                    elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()
+                        odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
                     return self.result_request(200, 0, _('Update sale order success'))
                 else:
                     return self.result_request(404, 1, _('Update sale order false'))
