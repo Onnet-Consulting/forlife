@@ -40,7 +40,7 @@ class PosOrderLine(models.Model):
                 vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
                     (0, 0, {
                         'type': 'handle',
-                        'recipe': line['discount'],
+                        'recipe': (line['discount']*line['qty']*line['original_price'])/100,
                         'listed_price': line['original_price']
                     })
                 ]
