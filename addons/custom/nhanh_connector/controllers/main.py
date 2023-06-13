@@ -161,7 +161,7 @@ class MainController(http.Controller):
                     })
                     if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
                         odoo_order.action_create_picking()
-                    elif data['status'] in ['Canceled', 'Aborted']:
+                    elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()

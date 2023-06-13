@@ -29,15 +29,23 @@ class SaleOrderNhanh(models.Model):
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
-        ('new', 'New'),
-        ('confirmed', 'Confirmed'),
-        ('packing', 'Packing'),
-        ('pickup', 'Pickup'),
-        ('shipping', 'Shipping'),
-        ('returning', 'Returning'),
-        ('success', 'Success'),
-        ('canceled', 'Canceled'),
-        ('aborted', 'Aborted'),
+        ('new', 'Đơn mới'),
+        ('confirming', 'Đang xác nhận'),
+        ('customerconfirming', 'Chờ khách xác nhận'),
+        ('confirmed', 'Đã xác nhận'),
+        ('packing', 'Đang đóng gói'),
+        ('packed', 'Đã đóng gói'),
+        ('changedepot', 'Đổi kho xuất hàng'),
+        ('pickup', 'Chờ thu gom'),
+        ('shipping', 'Đang chuyển'),
+        ('success', 'Thành công'),
+        ('failed', 'Thất bại'),
+        ('canceled', 'Khách hủy'),
+        ('aborted', 'Hệ thống hủy'),
+        ('carriercanceled', 'Hãng vận chuyển hủy đơn'),
+        ('soldout', 'Hết hàng'),
+        ('returning', 'Đang chuyển hoàn'),
+        ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
 
     # def write(self, vals):
