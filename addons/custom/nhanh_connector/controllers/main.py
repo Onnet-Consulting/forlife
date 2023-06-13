@@ -30,7 +30,7 @@ class MainController(http.Controller):
             })
             try:
                 data = value.get('data')
-                result_requests = self.handle_order(event_type, data)
+                result_requests = self.handle_order(event_type, data, webhook_value_id)
                 if result_requests.get('code') != 200 and webhook_value_id:
                     webhook_value_id.update({
                         'error': result_requests.get('message')
@@ -49,7 +49,7 @@ class MainController(http.Controller):
             return request.make_response(json.dumps(result_requests),
                                          headers={'Content-Type': 'application/json'})
 
-    def handle_order(self, event_type, data):
+    def handle_order(self, event_type, data, webhook_value_id=None):
         order_id = data.get('orderId')
         odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
         if event_type == 'orderUpdate':
@@ -146,16 +146,22 @@ class MainController(http.Controller):
                         'x_origin': origin_order_id.id if origin_order_id else None,
                         'nhanh_origin_id': order.get('returnFromOrderId', 0)
                     })
-                self.sale_order_model().sudo().create(value)
+                webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
+                if data['status'] in ['Packing', 'Pickup'] and not webhook_value_id.order_id.picking_ids:
+                    webhook_value_id.order_id.action_create_picking()
+                elif data['status'] in ['Canceled', 'Aborted']:
+                    if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped('state'):
+                        for picking_id in odoo_order.picking_ids:
+                            picking_id.action_cancel()
                 return self.result_request(200, 0, _('Create sale order success'))
             else:
                 if data.get('status'):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ['Packing', 'Pickup']:
+                    if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
                         odoo_order.action_create_picking()
-                    elif data['status'] == 'Canceled':
+                    elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()

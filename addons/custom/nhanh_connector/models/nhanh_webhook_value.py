@@ -21,6 +21,7 @@ class NhanhWebhookValue(models.Model):
     event_value = fields.Text('Event Value')
     error = fields.Char('Error')
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
+    order_id = fields.Many2one('sale.order', 'Order')
 
     def action_retry(self):
         data = safe_eval(self.event_value)
@@ -130,7 +131,7 @@ class NhanhWebhookValue(models.Model):
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
-            self.self.env['sale.order'].sudo().create(value)
+            self.order_id = self.self.env['sale.order'].sudo().create(value)
         except Exception as ex:
             self.write({
                 'error': f"{ex}"
@@ -224,15 +225,22 @@ class NhanhWebhookValue(models.Model):
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
-            self.self.env['sale.order'].sudo().create(value)
+            self.order_id = self.self.env['sale.order'].sudo().create(value)
+            if data['status'] in ['Packing', 'Pickup'] and not self.order_id.picking_ids:
+                self.order_id.action_create_picking()
+            elif data['status'] in ['Canceled', 'Aborted']:
+                if self.order_id.picking_ids and 'done' not in self.order_id.picking_ids.mapped('state'):
+                    for picking_id in self.order_id.picking_ids:
+                        picking_id.action_cancel()
         else:
             if data.get('status'):
+                self.order_id = odoo_order
                 odoo_order.sudo().write({
                     'nhanh_order_status': data['status'].lower(),
                 })
-                if data['status'] in ['Packing', 'Pickup']:
+                if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
                     odoo_order.action_create_picking()
-                elif data['status'] == 'Canceled':
+                elif data['status'] in ['Canceled', 'Aborted']:
                     if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
