@@ -247,6 +247,7 @@ class NhanhWebhookValue(models.Model):
                     if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
+                    odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
 
     def action_order_delete(self, data):
         data = data.get('data', {})

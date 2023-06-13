@@ -170,6 +170,7 @@ class MainController(http.Controller):
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()
+                        odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
                     return self.result_request(200, 0, _('Update sale order success'))
                 else:
                     return self.result_request(404, 1, _('Update sale order false'))
