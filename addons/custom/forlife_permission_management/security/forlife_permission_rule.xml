@@ -4,7 +4,7 @@
         <record model="ir.rule" id="purchase_request_read">
             <field name="name">purchase_request_read</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_purchase_purchase_order'))]"/>
             <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
                 ('department_id','=',
                 False), ('team_id','=', user.get_team()), ('team_id','=',
@@ -415,7 +415,7 @@
         <record model="ir.rule" id="pos_order_read">
             <field name="name">pos_order_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
