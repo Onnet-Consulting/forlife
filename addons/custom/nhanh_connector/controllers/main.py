@@ -58,9 +58,9 @@ class MainController(http.Controller):
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
-                if not (order.get('returnFromOrderId', 0) and data['status'] in ['Returned',
-                                                                                 'Success'] or not order.get(
-                        'returnFromOrderId', 0)):
+                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Returned',
+                                                                                  'Success']) or not order.get(
+                    'returnFromOrderId', 0)):
                     webhook_value_id.unlink()
                     return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
@@ -152,10 +152,13 @@ class MainController(http.Controller):
                         'nhanh_origin_id': order.get('returnFromOrderId', 0)
                     })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
-                if data['status'] in ['Packing', 'Pickup'] and not webhook_value_id.order_id.picking_ids:
+                if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
+                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
+                        not webhook_value_id.order_id.picking_ids:
                     webhook_value_id.order_id.action_create_picking()
                 elif data['status'] in ['Canceled', 'Aborted']:
-                    if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped('state'):
+                    if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
+                            'state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
                 return self.result_request(200, 0, _('Create sale order success'))

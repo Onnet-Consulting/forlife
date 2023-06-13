@@ -229,7 +229,10 @@ class NhanhWebhookValue(models.Model):
                     'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
             self.order_id = self.self.env['sale.order'].sudo().create(value)
-            if data['status'] in ['Packing', 'Pickup'] and not self.order_id.picking_ids:
+
+            if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
+                    order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
+                    not self.order_id.picking_ids:
                 self.order_id.action_create_picking()
             elif data['status'] in ['Canceled', 'Aborted']:
                 if self.order_id.picking_ids and 'done' not in self.order_id.picking_ids.mapped('state'):
