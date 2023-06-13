@@ -59,8 +59,6 @@ class PosOrder(models.Model):
                     HistoryPoint.sudo().create(history_values)
                     pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                     pos.action_point_addition()
-                    if pos.lines.filtered(lambda line: line.point != 0):
-                        pos.action_point_subtraction()
         return pos_id
 
     def btn_compensate_points_all(self, reason):
@@ -387,59 +385,6 @@ class PosOrder(models.Model):
         }
         move = self.env['account.move'].create(move_vals)._post()
         self.point_addition_move_ids |= move
-        return True
-
-    def get_value_entry_reduced_point(self):
-        vl = 0
-        for rec in self.lines:
-            vl += self.get_number_tax(rec.product_id, rec.point)
-        return vl
-
-    def get_number_tax(self, product, point):
-        number_tax = 0
-        for tax in product.taxes_id.filtered(lambda t: t.type_tax_use == 'sale'):
-            number_tax += tax.amount
-        total_tax = 1 + number_tax / 100
-        point_tax = abs(point) / total_tax
-        return round(point_tax)
-
-    def get_total_point_reduced(self):
-        return abs(sum([line.point for line in self.lines]))
-
-    def get_fee_tax_reduced_line(self):
-        return self.get_total_point_reduced() - self.get_value_entry_reduced_point()
-
-    def action_point_subtraction(self):
-        move_vals = {
-            'ref': self.name,
-            'pos_order_id': self.id,
-            'move_type': 'entry',
-            'date': self.date_order,
-            'journal_id': self.program_store_point_id.account_journal_id.id,
-            'company_id': self.company_id.id,
-            'line_ids': [
-                # debit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_reduce_accumulated_points_id.id,
-                    'debit': self.get_value_entry_reduced_point(),
-                    'credit': 0.0,
-                }),
-                # tax line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_tax_reduce_accumulated_points_id.id,
-                    'debit': self.get_fee_tax_reduced_line(),
-                    'credit': 0.0
-                }),
-                # credit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
-                    'debit': 0.0,
-                    'credit': self.get_total_point_reduced(),
-                }),
-            ]
-
-        }
-        move = self.env['account.move'].create(move_vals)._post()
         return True
 
     def _export_for_ui(self, order):
