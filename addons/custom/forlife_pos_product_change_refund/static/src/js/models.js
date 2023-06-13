@@ -219,15 +219,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 //            return res
 //        }
 
-        get_unit_display_price() {
-            var res = super.get_unit_display_price()
-            var total = 0;
-            if (this.money_reduce_from_product_defective > 0) {
-                total += this.money_reduce_from_product_defective
-            }
-            return res - total
-        }
-
         set_quantity(quantity, keep_price){
             if(this.is_product_defective && quantity > 1){
                     Gui.showPopup('ErrorPopup', {
