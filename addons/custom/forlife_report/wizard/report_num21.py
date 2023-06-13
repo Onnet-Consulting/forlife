@@ -4,7 +4,6 @@ from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = [
     'STT', 'Trạng thái', 'Ngày HĐ', 'Số HĐ', 'Mã kho xuất', 'Kho xuất', 'Mã kho nhận', 'Kho nhận', 'Đơn vị tính', 'Mã vạch',
@@ -42,7 +41,7 @@ class ReportNum21(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         status = []
         if self.is_all or (not self.is_all and not self.is_delivery and not self.is_receive and not self.is_done):
@@ -144,11 +143,11 @@ from stock_transfer st
     left join product_template pt on pt.id = product_tmpl_id
     left join product_category pc on pc.id = pt.categ_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
-    left join attribute_data ad_size on ad_size.product_id = stl.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_size on ad_size.product_id = stl.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
     left join attribute_data ad_color on ad_color.product_id = stl.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     left join attribute_data kieu_dang on kieu_dang.product_id = stl.product_id and kieu_dang.attrs_code = '{attr_value.get('subclass1', '')}'
     left join attribute_data doi_tuong on doi_tuong.product_id = stl.product_id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
-    left join attribute_data nam_sx on nam_sx.product_id = stl.product_id and nam_sx.attrs_code = '{attr_value.get('nam_sx', '')}'
+    left join attribute_data nam_sx on nam_sx.product_id = stl.product_id and nam_sx.attrs_code = '{attr_value.get('nam_san_xuat', '')}'
 where {format_date_query("st.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and stl.product_id = any (array{product_ids})
     and (s_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids}))

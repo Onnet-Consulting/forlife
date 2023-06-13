@@ -30,8 +30,6 @@
     'data': [
         'security/ir.model.access.csv',
 
-        'data/attribute_code_config_data.xml',
-
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',
         'wizard/report_num1_views.xml',
