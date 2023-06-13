@@ -725,17 +725,17 @@ class PurchaseOrder(models.Model):
                         # 'price_subtotal': line.price_subtotal,
                     })
 
-    def action_update_import(self):
-        for item in self:
-            item.exchange_rate_line = [(5, 0)]
-            for line in item.order_line:
-                self.env['purchase.order.exchange.rate'].create({
-                    'product_id': line.product_id.id,
-                    'name': line.name,
-                    'usd_amount': line.price_subtotal,
-                    'purchase_order_id': item.id,
-                    'qty_product': line.product_qty
-                })
+    # def action_update_import(self):
+    #     for item in self:
+    #         item.exchange_rate_line = [(5, 0)]
+    #         for line in item.order_line:
+    #             self.env['purchase.order.exchange.rate'].create({
+    #                 'product_id': line.product_id.id,
+    #                 'name': line.name,
+    #                 'usd_amount': line.price_subtotal,
+    #                 'purchase_order_id': item.id,
+    #                 'qty_product': line.product_qty
+    #             })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
