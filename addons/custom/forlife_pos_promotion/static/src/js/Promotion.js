@@ -1589,7 +1589,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let is_required_check_products = program.valid_product_ids.size > 0;
             let qty_taken = 0;
             for (const line of orderLines) {
-                if (!line.is_reward_line && program.valid_product_ids.has(line.product.id)) {
+                if (!line.is_reward_line
+                    && program.valid_product_ids.has(line.product.id)
+                    && (program.is_original_price ? !line.is_applied_promotion() : true)) {
                     qty_taken += line.quantity;
                 };
             };
