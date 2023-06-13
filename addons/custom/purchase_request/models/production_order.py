@@ -65,3 +65,7 @@ class ProductionOrderLine(models.Model):
     def compute_price(self):
         for rec in self:
             rec.price = rec.product_id.lst_price
+
+    # def _compute_price_by_product_id
+
+

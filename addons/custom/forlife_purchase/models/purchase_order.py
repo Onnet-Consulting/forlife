@@ -371,23 +371,23 @@ class PurchaseOrder(models.Model):
                 })
                 picking_in.write({'state': 'assigned'})
                 if picking_in:
-                    for orl in record.order_line:
-                        for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id:
-                                pkl.write({
-                                    'quantity_done': orl.product_qty,
-                                    'occasion_code_id': orl.occasion_code_id.id,
-                                    'work_production': orl.production_id.id,
-                                })
+                    for orl, pkl in zip(record.order_line, picking_in.move_ids_without_package):
+                        if orl.product_id == pkl.product_id:
+                            pkl.write({
+                                'po_l_id': orl.id,
+                                'quantity_done': orl.product_qty,
+                                'occasion_code_id': orl.occasion_code_id.id,
+                                'work_production': orl.production_id.id,
+                            })
 
-                        for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id:
-                                pk.write({
-                                    'po_id': orl.id,
-                                    'purchase_uom': orl.purchase_uom.id,
-                                    'quantity_change': orl.exchange_quantity,
-                                    'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
-                                })
+                    for orl, pk in zip(record.order_line, picking_in.move_line_ids_without_package):
+                        if orl.product_id == pk.product_id:
+                            pk.write({
+                                'po_id': orl.id,
+                                'purchase_uom': orl.purchase_uom.id,
+                                'quantity_change': orl.exchange_quantity,
+                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
+                            })
                 record.write({'custom_state': 'approved'})
             else:
                 data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
@@ -1824,12 +1824,16 @@ class StockPicking(models.Model):
                                       ('state', '=', 'done'),
                                       ('ware_check', '=', False)])
 
-            for line in po.order_line:
-                for item in picking_in.move_line_ids_without_package:
-                    if item.product_id.id == line.product_id.id:
-                        item.write({
-                            'po_id': line.id,
-                        })
+            for line, pk_l_detail in zip(po.order_line, picking_in.move_line_ids_without_package):
+                if line.product_id.id == pk_l_detail.product_id.id:
+                    pk_l_detail.write({
+                        'po_id': line.id,
+                    })
+            for line, pk_l in zip(po.order_line, picking_in.move_ids_without_package):
+                if line.product_id.id == pk_l.product_id.id:
+                    pk_l.write({
+                        'po_l_id': line.id,
+                    })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
