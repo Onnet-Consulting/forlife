@@ -2257,15 +2257,12 @@ class Synthetic(models.Model):
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost_true = 0
                 if cost_line:
-                    if rec.synthetic_id.type_po_cost == 'tax':
-                        for item in cost_line:
-                            if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
-                                if item.vnd_amount and rec.price_subtotal > 0:
-                                    before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
-                                    total_cost_true += before_tax
-                                rec.before_tax = total_cost_true
-                    if rec.synthetic_id.type_po_cost == 'cost':
-                        rec.after_tax = rec.before_tax = 0
+                    for item in cost_line:
+                        if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
+                            if item.vnd_amount and rec.price_subtotal > 0:
+                                before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
+                                total_cost_true += before_tax
+                            rec.before_tax = total_cost_true
                 if rec.product_id.id == line.product_id.id:
                     line.vnd_amount = rec.price_subtotal + rec.before_tax
 
@@ -2275,9 +2272,13 @@ class Synthetic(models.Model):
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost = 0
                 for item in rec.synthetic_id.cost_line:
-                    if rec.price_subtotal > 0:
-                        total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
-                        rec.after_tax = total_cost
+                    if rec.synthetic_id.type_po_cost == 'tax':
+                        if rec.price_subtotal > 0:
+                            total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+                            rec.after_tax = total_cost
+                    else:
+                        rec.after_tax = 0
+
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:
