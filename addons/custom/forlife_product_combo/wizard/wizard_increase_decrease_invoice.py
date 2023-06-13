@@ -44,12 +44,13 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     def action_confirm(self):
         move_copy_id = self.origin_invoice_id.copy({
             'invoice_type': self.invoice_type,
-            'move_type': 'entry',
+            'move_type': 'in_invoice',
             'origin_invoice_id': self.origin_invoice_id.id,
             'line_ids': [],
         })
         move_copy_id.write({
-            'line_ids': self.prepare_move_line()
+            'line_ids': self.prepare_move_line(),
+            'direction_sign': 1 if self.invoice_type == 'increase' else -1,
         })
         return {
             'type': 'ir.actions.act_window',
@@ -108,6 +109,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'quantity': line.quantity,
                         'price_unit': line.price_unit,
                         'balance': int(line.price_subtotal),
+                        'amount_currency': int(line.price_subtotal),
                         'tax_ids': [(6, 0, line.tax_ids.ids)] or False,
                         'discount': line.discount,
                         'currency_id': line.currency_id.id or False,
@@ -123,6 +125,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'debit': 0,
                         'credit': int(line.price_subtotal + tax_mount),
                         'balance': -int(line.price_subtotal + tax_mount),
+                        'amount_currency': -int(line.price_subtotal + tax_mount),
                         'display_type': 'payment_term',
                     })
                 ]
@@ -143,6 +146,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                                 'credit': tax['amount'],
                                 'account_id': tax['account_id'] or False,
                                 'amount_currency': -tax['amount'],
+                                'tax_amount': abs(tax['amount']),
                                 'tax_base_amount': tax['base'],
                                 'tax_repartition_line_id': tax['tax_repartition_line_id'],
                                 'group_tax_id': tax['group'] and tax['group'].id or False,
@@ -157,6 +161,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'debit': 0,
                         'credit': int(line.price_subtotal),
                         'balance': -int(line.price_subtotal),
+                        'amount_currency': -int(line.price_subtotal),
                         'display_type': 'product',
                         'tax_ids': [(6, 0, line.tax_ids.ids)] or False,
                         'discount': line.discount,
@@ -171,6 +176,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'debit': int(line.price_subtotal + tax_mount),
                         'credit': 0,
                         'balance': int(line.price_subtotal + tax_mount),
+                        'amount_currency': int(line.price_subtotal + tax_mount),
                         'display_type': 'payment_term',
                     })
                 ]
