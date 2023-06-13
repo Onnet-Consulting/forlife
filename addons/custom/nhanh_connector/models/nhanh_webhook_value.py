@@ -139,11 +139,11 @@ class NhanhWebhookValue(models.Model):
 
     def action_order_update(self, data):
         data = data.get('data', {})
-        odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', data.get('orderId'))], limit=1)
+        odoo_order = self.env['sale.order'].sudo().search([('nhanh_id', '=', data.get('orderId'))], limit=1)
         if not odoo_order:
             order, brand_id = constant.get_order_from_nhanh_id(self, data.get('orderId'))
             if not order:
-                return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
+                raise ValidationError('Không lấy được thông tin đơn hàng từ Nhanh')
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.env['res.partner'].sudo().search(
