@@ -58,9 +58,7 @@ class MainController(http.Controller):
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
-                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Returned',
-                                                                                  'Success']) or not order.get(
-                    'returnFromOrderId', 0)):
+                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get('returnFromOrderId', 0)):
                     webhook_value_id.unlink()
                     return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
@@ -143,9 +141,9 @@ class MainController(http.Controller):
                     'order_line': order_line
                 }
                 # đổi trả hàng
-                if order.get('returnFromOrderId', 0):
+                if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
                     origin_order_id = request.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+                        [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                     value.update({
                         'x_is_return': True,
                         'x_origin': origin_order_id.id if origin_order_id else None,

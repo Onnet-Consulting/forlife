@@ -146,7 +146,7 @@ class NhanhWebhookValue(models.Model):
             if not order:
                 raise ValidationError('Không lấy được thông tin đơn hàng từ Nhanh')
 
-            if not (order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success'] or not order.get('returnFromOrderId', 0)):
+            if not (order.get('returnFromOrderId', 0) and data['status'] in ['Success'] or not order.get('returnFromOrderId', 0)):
                 return
             name_customer = False
             # Add customer if not existed
@@ -220,9 +220,9 @@ class NhanhWebhookValue(models.Model):
                 'order_line': order_line
             }
             # đổi trả hàng
-            if order.get('returnFromOrderId', 0):
+            if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
                 origin_order_id = self.env['sale.order'].sudo().search(
-                    [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+                    [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                 value.update({
                     'x_is_return': True,
                     'x_origin': origin_order_id.id if origin_order_id else None,
