@@ -239,6 +239,7 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    po_l_id = fields.Char('Dùng để so sánh hoạt động và hoạt động chi tiết')
     name = fields.Char('Description', required=False)
     company_id = fields.Many2one(
         'res.company', 'Company',
@@ -346,9 +347,9 @@ class StockMoveLine(models.Model):
         for rec in self:
             for line in rec.picking_id.move_ids_without_package:
                 if rec.move_id.id == line.id:
-                    if rec.qty_done > line.product_uom_qty:
-                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
-
+                    if str(rec.po_id) == str(line.po_l_id):
+                        if rec.qty_done > line.product_uom_qty:
+                            raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
