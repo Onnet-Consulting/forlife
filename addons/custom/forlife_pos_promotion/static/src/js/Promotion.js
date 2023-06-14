@@ -1537,6 +1537,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         let result = [];
         for (let program of cardPrograms) {
+            let discount_based_on_unit_price = program.discount_based_on == 'unit_price';
             let max_reward_quantity = program.reward_quantity;
             let required_order_amount_min = program.order_amount_min;
             let required_min_quantity = program.min_quantity;
