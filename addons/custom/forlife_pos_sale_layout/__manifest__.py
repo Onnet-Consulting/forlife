@@ -11,7 +11,8 @@
     'depends': [
         'forlife_pos_payment_change',
         'forlife_pos_promotion',
-        'forlife_pos_point_order'
+        'forlife_pos_point_order',
+        'forlife_pos_accounting'
     ],
     'auto_install': True,
     'application': False,

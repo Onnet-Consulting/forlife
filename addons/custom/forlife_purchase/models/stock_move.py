@@ -103,3 +103,7 @@ class StockMoveLine(models.Model):
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    free_good = fields.Boolean(string="Hàng tặng")
+    quantity_change = fields.Float(string="Số lượng quy đổi")
+    quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
