@@ -168,7 +168,10 @@
                     <group string="Rewards">
                         <group>
                             <field name="discount_based_on"
-                                   attrs="{'invisible': ['&amp;', ('reward_type', 'not in', ('code_amount', 'code_percent', 'cart_discount_amount')), ('promotion_type', '!=', 'pricelist')],
+                                   attrs="{'invisible': ['&amp;', ('reward_type', 'not in',
+                                            ('code_amount', 'code_percent', 'cart_discount_amount', 'cart_discount_percent',
+                                            'cart_discount_fixed_price', 'cart_get_x_free')),
+                                            ('promotion_type', '!=', 'pricelist')],
                                             'readonly': [('promotion_type', '=', 'pricelist')]}" force_save="1"/>
                             <field name="discount_apply_on"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
