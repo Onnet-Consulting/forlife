@@ -96,6 +96,47 @@ class ResCompany(models.Model):
         request_data.update({'signature': signed_signature})
         return request_data
 
+    def _vietin_bank_send_request_inquiry(self):
+        company_sudo = self.env.company.sudo()
+        url = "https://api-uat.vietinbank.vn/vtb-api-uat/development/erp/v1/statement/inquiry"
+        client_id = company_sudo.vietin_bank_client_id
+        client_secret = company_sudo.vietin_bank_client_secret
+        request_data = self._vietin_bank_prepare_inquiry_request_data()
+        headers = {
+            'Content-Type': 'application/json',
+            'x-ibm-client-secret': client_secret,
+            'x-ibm-client-id': client_id
+        }
+        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        data = response.json()
+        return data
+
+    def _vietin_bank_prepare_inquiry_request_data(self):
+        request_data = {
+            "requestId": "343q433410001",
+            "merchantId": "",
+            "providerId": "khaianh",
+            "model": "1",
+            "account": "118649946666 ",
+            "fromDate": "12/06/2023",
+            "accountType": "D",
+            "collectionType": "d",
+            "agencyType": "a",
+            "transTime": "20210915050101",
+            "channel": "ERP",
+            "version": "1",
+            "clientIP": "10.10.2.201",
+            "language": "vi",
+            "signature": ""
+        }
+
+        signature_keys = ['requestId', 'providerId', 'merchantId', 'account']
+
+        unsigned_signature = ''.join([request_data[k] for k in signature_keys])
+        signed_signature = self._vietin_bank_sign_message(unsigned_signature)
+        request_data.update({"signature": signed_signature})
+        return request_data
+
     def _vietin_bank_sign_message(self, message):
         company_sudo = self.env.company.sudo()
         server_private_key = b64decode(company_sudo.vietin_bank_server_private_key)
