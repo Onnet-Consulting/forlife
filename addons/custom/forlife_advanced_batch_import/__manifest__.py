@@ -19,13 +19,15 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'queue_job', 'base_import', 'product'],
+    'depends': ['base', 'queue_job', 'base_import', 'stock_account'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/parent_batch_import.xml',
         'views/child_batch_import.xml',
+        'data/queue_data.xml',
+        'views/stock_picking_views.xml'
     ],
     'assets': {
         'web.assets_backend': [

@@ -9,13 +9,11 @@ register_container() {
   read registry
   echo "Creating docker images ..."
   docker build -t ${registry}/odoo${ODOO_VERSION} ./dockerfiles/odoo/${ODOO_VERSION}
-  docker build -t ${registry}/postgres${POSTGRES_VERSION} ./dockerfiles/postgres/${POSTGRES_VERSION}
 }
 
 push_container() {
   echo "Pushing docker images to gitlab ..."
   docker push ${registry}/odoo${ODOO_VERSION}
-  docker push ${registry}/postgres${POSTGRES_VERSION}
 }
 
 gitlab_login

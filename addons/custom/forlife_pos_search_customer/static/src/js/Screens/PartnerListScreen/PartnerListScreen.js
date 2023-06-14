@@ -3,6 +3,7 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
 
     const Registries = require('point_of_sale.Registries');
     const { useListener } = require("@web/core/utils/hooks");
+    const framework = require('web.framework');
 
     const PartnerListScreen = require('point_of_sale.PartnerListScreen');
 
@@ -29,11 +30,14 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
         }
 
         async _onSearchPartner(event) {
-            this.state.query = event.detail.searchTerm;
             const fieldName = event.detail.fieldName.toLowerCase();
             let domain = [];
+
+            this.state.query = event.detail.searchTerm;
+            this.state.fieldName = fieldName;
+
             if(this.state.query != ""){
-                domain = [[fieldName, "ilike", this.state.query + "%"]]
+                domain = [[fieldName, "like", this.state.query]]
             }
             this.env.pos.db.partner_sorted = [];
             this.env.pos.db.partner_by_id = [];
@@ -43,6 +47,7 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
                 this.render(true);
                 return [];
             }
+            framework.blockUI();
             const result = await this.env.services.rpc(
                 {
                     model: 'pos.session',
@@ -60,6 +65,7 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
                     shadow: true,
                 }
             );
+            framework.unblockUI();
             this.env.pos.addPartners(result);
             this.render(true);
             return result;

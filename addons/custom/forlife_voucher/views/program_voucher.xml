@@ -30,8 +30,9 @@
                     <header>
                         <button name="create_voucher" string="Create Voucher" class="oe_highlight"
                                 type="object"/>
-                        <button name="action_compute_product_apply" string="Sync Products Apply"
+                        <button name="action_compute_product_apply" string="Đồng bộ sản phẩm áp dụng"
                                 type="object"/>
+
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -57,7 +58,7 @@
                             <field name="end_date"/>
                             <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"/>
                             <field name="product_apply_ids" widget="many2many_tags" invisible="1"/>
-                            <field name="product_id" context="{'filter_product_follow_type': type}" required="1"/>
+                            <field name="product_id" required="1" context="{'filter_product_follow_type': type}"/>
                             <field name="details"/>
                         </group>
                         <notebook>

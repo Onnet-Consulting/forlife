@@ -108,5 +108,34 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="log_view_inherit">
+            <field name="name">log.view.inherit</field>
+            <field name="model">partner.history.point</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="partner_id"/>
+                    <field name="point_order_type"/>
+                    <field name="date_order"/>
+                    <field name="points_fl_order"/>
+                    <field name="points_used"/>
+                    <field name="points_back"/>
+                    <field name="points_store"/>
+                    <field name="reason"/>
+                    <field name="store"/>
+                    <field name="pos_order_id"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+        <record id="history_partner_action" model="ir.actions.act_window">
+            <field name="name">Partner history</field>
+            <field name="res_model">partner.history.point</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    <menuitem id="res_partner_retail_menu"
+              action="history_partner_action"
+              parent="contacts.res_partner_menu_config"
+              sequence="11"/>
     </data>
 </odoo>

@@ -131,11 +131,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.display_name = program.name
         };
         for (const item of this.promotionComboLines) {
-            let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
-            item.valid_product_ids = new Set(cl_valid_product_ids);
-            item.program_id = item.program_id[0];
-            item.program = this.promotion_program_by_id[item.program_id];
-            item.program.comboFormula.push(item);
+            if(item.json_valid_product_ids){
+                let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
+                item.valid_product_ids = new Set(cl_valid_product_ids);
+                item.program_id = item.program_id[0];
+                item.program = this.promotion_program_by_id[item.program_id];
+                item.program.comboFormula.push(item);
+            }
         };
         for (const reward of this.rewardLines) {
             this.reward_line_by_id[reward.id] = reward;
@@ -925,9 +927,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
         var valid_product_ids = codeProgram.valid_product_ids;
 
-        if (codeProgram.reward_type == "code_amount") {
-            max_count = 1;
-        }
+        // if (codeProgram.reward_type == "code_amount") {
+        //     max_count = 1;
+        // }
         // todo: consider to sort by 'lst_price' ASC for type code_buy_x_get_cheapest
         to_check_order_lines.sort((a,b) => (a.product.lst_price < b.product.lst_price) ? 1 : ((b.product.lst_price < a.product.lst_price) ? -1 : 0))
         var oneCombo = [];

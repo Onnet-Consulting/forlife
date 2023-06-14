@@ -8,7 +8,8 @@
     'license': 'LGPL-3',
     'category': 'Sales/Point of Sale',
     'depends': [
-        'point_of_sale'
+        'point_of_sale',
+        'web'
     ],
     'auto_install': True,
     'application': False,

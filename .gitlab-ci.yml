@@ -5,6 +5,7 @@ stages:
   - alpha
   - beta
   - production
+  - pilot-02
 
 default:
   before_script:
@@ -50,3 +51,16 @@ build-production:
   tags:
     - build-production
   when: manual
+
+build-pilot-02:
+  stage: pilot-02
+  only:
+    refs:
+      - pilot-02
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-pilot-02

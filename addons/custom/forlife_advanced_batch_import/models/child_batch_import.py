@@ -68,9 +68,7 @@ class ChildBatchImport(models.Model):
     def make_queue_job(self, delay_time=0):
         for rec in self:
             # tạo job queue theo sequence và delay time
-            result = rec.with_delay(priority=rec.sequence, eta=delay_time).batch_execute_import()
-            # using when force execute when queue job doesn't working
-            # result = rec.batch_execute_import()
+            result = rec.with_delay(channel='import', priority=rec.sequence, eta=delay_time).batch_execute_import()
 
     def batch_execute_import(self):
         for rec in self:

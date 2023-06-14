@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="0">
+        <record id="channel_job_import" model="queue.job.channel">
+            <field name="name">import</field>
+            <field name="parent_id" ref="queue_job.channel_root"/>
+        </record>
+        <record id="batch_execute_import" model="queue.job.function">
+            <field name="model_id" ref="forlife_advanced_batch_import.model_child_batch_import" />
+            <field name="method">batch_execute_import</field>
+            <field name="channel_id" ref="forlife_advanced_batch_import.channel_job_import" />
+        </record>
+
+        <record id="channel_validate_stock_valuation" model="queue.job.channel">
+            <field name="name">validate_stock_valuation</field>
+            <field name="parent_id" ref="queue_job.channel_root"/>
+        </record>
+        <record id="validate_stock_valuation" model="queue.job.function">
+            <field name="model_id" ref="account.model_account_move" />
+            <field name="method">_post</field>
+            <field name="channel_id" ref="forlife_advanced_batch_import.channel_validate_stock_valuation" />
+        </record>
+
+        <record id="channel_validate_stock_valuation_2" model="queue.job.channel">
+            <field name="name">validate_stock_valuation_2</field>
+            <field name="parent_id" ref="queue_job.channel_root"/>
+        </record>
+        <record id="validate_stock_valuation_2" model="queue.job.function">
+            <field name="model_id" ref="stock_account.model_stock_valuation_layer" />
+            <field name="method">_create_and_post_account_move</field>
+            <field name="channel_id" ref="forlife_advanced_batch_import.channel_validate_stock_valuation_2" />
+        </record>
+    </data>
+</odoo>

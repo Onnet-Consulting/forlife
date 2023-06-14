@@ -6,7 +6,7 @@
                 t-on-click="() => this.trigger('click-product', props.product)"
                 t-att-data-product-id="props.product.id"
                 t-attf-aria-labelledby="article_product_{{props.product.id}}">
-                <td class="product-code"><t t-if="props.product.default_code" t-esc="props.product.default_code" /></td>
+                <td class="product-code"><t t-if="props.product.barcode" t-esc="props.product.barcode" /></td>
                 <td class="product-name" t-attf-id="article_product_{{props.product.id}}"><t t-esc="props.product.display_name" /></td>
                 <td class="product-price"><t t-esc="price" /></td>
                 <td class="product-unit"><t t-esc="props.product.uom_id[1]" /></td>

@@ -40,8 +40,9 @@
             'forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js',
             'forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js',
             'forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js',
+            'forlife_pos_promotion/static/src/js/db.js',
+            'forlife_pos_promotion/static/src/js/models.js',
             'forlife_pos_promotion/static/src/js/Popup/CodeInputPopup.js',
-
             'forlife_pos_promotion/static/src/xml/ControlButtons/PromotionButton.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/EnterCodeButton.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',

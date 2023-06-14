@@ -1,7 +1,18 @@
-from odoo import api, fields, models
+import datetime
+
+from odoo import api, fields, models, _
 from odoo.addons.base_import.models.base_import import ImportValidationError, _logger
+from odoo.tools import config, DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 import psycopg2
 
+try:
+    import xlrd
+    try:
+        from xlrd import xlsx
+    except ImportError:
+        xlsx = None
+except ImportError:
+    xlrd = xlsx = None
 
 class Import(models.TransientModel):
     _inherit = "base_import.import"
@@ -119,3 +130,69 @@ class Import(models.TransientModel):
             import_result['file_length'] = len(merged_data)  # get length data
 
             return import_result
+
+    def _read_xlsx(self, options):
+        if options.get('import_valid_skip_error', False) and self.res_model == "stock.picking":
+            return self._read_xlsx_stock_picking(options)
+        res = super(Import, self)._read_xlsx(options)
+        return res
+
+    def _read_xlsx_stock_picking(self, options):
+        book = xlrd.open_workbook(file_contents=self.file or b'')
+        sheets = options['sheets'] = book.sheet_names()
+        sheet = options['sheet'] = options.get('sheet') or sheets[0]
+        return self._read_xls_book_stock_picking(book, sheet)
+
+    def _read_xls_book_stock_picking(self, book, sheet_name):
+
+        sheet = book.sheet_by_name(sheet_name)
+        rows = []
+        cols_picking = []
+        for rowx, row in enumerate(map(sheet.row, range(1)), 1):
+            for colx, cell in enumerate(row, 1):
+                if 'Dịch chuyển kho' not in str(cell.value):
+                    cols_picking.append(colx)
+
+        for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
+            values = []
+            for colx, cell in enumerate(row, 1):
+                if rowx > 2 and colx in cols_picking:
+                    cell.value = ""
+                if cell.ctype is xlrd.XL_CELL_NUMBER:
+                    is_float = cell.value % 1 != 0.0
+                    values.append(
+                        str(cell.value)
+                        if is_float
+                        else str(int(cell.value))
+                    )
+                elif cell.ctype is xlrd.XL_CELL_DATE:
+                    is_datetime = cell.value % 1 != 0.0
+                    # emulate xldate_as_datetime for pre-0.9.3
+                    dt = datetime.datetime(*xlrd.xldate.xldate_as_tuple(cell.value, book.datemode))
+                    values.append(
+                        dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                        if is_datetime
+                        else dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+                    )
+                elif cell.ctype is xlrd.XL_CELL_BOOLEAN:
+                    if cell.value:
+                        values.append(u'True' if cell.value else u'False')
+                    else:
+                        values.append(cell.value)
+                elif cell.ctype is xlrd.XL_CELL_ERROR:
+                    raise ValueError(
+                        _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s") % {
+                            'row': rowx,
+                            'col': colx,
+                            'cell_value': xlrd.error_text_from_code.get(cell.value,
+                                                                        _("unknown error code %s", cell.value))
+                        }
+                    )
+                else:
+                    values.append(cell.value)
+            if any(x for x in values if x.strip()):
+                rows.append(values)
+
+        # return the file length as first value
+        return sheet.nrows, rows
+
