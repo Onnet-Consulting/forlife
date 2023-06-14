@@ -82,8 +82,7 @@ class AccountMove(models.Model):
     is_check = fields.Boolean(default=False)
 
     # Field check page ncc vãng lại
-    is_check_vendor_page = fields.Boolean(default=False,
-                                          compute='_compute_is_check_vendor_page',
+    is_check_vendor_page = fields.Boolean(compute='_compute_is_check_vendor_page',
                                           store=1)
 
     # tab e-invoice-bkav
@@ -325,25 +324,26 @@ class AccountMove(models.Model):
     @api.depends('partner_id.is_passersby', 'partner_id')
     def _compute_is_check_vendor_page(self):
         for rec in self:
-            if rec.partner_id.is_passersby:
-                vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
-                                                              ('vendor_back_id', '=', rec.id),
-                                                              ('company_id', '=', rec.company_id.id),
-                                                              ('code_tax', '=', rec.partner_id.vat),
-                                                              ('street_ven', '=', rec.partner_id.street),
-                                                              ], limit=1)
-                rec.is_check_vendor_page = True
-                if not vendor_back:
-                    self.env['vendor.back'].create({'vendor': rec.partner_id.name,
-                                                    'vendor_back_id': rec.id,
-                                                    'company_id': rec.company_id.id,
-                                                    'code_tax': rec.partner_id.vat,
-                                                    'street_ven': rec.partner_id.street,
-                                                    })
+            if rec.partner_id:
+                if rec.partner_id.is_passersby:
+                    vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
+                                                                  ('vendor_back_id', '=', rec.id),
+                                                                  ('company_id', '=', rec.company_id.id),
+                                                                  ('code_tax', '=', rec.partner_id.vat),
+                                                                  ('street_ven', '=', rec.partner_id.street),
+                                                                  ], limit=1)
+                    if not vendor_back:
+                        self.env['vendor.back'].create({'vendor': rec.partner_id.name,
+                                                        'vendor_back_id': rec.id,
+                                                        'company_id': rec.company_id.id,
+                                                        'code_tax': rec.partner_id.vat,
+                                                        'street_ven': rec.partner_id.street,
+                                                        })
+                    else:
+                        rec.vendor_back_ids = [(6, 0, vendor_back.id)]
+                    rec.is_check_vendor_page = True
                 else:
-                    rec.vendor_back_ids = [(6, 0, vendor_back.id)]
-            if not rec.partner_id.is_passersby:
-                rec.is_check_vendor_page = False
+                    rec.is_check_vendor_page = False
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
@@ -434,45 +434,43 @@ class AccountMove(models.Model):
                     or not self.env.ref('forlife_purchase.product_excise_tax_default').with_company(rec.company_id).property_account_expense_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt hoặc tài khoản chi phí kế toán của sản phẩm có tên là 'Thuế tiêu thụ đặc biệt'")
             for item in rec.exchange_rate_line:
-                if item.tax_amount > 0:
-                    account_credit_tnk = (0, 0, {
-                        'sequence': 99991,
-                        'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.id,
-                        'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.name,
-                        'debit': 0,
-                        'credit': item.tax_amount * self.exchange_rate,
-                    })
-                    account_debit_tnk = (0, 0, {
-                        'sequence': 9,
-                        'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
-                            rec.company_id).property_stock_account_input_categ_id.id,
-                        'name': item.product_id.name,
-                        'debit': item.tax_amount * self.exchange_rate,
-                        'credit': 0,
-                    })
-                    lines_tnk = [account_debit_tnk, account_credit_tnk]
-                    account_tnk.extend(lines_tnk)
-                if item.special_consumption_tax_amount > 0:
-                    account_credit_db = (0, 0, {
-                        'sequence': 99991,
-                        'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.id,
-                        'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.name,
-                        'debit': 0,
-                        'credit': item.special_consumption_tax_amount * self.exchange_rate,
-                    })
-                    account_debit_db = (0, 0, {
-                        'sequence': 9,
-                        'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                        'name': item.product_id.name,
-                        'debit': item.special_consumption_tax_amount * self.exchange_rate,
-                        'credit': 0,
-                    })
-                    lines_db = [account_debit_db, account_credit_db]
-                    account_db.extend(lines_db)
+                account_credit_tnk = (0, 0, {
+                    'sequence': 99991,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.name,
+                    'debit': 0,
+                    'credit': item.tax_amount * self.exchange_rate,
+                })
+                account_debit_tnk = (0, 0, {
+                    'sequence': 9,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
+                        rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
+                    'debit': item.tax_amount * self.exchange_rate,
+                    'credit': 0,
+                })
+                lines_tnk = [account_debit_tnk, account_credit_tnk]
+                account_tnk.extend(lines_tnk)
+                account_credit_db = (0, 0, {
+                    'sequence': 99991,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.name,
+                    'debit': 0,
+                    'credit': item.special_consumption_tax_amount * self.exchange_rate,
+                })
+                account_debit_db = (0, 0, {
+                    'sequence': 9,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
+                    'debit': item.special_consumption_tax_amount * self.exchange_rate,
+                    'credit': 0,
+                })
+                lines_db = [account_debit_db, account_credit_db]
+                account_db.extend(lines_db)
                 merged_records_tnk = {}
                 merged_records_db = {}
                 for tnk in account_tnk:
@@ -525,67 +523,55 @@ class AccountMove(models.Model):
             invoice_tnk.action_post()
 
     def create_tax_vat(self):
-        account_tax = self.env['account.tax'].search([('company_id', '=', self.company_id.id),
-                                                      ('type_tax_use', '=', 'purchase'),
-                                                      ('active', '=', True),
-                                                      ('code', '=', 'VATTNK')
-                                                      ], limit=1)
         account_vat = []
-        if not account_tax:
-            raise ValidationError(_("Bạn chưa cấu hình thuế giá trị gia tăng nhập khẩu ở mục thuế cho %s !! Gợi ý mã mặc định của thuế giá trị gia tăng nhập khẩu: code = 'VATTNK'") % self.company_id.name)
-        else:
-            if not self.env.ref('forlife_purchase.product_vat_tax').with_company(
-                    self.company_id).property_account_expense_id:
-                raise ValidationError("Bạn chưa cấu hình tài khoản chi phí kế toán thuế VAT (Nhập khẩu), trong sản phẩm có tên là Thuế VAT (Nhập khẩu) ở tab kế toán")
-            for line in self.exchange_rate_line:
-                account_credit_vat = (0, 0, {
-                    'sequence': 9,
-                    'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
-                        self.company_id).property_account_expense_id.id,
-                    'name': line.name,
-                    'debit': 0,
-                    'credit': line.vat_tax_amount * self.exchange_rate,
-                })
-                for nine, mine in zip(account_tax.refund_repartition_line_ids, account_tax.invoice_repartition_line_ids):
-                    if not nine.product_id and nine.product_id.id == self.env.ref('forlife_purchase.product_vat_tax').id:
-                        raise ValidationError(_("Bạn chưa gắn sản phẩm Thuế VAT (Nhập khẩu) trong mục thuế!! Gợi ý sản phẩm sẽ được gán vào trong bản ghi có mã code = 'VATTNK ở %s tab 'PHÂN PHỐI HOÀN TIỀN' dòng kèm thuế") % self.company_id.id)
-                    if mine.repartition_type == 'tax' and nine.repartition_type == 'tax' and nine.product_id.id == self.env.ref('forlife_purchase.product_vat_tax').id:
-                        if not mine.account_id:
-                            raise ValidationError(_("Bạn chưa cấu hình tài khoản thuế trong mục thuế!! Gợi ý tài khoản được lấy ra từ bản ghi có mã code = 'VATTNK' ở %s tab 'PHÂN PHỐI CHO CÁC HÓA ĐƠN' dòng kèm thuế") % self.company_id.id)
-                        account_debit_vat = (0, 0, {
-                            'sequence': 99991,
-                            'account_id': mine.account_id.id,
-                            'name': 'thuế giá trị gia tăng nhập khẩu (VAT)',
-                            'debit': line.vat_tax_amount * self.exchange_rate,
-                            'credit': 0,
-                        })
-                        lines_vat = [account_credit_vat, account_debit_vat]
-                        account_vat.extend(lines_vat)
-                merged_records_vat = {}
-                for db in account_vat:
-                    key = (db[2]['account_id'], db[2]['name'], db[2]['sequence'])
-                    if key in merged_records_vat:
-                        merged_records_vat[key]['debit'] += db[2]['debit']
-                        merged_records_vat[key]['credit'] += db[2]['credit']
-                    else:
-                        merged_records_vat[key] = {
-                            'sequence': db[2]['sequence'],
-                            'account_id': db[2]['account_id'],
-                            'name': db[2]['name'],
-                            'debit': db[2]['debit'],
-                            'credit': db[2]['credit'],
-                        }
-                    # Chuyển đổi từ điển thành danh sách bản ghi
-            merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
-            invoice_vat = self.create({
-                'e_in_check': self.id,
-                'is_check_invoice_tnk': True,
-                'invoice_date': self.invoice_date,
-                'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
-                'line_ids': merged_records_list_vat,
-                'move_type': 'entry',
+        if not self.env.ref('forlife_purchase.product_vat_tax').with_company(self.company_id).property_account_expense_id:
+            raise ValidationError("Bạn chưa cấu hình tài khoản chi phí kế toán thuế VAT (Nhập khẩu), trong sản phẩm có tên là Thuế VAT (Nhập khẩu) ở tab kế toán")
+        if not self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
+            raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục sản phẩm có tên là Thuế VAT (Nhập khẩu)")
+        for line in self.exchange_rate_line:
+            account_credit_vat = (0, 0, {
+                'sequence': 9,
+                'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
+                    self.company_id).property_account_expense_id.id,
+                'name': 'thuế giá trị gia tăng nhập khẩu (VAT)',
+                'debit': 0,
+                'credit': line.vat_tax_amount * self.exchange_rate,
             })
-            invoice_vat.action_post()
+            account_debit_vat = (0, 0, {
+                'sequence': 99991,
+                'account_id': self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(
+                    self.company_id).property_stock_account_input_categ_id.id,
+                'name': line.name,
+                'debit': line.vat_tax_amount * self.exchange_rate,
+                'credit': 0,
+            })
+            lines_vat = [account_credit_vat, account_debit_vat]
+            account_vat.extend(lines_vat)
+            merged_records_vat = {}
+            for db in account_vat:
+                key = (db[2]['account_id'], db[2]['name'], db[2]['sequence'])
+                if key in merged_records_vat:
+                    merged_records_vat[key]['debit'] += db[2]['debit']
+                    merged_records_vat[key]['credit'] += db[2]['credit']
+                else:
+                    merged_records_vat[key] = {
+                        'sequence': db[2]['sequence'],
+                        'account_id': db[2]['account_id'],
+                        'name': db[2]['name'],
+                        'debit': db[2]['debit'],
+                        'credit': db[2]['credit'],
+                    }
+                # Chuyển đổi từ điển thành danh sách bản ghi
+        merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
+        invoice_vat = self.create({
+            'e_in_check': self.id,
+            'is_check_invoice_tnk': True,
+            'invoice_date': self.invoice_date,
+            'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
+            'line_ids': merged_records_list_vat,
+            'move_type': 'entry',
+        })
+        invoice_vat.action_post()
 
     def create_trade_discount(self):
         account_ck = []
@@ -643,7 +629,6 @@ class AccountMoveLine(models.Model):
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
     discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
@@ -664,6 +649,7 @@ class AccountMoveLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
+    occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     # goods invoice!!
@@ -828,6 +814,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế')
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+    _x_invoice_date = fields.Date(string='Ngày hóa đơn')
+    tax_percent = fields.Many2one('account.tax', string='% Thuế')
 
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):
@@ -988,7 +976,7 @@ class SyntheticInvoice(models.Model):
                     if rec.synthetic_id.type_inv == 'tax':
                         for item in cost_line:
                             if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
-                                if item.vnd_amount and rec.price_subtotal:
+                                if item.vnd_amount and rec.price_subtotal > 0:
                                     before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
                                     total_cost_true += before_tax
                                 rec.before_tax = total_cost_true
@@ -1000,8 +988,12 @@ class SyntheticInvoice(models.Model):
     @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal')
     def _compute_after_tax(self):
         for rec in self:
-            for line, item in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.cost_line):
-                rec.after_tax = ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+            for line in rec.synthetic_id.exchange_rate_line:
+                total_cost = 0
+                for item in rec.synthetic_id.cost_line:
+                    if rec.price_subtotal > 0:
+                        total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+                        rec.after_tax = total_cost
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:

@@ -37,7 +37,8 @@
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_punish"
-                        string="Phạt" type="object" context="{'validate_analytic': True}"/>
+                        string="Phạt" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': ['|', ('x_punish', '=', True), ('x_order_punish_count', '!=', 0)]}"/>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_return"
@@ -52,6 +53,10 @@
                 <xpath expr="//field[@name='order_line']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', '=', 'sale')]}</attribute>
                 </xpath>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree" position="attributes">
+                    <attribute name="class" add="width-hh" separator=" "/>
+                    <attribute name="style" add="width:100%" separator=" "/>
+                </xpath>
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
                     <field name="x_sale_type"/>
                     <field name="x_sale_chanel"/>
@@ -60,29 +65,31 @@
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
-                    <field name="x_free_good"/>
-                    <field name="x_cart_discount_fixed_price"/>
+                    <field name="x_free_good" optional="hide"/>
+                    <field name="x_cart_discount_fixed_price" optional="hide"/>
                     <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '=', 'product')]}"/>
-                    <field name="x_scheduled_date"/>
-                    <field name="x_manufacture_order_code_id"/>
+                    <field name="x_scheduled_date" optional="hide"/>
+                    <field name="x_manufacture_order_code_id" optional="hide"/>
+                    <field name="x_account_analytic_id" optional="hide"/>
+                    <field name="x_occasion_code_id" optional="hide"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
                     <field name="x_product_code_id"
                            attrs="{'column_invisible': [('parent.x_sale_type','=','product')], 'required': [('parent.x_sale_type','=','asset')]}"
                            force_save="1"/>
-                    <field name="x_account_analytic_id"/>
-                    <field name="x_occasion_code_id"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="before">
-                    <field name="x_process_punish"/>
-                    <field name="x_shipping_punish" force_save="1" readonly="1" attrs="{'invisible': [('x_shipping_punish', '=', False)]}"/>
+                    <field name="x_punish" force_save="1" readonly="1"/>
+<!--                    <field name="x_shipping_punish" force_save="1" readonly="1" attrs="{'invisible': [('x_shipping_punish', '=', False)]}"/>-->
                     <field name="x_manufacture_order_code_id"/>
                     <field name="x_is_return" force_save="1" readonly="1" attrs="{'invisible': [('x_is_return', '=', False)]}"/>
                     <field name="x_is_exchange" force_save="1" readonly="1" attrs="{'invisible': [('x_is_exchange', '=', False)]}"/>
                     <field name="x_origin"/>
-                    <field name="x_domain_pricelist" force_save="1" invisible="1"/>
+<!--                    <field name="x_domain_pricelist" force_save="1" invisible="1"/>-->
                 </xpath>
-                <xpath expr="//field[@name='pricelist_id']" position="attributes">
-                    <attribute name="domain">[('id', 'in', x_domain_pricelist)]</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='pricelist_id']" position="attributes">-->
+<!--                    <attribute name="domain">[('id', 'in', x_domain_pricelist)]</attribute>-->
+<!--                </xpath>-->
             </field>
         </record>
     </data>

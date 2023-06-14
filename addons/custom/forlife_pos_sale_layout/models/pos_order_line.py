@@ -8,7 +8,7 @@ class PosOrderLine(models.Model):
     def get_order_line(self, order_id):
         lst_line = []
         if order_id:
-            pos_line_ids = self.search([('order_id', '=', order_id)])
+            pos_line_ids = self.search([('order_id', '=', order_id), ('is_promotion', '=', False)])
             for line in pos_line_ids:
                 lst_line.append({
                     'id': line.id,

@@ -51,11 +51,12 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                                 let line_new = Orderline.create({}, {pos: this.env.pos, order: OrderCurrent, product: line.product});
                                 OrderCurrent.fix_tax_included_price(line_new);
                                 let options_line_new = {
-                                    money_reduce_from_product_defective:parseInt(products_defective[i].total_reduce),
-                                    is_product_defective: true,
-                                    product_defective_id: products_defective[i].product_defective_id
+                                    pricelist_item : line.pricelist_item
                                 }
                                 OrderCurrent.set_orderline_options(line_new, options_line_new);
+                                line_new.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce);
+                                line_new.is_product_defective = true;
+                                line_new.product_defective_id = products_defective[i].product_defective_id;
                                 let quant = line.quantity -1;
                                 line.quantity = quant;
                                 line.quantityStr = field_utils.format.float(quant, { digits: [true, this.env.pos.dp['Product Unit of Measure']] });

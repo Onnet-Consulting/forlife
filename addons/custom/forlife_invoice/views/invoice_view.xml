@@ -58,9 +58,6 @@
                     <attribute name="domain">[('active', '=', True)]</attribute>
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
-                <!--                <xpath expr="//field[@name='invoice_line_ids']//tree//field[@name='product_id']" position="after">-->
-                <!--                    <attribute name="domain">product_domain</attribute>-->
-                <!--                </xpath>-->
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
@@ -88,8 +85,6 @@
                            attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
-<!--                    <field name="partner_domain" invisible="1"/>/-->
-<!--                    <field name="partner_domain_2" invisible="1"/>-->
                     <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="purchase_order_product_id"
                            domain="[('partner_id', '=', partner_id), ('type_po_cost', '=', type_inv), ('custom_state', '=', 'approved'), ('is_inter_company', '=', False)]"
@@ -101,11 +96,9 @@
                            options="{'no_open': False}"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="x_asset_fin" widget="radio"/>
-                    <field name="x_root" widget="radio"/>
+                    <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
-<!--                    <field name="x_check_entry"/>-->
-<!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
@@ -131,14 +124,15 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="quantity_purchased"
+                            <field name="quantity_purchased" invisible="context.get('default_move_type', False) == 'out_invoice'"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="uom_id"
+                            <field name="product_uom_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="exchange_quantity"
+                            <field name="product_uom_category_id" invisible="1"/>
+                            <field name="exchange_quantity" invisible="context.get('default_move_type', False) == 'out_invoice'"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_check_exchange_quantity', '=', False)]}"/>
                             <field name="quantity"/>
-                            <field name="vendor_price"
+                            <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_is_passersby', '=', False), ('parent.state', '=', 'posted')]}"
                                    force_save="1"/>
                             <field name="price_unit" force_save="1" required="1"/>
@@ -154,8 +148,9 @@
                             <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1"/>
                             <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
-                            <field name="event_id"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+<!--                            <field name="event_id"-->
+<!--                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>-->
+                            <field name="occasion_code_id"/>
                             <field name="account_analytic_id"/>
                         </tree>
                     </field>
@@ -197,8 +192,7 @@
                             </tree>
                         </field>
                     </page>
-                    <page string="Chi phí" name="product_cost" attrs="{'invisible': [('move_type', '=', 'entry')]}">
-                        <!--                        <field name="is_inter_company" invisible="1"/>-->
+                    <page string="Chi phí" invisible="context.get('default_move_type', False) == 'out_invoice'" name="product_cost" attrs="{'invisible': [('move_type', '=', 'entry')]}">
                         <field name="cost_line" widget="section_and_note_one2many"
                                attrs="{'readonly': [('state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
@@ -212,7 +206,7 @@
                             </tree>
                         </field>
                     </page>
-                    <field name="is_check_vendor_page" invisible="1"/>
+                    <field name="is_check_vendor_page" force_save="1" invisible="1"/>
                     <page string="NCC vãng lai" name="supplier_info"
                           attrs="{'invisible':['|',('is_check_vendor_page', '=', False),('move_type', '=', 'entry')]}">
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
@@ -229,11 +223,13 @@
                                 <field name="price_subtotal_back" force_save="1"/>
                                 <field name="tax_back" force_save="1"/>
                                 <field name="tax_percent_back" force_save="1"/>
+                                <field name="tax_percent" force_save="1"/>
+                                <field name="_x_invoice_date" force_save="1"/>
                                 <field name="totals_back" force_save="1"/>
                             </tree>
                         </field>
                     </page>
-                    <page string="Tổng hợp" name="synthetic">
+                    <page string="Tổng hợp" invisible="context.get('default_move_type', False) == 'out_invoice'" name="synthetic">
                         <field name="invoice_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
                                 <field name="description"/>
@@ -289,10 +285,21 @@
                         </div>
                     </page>
                 </xpath>
-<!--                 <xpath expr="//field[@name='invoice_line_ids']" position="attributes">-->
-<!--                    <attribute name="attrs">{'readonly': [('is_check', '=', True)]}</attribute>-->
-<!--                </xpath>-->
             </field>
         </record>
+        <record id="action_inherit_vendor_invoice_form_view" model="ir.actions.act_window">
+            <field name="name">Hóa đơn</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('account.view_in_invoice_bill_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_invoice.inherit_vendor_invoice_form_view')})]"/>
+            <field name="domain">[('move_type', '=', 'in_invoice')]</field>
+            <field name="context">{'default_move_type': 'in_invoice'}
+            </field>
+        </record>
+        <menuitem id="menu_inherit_vendor_invoice_view" parent="account.menu_finance_payables"
+                  action="forlife_invoice.action_inherit_vendor_invoice_form_view" name="Hóa đơn nhà cung cấp" sequence="1"/>
+        <menuitem id="account.menu_action_move_in_invoice_type" active="False"/>
     </data>
 </odoo>

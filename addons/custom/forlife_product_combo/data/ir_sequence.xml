@@ -12,4 +12,15 @@
         </record>
     </data>
 
+    <data noupdate="0">
+        <record id="check_wait_confirm_stock_transfer_request" model="ir.cron">
+            <field name="name">Overdue transfer warning</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field ref="model_stock_transfer_request" name="model_id"/>
+            <field name="state">code</field>
+            <field name="code">model.check_wait_confirm_stock_transfer_request()</field>
+        </record>
+    </data>
 </odoo>
