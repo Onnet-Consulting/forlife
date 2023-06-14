@@ -1547,6 +1547,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         let result = [];
         for (let program of cardPrograms) {
+            let discount_based_on_unit_price = program.discount_based_on == 'unit_price';
             let max_reward_quantity = program.reward_quantity;
             let required_order_amount_min = program.order_amount_min;
             let required_min_quantity = program.min_quantity;
@@ -1591,7 +1592,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             for (const line of orderLines) {
                 if (!line.is_reward_line
                     && program.valid_product_ids.has(line.product.id)
-                    && (program.is_original_price ? !line.is_applied_promotion() : true)) {
+                    && (program.is_original_price ? !line.get_total_discounted() : true)) {
                     qty_taken += line.quantity;
                 };
             };
@@ -1629,12 +1630,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let voucher_program_id = [];
             let isSelected = false;
             if (program.reward_type == 'cart_get_x_free') {
-                to_reward_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
+                to_reward_lines = orderLines.filter(l=>(discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
             } else if (program.reward_type == 'cart_get_voucher') {
                 voucher_program_id = program.voucher_program_id;
                 isSelected = true;
             } else {
-                to_discount_lines = orderLines.filter(l=> (program.discount_based_on == 'unit_price' ? !l.is_applied_promotion() : true) && l.quantity > 0)
+                to_discount_lines = orderLines.filter(l=> (discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0)
                                               .filter(l=>program.discount_product_ids.has(l.product.id));
             };
             if ((program.reward_type == 'cart_get_x_free' && to_reward_lines.length > 0)
@@ -1701,19 +1702,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 });
             };
         };
-//            result.push({
-//                id: program.id,
-//                program: program,
-//                max_reward_quantity: max_reward_quantity,
-//                required_order_amount_min: required_order_amount_min,
-//                required_min_quantity: required_min_quantity,
-//                voucher_program_id,
-//                to_reward_lines,
-//                to_discount_lines,
-//                isSelected,
-//                reward_line_vals: []
-//            });
-//        };
         return result
     }
 
