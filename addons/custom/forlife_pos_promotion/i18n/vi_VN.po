@@ -51,6 +51,13 @@ msgid "%s: Không được khai báo cùng số lượng trên các chi tiết c
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
+#, python-format
+msgid "--Chọn sản phẩm--"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid ""
 "<span attrs=\"{'invisible': [('reward_type', 'not in', "
@@ -893,7 +900,6 @@ msgstr ""
 #. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/xml/Screens/ProductScreen/CustomOrderline.xml:0
-#: code:addons/forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
 #, python-format
 msgid "Giảm giá theo CT"
 msgstr ""
