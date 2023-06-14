@@ -119,7 +119,7 @@
 
         <record model="ir.ui.menu" id="account.menu_finance_reports">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_daxd_manager')), (4, ref('forlife_permission_management.group_daxd_user')), (4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_inventory')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_mer'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_daxd_manager')), (4, ref('forlife_permission_management.group_daxd_user')), (4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_inventory')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting'))]"/>
         </record>
         <!--Tồn kho/Verslagdoening/Địa điểm-->
         <record model="ir.ui.menu" id="stock_account.menu_valuation">
