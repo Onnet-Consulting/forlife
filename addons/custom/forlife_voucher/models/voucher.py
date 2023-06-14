@@ -209,7 +209,7 @@ class Voucher(models.Model):
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
                                                      voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=90)).day == now.day))
@@ -248,7 +248,7 @@ class Voucher(models.Model):
                         for v in vouchers:
                             v.has_accounted = True
                 else:
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=90)).day == now.day))
                         if vouchers:
@@ -262,7 +262,7 @@ class Voucher(models.Model):
                                     'line_ids': [
                                         # credit line
                                         (0, 0, {
-                                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                            'name': 'Write off giá trị còn lại của Voucher hết hạn',
                                             'display_type': 'product',
                                             'account_id': payment_mothod.account_other_income.id,
                                             'debit': 0.0,
@@ -272,7 +272,7 @@ class Voucher(models.Model):
                                         }),
                                         # debit line
                                         (0, 0, {
-                                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                            'name': 'Write off giá trị còn lại của Voucher hết hạn',
                                             'display_type': 'product',
                                             'account_id': payment_mothod.account_general.id,
                                             'debit': sum(vouchers.mapped('price_residual')),
