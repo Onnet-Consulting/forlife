@@ -6,8 +6,9 @@
         <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='journal_id']" position="after">
-                <field name="account_other_income" required="1" />
-                <field name="account_general" required="1" />
+                <field name="account_other_income"/>
+                <field name="account_general" />
+                <field name="account_other_fee" />
             </xpath>
         </field>
     </record>
