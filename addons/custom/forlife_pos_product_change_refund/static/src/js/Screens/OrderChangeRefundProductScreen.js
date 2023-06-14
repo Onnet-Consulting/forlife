@@ -78,7 +78,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         }
 
         _onShowOrderDetail({ detail: order }) {
-            const order_lines = order.orderlines.filter((line) => !line.is_promotion);
+            const order_lines = order.orderlines.filter((line) => !line.is_promotion && (line.quantity - line.refunded_qty ) > 0);
             this.showPopup('PosOrderRefundDetailPopup', { orderline: order_lines});
         }
 
