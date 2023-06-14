@@ -1,5 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-base_group_user_model_attribute_code_config,base.group.attribute_code_config,model_attribute_code_config,base.group_user,1,1,0,0
 base_group_user_model_report_num1,base.group.user_report_num1,model_report_num1,base.group_user,1,1,1,1
 base_group_user_model_report_num2,base.group.user_report_num2,model_report_num2,base.group_user,1,1,1,1
 base_group_user_model_report_num3,base.group.user_report_num3,model_report_num3,base.group_user,1,1,1,1

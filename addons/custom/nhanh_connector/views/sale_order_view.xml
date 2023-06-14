@@ -33,6 +33,7 @@
                         <group>
                             <field name="order_partner_id" readonly="1"/>
                             <field name="nhanh_id" readonly="1"/>
+                            <field name="nhanh_order_status" readonly="1"/>
                             <field name="nhanh_origin_id" readonly="1"/>
                             <field name="name_customer" readonly="1"/>
                             <field name="note_customer" readonly="1"/>

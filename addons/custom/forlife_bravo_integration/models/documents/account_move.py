@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 import re
 
 CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
+CONTEXT_UPDATE_JOURNAL = 'bravo_update_move'
 
 
 class AccountMove(models.Model):
@@ -20,6 +21,7 @@ class AccountMove(models.Model):
     @api.model
     def bravo_get_table(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
+        journal_update = kwargs.get(CONTEXT_UPDATE_JOURNAL)
         bravo_table = 'DEFAULT'
         if journal_data == 'purchase_asset_service':
             bravo_table = 'B30AccDocPurchase'
@@ -29,6 +31,8 @@ class AccountMove(models.Model):
             bravo_table = 'B30AccDocAtchDoc'
         elif journal_data == "purchase_product_cost_picking":
             bravo_table = "B30AccDocPurchase"
+        elif journal_update:
+            bravo_table = "B30UpdateData"
         return bravo_table
 
     @api.model
@@ -60,6 +64,7 @@ class AccountMove(models.Model):
 
     def bravo_get_insert_values(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
+        update_move_data = kwargs.get(CONTEXT_UPDATE_JOURNAL)
         if journal_data == 'purchase_asset_service':
             return self.bravo_get_purchase_asset_service_values()
         if journal_data == 'purchase_product':
@@ -68,6 +73,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_bill_vendor_back_values()
         if journal_data == 'purchase_product_cost_picking':
             return self.bravo_get_picking_purchase_costing_values()
+        if update_move_data:
+            return self.bravo_get_update_move_values(**kwargs)
         return [], []
 
     def bravo_get_insert_sql_by_journal_action(self):
@@ -103,6 +110,44 @@ class AccountMove(models.Model):
         return queries
 
     def bravo_get_insert_sql(self, **kwargs):
-        if kwargs.get(CONTEXT_JOURNAL_ACTION):
+        if kwargs.get(CONTEXT_JOURNAL_ACTION) or kwargs.get(CONTEXT_UPDATE_JOURNAL):
             return super().bravo_get_insert_sql(**kwargs)
         return self.bravo_get_insert_sql_by_journal_action()
+
+    # -------------------- UPDATE --------------------------
+
+    @api.model
+    def bravo_get_update_move_columns(self):
+        return [
+            "CompanyCode", "UpdateType", "DocNo", "DocDate",
+            "Stt", "RowId", "ColumnName", "OldValue", "NewValue",
+        ]
+
+    def bravo_get_update_move_values(self, **kwargs):
+        columns = self.bravo_get_update_move_columns()
+        values = []
+        for record in self:
+            value = {
+                "CompanyCode": record.company_id.code,
+                "UpdateType": "1",
+                "DocNo": record.name,
+                "DocDate": record.date,
+                "Stt": record.id,
+                "RowId": record.id,
+                "ColumnName": "Description",
+                "OldValue": record.invoice_description,
+                "NewValue": kwargs.get('invoice_description'),
+            }
+            values.append(value)
+        return columns, values
+
+    def write(self, vals):
+        records = self.filtered(lambda r: r.state == 'posted')
+        if 'invoice_description' not in vals or not bool(records):
+            return super().write(vals)
+        vals.update({CONTEXT_UPDATE_JOURNAL: True})
+        insert_queries = records.bravo_get_insert_sql(**vals)
+        if insert_queries:
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
+        vals.pop(CONTEXT_UPDATE_JOURNAL, None)
+        return super().write(vals)
