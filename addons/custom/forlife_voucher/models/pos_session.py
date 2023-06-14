@@ -16,7 +16,7 @@ class PosSession(models.Model):
     def action_pos_session_closing_control(self, balancing_account=False, amount_to_balance=0, bank_payment_method_diffs=None):
         res = super(PosSession, self).action_pos_session_closing_control(balancing_account, amount_to_balance, bank_payment_method_diffs)
         for session in self:
-            vouchers = session.order_ids.pos_voucher_line_ids.filtered(lambda v: v.voucher_id.purpose_id.purpose_voucher == 'gift')
+            vouchers = session.order_ids.pos_voucher_line_ids.filtered(lambda v: v.voucher_id.purpose_id.purpose_voucher == 'gift' and v.voucher_id.has_accounted == False)
             department_ids = []
             if vouchers:
                 for v in vouchers:
@@ -58,6 +58,8 @@ class PosSession(models.Model):
                 ]
             }
             AccountMove.sudo().create(move_vals)._post()
+            for v in vouchers:
+                v.voucher_id.has_accounted = True
         else:
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
