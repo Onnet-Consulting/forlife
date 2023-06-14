@@ -2,6 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_handle_change_refund,handle.change.refund,model_handle_change_refund,,1,1,1,0
 access_handle_change_refund_line,handle.change.refund.line,model_handle_change_refund_line,,1,1,1,0
 access_forlife_pos_reason_refund,forlife_pos_product_change.forlife_pos_reason_refund,model_pos_reason_refund,base.group_user,1,1,1,1
-access_product_defective,access_product_defective,model_product_defective,base.group_user,1,1,1,1
+access_product_defective,access_product_defective,model_product_defective,point_of_sale.group_pos_manager,1,1,1,1
 access_defective_type,access_defective_type,model_defective_type,base.group_user,1,1,1,1
 access_reason_refuse_product_defective,access_reason_refuse_product,model_reason_refuse_product,base.group_user,1,1,1,1
