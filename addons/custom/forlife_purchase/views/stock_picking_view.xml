@@ -36,6 +36,8 @@
                             <field name="lot_name"/>
                             <field name="purchase_uom"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
+                            <field name="free_good"
+                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_change"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_purchase_done"
