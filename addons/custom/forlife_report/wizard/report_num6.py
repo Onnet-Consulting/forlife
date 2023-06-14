@@ -6,7 +6,6 @@ from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
 COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
@@ -33,7 +32,7 @@ class ReportNum6(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         start_time = datetime.strptime('{} {:02d}:{:02d}:00'.format(
             self.date, int(self.start_time // 1), int(self.start_time % 1 * 60)), '%Y-%m-%d %H:%S:%M') + relativedelta(hours=-tz_offset)
@@ -127,9 +126,9 @@ from products pr
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
     left join product_info pi on pi.product_id = pr.product_id
-    left join attribute_data ad_size on ad_size.product_id = pr.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_size on ad_size.product_id = pr.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
     left join attribute_data ad_color on ad_color.product_id = pr.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data ad_gender on ad_gender.product_id = pr.product_id and ad_gender.attrs_code = '{attr_value.get('gioi_tinh', '')}'
+    left join attribute_data ad_gender on ad_gender.product_id = pr.product_id and ad_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
 order by num
 """
         return query
