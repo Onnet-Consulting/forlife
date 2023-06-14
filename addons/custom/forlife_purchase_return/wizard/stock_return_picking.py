@@ -48,10 +48,12 @@ class StockReturnPicking(models.TransientModel):
             for move in stock_move.move_dest_ids:
                 if not move.origin_returned_move_id or move.origin_returned_move_id != stock_move:
                     continue
-                if move.state in ('partially_available', 'assigned'):
-                    quantity_returned += sum(move.move_line_ids.mapped('reserved_qty'))
-                elif move.state in ('done'):
-                    quantity_returned += move.product_qty
+                # if move.state in ('partially_available', 'assigned'):
+                #     quantity_returned += sum(move.move_line_ids.mapped('reserved_qty'))
+                # elif move.state in ('done'):
+                #     quantity_returned += move.product_qty
+                if move.state in ('done'):
+                    quantity_returned += move.quantity_done
 
             res.update({
                 'quantity_init': stock_move.product_qty,
