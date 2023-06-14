@@ -40,7 +40,7 @@
                                     <field name="product_id" context="{'type': parent.type}"/>
                                     <field name="uom_id"/>
                                     <field name="product_qty" attrs="{'readonly': [('parent.type', '=', 'phantom')]}"/>
-                                    <field name="price"/>
+                                    <field name="price" string="Giá"/>
                                 </tree>
                             </field>
                         </page>

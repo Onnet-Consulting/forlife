@@ -592,5 +592,4 @@ class AccountMove(models.Model):
                         line[2]['price_unit'] = line[2].pop('return_price_unit')
                     if line[2].get('qty_returned'):
                         line[2]['quantity'] = line[2].get('quantity') - line[2].pop('qty_returned')
-
         return super(AccountMove, self).create(vals_list)

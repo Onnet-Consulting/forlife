@@ -46,7 +46,7 @@
                     <button string="In Approve" name="action_in_approve" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'out_approve')]}"/>
                     <button string="Done" name="action_done" type="object"
-                            attrs="{'invisible':[ ('state', '!=', 'in_approve')]}"/>
+                            attrs="{'invisible':['|', ('state', '!=', 'in_approve'), ('type', '!=', False)]}"/>
                     <button string="Reject " name="action_reject"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_approve')]}"/>
                     <button string="Cancel" name="action_cancel"

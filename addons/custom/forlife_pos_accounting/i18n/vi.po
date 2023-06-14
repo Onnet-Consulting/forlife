@@ -1,0 +1,172 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_pos_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-10 18:20+0000\n"
+"PO-Revision-Date: 2023-06-10 18:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.inherit_points_promotion_view_form
+msgid "<strong style=\"padding-right: 10px;\">from</strong>"
+msgstr "<strong style=\"padding-right: 10px;\">từ</strong>"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.inherit_points_promotion_view_form
+msgid "<strong style=\"padding-right: 10px;\">to</strong>"
+msgstr "<strong style=\"padding-right: 10px;\">đến</strong>"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_account_journal__account_consignment_tmpl_ids
+msgid "Account Consignment Tmpl"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "Cannot found contact's store (%s)"
+msgstr "Không tìm thấy liên hệ của cửa hàng (%s)"
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "Cannot found journal promotion's product %s"
+msgstr "Không tìm thấy sổ nhật ký CTKM của sản phẩm %s"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_account_journal__company_consignment_id
+msgid "Consignment Company"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_account_journal__default_account_id
+msgid "Default Account"
+msgstr "Tài khoản mặc định"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_member_card__product_discount_id
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_points_promotion__product_discount_id
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__product_discount_ids
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_promotion_program__product_discount_id
+msgid "Discount Product"
+msgstr "Sản phẩm khuyến mại"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order__invoice_count
+msgid "Invoice Count"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order__invoice_ids
+msgid "Invoices"
+msgstr "Hóa đơn"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_product_product__is_promotion
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_product_template__is_promotion
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__is_promotion
+msgid "Is Promotion"
+msgstr "Là khuyến mại"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__is_state_registration
+msgid "Is State Registration"
+msgstr "Đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model,name:forlife_pos_accounting.model_account_journal
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_promotion_program__journal_id
+msgid "Journal"
+msgstr "Sổ nhật ký"
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "No product that represent the promotion %s!"
+msgstr "Không có sản phẩm nào đại diện cho CTKM %s!"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_account_move_line__pos_order_line_id
+msgid "POS Order Line"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "Please configure before apply card/point to POS order!"
+msgstr "Vui lòng cấu hình sản phẩm cho trước khi áp dụng hạng thẻ, tích điểm vào đơn hàng!"
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "Please configure before apply promotion program to POS order!"
+msgstr "Vui long cấu hình sản phẩm cho trước khi áp dụng CTKM vào đơn hàng!"
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/stock_move.py:0
+#, python-format
+msgid "Product categories \"%s\" has not configured gift account!"
+msgstr "Nhóm hàng \"%s\" chưa được cấu hình tài khoản hàng tặng!"
+
+#. module: forlife_pos_accounting
+#. odoo-python
+#: code:addons/forlife_pos_accounting/models/pos_order.py:0
+#, python-format
+msgid "Product categories \"%s\" has not configured refund account!"
+msgstr "Nhóm hàng \"%s\" chưa được cấu hình tài khoản trả hàng!"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__promotion_id
+msgid "Promotion ID"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order__real_to_invoice
+msgid "Real To Invoice"
+msgstr ""
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.inherit_points_promotion_view_form
+msgid "Registration Date"
+msgstr "Ngày đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__product_src_id
+msgid "Source Product"
+msgstr "Sản phẩm gốc"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_account_move_line__is_state_registration
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_points_promotion__is_state_registration
+msgid "State Registration"
+msgstr "Đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_points_promotion__state_registration_end
+msgid "State Registration End"
+msgstr "Ngày hết hạn đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_points_promotion__state_registration_start
+msgid "State Registration Start"
+msgstr "Ngày bắt đầu đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__subtotal_paid
+msgid "Subtotal Paid"
+msgstr "Thành tiền thanh toán"

@@ -199,6 +199,7 @@ class StockPicking(models.Model):
         line = super(StockPicking, self).create(vals)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
             for rec in line.move_ids_without_package:
+                rec._onchange_product_id()
                 '''
                 rec.location_id = vals['location_id']
                 rec.location_dest_id = vals['location_dest_id']
@@ -303,6 +304,13 @@ class StockMove(models.Model):
             rec.is_production_order = rec.reason_id.is_work_order
             rec.is_amount_total = rec.reason_id.is_price_unit
 
+    @api.depends('product_id')
+    def compute_product_id(self):
+        for rec in self:
+            if not rec.reason_id.is_price_unit:
+                rec.amount_total = rec.product_id.standard_price
+            rec.name = rec.product_id.name
+
     @api.depends('product_uom_qty', 'picking_id.state')
     def compute_previous_qty(self):
         for rec in self:
@@ -318,13 +326,13 @@ class StockMove(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
-        for r in self:
-            if r.product_id:
-                r.reason_id = r.picking_id.location_id.id \
-                    if r.picking_id.other_import else r.picking_id.location_dest_id.id
-                r.reason_type_id = r.picking_id.reason_type_id.id
-                r.name = r.product_id.name
-                r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
+        self.name = self.product_id.name
+        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
+        if not self.reason_id:
+            self.reason_id = self.picking_id.location_id.id \
+                if self.picking_id.other_import else self.picking_id.location_dest_id.id
+        if not self.reason_type_id:
+            self.reason_type_id = self.picking_id.reason_type_id.id
 
 
 class StockMoveLine(models.Model):
@@ -352,6 +360,13 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                 data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
                 for pk in data_pk.move_line_ids_without_package:
                     pk.write({
-                        'qty_done': pk.reserved_qty
+                        'po_id': pk_od.po_id,
+                        'qty_done': pk.reserved_qty,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk.reserved_qty
+                    })
+                for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
+                    pk.write({
+                        'po_l_id': pk_od.po_l_id,
                     })
         return res

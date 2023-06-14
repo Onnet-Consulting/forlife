@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-05 04:34+0000\n"
-"PO-Revision-Date: 2023-05-05 04:34+0000\n"
+"POT-Creation-Date: 2023-06-13 09:49+0000\n"
+"PO-Revision-Date: 2023-06-13 09:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -141,6 +141,11 @@ msgstr "Danh mục sản phẩm"
 #: model:ir.model,name:forlife_rabbitmq_integration.model_product_product
 msgid "Product Variant"
 msgstr "Biến thể sản phẩm"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_program_voucher
+msgid "Program Voucher for Forlife"
+msgstr ""
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_campaign
@@ -282,6 +287,11 @@ msgstr "Thông tin kết nối máy chủ Rabbitmq đã tồn tại !"
 #: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__username
 msgid "Username"
 msgstr "Tên đăng nhập"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_voucher_voucher
+msgid "Voucher"
+msgstr "Mã Voucher"
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model,name:forlife_rabbitmq_integration.model_res_ward

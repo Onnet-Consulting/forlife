@@ -57,7 +57,7 @@ class SaleOrder(models.Model):
                 'name': line.partner_id.name,
             } if line.partner_id else None,
             'payment_method': ['cod'],
-            'order_date': line.date_line.strftime('%Y-%m-%d %H:%M:%S'),
+            'order_date': line.date_order.strftime('%Y-%m-%d %H:%M:%S'),
             'coupons': None,
         } for line in self]
 

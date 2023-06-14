@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_point_of_sale.ClosePosPopup" t-inherit-mode="extension" t-inherit="point_of_sale.ClosePosPopup" owl="1">
+        <xpath expr="//tbody[hasclass('cash-overview')]" position="replace">
+            <tbody class="cash-overview">
+                <t t-set="out_total" t-value="0"/>
+                <t t-set="in_total" t-value="0"/>
+                <tr>
+                    <td>Opening</td>
+                    <td t-esc="env.pos.format_currency(defaultCashDetails.opening)"/>
+                </tr>
+                <tr style="font-weight: normal !important;font-size: 16px;font-style: italic;">
+                    <td colspan="2">
+                        <table style="height: 100%;">
+                            <tboby>
+                                <tr t-foreach="movesNegative" t-as="move" t-key="move_index">
+                                    <t t-set="out_total" t-value="out_total + move.amount"/>
+                                    <td>
+                                        <div class="flex">
+                                            <t t-esc="move.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 30px; white-space: nowrap;">
+                                        <t t-esc="move.amount &lt; 0 ? '-' : '+'"/>
+                                        <t t-esc="env.pos.format_currency(Math.abs(move.amount))"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="defaultCashDetails.payment_amount &lt; 0">
+                                    <t t-set="out_total" t-value="out_total + defaultCashDetails.payment_amount"/>
+                                    <td>
+                                        <div class="flex">
+                                            Payments in <t t-esc="defaultCashDetails.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 10px; white-space: nowrap;">
+                                        <t t-esc="defaultCashDetails.payment_amount &lt; 0 ? '-' : '+'"/>
+                                        <t t-esc="env.pos.format_currency(Math.abs(defaultCashDetails.payment_amount))"/>
+                                    </td>
+                                </tr>
+                            </tboby>
+                        </table>
+                    </td>
+                    <td colspan="2">
+                        <table style="height: 100%; border-left: solid grey">
+                            <tboby>
+                                <tr t-foreach="movesPositive" t-as="move" t-key="move_index">
+                                    <t t-set="in_total" t-value="in_total + move.amount"/>
+                                    <td>
+                                        <div class="flex">
+                                            <t t-esc="move.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 10px; white-space: nowrap;">
+                                        <t t-esc="move.amount &lt; 0 ? '-' : '+'"/>
+                                        <t t-esc="env.pos.format_currency(Math.abs(move.amount))"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="defaultCashDetails.payment_amount &gt; 0">
+                                    <t t-set="in_total" t-value="in_total + defaultCashDetails.payment_amount"/>
+                                    <td>
+                                        <div class="flex">
+                                            Payments in <t t-esc="defaultCashDetails.name"/>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 10px; white-space: nowrap;">
+                                        <t t-esc="defaultCashDetails.payment_amount &lt; 0 ? '-' : '+'"/>
+                                        <t t-esc="env.pos.format_currency(Math.abs(defaultCashDetails.payment_amount))"/>
+                                    </td>
+                                </tr>
+                            </tboby>
+                        </table>
+                    </td>
+                </tr>
+                <tr style="font-weight: bold !important; font-size: 16px;">
+                    <td>Tổng chi</td>
+                    <td><t t-esc="env.pos.format_currency(out_total)"/></td>
+                    <td>Tổng thu</td>
+                    <td><t t-esc="env.pos.format_currency(in_total)"/></td>
+                </tr>
+                <style>
+                    .cash-overview::after {
+                            content: '';
+                            display: block;
+                            height: 15px;
+                    }
+                </style>
+            </tbody>
+        </xpath>
+    </t>
+</templates>
