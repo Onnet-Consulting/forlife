@@ -26,15 +26,8 @@ class ForlifeBOM(models.Model):
         ('approved', 'Approved'),
         ('done', 'Done'),
     ], default='draft')
-
-    implementation_department = fields.Selection([('di_nau', 'Xưởng Dị Nâu'),
-                                                  ('minh_khai', 'Xưởng Minh Khai'),
-                                                  ('nguyen_van_cu', 'Xưởng Nguyễn Văn Cừ'),
-                                                  ('da_lat', 'Xưởng Đà Lạt'),
-                                                  ('gia_cong', 'Gia công')], string='Implementation Department')
-    management_department = fields.Selection([('tkl', 'Bộ phận sản xuất TKL'),
-                                              ('fm', 'Bộ phận quản lý FM'),
-                                              ('mua_hang', 'Phòng mua hàng')], string='Management Department')
+    implementation_id = fields.Many2one('account.analytic.account', string='Bộ phận thực hiện')
+    management_id = fields.Many2one('account.analytic.account', string='Bộ phận quản lý')
     production_department = fields.Selection([('tu_san_xuat', 'Hàng tự sản xuất'),
                                               ('tp', 'Gia công TP'),
                                               ('npl', 'Gia công NPL')], string='Production Department')
