@@ -39,16 +39,16 @@
                     </group>
                     <notebook>
                         <page string="Sản phẩm chính">
-                            <field name="split_product_line_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
+                            <field name="split_product_line_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled','in_progress'])]}">
                                 <tree editable="bottom">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_uom"/>
-                                    <field name="warehouse_out_id" attrs="{'readonly': [('state','=','canceled')]}"/>
+                                    <field name="warehouse_out_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
                                     <field name="product_quantity_out"/>
                                     <field name="product_quantity_split" attrs="{'readonly': [('state','in',['canceled','in_progress','done'])]}"/>
                                     <field name="product_uom_split"/>
-                                    <field name="warehouse_in_id" attrs="{'readonly': [('state','=','canceled')]}"/>
+                                    <field name="warehouse_in_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
                                     <field name="unit_price" invisible="True"/>
                                     <field name="value" invisible="True"/>
                                 </tree>

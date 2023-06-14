@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
-import ast
 
 TITLES = [
     'STT', 'Mã CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã hàng', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
@@ -42,7 +41,7 @@ class ReportNum20(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         customer_condition = f"and (rp.ref ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')" if self.customer else ''
         order_filter_condition = f"""and (po.pos_reference ilike '%{self.order_filter}%'
@@ -136,7 +135,7 @@ from pos_order po
     left join card_rank cr on cr.id = pcr.card_rank_id
     left join hr_employee emp on emp.id = pol.employee_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
-    left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
     left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     left join attribute_data nhan_hieu on nhan_hieu.product_id = pp.id and nhan_hieu.attrs_code = '{attr_value.get('nhan_hieu', '')}'
 where po.brand_id = {self.brand_id.id} and po.company_id = any( array{allowed_company})

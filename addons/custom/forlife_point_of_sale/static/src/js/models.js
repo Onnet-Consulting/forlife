@@ -10,6 +10,13 @@ odoo.define('forlife_point_of_sale.models', function (require) {
             await super._processData(...arguments);
             this.pos_brand_info = loadedData['pos_brand_info'];
         }
+
+        async getClosePosInfo() {
+            let result = await super.getClosePosInfo();
+            result['movesNegative'] = result.defaultCashDetails.moves.filter(l => l.amount <= 0);
+            result['movesPositive'] = result.defaultCashDetails.moves.filter(l => l.amount > 0);
+            return result;
+        }
     }
     Registries.Model.extend(PosGlobalState, CustomPosGlobalState);
 
