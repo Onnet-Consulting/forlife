@@ -1480,18 +1480,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 line.is_cart_discounted = true;
             }
         }
-        else if (program.reward_type == 'cart_discount_amount') {
-            let base_total_amount = to_discount_lines.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let disc_total_amount = program.disc_amount;
-            for (let line of to_discount_lines) {
-                let originalPrice = line.price;
-                let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, line.quantity);
-                line.price = newPrice;
-                line.promotion_usage_ids.push(new PromotionUsageLine(
-                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
-                line.is_cart_discounted = true;
-            };
-        }
         else if (program.reward_type == 'cart_get_x_free') {
             for (let line of to_discount_lines) {
                 let originalPrice = line.price
@@ -1591,7 +1579,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let is_required_check_products = program.valid_product_ids.size > 0;
             let qty_taken = 0;
             for (const line of orderLines) {
-                if (!line.is_reward_line && program.valid_product_ids.has(line.product.id)) {
+                if (!line.is_reward_line
+                    && program.valid_product_ids.has(line.product.id)
+                    && (program.is_original_price ? !line.get_total_discounted() : true)) {
                     qty_taken += line.quantity;
                 };
             };
@@ -1629,12 +1619,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let voucher_program_id = [];
             let isSelected = false;
             if (program.reward_type == 'cart_get_x_free') {
-                to_reward_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
+                to_reward_lines = orderLines.filter(l=>(discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
             } else if (program.reward_type == 'cart_get_voucher') {
                 voucher_program_id = program.voucher_program_id;
                 isSelected = true;
             } else {
-                to_discount_lines = orderLines.filter(l=> (program.discount_based_on == 'unit_price' ? !l.is_applied_promotion() : true) && l.quantity > 0)
+                to_discount_lines = orderLines.filter(l=> (discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0)
                                               .filter(l=>program.discount_product_ids.has(l.product.id));
             };
             if ((program.reward_type == 'cart_get_x_free' && to_reward_lines.length > 0)
@@ -1701,19 +1691,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 });
             };
         };
-//            result.push({
-//                id: program.id,
-//                program: program,
-//                max_reward_quantity: max_reward_quantity,
-//                required_order_amount_min: required_order_amount_min,
-//                required_min_quantity: required_min_quantity,
-//                voucher_program_id,
-//                to_reward_lines,
-//                to_discount_lines,
-//                isSelected,
-//                reward_line_vals: []
-//            });
-//        };
         return result
     }
 
@@ -2325,6 +2302,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     autoApplyPriceListProgram(new_ol) {
+        if (this.locked) return false;
         let is_with_code = (p) => p.with_code;
         if (new_ol && new_ol.quantity > 0 && !new_ol.is_applied_promotion() && new_ol.pricelist_item) {
             if (this._programIsApplicableAutomatically(new_ol.pricelist_item) && !is_with_code(new_ol.pricelist_item)) {
