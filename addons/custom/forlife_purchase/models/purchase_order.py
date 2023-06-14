@@ -381,12 +381,14 @@ class PurchaseOrder(models.Model):
                                 'quantity_done': orl.product_qty,
                                 'occasion_code_id': orl.occasion_code_id.id,
                                 'work_production': orl.production_id.id,
+                                'account_analytic_id': orl.account_analytic_id.id,
                             })
 
                     for orl, pk in zip(record.order_line, picking_in.move_line_ids_without_package):
                         if orl.product_id == pk.product_id:
                             pk.write({
-                                'po_id': orl.id,
+                                'po_id': po_id,
+                                'free_good': orl.free_good,
                                 'purchase_uom': orl.purchase_uom.id,
                                 'quantity_change': orl.exchange_quantity,
                                 'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False

@@ -365,4 +365,16 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                         'quantity_change': pk_od.quantity_change,
                         'quantity_purchase_done': pk.reserved_qty
                     })
+                for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
+                    pk.write({
+                        'po_l_id': pk_od.po_l_id,
+                    })
+                for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
+                    })
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
+                    })
         return res
