@@ -15,8 +15,8 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
-    nhanh_id = fields.Integer(string='Id Nhanh.vn')
-    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
+    nhanh_id = fields.Integer(string='Id Nhanh.vn', copy=False)
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn', copy=False)
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
@@ -25,18 +25,27 @@ class SaleOrderNhanh(models.Model):
     order_partner_id = fields.Many2one('res.partner', 'Khách Order')
     carrier_name = fields.Char('Carrier Name')
 
-    nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
-        ('confirmed', 'Confirmed'),
-        ('packing', 'Packing'),
-        ('pickup', 'Pickup'),
-        ('shipping', 'Shipping'),
-        ('returning', 'Returning'),
-        ('success', 'Success'),
-        ('canceled', 'Canceled'),
+        ('new', 'Đơn mới'),
+        ('confirming', 'Đang xác nhận'),
+        ('customerconfirming', 'Chờ khách xác nhận'),
+        ('confirmed', 'Đã xác nhận'),
+        ('packing', 'Đang đóng gói'),
+        ('packed', 'Đã đóng gói'),
+        ('changedepot', 'Đổi kho xuất hàng'),
+        ('pickup', 'Chờ thu gom'),
+        ('shipping', 'Đang chuyển'),
+        ('success', 'Thành công'),
+        ('failed', 'Thất bại'),
+        ('canceled', 'Khách hủy'),
+        ('aborted', 'Hệ thống hủy'),
+        ('carriercanceled', 'Hãng vận chuyển hủy đơn'),
+        ('soldout', 'Hết hàng'),
+        ('returning', 'Đang chuyển hoàn'),
+        ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
 
     # def write(self, vals):
@@ -207,7 +216,7 @@ class SaleOrderNhanh(models.Model):
                                                                       limit=1)
                 value = {
                     'nhanh_id': v['id'],
-                    'nhanh_status': v['statusCode'],
+                    'nhanh_order_status': v['statusCode'].lower(),
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],

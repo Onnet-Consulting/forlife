@@ -282,7 +282,7 @@
         </record>
 
         <record id="group_pos_pos_order" model="res.groups">
-            <field name="name">POS/Hoạt động/Đơn hàng POS</field>
+            <field name="name">POS/Đơn hàng/Đơn hàng POS</field>
             <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
         </record>
 

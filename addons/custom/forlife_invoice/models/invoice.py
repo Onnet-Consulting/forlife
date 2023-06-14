@@ -82,8 +82,7 @@ class AccountMove(models.Model):
     is_check = fields.Boolean(default=False)
 
     # Field check page ncc vãng lại
-    is_check_vendor_page = fields.Boolean(default=False,
-                                          compute='_compute_is_check_vendor_page',
+    is_check_vendor_page = fields.Boolean(compute='_compute_is_check_vendor_page',
                                           store=1)
 
     # tab e-invoice-bkav
@@ -325,25 +324,26 @@ class AccountMove(models.Model):
     @api.depends('partner_id.is_passersby', 'partner_id')
     def _compute_is_check_vendor_page(self):
         for rec in self:
-            if rec.partner_id.is_passersby:
-                vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
-                                                              ('vendor_back_id', '=', rec.id),
-                                                              ('company_id', '=', rec.company_id.id),
-                                                              ('code_tax', '=', rec.partner_id.vat),
-                                                              ('street_ven', '=', rec.partner_id.street),
-                                                              ], limit=1)
-                rec.is_check_vendor_page = True
-                if not vendor_back:
-                    self.env['vendor.back'].create({'vendor': rec.partner_id.name,
-                                                    'vendor_back_id': rec.id,
-                                                    'company_id': rec.company_id.id,
-                                                    'code_tax': rec.partner_id.vat,
-                                                    'street_ven': rec.partner_id.street,
-                                                    })
+            if rec.partner_id:
+                if rec.partner_id.is_passersby:
+                    vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
+                                                                  ('vendor_back_id', '=', rec.id),
+                                                                  ('company_id', '=', rec.company_id.id),
+                                                                  ('code_tax', '=', rec.partner_id.vat),
+                                                                  ('street_ven', '=', rec.partner_id.street),
+                                                                  ], limit=1)
+                    if not vendor_back:
+                        self.env['vendor.back'].create({'vendor': rec.partner_id.name,
+                                                        'vendor_back_id': rec.id,
+                                                        'company_id': rec.company_id.id,
+                                                        'code_tax': rec.partner_id.vat,
+                                                        'street_ven': rec.partner_id.street,
+                                                        })
+                    else:
+                        rec.vendor_back_ids = [(6, 0, vendor_back.id)]
+                    rec.is_check_vendor_page = True
                 else:
-                    rec.vendor_back_ids = [(6, 0, vendor_back.id)]
-            if not rec.partner_id.is_passersby:
-                rec.is_check_vendor_page = False
+                    rec.is_check_vendor_page = False
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
@@ -629,7 +629,6 @@ class AccountMoveLine(models.Model):
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
     discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
@@ -650,6 +649,7 @@ class AccountMoveLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
+    occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     # goods invoice!!
@@ -814,6 +814,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế')
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+    _x_invoice_date = fields.Date(string='Ngày hóa đơn')
+    tax_percent = fields.Many2one('account.tax', string='% Thuế')
 
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):
@@ -974,7 +976,7 @@ class SyntheticInvoice(models.Model):
                     if rec.synthetic_id.type_inv == 'tax':
                         for item in cost_line:
                             if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
-                                if item.vnd_amount and rec.price_subtotal:
+                                if item.vnd_amount and rec.price_subtotal > 0:
                                     before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
                                     total_cost_true += before_tax
                                 rec.before_tax = total_cost_true
@@ -986,8 +988,12 @@ class SyntheticInvoice(models.Model):
     @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal')
     def _compute_after_tax(self):
         for rec in self:
-            for line, item in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.cost_line):
-                rec.after_tax = ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+            for line in rec.synthetic_id.exchange_rate_line:
+                total_cost = 0
+                for item in rec.synthetic_id.cost_line:
+                    if rec.price_subtotal > 0:
+                        total_cost += ((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * item.vnd_amount
+                        rec.after_tax = total_cost
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:

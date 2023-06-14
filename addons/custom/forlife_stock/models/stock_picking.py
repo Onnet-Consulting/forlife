@@ -361,6 +361,7 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                 data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
                 for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
                     pk.write({
+                        'po_id': pk_od.po_id,
                         'qty_done': pk.reserved_qty,
                         'quantity_change': pk_od.quantity_change,
                         'quantity_purchase_done': pk.reserved_qty
