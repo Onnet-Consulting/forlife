@@ -136,6 +136,11 @@ class PurchaseOrder(models.Model):
         for item in self:
             item.count_stock = self.env['stock.picking'].search_count([('origin', '=', item.name), ('other_export', '=', True)])
 
+    @api.onchange('location_id')
+    def _onchange_line_location_id(self):
+        for rec in self.order_line:
+            rec.location_id = self.location_id
+
     @api.onchange('partner_id', 'currency_id')
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
