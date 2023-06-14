@@ -209,7 +209,7 @@ class Voucher(models.Model):
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
-                    vouchers = self.search([('derpartment_id', '=', d.id)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
                                                      voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=90)).day == now.day))
@@ -245,8 +245,10 @@ class Voucher(models.Model):
                                 AccountMove.sudo().create(move_vals)._post()
                             except Exception as e:
                                 _logger.info(e)
+                        for v in vouchers:
+                            v.has_accounted = True
                 else:
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired')])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=90)).day == now.day))
                         if vouchers:
@@ -282,6 +284,7 @@ class Voucher(models.Model):
                             except Exception as e:
                                 _logger.info(e)
                             for v in vouchers:
+                                v.has_accounted = True
                                 v.price_residual = 0
         else:
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
