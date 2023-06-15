@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import models, SUPERUSER_ID
 
 
 class PosSession(models.Model):
@@ -11,7 +11,7 @@ class PosSession(models.Model):
         pos_cache = self.env['pos.model.cache']
         cache_for_user = pos_cache.search([
             ('id', 'in', self.config_id.model_cache_ids.ids),
-            ('compute_user_id', '=', self.env.uid),
+            ('compute_user_id', '=', SUPERUSER_ID),
             ('domain', '=', domain_str),
             ('model_fields', '=', fields_str),
             ('model', '=', 'promotion.pricelist.item')
@@ -22,7 +22,7 @@ class PosSession(models.Model):
                 'config_id': self.config_id.id,
                 'domain': domain_str,
                 'model_fields': fields_str,
-                'compute_user_id': self.env.uid,
+                'compute_user_id': SUPERUSER_ID,
                 'model': 'promotion.pricelist.item'
             })
             cache_for_user.refresh_cache()
@@ -41,3 +41,26 @@ class PosSession(models.Model):
         records = self.get_promotion_pricelist_item_from_cache()
         self._process_pos_ui_promotion_pricelist_item(records)
         return records
+
+    def get_products_from_cache(self):
+        loading_info = self._loader_params_product_product()
+        fields_str = str(loading_info['search_params']['fields'])
+        domain_str = str([list(item) if isinstance(item, (list, tuple)) else item for item in loading_info['search_params']['domain']])
+        pos_cache = self.env['pos.cache']
+        cache_for_user = pos_cache.search([
+            ('id', 'in', self.config_id.cache_ids.ids),
+            ('compute_user_id', '=', SUPERUSER_ID),
+            ('product_domain', '=', domain_str),
+            ('product_fields', '=', fields_str),
+        ])
+
+        if not cache_for_user:
+            cache_for_user = pos_cache.create({
+                'config_id': self.config_id.id,
+                'product_domain': domain_str,
+                'product_fields': fields_str,
+                'compute_user_id': SUPERUSER_ID
+            })
+            cache_for_user.refresh_cache()
+
+        return cache_for_user.cache2json()
