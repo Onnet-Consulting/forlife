@@ -66,7 +66,7 @@ class PosSession(models.Model):
             offset=params['search_params']['offset'],
             limit=params['search_params']['limit']).sorted(key='fixed_price', reverse=False)
         for item in result:
-            if item.product_id.id not in product_set and item.product_id.lst_price > item.fixed_price:
+            if item.product_id.lst_price > item.fixed_price:
                 pricelist_items |= item
                 product_set.add(item.product_id.id)
         return pricelist_items.read(params['search_params']['fields'])
