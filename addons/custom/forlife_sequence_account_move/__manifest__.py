@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": """Forlife Sequence Account Move""",
     "depends": [
-        'account',
+        'point_of_sale',
     ],
     "data": [
     ],
