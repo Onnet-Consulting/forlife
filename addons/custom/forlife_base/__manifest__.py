@@ -15,7 +15,8 @@
         'purchase',
         'account',
         'forlife_product',
-        'forlife_point_of_sale'
+        'forlife_point_of_sale',
+        'base_external_dbsource',
     ],
     'installable': True,
     'auto_install': True,

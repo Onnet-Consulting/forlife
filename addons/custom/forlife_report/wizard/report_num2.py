@@ -23,7 +23,7 @@ class ReportNum2(models.TransientModel):
 
         where_query = f"sqt.company_id = any (array{allowed_company}) and sw.id notnull\n"
         if warehouse_ids:
-            location_conditions = ' or '.join([f"sl.parent_path like '%/{view_location_id}/%'" for view_location_id in warehouse_ids.mapped('view_location_id').ids])
+            location_conditions = ' or '.join([f"sl.parent_path like '%%/{view_location_id}/%%'" for view_location_id in warehouse_ids.mapped('view_location_id').ids])
             where_query += f" and ({location_conditions})\n"
         if product_ids:
             where_query += f" and sqt.product_id = any (array{product_ids})\n"
@@ -80,8 +80,7 @@ from stock_product stp
         product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
         warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data_by_product_id = {}
         detail_data_by_product_id = {}
         for line in data:

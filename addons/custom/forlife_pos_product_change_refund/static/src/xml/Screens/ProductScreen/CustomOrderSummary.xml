@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<t t-inherit="forlife_pos_layout.CustomOrderSummary" t-inherit-mode="extension" owl="1">
+    <xpath expr="//th[hasclass('total-quantity')]" position="replace">
+        <th class="total-quantity">
+            <t t-if="props.order.is_refund_product or props.order.is_change_product"></t>
+            <t t-else="">
+                <t t-esc="_totalQuantity" />
+            </t>
+        </th>
+    </xpath>
+
+    <xpath expr="//th[hasclass('total-money-product')]" position="replace">
+        <th class="total-money-product">
+            <t t-if="props.order.is_refund_product or props.order.is_change_product"></t>
+            <t t-else="">
+                <t t-esc="env.pos.format_currency(_totalPriceTax)" />
+            </t>
+        </th>
+    </xpath>
+
+    <xpath expr="//th[hasclass('total-money-discount')]" position="replace">
+        <th class="total-money-discount">
+            <t t-if="props.order.is_refund_product or props.order.is_change_product"></t>
+            <t t-else="">
+                <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
+            </t>
+        </th>
+    </xpath>
+
+</t>
