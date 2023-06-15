@@ -254,7 +254,7 @@ class AccountMove(models.Model):
                                         'request_code': product.request_purchases,
                                         'promotions': product.free_good,
                                         'quantity_purchased': pnk.quantity_purchase_done,
-                                        'uom_id': pnk.purchase_uom.id,
+                                        'product_uom_id': pnk.purchase_uom.id,
                                         'exchange_quantity': pnk.quantity_change,
                                         'quantity': pnk.qty_done,
                                         'vendor_price': product.vendor_price,
