@@ -158,7 +158,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let raw_program_ids = JSON.parse(program_ids);
                 let promotion_names = _.map(raw_program_ids, program_id => {
                     let program = this.pos.promotion_program_by_id[program_id];
-                    if (program.program_type === 'pricelist') {
+                    if (program.promotion_type === 'pricelist' || program.program_type === 'pricelist') {
                         return false;
                     }
                     return program.name;
