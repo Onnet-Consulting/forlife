@@ -94,8 +94,7 @@ order by num
         warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids if self.all_warehouses else self.warehouse_ids.ids
         store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
         query = self._get_query(store_ids)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

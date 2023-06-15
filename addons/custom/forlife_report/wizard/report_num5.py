@@ -227,7 +227,6 @@ from employee_list employee
         self.ensure_one()
         values = super().get_data(allowed_company)
         query = self._get_query()
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.execute_postgresql(query=query, param=[], build_dict=True)
         values.update(self.format_data(data))
         return values

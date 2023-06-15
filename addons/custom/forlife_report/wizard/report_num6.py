@@ -139,8 +139,7 @@ order by num
         values = dict(super().get_data(allowed_company))
         warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1]
         query = self._get_query(warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,
