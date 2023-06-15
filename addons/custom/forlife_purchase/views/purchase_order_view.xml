@@ -91,7 +91,7 @@
                                 type="action" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
                                 groups="purchase_request.admin_purchase_request_group" />
                         <button string="Cancel" name="action_cancel" type="object"
-                                attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>
+                                attrs="{'invisible': True}"/>
                         <button string="Cancel" name="%(forlife_purchase.cancel_order_wizard)d"
                                 type="action" attrs="{'invisible': [('custom_state', 'in', ('cancel', 'close', 'approved'))]}"/>
                         <button string="Close" name="action_close" type="object"
