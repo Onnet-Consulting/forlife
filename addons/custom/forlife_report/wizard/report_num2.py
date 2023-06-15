@@ -2,7 +2,6 @@
 
 from odoo import api, fields, models, _
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
 COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
@@ -20,7 +19,7 @@ class ReportNum2(models.TransientModel):
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         user_lang_code = self.env.user.lang
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         where_query = f"sqt.company_id = any (array{allowed_company}) and sw.id notnull\n"
         if warehouse_ids:
@@ -69,7 +68,7 @@ from stock_product stp
     left join product_product pp on pp.id = stp.product_id
     left join product_template pt on pp.product_tmpl_id = pt.id
     left join stock_warehouse sw on sw.id = stp.warehouse_id
-    left join attribute_data ad_size on ad_size.product_id = stp.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_size on ad_size.product_id = stp.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
     left join attribute_data ad_color on ad_color.product_id = stp.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
 """
 

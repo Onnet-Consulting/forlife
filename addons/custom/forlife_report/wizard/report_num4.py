@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['STT', 'Mã Hàng', 'Tên Hàng', 'Nhóm hàng', 'Màu', 'Size', 'Bộ sưu tập', 'Kết cấu', 'Dòng hàng', 'SL cuối kỳ']
 COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
@@ -22,7 +21,7 @@ class ReportNum4(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         where_query = f"""
             sm.company_id = any (array{allowed_company})
@@ -58,7 +57,7 @@ product_cate_info as
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
         left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     where pp.id = any (array{product_ids})
     ),

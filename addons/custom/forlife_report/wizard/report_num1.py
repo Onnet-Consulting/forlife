@@ -4,7 +4,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = [
     'STT', 'Kho', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Đơn vị', 'Giá', 'Số lượng',
@@ -37,7 +36,7 @@ class ReportNum1(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         query = []
         product_condition = f'and pol.product_id = any (array{product_ids})'
@@ -161,7 +160,7 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
                         ) as subname_table
                 ) as pt
         on pt.id = pp.product_tmpl_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
         left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     where pp.id = any (array{product_ids})
     order by pp.product_tmpl_id asc
