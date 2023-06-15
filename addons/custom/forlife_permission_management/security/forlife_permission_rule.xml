@@ -4,7 +4,8 @@
         <record model="ir.rule" id="purchase_request_read">
             <field name="name">purchase_request_read</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_purchase_purchase_order'))]"/>
+            <field name="groups"
+                   eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_purchase_purchase_order'))]"/>
             <field name="domain_force">['&amp;', '&amp;', '|', ('department_id','=', user.get_department()),
                 ('department_id','=',
                 False), '|', ('team_id','=', user.get_team()), ('team_id','=',
@@ -149,7 +150,8 @@
             <field name="name">stock_transfer_read</field>
             <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','=',
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=',
                 False)]
             </field>
             <field name="perm_read" eval="True"/>
@@ -162,8 +164,8 @@
             <field name="name">stock_transfer_write_create</field>
             <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -175,8 +177,8 @@
             <field name="name">stock_transfer_unlink</field>
             <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -188,8 +190,8 @@
             <field name="name">stock_picking_read</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -201,8 +203,8 @@
             <field name="name">stock_picking_write_create</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -214,8 +216,8 @@
             <field name="name">stock_picking_unlink</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -227,8 +229,8 @@
             <field name="name">stock_transfer_inventory_read</field>
             <field name="model_id" ref="forlife_stock.model_transfer_stock_inventory"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -240,8 +242,8 @@
             <field name="name">stock_transfer_inventory_write_create</field>
             <field name="model_id" ref="forlife_stock.model_transfer_stock_inventory"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -253,8 +255,8 @@
             <field name="name">stock_transfer_inventory_unlink</field>
             <field name="model_id" ref="forlife_stock.model_transfer_stock_inventory"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id','in',
-                False)]
+            <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()),
+                ('location_dest_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -305,7 +307,8 @@
             <field name="name">other_export_read</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in', user.get_stock()),
+            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in',
+                user.get_stock()),
                 ('location_dest_id','=', False), ('location_id.warehouse_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
@@ -318,7 +321,8 @@
             <field name="name">other_export_write_create</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in', user.get_stock()),
+            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in',
+                user.get_stock()),
                 ('location_dest_id','=', False), ('location_id.warehouse_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
@@ -331,7 +335,8 @@
             <field name="name">other_export_unlink</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in', user.get_stock()),
+            <field name="domain_force">[('other_export', '=', True), '|', '|', ('location_id.warehouse_id','in',
+                user.get_stock()),
                 ('location_dest_id','=', False), ('location_id.warehouse_id','=', False)]
             </field>
             <field name="perm_read" eval="False"/>
@@ -415,7 +420,8 @@
         <record model="ir.rule" id="pos_order_read">
             <field name="name">pos_order_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
+            <field name="groups"
+                   eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>
