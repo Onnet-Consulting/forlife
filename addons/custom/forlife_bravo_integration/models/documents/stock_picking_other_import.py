@@ -37,6 +37,16 @@ class StockPickingOtherImport(models.Model):
         picking = stock_move.picking_id
         employee = self.env.user.employee_id
         partner = picking.partner_id or employee.partner_id
+        account_move_lines = account_move.line_ids
+        debit_lines = account_move_lines.filtered(lambda x: x.debit > 0)
+        credit_lines = account_move_lines - debit_lines
+        debit_line = debit_lines[0] if debit_lines else False
+        credit_line = credit_lines[0] if credit_lines else False
+        debit = debit_line.debit if debit_line else 0
+        debit_account_code = debit_line.account_id.code if debit_line else False
+        credit_account_code = credit_line.account_id.code if credit_line else False
+        quantity_done = stock_move.quantity_done
+
         journal_value = {
             "CompanyCode": picking.company_id.code,
             "Stt": picking.name,
@@ -56,28 +66,20 @@ class StockPickingOtherImport(models.Model):
             "ItemCode": product.barcode,
             "ItemName": product.name,
             "UnitPurCode": stock_move.product_uom.code,
-            "Quantity9": stock_move.quantity_done,
+            "Quantity9": quantity_done,
             "ConvertRate9": 1,
-            "Quantity": stock_move.quantity_done,
-            "OriginalUnitCost": stock_move.price_unit,
-            "UnitCostCode": stock_move.price_unit,
-            "OriginalAmount": stock_move.price_unit * stock_move.quantity_done,
-            "Amount": stock_move.price_unit * stock_move.quantity_done,
+            "Quantity": quantity_done,
+            "OriginalUnitCost": debit / quantity_done if quantity_done else 0,
+            "UnitCostCode": debit / quantity_done if quantity_done else 0,
+            "OriginalAmount": debit,
+            "Amount": debit,
             "WarehouseCode": picking.location_dest_id.warehouse_id.code,
             "JobCode": stock_move.occasion_code_id.code,
             "DocNo_WO": stock_move.work_production.code,
             'DeptCode': stock_move.account_analytic_id.code,
             "RowId": stock_move.id,
+            "DebitAccount": debit_account_code,
+            "CreditAccount": credit_account_code,
         }
-
-        for move_line in account_move.line_ids:
-            if move_line.debit:
-                journal_value.update({
-                    'DebitAccount': move_line.account_id.code
-                })
-            else:
-                journal_value.update({
-                    'CreditAccount': move_line.account_id.code
-                })
 
         return journal_value

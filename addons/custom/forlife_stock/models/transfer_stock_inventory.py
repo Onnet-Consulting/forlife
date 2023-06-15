@@ -108,10 +108,10 @@ class TransferStockInventory(models.Model):
         if not picking_type_out:
             raise ValidationError(
                 'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác' % (self.env.user.company_id.name))
+        export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
         for rec in self:
             data_ex_other = {}
-            if not self.env.ref('forlife_stock.export_inventory_balance').x_property_valuation_in_account_id and not self.env.ref(
-                    'forlife_stock.enter_inventory_balance').x_property_valuation_out_account_id:
+            if not export_inventory_balance.x_property_valuation_in_account_id and not export_inventory_balance.x_property_valuation_out_account_id:
                 raise ValidationError(
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
             for line in rec.transfer_stock_inventory_line_ids:
@@ -119,36 +119,50 @@ class TransferStockInventory(models.Model):
 
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
+                    if not enter_inventory_balance:
+                        raise ValidationError(
+                            "Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N201" % (self.env.user.company_id.name))
                     product_import = (
                         0, 0,
                         {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
                          'product_uom': line.uom_to_id.id,
                          'name': line.product_to_id.name, 'price_unit': line.product_to_id.standard_price,
-                         'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                         'location_id': enter_inventory_balance.id,
                          'location_dest_id': line.location_id.id,
                          "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
-                         'amount_total': line.product_to_id.standard_price*line.qty_in
+                         'amount_total': line.product_to_id.standard_price * line.qty_in
                          })
                 else:
-                    amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out, line.location_id.company_id).get('value')
+                    amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out,
+                                                                               line.location_id.company_id).get('value')
+                    if not import_inventory_balance_classify:
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N402" % (self.env.user.company_id.name))
                     product_import = (
                         0, 0,
                         {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
                          'product_uom': line.uom_to_id.id,
-                         'name': line.product_to_id.name, 'price_unit': amount_total/line.qty_in,
-                         'location_id': self.env.ref('forlife_stock.import_inventory_balance_classify').id,
+                         'name': line.product_to_id.name, 'price_unit': amount_total / line.qty_in,
+                         'location_id': import_inventory_balance_classify.id,
                          'location_dest_id': line.location_id.id,
                          "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
                          'amount_total': amount_total
                          })
+                if self.x_classify and (not export_inventory_balance_classify or not import_inventory_balance_classify):
+                    raise ValidationError(
+                        "Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X802 hoặc N402" % (
+                            self.env.user.company_id.name))
+                elif not self.x_classify and (not export_inventory_balance or not enter_inventory_balance):
+                    raise ValidationError(
+                        "Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã 1381000003 hoặc N201" % (
+                            self.env.user.company_id.name))
+
                 product_export = (
                     0, 0,
                     {'product_id': line.product_from_id.id, 'product_uom_qty': line.qty_out,
                      'product_uom': line.uom_from_id.id, 'name': line.product_from_id.name,
                      'price_unit': line.unit_price_from,
                      'location_id': line.location_id.id,
-                     'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id if
-                        not self.x_classify else self.env.ref('forlife_stock.export_inventory_balance_classify').id,
+                     'location_dest_id': export_inventory_balance.id if not self.x_classify else export_inventory_balance_classify.id,
                      "quantity_done": line.qty_out, 'work_production': line.mrp_production_from_id.id,
                      'amount_total': line.total_out
                      })
@@ -157,8 +171,7 @@ class TransferStockInventory(models.Model):
                     "is_locked": True,
                     "immediate_transfer": False,
                     'transfer_stock_inventory_id': rec.id,
-                    'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id if
-                        not self.x_classify else self.env.ref('forlife_stock.import_inventory_balance_classify').id,
+                    'location_id': enter_inventory_balance.id if not self.x_classify else import_inventory_balance_classify.id,
                     'reason_type_id': self.env.ref('forlife_stock.reason_type_5').id,
                     'location_dest_id': line.location_id.id,
                     'scheduled_date': datetime.now(),
@@ -175,8 +188,7 @@ class TransferStockInventory(models.Model):
                     'transfer_stock_inventory_id': rec.id,
                     'location_id': line.location_id.id,
                     'reason_type_id': self.env.ref('forlife_stock.reason_type_4').id,
-                    'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id if
-                    not self.x_classify else self.env.ref('forlife_stock.export_inventory_balance_classify').id,
+                    'location_dest_id': export_inventory_balance.id if not self.x_classify else export_inventory_balance_classify.id,
                     'scheduled_date': datetime.now(),
                     'origin': rec.code,
                     'other_export': True,
@@ -204,6 +216,17 @@ class TransferStockInventory(models.Model):
                     data_ex_other.get(item))
                 picking_id.button_validate()
             rec.write({'state': 'approved', 'is_nk_xk': True})
+
+    def get_location(self):
+        export_inventory_balance = self.env['stock.location'].search(
+            [('company_id', '=', self.env.company_id.id), ('code', '=', '1381000003')], limit=1)
+        enter_inventory_balance = self.env['stock.location'].search(
+            [('company_id', '=', self.env.company_id.id), ('code', '=', 'N201')], limit=1)
+        export_inventory_balance_classify = self.env['stock.location'].search(
+            [('company_id', '=', self.env.company_id.id), ('code', '=', 'X802')], limit=1)
+        import_inventory_balance_classify = self.env['stock.location'].search(
+            [('company_id', '=', self.env.company_id.id), ('code', '=', 'N402')], limit=1)
+        return export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify
 
     def create_picking_and_move(self, item, data_ex_other):
         if item[1] == 'export':
