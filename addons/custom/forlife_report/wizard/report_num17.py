@@ -206,7 +206,7 @@ order by num
         values = dict(super().get_data(allowed_company))
         store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_id else self.store_id.ids
         query = self._get_query(store_ids, allowed_company)
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

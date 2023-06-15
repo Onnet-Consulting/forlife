@@ -227,6 +227,6 @@ from employee_list employee
         self.ensure_one()
         values = super().get_data(allowed_company)
         query = self._get_query()
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update(self.format_data(data))
         return values

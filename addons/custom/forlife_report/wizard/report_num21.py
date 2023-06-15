@@ -167,7 +167,7 @@ order by num
             warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([
                 ('company_id', 'in', allowed_company), ('loc_province_id', 'in', self.location_province_ids.ids)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

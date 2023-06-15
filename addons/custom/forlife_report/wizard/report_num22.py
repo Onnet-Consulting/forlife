@@ -142,7 +142,7 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query()
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLE_LAYER1,
             'title_layer2': TITLE_LAYER2,

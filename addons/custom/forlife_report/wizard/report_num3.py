@@ -209,7 +209,7 @@ order by num
         warehouse_ids = self.env['stock.warehouse'].search(wh_domain)
         wh_ids = warehouse_ids.ids or [-1]
         query = self._get_query(product_ids, wh_ids, allowed_company)
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data(warehouse_ids)
         values.update({

@@ -64,15 +64,3 @@ class ReportBase(models.AbstractModel):
             },
             'params': {'active_model': self._name},
         }
-
-    def execute_postgresql(self, query, param, build_dict):
-        db_source = self.env['base.external.dbsource'].sudo().search([('connector', '=', 'postgresql')], limit=1)
-        if db_source:
-            rows, cols = db_source.execute_postgresql(query, param, build_dict)
-            return self.build_dict(rows, cols) if build_dict else rows
-        else:
-            self._cr.execute(query, param)
-            return self._cr.dictfetchall() if build_dict else self._cr.fetchall()
-
-    def build_dict(self, rows, cols):
-        return [{d: row[i] for i, d in enumerate(cols)} for row in rows]

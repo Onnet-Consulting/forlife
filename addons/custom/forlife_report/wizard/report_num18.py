@@ -91,7 +91,7 @@ where pr.company_id = any( array{allowed_company})
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query(allowed_company)
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

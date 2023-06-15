@@ -80,7 +80,7 @@ from stock_product stp
         product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
         warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        data = self.execute_postgresql(query=query, param=[], build_dict=True)
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data_by_product_id = {}
         detail_data_by_product_id = {}
         for line in data:
