@@ -400,7 +400,13 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             return moment(order.validation_date).format('YYYY-MM-DD hh:mm A');
         }
         getTotal(order) {
-            return this.env.pos.format_currency(order.get_total_with_tax());
+            let total_reduce = 0
+            order.orderlines.forEach(function(item){
+                if(!item.is_promotion){
+                   total_reduce += item.subtotal_paid
+                }
+            })
+            return this.env.pos.format_currency(total_reduce);
         }
         getPartner(order) {
             return order.get_partner_name();
