@@ -54,8 +54,9 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         }
 
         receipt_order_get_applied_voucher_values() {
+            let exist_voucher_payment = _.any(this.payment_lines, p => p.payment_method.is_voucher);
             let vouchers = this.data_voucher;
-            if (vouchers && vouchers.length > 0) {
+            if (exist_voucher_payment && vouchers && vouchers.length > 0) {
                 let voucher_data = [];
                 for (const voucher of vouchers) {
                     if (!voucher || !voucher.value) continue;
