@@ -62,7 +62,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.hourData = loadedData['hour.data'] || [];
         this.promotionPricelistItems = [];
         this._loadPromotionData();
-        this.loadPromotionPriceListItemBackground();
+//        this.loadPromotionPriceListItemBackground();
+        this._loadPromotionPriceListItem(loadedData['promotion.pricelist.item']);
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
@@ -650,8 +651,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.buy_voucher_get_code_rewards = [];
         this.surprising_reward_line_id = null;
         this._get_reward_lines().forEach(reward_line => {
-            this.orderlines.remove(reward_line);
-        })
+//            this.orderlines.remove(reward_line);
+            reward_line.is_reward_line = false;
+            reward_line.reset_unit_price()
+        });
 //        this.remove_orderline(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
         orderlines.forEach(line => line.reset_unit_price());
@@ -686,7 +689,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
         let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id;
         for (let line of to_remove_lines) {
-            this.remove_orderline(line);
+//            this.remove_orderline(line);
+            line.is_reward_line = false;
+            line.reset_unit_price();
         };
         this.reward_voucher_program_id = null;
         this.cart_promotion_program_id = null;
@@ -1577,7 +1582,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             };
             if (program.limit_usage_per_program) {
-                let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
+                let historyUsed = ((this.historyProgramUsages || {}).all_usage_promotions || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_program) {
                     continue;
                 };
@@ -1586,8 +1591,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let amountCheck = totalsPerProgram[program.id]['taxed'];
             if (program.incl_reward_in_order_type == 'no_incl') {
                 let no_incl_amount = 0;
-                let no_incl_ols = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0)
+                let no_incl_ols;
+                if (program.reward_type == 'cart_get_x_free') {
+                    no_incl_ols = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0)
+                                            .filter(l=>program.reward_product_ids.has(l.product.id));
+                } else {
+                    no_incl_ols = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0)
                                             .filter(l=>program.discount_product_ids.has(l.product.id));
+                };
                 for (let ol of no_incl_ols) {
                     no_incl_amount += ol.quantity * ol.price;
                 };
@@ -1604,7 +1615,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             };
             // Nếu không có sản phẩm điều kiện, Loại CT k thõa
-            if (program.valid_product_ids.size > 0 && qty_taken == 0) {
+            if (program.valid_product_ids.size > 0 && qty_taken < required_min_quantity) {
                 continue;
             };
 
@@ -1841,6 +1852,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let originalPrice = LineList.product.lst_price ;
                 let discAmountInLine = LineList.product.lst_price
                 LineList.price = 0.0;
+                LineList.is_reward_line = true;
                 let newUsage = new PromotionUsageLine(CodeProgram.id, code, null, originalPrice, 0.0, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on)
                 LineList.promotion_usage_ids.push(newUsage);
                 LineList.isCheapest = false;

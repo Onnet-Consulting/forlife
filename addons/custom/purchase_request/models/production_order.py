@@ -12,8 +12,7 @@ class ProductionOrder(models.Model):
     code = fields.Char('Reference')
     sequence = fields.Integer('Sequence')
     type = fields.Selection([
-        ('normal', 'Attach Ingredients'),
-        ('phantom', 'Product Separation')], 'BoM Type', default='normal', required=True)
+        ('normal', 'Attach Ingredients')], 'BoM Type', default='normal', required=True)
     product_id = fields.Many2one('product.product', 'Product', required=True)
     production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines', copy=True)
@@ -54,7 +53,7 @@ class ProductionOrderLine(models.Model):
     order_id = fields.Many2one('production.order', ondelete='cascade', required=True)
     uom_id = fields.Many2one(related="product_id.uom_id")
     attachments_count = fields.Integer('Attachments Count')
-    price = fields.Float(string='Price', compute='compute_price', readonly=False, store=1)
+    price = fields.Float(string='Giá', compute='compute_price', readonly=False, store=1)
 
     @api.constrains('product_qty')
     def constrains_product_qty(self):

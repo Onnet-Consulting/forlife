@@ -13,12 +13,14 @@ class StockPickingOtherExport(models.Model):
             res.extend(record.bravo_get_picking_other_export_value())
         return columns, res
 
+    @api.model
     def bravo_get_picking_other_export_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "EmployeeCode", "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode",
-            "Quantity9", "ConvertRate9", "Quantity", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount",
-            "WarehouseCode", "DocNo_WO", "DeptCode", "RowId", 'DebitAccount', 'CreditAccount'
+            "CustomerName", "Address", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
+            "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
+            "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
+            "DocNo_WO", "ProductCode", "DeptCode",
         ]
 
     def bravo_get_picking_other_export_value(self):
@@ -34,8 +36,15 @@ class StockPickingOtherExport(models.Model):
         stock_move = account_move.stock_move_id
         product = stock_move.product_id
         picking = stock_move.picking_id
-        employee = picking.user_id.employee_id
+        employee = self.env.user.employee_id
         partner = picking.partner_id or employee.partner_id
+        debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
+        debit_line = debit_line[0] if debit_line else False
+        debit = debit_line.debit if debit_line else 0
+        credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
+        credit_line = credit_line[0] if credit_line else False
+        credit_account_code = credit_line.account_id.code if credit_line else False
+        debit_account_code = debit_line.account_id.code if debit_line else False
         journal_value = {
             "CompanyCode": picking.company_id.code,
             "Stt": picking.id,
@@ -48,31 +57,26 @@ class StockPickingOtherExport(models.Model):
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "EmployeeCode": employee.code,
+            "IsTransfer": 0,
             "BuiltinOrder": line_count,
+            "DocumentType": picking.location_dest_id.code,
             "ItemCode": product.barcode,
             "ItemName": product.name,
             "UnitPurCode": stock_move.product_uom.code,
             "Quantity9": stock_move.quantity_done,
             "ConvertRate9": 1,
             "Quantity": stock_move.quantity_done,
-            "OriginalUnitCost": stock_move.price_unit,
-            "UnitCostCode": stock_move.price_unit,
-            "OriginalAmount": stock_move.price_unit * stock_move.quantity_done,
-            "Amount": stock_move.price_unit * stock_move.quantity_done,
-            "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
-            "DocNo_WO": picking.work_production.code,
+            "OriginalUnitCost": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
+            "UnitCostCode": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
+            "OriginalAmount": debit,
+            "Amount": debit,
+            "WarehouseCode": picking.location_id.code,
+            "JobCode": stock_move.occasion_code_id.code,
+            "DocNo_WO": stock_move.work_production.code,
             'DeptCode': stock_move.account_analytic_id.code,
             "RowId": stock_move.id,
+            "DebitAccount": debit_account_code,
+            "CreditAccount": credit_account_code
         }
-
-        for move_line in account_move.line_ids:
-            if move_line.debit:
-                journal_value.update({
-                    'DebitAccount': move_line.account_id.code
-                })
-            else:
-                journal_value.update({
-                    'CreditAccount': move_line.account_id.code
-                })
 
         return journal_value

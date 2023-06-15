@@ -53,6 +53,8 @@ class Voucher(models.Model):
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
     using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
 
+    notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app,'
+                                                          ' dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho khách hàng.')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
@@ -146,7 +148,9 @@ class Voucher(models.Model):
                             'using_limit': vourcher.program_voucher_id.using_limit,
                             'program_voucher_id': vourcher.program_voucher_id.id,
                             'product_voucher_name': vourcher.program_voucher_id.name,
-                            'derpartment_name': vourcher.derpartment_id.name
+                            'derpartment_name': vourcher.derpartment_id.name,
+                            'state_app': vourcher.state_app,
+                            'apply_many_times': vourcher.apply_many_times
                         }
                     })
                 if not vourcher:

@@ -17,6 +17,7 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
             return total;
         }
 
+        // Tổng tiền hàng
         getTotalPriceWithTax() {
             // lấy số tiền ban đầu có
             var total = 0;
@@ -30,6 +31,8 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
             }
             return total + totalDiscount;
         }
+
+        // tổng tiền thanh toán
         getTotalNotFormat() {
             return this.props.order.get_total_with_tax();
         }

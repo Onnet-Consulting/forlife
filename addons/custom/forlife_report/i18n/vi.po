@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-30 06:54+0000\n"
-"PO-Revision-Date: 2023-05-30 06:54+0000\n"
+"POT-Creation-Date: 2023-06-08 08:43+0000\n"
+"PO-Revision-Date: 2023-06-08 08:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,12 +16,88 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: forlife_report
+#: model:ir.actions.report,print_report_name:forlife_report.print_purchase_order
+msgid "'Purchase Order - %s' % (object.name).replace('/', '')"
+msgstr "'Phiếu mua hàng - %s' % (object.name).replace('/', '')"
+
+#. module: forlife_report
+#: model:ir.actions.report,print_report_name:forlife_report.print_purchase_request
+msgid "'Purchase Request - %s' % (object.name).replace('/', '')"
+msgstr "'Phiếu yêu cầu mua - %s' % (object.name).replace('/', '')"
+
+#. module: forlife_report
+#: model:ir.actions.report,print_report_name:forlife_report.accountant_print_stock_picking_outgoing
+#: model:ir.actions.report,print_report_name:forlife_report.accountant_print_stock_transfer_outgoing
+#: model:ir.actions.report,print_report_name:forlife_report.warehouse_print_stock_picking_outgoing
+#: model:ir.actions.report,print_report_name:forlife_report.warehouse_print_stock_transfer_outgoing
+msgid "'Stock delivery - %s' % (object.name).replace('/', '')"
+msgstr "'Phiếu xuất - %s' % (object.name).replace('/', '')"
+
+#. module: forlife_report
+#: model:ir.actions.report,print_report_name:forlife_report.accountant_print_stock_picking_ingoing
+#: model:ir.actions.report,print_report_name:forlife_report.accountant_print_stock_transfer_ingoing
+#: model:ir.actions.report,print_report_name:forlife_report.warehouse_print_stock_picking_ingoing
+#: model:ir.actions.report,print_report_name:forlife_report.warehouse_print_stock_transfer_ingoing
+msgid "'Stock receive - %s' % (object.name).replace('/', '')"
+msgstr "'Phiếu  nhập - %s' % (object.name).replace('/', '')"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "(Chú ý: đặt hàng theo cột số lượng đặt)"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "(Ký, họ tên)"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "(chú ý:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid ""
+"<br/>\n"
+"                                                Chức vụ:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "<br/>Địa điểm giao hàng:"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num11_window_action
 #: model:ir.model,name:forlife_report.model_report_num11
 #: model:ir.ui.menu,name:forlife_report.report_num11_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num11_form
 msgid "About to rank up"
 msgstr "Sắp lên hạng"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.accountant_print_stock_picking_outgoing
+msgid "Accountant Print Stock Picking Delivery"
+msgstr "In phiếu  xuất (Kế toán)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.accountant_print_stock_picking_ingoing
+msgid "Accountant Print Stock Picking Receive"
+msgstr "In phiếu nhập (Kế toán)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.accountant_print_stock_transfer_outgoing
+msgid "Accountant Print Stock Transfer Delivery"
+msgstr "In phiếu xuất điều chuyển (Kế toán)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.accountant_print_stock_transfer_ingoing
+msgid "Accountant Print Stock Transfer Receive"
+msgstr "In phiếu nhập điều chuyển (Kế toán)"
 
 #. module: forlife_report
 #. odoo-python
@@ -111,6 +187,11 @@ msgid "Brand"
 msgstr "Thương hiệu"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Buyer"
+msgstr "Người mua"
+
+#. module: forlife_report
 #: model:ir.model.fields.selection,name:forlife_report.selection__report_num5__view_type__by_day
 msgid "By day"
 msgstr "Theo ngày"
@@ -142,6 +223,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num22_form
 msgid "Cash receipts report"
 msgstr "Báo cáo thu chi tiền mặt tại cửa hàng"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Chờ thêm trường date_done"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Chức vụ:"
+msgstr ""
 
 #. module: forlife_report
 #. odoo-python
@@ -267,6 +359,11 @@ msgid "Có"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Công ty"
+msgstr ""
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/js/report_base.js:0
 #, python-format
@@ -383,6 +480,11 @@ msgid "Ecommerce"
 msgstr "TMĐT"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Email:"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num5__employee_id
 msgid "Employee"
 msgstr "Nhân viên"
@@ -462,6 +564,19 @@ msgid "From rank"
 msgstr "Từ hạng"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Ghi chú"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Ghi chú:"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_attribute_code_config__id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__id
@@ -527,10 +642,42 @@ msgid "Kho"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "Kho nhập:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Kho xuất:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Khách hàng:"
+msgstr ""
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #, python-format
 msgid "Không có bản ghi nào"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Kiểm soát"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "Kế toán"
 msgstr ""
 
 #. module: forlife_report
@@ -626,11 +773,56 @@ msgid "Lock date"
 msgstr "Khóa ngày"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Lập biểu"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "MST"
+msgstr ""
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #, python-format
 msgid "Module"
 msgstr "Phân hệ"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "Màu"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Mã số"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Mô tả chi tiết"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid ""
+"Mọi chất lượng không đảm bảo sai quy cách bên tôi sẽ từ chối thanh toán toàn"
+" bộ các đơn hàng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "MỞ MỚI"
+msgstr ""
 
 #. module: forlife_report
 #. odoo-javascript
@@ -672,6 +864,69 @@ msgid "Next"
 msgstr "Kế tiếp"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Ngày nhận hàng:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Ngày đặt hàng:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "Người lập phiếu"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "Người nhận hàng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Người yêu cầu:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Người đại diện"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Người đề nghị"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "Nhà cung cấp:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Nhân viên bán hàng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Nhân viên:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Nhận hàng"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num22__so_ct
 msgid "Number CT"
 msgstr "Số CT"
@@ -704,6 +959,28 @@ msgid "Order-filter"
 msgstr "Số CT/Mã SP/Mã thẻ"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "PHIẾU MUA HÀNG"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+msgid "PHIẾU NHẬP KHO"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "PHIẾU XUẤT KHO"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "PHÒNG BAN ĐỀ NGHỊ"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num13__po_number
 msgid "PO number"
 msgstr "Số PO"
@@ -724,6 +1001,16 @@ msgid "PR001,PR002,..."
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "PURCHASE ORDER NO."
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "PURCHASE ORDER/ĐƠN ĐẶT HÀNG"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num1__picking_type
 msgid "Picking type"
 msgstr "Loại phiếu"
@@ -735,6 +1022,30 @@ msgstr "Loại phiếu"
 #, python-format
 msgid "Previous"
 msgstr "Trước đó"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.stock_picking_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_report.stock_transfer_form_view_inherit
+msgid "Print Delivery"
+msgstr "In phiếu xuất"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.print_purchase_order
+#: model_terms:ir.ui.view,arch_db:forlife_report.purchase_order_form_view_inherit
+msgid "Print Purchase Order"
+msgstr "In phiếu mua hàng"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.print_purchase_request
+#: model_terms:ir.ui.view,arch_db:forlife_report.purchase_request_form_view_inherit
+msgid "Print Purchase Request"
+msgstr "In phiếu YC mua"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.stock_picking_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_report.stock_transfer_form_view_inherit
+msgid "Print Receive"
+msgstr "In phiếu nhập"
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_domain
@@ -910,6 +1221,11 @@ msgid "Revenue by Product"
 msgstr "Doanh thu theo sản phẩm"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "SL"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num19__str_number
 msgid "STR number"
 msgstr "Số YC"
@@ -922,6 +1238,16 @@ msgstr ""
 #. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
 #, python-format
 msgid "STT"
 msgstr ""
@@ -952,6 +1278,23 @@ msgstr "Tra cứu mã Code đã sử dụng"
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 msgid "Search Voucher Used"
 msgstr "Tra cứu mã Voucher đã sử dụng"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Seller"
+msgstr "Người bán"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "Size"
+msgstr ""
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num3__defective_inventory
@@ -1017,6 +1360,79 @@ msgstr "Tồn kho theo giá bán"
 #, python-format
 msgid "Store"
 msgstr "Cửa hàng"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "SĐT:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Số HĐ:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "Số lượng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Số lượng kho"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Số lượng mua"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Số lượng đặt"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Thanh toán"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Thành tiền"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Thời gian giao hàng:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Thời gian nhận hàng:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_stock_transfer_outgoing_template
+msgid "Thủ kho"
+msgstr ""
 
 #. module: forlife_report
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
@@ -1165,6 +1581,11 @@ msgid "To rank"
 msgstr "Đến hạng"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Tp chức năng"
+msgstr ""
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_num22.xml:0
 #, python-format
@@ -1177,8 +1598,35 @@ msgid "Type"
 msgstr "Khoản mục"
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "Tên"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Tên hàng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Tên sản phẩm"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields.selection,name:forlife_report.selection__report_num1__picking_type__all
 msgid "Tất cả"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Tất cả các hàng đúng chất lượng cam kết theo hợp đồng nguyên tắc đã ký"
 msgstr ""
 
 #. module: forlife_report
@@ -1189,12 +1637,48 @@ msgid "Tồn"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Tổng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "Tổng cộng"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Tổng sau thuế"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Tổng tiền"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num10_window_action
 #: model:ir.model,name:forlife_report.model_report_num10
 #: model:ir.ui.menu,name:forlife_report.report_num10_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
 msgid "Up Rank History"
 msgstr "Lịch sử nâng hạng"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "VAT"
+msgstr ""
 
 #. module: forlife_report
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
@@ -1247,6 +1731,26 @@ msgstr "Mã voucher"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num6__warehouse_domain
 msgid "Warehouse"
 msgstr "Kho"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.warehouse_print_stock_picking_outgoing
+msgid "Warehouse Print Stock Picking Delivery"
+msgstr "In phiếu xuất (Kho)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.warehouse_print_stock_picking_ingoing
+msgid "Warehouse Print Stock Picking Receive"
+msgstr "In phiếu nhập (Kho)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.warehouse_print_stock_transfer_outgoing
+msgid "Warehouse Print Stock Transfer Delivery"
+msgstr "In phiếu xuất điều chuyển (Kho)"
+
+#. module: forlife_report
+#: model:ir.actions.report,name:forlife_report.warehouse_print_stock_transfer_ingoing
+msgid "Warehouse Print Stock Transfer Receive"
+msgstr "In phiếu nhập điều chuyển (Kho)"
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__warehouse_ids
@@ -1330,3 +1834,60 @@ msgstr "từ"
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num9_form
 msgid "to"
 msgstr "đến"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.warehouse_print_stock_transfer_outgoing_template
+msgid "ĐVT"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Điện thoại/Fax"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_picking_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_ingoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.accountant_print_stock_transfer_outgoing_template
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Đơn giá"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Đơn vị"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "ĐẠI DIỆN BÊN BÁN"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "ĐẠI DIỆN BÊN MUA"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Đại diện:"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_order_template
+msgid "Địa chỉ"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
+msgid "Địa chỉ:"
+msgstr ""

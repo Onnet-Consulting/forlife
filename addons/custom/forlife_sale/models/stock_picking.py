@@ -40,7 +40,7 @@ class StockPicking(models.Model):
                 'price_unit': line.sale_line_id.price_unit,
                 'warehouse': line.location_id.id,
                 'taxes_id': line.sale_line_id.tax_id[0].id if line.sale_line_id.tax_id else None,
-                'discount_percent': line.sale_line_id.discount,
+                'discount': line.sale_line_id.discount,
                 'account_analytic_id': line.account_analytic_id.id,
                 'work_order': line.sale_line_id.x_manufacture_order_code_id.id,
                 'sale_line_ids': [(4, line.sale_line_id.id)]

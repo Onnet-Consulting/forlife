@@ -16,9 +16,10 @@ class StockPickingOtherImport(models.Model):
     def bravo_get_picking_other_import_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "EmployeeCode", "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode",
-            "Quantity9", "ConvertRate9", "Quantity", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount",
-            "WarehouseCode", "DocNo_WO", "DeptCode", "RowId", 'DebitAccount', 'CreditAccount'
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DocumentType", "BuiltinOrder",
+            "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9",
+            "Quantity", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount", "WarehouseCode", "JobCode",
+            "RowId", "DocNo_WO", "DeptCode",
         ]
 
     def bravo_get_picking_other_import_value(self):
@@ -34,11 +35,11 @@ class StockPickingOtherImport(models.Model):
         stock_move = account_move.stock_move_id
         product = stock_move.product_id
         picking = stock_move.picking_id
-        employee = picking.user_id.employee_id
+        employee = self.env.user.employee_id
         partner = picking.partner_id or employee.partner_id
         journal_value = {
             "CompanyCode": picking.company_id.code,
-            "Stt": picking.id,
+            "Stt": picking.name,
             "DocCode": "TP" if picking.reason_type_id.code == 'N01' else 'PN',
             "DocNo": picking.name,
             "DocDate": picking.date_done,
@@ -47,7 +48,10 @@ class StockPickingOtherImport(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
+            "Description": picking.note,
             "EmployeeCode": employee.code,
+            "IsTransfer": 0,
+            "DocumentType": picking.location_id.code,
             "BuiltinOrder": line_count,
             "ItemCode": product.barcode,
             "ItemName": product.name,
@@ -59,8 +63,9 @@ class StockPickingOtherImport(models.Model):
             "UnitCostCode": stock_move.price_unit,
             "OriginalAmount": stock_move.price_unit * stock_move.quantity_done,
             "Amount": stock_move.price_unit * stock_move.quantity_done,
-            "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
-            "DocNo_WO": picking.work_production.code,
+            "WarehouseCode": picking.location_dest_id.warehouse_id.code,
+            "JobCode": stock_move.occasion_code_id.code,
+            "DocNo_WO": stock_move.work_production.code,
             'DeptCode': stock_move.account_analytic_id.code,
             "RowId": stock_move.id,
         }

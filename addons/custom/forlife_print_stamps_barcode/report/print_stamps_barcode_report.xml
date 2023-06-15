@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="paperformat_print_stamps_barcode" model="report.paperformat">
+            <field name="name">A4 Product Barcode</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">2</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="disable_shrinking" eval="True"/>
+            <field name="dpi">96</field>
+        </record>
+
     <record id="print_stamps_barcode_report" model="ir.actions.report">
         <field name="name">Print Stamps Barcode</field>
         <field name="model">print.stamps.barcode</field>
@@ -7,87 +22,89 @@
         <field name="report_name">forlife_print_stamps_barcode.print_stamps_barcode</field>
         <field name="report_file">forlife_print_stamps_barcode.print_stamps_barcode</field>
         <field name="print_report_name">'Print Barcode'</field>
-        <field name="binding_model_id" ref="model_print_stamps_barcode"/>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="forlife_print_stamps_barcode.paperformat_print_stamps_barcode"/>
     </record>
 
     <template id="print_stamps_barcode">
         <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="o">
-                    <t t-set="products" t-value="o.get_product_list()"/>
-                    <div class="page">
-                        <div class="oe_structure"/>
-                        <style>
-                            .page {
-                            margin-top: 0px;
-                            font-family: Times New Roman;
-                            font-size: 9px;
-                            page-break-before: always;
-                            }
-                            table {
-                            border: none;
-                            }
-                            td.detail {
-                            display: inline-block;
-                            min-height: 88px;
-                            max-height: 88px;
-                            min-width: 209px;
-                            max-width: 209px;
-                            }
-                            .view-center {
-                            text-align: center;
-                            }
-                            .view-right {
-                            text-align: right;
-                            }
-                        </style>
-                        <table class="table">
-                            <col style="width:25%"/>
-                            <col style="width:25%"/>
-                            <col style="width:25%"/>
-                            <col style="width:25%"/>
-                            <tbody>
-                                <t t-foreach="10" t-as="row">
-                                    <tr>
-                                        <t t-foreach="4" t-as="col">
-                                            <t t-set="p" t-value="products[(col + 1) + 4 * row - 1]"/>
-                                            <td class="detail">
-                                                <t t-if="p[0]">
-                                                    <div>
+                    <t t-set="data" t-value="o.get_product_list()"/>
+                    <t t-foreach="data" t-as="products">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <style>
+                                .page {
+                                font-family: Times New Roman;
+                                font-size: 9px;
+                                page-break-before: always;
+                                }
+                                table {
+                                border: none;
+                                }
+                                td.detail {
+                                display: inline-block;
+                                min-height: 105px;
+                                max-height: 105px;
+                                min-width: 190px;
+                                max-width: 190px;
+                                }
+                                .view-center {
+                                text-align: center;
+                                }
+                                .view-right {
+                                text-align: right;
+                                }
+                            </style>
+                            <table class="table">
+                                <col style="width:25%"/>
+                                <col style="width:25%"/>
+                                <col style="width:25%"/>
+                                <col style="width:25%"/>
+                                <tbody>
+                                    <t t-foreach="10" t-as="row">
+                                        <tr>
+                                            <t t-foreach="4" t-as="col">
+                                                <t t-set="p" t-value="products[(col + 1) + 4 * row - 1]"/>
+                                                <td class="detail">
+                                                    <t t-if="p[0]">
                                                         <div>
-                                                            <t t-esc="p[0].product_tmpl_id.name"/>
-                                                        </div>
-                                                        <p align="center" style="padding-top: 5px;">
-                                                            <img t-att-src="'/report/barcode/Code128/'+p[0].barcode" style="width:100%;height:12%;" alt="Barcode"/>
-                                                        </p>
-                                                        <div class="view-center" style="padding-top: -15px;">
-                                                            <t t-esc="p[0].barcode"/>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-6">Size:
-                                                                <t t-esc="p[0].product_template_attribute_value_ids.filtered(lambda f: f.attribute_id.name == 'Kích cỡ').name"/>
+                                                            <div>
+                                                                <t t-esc="p[0].product_tmpl_id.name"/>
                                                             </div>
-                                                            <div class="col-6 view-right">Màu:
-                                                                <t t-esc="p[0].product_template_attribute_value_ids.filtered(lambda f: f.attribute_id.name == 'Màu sắc').name"/>
+                                                            <p align="center" style="padding-top: 5px;">
+                                                                <img t-att-src="'/report/barcode/Code128/'+p[0].barcode" style="width:100%;height:12%;" alt="Barcode"/>
+                                                            </p>
+                                                            <div class="view-center" style="padding-top: -15px;">
+                                                                <t t-esc="p[0].barcode"/>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-6">Size:
+                                                                    <t t-esc="','.join(p[0].attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT006').mapped('value_ids.name'))"/>
+                                                                </div>
+                                                                <div class="col-6 view-right">Màu:
+                                                                    <t t-esc="','.join(p[0].attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT004').mapped('value_ids.name'))"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center">Giá:
+                                                                <t t-esc="'{0:,.0f}'.format(p[0].lst_price)"/>
+                                                                <t t-esc="p[0].currency_id.symbol"/>
+                                                            </div>
+                                                            <div style="text-align: left;">Xuất xứ:
+                                                                <t t-esc="','.join(p[0].attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT024').mapped('value_ids.name'))"/>
                                                             </div>
                                                         </div>
-                                                        <div class="text-center">Giá:
-                                                            <t t-esc="'{0:,.0f}'.format(p[0].lst_price)"/>
-                                                            <t t-esc="p[0].currency_id.symbol"/>
-                                                        </div>
-                                                        <div style="text-align: left;">Xuất xứ:
-                                                            <t t-esc="p[0].product_template_attribute_value_ids.filtered(lambda f: f.attribute_id.name == 'Xuất xứ').name"/>
-                                                        </div>
-                                                    </div>
-                                                </t>
-                                            </td>
-                                        </t>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
+                                                    </t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
                 </t>
             </div>
         </t>

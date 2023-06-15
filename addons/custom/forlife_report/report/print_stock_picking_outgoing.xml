@@ -1,0 +1,251 @@
+<odoo>
+    <data>
+        <record id="accountant_print_stock_picking_outgoing" model="ir.actions.report">
+            <field name="name">Accountant Print Stock Picking Delivery</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_report.accountant_print_stock_picking_outgoing_template</field>
+            <field name="report_file">forlife_report.accountant_print_stock_picking_outgoing_template</field>
+            <field name="print_report_name">'Stock delivery - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="forlife_report.report_paperformat_stock"/>
+        </record>
+
+        <record id="warehouse_print_stock_picking_outgoing" model="ir.actions.report">
+            <field name="name">Warehouse Print Stock Picking Delivery</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_report.warehouse_print_stock_picking_outgoing_template</field>
+            <field name="report_file">forlife_report.warehouse_print_stock_picking_outgoing_template</field>
+            <field name="print_report_name">'Stock delivery - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="forlife_report.report_paperformat_stock"/>
+        </record>
+
+        <template id="print_stock_picking_outgoing_template">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <style>
+                            .page {
+                            padding-top: 5px;
+                            font-family: Times New Roman;
+                            font-size: 11px;
+                            page-break-before: always;
+                            }
+                            table {
+                            padding-top: 5px;
+                            border: 1px solid black;
+                            }
+                            .x_title {
+                            font-size: 24px;
+                            }
+                            .font13 {
+                            font-size: 13px;
+                            }
+                            .x_bold {
+                            font-weight: bold;
+                            }
+                            .x_center {
+                            text-align: center;
+                            }
+                            .x_right {
+                            text-align: right;
+                            }
+                            .x_italic {
+                            font-style: italic;
+                            }
+                        </style>
+                        <div class="x_center x_bold">
+                            <h2>PHIẾU XUẤT KHO</h2>
+                            <p>
+                                <div>
+                                    <t t-esc="o.date_done.strftime('Ngày %d tháng %m năm %Y')"/>
+                                </div>
+                                <div>Số HĐ:
+                                    <span t-field="o.name"/>
+                                </div>
+                            </p>
+                        </div>
+                        <p>
+                            <div class="row">
+                                <div class="col-7">
+                                    <div>Kho xuất:
+                                        <span t-field="o.location_id"/>
+                                    </div>
+                                    <div>Khách hàng:
+                                        <span t-field="o.partner_id"/>
+                                    </div>
+                                    <div>Ghi chú:
+                                        <span t-field="o.note"/>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                    <div>Nhân viên:
+                                        <span t-field="o.env.user.employee_ids.name"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </p>
+                        <br/>
+                        <div>
+                            <t t-out="0"/>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Kiểm soát</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Nhận hàng</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Thủ kho</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Thanh toán</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Nhân viên bán hàng</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                            <div class="col-2 x_center">
+                                <div class="font13 x_bold">Lập biểu</div>
+                                <div class="x_italic">(Ký, họ tên)</div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <template id="accountant_print_stock_picking_outgoing_template">
+            <t t-call="forlife_report.print_stock_picking_outgoing_template">
+                <t t-set="o" t-value="docs"/>
+                <table class="table">
+                    <col style="width:5%"/>
+                    <col style="width:30%"/>
+                    <col style="width:8%"/>
+                    <col style="width:10%"/>
+                    <col style="width:10%"/>
+                    <col style="width:10%"/>
+                    <col style="width:13%"/>
+                    <col style="width:14%"/>
+                    <tbody>
+                        <tr class="x_bold x_center">
+                            <td>STT</td>
+                            <td>Tên</td>
+                            <td>ĐVT</td>
+                            <td>Màu</td>
+                            <td>Số lượng</td>
+                            <td>Size</td>
+                            <td>Đơn giá</td>
+                            <td>Thành tiền</td>
+                        </tr>
+                        <t t-set="stt" t-value="1"/>
+                        <t t-foreach="o.move_ids_without_package" t-as="line">
+                            <tr>
+                                <td class="x_center">
+                                    <t t-esc="stt"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_id.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_uom"/>
+                                </td>
+                                <td>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT004').mapped('value_ids.name'))"/>
+                                </td>
+                                <td class="x_center">
+                                    <span t-field="line.quantity_done"/>
+                                </td>
+                                <td>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT006').mapped('value_ids.name'))"/>
+                                </td>
+                                <td class="x_right">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td class="x_right">
+                                    <t t-esc="line.price_unit * line.quantity_done"/>
+                                </td>
+                            </tr>
+                            <t t-set="stt" t-value="stt + 1"/>
+                        </t>
+                        <tr class="x_bold x_right">
+                            <td colspan="4">Tổng cộng</td>
+                            <td>
+                                <t t-esc="sum(o.move_ids_without_package.mapped('quantity_done'))"/>
+                            </td>
+                            <td colspan="2">Tổng tiền</td>
+                            <td>
+                                <t t-esc="sum([l.price_unit * l.quantity_done for l in o.move_ids_without_package])"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </template>
+
+        <template id="warehouse_print_stock_picking_outgoing_template">
+            <t t-call="forlife_report.print_stock_picking_outgoing_template">
+                <t t-set="o" t-value="docs"/>
+                <table class="table">
+                    <col style="width:7%"/>
+                    <col style="width:45%"/>
+                    <col style="width:12%"/>
+                    <col style="width:12%"/>
+                    <col style="width:12%"/>
+                    <col style="width:12%"/>
+                    <tbody>
+                        <tr class="x_bold x_center">
+                            <td>STT</td>
+                            <td>Tên</td>
+                            <td>ĐVT</td>
+                            <td>Màu</td>
+                            <td>Số lượng</td>
+                            <td>Size</td>
+                        </tr>
+                        <t t-set="stt" t-value="1"/>
+                        <t t-foreach="o.move_ids_without_package" t-as="line">
+                            <tr>
+                                <td class="x_center">
+                                    <t t-esc="stt"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_id.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_uom"/>
+                                </td>
+                                <td>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT004').mapped('value_ids.name'))"/>
+                                </td>
+                                <td class="x_center">
+                                    <span t-field="line.quantity_done"/>
+                                </td>
+                                <td>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT006').mapped('value_ids.name'))"/>
+                                </td>
+                            </tr>
+                            <t t-set="stt" t-value="stt + 1"/>
+                        </t>
+                        <tr>
+                            <td class="x_bold x_right" colspan="4">Tổng cộng</td>
+                            <td class="x_bold x_center">
+                                <t t-esc="sum(o.move_ids_without_package.mapped('quantity_done'))"/>
+                            </td>
+                            <td/>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </template>
+    </data>
+</odoo>
+

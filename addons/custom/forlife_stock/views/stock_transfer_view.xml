@@ -6,6 +6,7 @@
         <field name="prefix">PXB</field>
         <field name="padding">2</field>
         <field name="suffix" eval=""/>
+        <field name="company_id" eval="False"></field>
     </record>
 
     <record id="stock_transfer_tree" model="ir.ui.view">
@@ -45,7 +46,7 @@
                     <button string="In Approve" name="action_in_approve" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'out_approve')]}"/>
                     <button string="Done" name="action_done" type="object"
-                            attrs="{'invisible':[ ('state', '!=', 'in_approve')]}"/>
+                            attrs="{'invisible':['|', ('state', '!=', 'in_approve'), ('type', '!=', False)]}"/>
                     <button string="Reject " name="action_reject"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_approve')]}"/>
                     <button string="Cancel" name="action_cancel"
@@ -69,7 +70,7 @@
                             <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)], 'readonly': [('state', '!=', 'draft')]}" string="Tài liệu gốc"/>
                             <field name="type" attrs="{'invisible':[('type', '=', False)]}"/>
                             <field name ="date_transfer"  attrs="{'invisible':[('state', 'in', ('draft','wait_approve','approved','cancel'))]}"  readonly="1"  />
-                            <field name="note" string="Ghi chú"/>
+                            <field name ="date_in_approve"/>
                         </group>
                         <group>
                             <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -81,6 +82,9 @@
                             <field name="total_package" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
+                    </group>
+                    <group string="Ghi chú">
+                        <field colspan="2" name="note" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="Product">

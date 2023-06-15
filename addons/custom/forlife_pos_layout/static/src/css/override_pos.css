@@ -22,6 +22,15 @@ li.product-code {
     width: calc(25% - 12px);
 }
 
+li.refund-code {
+    font-weight: bold;
+}
+
+li.refund-line-unit-price, li.refund-percent-discount,
+li.refund-discount, li.refund-price, li.available-refund {
+    font-weight: bold;
+}
+
 li.line-quantity {
     font-weight: bold;
     width: 10%;

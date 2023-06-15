@@ -17,6 +17,8 @@ class PurchaseReturnWizardLine(models.TransientModel):
     quantity = fields.Integer("Quantity", digits='Product Unit of Measure', required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
     vendor_price = fields.Float(string="Vendor Price")
+    price_unit = fields.Float(string="Unit Price")
+
     purchase_line_id = fields.Many2one('purchase.order.line')
 
     @api.onchange('quantity')
@@ -90,6 +92,7 @@ class PurchaseReturnWizard(models.TransientModel):
         purchase_returned = purchase_line.qty_returned
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price
+        price_unit = purchase_line.price_unit
         # quantity = float_round(quantity, precision_rounding=purchase_line.product_id.purchase_uom.rounding)
         return {
             'product_id': purchase_line.product_id.id,
@@ -99,6 +102,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'exchange_quantity': exchange_quantity,
             'quantity': 0,
             'vendor_price': vendor_price,
+            'price_unit': price_unit,
             'uom_id': purchase_line.purchase_uom.id if purchase_line.purchase_uom else purchase_line.product_id.uom_id.id,
             'purchase_line_id': purchase_line.id
         }

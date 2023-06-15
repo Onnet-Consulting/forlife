@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="0">
+        <record model="stock.location" id="nhap_tra_lai_hang_ki_gui_tu_dong">
+            <field name="name">Nhập trả lại hàng kí gửi</field>
+            <field name="code">N0501</field>
+            <field name="type_other">incoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record model="stock.location" id="xuat_ki_gui_tu_dong">
+            <field name="name">Xuất kí gửi tự động</field>
+            <field name="code">X1101</field>
+            <field name="type_other">outcoming</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record model="stock.location" id="nhap_ki_gui_tu_dong">
+            <field name="name">Nhập kí gửi tự dộng</field>
+            <field name="code">N0601</field>
+            <field name="type_other">incoming</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="reason_type_import_return_product" model="forlife.reason.type">
+            <field name="code">05</field>
+            <field name="name">Nhập trả lại hàng kí gửi</field>
+        </record>
+        <record id="reason_type_export_auto" model="forlife.reason.type">
+            <field name="code">11</field>
+            <field name="name">Xuất kí gửi tự động</field>
+        </record>
+                <record id="reason_type_import_auto" model="forlife.reason.type">
+            <field name="code">06</field>
+            <field name="name">Nhập kí gửi tự động</field>
+        </record>
+    </data>
+</odoo>

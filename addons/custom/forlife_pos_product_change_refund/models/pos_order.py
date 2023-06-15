@@ -78,6 +78,7 @@ class PosOrder(models.Model):
                     pos_order_id.brand_id = brand_id
             for p in pos.lines:
                 if p.product_defective_id:
+                    p.product_defective_id.is_already_in_use = True
                     p.product_defective_id.quantity_can_be_sale = p.product_defective_id.quantity_can_be_sale - p.qty
             # update history back order
             if pos.refund_point > 0 or pos.pay_point > 0:

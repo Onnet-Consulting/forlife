@@ -21,27 +21,36 @@ class PrintStampsBarcode(models.Model):
         ('check_start_print', 'CHECK(start_print >= 1 and start_print <= 40)', _('Start Print must be between 1 and 40'))
     ]
 
+    @api.onchange('start_print')
+    def onchange_start_print(self):
+        if self.start_print > 40 or self.start_print < 1:
+            self.start_print = min(40, max(1, self.start_print))
+
     @api.depends('line_ids', 'start_print')
     def compute_view(self):
         for line in self:
-            total = sum(line.line_ids.mapped('qty')) + line.start_print
-            res = ''
-            ind = 1
-            for row in range(10):
-                rows = ''
-                for col in range(4):
-                    rows += ('<th style="background-color: #8d9cfc;">' if (ind >= line.start_print and ind < total) else '<th>') + str(ind) + '</th>'
-                    ind += 1
-                res += '<tr>' + rows + '</tr>'
-            line.view = '<table class="table table-bordered text-center">' + res + '</table>'
+            totals = sum(line.line_ids.mapped('qty')) + line.start_print - 1
+            result = []
+            page = 1
+            while totals > 0:
+                res = ''
+                total = min(40, totals)
+                totals = totals - total
+                ind = 1
+                for row in range(10):
+                    rows = ''
+                    for col in range(4):
+                        rows += ('<th style="background-color: #03009b; color: #ffffff;">' if ((ind >= line.start_print or page > 1) and ind < total + 1) else '<th>') + str(ind) + '</th>'
+                        ind += 1
+                    res += '<tr>' + rows + '</tr>'
+                result.append(f'<div class="col-3"><table class="table table-bordered text-center"><th colspan="4">Trang {page}</th>' + res + '</table></div>')
+                page += 1
+            line.view = '<div class="row">' + ''.join(result) + '</div>'
 
     def btn_approve(self):
         self.ensure_one()
         if self.state == 'approved':
             return True
-        quantity = sum(self.line_ids.mapped('qty')) + self.start_print - 1
-        if quantity > 40:
-            raise ValidationError(_("Only %s codes can be printed if starting from %s position") % (40 - self.start_print + 1, self.start_print))
         if self.approve_uid:
             if self.env.user.id == self.approve_uid.id:
                 self.write({
@@ -59,8 +68,14 @@ class PrintStampsBarcode(models.Model):
         product_list = [(0, 0)] * (self.start_print - 1) if self.start_print > 1 else []
         for line in self.line_ids:
             product_list += [(line.product_id, 0)] * line.qty
-        product_list += [(0, 0)] * (40 - (sum(self.line_ids.mapped('qty')) + self.start_print - 1))
-        return product_list
+        total = sum(self.line_ids.mapped('qty')) + self.start_print - 1
+        product_list += [(0, 0)] * (40 - (int((total/40 - int(total/40)) * 40)))
+        res = [product_list[0:min(40, len(product_list)):]]
+        while product_list:
+            product_list = product_list[min(40, len(product_list)):]
+            if product_list:
+                res.append(product_list[0:min(40, len(product_list)):])
+        return res
 
 
 class PrintStampsBarcodeLine(models.Model):
@@ -76,3 +91,8 @@ class PrintStampsBarcodeLine(models.Model):
     _sql_constraints = [
         ('check_qty', 'CHECK (qty >= 1)', 'Quantity must be greater than 1.')
     ]
+
+    @api.onchange('qty')
+    def onchange_qty(self):
+        if self.qty < 1:
+            self.qty = 1

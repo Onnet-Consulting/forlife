@@ -28,10 +28,11 @@ class NhanhBrandConfig(models.Model):
 
     @api.constrains('brand_id', 'active')
     def _contrains_brand_active(self):
-        exist_brand_config = self.env['nhanh.brand.config'].sudo().search_count(
-            [('brand_id', '=', self.brand_id.id), ('id', '!=', self.id)])
-        if exist_brand_config:
-            raise exceptions.ValidationError('Đã tồn tại cấu hình cho chi nhánh này!')
+        for item in self:
+            exist_brand_config = self.env['nhanh.brand.config'].sudo().search_count(
+                [('brand_id', '=', item.brand_id.id), ('id', '!=', item.id)])
+            if exist_brand_config:
+                raise exceptions.ValidationError('Đã tồn tại cấu hình cho chi nhánh này!')
 
     @api.depends('nhanh_app_id', 'nhanh_return_link')
     def compute_link_get_access_code(self):

@@ -136,7 +136,7 @@ class TransferStockInventory(models.Model):
                         {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
                          'product_uom': line.uom_to_id.id,
                          'name': line.product_to_id.name, 'price_unit': amount_total/line.qty_in,
-                         'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                         'location_id': self.env.ref('forlife_stock.import_inventory_balance_classify').id,
                          'location_dest_id': line.location_id.id,
                          "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
                          'amount_total': amount_total
@@ -147,7 +147,8 @@ class TransferStockInventory(models.Model):
                      'product_uom': line.uom_from_id.id, 'name': line.product_from_id.name,
                      'price_unit': line.unit_price_from,
                      'location_id': line.location_id.id,
-                     'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id,
+                     'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id if
+                        not self.x_classify else self.env.ref('forlife_stock.export_inventory_balance_classify').id,
                      "quantity_done": line.qty_out, 'work_production': line.mrp_production_from_id.id,
                      'amount_total': line.total_out
                      })
@@ -156,7 +157,8 @@ class TransferStockInventory(models.Model):
                     "is_locked": True,
                     "immediate_transfer": False,
                     'transfer_stock_inventory_id': rec.id,
-                    'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                    'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id if
+                        not self.x_classify else self.env.ref('forlife_stock.import_inventory_balance_classify').id,
                     'reason_type_id': self.env.ref('forlife_stock.reason_type_5').id,
                     'location_dest_id': line.location_id.id,
                     'scheduled_date': datetime.now(),
@@ -173,7 +175,8 @@ class TransferStockInventory(models.Model):
                     'transfer_stock_inventory_id': rec.id,
                     'location_id': line.location_id.id,
                     'reason_type_id': self.env.ref('forlife_stock.reason_type_4').id,
-                    'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id,
+                    'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id if
+                    not self.x_classify else self.env.ref('forlife_stock.export_inventory_balance_classify').id,
                     'scheduled_date': datetime.now(),
                     'origin': rec.code,
                     'other_export': True,
@@ -238,7 +241,7 @@ class TransferStockInventory(models.Model):
                 }
                 vals = {
                     'journal_id': journal_id,
-                    'ref': picking_id.name + line.product_id.name,
+                    'ref': picking_id.name + ' - ' + line.product_id.name,
                     'partner_id': picking_id.partner_id.id,
                     'move_type': 'entry',
                     'stock_move_id': line.id,

@@ -1,0 +1,184 @@
+<odoo>
+    <data>
+        <record id="print_purchase_request" model="ir.actions.report">
+            <field name="name">Print Purchase Request</field>
+            <field name="model">purchase.request</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_report.print_purchase_request_template</field>
+            <field name="report_file">forlife_report.print_purchase_request_template</field>
+            <field name="print_report_name">'Purchase Request - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="forlife_report.paperformat_purchase_request"/>
+        </record>
+
+        <template id="print_purchase_request_template">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <style>
+                            .page {
+                            font-family: Times New Roman;
+                            font-size: 10px;
+                            page-break-before: always;
+                            }
+                            table {
+                            border: 1px solid black;
+                            }
+                            .x_title {
+                            font-size: 12px;
+                            }
+                            .x_bold {
+                            font-weight: bold;
+                            }
+                            .x_center {
+                            text-align: center;
+                            }
+                            .x_italic {
+                            font-style: italic;
+                            }
+                        </style>
+                        <div class="row">
+                            <table class="table table-bordered">
+                                <col style="width:5%"/>
+                                <col style="width:10%"/>
+                                <col style="width:15%"/>
+                                <col style="width:7%"/>
+                                <col style="width:12%"/>
+                                <col style="width:12%"/>
+                                <col style="width:12%"/>
+                                <col style="width:27%"/>
+                                <tbody>
+                                    <tr class="x_title x_bold x_center">
+                                        <td colspan="3" rowspan="2"/>
+                                        <td colspan="4">
+                                            PHÒNG BAN ĐỀ NGHỊ
+                                            <span t-field="o.department_id"/>
+                                        </td>
+                                        <td colspan="3">
+                                            <span t-field="o.account_analytic_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_title x_bold x_center">
+                                        <td colspan="4">
+                                            PHIẾU MUA HÀNG
+                                        </td>
+                                        <td colspan="3">
+                                            MỞ MỚI
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="3">Người yêu cầu:
+                                            <span t-field="o.employee_id"/>
+                                        </td>
+                                        <td colspan="2">Chức vụ:
+                                            <span t-field="o.employee_id.job_id"/>
+                                        </td>
+                                        <td colspan="2">Email:
+                                            <span t-field="o.employee_id.work_email"/>
+                                        </td>
+                                        <td>SĐT:
+                                            <span t-field="o.employee_id.mobile_phone"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="3">Người nhận hàng:
+                                            <span t-field="o.receiver_id"/>
+                                        </td>
+                                        <td colspan="2">Chức vụ:
+                                            <span t-field="o.receiver_id.job_id"/>
+                                        </td>
+                                        <td colspan="2">Email:
+                                            <span t-field="o.receiver_id.work_email"/>
+                                        </td>
+                                        <td>SĐT:
+                                            <span t-field="o.receiver_id.mobile_phone"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="8">Địa chỉ:
+                                            <span t-field="o.delivery_address"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="8">Ngày đặt hàng:
+                                            <span t-field="o.request_date"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="8">Ngày nhận hàng:
+                                            <span t-field="o.date_planned" t-options='{"widget": "date"}'/>
+                                            (chú ý:<span t-field="o.attention"/>)
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold x_center">
+                                        <td>STT</td>
+                                        <td>Mã số</td>
+                                        <td>Tên hàng</td>
+                                        <td>Đơn vị</td>
+                                        <td>Số lượng đặt</td>
+                                        <td>Số lượng kho</td>
+                                        <td>Số lượng mua</td>
+                                        <td>Ghi chú</td>
+                                    </tr>
+                                    <t t-set="stt" t-value="1"/>
+                                    <t t-set="total" t-value="0"/>
+                                    <t t-foreach="o.order_lines" t-as="line">
+                                        <tr>
+                                            <td class="x_center">
+                                                <t t-esc="stt"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_id.barcode"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.purchase_uom"/>
+                                            </td>
+                                            <td class="x_center">
+                                                <span t-field="line.purchase_quantity"/>
+                                            </td>
+                                            <td/>
+                                            <td/>
+                                            <td class="x_italic">Thời gian nhận hàng:
+                                                <span t-field="line.date_planned" t-options='{"widget": "date"}'/>
+                                                (Chú ý: đặt hàng theo cột số lượng đặt)
+                                            </td>
+                                        </tr>
+                                        <t t-set="stt" t-value="stt + 1"/>
+                                        <t t-set="total" t-value="total + line.purchase_quantity"/>
+                                    </t>
+                                    <tr class="x_bold x_center">
+                                        <td colspan="4">Tổng</td>
+                                        <td>
+                                            <t t-esc="total"/>
+                                        </td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br/>
+                        <div class="x_italic">
+                            Tất cả các hàng đúng chất lượng cam kết theo hợp đồng nguyên tắc đã ký
+                        </div>
+                        <div class="x_italic">
+                            Mọi chất lượng không đảm bảo sai quy cách bên tôi sẽ từ chối thanh toán toàn bộ các đơn hàng
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-4 x_center">Tp chức năng</div>
+                            <div class="col-4"/>
+                            <div class="col-4 x_center">Người đề nghị</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+

@@ -15,8 +15,8 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
-    nhanh_id = fields.Integer(string='Id Nhanh.vn')
-    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
+    nhanh_id = fields.Integer(string='Id Nhanh.vn', copy=False)
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn', copy=False)
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
@@ -25,18 +25,27 @@ class SaleOrderNhanh(models.Model):
     order_partner_id = fields.Many2one('res.partner', 'Khách Order')
     carrier_name = fields.Char('Carrier Name')
 
-    nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
-        ('confirmed', 'Confirmed'),
-        ('packing', 'Packing'),
-        ('pickup', 'Pickup'),
-        ('shipping', 'Shipping'),
-        ('returning', 'Returning'),
-        ('success', 'Success'),
-        ('canceled', 'Canceled'),
+        ('new', 'Đơn mới'),
+        ('confirming', 'Đang xác nhận'),
+        ('customerconfirming', 'Chờ khách xác nhận'),
+        ('confirmed', 'Đã xác nhận'),
+        ('packing', 'Đang đóng gói'),
+        ('packed', 'Đã đóng gói'),
+        ('changedepot', 'Đổi kho xuất hàng'),
+        ('pickup', 'Chờ thu gom'),
+        ('shipping', 'Đang chuyển'),
+        ('success', 'Thành công'),
+        ('failed', 'Thất bại'),
+        ('canceled', 'Khách hủy'),
+        ('aborted', 'Hệ thống hủy'),
+        ('carriercanceled', 'Hãng vận chuyển hủy đơn'),
+        ('soldout', 'Hết hàng'),
+        ('returning', 'Đang chuyển hoàn'),
+        ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
 
     # def write(self, vals):
@@ -101,20 +110,25 @@ class SaleOrderNhanh(models.Model):
                 continue
             order_model = self.env['sale.order']
             partner_model = self.env['res.partner']
-            nhanh_orders = res['data']['orders']
-            nhanh_order_keys = list(nhanh_orders.keys())
-            _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
-            # Get all odoo orders which don't exist in nhanhvn
-            odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
-                ['nhanh_id'])
-            odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
-            # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
-            _logger.info(f'List order id from Odoo: {odoo_order_ids}')
-            # Delete in nhanh_orders if it existed in odoo_orders
-            for item in odoo_order_ids:
-                if item in nhanh_orders:
-                    nhanh_orders.pop(item)
-            list(nhanh_orders)
+            data = res.get('data')
+            for page in range(1, data.get('totalRecords') + 1):
+                data['page'] = page
+                res_server = requests.post(url, json=json.dumps(data))
+                res = res_server.json()
+                nhanh_orders = res['data']['orders']
+                nhanh_order_keys = list(nhanh_orders.keys())
+                _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
+                # Get all odoo orders which don't exist in nhanhvn
+                odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
+                    ['nhanh_id'])
+                odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
+                # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
+                _logger.info(f'List order id from Odoo: {odoo_order_ids}')
+                # Delete in nhanh_orders if it existed in odoo_orders
+                for item in odoo_order_ids:
+                    if item in nhanh_orders:
+                        nhanh_orders.pop(item)
+                list(nhanh_orders)
             # _logger.info(nhanh_orders)
             for k, v in nhanh_orders.items():
                 name_customer = False
@@ -150,7 +164,7 @@ class SaleOrderNhanh(models.Model):
                     if not product and item.get('productBarcode'):
                         product = self.search_product(('barcode', '=', item.get('productBarcode')))
                     if not product and item.get('productCode'):
-                        product = self.search_product(('code_product', '=', item.get('productCode')))
+                        product = self.search_product(('barcode', '=', item.get('productCode')))
                     if not product:
                         product = self.env['product.template'].create({
                             'detailed_type': 'asset',
@@ -158,7 +172,7 @@ class SaleOrderNhanh(models.Model):
                             'check_data_odoo': False,
                             'name': item.get('productName'),
                             'barcode': item.get('productBarcode'),
-                            'code_product': item.get('productCode'),
+                            # 'code_product': item.get('productCode'),
                             'list_price': item.get('price'),
                             'uom_id': uom,
                             'weight': item.get('shippingWeight', 0),
@@ -202,7 +216,7 @@ class SaleOrderNhanh(models.Model):
                                                                       limit=1)
                 value = {
                     'nhanh_id': v['id'],
-                    'nhanh_status': v['statusCode'],
+                    'nhanh_order_status': v['statusCode'].lower(),
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],
@@ -219,7 +233,7 @@ class SaleOrderNhanh(models.Model):
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': warehouse_id.id if warehouse_id else None,
+                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id  else None,
                     'order_line': order_line
                 }
                 # đổi hàng
@@ -272,34 +286,40 @@ class SaleOrderNhanh(models.Model):
                     _logger.info(f'Get customer error {res["messages"]}')
                     continue
                 else:
-                    for item in res.get('data').get('customers'):
-                        if not res.get('data').get('customers').get(item).get('mobile'):
-                            continue
-                        exist_partner = self.env['res.partner'].search_count(
-                            [('phone', '=', res.get('data').get('customers').get(item).get('mobile'))])
-                        if exist_partner:
-                            continue
-                        value_data = res.get('data').get('customers').get(item)
+                    data = res.get('data')
+                    for page in range(1, data.get('totalPages') + 1):
+                        data['page'] = page
+                        res_server = requests.post(url, json=json.dumps(data))
+                        res = res_server.json()
+                        customers = res.get('data').get('customers')
+                        for item in customers:
+                            if not customers.get(item).get('mobile'):
+                                continue
+                            exist_partner = self.env['res.partner'].search_count(
+                                [('phone', '=', customers.get(item).get('mobile'))])
+                            if exist_partner:
+                                continue
+                            value_data = customers.get(item)
 
-                        self.env['res.partner'].create({
-                            'source_record': True,
-                            'customer_nhanh_id': int(res.get('data').get('customers').get(item).get('id')),
-                            'name': value_data.get('name'),
-                            'phone': value_data.get('mobile'),
-                            'mobile': value_data.get('mobile'),
-                            'email': value_data.get('email'),
-                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get(
-                                'gender') == '2' else 'other',
-                            'contact_address_complete': value_data.get('address'),
-                            'street': value_data.get('address'),
-                            'vat': value_data.get('taxCode'),
-                            'birthday': datetime.datetime.strptime(value_data.get('birthday'),
-                                                                   "%Y-%m-%d").date() if value_data.get(
-                                'birthday') else None,
-                            'type_customer': 'retail_customers' if value_data.get(
-                                'type') == 1 else 'wholesalers' if value_data.get(
-                                'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
-                        })
+                            self.env['res.partner'].create({
+                                'source_record': True,
+                                'customer_nhanh_id': int(customers.get(item).get('id')),
+                                'name': value_data.get('name'),
+                                'phone': value_data.get('mobile'),
+                                'mobile': value_data.get('mobile'),
+                                'email': value_data.get('email'),
+                                'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get(
+                                    'gender') == '2' else 'other',
+                                'contact_address_complete': value_data.get('address'),
+                                'street': value_data.get('address'),
+                                'vat': value_data.get('taxCode'),
+                                'birthday': datetime.datetime.strptime(value_data.get('birthday'),
+                                                                       "%Y-%m-%d").date() if value_data.get(
+                                    'birthday') else None,
+                                'type_customer': 'retail_customers' if value_data.get(
+                                    'type') == 1 else 'wholesalers' if value_data.get(
+                                    'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
+                            })
         ## End
 
     @api.model
@@ -351,14 +371,14 @@ class SaleOrderNhanh(models.Model):
                         if not product and res.get('data').get('products').get(item).get('barcode'):
                             product = self.search_product(('barcode', '=', value_data.get('barcode')))
                         if not product and value_data.get('code'):
-                            product = self.search_product(('code_product', '=', value_data.get('code')))
+                            product = self.search_product(('barcode', '=', value_data.get('code')))
                         if not product:
                             dic_data_product = {
                                 'nhanh_id': value_data.get('idNhanh'),
                                 'check_data_odoo': False,
                                 'name': value_data.get('name'),
                                 'barcode': value_data.get('barcode'),
-                                'code_product': value_data.get('code'),
+                                # 'code_product': value_data.get('code'),
                                 'list_price': value_data.get('price'),
                                 'detailed_type': 'asset',
                             }

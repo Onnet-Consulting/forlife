@@ -10,7 +10,7 @@ class BravoSyncTaxWizard(models.TransientModel):
     _description = 'Bravo synchronize Taxes wizard'
 
     def sync(self):
-        companies = self.env['res.company'].search([])
+        companies = self.env['res.company'].search([('code', '!=', False)])
         bravo_taxes = self.get_bravo_taxes()
         for company in companies:
             self = self.with_company(company).sudo()

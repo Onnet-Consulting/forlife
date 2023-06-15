@@ -19,6 +19,8 @@ class ResPartner(models.Model):
     br_7 = BravoIntegerField(bravo_default=0, bravo_name="IsGroup")
     br_8 = BravoMany2oneField('res.partner.group', odoo_name='group_id', bravo_name='ParentCode', field_detail='code')
     br_9 = BravoDecimalField(odoo_name='credit_limit', bravo_name='CreditLimit')
+    br_10 = BravoMany2oneField('res.currency', odoo_name='property_purchase_currency_id',
+                               bravo_name='CurrencyCode', field_detail='name')
 
     def bravo_get_filter_domain(self):
         partner_group_c = self.env.ref('forlife_pos_app_member.partner_group_c').id
@@ -36,7 +38,7 @@ class ResPartnerGroup(models.Model):
     br_3 = BravoIntegerField(bravo_default=1, bravo_name="IsGroup")
 
     @api.model
-    def _push_existing_groups(self):
+    def bravo_push_existing_groups(self):
         exist_groups = self.env.ref("forlife_pos_app_member.partner_group_1") + \
                        self.env.ref("forlife_pos_app_member.partner_group_2") + \
                        self.env.ref("forlife_pos_app_member.partner_group_3") + \

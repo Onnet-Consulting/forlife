@@ -411,7 +411,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         # update records existed queries
         update_queries = existing_records.bravo_get_update_sql_for_existing_multiple_records(**kwargs)
         # insert remain records (don't exist in Bravo yet) queries
-        insert_queries = newly_records.bravo_get_insert_sql()
+        insert_queries = newly_records.bravo_get_insert_sql(**kwargs)
         return update_queries + insert_queries
 
     @api.model

@@ -9,21 +9,14 @@ class PosSession(models.Model):
         location_id = self.config_id.picking_type_id.default_location_src_id.id
         query = '''
                     SELECT pp.id AS ppid, sq.quantity FROM stock_quant sq 
-                    JOIN product_product pp ON pp.id = sq.product_id 
+                    RIGHT JOIN product_product pp ON pp.id = sq.product_id 
                     JOIN product_template pt ON pt.id = pp.product_tmpl_id
-                    WHERE location_id = %(location_id)s AND sq.quantity > 0;
+                    WHERE location_id = %(location_id)s 
+                    AND sq.quantity > 0 or pt.detailed_type = 'service'
                 '''
         self.env.cr.execute(query, {'location_id': location_id})
         data = self.env.cr.fetchall()
         return [id[0] for id in data]
-
-    def _loader_params_product_product(self):
-        product_id = self._get_product_ids_by_store()
-        res = super(PosSession, self)._loader_params_product_product()
-        if res.get('search_params', False) and res['search_params'].get('domain', False):
-            res['search_params']['domain'] = expression.AND(
-                [res['search_params']['domain'], ['|', ('id', 'in', product_id), ('detailed_type', '=', 'service')]])
-        return res
 
     def _get_pos_ui_product_product(self, params):
         self = self.with_context(**params['context'])
@@ -45,3 +38,12 @@ class PosSession(models.Model):
             'pos_brand_info': pos_brand_info
         })
         return loaded_data
+
+    def _process_pos_ui_product_product(self, products):
+        product_ids = set(self._get_product_ids_by_store())
+        new_products = []
+        for product in products:
+            if product.get('id') in product_ids:
+                new_products.append(product)
+        products[:] = new_products
+        return super(PosSession, self)._process_pos_ui_product_product(products)

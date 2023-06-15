@@ -34,6 +34,12 @@ class StockReturnPicking(models.TransientModel):
     #             return_line.unlink()
     #     return res
 
+    def _prepare_picking_default_values(self):
+        vals = super(StockReturnPicking, self)._prepare_picking_default_values()
+        if self.for_po:
+            vals.update({'is_return_po': True})
+        return vals
+
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
         res = super(StockReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)

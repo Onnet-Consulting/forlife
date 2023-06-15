@@ -28,8 +28,8 @@ class SaleOrder(models.Model):
     def bravo_get_delete_sql(self):
         return False
 
-    def action_confirm(self):
-        res = super().action_confirm()
+    def action_create_picking(self):
+        res = super().action_create_picking()
         queries = self.bravo_get_insert_sql()
         self.env['sale.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res

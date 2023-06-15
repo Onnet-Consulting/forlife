@@ -9,7 +9,7 @@ class PurchaseOrderCostLine(models.Model):
     name = fields.Char(string='Mô tả', related='product_id.name')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
     # expensive_total = fields.Float(string='Tổng tiền', compute='compute_expensive_total', store=True)
-    currency_id = fields.Many2one('res.currency', string='Tiền tệ')
+    currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá')
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
     vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
@@ -23,10 +23,7 @@ class PurchaseOrderCostLine(models.Model):
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
         for rec in self:
-            if rec.exchange_rate == 1:
-                pass
-            else:
-                rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
+            rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
 
 
 

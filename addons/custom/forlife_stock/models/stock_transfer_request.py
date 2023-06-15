@@ -39,9 +39,13 @@ class StockTransferRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['request_employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
+        res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         res['request_date'] = datetime.now()
         return res
+
+    @api.onchange('request_employee_id')
+    def _onchange_request_employee_id(self):
+        self.department_id = self.request_employee_id.department_id.id
 
     @api.constrains('request_date', 'date_planned')
     def constrains_request_planed_dated(self):

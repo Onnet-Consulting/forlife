@@ -6,8 +6,17 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    other_picking_type_id = fields.Many2one('stock.picking.type', string="Kiểu giao nhận xuất/nhập khác")
+    other_location_id = fields.Many2one('stock.location', string="Lý do xuất/nhập khác mặc định")
+
+
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+
+    is_return_po = fields.Boolean(default=False)
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
@@ -19,43 +28,56 @@ class StockPicking(models.Model):
                 picking.create_return_valuation_npl()
         return res
 
-    def create_return_nk_picking(self, po, record, list_line_xk, account_move=None):
-        picking_type_in = self.env['stock.picking.type'].search([
+    def _get_picking_info_return(self, po):
+        incoming_type_id = self.env['stock.picking.type'].search([
             ('code', '=', 'incoming'),
             ('company_id', '=', self.env.company.id)], limit=1)
-        if po and po.picking_type_id and po.picking_type_id.return_picking_type_id:
-            picking_type_id = po.picking_type_id.return_picking_type_id.id
-        else:
-            picking_type_id = picking_type_in.id
+        picking_type_id = incoming_type_id
+        if po and po.picking_type_id:
+            # if not po.picking_type_id.other_picking_type_id:
+            #     raise ValidationError("Vui lòng thiết lập 'Kiểu giao nhận xuất/nhập khác' tại Kiểu giao nhận tương ứng.")
+            if po.picking_type_id.other_picking_type_id:
+                picking_type_id = po.picking_type_id.other_picking_type_id
+            elif po.picking_type_id.return_picking_type_id:
+                picking_type_id = po.picking_type_id.return_picking_type_id
 
-        master_xk = {
+        if po and po.is_return and po.warehouse_material:
+            location_id = po.warehouse_material
+        elif picking_type_id.other_location_id:
+            location_id = picking_type_id.other_location_id
+        else:
+            location_id = self.env.ref('forlife_stock.import_production_order')
+
+        return picking_type_id, location_id
+
+    def create_return_picking_npl(self, po, record, lines_npl):
+        picking_type_id, location_id = self._get_picking_info_return(po)
+
+        vals = {
             "is_locked": True,
             "immediate_transfer": False,
             'reason_type_id': self.env.ref('forlife_stock.reason_type_7').id,
-            'location_id': po.warehouse_material.id if po and po.warehouse_material else self.env.ref('forlife_stock.import_production_order').id,
+            'location_id': location_id.id,
             'location_dest_id': record.location_id.id,
             'scheduled_date': datetime.datetime.now(),
             'origin': po.name + " nhập trả NPL" if po else record.name + " nhập trả NPL",
-            # 'other_export': True,
             'state': 'assigned',
-            'picking_type_id': picking_type_id,
-            'move_ids_without_package': list_line_xk,
+            'picking_type_id': picking_type_id.id,
+            'move_ids_without_package': lines_npl,
             'other_import': True
         }
-        xk_picking = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk)
-        xk_picking.button_validate()
-        if account_move:
-            xk_picking.write({'account_xk_id': account_move.id})
-        record.write({'picking_xk_id': xk_picking.id})
-        return xk_picking
+        picking_npl = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(vals)
+        ctx = picking_npl._context.copy()
+        ctx.update({'extend_account_npl': True})
+        picking_npl.with_context(ctx).button_validate()
+        record.write({'picking_xk_id': picking_npl.id})
+        return picking_npl
 
     def create_return_valuation_npl(self):
-        lines_nk = []
+        lines_npl = []
         invoice_line_npls = []
-        po = self.purchase_id
-        npl_location_id = self.env.ref('forlife_stock.import_production_order')
-        if self.purchase_id and self.purchase_id.is_return and self.purchase_id.warehouse_material:
-            npl_location_id = self.purchase_id.warehouse_material
+
+        picking_type_id, npl_location_id = self._get_picking_info_return(self.purchase_id)
 
         for move in self.move_ids:
             production_order = self.env['production.order'].search(
@@ -67,14 +89,12 @@ class StockPicking(models.Model):
             else:
                 raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
 
-            credit = 0
             production_data = []
             for production_line in production_order.order_line_ids:
                 product_plan_qty = move.quantity_done / production_order.product_qty * production_line.product_qty
-                debit = production_line.price * product_plan_qty
 
                 if not production_line.product_id.product_tmpl_id.x_type_cost_product:
-                    lines_nk.append((0, 0, {
+                    lines_npl.append((0, 0, {
                         'product_id': production_line.product_id.id,
                         'product_uom': production_line.uom_id.id,
                         'price_unit': production_line.price,
@@ -85,38 +105,18 @@ class StockPicking(models.Model):
                         'amount_total': production_line.price * product_plan_qty,
                         'reason_type_id': self.env.ref('forlife_stock.reason_type_7').id,
                         'reason_id': npl_location_id.id,
+                        'include_move_id': move.id
                     }))
-                    # Bút toán cho nguyên phụ liệu
-                    debit_npl = (0, 0, {
-                        'account_id': npl_location_id.valuation_out_account_id.id,
-                        'name': production_line.product_id.name,
-                        'debit': debit,
-                        'credit': 0,
-                        # 'is_uncheck': True,
-                    })
-                    invoice_line_npls.append(debit_npl)
-                    credit += debit
 
-            # Bút toán cho nguyên phụ liệu
-            if credit > 0:
-                credit_npl = (0, 0, {
-                    'account_id': account_1561,
-                    'name': move.product_id.name,
-                    'debit': 0,
-                    'credit': credit,
-                    # 'is_uncheck': True,
-
-                })
-                invoice_line_npls.append(credit_npl)
-
-        if invoice_line_npls and lines_nk:
-            account_nl = self.create_account_move(po, invoice_line_npls, self)
-            master_xk = self.create_return_nk_picking(po, self, lines_nk, account_nl)
+        if lines_npl:
+            picking_npl = self.create_return_picking_npl(self.purchase_id, self, lines_npl)
         return True
 
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    include_move_id = fields.Many2one('stock.move')
 
     def _get_price_unit(self):
         self.ensure_one()
@@ -164,3 +164,46 @@ class StockMove(models.Model):
                 svl_vals['description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
         return svl_vals_list
+
+    def _account_entry_move(self, qty, description, svl_id, cost):
+        am_vals = super(StockMove, self)._account_entry_move(qty, description, svl_id, cost)
+        if 'extend_account_npl' in self._context and self.include_move_id and len(am_vals) == 1:
+            include_move_id = self.include_move_id
+            account_1561 = include_move_id.product_id.categ_id.property_stock_valuation_account_id.id
+
+            if self.reason_id.type_other == 'incoming':
+                debit_account_id = self.reason_id.x_property_valuation_out_account_id.id
+                credit_account_id = account_1561
+
+                svl = self.env['stock.valuation.layer'].browse(svl_id)
+                line_ids = am_vals[0].get('line_ids')
+
+                # FIXME: find true logic
+                if len(line_ids) == 2:
+                    for line in line_ids:
+                        if line[2]['balance'] < 0:
+                            credit = -line[2]['balance']
+                        else:
+                            debit = line[2]['balance']
+                else:
+                    value = self._get_price_unit() * self.quantity_done
+                    credit = value
+                    debit = value
+
+                # Other debit line account
+                line_ids += [(0, 0, {
+                    'account_id': debit_account_id,
+                    'name': self.product_id.name,
+                    'debit': debit,
+                    'credit': 0,
+                })]
+                # Other credit line account
+                line_ids += [(0, 0, {
+                    'account_id': credit_account_id,
+                    'name': include_move_id.product_id.name,
+                    'debit': 0,
+                    'credit': credit,
+                })]
+                am_vals[0]['line_ids'] = line_ids
+
+        return am_vals

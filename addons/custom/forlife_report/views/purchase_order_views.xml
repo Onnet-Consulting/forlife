@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="purchase_order_form_view_inherit" model="ir.ui.view">
+            <field name="name">purchase_order_form_view_inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="forlife_purchase.inherit_purchase_order_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_close']" position="after">
+                    <button name="%(print_purchase_order)d" string="Print Purchase Order" class="oe_highlight" type="action"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

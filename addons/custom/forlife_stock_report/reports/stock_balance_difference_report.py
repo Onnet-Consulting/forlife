@@ -1,4 +1,4 @@
-import pytz, calendar
+import pytz
 from odoo import models, fields, api, _
 from datetime import datetime
 from ..tools import convert_to_utc_datetime
