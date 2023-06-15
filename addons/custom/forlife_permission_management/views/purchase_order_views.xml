@@ -29,9 +29,6 @@
                 <xpath expr="//button[@name='action_approved']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_purchase_order_approve_reject</attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_cancel']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_purchase_order_cancel</attribute>
-                </xpath>
                 <xpath expr="//button[@name='%(forlife_purchase.cancel_order_wizard)d']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_purchase_order_cancel</attribute>
                 </xpath>

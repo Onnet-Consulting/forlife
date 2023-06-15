@@ -254,7 +254,7 @@ class AccountMove(models.Model):
                                         'request_code': product.request_purchases,
                                         'promotions': product.free_good,
                                         'quantity_purchased': pnk.quantity_purchase_done,
-                                        'uom_id': pnk.purchase_uom.id,
+                                        'product_uom_id': pnk.purchase_uom.id,
                                         'exchange_quantity': pnk.quantity_change,
                                         'quantity': pnk.qty_done,
                                         'vendor_price': product.vendor_price,
@@ -629,7 +629,6 @@ class AccountMoveLine(models.Model):
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
     discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
@@ -650,6 +649,7 @@ class AccountMoveLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
+    occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     # goods invoice!!
@@ -814,6 +814,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế')
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+    _x_invoice_date = fields.Date(string='Ngày hóa đơn')
+    tax_percent = fields.Many2one('account.tax', string='% Thuế')
 
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):

@@ -239,6 +239,7 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    po_l_id = fields.Char('Dùng để so sánh hoạt động và hoạt động chi tiết')
     name = fields.Char('Description', required=False)
     company_id = fields.Many2one(
         'res.company', 'Company',
@@ -346,9 +347,9 @@ class StockMoveLine(models.Model):
         for rec in self:
             for line in rec.picking_id.move_ids_without_package:
                 if rec.move_id.id == line.id:
-                    if rec.qty_done > line.product_uom_qty:
-                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
-
+                    if str(rec.po_id) == str(line.po_l_id):
+                        if rec.qty_done > line.product_uom_qty:
+                            raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
@@ -358,7 +359,7 @@ class StockBackorderConfirmationInherit(models.TransientModel):
         for item in self:
             for rec in item.pick_ids:
                 data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
-                for pk in data_pk.move_line_ids_without_package:
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
                     pk.write({
                         'po_id': pk_od.po_id,
                         'qty_done': pk.reserved_qty,
@@ -368,5 +369,13 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                 for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
                     pk.write({
                         'po_l_id': pk_od.po_l_id,
+                    })
+                for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
+                    })
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
                     })
         return res
