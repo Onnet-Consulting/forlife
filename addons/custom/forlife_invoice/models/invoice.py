@@ -813,6 +813,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế')
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+    _x_invoice_date = fields.Date(string='Ngày hóa đơn')
+    tax_percent = fields.Many2one('account.tax', string='% Thuế')
 
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):

@@ -328,7 +328,7 @@ msgstr "Bộ phận quản lý"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__production_department
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__production_department
 msgid "Production Department"
-msgstr "Bộ phận sản xuất"
+msgstr "Phân loại sản xuất"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__produced_from_date

@@ -96,6 +96,9 @@
                     <field name="amount_total" force_save="1" string="Tổng tiền" attrs="{'column_invisible': [('parent.other_import', '!=', True)], 'readonly': [('is_amount_total', '!=', True)]}"/>
                     <field name="reason_type_id" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="reason_id" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
+                    <field name="free_good" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
+                    <field name="quantity_change" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
+                    <field name="quantity_purchase_done" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
                     <field name="occasion_code_id" string="Mã vụ việc"/>
                     <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
                     <field name="account_analytic_id" string="Trung tâm chi phí"/>
