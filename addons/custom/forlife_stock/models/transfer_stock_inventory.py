@@ -111,7 +111,7 @@ class TransferStockInventory(models.Model):
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
         for rec in self:
             data_ex_other = {}
-            if not export_inventory_balance.x_property_valuation_in_account_id and not export_inventory_balance.x_property_valuation_out_account_id:
+            if not export_inventory_balance.x_property_valuation_in_account_id and not enter_inventory_balance.x_property_valuation_out_account_id:
                 raise ValidationError(
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
             for line in rec.transfer_stock_inventory_line_ids:
