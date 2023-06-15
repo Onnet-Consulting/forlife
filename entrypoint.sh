@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Starting Entrypoint"
+
+
 set -e
 
 if [ -v PASSWORD_FILE ]; then
