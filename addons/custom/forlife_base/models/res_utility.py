@@ -61,6 +61,18 @@ class ResUtility(models.AbstractModel):
                     values.append(cell.value)
             yield values
 
+    def execute_postgresql(self, query, param, build_dict):
+        db_source = self.env['base.external.dbsource'].sudo().search([('connector', '=', 'postgresql')], limit=1)
+        if db_source:
+            rows, cols = db_source.execute_postgresql(query, param, build_dict)
+            return self.build_dict(rows, cols) if build_dict else rows
+        else:
+            self._cr.execute(query, param)
+            return self._cr.dictfetchall() if build_dict else self._cr.fetchall()
+
+    def build_dict(self, rows, cols):
+        return [{d: row[i] for i, d in enumerate(cols)} for row in rows]
+
     def get_attribute_code_config(self):
         return ast.literal_eval(self.env.ref('forlife_base.attr_code_default').attr_code or '{}')
 
@@ -130,32 +142,73 @@ class ResUtility(models.AbstractModel):
 
     @api.model
     def get_stock_quant_in_warehouse_by_barcode(self, wh_id, barcode):
-        product = self.env['product.product'].search([('barcode', '=', barcode)], limit=1)
-        wh = self.env['stock.warehouse'].search([('id', '=', wh_id)])
-        if any([not product, not wh, not wh_id, not barcode]):
-            return {}
-        stock_move = self.env['stock.move'].search(['&', '&', '&', ('product_id', '=', product.id),
-                                                    ('state', '=', 'done'), ('company_id', '=', wh.company_id.id),
-                                                    '|', ('location_id.warehouse_id', '=', wh_id), ('location_dest_id.warehouse_id', '=', wh_id)])
-        fix_price = self.env['promotion.pricelist.item'].search([('product_id', '=', product.id), ('program_id.active', '=', True),
-                                                                 ('program_id.campaign_id.company_id', '=', wh.company_id.id),
-                                                                 ('program_id.campaign_id.from_date', '<=', fields.Datetime.now()),
-                                                                 ('program_id.campaign_id.to_date', '>', fields.Datetime.now()),
-                                                                 ('program_id.campaign_id.state', '=', 'in_progress'),
-                                                                 ]).sorted(lambda f: (f.program_id.campaign_id.from_date, -f.id))
-        sale_price = fix_price[0].fixed_price or product.lst_price
-        qty_out = sum(stock_move.filtered(lambda f: f.location_id.warehouse_id.id == wh_id).mapped('product_qty'))
-        qty_in = sum(stock_move.filtered(lambda f: f.location_dest_id.warehouse_id.id == wh_id).mapped('product_qty'))
-        attr_value = self.env['res.utility'].get_attribute_code_config()
-        return {
-            'barcode': product.barcode,
-            'ten_san_pham': product.name,
-            'so_luong': qty_in - qty_out,
-            'mau_sac': ', '.join(product.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('mau_sac', '')).mapped('value_ids.name')),
-            'size': ', '.join(product.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('size', '')).mapped('value_ids.name')),
-            'gioi_tinh': ', '.join(product.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('doi_tuong', '')).mapped('value_ids.name')),
-            'gia_ban': sale_price,
-        }
+        if any([not wh_id, not barcode]):
+            return []
+        attr_value = self.get_attribute_code_config()
+        sql = f"""
+with products as (select id
+                  from product_product
+                  where product_tmpl_id in (select id
+                                            from product_template
+                                            where sku_code in (select distinct pt.sku_code
+                                                               from product_product pp
+                                                                        join product_template pt on pp.product_tmpl_id = pt.id
+                                                               where pp.barcode = '{barcode}'))),
+     companys as (select company_id as id from stock_warehouse where id = {wh_id}),
+     locatoins as (select id from stock_location where warehouse_id = {wh_id}),
+     attribute_data as (select pp.id                                                                                as product_id,
+                               pa.attrs_code                                                                        as attrs_code,
+                               array_agg(coalesce(pav.name::json -> 'vi_VN', pav.name::json -> 'en_US')) as value
+                        from product_template_attribute_line ptal
+                                 left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+                                 left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+                                 left join product_attribute pa on ptal.attribute_id = pa.id
+                                 left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+                        where pp.id in (select id from products)
+                        group by pp.id, pa.attrs_code),
+     stocks as (select product_id as product_id, sum(product_qty) as qty
+                from stock_move
+                where state = 'done'
+                  and company_id in (select id from companys)
+                  and location_dest_id in (select id from locatoins)
+                  and product_id in (select id from products)
+                group by product_id
+                union all
+                select product_id as product_id, - sum(product_qty) as qty
+                from stock_move
+                where state = 'done'
+                  and company_id in (select id from companys)
+                  and location_id in (select id from locatoins)
+                  and product_id in (select id from products)
+                group by product_id),
+     stock_final as (select product_id, sum(qty) as qty
+                     from stocks
+                     group by product_id),
+     fixed_prices as (select row_number() over (PARTITION BY ppi.product_id order by campaign.from_date, ppi.id desc) as num, ppi.product_id, ppi.fixed_price
+                      from promotion_pricelist_item ppi
+                               join promotion_program program on ppi.program_id = program.id
+                               join promotion_campaign campaign on campaign.id = program.campaign_id
+                      where product_id in (select id from products)
+                        and campaign.state = 'in_progress'
+                        and now() between campaign.from_date and campaign.to_date)
+
+select coalesce(pp2.barcode, '')                                      as barcode,
+       coalesce(pt2.name::json -> 'vi_VN', pt2.name::json -> 'en_US') as ten_san_pham,
+       coalesce(sf.qty, 0)                                            as so_luong,
+       coalesce(attr_color.value, array[]::json[])                                 as mau_sac,
+       coalesce(attr_size.value, array[]::json[])                                  as size,
+       coalesce(attr_gender.value, array[]::json[])                                as gioi_tinh,
+       coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban
+from products
+         left join fixed_prices on products.id = fixed_prices.product_id and fixed_prices.num = 1
+         left join stock_final sf on sf.product_id = products.id
+         left join product_product pp2 on pp2.id = products.id
+         left join product_template pt2 on pt2.id = pp2.product_tmpl_id
+         left join attribute_data attr_color on attr_color.product_id = products.id and attr_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+         left join attribute_data attr_size on attr_size.product_id = products.id and attr_size.attrs_code = '{attr_value.get('size', '')}'
+         left join attribute_data attr_gender on attr_gender.product_id = products.id and attr_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
+"""
+        return self.execute_postgresql(sql, [], True)
 
     @api.model
     def get_stock_warehouse_info_by_barcode(self, wh_type_code, barcode):
