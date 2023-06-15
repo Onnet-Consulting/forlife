@@ -2139,7 +2139,7 @@ class StockPicking(models.Model):
                                 'sequence': 9,
                                 'account_id': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
                                 'name': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.name,
-                                'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price) * item.order_id.exchange_rate,
+                                'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                                 'credit': 0,
                             })
                             credit_npl = (0, 0, {
@@ -2147,7 +2147,7 @@ class StockPicking(models.Model):
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id,
                                 'name': material_line.product_id.name,
                                 'debit': 0,
-                                'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price) * item.order_id.exchange_rate,
+                                'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                             })
                             lines_npl = [debit_npl, credit_npl]
                             list_npls.extend(lines_npl)
@@ -2246,7 +2246,6 @@ class StockPicking(models.Model):
             xk_picking.write({'account_xk_id': account_move.id})
         record.write({'picking_xk_id': xk_picking.id})
         return xk_picking
-
 
 class Synthetic(models.Model):
     _name = 'forlife.synthetic'
