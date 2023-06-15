@@ -11,7 +11,7 @@
         </field>
     </record>
 
-    <record id="" model="ir.actions.act_window">
+    <record id="point_compensate_request_action" model="ir.actions.act_window">
         <field name="name">Yêu cầu tích bù</field>
         <field name="res_model">point.compensate.request</field>
         <field name="view_mode">tree</field>
