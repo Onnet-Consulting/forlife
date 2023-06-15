@@ -37,6 +37,8 @@ class ProductCombo(models.Model):
         return result
 
     def write(self, values):
+        if not self.code:
+            values['code'] = self.env['ir.sequence'].next_by_code('product.combo')
         res = super().write(values)
         for pr in self.combo_product_ids:
             pr.product_id.write({
