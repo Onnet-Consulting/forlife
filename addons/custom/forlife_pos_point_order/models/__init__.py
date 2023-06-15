@@ -7,3 +7,4 @@ from . import points_promotion
 from . import points_consumption_line
 from . import account_move
 from . import pos_order_line_discount_details
+from . import point_compensate_request
