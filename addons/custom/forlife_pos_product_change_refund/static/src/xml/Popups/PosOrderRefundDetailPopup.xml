@@ -31,7 +31,7 @@
                                 <t t-esc="res.product.display_name"/>
                             </td>
                             <td style="border:1px solid black;text-align: center;">
-                                <t t-esc="res.quantity"/>
+                                <t t-esc="res.quantity - res.refunded_qty"/>
                             </td>
                             <td style="border:1px solid black;text-align: center;">
                                 <t t-esc="env.pos.format_currency(res.original_price)"/>
@@ -40,7 +40,7 @@
                                 <t t-esc="env.pos.format_currency(res.money_is_reduced)"/>
                             </td>
                             <td style="border:1px solid black;text-align: center;">
-                                <t t-esc="env.pos.format_currency((res.original_price * res.quantity) - res.money_is_reduced)"/>
+                                <t t-esc="env.pos.format_currency((res.original_price * (res.quantity- res.refunded_qty)) - res.money_is_reduced)"/>
                             </td>
                         </tr>
                     </t>
