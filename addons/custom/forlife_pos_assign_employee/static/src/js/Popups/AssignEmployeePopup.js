@@ -15,8 +15,13 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
         setup() {
             super.setup();
             this.state = useState({
-                employeeID: this.props.startingValue
+                employeeID: this.get_default_employee()
             })
+        }
+
+        get_default_employee() {
+            let employees = this.env.pos.assignable_employees;
+            return employees && employees[0].id;
         }
 
         get employees() {
