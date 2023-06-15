@@ -76,6 +76,8 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 COPY ./addons/ /mnt/extra-addons
 COPY ./requirements.txt /opt/
 
+RUN pip3 install -r /opt/requirements.txt
+
 # Expose Odoo services
 EXPOSE 8069 8071 8072
 
