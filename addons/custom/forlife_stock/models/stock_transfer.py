@@ -517,6 +517,33 @@ class StockTransferLine(models.Model):
             self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'),
             self._context.get('from_date'), self._context.get('to_date'))
         qty_available = result[product.id].get('qty_available', 0)
+        quantity_prodution = self.env['quantity.production.order'].search(
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
+             ('production_id', '=', self.work_from.id)])
+        quantity_prodution_to = self.env['quantity.production.order'].search(
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
+             ('production_id', '=', self.work_to.id)])
+        if quantity_prodution:
+            if self.work_from and self.qty_out > quantity_prodution.quantity:
+                raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+            else:
+                quantity_prodution.update({
+                    'quantity': quantity_prodution.quantity - self.qty_out
+                })
+            if self.work_to and self.work_from != self.work_to:
+                if quantity_prodution_to:
+                    quantity_prodution_to.update({
+                        'quantity': quantity_prodution_to.quantity + self.qty_out
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': product.id,
+                        'location_id': self.stock_transfer_id.location_id.id,
+                        'production_id': self.work_to.id,
+                        'quantity': self.qty_out
+                    })
+        else:
+            raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
         if qty_available < product_quantity:
             if is_diff_transfer:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)

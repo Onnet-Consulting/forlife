@@ -23,7 +23,16 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
+                    <button string="Trở về nháp" name="action_draft" type="object"
+                            attrs="{'invisible': [('state', '!=', 'wait_confirm')]}"/>
+                    <button string="Gửi duyệt" name="action_wait_confirm"
+                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                    <button string="Phê duyệt" name="action_approved" type="object"
+                            attrs="{'invisible':[ ('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
+                </header>
+                <header>
+                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
