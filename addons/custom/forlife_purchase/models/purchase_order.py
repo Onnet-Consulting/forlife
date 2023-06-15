@@ -828,7 +828,7 @@ class PurchaseOrder(models.Model):
                                         'vendor_price': line.vendor_price,
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent,
-                                        'event_id': line.event_id.id,
+                                        # 'event_id': line.event_id.id,
                                         'work_order': line.production_id.id,
                                         'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
@@ -839,6 +839,7 @@ class PurchaseOrder(models.Model):
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                        'occasion_code_id': line.occasion_code_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -866,7 +867,7 @@ class PurchaseOrder(models.Model):
                                 'vendor_price': line.vendor_price,
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent,
-                                'event_id': line.event_id.id,
+                                # 'event_id': line.event_id.id,
                                 'work_order': line.production_id.id,
                                 'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
@@ -877,6 +878,7 @@ class PurchaseOrder(models.Model):
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                'occasion_code_id': line.occasion_code_id.id,
                             }
                             if line.display_type == 'line_section':
                                 pending_section = line
@@ -910,6 +912,7 @@ class PurchaseOrder(models.Model):
                         payment_refs.add(invoice_vals['payment_reference'])
                         refs.add(invoice_vals['ref'])
                     ref_invoice_vals.update({
+                        'move_type': 'in_invoice',
                         'purchase_type': self.purchase_type if len(self) == 1 else 'product',
                         'reference': ', '.join(self.mapped('name')),
                         'ref': ', '.join(refs)[:2000],
@@ -975,7 +978,7 @@ class PurchaseOrder(models.Model):
                                                 'vendor_price': line.vendor_price,
                                                 'warehouse': line.location_id.id,
                                                 'discount': line.discount_percent,
-                                                'event_id': line.event_id.id,
+                                                # 'event_id': line.event_id.id,
                                                 'work_order': line.production_id.id,
                                                 'account_analytic_id': line.account_analytic_id.id,
                                                 'request_code': line.request_purchases,
@@ -986,6 +989,7 @@ class PurchaseOrder(models.Model):
                                                 'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
                                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                                'occasion_code_id': line.occasion_code_id.id,
                                             }
                                             if line.display_type == 'line_section':
                                                 pending_section = line
@@ -1015,7 +1019,7 @@ class PurchaseOrder(models.Model):
                                         'vendor_price': line.vendor_price,
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent,
-                                        'event_id': line.event_id.id,
+                                        # 'event_id': line.event_id.id,
                                         'work_order': line.production_id.id,
                                         'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
@@ -1026,6 +1030,7 @@ class PurchaseOrder(models.Model):
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                        'occasion_code_id': line.occasion_code_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -1051,6 +1056,9 @@ class PurchaseOrder(models.Model):
                                                        and r.picking_type_id.code == 'incoming'
                                                        and r.ware_check == True
                                                        and r.x_is_check_return == False)
+                list_picking_in = []
+                for item in picking_incoming:
+                    list_picking_in.append(item.id)
                 for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
                         x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
                     origins = set()
@@ -1074,7 +1082,7 @@ class PurchaseOrder(models.Model):
                         'type_inv': self.type_po_cost,
                         'move_type': 'in_invoice',
                         'purchase_order_product_id': [(6, 0, [self.id])],
-                        'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
+                        'receiving_warehouse_id': [(6, 0, list_picking_in)],
                         'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1148,7 +1156,7 @@ class PurchaseOrder(models.Model):
                                     'vendor_price': line.vendor_price,
                                     'warehouse': line.location_id.id,
                                     'discount': line.discount_percent,
-                                    'event_id': line.event_id.id,
+                                    # 'event_id': line.event_id.id,
                                     'work_order': line.production_id.id,
                                     'account_analytic_id': line.account_analytic_id.id,
                                     'request_code': line.request_purchases,
@@ -1159,6 +1167,7 @@ class PurchaseOrder(models.Model):
                                     'product_uom_id': line.product_uom.id,
                                     'price_unit': line.price_unit,
                                     'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                    'occasion_code_id': line.occasion_code_id.id,
                                 }
                             sequence += 1
                             key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1192,7 +1201,7 @@ class PurchaseOrder(models.Model):
                             'vendor_price': line.vendor_price,
                             'warehouse': line.location_id.id,
                             'discount': line.discount_percent,
-                            'event_id': line.event_id.id,
+                            # 'event_id': line.event_id.id,
                             'work_order': line.production_id.id,
                             'account_analytic_id': line.account_analytic_id.id,
                             'request_code': line.request_purchases,
@@ -1203,6 +1212,7 @@ class PurchaseOrder(models.Model):
                             'product_uom_id': line.product_uom.id,
                             'price_unit': line.price_unit,
                             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                            'occasion_code_id': line.occasion_code_id.id,
                         }
                         sequence += 1
                         key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1224,9 +1234,6 @@ class PurchaseOrder(models.Model):
                             key: invoice_vals
                         })
             else:
-                # if order.inventory_status != 'done' and order.purchase_type == 'product':
-                #     raise ValidationError(
-                #         'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
                 if order.custom_state != 'approved':
                     raise UserError(
                         _('Tạo hóa đơn không hợp lệ!'))
@@ -1255,7 +1262,7 @@ class PurchaseOrder(models.Model):
                                 'vendor_price': line.vendor_price,
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent,
-                                'event_id': line.event_id.id,
+                                # 'event_id': line.event_id.id,
                                 'work_order': line.production_id.id,
                                 'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
@@ -1266,6 +1273,7 @@ class PurchaseOrder(models.Model):
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                'occasion_code_id': line.occasion_code_id.id,
                             }
                             wave.picking_id.ware_check = True
                     else:
