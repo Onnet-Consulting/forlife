@@ -47,7 +47,9 @@ class ProductDefective(models.Model):
         self._send_mail_approve(self.id)
 
     def action_approve(self):
-        if self.quantity_defective_approved > self.quantity_inventory_store - self.quantity_can_be_sale:
+        self.ensure_one()
+        product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id),('id','!=',self.id)])
+        if self.quantity_defective_approved > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
             raise ValidationError(_('Tồn kho không đáp ứng'))
         self.quantity_can_be_sale = self.quantity_defective_approved
         self.state = 'approved'
