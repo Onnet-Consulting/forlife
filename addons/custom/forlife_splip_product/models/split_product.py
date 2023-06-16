@@ -87,13 +87,14 @@ class SplitProduct(models.Model):
             for r in self.split_product_line_sub_ids:
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     product_qty_split += r.quantity
-                    product = self._create_product(r)
-                    r.product_new_id = product.id
             rec.product_quantity_out = product_qty_split
             available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.lot_stock_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
             if rec.product_quantity_out > available_quantity:
                 raise UserError(
                     _(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}"))
+        for r in self.split_product_line_sub_ids:
+            product = self._create_product(r)
+            r.product_new_id = product.id
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
         pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
