@@ -174,13 +174,62 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     @api.model
     def create(self, vals):
+        old_record = self.env['forlife.production'].search([('id', '=', vals['forlife_production_id'])])
+        value = {
+            'code': old_record.code,
+            'name': old_record.name,
+            'user_id': old_record.user_id.id,
+            'company_id': old_record.company_id.id,
+            'created_date': old_record.created_date,
+            'implementation_id': old_record.implementation_id.id,
+            'management_id': old_record.management_id.id,
+            'production_department': old_record.production_department,
+            'to_date': old_record.to_date,
+            'brand_id': old_record.brand_id.id,
+            'state': old_record.state,
+            'status': old_record.status,
+            'relationship_forlife_production_id': old_record.id,
+            'forlife_production_finished_product_ids': []
+        }
+        for record in old_record.forlife_production_finished_product_ids:
+            value['forlife_production_finished_product_ids'].append((
+                0, 0, {'forlife_production_id': record.forlife_production_id.id,
+                       'product_id': record.product_id.id,
+                       'forlife_production_name': record.forlife_production_name,
+                       'description': record.description,
+                       'produce_qty': record.produce_qty,
+                       'uom_id': record.uom_id.id,
+                       'unit_price': record.unit_price,
+                       'stock_qty': record.stock_qty,
+                       'remaining_qty': record.remaining_qty,
+                       'implementation_id': record.implementation_id.id,
+                       'management_id': record.management_id.id,
+                       'production_department': record.production_department,
+                       'forlife_bom_material_ids': [(
+                           0, 0, {'forlife_production_id': line.forlife_production_id.id,
+                                  'product_id': line.product_id.id,
+                                  'description': line.description,
+                                  'quantity': line.quantity,
+                                  'uom_id': line.uom_id.id,
+                                  'production_uom_id': line.production_uom_id.id,
+                                  'conversion_coefficient': line.conversion_coefficient,
+                                  'rated_level': line.rated_level,
+                                  'loss': line.loss,
+                                  'total': line.total,
+                                  }) for line in record.forlife_bom_material_ids],
+                       'forlife_bom_service_cost_ids': [(
+                           0, 0, {'forlife_production_id': line.forlife_bom_id.id,
+                                  'product_id': line.product_id.id,
+                                  'rated_level': line.rated_level
+                                  }) for line in record.forlife_bom_service_cost_ids]
+                       }))
+        history = self.env['production.history'].create(value)
         current_order = self.env['forlife.production.finished.product'].search([('forlife_production_id', '=', vals['forlife_production_id']), ('product_id', '=', vals['product_id'])])
         current_order.unlink()
         line = super(ForlifeProductionFinishedProduct, self).create(vals)
         return line
 
     def write(self, vals):
-        res = super(ForlifeProductionFinishedProduct, self).write(vals)
         for item in self:
             value = {
                 'code': self.forlife_production_id.code,
@@ -231,6 +280,7 @@ class ForlifeProductionFinishedProduct(models.Model):
                                       }) for line in record.forlife_bom_service_cost_ids]
                            }))
             history = self.env['production.history'].create(value)
+            res = super(ForlifeProductionFinishedProduct, self).write(vals)
         return res
 
     @api.model
