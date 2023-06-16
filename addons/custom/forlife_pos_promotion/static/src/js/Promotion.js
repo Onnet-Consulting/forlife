@@ -421,7 +421,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             let pro = this.pos.get_program_by_id(usage.str_id);
             result.push({
                 id: usage.program_id,
-                str: pro.display_name,
+                str: pro.name,
                 code: this.pos.getPromotionCode(pro),
                 discount_amount: this.quantity * usage.discount_amount
             });
