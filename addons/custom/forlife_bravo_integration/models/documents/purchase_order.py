@@ -260,9 +260,10 @@ class StockPickingPurchaseProduct(models.Model):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount",
-            "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity", "OriginalPriceUnit",
-            "PriceUnit", "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "DocNo_PO", "WarehouseCode",
-            "JobCode", "RowId", "DocNo_WO", "DeptCode",
+            "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9",
+            "ConvertRate9", "Quantity", "OriginalPriceUnit",
+            "PriceUnit", "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount",
+            "IsPromotions", "DocNo_PO", "WarehouseCode", "JobCode", "RowId", "DocNo_WO", "DeptCode",
         ]
 
     def bravo_get_picking_purchase_value(self):
@@ -309,6 +310,8 @@ class StockPickingPurchaseProduct(models.Model):
             "ItemName": product.name,
             "UnitPurCode": purchase_order_line.purchase_uom.code,
             "DebitAccount": ...,
+            "Quantity9": stock_move.quantity_purchase_done,
+            "ConvertRate9": stock_move.quantity_change,
             "Quantity": stock_move.quantity_done,
             "OriginalPriceUnit": vendor_price,
             "PriceUnit": vendor_price * exchange_rate,
@@ -316,6 +319,9 @@ class StockPickingPurchaseProduct(models.Model):
             "Discount": original_discount * exchange_rate,
             "OriginalUnitCost": vendor_price - original_discount,
             "UnitCost": (vendor_price - original_discount) * exchange_rate,
+            "OriginalAmount": stock_move.quantity_purchase_done * (vendor_price - original_discount),
+            "Amount": (stock_move.quantity_purchase_done * (vendor_price - original_discount)) * exchange_rate,
+            "IsPromotions": 1 if stock_move.free_good else 0,
             "DocNo_PO": picking.origin,
             "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
             "JobCode": stock_move.occasion_code_id.code,
