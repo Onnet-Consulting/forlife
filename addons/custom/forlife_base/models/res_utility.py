@@ -158,7 +158,7 @@ with products as (select id
      locatoins as (select id from stock_location where warehouse_id = {wh_id}),
      attribute_data as (select pp.id                                                                                as product_id,
                                pa.attrs_code                                                                        as attrs_code,
-                               array_agg(coalesce(pav.name::json -> 'vi_VN', pav.name::json -> 'en_US')) as value
+                               array_agg(coalesce(pav.name::json -> '{self.env.user.lang}', pav.name::json -> 'en_US')) as value
                         from product_template_attribute_line ptal
                                  left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
                                  left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -193,7 +193,7 @@ with products as (select id
                         and now() between campaign.from_date and campaign.to_date)
 
 select coalesce(pp2.barcode, '')                                      as barcode,
-       coalesce(pt2.name::json -> 'vi_VN', pt2.name::json -> 'en_US') as ten_san_pham,
+       coalesce(pt2.name::json -> '{self.env.user.lang}', pt2.name::json -> 'en_US') as ten_san_pham,
        coalesce(sf.qty, 0)                                            as so_luong,
        REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_color.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as mau_sac,
        REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_size.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as size,
@@ -208,7 +208,8 @@ from products
          left join attribute_data attr_size on attr_size.product_id = products.id and attr_size.attrs_code = '{attr_value.get('size', '')}'
          left join attribute_data attr_gender on attr_gender.product_id = products.id and attr_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
 """
-        return self.execute_postgresql(sql, [], True)
+        self._cr.execute(sql)
+        return self._cr.dictfetchall()
 
     @api.model
     def get_stock_warehouse_info_by_barcode(self, wh_type_code, barcode):
@@ -233,3 +234,57 @@ from products
                     'so_luong': sm_in - sm_out,
                 })
         return result
+
+    @api.model
+    def get_point_history_information(self, phone_number, brand, type):
+        if any([not phone_number, brand not in ('FMT', 'TKL'), type not in (0, 1)]):
+            return []
+        _point_type = {
+            0: 'points_fl_order',
+            1: 'points_used',
+        }
+        _brand = {
+            'FMT': 'format',
+            'TKL': 'forlife',
+        }
+        tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz)).utcoffset().total_seconds() / 3600)
+
+        sql = f"""
+select coalesce(po.name, '')                                                      as ma_don_hang,
+       coalesce(php.{_point_type.get(type)}, 0)                                   as diem,
+       to_char(php.date_order + interval '{tz_offset} hours', 'HH:MM DD/MM/YYYY') as ngay_mua_hang
+from partner_history_point php
+         join res_partner rp on rp.id = php.partner_id
+         left join pos_order po on po.id = php.pos_order_id
+where php.store = '{_brand.get(brand)}'
+  and rp.phone = '{phone_number}'
+  and coalesce(php.{_point_type.get(type)}, 0) <> 0
+order by php.date_order desc
+"""
+        return self.execute_postgresql(sql, [], True)
+
+    @api.model
+    def get_pos_order_information(self, phone_number, month, year, brand):
+        if any([not phone_number, not brand, not (month in range(1, 13)), not isinstance(year, int)]):
+            return []
+        _brand = self.env['res.brand'].search([('code', '=', brand)], limit=1).id or 0
+        tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz)).utcoffset().total_seconds() / 3600)
+
+        sql = f"""
+select po.name                                                             as ma_don_hang,
+       store.code                                                          as ma_cua_hang,
+       store.name                                                          as ten_cua_hang,
+       to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY') as ngay_mua_hang,
+       coalesce(po.amount_total, 0)                                        as so_tien_phai_tra,
+       coalesce(po.point_order, 0)                                         as diem_tich_luy
+
+from pos_order po
+         join res_partner rp on rp.id = po.partner_id
+         join pos_session ps on ps.id = po.session_id
+         join pos_config pc on pc.id = ps.config_id
+         join store on store.id = pc.store_id
+where rp.phone = '{phone_number}'
+  and po.brand_id = {_brand}
+  and to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY') = '{"%.2d/%.4d" % (month, year)}'
+"""
+        return self.execute_postgresql(sql, [], True)
