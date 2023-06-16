@@ -137,3 +137,13 @@ msgstr "Giá NCC"
 #: model:ir.model.fields,field_description:forlife_purchase_return.field_stock_return_picking_line__quantity_remain
 msgid "Quantity Remain"
 msgstr "SL còn lại"
+
+#. module: forlife_purchase_return
+#: model_terms:ir.ui.view,arch_db:forlife_purchase_return.purchase_order_view_form_inherit
+msgid "Receipt Products"
+msgstr "Nhận hàng"
+
+#. module: forlife_purchase_return
+#: model_terms:ir.ui.view,arch_db:forlife_purchase_return.purchase_order_view_form_inherit
+msgid "Return"
+msgstr "Trả hàng"

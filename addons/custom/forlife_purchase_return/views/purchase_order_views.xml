@@ -58,7 +58,27 @@
             </field>
         </record>
 
-        
+        <record id="purchase_order_view_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="replace">
+                    <button type="object"
+                        name="action_view_picking"
+                        class="oe_stat_button"
+                        icon="fa-truck" attrs="{'invisible':['|', ('incoming_picking_count','=', 0), ('is_return', '=', True)]}" groups="stock.group_stock_user">
+                        <field name="incoming_picking_count" widget="statinfo" string="Receipt Products"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_picking"
+                        class="oe_stat_button"
+                        icon="fa-truck" attrs="{'invisible':['|', ('return_picking_count','=', 0), ('is_return', '=', False)]}" groups="stock.group_stock_user">
+                        <field name="return_picking_count" widget="statinfo" string="Return"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
 
         <record id="action_purchase_order_return" model="ir.actions.act_window">
             <field name="name">Purchase Return Order</field>
