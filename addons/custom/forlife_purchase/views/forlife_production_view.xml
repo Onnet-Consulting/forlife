@@ -38,19 +38,19 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="code"/>
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="created_date"/>
+                            <field name="code" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="name" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="created_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="selected_product_ids" invisible="1"/>
                         </group>
                         <group>
-                            <field name="implementation_id"/>
-                            <field name="management_id"/>
-                            <field name="production_department"/>
-                            <field name="brand_id"/>
-                            <field name="produced_from_date"/>
-                            <field name="to_date"/>
+                            <field name="implementation_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="management_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="production_department" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="brand_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="produced_from_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="to_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -154,20 +154,20 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Ingredients" name="ingredients">
-                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">
-                                    <tree editable="bottom">
-                                        <field name="product_id"/>
-                                        <field name="description"/>
-                                        <field name="uom_id"/>
-                                        <field name="production_uom_id"/>
-                                        <field name="conversion_coefficient"/>
-                                        <field name="rated_level"/>
-                                        <field name="loss"/>
-                                        <field name="total"/>
-                                    </tree>
-                                </field>
-                            </page>
+<!--                            <page string="Ingredients" name="ingredients">-->
+<!--                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">-->
+<!--                                    <tree editable="bottom">-->
+<!--                                        <field name="product_id"/>-->
+<!--                                        <field name="description"/>-->
+<!--                                        <field name="uom_id"/>-->
+<!--                                        <field name="production_uom_id"/>-->
+<!--                                        <field name="conversion_coefficient"/>-->
+<!--                                        <field name="rated_level"/>-->
+<!--                                        <field name="loss"/>-->
+<!--                                        <field name="total"/>-->
+<!--                                    </tree>-->
+<!--                                </field>-->
+<!--                            </page>-->
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">

@@ -188,11 +188,13 @@ class ForlifeProductionFinishedProduct(models.Model):
                 'user_id': self.forlife_production_id.user_id.id,
                 'company_id': self.forlife_production_id.company_id.id,
                 'created_date': self.forlife_production_id.created_date,
-                'implementation_department': self.forlife_production_id.implementation_department,
-                'management_department': self.forlife_production_id.management_department,
+                'implementation_id': self.forlife_production_id.implementation_id.id,
+                'management_id': self.forlife_production_id.management_id.id,
                 'production_department': self.forlife_production_id.production_department,
                 'to_date': self.forlife_production_id.to_date,
+                'brand_id': self.forlife_production_id.brand_id.id,
                 'state': self.forlife_production_id.state,
+                'status': self.forlife_production_id.status,
                 'relationship_forlife_production_id': self.forlife_production_id.id,
                 'forlife_production_finished_product_ids': []
             }
@@ -207,8 +209,8 @@ class ForlifeProductionFinishedProduct(models.Model):
                            'unit_price': record.unit_price,
                            'stock_qty': record.stock_qty,
                            'remaining_qty': record.remaining_qty,
-                           'implementation_department': record.implementation_department,
-                           'management_department': record.management_department,
+                           'implementation_id': record.implementation_id.id,
+                           'management_id': record.management_id.id,
                            'production_department': record.production_department,
                            'forlife_bom_material_ids': [(
                                0, 0, {'forlife_production_id': line.forlife_production_id.id,
