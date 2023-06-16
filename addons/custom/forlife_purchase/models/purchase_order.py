@@ -141,6 +141,11 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.location_id = self.location_id
 
+    @api.onchange('receive_date')
+    def _onchange_line_receive_date(self):
+        for rec in self.order_line:
+            rec.receive_date = self.receive_date
+
     @api.onchange('partner_id', 'currency_id')
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
