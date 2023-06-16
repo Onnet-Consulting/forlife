@@ -54,5 +54,6 @@ class PosOrderLine(models.Model):
         result['money_point_is_reduced'] = orderline.money_point_is_reduced
         result['is_voucher_conditional'] = orderline.is_voucher_conditional
         result['is_product_defective'] = orderline.is_product_defective
+        result['subtotal_paid'] = orderline.subtotal_paid
         result['money_reduce_from_product_defective'] = orderline.money_reduce_from_product_defective
         return result
