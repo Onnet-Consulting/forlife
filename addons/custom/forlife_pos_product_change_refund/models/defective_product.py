@@ -40,12 +40,13 @@ class ProductDefective(models.Model):
     def compute_quantity_inventory_store(self):
         Quant = self.env['stock.quant']
         for rec in self:
-            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.store_id.warehouse_id.lot_stock_id, lot_id=None, package_id=None,
-                                                               owner_id=None, strict=False, allow_negative=False)
-            if available_quantity:
-                rec.quantity_inventory_store = available_quantity
-            else:
-                rec.quantity_inventory_store = 0
+            if rec.product_id and rec.store_id:
+                available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.store_id.warehouse_id.lot_stock_id, lot_id=None, package_id=None,
+                                                                   owner_id=None, strict=False, allow_negative=False)
+                if available_quantity:
+                    rec.quantity_inventory_store = available_quantity
+                else:
+                    rec.quantity_inventory_store = 0
 
     def action_send_request_approve(self):
         self.state = 'waiting approve'
