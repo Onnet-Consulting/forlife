@@ -141,6 +141,11 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.location_id = self.location_id
 
+    @api.onchange('receive_date')
+    def _onchange_line_receive_date(self):
+        for rec in self.order_line:
+            rec.receive_date = self.receive_date
+
     @api.onchange('partner_id', 'currency_id')
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
@@ -367,7 +372,7 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
-                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)], limit=1)
+                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
                 picking_in.write({
                     'is_pk_purchase': True
                 })
@@ -461,7 +466,7 @@ class PurchaseOrder(models.Model):
                         'price_unit': line.price_unit,
                         'product_uom': line.product_id.uom_id.id if line.product_id.uom_id else uom,
                         'location_id': line.location_id.id,
-                        'taxes_id': line.taxes_id.id,
+                        'tax_ids': line.taxes_id.ids,
                         'price_tax': line.price_tax,
                         'discount_percent': line.discount_percent,
                         'discount': line.discount,
@@ -489,7 +494,7 @@ class PurchaseOrder(models.Model):
                         'vendor_price': line.vendor_price,
                         'price_unit': line.price_unit,
                         'warehouse': line.location_id.id,
-                        'taxes_id': line.taxes_id.id,
+                        'tax_ids': line.taxes_id.ids,
                         'tax_amount': line.price_tax,
                         'price_subtotal': line.price_subtotal,
                         'account_analytic_id': line.account_analytic_id.id,
@@ -845,7 +850,7 @@ class PurchaseOrder(models.Model):
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                         'discount_percent': line.discount,
-                                        'taxes_id': line.taxes_id.id,
+                                        'tax_ids': line.taxes_id.ids,
                                         'tax_amount': line.price_tax,
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
@@ -884,7 +889,7 @@ class PurchaseOrder(models.Model):
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': line.purchase_quantity,
                                 'discount_percent': line.discount,
-                                'taxes_id': line.taxes_id.id,
+                                'tax_ids': line.taxes_id.ids,
                                 'tax_amount': line.price_tax,
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
@@ -995,7 +1000,7 @@ class PurchaseOrder(models.Model):
                                                 'request_code': line.request_purchases,
                                                 'quantity_purchased': wave_item.quantity_purchase_done - x_return.quantity_purchase_done,
                                                 'discount_percent': line.discount,
-                                                'taxes_id': line.taxes_id.id,
+                                                'tax_ids': line.taxes_id.ids,
                                                 'tax_amount': line.price_tax,
                                                 'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
@@ -1036,7 +1041,7 @@ class PurchaseOrder(models.Model):
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': wave_item.quantity_purchase_done,
                                         'discount_percent': line.discount,
-                                        'taxes_id': line.taxes_id.id,
+                                        'tax_ids': line.taxes_id.ids,
                                         'tax_amount': line.price_tax,
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
@@ -1173,7 +1178,7 @@ class PurchaseOrder(models.Model):
                                     'request_code': line.request_purchases,
                                     'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                     'discount_percent': line.discount,
-                                    'taxes_id': line.taxes_id.id,
+                                    'tax_ids': line.taxes_id.ids,
                                     'tax_amount': line.price_tax,
                                     'product_uom_id': line.product_uom.id,
                                     'price_unit': line.price_unit,
@@ -1218,7 +1223,7 @@ class PurchaseOrder(models.Model):
                             'request_code': line.request_purchases,
                             'quantity_purchased': line.purchase_quantity,
                             'discount_percent': line.discount,
-                            'taxes_id': line.taxes_id.id,
+                            'tax_ids': line.taxes_id.ids,
                             'tax_amount': line.price_tax,
                             'product_uom_id': line.product_uom.id,
                             'price_unit': line.price_unit,
@@ -1279,7 +1284,7 @@ class PurchaseOrder(models.Model):
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': wave_item.quantity_purchase_done,
                                 'discount_percent': line.discount,
-                                'taxes_id': line.taxes_id.id,
+                                'tax_ids': line.taxes_id.ids,
                                 'tax_amount': line.price_tax,
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
@@ -1857,6 +1862,23 @@ class StockPicking(models.Model):
                 # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
+                for rec in record.move_ids_without_package:
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho

@@ -421,10 +421,9 @@ class AccountMove(models.Model):
                     })
                     if synthetic_line:
                         synthetic_line.update({
-                            'syn_po_id': invoice.id,
-                            'quantity': invoice.quantity,
-                            'discount': invoice.discount_percent,
-                            'price_unit': invoice.price_unit,
+                            'quantity': invoice.quantity if invoice.quantity else 0,
+                            'discount': invoice.discount_percent if invoice.discount_percent else 0,
+                            'price_unit': invoice.price_unit if invoice.price_unit else 0,
                         })
 
     def create_invoice_tnk_db(self):
@@ -635,22 +634,13 @@ class AccountMoveLine(models.Model):
     work_order = fields.Many2one('forlife.production', string='Work Order')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
-    discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
-    tax_amount = fields.Monetary(string='Tiền thuế')
-    taxes_id = fields.Many2one('account.tax',
-                               string='Thuế %',
-                               domain=[('active', '=', True)])
-    pbo_cost = fields.Float()
-
-    @api.onchange('move_id.is_check_cost_view')
-    def onchange_is_check_cost_view(self):
-        a = self.quantity * (self.price_unit / self.pbo_cost)
-        if self.is_check_cost_view:
-            self.price_subtotal = a
+    tax_amount = fields.Monetary(string='Thuế', compute='_compute_tax_amount', store=1)
+    # discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
+    # taxes_id = fields.Many2one('account.tax',
+    #                            string='Thuế %',
+    #                            domain=[('active', '=', True)])
 
     # fields common !!
-    readonly_discount = fields.Boolean(default=False)
-    readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
@@ -704,11 +694,44 @@ class AccountMoveLine(models.Model):
         res = super().create(list_vals)
         return res
 
+    @api.depends('tax_ids', 'price_subtotal')
+    def _compute_tax_amount(self):
+        for rec in self:
+            if rec.tax_ids and rec.price_subtotal:
+                for item in rec.tax_ids:
+                    rec.tax_amount = (item.amount / 100) * rec.price_subtotal
+
     @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
             if rec.price_subtotal and rec.move_id.exchange_rate:
                 rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
+
+    @api.onchange("discount")
+    def _onchange_discount_percent(self):
+        if self.discount:
+            self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
+
+    @api.onchange("discount_percent")
+    def _onchange_discount(self):
+        if self.discount_percent and self.price_unit > 0 and self.quantity > 0:
+            self.discount = self.discount_percent / (self.price_unit * self.quantity * 0.01)
+
+    is_check_promotions = fields.Boolean('Dùng để readonly line nếu self.promotions = True')
+
+    @api.onchange('promotions')
+    def onchange_vendor_prices(self):
+        if self.promotions:
+            self.vendor_price = False
+            self.price_unit = False
+            self.discount = self.discount_percent = False
+            self.tax_ids = False
+            self.tax_amount = False
+            self.total_vnd_amount = False
+            self.is_check_promotions = True
+
+
+
     #
     # def _prepare_compute_all_values(self):
     #     # Hook method to returns the different argument values for the
@@ -740,14 +763,6 @@ class AccountMoveLine(models.Model):
     #             self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
     #
     #
-    # @api.depends('taxes_id')
-    # def _compute_tax_amount(self):
-    #     for rec in self:
-    #         if rec.taxes_id:
-    #             rec.tax_amount = (rec.taxes_id.amount / 100) * rec.price_subtotal
-    #             # self.readonly_discount = True
-    #         # else:
-    #             # self.readonly_discount = False
     #
     # # @api.onchange("discount_percent")
     # # def _onchange_discount(self):
@@ -1007,10 +1022,12 @@ class SyntheticInvoice(models.Model):
                                 rec.after_tax = total_cost
                 else:
                     rec.after_tax = 0
+                    
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:
-            record.price_subtotal = record.price_unit * record.quantity * record.synthetic_id.exchange_rate
+            if record.price_unit and record.quantity:
+                record.price_subtotal = record.price_unit * record.quantity * record.synthetic_id.exchange_rate
 
     @api.depends('price_subtotal', 'discount', 'before_tax', 'tnk_tax', 'db_tax', 'after_tax')
     def _compute_total_product(self):

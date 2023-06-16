@@ -30,12 +30,42 @@ class ForlifeProduction(models.Model):
     to_date = fields.Date(string="To Date", required=True)
     brand_id = fields.Many2one('res.brand', string="Nhãn hàng")
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('open', 'Open'),
-        ('confirm', 'Confirm'),
-        ('approved', 'Approved'),
-        ('done', 'Done'),
+        ('draft', 'Nháp'),
+        ('wait_confirm', 'Chờ duyệt'),
+        ('approved', 'Đã duyệt'),
     ], default='draft')
+    status = fields.Selection([
+        ('assigned', 'Chưa thực hiện'),
+        ('in_approved', 'Đã nhập kho'),
+        ('done', 'Hoàn thành'),
+    ], compute='compute_check_status')
+
+    def action_draft(self):
+        for record in self:
+            record.write({'state': 'draft'})
+
+    def action_wait_confirm(self):
+        for record in self:
+            record.write({'state': 'wait_confirm'})
+
+    def action_approved(self):
+        for record in self:
+            record.write({'state': 'approved'})
+
+    @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty', 'forlife_production_finished_product_ids.stock_qty')
+    def compute_check_status(self):
+        for rec in self:
+            if rec.forlife_production_finished_product_ids and any(x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
+                if all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('remaining_qty')):
+                    rec.status = 'done'
+                elif all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('stock_qty')):
+                    rec.status = 'assigned'
+
+                else:
+                    rec.status = 'in_approved'
+
+            else:
+                rec.status = 'assigned'
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
@@ -74,7 +104,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Unit', related='product_id.uom_id')
     produce_qty = fields.Float(string='Produce Quantity', required=True)
     unit_price = fields.Float(readonly=1, string='Unit Price')
-    stock_qty = fields.Float(string='Stock Quantity')
+    stock_qty = fields.Float(string='Stock Quantity', compute='_compute_remaining_qty', store=1)
     remaining_qty = fields.Float(string='Remaining Quantity')
     description = fields.Char(string='Description', related='product_id.name')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')

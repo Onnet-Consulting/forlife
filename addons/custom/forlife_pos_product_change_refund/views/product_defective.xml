@@ -29,7 +29,7 @@
                     <header>
                         <button name="action_send_request_approve" type="object" class="oe_highlight" string="Gửi duyệt" states="new"/>
                         <button name="action_approve" type="object" class="oe_highlight" string="Duyệt" states="waiting approve"/>
-                        <button name="action_refuse" type="object" string="Từ chối (alpha)" states="waiting approve"/>
+                        <button name="action_refuse" type="object" string="Từ chối (alpha)" invisible="1" states="waiting approve"/>
                         <button name="%(action_reason_refuse_product_defective)d" type="action" string="Từ chối (beta)" states="waiting approve"/>
                         <field name="state" widget="statusbar"/>
                     </header>
