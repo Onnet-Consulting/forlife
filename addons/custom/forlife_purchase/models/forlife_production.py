@@ -20,29 +20,52 @@ class ForlifeProduction(models.Model):
                                                       string='Materials')
     forlife_production_service_cost_ids = fields.One2many('forlife.production.service.cost', 'forlife_production_id',
                                                           string='Service costs')
-    implementation_department = fields.Selection([('di_nau', 'Xưởng Dị Nâu'),
-                                                  ('minh_khai', 'Xưởng Minh Khai'),
-                                                  ('nguyen_van_cu', 'Xưởng Nguyễn Văn Cừ'),
-                                                  ('da_lat', 'Xưởng Đà Lạt'),
-                                                  ('gia_cong', 'Gia công'),
-                                                  ], default='di_nau', string='Implementation Department')
-    management_department = fields.Selection([('tkl', 'Bộ phận sản xuất TKL'),
-                                              ('fm', 'Bộ phận quản lý FM'),
-                                              ('mua_hang', 'Phòng mua hàng')
-                                              ], default='tkl', string='Management Department')
+    implementation_id = fields.Many2one('account.analytic.account', string='Bộ phận thực hiện')
+    management_id = fields.Many2one('account.analytic.account', string='Bộ phận quản lý')
     production_department = fields.Selection([('tu_san_xuat', 'Hàng tự sản xuất'),
                                               ('tp', 'Gia công TP'),
                                               ('npl', 'Gia công NPL')
                                               ], default='tu_san_xuat', string='Production Department')
     produced_from_date = fields.Date(string="Produced From Date", default=lambda self: fields.datetime.now(), required=True)
     to_date = fields.Date(string="To Date", required=True)
+    brand_id = fields.Many2one('res.brand', string="Nhãn hàng")
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('open', 'Open'),
-        ('confirm', 'Confirm'),
-        ('approved', 'Approved'),
-        ('done', 'Done'),
+        ('draft', 'Nháp'),
+        ('wait_confirm', 'Chờ duyệt'),
+        ('approved', 'Đã duyệt'),
     ], default='draft')
+    status = fields.Selection([
+        ('assigned', 'Chưa thực hiện'),
+        ('in_approved', 'Đã nhập kho'),
+        ('done', 'Hoàn thành'),
+    ], compute='compute_check_status')
+
+    def action_draft(self):
+        for record in self:
+            record.write({'state': 'draft'})
+
+    def action_wait_confirm(self):
+        for record in self:
+            record.write({'state': 'wait_confirm'})
+
+    def action_approved(self):
+        for record in self:
+            record.write({'state': 'approved'})
+
+    @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty', 'forlife_production_finished_product_ids.stock_qty')
+    def compute_check_status(self):
+        for rec in self:
+            if rec.forlife_production_finished_product_ids and any(x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
+                if all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('remaining_qty')):
+                    rec.status = 'done'
+                elif all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('stock_qty')):
+                    rec.status = 'assigned'
+
+                else:
+                    rec.status = 'in_approved'
+
+            else:
+                rec.status = 'assigned'
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
@@ -93,12 +116,12 @@ class ForlifeProductionFinishedProduct(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Unit', related='product_id.uom_id')
     produce_qty = fields.Float(string='Produce Quantity', required=True)
     unit_price = fields.Float(readonly=1, string='Unit Price')
-    stock_qty = fields.Float(string='Stock Quantity')
+    stock_qty = fields.Float(string='Stock Quantity', compute='_compute_remaining_qty', store=1)
     remaining_qty = fields.Float(string='Remaining Quantity')
     description = fields.Char(string='Description', related='product_id.name')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
-    implementation_department = fields.Selection(related='forlife_production_id.implementation_department')
-    management_department = fields.Selection(related='forlife_production_id.management_department')
+    implementation_id = fields.Many2one('account.analytic.account', related='forlife_production_id.implementation_id')
+    management_id = fields.Many2one('account.analytic.account', related='forlife_production_id.management_id')
     production_department = fields.Selection(related='forlife_production_id.production_department')
     forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')

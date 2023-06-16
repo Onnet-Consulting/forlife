@@ -2,6 +2,7 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_round
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -179,13 +180,16 @@ class StockMove(models.Model):
                 line_ids = am_vals[0].get('line_ids')
 
                 # FIXME: find true logic
+                credit = None
+                debit = None
                 if len(line_ids) == 2:
                     for line in line_ids:
-                        if line[2]['balance'] < 0:
+                        if line[2]['balance'] <= 0:
                             credit = -line[2]['balance']
-                        else:
+                        if line[2]['balance'] >= 0:
                             debit = line[2]['balance']
-                else:
+
+                if credit == None or debit == None:
                     value = self._get_price_unit() * self.quantity_done
                     credit = value
                     debit = value

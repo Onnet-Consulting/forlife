@@ -30,5 +30,6 @@
         'data/ir_sequence.xml',
         'views/account_move.xml',
         'wizard/wizard_increase_decrease_invoice_view.xml',
+        'data/mail_template_data.xml'
     ],
 }

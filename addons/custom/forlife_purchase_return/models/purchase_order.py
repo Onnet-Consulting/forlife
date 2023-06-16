@@ -16,8 +16,13 @@ class PurchaseOrder(models.Model):
     return_purchase_ids = fields.One2many('purchase.order', 'origin_purchase_id', string="Return Purchases", copy=False)
     origin_purchase_id = fields.Many2one('purchase.order', string="Origin Purchase", copy=False)
     count_return_purchase = fields.Integer(compute="_compute_count_return_purchase", store=True, copy=False)
-
+    return_picking_count = fields.Integer("Return Shipment count", compute='_compute_return_picking_count')
     warehouse_material = fields.Many2one('stock.location', string="Lý do nhập/xuất khác")
+
+    @api.depends('picking_ids')
+    def _compute_return_picking_count(self):
+        for order in self:
+            order.return_picking_count = len(order.picking_ids)
 
     @api.onchange('partner_id')
     def _onchange_partner_id_return(self):
@@ -159,7 +164,7 @@ class PurchaseOrder(models.Model):
                                         'discount_percent': line.discount_percent,
                                         'taxes_id': line.taxes_id.id,
                                         'tax_amount': line.price_tax,
-                                        'uom_id': line.product_uom.id,
+                                        'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                     }
@@ -198,7 +203,7 @@ class PurchaseOrder(models.Model):
                                 'discount_percent': line.discount_percent,
                                 'taxes_id': line.taxes_id.id,
                                 'tax_amount': line.price_tax,
-                                'uom_id': line.product_uom.id,
+                                'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                             }
@@ -306,7 +311,7 @@ class PurchaseOrder(models.Model):
                                                 'discount_percent': line.discount_percent,
                                                 'taxes_id': line.taxes_id.id,
                                                 'tax_amount': line.price_tax,
-                                                'uom_id': line.product_uom.id,
+                                                'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
                                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                             }
@@ -346,7 +351,7 @@ class PurchaseOrder(models.Model):
                                         'discount_percent': line.discount_percent,
                                         'taxes_id': line.taxes_id.id,
                                         'tax_amount': line.price_tax,
-                                        'uom_id': line.product_uom.id,
+                                        'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                     }

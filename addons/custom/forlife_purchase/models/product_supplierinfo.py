@@ -6,10 +6,10 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     vendor_code = fields.Char(related='partner_id.code')
-    amount_conversion = fields.Float('Số lượng quy đổi', default=1)
+    amount_conversion = fields.Float('Số lượng quy đổi', default=1, required=1)
 
     date_start = fields.Date('Start Date', help="Start date for this vendor price", required=True)
-    date_end = fields.Date('End Date', help="End date for this vendor price", required= True)
+    date_end = fields.Date('End Date', help="End date for this vendor price", required=True)
 
     @api.constrains('product_tmpl_id', 'date_start', 'date_end', 'partner_id')
     def constrains_check_duplicate_date_by_product_tmpl_id(self):
