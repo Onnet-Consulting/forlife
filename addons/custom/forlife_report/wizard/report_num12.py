@@ -109,8 +109,7 @@ join count_data_by_store_and_card_rank x2 on x1.key_data = x2.key_data"""
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query()
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLE_LAYER1,
             'title_layer2': TITLE_LAYER2,

@@ -6,7 +6,7 @@
         <field name="prefix">PXB</field>
         <field name="padding">2</field>
         <field name="suffix" eval=""/>
-        <field name="company_id" eval="False"></field>
+        <field name="company_id" eval="False"/>
     </record>
 
     <record id="stock_transfer_tree" model="ir.ui.view">

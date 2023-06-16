@@ -18,7 +18,7 @@ class StockPickingOtherExport(models.Model):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
-            "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
+            "ItemCode", "ItemName", "UnitPurCode", "CreditAccount", "Quantity9", "ConvertRate9", "Quantity",
             "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
             "DocNo_WO", "ProductCode", "DeptCode",
         ]

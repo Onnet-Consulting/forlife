@@ -123,6 +123,7 @@
         <template id="accountant_print_stock_picking_ingoing_template">
             <t t-call="forlife_report.print_stock_picking_ingoing_template">
                 <t t-set="o" t-value="docs"/>
+                <t t-set="attr_value" t-value="env['res.utility'].get_attribute_code_config()"/>
                 <table class="table">
                     <col style="width:5%"/>
                     <col style="width:30%"/>
@@ -156,13 +157,13 @@
                                     <span t-field="line.product_uom"/>
                                 </td>
                                 <td>
-                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT004').mapped('value_ids.name'))"/>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('mau_sac', '')).mapped('value_ids.name'))"/>
                                 </td>
                                 <td class="x_center">
                                     <span t-field="line.quantity_done"/>
                                 </td>
                                 <td>
-                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT006').mapped('value_ids.name'))"/>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('size', '')).mapped('value_ids.name'))"/>
                                 </td>
                                 <td class="x_right">
                                     <span t-field="line.price_unit"/>
@@ -191,6 +192,7 @@
         <template id="warehouse_print_stock_picking_ingoing_template">
             <t t-call="forlife_report.print_stock_picking_ingoing_template">
                 <t t-set="o" t-value="docs"/>
+                <t t-set="attr_value" t-value="env['res.utility'].get_attribute_code_config()"/>
                 <table class="table">
                     <col style="width:7%"/>
                     <col style="width:45%"/>
@@ -220,13 +222,13 @@
                                     <span t-field="line.product_uom"/>
                                 </td>
                                 <td>
-                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT004').mapped('value_ids.name'))"/>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('mau_sac', '')).mapped('value_ids.name'))"/>
                                 </td>
                                 <td class="x_center">
                                     <span t-field="line.quantity_done"/>
                                 </td>
                                 <td>
-                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == 'AT006').mapped('value_ids.name'))"/>
+                                    <t t-esc="','.join(line.product_id.attribute_line_ids.filtered(lambda f: f.attribute_id.attrs_code == attr_value.get('size', '')).mapped('value_ids.name'))"/>
                                 </td>
                             </tr>
                             <t t-set="stt" t-value="stt + 1"/>

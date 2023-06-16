@@ -130,6 +130,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 amount_total_after_discount = order_total_amount - no_incl_line_total_amount;
             } else if (program.incl_reward_in_order_type == 'discounted_price') {
                 amount_total_after_discount = order_total_amount - discount_total;
+            } else {
+                amount_total_after_discount = order_total_amount;
             };
 
             let selected_programs = this._get_selected_programs();

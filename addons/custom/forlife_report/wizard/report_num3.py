@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
           'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Nhãn hiệu', 'Tổng tồn', 'Hàng treo']
@@ -28,7 +27,7 @@ class ReportNum3(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         where_query = f"""
             sm.company_id = any (array{allowed_company})
@@ -104,10 +103,10 @@ product_cate_info as (
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join uom_uom uom on pt.uom_id = uom.id
         join product_category cate on cate.id = pt.categ_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
         left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-        left join attribute_data ad_season on ad_season.product_id = pp.id and ad_season.attrs_code = '{attr_value.get('mua_hang', '')}'
-        left join attribute_data ad_gender on ad_gender.product_id = pp.id and ad_gender.attrs_code = '{attr_value.get('gioi_tinh', '')}'
+        left join attribute_data ad_season on ad_season.product_id = pp.id and ad_season.attrs_code = '{attr_value.get('mua_vu', '')}'
+        left join attribute_data ad_gender on ad_gender.product_id = pp.id and ad_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
         left join attribute_data ad_label on ad_label.product_id = pp.id and ad_label.attrs_code = '{attr_value.get('nhan_hieu', '')}'
     where pp.id = any (array{product_ids})
 ),
@@ -210,8 +209,7 @@ order by num
         warehouse_ids = self.env['stock.warehouse'].search(wh_domain)
         wh_ids = warehouse_ids.ids or [-1]
         query = self._get_query(product_ids, wh_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data(warehouse_ids)
         values.update({

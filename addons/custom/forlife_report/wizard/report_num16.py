@@ -4,7 +4,6 @@ from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = [
     'STT', 'Ngày', 'Số CT', 'Kho', 'Số CT2', 'Kho2', 'Mã khách', 'Tên khách', 'Đối tượng', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu',
@@ -33,7 +32,7 @@ class ReportNum16(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         where_query = f""" where
             sm.company_id = any( array{allowed_company})
@@ -92,8 +91,8 @@ product_cate_info as (
         left join account_by_categ_id acc on acc.cate_id = cate.id
         left join attribute_data doi_tuong on doi_tuong.product_id = pp.id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
         left join attribute_data mau_sac on mau_sac.product_id = pp.id and mau_sac.attrs_code = '{attr_value.get('mau_sac', '')}'
-        left join attribute_data kich_thuoc on kich_thuoc.product_id = pp.id and kich_thuoc.attrs_code = '{attr_value.get('kich_thuoc', '')}'
-        left join attribute_data nam_sx on nam_sx.product_id = pp.id and nam_sx.attrs_code = '{attr_value.get('nam_sx', '')}'
+        left join attribute_data kich_thuoc on kich_thuoc.product_id = pp.id and kich_thuoc.attrs_code = '{attr_value.get('size', '')}'
+        left join attribute_data nam_sx on nam_sx.product_id = pp.id and nam_sx.attrs_code = '{attr_value.get('nam_san_xuat', '')}'
         left join attribute_data xuat_xu on xuat_xu.product_id = pp.id and xuat_xu.attrs_code = '{attr_value.get('xuat_xu', '')}'
         left join attribute_data subclass1 on subclass1.product_id = pp.id and subclass1.attrs_code = '{attr_value.get('subclass1', '')}'
         left join attribute_data subclass2 on subclass2.product_id = pp.id and subclass2.attrs_code = '{attr_value.get('subclass2', '')}'
@@ -152,8 +151,7 @@ order by num
         product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
         warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

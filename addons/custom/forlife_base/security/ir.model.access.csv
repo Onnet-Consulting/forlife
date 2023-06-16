@@ -64,3 +64,5 @@ access_hr_team_group_user,access_hr_team_group_user,forlife_base.model_hr_team,b
 
 access_forlife_app_api_link_manager,forlife.app.api.link manager,model_forlife_app_api_link,base.group_system,1,1,1,0
 access_forlife_app_api_link_view,forlife.app.api.link view,model_forlife_app_api_link,base.group_user,1,0,0,0
+
+base_group_user_model_attribute_code_config,base.group.attribute_code_config,model_attribute_code_config,base.group_user,1,1,0,0

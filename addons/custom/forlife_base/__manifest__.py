@@ -15,7 +15,8 @@
         'purchase',
         'account',
         'forlife_product',
-        'forlife_point_of_sale'
+        'forlife_point_of_sale',
+        'base_external_dbsource',
     ],
     'installable': True,
     'auto_install': True,
@@ -28,6 +29,7 @@
         'data/product_category_data.xml',
         'data/stock_warehouse_data.xml',
         'data/forlife_app_api_link_data.xml',
+        'data/attribute_code_config_data.xml',
 
         'views/uom_uom_view.xml',
         'views/account_tax_view.xml',
@@ -47,6 +49,7 @@
         'views/account_move_views.xml',
         'views/res_ward_views.xml',
         'views/forlife_app_api_link_views.xml',
+        'views/attribute_code_config_views.xml',
         'views/menu_item.xml',
     ],
     "post_init_hook": "post_init_hook",

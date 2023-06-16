@@ -403,3 +403,76 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             values.append(line_value)
 
         return values
+
+
+class StockPickingPurchaseReturn(models.Model):
+    _inherit = 'stock.picking'
+
+    @api.model
+    def bravo_get_return_picking_purchase_columns(self):
+        return [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder",
+            "ItemCode", "ItemName", "CreditAccount", "DebitAccount", "OriginalPriceUnit", "PriceUnit",
+            "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "DocNo_PO", "WarehouseCode", "JobCode",
+            "RowId", "DocNo_WO", "RowId_Purchase", "DeptCode",
+        ]
+
+    def bravo_get_return_picking_purchase_values(self):
+        values = []
+        columns = self.bravo_get_return_picking_purchase_columns()
+        for record in self:
+            for idx, stock_move in enumerate(record.move_ids, start=1):
+                values.append(record.bravo_get_return_picking_purchase_value(stock_move, idx))
+        return columns, values
+
+    def bravo_get_return_picking_purchase_value(self, stock_move, idx):
+        account_move = stock_move.account_move_ids
+        purchase_order_line = stock_move.purchase_line_id
+        purchase_order = purchase_order_line.order_id
+        exchange_rate = purchase_order.exchange_rate
+        picking = stock_move.picking_id
+        partner = picking.partner_id
+        product = stock_move.product_id
+        debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
+        credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
+        debit_account = debit_line[0].account_id.code if debit_line else None
+        credit_account = credit_line[0].account_id.code if credit_line else None
+        discount = purchase_order_line.discount / purchase_order_line.purchase_quantity \
+            if purchase_order_line.purchase_quantity else 0
+        vendor_price = purchase_order_line.vendor_price
+
+        value = {
+            "CompanyCode": picking.company_id.code,
+            "Stt": picking.name,
+            "DocCode": "XT",
+            "DocDate": picking.date_done,
+            "CurrencyCode": picking.company_id.currency_id.name,
+            "ExchangeRate": exchange_rate,
+            "CustomerCode": partner.ref,
+            "CustomerName": partner.name,
+            "Address": partner.contact_address_complete,
+            "Description": picking.note or "Xuất trả hàng hóa/nguyên vật liệu",
+            "EmployeeCode": self.env.user.employee_id.code,
+            "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
+            "BuiltinOrder": idx,
+            "ItemCode": product.barcode,
+            "ItemName": product.name,
+            "CreditAccount": credit_account,
+            "DebitAccount": debit_account,
+            "OriginalPriceUnit": vendor_price,
+            "PriceUnit": vendor_price * exchange_rate,
+            "OriginalDiscount": discount,
+            "Discount": discount * exchange_rate,
+            "OriginalUnitCost": vendor_price - discount,
+            "UnitCost": (vendor_price - discount) * exchange_rate,
+            "DocNo_PO": picking.origin,
+            "WarehouseCode": picking.location_id.warehouse_id.code,
+            "JobCode": stock_move.occasion_code_id.code,
+            "RowId": stock_move.id,
+            "DocNo_WO": stock_move.work_production.code,
+            "RowId_Purchase": stock_move.origin_returned_move_id.id,
+            "DeptCode": stock_move.account_analytic_id.code
+        }
+
+        return value
