@@ -8,5 +8,23 @@
         <record id="forlife_reason_type_outgoing_exchange" model="forlife.reason.type">
             <field name="name">Xuất nguyên phụ liệu</field>
         </record>
+
+        <record id="forlife_location_incoming_exchange" model="stock.location">
+            <field name="name">Nhập kho thành phẩm sản xuất</field>
+            <field name="usage">supplier</field>
+            <field name="type_other">incoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_incoming_exchange"/>
+        </record>
+
+        <record id="forlife_location_outgoing_exchange" model="stock.location">
+            <field name="name">Xuất kho nguyên phụ liệu sản xuất</field>
+            <field name="usage">customer</field>
+            <field name="type_other">outcoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_outgoing_exchange"/>
+        </record>
     </data>
 </odoo>
