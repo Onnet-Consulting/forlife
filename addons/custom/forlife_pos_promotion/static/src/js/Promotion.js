@@ -2311,6 +2311,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     autoApplyPriceListProgram(new_ol) {
+        if (this.locked) return false;
         let is_with_code = (p) => p.with_code;
         if (new_ol && new_ol.quantity > 0 && !new_ol.is_applied_promotion() && new_ol.pricelist_item) {
             if (this._programIsApplicableAutomatically(new_ol.pricelist_item) && !is_with_code(new_ol.pricelist_item)) {
