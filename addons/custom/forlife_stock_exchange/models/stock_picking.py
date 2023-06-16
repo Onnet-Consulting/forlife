@@ -93,6 +93,7 @@ class InheritStockPicking(models.Model):
     def button_validate(self):
         results = super(InheritStockPicking, self).button_validate()
         if self.picking_type_id.exchange_code == 'incoming' and self.state == 'done':
+            self._update_forlife_production()
             bom_ids = {
                 bom.product_id.id: bom
                 for bom in self.env['forlife.production.finished.product'].sudo().search(
@@ -113,6 +114,16 @@ class InheritStockPicking(models.Model):
             self = self.with_context(exchange_code='incoming')
             self.write({'picking_outgoing_id': picking_outgoing_id.id})
         return results
+
+    def _update_forlife_production(self):
+        for line in self.move_ids_without_package:
+            if line.work_production:
+                forlife_production = line.work_production.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == line.product_id.id)
+                if not forlife_production:
+                    continue
+                forlife_production.write({
+                    'forlife_production_stock_move_ids': [(4, line.id)],
+                })
 
     def action_cancel(self):
         for rec in self:
