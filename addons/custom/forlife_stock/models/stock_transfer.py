@@ -550,8 +550,8 @@ class StockTransferLine(models.Model):
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
             else:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % product.name)
-        if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
-            raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
+        # if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
+        #     raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
 
     def validate_product_tolerance(self, type='out'):
         self.ensure_one()
@@ -626,13 +626,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     _inherit = 'forlife.production.finished.product'
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
+    forlife_production_stock_move_ids = fields.Many2many('stock.move')
     remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):
         for rec in self:
-            qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
-                lambda r: r.stock_transfer_id.state in 'done')])
+            qty_done = sum([line.quantity_done for line in rec.forlife_production_stock_move_ids.filtered(
+                lambda r: r.picking_id.state in 'done')])
             rec.stock_qty = qty_done
             rec.remaining_qty = rec.produce_qty - qty_done
 
