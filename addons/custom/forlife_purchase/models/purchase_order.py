@@ -1857,21 +1857,22 @@ class StockPicking(models.Model):
                 'exchange_rate': po.exchange_rate
             })
                 for rec in record.move_ids_without_package:
-                    quantity = self.env['quantity.production.order'].search(
-                        [('product_id', '=', rec.product_id.id),
-                         ('location_id', '=', rec.picking_id.location_dest_id.id),
-                         ('production_id', '=', rec.work_production.id)])
-                    if quantity:
-                        quantity.write({
-                            'quantity': quantity.quantity + rec.quantity_done
-                        })
-                    else:
-                        self.env['quantity.production.order'].create({
-                            'product_id': rec.product_id.id,
-                            'location_id': rec.picking_id.location_dest_id.id,
-                            'production_id': rec.work_production.id,
-                            'quantity': rec.quantity_done
-                        })
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
