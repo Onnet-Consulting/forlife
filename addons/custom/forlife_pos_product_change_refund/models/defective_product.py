@@ -47,6 +47,8 @@ class ProductDefective(models.Model):
                     rec.quantity_inventory_store = available_quantity
                 else:
                     rec.quantity_inventory_store = 0
+            else:
+                rec.quantity_inventory_store = 0
 
     def action_send_request_approve(self):
         self.state = 'waiting approve'
