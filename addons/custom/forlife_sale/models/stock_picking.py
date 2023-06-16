@@ -33,7 +33,7 @@ class StockPicking(models.Model):
                 'type': line.product_type,
                 'quantity_purchased': line.product_uom_qty,
                 'exchange_quantity': 1,
-                'uom_id': line.product_id.uom_id.id,
+                'product_uom_id': line.product_id.uom_id.id,
                 'quantity': line.product_qty,
                 'request_code': line.picking_id.name,
                 'vendor_price': line.sale_line_id.price_unit,
