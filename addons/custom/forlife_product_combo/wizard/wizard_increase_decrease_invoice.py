@@ -145,7 +145,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'is_refund': line.is_refund,
                         'display_type': 'product',
                         'tax_amount': tax_mount,
-                        'uom_id': line.uom_id.id,
+                        'product_uom_id': line.uom_id.id,
                         'taxes_id': line.tax_ids.id,
                     })
                 ]
@@ -219,7 +219,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'currency_id': line.currency_id.id or False,
                         'is_refund': line.is_refund,
                         'tax_amount': tax_mount,
-                        'uom_id': line.uom_id.id,
+                        'product_uom_id': line.uom_id.id,
                         'taxes_id': line.tax_ids.id,
                     })
                 ]
