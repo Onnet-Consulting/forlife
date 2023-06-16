@@ -195,9 +195,9 @@ with products as (select id
 select coalesce(pp2.barcode, '')                                      as barcode,
        coalesce(pt2.name::json -> 'vi_VN', pt2.name::json -> 'en_US') as ten_san_pham,
        coalesce(sf.qty, 0)                                            as so_luong,
-       coalesce(attr_color.value, array[]::json[])                                 as mau_sac,
-       coalesce(attr_size.value, array[]::json[])                                  as size,
-       coalesce(attr_gender.value, array[]::json[])                                as gioi_tinh,
+       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_color.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as mau_sac,
+       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_size.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as size,
+       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_gender.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as gioi_tinh,
        coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban
 from products
          left join fixed_prices on products.id = fixed_prices.product_id and fixed_prices.num = 1
