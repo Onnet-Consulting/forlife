@@ -108,9 +108,8 @@
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
-                            <field name="readonly_discount_percent" invisible="1"/>
-                            <field name="readonly_discount" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
+                            <field name="is_check_promotions" invisible="1"/>
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
@@ -133,19 +132,29 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_check_exchange_quantity', '=', False)]}"/>
                             <field name="quantity"/>
                             <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_is_passersby', '=', False), ('parent.state', '=', 'posted')]}"
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_is_passersby', '=', False), ('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"
                                    force_save="1"/>
-                            <field name="price_unit" force_save="1" required="1"/>
+                            <field name="price_unit" force_save="1" required="1"
+                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="discount_percent" readonly="1"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': [('readonly_discount_percent', '=', True)]}"/>
-                            <field name="discount"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount', '=', True)]}"/>
-                            <field name="taxes_id" optional="show"/>
-                            <field name="tax_amount"/>
+                            <field name="discount" string="Chiết khấu %"
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                             <field name="discount_percent"
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                            <field name="tax_ids"
+                                   optional="show"
+                                   widget="many2many_tags"
+                                   string="Thuế %"
+                                   domain="[('active', '=', True)]"
+                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                            <field name="tax_amount"
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
                             <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
-                            <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                            <field name="total_vnd_amount"
+                                   sum="discounted subtotal"
+                                   force_save="1"
+                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
                             <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
