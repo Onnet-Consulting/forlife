@@ -88,7 +88,7 @@ def connect_bkav(data, configs):
         decode = gzip.decompress(plaintext).decode()
     except Exception as ex:
         _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-        return False
+        raise ValidationError(f'Nhận khách từ lỗi của BKAV {ex}')
     response_bkav = json.loads(decode)
 
     if response_bkav['Status'] == 0:
@@ -130,7 +130,8 @@ class AccountMoveBKAV(models.Model):
     is_check_cancel = fields.Boolean(default=False, copy=False)
 
     ###trạng thái và số hdđt từ bkav trả về
-    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_get_values', store=1, copy=False)
+    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_get_values', store=1,
+                                  copy=False)
     invoice_guid = fields.Char('GUID HDDT', copy=False)
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_e_date = fields.Char('Ngày HDDT', copy=False)
@@ -161,7 +162,8 @@ class AccountMoveBKAV(models.Model):
             'partner_guid': self.env['ir.config_parameter'].sudo().get_param('bkav.partner_guid'),
             'cmd_addInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice'),
             'cmd_addInvoiceEdit': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit'),
-            'cmd_addInvoiceEditDiscount': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit_discount'),
+            'cmd_addInvoiceEditDiscount': self.env['ir.config_parameter'].sudo().get_param(
+                'bkav.add_einvoice_edit_discount'),
             'cmd_addInvoiceReplace': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_replace'),
             'cmd_updateInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.update_einvoice'),
             'cmd_deleteInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.delete_einvoice'),
@@ -226,7 +228,8 @@ class AccountMoveBKAV(models.Model):
                     },
                     "ListInvoiceDetailsWS": [
                         {
-                            "ItemName": (line.product_id.name or line.name) if (line.product_id.name or line.name) else '',
+                            "ItemName": (line.product_id.name or line.name) if (
+                                        line.product_id.name or line.name) else '',
                             "UnitName": line.product_uom_id.name or '',
                             "Qty": line.quantity or 0.0,
                             "Price": line.price_unit,
@@ -488,20 +491,20 @@ class AccountMoveBKAV(models.Model):
                     pass
         return res
 
-    def post_invoice_to_bkav_end_day(self):
-        today = datetime.now().date()
-        next_day = today + timedelta(days=1)
-        start_of_day = datetime.combine(next_day, time(hour=2, minute=0, second=0))
-        end_of_day = datetime.combine(today, time.max)
-        invoices = self.search(
-            [('is_post_bkav', '=', False), ('state', '=', 'posted'),
-             ('create_date', '>=', start_of_day), ('create_date', '<=', end_of_day)])
-        if len(invoices):
-            inv_bkav = self.create({
-                'partner_id': self.env.ref('base.partner_admin').id,
-                'invoice_date': today,
-                'is_post_bkav': True,
-                'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
-                'invoice_line_ids': [(0, 0, line.copy_data()[0]) for line in invoices.mapped('invoice_line_ids')]
-            })
-            inv_bkav.action_post()
+    # def post_invoice_to_bkav_end_day(self):
+    #     today = datetime.now().date()
+    #     next_day = today + timedelta(days=1)
+    #     start_of_day = datetime.combine(next_day, time(hour=2, minute=0, second=0))
+    #     end_of_day = datetime.combine(today, time.max)
+    #     invoices = self.search(
+    #         [('is_post_bkav', '=', False), ('state', '=', 'posted'),
+    #          ('create_date', '>=', start_of_day), ('create_date', '<=', end_of_day)])
+    #     if len(invoices):
+    #         inv_bkav = self.create({
+    #             'partner_id': self.env.ref('base.partner_admin').id,
+    #             'invoice_date': today,
+    #             'is_post_bkav': True,
+    #             'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
+    #             'invoice_line_ids': [(0, 0, line.copy_data()[0]) for line in invoices.mapped('invoice_line_ids')]
+    #         })
+    #         inv_bkav.action_post()
