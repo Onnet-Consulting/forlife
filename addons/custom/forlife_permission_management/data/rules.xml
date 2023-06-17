@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'purchase'), ('name', '=', 'purchase_user_account_move_line_rule')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record model="ir.rule" id="purchase.purchase_user_account_move_line_rule">
+            <field name="name">Purchase User Account Move Line</field>
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>
