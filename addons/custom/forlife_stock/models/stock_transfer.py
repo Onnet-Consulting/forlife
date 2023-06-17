@@ -521,16 +521,19 @@ class StockTransferLine(models.Model):
             [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
              ('production_id', '=', self.work_from.id)])
         quantity_prodution_to = self.env['quantity.production.order'].search(
-            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
              ('production_id', '=', self.work_to.id)])
-        if quantity_prodution:
-            if self.work_from and self.qty_out > quantity_prodution.quantity:
-                raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+        if self.work_from:
+            if quantity_prodution:
+                if self.qty_out > quantity_prodution.quantity:
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+                else:
+                    quantity_prodution.update({
+                        'quantity': quantity_prodution.quantity - self.qty_out
+                    })
             else:
-                quantity_prodution.update({
-                    'quantity': quantity_prodution.quantity - self.qty_out
-                })
-            if self.work_to and self.work_from != self.work_to:
+                raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
+            if self.work_to:
                 if quantity_prodution_to:
                     quantity_prodution_to.update({
                         'quantity': quantity_prodution_to.quantity + self.qty_out
@@ -538,12 +541,23 @@ class StockTransferLine(models.Model):
                 else:
                     self.env['quantity.production.order'].create({
                         'product_id': product.id,
-                        'location_id': self.stock_transfer_id.location_id.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
                         'production_id': self.work_to.id,
                         'quantity': self.qty_out
                     })
         else:
-            raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
+            if self.work_to:
+                if quantity_prodution_to:
+                    quantity_prodution_to.update({
+                        'quantity': quantity_prodution_to.quantity + self.qty_out
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': product.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
+                        'production_id': self.work_to.id,
+                        'quantity': self.qty_out
+                    })
         if qty_available < product_quantity:
             if is_diff_transfer:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
