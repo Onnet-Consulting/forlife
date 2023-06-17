@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="forlife_other_in_out_request_form_permission" model="ir.ui.view">
+            <field name="name">forlife_other_in_out_request_form_permission</field>
+            <field name="model">forlife.other.in.out.request</field>
+            <field name="inherit_id" ref="forlife_stock.forlife_other_in_out_request_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_in_out_request_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="nhanh_brand_config_view_form" model="ir.ui.view">
+        <field name="name">nhanh_brand_config_view_form</field>
+        <field name="model">nhanh.brand.config</field>
+        <field name="arch" type="xml">
+            <form string="Nhanh Config">
+                <header>
+                    <button name="action_get_nhanh_access_token" string="Get Access Token" type="object"
+                            class="oe_highlight mr16" attrs="{'invisible': [('nhanh_access_code', '=', False)]}"/>
+                    <button name="check_connect_to_nhanh" string="Check Connection" type="object"
+                            class="oe_highlight mr16" attrs="{'invisible': [('nhanh_access_token', '=', False)]}"/>
+                    <button name="remove_nhanh_config" string="Remove Nhanh Configuration" type="object"
+                            class="btn-danger"
+                            confirm="Are you sure to remove Nhanh's configuration"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="brand_id"/>
+                        <field name="active" invisible="1"/>
+                        <field name="nhanh_app_id"/>
+                        <field name="nhanh_secret_key" class="text-break"/>
+                        <field name="nhanh_access_code" class="text-break"/>
+                        <field name="nhanh_return_link" />
+                        <field name="link_get_access_code"/>
+                        <field name="nhanh_business_id" readonly="1"/>
+                        <field name="nhanh_access_token" readonly="1" class="text-break"/>
+                        <field name="nhanh_access_token_expired" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="nhanh_brand_config_view_tree" model="ir.ui.view">
+        <field name="name">nhanh_brand_config_view_tree</field>
+        <field name="model">nhanh.brand.config</field>
+        <field name="arch" type="xml">
+            <tree string="Nhanh Config">
+                <field name="brand_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="nhanh_brand_config_action" model="ir.actions.act_window">
+        <field name="name">Nhanh Config</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">nhanh.brand.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="nhanh_brand_config_menu" name="Nhanh config" parent="base.menu_ir_property"
+              action="nhanh_brand_config_action"/>
+
+</odoo>

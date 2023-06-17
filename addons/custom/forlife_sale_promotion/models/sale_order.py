@@ -100,20 +100,17 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
-                                        'promotion_type': 'vip_amount',
                                         'account_id': promotion_account_id and promotion_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu theo chính sách vip"
                                     })]
                                 # Ưu tiên 4
-
                                 if ln.x_cart_discount_fixed_price - price_percent > 0:
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                        'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
                         else:
@@ -132,7 +129,6 @@ class SaleOrder(models.Model):
                         diff_price = diff_price_unit * ln.product_uom_qty
                         gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
                         discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-
                         promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
                         # Ưu tiên 4
                         if not has_vip and ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:

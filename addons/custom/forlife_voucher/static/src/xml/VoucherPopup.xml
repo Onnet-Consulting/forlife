@@ -82,9 +82,9 @@
                                                 <td class="o_table_type" style="border:1px solid black;width:85px;">E-Điện tử</td>
                                             </t>
                                     <td class="o_table_end_date" style="border:1px solid black;width:85px;"><t t-esc="env.pos.selectedOrder.data_voucher[num].value.end_date"/></td>
-                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_residual_no_compute)" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" readonly="True" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_residual_no_compute)" type="text" style="width: 100%;text-align: center;"/></td>
                                     <td style="border:1px solid black;width:85px;">
-                                            <input class="o_price_used" t-on-change="_onValueChange" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_used)" type="text" style="width: 100%;text-align: center;"/>
+                                            <input class="o_price_used" readonly="True" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_used)" type="text" style="width: 100%;text-align: center;"/>
                                     </td>
                                     <td style="border:1px solid black;width:85px;"><span class="derpartmentname"><t t-esc="env.pos.selectedOrder.data_voucher[num].value.derpartment_name"/></span></td>
                                 </t>

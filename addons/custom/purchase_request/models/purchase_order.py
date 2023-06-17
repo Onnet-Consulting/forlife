@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    production_id = fields.Many2one('forlife.production', string='Production Order')
+    production_id = fields.Many2many('forlife.production', string='Production Order')
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
@@ -76,6 +76,21 @@ class PurchaseOrder(models.Model):
                 'source_document': rec.name,
                 'purchase_material_line_ids': material_data,
             })
+        for rec in self:
+            for item in rec.order_line:
+                production_order = self.env['production.order'].search(
+                    [('product_id', '=', item.product_id.id), ('type', '=', 'normal')], limit=1)
+                if not item.purchase_order_line_material_line_ids:
+                    for production_line in production_order.order_line_ids:
+                        self.env['purchase.order.line.material.line'].create({
+                            'purchase_order_line_id': item.id,
+                            'product_id': production_line.product_id.id,
+                            'uom': production_line.uom_id.id,
+                            'production_order_product_qty': production_order.product_qty,
+                            'production_line_product_qty': production_line.product_qty,
+                            'price_unit': production_line.price,
+                            'is_from_po': True,
+                        })
         return res
 
 
@@ -112,12 +127,23 @@ class PurchaseOrderLine(models.Model):
                     # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
+                    'production_line_price_unit': production_line.price,
                     'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
             self.write({
                 'purchase_order_line_material_line_ids': production_data
             })
+        else:
+            product = self.product_id
+            production_order = self.env['production.order'].search(
+                [('product_id', '=', product.id), ('type', '=', 'normal')], limit=1)
+            if not production_order:
+                raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
+            for production_line in production_order.order_line_ids:
+                for item in self.purchase_order_line_material_line_ids:
+                    item.write({'product_qty': item.purchase_order_line_id.product_qty * production_line.product_qty
+                                })
         view_id = self.env.ref('purchase_request.purchase_order_line_material_form_view').id
         return {
             'type': 'ir.actions.act_window',
@@ -136,6 +162,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     _description = 'Purchase Order Line Material Line'
 
     purchase_order_line_id = fields.Many2one('purchase.order.line', ondelete='cascade')
+
     product_id = fields.Many2one('product.product')
     name = fields.Char(related='product_id.name')
     uom = fields.Many2one('uom.uom', string='UOM')
@@ -145,30 +172,23 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
-    price_unit = fields.Float()
-
-    @api.constrains('product_qty', 'product_plan_qty')
-    def _constraint_product_qty(self):
-        for rec in self:
-            if rec.product_qty > rec.product_plan_qty:
-                raise ValidationError('Số lượng điều chuyển không được lớn hơn số lượng điều chuyển theo kế hoạch')
+    production_line_price_unit = fields.Float(digits='Product Unit of Measure')
+    price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False)
 
     @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
     def _compute_product_plan_qty(self):
         for rec in self:
-            if rec.production_order_product_qty > 0:
-                rec.product_plan_qty = rec.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.purchase_order_line_id.purchase_quantity
-                rec.product_qty = rec.product_plan_qty
+            if rec.production_line_product_qty > 0:
+                rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
             else:
-                rec.product_plan_qty = 0
                 rec.product_qty = 0
+
+    @api.depends('production_line_price_unit', 'product_qty')
+    def _compute_price_unit(self):
+        for rec in self:
+            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                rec.price_unit = rec.product_qty * rec.production_line_price_unit
 
     def _inverse_product_plan_qty(self):
         pass
-
-    @api.depends('product_plan_qty', 'product_qty')
-    def _compute_product_remain_qty(self):
-        for rec in self:
-            rec.product_remain_qty = max((rec.product_plan_qty - rec.product_qty), 0)
-
 

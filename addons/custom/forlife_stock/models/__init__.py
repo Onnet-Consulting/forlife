@@ -14,3 +14,5 @@ from . import stock_move
 from . import stock_move_line
 from . import stock_valuation_layer
 from . import other_in_out_request
+from . import stock_picking_type
+from . import quantity_production_order

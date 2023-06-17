@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="forlife_pos_payment_change.POSOrderList" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('header-row')]" position="inside">
+            <div class="col very-info"></div>
+        </xpath>
+    </t>
+
+</templates>

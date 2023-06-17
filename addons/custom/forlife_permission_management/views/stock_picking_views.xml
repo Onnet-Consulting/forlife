@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_picking_form_permission_btn_cancel" model="ir.ui.view">
+            <field name="name">view_picking_form_permission_btn_cancel</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_cancel</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_confirm</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_validate']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_confirm</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_toggle_is_locked'][2]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

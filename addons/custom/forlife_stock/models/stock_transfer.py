@@ -14,8 +14,8 @@ class StockTransfer(models.Model):
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     location_id = fields.Many2one('stock.location', string="Whs From", required=1)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1)
-    work_from = fields.Many2one('forlife.production', string="LSX From")
-    work_to = fields.Many2one('forlife.production',string="LSX To")
+    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -52,8 +52,10 @@ class StockTransfer(models.Model):
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
-    note = fields.Char("Ghi chú")
-    date_transfer = fields.Date("Ngày xác nhận xuất", default=date.today())
+    note = fields.Text("Ghi chú")
+    date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now())
+    date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now())
+
     @api.onchange('work_from')
     def _onchange_work_from(self):
         self.stock_transfer_line.write({
@@ -139,6 +141,66 @@ class StockTransfer(models.Model):
             })
         self._action_out_approve()
 
+    def _create_move_import_int(self, pickking, location_id, location_dest_id):
+        warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
+        warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
+        s_location_pos = self.env.ref('forlife_stock.warehouse_for_pos', raise_if_not_found=False).id
+        s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
+        warehouse_id = location_id.warehouse_id.whs_type.id
+        warehouse_dest_id = location_dest_id.warehouse_id.whs_type.id
+        if location_dest_id.stock_location_type_id.id in [s_location_pos] and warehouse_id in [warehouse_type_master] and location_dest_id.id_deposit and location_dest_id.account_stock_give:
+            return self._create_move_given(pickking, location_dest_id, type_create='in')
+        elif location_id.stock_location_type_id.id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
+            return self._create_move_given(pickking, location_id, type_create='out')
+        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos]:
+            loc = location_id if location_id.id_deposit and location_id.account_stock_give else False
+            loc_dest = location_dest_id if location_dest_id.id_deposit and location_dest_id.account_stock_give else False
+            if not loc and not loc_dest:
+                return False
+            elif not loc and loc_dest:
+                return self._create_move_given(pickking, loc_dest, type_create='out')
+            elif loc and not loc_dest:
+                return self._create_move_given(pickking, loc, type_create='out')
+            return self._create_move_given(pickking, location_id, type_create='out')
+
+        return True
+
+    def _create_move_given(self, picking, location, type_create):
+        for d in picking.move_ids_without_package:
+            if type_create == 'out':
+                account_id_debit = d.product_id.categ_id.property_stock_valuation_account_id.id
+                account_id_credit = location.account_stock_give.id
+            else:
+                account_id_debit = location.account_stock_give.id
+                account_id_credit = d.product_id.categ_id.property_stock_valuation_account_id.id
+            accounts_data = d.product_id.product_tmpl_id.get_product_accounts()
+            if not accounts_data['stock_journal']:
+                raise ValidationError(_('Chưa cấu hình sổ nhật kí kho của danh mục sản phẩm này!'))
+            move_vals = {
+                'journal_id': accounts_data['stock_journal'].id,
+                'date': datetime.now(),
+                'ref': picking.name,
+                'move_type': 'entry',
+                'stock_move_id': d.id,
+                'line_ids': [
+                    (0, 0, {
+                        'name': picking.name,
+                        'account_id': account_id_debit,
+                        'debit': d.quantity_done * d.product_id.standard_price,
+                        'credit': 0.0,
+                    }),
+                    (0, 0, {
+                        'name': picking.name,
+                        'account_id': account_id_credit,
+                        'debit': 0.0,
+                        'credit': d.quantity_done*d.product_id.standard_price,
+                    })
+                ]
+            }
+            move = self.env['account.move'].create(move_vals)
+            move.action_post()
+        return True
+
     def _out_approve_less_quantity(self, stock_transfer_line_less):
         self.ensure_one()
         for line in stock_transfer_line_less:
@@ -198,25 +260,31 @@ class StockTransfer(models.Model):
         self.write({'state': 'done'})
         return self._action_in_approve_in_process()
 
-    def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type):
+    def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         for data_line in data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
         stock_picking = self.env['stock.picking'].create({
             'transfer_id': self.id,
+            'origin': origin,
+            'date_done': date_done,
             'picking_type_id': stock_picking_type.id,
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
             'move_ids_without_package': data,
-        })
+            }
+        )
         stock_picking.button_validate()
+        return stock_picking
 
-    def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type):
+    def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         location_ho = self.env.ref('forlife_stock.ho_location_stock')
         to_data = data
         for data_line in to_data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_ho.id})
         stock_picking_to_ho = self.env['stock.picking'].create({
             'transfer_id': self.id,
+            'origin': origin,
+            'date_done': date_done,
             'picking_type_id': stock_picking_type.id,
             'location_id': location_id.id,
             'location_dest_id': location_ho.id,
@@ -240,6 +308,8 @@ class StockTransfer(models.Model):
         company_id = self.env.company.id
         pk_type = self.env['stock.picking.type'].sudo().search(
             [('company_id', '=', company_id), ('code', '=', 'internal')], limit=1)
+        origin = self.name
+        date_done = self.date_in_approve
         location_id = self.location_id
         location_dest_id = self.location_dest_id
         stock_picking_type = pk_type
@@ -289,9 +359,12 @@ class StockTransfer(models.Model):
                     'qty_in': product_quantity,
                 })
         if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
-            self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
+            picking = self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
+            # if picking.location_dest_id.id_deposit and picking.location_dest_id.account_stock_give:
+            self._create_move_import_int(picking,location_id, location_dest_id)
         else:
-            self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
+            self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
+        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
         if diff_transfer:
             return {
                 'type': 'ir.actions.client',
@@ -355,7 +428,8 @@ class StockTransfer(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
-            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + str(
+            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
+                warehouse if warehouse else '') + str(
                 datetime.now().year)
         return super(StockTransfer, self).create(vals)
 
@@ -386,8 +460,8 @@ class StockTransferLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
     qty_plan = fields.Integer(string='Quantity Plan')
-    qty_out = fields.Integer(string='Quantity Out')
-    qty_in = fields.Integer(string='Quantity In')
+    qty_out = fields.Integer(string='Quantity Out', copy=False)
+    qty_in = fields.Integer(string='Quantity In', copy=False)
     qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
@@ -444,13 +518,54 @@ class StockTransferLine(models.Model):
             self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'),
             self._context.get('from_date'), self._context.get('to_date'))
         qty_available = result[product.id].get('qty_available', 0)
+        quantity_prodution = self.env['quantity.production.order'].search(
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
+             ('production_id', '=', self.work_from.id)])
+        quantity_prodution_to = self.env['quantity.production.order'].search(
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
+             ('production_id', '=', self.work_to.id)])
+        if self.work_from:
+            if quantity_prodution:
+                if self.qty_out > quantity_prodution.quantity:
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+                else:
+                    quantity_prodution.update({
+                        'quantity': quantity_prodution.quantity - self.qty_out
+                    })
+            else:
+                raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
+            if self.work_to:
+                if quantity_prodution_to:
+                    quantity_prodution_to.update({
+                        'quantity': quantity_prodution_to.quantity + self.qty_out
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': product.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
+                        'production_id': self.work_to.id,
+                        'quantity': self.qty_out
+                    })
+        else:
+            if self.work_to:
+                if quantity_prodution_to:
+                    quantity_prodution_to.update({
+                        'quantity': quantity_prodution_to.quantity + self.qty_out
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': product.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
+                        'production_id': self.work_to.id,
+                        'quantity': self.qty_out
+                    })
         if qty_available < product_quantity:
             if is_diff_transfer:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
             else:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % product.name)
-        if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
-            raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
+        # if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
+        #     raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
 
     def validate_product_tolerance(self, type='out'):
         self.ensure_one()
@@ -461,7 +576,7 @@ class StockTransferLine(models.Model):
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
         else:
-            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)])
+            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)], limit=1)
             other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
             quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
                 lambda r: r.product_id == self.product_id)])
@@ -525,12 +640,23 @@ class ForlifeProductionFinishedProduct(models.Model):
     _inherit = 'forlife.production.finished.product'
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
+    forlife_production_stock_move_ids = fields.Many2many('stock.move')
     remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):
         for rec in self:
-            qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
-                lambda r: r.stock_transfer_id.state in 'done')])
+            qty_done = sum([line.quantity_done for line in rec.forlife_production_stock_move_ids.filtered(
+                lambda r: r.picking_id.state in 'done')])
             rec.stock_qty = qty_done
             rec.remaining_qty = rec.produce_qty - qty_done
+
+
+class HREmployee(models.Model):
+    _inherit = 'hr.employee'
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        args = args or []
+        recs = self.search([('name', operator, name)] + args, limit=limit)
+        return recs.name_get()

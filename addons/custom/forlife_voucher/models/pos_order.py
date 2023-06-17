@@ -47,7 +47,8 @@ class PosOrder(models.Model):
                     'account_id': voucher.payment_method_id.account_other_income.id,
                     'debit': 0.0,
                     'credit': voucher.voucher_id.price_residual,
-                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
+                    'analytic_distribution': {
+                        voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
                 }),
                 # credit line
                 (0, 0, {
@@ -55,12 +56,14 @@ class PosOrder(models.Model):
                     'account_id': voucher.payment_method_id.account_general.id,
                     'debit': voucher.voucher_id.price_residual,
                     'credit': 0.0,
-                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
+                    'analytic_distribution': {
+                        voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
                 }),
             ]
         }
         move = self.env['account.move'].create(move_vals)._post()
         return True
+
 
     @api.model
     def _order_fields(self, ui_order):

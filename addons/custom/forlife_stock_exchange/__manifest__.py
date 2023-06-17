@@ -9,6 +9,7 @@
     ],
     "data": [
         'data/stock_exchange_data.xml',
+        'views/forlife_picking_type_views.xml',
         'views/forlife_stock_exchange_views.xml',
         'views/forlife_menuitems.xml'
     ],

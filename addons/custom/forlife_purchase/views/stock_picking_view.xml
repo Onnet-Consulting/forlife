@@ -19,6 +19,7 @@
                             <span class="o_stat_text">Phiếu NPL</span>
                         </div>
                     </button>
+                </xpath>
                  <xpath expr="//header//button[@name='action_assign']" position="attributes">
                      <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath>
@@ -34,6 +35,8 @@
                             <field name="location_dest_id"/>
                             <field name="lot_name"/>
                             <field name="purchase_uom"
+                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
+                            <field name="free_good"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_change"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>

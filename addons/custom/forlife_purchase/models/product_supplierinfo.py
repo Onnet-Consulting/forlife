@@ -6,10 +6,16 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     vendor_code = fields.Char(related='partner_id.code')
-    amount_conversion = fields.Float('Số lượng quy đổi')
+    amount_conversion = fields.Float('Số lượng quy đổi', default=1, required=1)
 
     date_start = fields.Date('Start Date', help="Start date for this vendor price", required=True)
-    date_end = fields.Date('End Date', help="End date for this vendor price", required= True)
+    date_end = fields.Date('End Date', help="End date for this vendor price", required=True)
+
+    @api.constrains('amount_conversion')
+    def constrains_amount_conversion(self):
+        for rec in self:
+            if rec.amount_conversion <= 0:
+                raise ValidationError(_('Số lượng quy đổi không được nhỏ hơn hoặc bằng 0 !!'))
 
     @api.constrains('product_tmpl_id', 'date_start', 'date_end', 'partner_id')
     def constrains_check_duplicate_date_by_product_tmpl_id(self):

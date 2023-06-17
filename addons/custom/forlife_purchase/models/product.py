@@ -40,8 +40,10 @@ class ProductTemplate(models.Model):
     x_type_cost_product = fields.Selection(
         selection=[
             ('internal_costs', 'Chi phí nội bộ'),
-            ('labor_costs', 'Chi phí nhân công'),
-        ], string="Sản phẩn là chi phí")
+            ('labor_costs', 'Chi phí thuê ngoài'),
+        ], string="Loại chi phí gia công")
+
+    is_trade_discount = fields.Boolean(string="CKTM", default=False)
 
     @api.model
     def default_get(self, default_fields):
@@ -132,5 +134,5 @@ class ProductProduct(models.Model):
 
     def name_get(self):
         if self.env.context.get('show_product_code'):
-            return [(record.id, record.code_product or record.name) for record in self]
+            return [(record.id, record.name or record.name) for record in self]
         return super().name_get()

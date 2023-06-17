@@ -6,6 +6,14 @@ from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import float_compare, float_is_zero
+from odoo import api, fields, models, _, tools
+
+
+def read_sql_file(file_path):
+    fd = tools.file_open(file_path, 'r')
+    sqlFile = fd.read()
+    fd.close()
+    return sqlFile
 
 
 class Inventory(models.Model):
@@ -16,7 +24,7 @@ class Inventory(models.Model):
 
     name = fields.Char('Mã phiếu', default="Phiếu kiểm kê", readonly=True, required=True,
                        states={'draft': [('readonly', False)]})
-    date = fields.Datetime('Ngày kiểm kho', readonly=True, required=True, default=fields.Datetime.now)
+    date = fields.Datetime('Ngày kiểm kho', required=True, default=fields.Datetime.now)
     accounting_date = fields.Date('Ngày kế toán')
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Chi tiết tồn kho',
                                copy=False, readonly=False, states={'done': [('readonly', True)]})
@@ -135,7 +143,7 @@ class Inventory(models.Model):
                 negative.product_qty
             ))
         self.action_check()
-        self.write({'state': 'done', 'date': fields.Datetime.now()})
+        self.write({'state': 'done'})
         self.post_inventory()
         return True
 
@@ -175,7 +183,7 @@ class Inventory(models.Model):
                 continue
             vals = {
                 'state': 'first_inv',
-                'date': fields.Datetime.now()
+                # 'date': fields.Datetime.now()
             }
             if not inventory.line_ids and not inventory.start_empty:
                 self.env['stock.inventory.line'].create(inventory._get_inventory_lines_values())
@@ -231,7 +239,9 @@ class Inventory(models.Model):
             'domain': domain,
         }
         return action
-
+    def init(self):
+        get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
+        self.env.cr.execute(get_quantity_inventory)
     def action_print(self):
         return self.env.ref('stock_inventory.action_report_inventory').report_action(self)
 
@@ -251,11 +261,15 @@ class Inventory(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        domain = [('company_id', '=', self.company_id.id),
-                  ('quantity', '!=', '0'),
-                  ('location_id', 'in', locations_ids)]
-        if self.prefill_counted_quantity == 'zero':
-            domain.append(('product_id.active', '=', True))
+        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        self._cr.execute(sql)
+        data = self._cr.dictfetchall()
+        return data
+        # domain = [('company_id', '=', self.company_id.id),
+        #           ('quantity', '!=', '0'),
+        #           ('location_id', 'in', locations_ids)]
+        # if self.prefill_counted_quantity == 'zero':
+        #     domain.append(('product_id.active', '=', True))
 
         # if self.product_ids and self.filter_by == "1":
         #     domain = expression.AND([domain, [('product_id', 'in', self.product_ids.ids)]])
@@ -266,18 +280,18 @@ class Inventory(models.Model):
         # if self.marque_ids and self.filter_by == "3":
         #     domain = expression.AND([domain, [('product_id.product_brand_id', 'in', self.marque_ids.ids)]])
 
-        fields = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id', 'quantity:sum']
-        group_by = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id']
+        # fields = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id', 'quantity:sum']
+        # group_by = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id']
 
-        quants = self.env['stock.quant'].read_group(domain, fields, group_by, lazy=False)
-        return {(
-            quant['product_id'] and quant['product_id'][0] or False,
-            quant['location_id'] and quant['location_id'][0] or False,
-            quant['lot_id'] and quant['lot_id'][0] or False,
-            quant['package_id'] and quant['package_id'][0] or False,
-            quant['owner_id'] and quant['owner_id'][0] or False):
-            quant['quantity'] for quant in quants
-        }
+        # quants = self.env['stock.quant'].read_group(domain, fields, group_by, lazy=False)
+        # return {(
+        #     quant['product_id'] and quant['product_id'][0] or False,
+        #     quant['location_id'] and quant['location_id'][0] or False,
+        #     quant['lot_id'] and quant['lot_id'][0] or False,
+        #     quant['package_id'] and quant['package_id'][0] or False,
+        #     quant['owner_id'] and quant['owner_id'][0] or False):
+        #     quant['quantity'] for quant in quants
+        # }
 
     def _get_exhausted_inventory_lines_vals(self, non_exhausted_set):
         """Return the values of the inventory lines to create if the user
@@ -324,20 +338,17 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
-        for (product_id, location_id, lot_id, package_id, owner_id), quantity in quants_groups.items():
-            line_values = {
+        for data in quants_groups:
+            line = {
                 'inventory_id': self.id,
-                'product_qty': 0 if self.prefill_counted_quantity == "zero" else quantity,
-                'theoretical_qty': quantity,
-                'x_first_qty': quantity,
-                'prod_lot_id': lot_id,
-                'partner_id': owner_id,
-                'product_id': product_id,
-                'location_id': location_id,
-                'package_id': package_id
+                'product_qty': 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
+                'theoretical_qty': data.get('quanty'),
+                'x_first_qty': data.get('quanty'),
+                'product_id': data.get('product_id'),
+                'location_id': data.get('location_id'),
+                'product_uom_id': self.env['product.product'].browse(data.get('product_id')).uom_id.id
             }
-            line_values['product_uom_id'] = self.env['product.product'].browse(product_id).uom_id.id
-            vals.append(line_values)
+            vals.append(line)
         if self.exhausted:
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
@@ -387,8 +398,7 @@ class InventoryLine(models.Model):
         index=True, readonly=True, store=True)
     state = fields.Selection(string='Status', related='inventory_id.state')
     theoretical_qty = fields.Float(
-        'Tồn hiện có',
-        digits='Product Unit of Measure', readonly=True)
+        'Tồn hiện có')
     x_first_qty = fields.Float(
         'Đã đếm',
         digits='Product Unit of Measure')
@@ -509,14 +519,9 @@ class InventoryLine(models.Model):
         """
         for values in vals_list:
             if 'theoretical_qty' not in values:
-                theoretical_qty = self.env['product.product'].get_theoretical_quantity(
-                    values['product_id'],
-                    values['location_id'],
-                    lot_id=values.get('prod_lot_id'),
-                    package_id=values.get('package_id'),
-                    owner_id=values.get('partner_id'),
-                    to_uom=values.get('product_uom_id'),
-                )
+                check_quant = self.env['stock.quant'].search(
+                    [('product_id', '=', self.product_id.id), ('location_id', '=', self.location_id.id)])
+                theoretical_qty = check_quant.quantity if check_quant else 0
                 values['theoretical_qty'] = theoretical_qty
             if 'product_id' in values and 'product_uom_id' not in values:
                 values['product_uom_id'] = self.env['product.product'].browse(values['product_id']).uom_id.id
@@ -592,8 +597,10 @@ class InventoryLine(models.Model):
                 continue
             if line.difference_qty > 0:  # found more than expected
                 vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
+                line.create_import_export_other(vals, type_picking='import')
             else:
                 vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
+                line.create_import_export_other(vals, type_picking='export')
             vals_list.append(vals)
         return self.env['stock.move'].create(vals_list)
 

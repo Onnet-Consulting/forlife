@@ -43,6 +43,10 @@ class StockTransferRequest(models.Model):
         res['request_date'] = datetime.now()
         return res
 
+    @api.onchange('request_employee_id')
+    def _onchange_request_employee_id(self):
+        self.department_id = self.request_employee_id.department_id.id
+
     @api.constrains('request_date', 'date_planned')
     def constrains_request_planed_dated(self):
         for item in self:

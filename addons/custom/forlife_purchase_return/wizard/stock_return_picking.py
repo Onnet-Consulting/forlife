@@ -34,6 +34,12 @@ class StockReturnPicking(models.TransientModel):
     #             return_line.unlink()
     #     return res
 
+    def _prepare_picking_default_values(self):
+        vals = super(StockReturnPicking, self)._prepare_picking_default_values()
+        if self.for_po:
+            vals.update({'is_return_po': True})
+        return vals
+
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
         res = super(StockReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)
@@ -42,10 +48,12 @@ class StockReturnPicking(models.TransientModel):
             for move in stock_move.move_dest_ids:
                 if not move.origin_returned_move_id or move.origin_returned_move_id != stock_move:
                     continue
-                if move.state in ('partially_available', 'assigned'):
-                    quantity_returned += sum(move.move_line_ids.mapped('reserved_qty'))
-                elif move.state in ('done'):
-                    quantity_returned += move.product_qty
+                # if move.state in ('partially_available', 'assigned'):
+                #     quantity_returned += sum(move.move_line_ids.mapped('reserved_qty'))
+                # elif move.state in ('done'):
+                #     quantity_returned += move.product_qty
+                if move.state in ('done'):
+                    quantity_returned += move.quantity_done
 
             res.update({
                 'quantity_init': stock_move.product_qty,

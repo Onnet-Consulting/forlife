@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nhanh_brand_config_system,nhanh brand config system,model_nhanh_brand_config,base.group_system,1,1,1,1
+access_nhanh_brand_config_user,nhanh brand config user,model_nhanh_brand_config,base.group_user,1,0,0,0
+access_nhanh_webhook_value_system,nhanh webhook value system,model_nhanh_webhook_value,base.group_system,1,1,1,1
+access_nhanh_webhook_value_user,nhanh webhook value user,model_nhanh_webhook_value,base.group_user,1,0,0,0

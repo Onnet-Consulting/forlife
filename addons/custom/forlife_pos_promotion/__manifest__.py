@@ -49,6 +49,7 @@
 
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderDetail.xml',
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/CustomOrderline.xml',
+            'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/CartPromotionButton.xml',

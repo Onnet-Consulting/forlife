@@ -13,12 +13,31 @@
                 </t>
                 <t t-else="">
                     <t t-if="order.is_refund_product or order.is_change_product">
-                        <ul class="orderlines">
-                            <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">
-                                <Orderline line="orderline" />
-                            </t>
-                        </ul>
-                        <OrderSummary order="order" />
+                        <div class="list-order">
+                            <ul class="head">
+                                <li style="width: 15%">TÊN SP</li>
+                                <li style="width: 6%">SL TRẢ</li>
+                                <li style="width: 6%">SL MỚI</li>
+                                <li style="width: 13%">ĐƠN GIÁ</li>
+                                <li style="width: 10%">%GG</li>
+                                <li style="width: 10%">GIẢM GIÁ</li>
+                                <li style="width: 20%">THÀNH TIỀN</li>
+                                <li style="width: 10%">SL ĐƯỢC TRẢ</li>
+                                <li style="width: 10%"></li>
+                            </ul>
+                            <ul class="orderlines">
+                                <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">
+                                    <OrderlineChangeRefund line="orderline" />
+                                </t>
+                            </ul>
+                        </div>
+<!--                        <CustomOrderSummary order="order" />-->
+<!--                        <ul class="orderlines">-->
+<!--                            <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">-->
+<!--                                <Orderline line="orderline" />-->
+<!--                            </t>-->
+<!--                        </ul>-->
+<!--                        <OrderSummary order="order" />-->
                     </t>
                     <t t-else="">
                         <div class="list-order">
@@ -36,8 +55,9 @@
                                 </t>
                             </ul>
                         </div>
-                        <CustomOrderSummary order="order" />
+<!--                        <CustomOrderSummary order="order" />-->
                     </t>
+                    <CustomOrderSummary order="order" />
 
                 </t>
             </div>

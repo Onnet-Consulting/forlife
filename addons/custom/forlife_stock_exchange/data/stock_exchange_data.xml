@@ -1,44 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <odoo>
     <data noupdate="1">
-
-        <record id="forlife_stock_location_exchange" model="stock.location">
-            <field name="name">Import of finished products</field>
-            <field name="code">1541</field>
-            <field name="usage">internal</field>
-        </record>
-
-        <record id="forlife_picking_type_incoming_exchange" model="stock.picking.type">
-            <field name="name">Import of finished products</field>
-            <field name="sequence_code">IN</field>
-            <field name="code">incoming</field>
-            <field name="exchange_code">incoming</field>
-            <field name="default_location_src_id" ref="stock.stock_location_suppliers"/>
-            <field name="default_location_dest_id" ref="forlife_stock_exchange.forlife_stock_location_exchange"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="create_backorder">ask</field>
-            <field name="reservation_method">at_confirm</field>
-        </record>
-
-        <record id="forlife_picking_type_outgoing_exchange" model="stock.picking.type">
-            <field name="name">Export of materials</field>
-            <field name="sequence_code">OUT</field>
-            <field name="code">outgoing</field>
-            <field name="exchange_code">outgoing</field>
-            <field name="default_location_src_id" ref="forlife_stock_exchange.forlife_stock_location_exchange"/>
-            <field name="default_location_dest_id" ref="stock.stock_location_customers"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="create_backorder">ask</field>
-            <field name="reservation_method">at_confirm</field>
-        </record>
-
         <record id="forlife_reason_type_incoming_exchange" model="forlife.reason.type">
-            <field name="name">Import of finished products</field>
+            <field name="name">Nhập kho thành phẩm</field>
         </record>
 
         <record id="forlife_reason_type_outgoing_exchange" model="forlife.reason.type">
-            <field name="name">Export of materials</field>
+            <field name="name">Xuất nguyên phụ liệu</field>
         </record>
 
+        <record id="forlife_location_incoming_exchange" model="stock.location">
+            <field name="name">Nhập kho thành phẩm sản xuất</field>
+            <field name="usage">supplier</field>
+            <field name="type_other">incoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_incoming_exchange"/>
+        </record>
+
+        <record id="forlife_location_outgoing_exchange" model="stock.location">
+            <field name="name">Xuất kho nguyên phụ liệu sản xuất</field>
+            <field name="usage">customer</field>
+            <field name="type_other">outcoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_outgoing_exchange"/>
+        </record>
     </data>
 </odoo>

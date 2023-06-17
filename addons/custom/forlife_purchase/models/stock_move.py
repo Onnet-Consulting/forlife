@@ -28,8 +28,8 @@ class StockPicking(models.Model):
     def view_xk_account(self):
         # context = { 'create': True, 'delete': True, 'edit': True}
         account_ids = self.account_xk_id.ids if self.account_xk_id else []
-        stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
-        account_ids += stock_valuation_account.ids
+        # stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
+        # account_ids += stock_valuation_account.ids
         domain = [('id', 'in', account_ids)]
         return {
             'name': _('Forlife Account'),
@@ -65,10 +65,34 @@ class StockPicking(models.Model):
                 rec.account_xk_id.unlink()
         return super(StockPicking, self).action_back_to_draft()
 
+    order_line_count = fields.Integer('Order Line Count', compute='_compute_order_line_count')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('waiting', 'Waiting Another Operation'),
+        ('confirmed', 'Waiting'),
+        ('assigned', 'Ready'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled'),
+    ], string='Status', compute='_compute_state',
+        copy=False, index=True, readonly=True, store=True, tracking=True,
+        help=" * Draft: The transfer is not confirmed yet. Reservation doesn't apply.\n"
+             " * Waiting another operation: This transfer is waiting for another operation before being ready.\n"
+             " * Waiting: The transfer is waiting for the availability of some products.\n(a) The shipping policy is \"As soon as possible\": no product could be reserved.\n(b) The shipping policy is \"When all products are ready\": not all the products could be reserved.\n"
+             " * Ready: The transfer is ready to be processed.\n(a) The shipping policy is \"As soon as possible\": at least one product has been reserved.\n(b) The shipping policy is \"When all products are ready\": all product have been reserved.\n"
+             " * Done: The transfer has been processed.\n"
+             " * Cancelled: The transfer has been cancelled.")
+
+    def write(self, vals):
+        old_line_count = len(self.move_line_ids_without_package)
+        new_line_count = len(vals.get('move_line_ids_without_package', []))
+        if (new_line_count > old_line_count) and (self.state == 'assigned' or self.state =="done") :
+            raise ValidationError('Không thể thêm dòng sản phẩm khi đang ở trạng thái sẵn sàng hoặc hoàn thành.')
+        return super(StockPicking, self).write(vals)
 
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
+    free_good = fields.Boolean(string="Hàng tặng")
     purchase_uom = fields.Many2one('uom.uom', string="Đơn vị mua")
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
@@ -80,3 +104,7 @@ class StockMoveLine(models.Model):
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    free_good = fields.Boolean(string="Hàng tặng")
+    quantity_change = fields.Float(string="Số lượng quy đổi")
+    quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")

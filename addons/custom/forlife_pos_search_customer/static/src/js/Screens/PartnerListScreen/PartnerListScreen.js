@@ -25,9 +25,12 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
         }
 
         async _onSearchPartner(event) {
-            this.state.query = event.detail.searchTerm;
             const fieldName = event.detail.fieldName.toLowerCase();
             let domain = [];
+
+            this.state.query = event.detail.searchTerm;
+            this.state.fieldName = fieldName;
+
             if(this.state.query != ""){
                 domain = [[fieldName, "ilike", this.state.query + "%"]]
             }
@@ -92,6 +95,21 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
                 },
                 defaultFilter: null,
             };
+        }
+
+          // OVERRIDE
+          createPartner() {
+            // initialize the edit screen with default details about country & state
+            let partner = {
+                country_id: this.env.pos.company.country_id,
+                state_id: this.env.pos.company.state_id,
+            }
+            // Default customer search value as input in customer creation form
+            if(this.state.fieldName){
+                partner[this.state.fieldName] = this.state.query;
+            }
+            this.state.editModeProps.partner = partner;
+            this.activateEditMode();
         }
 
     }

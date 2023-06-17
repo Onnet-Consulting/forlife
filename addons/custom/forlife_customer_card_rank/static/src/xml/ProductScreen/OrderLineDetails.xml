@@ -11,6 +11,14 @@
                     <span>&#160;<t t-esc="env.pos.format_currency(-props.line.get_card_rank_discount())"/></span>
                 </li>
             </t>
+            <t t-if="props.line.money_reduce_from_product_defective >0">
+                    <li class="info orderline-product-defective" style="width: 65%;">
+                        <em>Giảm giá hàng lỗi</em>
+                    </li>
+                    <li class="info orderline-product-defective" style="width: 35%;">
+                        <span>&#160;<t t-esc="env.pos.format_currency(props.line.money_reduce_from_product_defective)"/></span>
+                    </li>
+            </t>
         </xpath>
     </t>
 </templates>

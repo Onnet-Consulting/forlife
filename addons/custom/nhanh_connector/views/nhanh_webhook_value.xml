@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="nhanh_webhook_value_view_form" model="ir.ui.view">
+        <field name="name">nhanh_webhook_value_view_form</field>
+        <field name="model">nhanh.webhook.value</field>
+        <field name="arch" type="xml">
+            <form string="Nhanh Webhook Value" create="0" delete="0" edit="0">
+                <header>
+                    <button name="action_retry" string="Retry" type="object"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="event_type"/>
+                        <field name="event_value"/>
+                        <field name="order_id"/>
+                        <field name="error"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="nhanh_webhook_value_view_tree" model="ir.ui.view">
+        <field name="name">nhanh_webhook_value_view_tree</field>
+        <field name="model">nhanh.webhook.value</field>
+        <field name="arch" type="xml">
+            <tree string="Nhanh Webhook Value" create="0" delete="0" edit="0" default_order="create_date desc">
+                <field name="event_type"/>
+                <field name="error"/>
+                <field name="state"/>
+                <field name="create_date" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="nhanh_webhook_value_action" model="ir.actions.act_window">
+        <field name="name">Nhanh Webhook Value</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">nhanh.webhook.value</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="nhanh_webhook_value_menu" name="Nhanh Webhook Value" parent="base.menu_ir_property"
+              action="nhanh_webhook_value_action"/>
+
+</odoo>

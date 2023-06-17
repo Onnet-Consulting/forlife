@@ -3,9 +3,12 @@ import phonenumbers
 from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
 import string
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 import pytz
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Voucher(models.Model):
@@ -52,6 +55,8 @@ class Voucher(models.Model):
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
     using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
+
+    has_accounted = fields.Boolean(default=False)
 
 
     @api.depends('price_used', 'price')
@@ -114,10 +119,13 @@ class Voucher(models.Model):
             else:
                 vourcher = self.sudo().search([('name', '=', code['value'])], limit=1)
                 if vourcher:
-                    # sql = f"SELECT product_product_id FROM product_product_program_voucher_rel WHERE program_voucher_id = {vourcher.program_voucher_id.id}"
-                    # self._cr.execute(sql)
-                    # product_ids = self._cr.fetchall()
-                    # product_ids = [id[0] for id in product_ids]
+                    sql = f"SELECT product_product_id FROM product_product_program_voucher_rel WHERE program_voucher_id = {vourcher.program_voucher_id.id}"
+                    self._cr.execute(sql)
+                    product_ids = self._cr.fetchall()
+                    if product_ids:
+                        product_ids = [id[0] for id in product_ids]
+                    else:
+                        product_ids = []
                     start_date = self._format_time_zone(vourcher.start_date)
                     end_date = self._format_time_zone(vourcher.end_date)
                     end_date_format = datetime.strptime(end_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
@@ -141,12 +149,15 @@ class Voucher(models.Model):
                             'state': vourcher.state,
                             'start_date': start_date_format,
                             'apply_contemp_time': vourcher.apply_contemp_time,
-                            'product_apply_ids': vourcher.product_apply_ids.ids,
+                            'product_apply_ids': product_ids,
                             'is_full_price_applies': vourcher.is_full_price_applies,
                             'using_limit': vourcher.program_voucher_id.using_limit,
                             'program_voucher_id': vourcher.program_voucher_id.id,
                             'product_voucher_name': vourcher.program_voucher_id.name,
-                            'derpartment_name': vourcher.derpartment_id.name
+                            'derpartment_name': vourcher.derpartment_id.name,
+                            'derpartment_id': vourcher.derpartment_id.id,
+                            'state_app': vourcher.state_app,
+                            'apply_many_times': vourcher.apply_many_times
                         }
                     })
                 if not vourcher:
@@ -189,6 +200,95 @@ class Voucher(models.Model):
                 if rec.end_date and rec.end_date < now:
                     rec.status_latest = rec.state
                     rec.state = 'expired'
+
+    def generate_account_move_voucher(self):
+        AccountMove = self.env['account.move']
+        departments = self.env['hr.department'].search([])
+        now = datetime.now()
+        payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True),('company_id','=',self.env.company.id)], limit=1)
+        if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
+            for d in departments:
+                if not self._context.get('expired'):
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False),('apply_many_times','=',False)])
+                    if vouchers:
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
+                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=90)).day == now.day))
+                        if vouchers:
+                            try:
+                                move_vals = {
+                                    'ref': 'Voucher bán hết giá trị/ hết hạn ngày 90 ngày trước',
+                                    'date': now,
+                                    'journal_id': payment_mothod.journal_id.id,
+                                    'company_id': payment_mothod.company_id.id,
+                                    'move_type': 'entry',
+                                    'line_ids': [
+                                        # credit line
+                                        (0, 0, {
+                                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                            'display_type': 'product',
+                                            'account_id': payment_mothod.account_other_income.id,
+                                            'debit': 0.0,
+                                            'credit': sum(vouchers.mapped('price_residual')),
+                                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id.id else {}
+                                        }),
+                                        # debit line
+                                        (0, 0, {
+                                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                            'display_type': 'product',
+                                            'account_id': payment_mothod.account_general.id,
+                                            'debit': sum(vouchers.mapped('price_residual')),
+                                            'credit': 0.0,
+                                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {}
+                                        }),
+                                    ]
+                                }
+                                AccountMove.sudo().create(move_vals)._post()
+                            except Exception as e:
+                                _logger.info(e)
+                        for v in vouchers:
+                            v.has_accounted = True
+                else:
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
+                    if vouchers:
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=90)).day == now.day))
+                        if vouchers:
+                            try:
+                                move_vals = {
+                                    'ref': 'Voucher bán hết giá trị/ hết hạn ngày 90 ngày trước',
+                                    'date': now,
+                                    'journal_id': payment_mothod.journal_id.id,
+                                    'company_id': payment_mothod.company_id.id,
+                                    'move_type': 'entry',
+                                    'line_ids': [
+                                        # credit line
+                                        (0, 0, {
+                                            'name': 'Write off giá trị còn lại của Voucher hết hạn',
+                                            'display_type': 'product',
+                                            'account_id': payment_mothod.account_other_income.id,
+                                            'debit': 0.0,
+                                            'credit': sum(vouchers.mapped('price_residual')),
+                                            'analytic_distribution': {
+                                                d.center_expense_id.id: 100} if d.center_expense_id.id else {}
+                                        }),
+                                        # debit line
+                                        (0, 0, {
+                                            'name': 'Write off giá trị còn lại của Voucher hết hạn',
+                                            'display_type': 'product',
+                                            'account_id': payment_mothod.account_general.id,
+                                            'debit': sum(vouchers.mapped('price_residual')),
+                                            'credit': 0.0
+                                        }),
+                                    ]
+                                }
+                                AccountMove.sudo().create(move_vals)._post()
+                            except Exception as e:
+                                _logger.info(e)
+                            for v in vouchers:
+                                v.has_accounted = True
+                                v.price_residual = 0
+        else:
+            _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
+        return True
 
     @api.model
     def create(self, vals_list):

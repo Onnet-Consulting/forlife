@@ -62,6 +62,11 @@ class PurchaseRequest(models.Model):
         res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
         return res
 
+    @api.onchange('employee_id')
+    def onchange_department_id(self):
+        if self.employee_id.department_id:
+            self.department_id = self.employee_id.department_id
+
     def submit_action(self):
         for record in self:
             record.write({'state': 'confirm'})
@@ -137,9 +142,18 @@ class PurchaseRequest(models.Model):
                                     fields=['product_id', 'vendor_code', 'product_type'],
                                     groupby=['vendor_code', 'product_type'], lazy=False)
         purchase_order = self.env['purchase.order']
+        occasion_code_id = []
+        account_analytic_id = []
+        production_id = []
         for rec in self:
             if rec.state != 'approved':
-                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt!')
+                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name
+            if rec.occasion_code_id:
+                occasion_code_id.append(rec.occasion_code_id.id)
+            if rec.account_analytic_id:
+                account_analytic_id.append(rec.account_analytic_id.id)
+            if rec.production_id:
+                production_id.append(rec.production_id.id)
         for group in order_lines_groups:
             keys = {}
             domain = group['__domain']
@@ -149,15 +163,9 @@ class PurchaseRequest(models.Model):
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
             po_line_data = []
             po_ex_line_data = []
-            po_cost_line_data = []
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
-                # if rec.date_planned and line.date_planned:
-                #     if rec.date_planned > line.date_planned:
-                #         date_planned_po = rec.date_planned
-                #     else:
-                #         date_planned_po = line.date_planned
                 keys.update({
                     line.request_id.name: line.request_id.name
                 })
@@ -194,15 +202,13 @@ class PurchaseRequest(models.Model):
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
                     'exchange_rate_line': po_ex_line_data,
-                    'occasion_code_ids': [(6, 0, self.mapped('occasion_code_id').ids)],
-                    'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
+                    'occasion_code_ids': occasion_code_id,
+                    'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
-                    'production_id': self.production_id.id,
-                    'date_planned': rec.date_planned,
+                    'production_id': production_id,
+                    'date_planned': self.date_planned if len(self) == 1 else False,
                 }
                 purchase_order |= purchase_order.create(po_data)
-        # if not purchase_order:
-        #     raise ValidationError('Sản phẩm đã được lấy hết hoặc đã đóng!')
         return {
             'name': 'Purchase Orders',
             'type': 'ir.actions.act_window',
@@ -281,17 +287,16 @@ class PurchaseRequestLine(models.Model):
             else:
                 line.product_qty = line.purchase_quantity
 
-    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty')
+    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty', 'purchase_order_line_ids.order_id.custom_state')
     def _compute_order_quantity(self):
         for rec in self:
-            # ### yêu cầu cũ là lọc theo trạng thái purchase
-            done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-            rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
+            if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
+                rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
         for rec in self:
-            rec.is_no_more_quantity = rec.purchase_quantity == rec.order_quantity
+            rec.is_no_more_quantity = rec.purchase_quantity <= rec.order_quantity
 
     @api.constrains('purchase_quantity', 'exchange_quantity')
     def constrains_purchase_quantity(self):

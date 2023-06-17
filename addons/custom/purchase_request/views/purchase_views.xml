@@ -30,6 +30,7 @@
                            attrs="{'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"
                            widget="many2many_tags"/>
                     <field name="production_id"
+                           widget="many2many_tags"
                            attrs="{'invisible': [('purchase_type', '=', 'asset')], 'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
 <!--                    <field name="event_id"-->
 <!--                           attrs="{'invisible': [('purchase_type', '!=', 'product')], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>-->
@@ -117,10 +118,10 @@
                                         <field name="product_id" context="{'show_product_code': True}"
                                                attrs="{'readonly': [('is_from_po', '=', True)]}" string="Sản phẩm"/>
                                         <field name="name" string="Mô tả"/>
-                                        <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}"
-                                               string="Đơn vị"/>
-                                        <field name="product_qty" string="Số lượng điều chuyển"/>
-                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>
+                                        <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
+                                        <field name="product_qty" string="Số lượng"/>
+<!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
+                                        <field name="price_unit" string="Giá"/>
                                     </tree>
                                 </field>
                             </page>

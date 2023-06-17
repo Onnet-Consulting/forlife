@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="split_product_form_view">
+            <field name="name">split.product.form.view</field>
+            <field name="model">split.product</field>
+            <field name="arch" type="xml">
+                <form string="Phân rã hàng hoá">
+                    <header>
+                        <button string="Tạo phân tách" type="object" name="action_generate" class="btn btn-primary" states="new"/>
+                        <button string="Xác nhận" type="object" name="action_approve" class="btn btn-primary" states="in_progress"/>
+                        <button string="Huỷ" type="object" name="action_cancel" states="new,in_progress"/>
+                        <button string="Đưa về dự thảo" type="object" name="action_draft" states="canceled"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                         <div class="oe_button_box" name="button_box">
+                            <button name="action_view_picking" string="Các phiếu nhập xuất" type="object" class="oe_stat_button" icon="fa-bars">
+                                <field name="count_picking" string="Các phiếu nhập xuất" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1 class="d-flex">
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="user_create_id"/>
+                                <field name="date_create"/>
+                            </group>
+                            <group>
+                                <field name="user_approve_id" />
+                                <field name="date_approved"/>
+                            </group>
+                        </group>
+                    <group string="Ghi chú">
+                        <field colspan="2" name="note" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Sản phẩm chính">
+                            <field name="split_product_line_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled','in_progress'])]}">
+                                <tree editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
+                                    <field name="product_uom"/>
+                                    <field name="warehouse_out_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
+                                    <field name="product_quantity_out"/>
+                                    <field name="product_quantity_split" attrs="{'readonly': [('state','in',['canceled','in_progress','done'])]}"/>
+                                    <field name="product_uom_split"/>
+                                    <field name="warehouse_in_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
+                                    <field name="unit_price" invisible="True"/>
+                                    <field name="value" invisible="True"/>
+                                </tree>
+
+                            </field>
+                        </page>
+                        <page string="Sản phẩm phân tách">
+                            <field name="split_product_line_sub_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
+                                <tree editable="bottom" create="0">
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_id" optional="show"/>
+                                    <field name="product_split"/>
+                                    <field name="warehouse_in_id"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_split"/>
+                                    <field name="unit_price" invisible="True"/>
+                                    <field name="value" invisible="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+                <record model="ir.ui.view" id="split_product_tree_view">
+            <field name="name">split.product.tree.view</field>
+            <field name="model">split.product</field>
+            <field name="arch" type="xml">
+                <tree string="Phân rã hàng hoá">
+                    <field name="user_create_id"/>
+                    <field name="user_approve_id"/>
+                    <field name="date_approved"/>
+                    <field name="note"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="split_product_action" model="ir.actions.act_window">
+            <field name="name">Phân rã hàng hoá</field>
+            <field name="res_model">split.product</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+         <menuitem id="split_product" parent="stock.menu_stock_warehouse_mgmt" action="forlife_splip_product.split_product_action" name="Phân rã hàng hoá" sequence="3"/>
+    </data>
+</odoo>
