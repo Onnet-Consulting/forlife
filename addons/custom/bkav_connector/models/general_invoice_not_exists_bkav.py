@@ -62,7 +62,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                             'quantity': diff_qty,
                             'price_unit': line.price_unit,
                             'price_subtotal': price_subtotal,
-                            'taxes_id': line.taxes_id.id,
+                            # 'taxes_id': line.taxes_id.id,
                         }))
                     if diff_qty < 0:
                         negative_line_vals.append((0, 0, {
@@ -71,12 +71,12 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                             'quantity': abs(diff_qty),
                             'price_unit': line.price_unit,
                             'price_subtotal': price_subtotal,
-                            'taxes_id': line.taxes_id.id
+                            # 'taxes_id': line.taxes_id.id
                         }))
             # Sản phẩm chỉ có trả trong ngày
             for line in refund_invoices.invoice_line_ids.filtered(lambda x: x.product_id.id not in product_checked):
                 if line.id not in line_checked:
-                    refund_line_ids = refund_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit and line.taxes_id.id == r.taxes_id.id)
+                    refund_line_ids = refund_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
                     line_checked += (refund_line_ids).ids
                     negative_line_vals.append((0, 0, {
                         'product_id': line.product_id.id,
@@ -84,7 +84,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                         'quantity': sum(refund_line_ids.mapped('quantity')),
                         'price_unit': line.price_unit,
                         'price_subtotal': sum(refund_line_ids.mapped('price_subtotal')),
-                        'taxes_id': line.taxes_id.id
+                        # 'taxes_id': line.taxes_id.id
                     }))
 
             general_invoice_id = self.env['invoice.not.exists.bkav'].sudo().create({
