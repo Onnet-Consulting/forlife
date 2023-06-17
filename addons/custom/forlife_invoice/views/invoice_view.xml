@@ -246,43 +246,43 @@
                             </tree>
                         </field>
                     </page>
-                    <field name="exists_bkav" invisible="1"/>
-                    <page string="e-Invoice" name="e_invoice" attrs="{'invisible':[('exists_bkav', '=', False)]}">
-                        <field name="is_check_cancel" invisible="1"/>
-                        <field name="e_invoice_ids" class="width-hh" widget="one2many" mode="tree">
-                            <tree editable="bottom">
-                                <control>
-                                    <create name="add" string="Thêm mới" readonly="1"/>
-                                </control>
-                                <field name="number_e_invoice"/>
-                                <field name="date_start_e_invoice"/>
-                                <field name="state_e_invoice"/>
-                            </tree>
-                        </field>
-                        <div class="xl-12 d-flex" style="justify-content: end;"
-                             attrs="{'invisible':[('exists_bkav', '=', False)]}">
-                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
-                                <button name="getting_invoice_status" type="object"
-                                        string="Cập nhật trạng thái"
-                                        class="oe_highlight"/>
-                            </div>
-                            <div style="padding: 40px;">
-                                <button name="action_download_view_e_invoice" type="object"
-                                        string="Xem và tải xuống HĐĐT"
-                                        class="oe_highlight"/>
-                            </div>
-                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
-                                <button name="cancel_invoice" type="object"
-                                        string="Hủy HĐĐT trên BKAV"
-                                        class="oe_highlight"/>
-                            </div>
-                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
-                                <button name="getting_sign_the_bill_hsm" type="object"
-                                        string="Ký HĐĐT trên BKAV"
-                                        class="oe_highlight"/>
-                            </div>
-                        </div>
-                    </page>
+<!--                    <field name="exists_bkav" invisible="1"/>-->
+<!--                    <page string="e-Invoice" name="e_invoice" attrs="{'invisible':[('exists_bkav', '=', False)]}">-->
+<!--                        <field name="is_check_cancel" invisible="1"/>-->
+<!--                        <field name="e_invoice_ids" class="width-hh" widget="one2many" mode="tree">-->
+<!--                            <tree editable="bottom">-->
+<!--                                <control>-->
+<!--                                    <create name="add" string="Thêm mới" readonly="1"/>-->
+<!--                                </control>-->
+<!--                                <field name="number_e_invoice"/>-->
+<!--                                <field name="date_start_e_invoice"/>-->
+<!--                                <field name="state_e_invoice"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+<!--                        <div class="xl-12 d-flex" style="justify-content: end;"-->
+<!--                             attrs="{'invisible':[('exists_bkav', '=', False)]}">-->
+<!--                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">-->
+<!--                                <button name="getting_invoice_status" type="object"-->
+<!--                                        string="Cập nhật trạng thái"-->
+<!--                                        class="oe_highlight"/>-->
+<!--                            </div>-->
+<!--                            <div style="padding: 40px;">-->
+<!--                                <button name="action_download_view_e_invoice" type="object"-->
+<!--                                        string="Xem và tải xuống HĐĐT"-->
+<!--                                        class="oe_highlight"/>-->
+<!--                            </div>-->
+<!--                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">-->
+<!--                                <button name="cancel_invoice" type="object"-->
+<!--                                        string="Hủy HĐĐT trên BKAV"-->
+<!--                                        class="oe_highlight"/>-->
+<!--                            </div>-->
+<!--                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">-->
+<!--                                <button name="getting_sign_the_bill_hsm" type="object"-->
+<!--                                        string="Ký HĐĐT trên BKAV"-->
+<!--                                        class="oe_highlight"/>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </page>-->
                 </xpath>
             </field>
         </record>
