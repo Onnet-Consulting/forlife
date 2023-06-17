@@ -137,7 +137,13 @@ class PurchaseReturnWizard(models.TransientModel):
             'product_qty': return_line.quantity,
             'vendor_price': return_line.vendor_price,
             'price_unit': return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity else 0,
-            'origin_po_line_id': return_line.purchase_line_id.id
+            'origin_po_line_id': return_line.purchase_line_id.id,
+            'purchase_uom': return_line.purchase_line_id.purchase_uom.id,
+            'taxes_id': [(6, 0, return_line.purchase_line_id.taxes_id.ids)],
+            'discount_percent': return_line.purchase_line_id.discount_percent,
+            'occasion_code_id': return_line.purchase_line_id.occasion_code_id.id,
+            'production_id': return_line.purchase_line_id.production_id.id,
+            'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
         }
         return vals
 

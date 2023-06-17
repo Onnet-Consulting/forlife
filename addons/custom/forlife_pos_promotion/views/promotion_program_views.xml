@@ -138,6 +138,7 @@
                         <field name="with_code" attrs="{'invisible': [('promotion_type', 'not in', ('cart', 'code', 'pricelist'))]}"/>
                         <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
 <!--                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>-->
+                        <field name="only_condition_product" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="is_original_price" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="incl_reward_in_order_type"
                                attrs="{'invisible': [('promotion_type', 'not in', ('cart'))], 'required': [('promotion_type', '=', 'cart')]}"/>

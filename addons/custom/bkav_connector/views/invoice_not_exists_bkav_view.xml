@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="invoice_not_exists_bkav_form" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">invoice.not.exists.bkav</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="move_date" readonly="1"/>
+                            <field name="invoice_e_date" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="invoice_guid" readonly="1"/>
+                            <field name="invoice_no" readonly="1"/>
+                            <field name="invoice_ids" invisible="1" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="detail" string="Detail">
+                            <field name="line_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="parent_id" invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="taxes_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="negative detail" string="Negative Detail">
+                            <field name="negative_line_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="parent_id" invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="taxes_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="invoice" string="Invoices">
+                            <field name="invoice_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="partner_id"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="invoice_not_exists_bkav_tree" model="ir.ui.view">
+        <field name="name">invoice.not.exists.bkav.name</field>
+        <field name="model">invoice.not.exists.bkav</field>
+        <field name="arch" type="xml">
+            <tree create="0">
+                <field name="move_date"/>
+                <field name="company_id"/>
+                <field name="invoice_e_date"/>
+                <field name="invoice_guid"/>
+                <field name="invoice_no"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="invoice_not_exists_bkav_action" model="ir.actions.act_window">
+        <field name="name">General invoice not exists BKAV</field>
+        <field name="res_model">invoice.not.exists.bkav</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="invoice_not_exists_bkav_menu"
+              parent="account.account_invoicing_menu"
+              action="invoice_not_exists_bkav_action"
+              sequence="10"/>
+</odoo>

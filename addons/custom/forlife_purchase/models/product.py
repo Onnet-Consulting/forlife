@@ -134,5 +134,5 @@ class ProductProduct(models.Model):
 
     def name_get(self):
         if self.env.context.get('show_product_code'):
-            return [(record.id, record.code_product or record.name) for record in self]
+            return [(record.id, record.name or record.name) for record in self]
         return super().name_get()

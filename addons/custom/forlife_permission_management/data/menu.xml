@@ -54,7 +54,7 @@
         <!--Tồn kho/Hoạt động/Xử lý hàng lỗi-->
         <record model="ir.ui.menu" id="forlife_stock.transfer_stock_inventory_classify_menu">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_purchase_group_admin'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_purchase_group_admin'))]"/>
         </record>
         <!--Tồn kho/Hoạt động/Phiếu kiểm kê kho-->
         <record model="ir.ui.menu" id="stock_inventory.menu_action_inventory_form_inherit">
@@ -194,7 +194,7 @@
         <!--Mua hàng/Đơn hàng-->
         <record model="ir.ui.menu" id="purchase.menu_procurement_management">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_admin'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_purchase_purchase_order')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_liabilities_accounting')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_admin'))]"/>
         </record>
         <!--Mua hàng/Đơn hàng/Nhà cung cấp-->
         <record model="ir.ui.menu" id="purchase.menu_procurement_management_supplier_name">
@@ -384,13 +384,13 @@
         <!--        Điểm bán lẻ/Đơn hàng-->
         <record model="ir.ui.menu" id="point_of_sale.menu_point_of_sale">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
         </record>
 
         <!--        Điểm bán lẻ/Đơn hàng/Đơn hàng-->
         <record model="ir.ui.menu" id="point_of_sale.menu_point_ofsale">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_mer')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
 
         <!--        Điểm bán lẻ/Đơn hàng/Phiên-->

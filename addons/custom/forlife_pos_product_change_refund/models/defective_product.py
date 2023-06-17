@@ -36,11 +36,19 @@ class ProductDefective(models.Model):
     def name_get(self):
         return [(rec.id, '%s' % rec.product_id.name) for rec in self]
 
-    @api.depends('product_id')
+    @api.depends('product_id', 'store_id')
     def compute_quantity_inventory_store(self):
+        Quant = self.env['stock.quant']
         for rec in self:
-            quant = self.env['stock.quant'].search([('product_id','=', rec.product_id.id), ('location_id','=', rec.store_id.warehouse_id.lot_stock_id.id)], limit=1)
-            rec.quantity_inventory_store = quant.available_quantity
+            if rec.product_id and rec.store_id:
+                available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.store_id.warehouse_id.lot_stock_id, lot_id=None, package_id=None,
+                                                                   owner_id=None, strict=False, allow_negative=False)
+                if available_quantity:
+                    rec.quantity_inventory_store = available_quantity
+                else:
+                    rec.quantity_inventory_store = 0
+            else:
+                rec.quantity_inventory_store = 0
 
     def action_send_request_approve(self):
         self.state = 'waiting approve'
@@ -48,9 +56,9 @@ class ProductDefective(models.Model):
 
     def action_approve(self):
         self.ensure_one()
-        product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id),('id','!=',self.id)])
+        product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id), ('id','!=',self.id),('store_id','=',self.store_id.id),('state','=','approved')])
         if self.quantity_defective_approved > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
-            raise ValidationError(_('Tồn kho không đáp ứng'))
+            raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
         self.quantity_can_be_sale = self.quantity_defective_approved
         self.state = 'approved'
 

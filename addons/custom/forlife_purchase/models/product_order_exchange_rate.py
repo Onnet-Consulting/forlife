@@ -5,6 +5,8 @@ class PurchaseOrderExchangeRate(models.Model):
     _name = "purchase.order.exchange.rate"
     _description = 'Purchase Order Exchange Rate'
 
+    ex_po_id = fields.Char('')
+
     name = fields.Char(string='Name')
     product_id = fields.Many2one('product.product', string='Mã sản phẩm')
 
