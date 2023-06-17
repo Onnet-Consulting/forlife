@@ -42,17 +42,21 @@ class SaleOrder(models.Model):
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
-    # x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
+    x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
-    # @api.onchange('x_process_punish', 'partner_id')
-    # def _compute_domain_pricelist(self):
-    #     for r in self:
-    #         if not r.x_process_punish:
-    #             pricelist = self.env['product.pricelist'].search(
-    #                 ['|', ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
-    #         else:
-    #             pricelist = r.get_pricelist()
-    #         r.x_domain_pricelist = [(6, 0, pricelist)]
+    @api.onchange('x_punish', 'partner_id')
+    def _compute_domain_pricelist(self):
+        for r in self:
+            if not r.partner_id:
+                r.x_domain_pricelist = None
+                continue
+            if not r.x_punish:
+                pricelist = self.env['product.pricelist'].search(
+                    ['|', ('x_partner_id', '=', r.partner_id.id), ('x_partner_id', '=', False), '|',
+                     ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
+            else:
+                pricelist = r.get_pricelist()
+            r.x_domain_pricelist = [(6, 0, pricelist)]
 
     def get_pricelist(self):
         sql = f"""            
@@ -61,7 +65,8 @@ class SaleOrder(models.Model):
                 where 1=1
                 and pp.x_punish is True
                 and pp.x_partner_id = {self.partner_id.id}
-                and '{str(self.date_order)}'::date between ppi.date_start and ppi.date_end
+                and '{str(self.date_order)}' between ppi.date_start and ppi.date_end
+                and (pp.company_id = {self.company_id.id} or pp.company_id is Null)
                 order by pp.id desc
             """
         self._cr.execute(sql)
