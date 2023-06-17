@@ -418,9 +418,18 @@ class SaleOrderLine(models.Model):
                 product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
                 domain = [('id', 'in', product_id.ids)]
                 return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
+                                                  ('company_id', '=', self.order_id.company_id)] + domain,
+                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                         ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
             else:
-                return {'domain': {'product_id': [('id', '=', 0)]}}
+                return {'domain': {'product_id': [('id', '=', 0)],
+                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                         ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
+        else:
+            return {'domain': {'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                     ('company_id', '=', self.order_id.company_id.id)]}}
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
