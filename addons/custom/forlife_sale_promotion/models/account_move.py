@@ -60,14 +60,33 @@ class AccountMove(models.Model):
             line_ids = []
             journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
             for pr in self.promotion_ids:
+                account_debit_id = False
+                account_credit_id = False
+                line_allow = False
                 property_account_receivable_id = self.partner_id.property_account_receivable_id
-                account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id
-                account_credit_id = pr.value > 0 and property_account_receivable_id or pr.account_id
-                if account_debit_id and account_credit_id:
+                account_payable_customer_id = self.partner_id.property_account_payable_id
+                account_tax = pr.product_id.taxes_id
+                account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
+
+                if pr.promotion_type in ['vip_amount', 'reward']:
+                    line_allow = True
+                    account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id
+                    account_credit_id = pr.value > 0 and property_account_receivable_id or pr.account_id
+
+                if pr.promotion_type == 'nhanh_shipping_fee':
+                    line_allow = True
+                    account_debit_id = property_account_receivable_id
+                    account_credit_id = pr.account_id
+                if pr.promotion_type == 'customer_shipping_fee':
+                    line_allow = True
+                    account_debit_id = pr.account_id
+                    account_credit_id = account_payable_customer_id
+
+                if line_allow:
                     line_ids.append({
                         'name': self.name + "(%s)" % pr.description,
                         'product_id': pr.product_id.id,
-                        'account_id': account_debit_id.id,
+                        'account_id': account_debit_id and account_debit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
                         'debit': abs(pr.value),
                         'credit': 0
@@ -75,11 +94,29 @@ class AccountMove(models.Model):
                     line_ids.append({
                         'name': self.name + "(%s)" % pr.description,
                         'product_id': pr.product_id.id,
-                        'account_id': account_credit_id.id,
+                        'account_id': account_credit_id and account_credit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
                         'debit': 0,
                         'credit': abs(pr.value)
                     })
+                    if pr.promotion_type == 'nhanh_shipping_fee' and account_repartition_tax:
+                        line_ids.append({
+                            'name': self.name + "(%s)" % pr.description,
+                            'product_id': pr.product_id.id,
+                            'account_id': account_repartition_tax and account_repartition_tax[0].account_id.id,
+                            'analytic_account_id': pr.analytic_account_id.id,
+                            'debit': 0,
+                            'credit': abs(pr.value)
+                        })
+                        line_ids.append({
+                            'name': self.name + "(%s)" % pr.description,
+                            'product_id': pr.product_id.id,
+                            'account_id': account_repartition_tax and account_repartition_tax[0].account_id.id,
+                            'analytic_account_id': pr.analytic_account_id.id,
+                            'debit': abs(pr.value),
+                            'credit': 0
+                        })
+
             default_value = {
                 'date': self.invoice_date,
                 'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
@@ -87,7 +124,8 @@ class AccountMove(models.Model):
                 'move_type': 'entry',
                 'line_ids': [(0, 0, line_id) for line_id in line_ids]
             }
-            self.copy(default_value)
+            invoice_id = self.copy(default_value)
+            invoice_id.action_post()
         return res
 
 

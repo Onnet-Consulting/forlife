@@ -25,6 +25,7 @@
     'sequence': 1,
     'data': [
         'data/account.xml',
+        'data/product.xml',
         'security/ir.model.access.csv',
         'wizard/check_promotion_wizard.xml',
         'views/sale_order.xml',
