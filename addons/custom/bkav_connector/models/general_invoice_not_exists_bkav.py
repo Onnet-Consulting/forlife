@@ -49,8 +49,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             for line in out_invoices.invoice_line_ids:
                 if line.id not in line_checked:
                     product_checked.append(line.product_id.id)
-                    product_line_ids = out_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit and line.taxes_id.id == r.taxes_id.id)
-                    refund_line_ids = refund_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit and line.taxes_id.id == r.taxes_id.id)
+                    product_line_ids = out_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
+                    refund_line_ids = refund_invoices.invoice_line_ids.filtered(lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
                     line_checked += (product_line_ids + refund_line_ids).ids
                     diff_qty = sum(product_line_ids.mapped('quantity')) - sum(refund_line_ids.mapped('quantity'))
                     price_subtotal = sum(product_line_ids.mapped('price_subtotal')) - sum(
@@ -58,7 +58,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     if diff_qty > 0:
                         out_line_vals.append((0, 0, {
                             'product_id': line.product_id.id,
-                            'uom_id': line.uom_id.id or line.product_id.uom_id.id,
+                            'uom_id': line.product_id.uom_id.id,
                             'quantity': diff_qty,
                             'price_unit': line.price_unit,
                             'price_subtotal': price_subtotal,
@@ -67,7 +67,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     if diff_qty < 0:
                         negative_line_vals.append((0, 0, {
                             'product_id': line.product_id.id,
-                            'uom_id': line.uom_id.id or line.product_id.uom_id.id,
+                            'uom_id': line.product_id.uom_id.id,
                             'quantity': abs(diff_qty),
                             'price_unit': line.price_unit,
                             'price_subtotal': price_subtotal,
@@ -80,7 +80,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     line_checked += (refund_line_ids).ids
                     negative_line_vals.append((0, 0, {
                         'product_id': line.product_id.id,
-                        'uom_id': line.uom_id.id or line.product_id.uom_id.id,
+                        'uom_id': line.product_id.uom_id.id,
                         'quantity': sum(refund_line_ids.mapped('quantity')),
                         'price_unit': line.price_unit,
                         'price_subtotal': sum(refund_line_ids.mapped('price_subtotal')),
