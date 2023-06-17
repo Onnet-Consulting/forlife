@@ -25,7 +25,7 @@ class AccountMove(models.Model):
                 param['id'] = self.id or self.id.origin
 
             where_string += " AND sequence_prefix like %(warehouse_code)s "
-            param['warehouse_code'] = warehouse_code
+            param['warehouse_code'] = warehouse_code + '/%'
 
             query = f"""
                             SELECT {{field}} FROM {self._table}
