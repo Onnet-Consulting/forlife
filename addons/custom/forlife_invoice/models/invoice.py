@@ -125,36 +125,13 @@ class AccountMove(models.Model):
             if self.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
                 self.type_inv = 'tax'
 
-    # @api.onchange('purchase_order_product_id')
-    # def _domain_partner_domain_2(self):
-    #     domain = []
-    #     for rec in self:
-    #         if rec.purchase_order_product_id:
-    #             for po in rec.purchase_order_product_id:
-    #                 receiving_warehouse_id = self.env['stock.picking'].search(
-    #                     [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
-    #                      ('state', '=', 'done')])
-    #                 domain.append(receiving_warehouse_id.ids)
-    #         else:
-    #             receiving_warehouse_id = self.env['stock.picking'].search(
-    #                 [('state', '=', 'done')])
-    #             rec.domain = json.dumps([('id', 'in', receiving_warehouse_id.ids)])
-        # for rec in self:
-        #     if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_2').id or rec.type_inv == 'cost':
-        #         data_search = self.env['purchase.order'].search(
-        #             [('partner_id', '=', rec.partner_id.id), ('custom_state', '=', 'approved'),
-        #              ('inventory_status', '=', 'done'), ('type_po_cost', '=', 'cost'), ('is_inter_company', '=', False)])
-        #         rec.partner_domain = json.dumps([('id', 'in', data_search.ids)])
-        #     elif rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id or rec.type_inv == 'tax':
-        #         data_search_2 = self.env['purchase.order'].search(
-        #             [('partner_id', '=', rec.partner_id.id), ('custom_state', '=', 'approved'),
-        #              ('inventory_status', '=', 'done'), ('type_po_cost', '=', 'tax'), ('is_inter_company', '=', False)])
-        #         rec.partner_domain = json.dumps([('id', 'in', data_search_2.ids)])
-        #     else:
-        #         data_search_3 = self.env['purchase.order'].search(
-        #             [('partner_id', '=', rec.partner_id.id), ('custom_state', '=', 'approved'),
-        #              ('inventory_status', '=', 'done'), ('is_inter_company', '=', False)])
-        #         rec.partner_domain = json.dumps([('id', 'in', data_search_3.ids)])
+    @api.onchange('currency_id')
+    def onchange_exchange_rate(self):
+        if self.currency_id:
+            if self.type_inv != 'cost':
+                self.exchange_rate = self.currency_id.rate
+            else:
+                self.exchange_rate = 1
 
     @api.onchange('purchase_order_product_id')
     def onchange_purchase_order_product_id(self):
