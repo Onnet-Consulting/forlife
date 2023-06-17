@@ -139,7 +139,7 @@ class SplitProduct(models.Model):
         pickings = self.env['stock.picking']
         location_id = self.env['stock.location'].search([('code','=','N0301')], limit=1)
         if not location_id:
-            raise ValidationError(_('Không tìm thấy địa điểm Nhậptách/gộp mã nguyên phụ liệu mã N0301'))
+            raise ValidationError(_('Không tìm thấy địa điểm Nhập tách/gộp mã nguyên phụ liệu mã N0301'))
         for record in self.split_product_line_ids:
             data = []
             for rec in self.split_product_line_sub_ids:
