@@ -584,6 +584,15 @@ class PurchaseOrderLine(models.Model):
             vals.update({'qty_returned': self.qty_returned})
         return vals
 
+    def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
+        vals = super(PurchaseOrderLine, self)._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
+        if self.order_id.is_return:
+            vals.update({
+                'occasion_code_id': self.occasion_code_id.id,
+                'work_production': self.production_id.id,
+                'account_analytic_id': self.account_analytic_id.id,
+            })
+        return vals
 
 class AccountMove(models.Model):
     _inherit = 'account.move'

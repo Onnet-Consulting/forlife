@@ -537,8 +537,7 @@ class PurchaseOrder(models.Model):
                         raise UserError("Giá sản phẩm công cụ dụng cụ %s khác giá nhập vào đợt trước. Yêu cầu người dùng tạo sản phẩm mới." % ",".join(product_ccdc_diff_price))
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
-        company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
-        partner_so = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
+        company_partner = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
         company_id = self.env.company.id
         picking_type_in = self.env['stock.picking.type'].search([
             ('code', '=', 'incoming'),
@@ -715,6 +714,7 @@ class PurchaseOrder(models.Model):
             rec.purchase_synthetic_ids = [(5, 0)]
             for line in rec.order_line:
                 exchange_rate_line = self.env['purchase.order.exchange.rate'].create({
+                    'ex_po_id': line.id,
                     'product_id': line.product_id.id,
                     'name': line.name,
                     'vnd_amount': line.total_vnd_amount,
@@ -722,10 +722,10 @@ class PurchaseOrder(models.Model):
                     'qty_product': line.product_qty,
                 })
                 synthetic_line = self.env['forlife.synthetic'].create({
+                    'syn_po_id': line.id,
                     'product_id': line.product_id.id,
                     'description': line.name,
                     'price_unit': line.price_unit,
-                    # 'price_subtotal': line.price_subtotal,
                     'quantity': line.product_qty,
                     'before_tax': line.total_value,
                     'discount': line.discount,
@@ -733,15 +733,16 @@ class PurchaseOrder(models.Model):
                 })
                 if exchange_rate_line:
                     exchange_rate_line.update({
+                        'ex_po_id': line.id,
                         'vnd_amount': line.total_vnd_amount,
                         'qty_product': line.product_qty,
                     })
                 if synthetic_line:
                     synthetic_line.update({
+                        'syn_po_id': line.id,
                         'quantity': line.product_qty,
                         'discount': line.discount,
                         'price_unit': line.price_unit,
-                        # 'price_subtotal': line.price_subtotal,
                     })
 
     # def action_update_import(self):
@@ -1415,7 +1416,7 @@ class PurchaseOrderLine(models.Model):
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
@@ -2169,7 +2170,7 @@ class StockPicking(models.Model):
                                 'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
                                 'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                             }))
-                        ### tạo bút toán npl
+                        ### tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {
@@ -2226,7 +2227,7 @@ class StockPicking(models.Model):
                     })
                     entry_cp.action_post()
 
-            if list_npls and list_line_xk:
+            if list_npls:
                 merged_records_npl = {}
                 for npl in list_npls:
                     key = (npl[2]['account_id'], npl[2]['name'], npl[2]['sequence'])
@@ -2290,6 +2291,7 @@ class Synthetic(models.Model):
     _name = 'forlife.synthetic'
 
     synthetic_id = fields.Many2one('purchase.order')
+    syn_po_id = fields.Char('')
 
     description = fields.Char(string='Mã hàng')
     product_id = fields.Many2one('product.product', string='Tên hàng')
@@ -2307,33 +2309,39 @@ class Synthetic(models.Model):
     @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
-            cost_line = rec.synthetic_id.cost_line
+            cost_line_true = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost_true = 0
-                if cost_line:
-                    for item in cost_line:
-                        if item.is_check_pre_tax_costs or not item.is_check_pre_tax_costs:
-                            if item.vnd_amount and rec.price_subtotal > 0:
-                                before_tax = (rec.price_subtotal / sum(self.mapped('price_subtotal'))) * item.vnd_amount
-                                total_cost_true += before_tax
-                            rec.before_tax = total_cost_true
-                if rec.product_id.id == line.product_id.id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax
+                if cost_line_true:
+                    for item in cost_line_true:
+                        if item.vnd_amount and rec.price_subtotal > 0:
+                            before_tax = ((rec.price_subtotal - rec.discount) / (sum(self.mapped('price_subtotal')) - sum(self.mapped('discount')))) * item.vnd_amount
+                            total_cost_true += before_tax
+                        rec.before_tax = total_cost_true
+                        rec.after_tax = 0
+                else:
+                    rec.before_tax = 0
+                if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                    line.vnd_amount = rec.price_subtotal + rec.before_tax - rec.discount
 
-    @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal')
+    @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal', 'discount', 'synthetic_id.exchange_rate_line.vnd_amount')
     def _compute_after_tax(self):
         for rec in self:
+            cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             for line in rec.synthetic_id.exchange_rate_line:
                 total_cost = 0
-                for item in rec.synthetic_id.cost_line:
-                    if rec.synthetic_id.type_po_cost == 'tax':
+                sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
+                sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
+                sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
+                if rec.synthetic_id.type_po_cost == 'tax':
+                    for item in cost_line_false:
                         if rec.price_subtotal > 0:
                             total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
                             if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
                                 rec.after_tax = total_cost
                 else:
                     rec.after_tax = 0
-
+                    
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
         for record in self:

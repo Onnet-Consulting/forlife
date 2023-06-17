@@ -14,8 +14,8 @@ class StockTransfer(models.Model):
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     location_id = fields.Many2one('stock.location', string="Whs From", required=1)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1)
-    work_from = fields.Many2one('forlife.production', string="LSX From")
-    work_to = fields.Many2one('forlife.production',string="LSX To")
+    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -522,16 +522,19 @@ class StockTransferLine(models.Model):
             [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
              ('production_id', '=', self.work_from.id)])
         quantity_prodution_to = self.env['quantity.production.order'].search(
-            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
              ('production_id', '=', self.work_to.id)])
-        if quantity_prodution:
-            if self.work_from and self.qty_out > quantity_prodution.quantity:
-                raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+        if self.work_from:
+            if quantity_prodution:
+                if self.qty_out > quantity_prodution.quantity:
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (product.name, self.work_from.code))
+                else:
+                    quantity_prodution.update({
+                        'quantity': quantity_prodution.quantity - self.qty_out
+                    })
             else:
-                quantity_prodution.update({
-                    'quantity': quantity_prodution.quantity - self.qty_out
-                })
-            if self.work_to and self.work_from != self.work_to:
+                raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
+            if self.work_to:
                 if quantity_prodution_to:
                     quantity_prodution_to.update({
                         'quantity': quantity_prodution_to.quantity + self.qty_out
@@ -539,19 +542,30 @@ class StockTransferLine(models.Model):
                 else:
                     self.env['quantity.production.order'].create({
                         'product_id': product.id,
-                        'location_id': self.stock_transfer_id.location_id.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
                         'production_id': self.work_to.id,
                         'quantity': self.qty_out
                     })
         else:
-            raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (product.name, self.work_from.code))
+            if self.work_to:
+                if quantity_prodution_to:
+                    quantity_prodution_to.update({
+                        'quantity': quantity_prodution_to.quantity + self.qty_out
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': product.id,
+                        'location_id': self.stock_transfer_id.location_dest_id.id,
+                        'production_id': self.work_to.id,
+                        'quantity': self.qty_out
+                    })
         if qty_available < product_quantity:
             if is_diff_transfer:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
             else:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % product.name)
-        if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
-            raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
+        # if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
+        #     raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
 
     def validate_product_tolerance(self, type='out'):
         self.ensure_one()
@@ -626,13 +640,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     _inherit = 'forlife.production.finished.product'
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
+    forlife_production_stock_move_ids = fields.Many2many('stock.move')
     remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):
         for rec in self:
-            qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
-                lambda r: r.stock_transfer_id.state in 'done')])
+            qty_done = sum([line.quantity_done for line in rec.forlife_production_stock_move_ids.filtered(
+                lambda r: r.picking_id.state in 'done')])
             rec.stock_qty = qty_done
             rec.remaining_qty = rec.produce_qty - qty_done
 
