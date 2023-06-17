@@ -25,6 +25,7 @@
         'forlife_pos_product_change_refund',
         'point_of_sale',
         'forlife_pos_promotion',
+        'forlife_promotion',
     ],
     'installable': True,
     'auto_install': True,

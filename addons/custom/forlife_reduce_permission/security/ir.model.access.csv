@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+purchase.access_account_move,account.move,account.model_account_move,purchase.group_purchase_user,0,0,0,0
+purchase_request.access_purchase_request
