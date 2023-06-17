@@ -254,7 +254,7 @@ class AccountMove(models.Model):
                                         'request_code': product.request_purchases,
                                         'promotions': product.free_good,
                                         'quantity_purchased': pnk.quantity_purchase_done,
-                                        'uom_id': pnk.purchase_uom.id,
+                                        'product_uom_id': pnk.purchase_uom.id,
                                         'exchange_quantity': pnk.quantity_change,
                                         'quantity': pnk.qty_done,
                                         'vendor_price': product.vendor_price,
@@ -649,6 +649,7 @@ class AccountMoveLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
+    occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     # goods invoice!!
