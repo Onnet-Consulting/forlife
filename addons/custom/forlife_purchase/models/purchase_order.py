@@ -1851,6 +1851,11 @@ class StockPicking(models.Model):
                 # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
+            for rec_move in self.move_ids:
+                account_move = self.env['account.move'].search([('stock_move_id', '=', rec_move.id)])
+                for item in account_move:
+                    item.currency_id = po.currency_id.id
+                    item.exchange_rate = po.exchange_rate
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
