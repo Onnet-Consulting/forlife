@@ -400,9 +400,11 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
+        location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
+        self.x_location_id = location
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
@@ -450,15 +452,21 @@ class SaleOrderLine(models.Model):
             else:
                 self.price_unit = abs(self.price_unit)
 
-    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    def _compute_amount(self):
-        """
-        Compute the amounts of the SO line.
-        """
-        res = super()._compute_amount()
-        for line in self:
-            line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
-        return res
+    @api.onchange('x_cart_discount_fixed_price')
+    def onchange_x_cart_discount_fixed_price(self):
+        if self.x_cart_discount_fixed_price:
+            self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
+                    self.price_unit * self.product_uom_qty) else 0
+
+    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
+    # def _compute_amount(self):
+    #     """
+    #     Compute the amounts of the SO line.
+    #     """
+    #     res = super()._compute_amount()
+    #     # for line in self:
+    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
+    #     return res
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
