@@ -28,8 +28,8 @@ class StockPicking(models.Model):
     def view_xk_account(self):
         # context = { 'create': True, 'delete': True, 'edit': True}
         account_ids = self.account_xk_id.ids if self.account_xk_id else []
-        stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
-        account_ids += stock_valuation_account.ids
+        # stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
+        # account_ids += stock_valuation_account.ids
         domain = [('id', 'in', account_ids)]
         return {
             'name': _('Forlife Account'),
