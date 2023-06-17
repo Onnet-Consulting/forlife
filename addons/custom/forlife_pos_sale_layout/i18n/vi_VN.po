@@ -1,0 +1,77 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_pos_sale_layout
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-09 03:41+0000\n"
+"PO-Revision-Date: 2023-06-09 03:41+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/js/Popups/PosOrderSaleInfoPopup.js:0
+#, python-format
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Giảm giá"
+msgstr ""
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Mã vạch"
+msgstr ""
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/js/Popups/PosOrderSaleInfoPopup.js:0
+#, python-format
+msgid "Order Detail"
+msgstr "Chi tiết đơn hàng"
+
+#. module: forlife_pos_sale_layout
+#: model:ir.model,name:forlife_pos_sale_layout.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Số lượng"
+msgstr ""
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Thành tiền"
+msgstr ""
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Tên sản phẩm"
+msgstr ""
+
+#. module: forlife_pos_sale_layout
+#. odoo-javascript
+#: code:addons/forlife_pos_sale_layout/static/src/xml/Popups/PosOrderSaleInfoPopup.xml:0
+#, python-format
+msgid "Đơn giá"
+msgstr ""

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="point_compensate_request_tree" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">point.compensate.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_id"/>
+                <field name="compensated"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="point_compensate_request_action" model="ir.actions.act_window">
+        <field name="name">Yêu cầu tích bù</field>
+        <field name="res_model">point.compensate.request</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="point_compensate_request_menu"
+              action="point_compensate_request_action"
+              parent="point_of_sale.menu_point_root"
+              sequence="99"/>
+</odoo>

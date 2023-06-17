@@ -889,3 +889,13 @@ msgstr "Đợi duyệt"
 #: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__new
 msgid "New"
 msgstr "Mới"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__product_defective
+msgid "Product Defective"
+msgstr "Hàng lỗi"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__handle
+msgid "Handle"
+msgstr "Thủ công"

@@ -31,6 +31,16 @@ odoo.define('forlife_pos_product_change_refund.TicketScreen', function (require)
             }
             this._removeHandleChangeRefund(order);
         }
+
+        getTotal(order) {
+            let total_reduce = 0
+            order.orderlines.forEach(function(item){
+                if(!item.is_promotion){
+                   total_reduce += item.subtotal_paid
+                }
+            })
+            return this.env.pos.format_currency(total_reduce);
+        }
     };
 
     Registries.Component.extend(TicketScreen, TicketScreenChangeRefund);
