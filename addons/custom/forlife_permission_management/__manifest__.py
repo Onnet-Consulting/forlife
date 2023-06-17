@@ -40,6 +40,7 @@
         'data/action.xml',
         'data/menu.xml',
         'data/groups.xml',
+        'data/rules.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
         'views/hr_team_views.xml',
