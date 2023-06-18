@@ -183,7 +183,7 @@ class PurchaseOrder(models.Model):
     def onchange_exchange_rate(self):
         if self.currency_id:
             if self.type_po_cost != 'cost':
-                self.exchange_rate = self.currency_id.rate
+                self.exchange_rate = self.currency_id.inverse_rate
             else:
                 self.exchange_rate = 1
 
