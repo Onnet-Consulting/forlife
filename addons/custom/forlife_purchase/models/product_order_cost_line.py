@@ -18,7 +18,7 @@ class PurchaseOrderCostLine(models.Model):
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
         if self.currency_id:
-            self.exchange_rate = self.currency_id.rate
+            self.exchange_rate = self.currency_id.inverse_rate
 
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
