@@ -39,7 +39,7 @@
                     </header>
                      <field name="name" string="Reference" decoration-bf="1"/>
                     <field name="employee_id"/>
-                    <field name="department_id"/>
+                    <field name="department_id" force_save="1"/>
                     <field name="request_date" align="center"/>
                     <field name="date_planned" align="center"/>
                     <field name="state" widget="badge" decoration-success="state == 'close'" decoration-info="state == 'approved'"/>
