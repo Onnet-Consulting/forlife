@@ -408,7 +408,10 @@ class PurchaseOrder(models.Model):
                                 'free_good': orl.free_good,
                                 'purchase_uom': orl.purchase_uom.id,
                                 'quantity_change': orl.exchange_quantity,
-                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
+                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False,
+                                'occasion_code_id': orl.occasion_code_id.id,
+                                'work_production': orl.production_id.id,
+                                'account_analytic_id': orl.account_analytic_id.id,
                             })
                 record.write({'custom_state': 'approved'})
             else:
@@ -689,6 +692,15 @@ class PurchaseOrder(models.Model):
         new_line_count = len(vals.get('order_line', []))
         if (new_line_count > old_line_count) and self.custom_state == "approved":
             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+        for item in self.exchange_rate_line:
+            item.update({
+                'import_tax': item.import_tax,
+                'tax_amount': item.tax_amount,
+                'special_consumption_tax': item.special_consumption_tax,
+                'special_consumption_tax_amount': item.special_consumption_tax_amount,
+                'vat_tax': item.vat_tax,
+                'vat_tax_amount': item.vat_tax_amount,
+            })
         return super(PurchaseOrder, self).write(vals)
 
     @api.onchange('company_id', 'currency_id')
@@ -738,6 +750,7 @@ class PurchaseOrder(models.Model):
                         'discount': line.discount,
                         'price_unit': line.price_unit,
                     })
+
 
     # def action_update_import(self):
     #     for item in self:
@@ -839,8 +852,6 @@ class PurchaseOrder(models.Model):
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent,
                                         # 'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                         'discount_percent': line.discount,
@@ -850,6 +861,8 @@ class PurchaseOrder(models.Model):
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                         'occasion_code_id': line.occasion_code_id.id,
+                                        'work_order': line.production_id.id,
+                                        'account_analytic_id': line.account_analytic_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -878,8 +891,6 @@ class PurchaseOrder(models.Model):
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent,
                                 # 'event_id': line.event_id.id,
-                                'work_order': line.production_id.id,
-                                'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': line.purchase_quantity,
                                 'discount_percent': line.discount,
@@ -889,6 +900,8 @@ class PurchaseOrder(models.Model):
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                 'occasion_code_id': line.occasion_code_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
                             }
                             if line.display_type == 'line_section':
                                 pending_section = line
@@ -989,8 +1002,6 @@ class PurchaseOrder(models.Model):
                                                 'warehouse': line.location_id.id,
                                                 'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                                 # 'event_id': line.event_id.id,
-                                                'work_order': line.production_id.id,
-                                                'account_analytic_id': line.account_analytic_id.id,
                                                 'request_code': line.request_purchases,
                                                 'quantity_purchased': wave_item.quantity_purchase_done - x_return.quantity_purchase_done,
                                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -999,7 +1010,9 @@ class PurchaseOrder(models.Model):
                                                 'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
                                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                                'occasion_code_id': line.occasion_code_id.id,
+                                                'occasion_code_id': wave_item.occasion_code_id.id,
+                                                'work_order': wave_item.production_id.id,
+                                                'account_analytic_id': wave_item.account_analytic_id.id,
                                             }
                                             if line.display_type == 'line_section':
                                                 pending_section = line
@@ -1030,8 +1043,6 @@ class PurchaseOrder(models.Model):
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                         # 'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': wave_item.quantity_purchase_done,
                                         'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -1040,7 +1051,9 @@ class PurchaseOrder(models.Model):
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                        'occasion_code_id': line.occasion_code_id.id,
+                                        'occasion_code_id': wave_item.occasion_code_id.id,
+                                        'work_order': wave_item.production_id.id,
+                                        'account_analytic_id': wave_item.account_analytic_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -1167,8 +1180,6 @@ class PurchaseOrder(models.Model):
                                     'warehouse': line.location_id.id,
                                     'discount': line.discount_percent,
                                     # 'event_id': line.event_id.id,
-                                    'work_order': line.production_id.id,
-                                    'account_analytic_id': line.account_analytic_id.id,
                                     'request_code': line.request_purchases,
                                     'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                     'discount_percent': line.discount,
@@ -1178,6 +1189,8 @@ class PurchaseOrder(models.Model):
                                     'price_unit': line.price_unit,
                                     'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                     'occasion_code_id': line.occasion_code_id.id,
+                                    'work_order': line.production_id.id,
+                                    'account_analytic_id': line.account_analytic_id.id,
                                 }
                             sequence += 1
                             key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1212,8 +1225,6 @@ class PurchaseOrder(models.Model):
                             'warehouse': line.location_id.id,
                             'discount': line.discount_percent,
                             # 'event_id': line.event_id.id,
-                            'work_order': line.production_id.id,
-                            'account_analytic_id': line.account_analytic_id.id,
                             'request_code': line.request_purchases,
                             'quantity_purchased': line.purchase_quantity,
                             'discount_percent': line.discount,
@@ -1223,6 +1234,8 @@ class PurchaseOrder(models.Model):
                             'price_unit': line.price_unit,
                             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                             'occasion_code_id': line.occasion_code_id.id,
+                            'work_order': line.production_id.id,
+                            'account_analytic_id': line.account_analytic_id.id,
                         }
                         sequence += 1
                         key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1273,8 +1286,6 @@ class PurchaseOrder(models.Model):
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                 # 'event_id': line.event_id.id,
-                                'work_order': line.production_id.id,
-                                'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': wave_item.quantity_purchase_done,
                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -1283,7 +1294,9 @@ class PurchaseOrder(models.Model):
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                'occasion_code_id': line.occasion_code_id.id,
+                                'occasion_code_id': wave_item.occasion_code_id.id,
+                                'work_order': wave_item.production_id.id,
+                                'account_analytic_id': wave_item.account_analytic_id.id,
                             }
                             wave.picking_id.ware_check = True
                     else:
