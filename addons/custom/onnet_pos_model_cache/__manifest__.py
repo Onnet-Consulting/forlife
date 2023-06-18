@@ -15,7 +15,7 @@
     'category': 'Sales/Point of Sale',
 
     'depends': [
-        'pos_cache',
+        'point_of_sale',
         # TODO: make another module to inherit this ..... i'm in a rush here :shame:
         'forlife_pos_promotion',
 

@@ -5,7 +5,7 @@
             <field name="name">PoS: refresh MODEL cache</field>
             <field name="model_id" ref="model_pos_model_cache"/>
             <field name="state">code</field>
-            <field name="code">model.refresh_all_caches()</field>
+            <field name="code">model.refresh_all_model_caches()</field>
             <field name="active" eval="False"/>
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>

@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from datetime import datetime, timedelta
 
 
@@ -7,7 +7,7 @@ class SplitProduct(models.Model):
     _name = 'split.product'
     _description = 'Nghiệp vụ phân tách mã'
 
-    name = fields.Char(default='New', copy=False)
+    name = fields.Char(default='New')
 
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
     date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
@@ -39,8 +39,9 @@ class SplitProduct(models.Model):
     # return super(SplitProduct, self).create(vals_list)
 
     def unlink(self):
-        if self.state == 'new':
-            return super().unlink()
+        for rec in self:
+            if rec.state == 'new':
+                return super().unlink()
         raise ValidationError(_('Chỉ được xoá phiếu ở trạng thái Mới!'))
 
     def action_generate(self):
@@ -80,15 +81,20 @@ class SplitProduct(models.Model):
 
     def action_approve(self):
         self.ensure_one()
+        Quant = self.env['stock.quant']
         for rec in self.split_product_line_ids:
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     product_qty_split += r.quantity
-                product = self._create_product(r)
-                r.product_new_id = product.id
             rec.product_quantity_out = product_qty_split
-            rec.product_quantity_split = product_qty_split
+            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.lot_stock_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
+            if rec.product_quantity_out > available_quantity:
+                raise UserError(
+                    _(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}"))
+        for r in self.split_product_line_sub_ids:
+            product = self._create_product(r)
+            r.product_new_id = product.id
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
         pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
@@ -155,6 +161,8 @@ class SplitProduct(models.Model):
                 'location_id': location_id.id,
                 'location_dest_id': record.warehouse_in_id.lot_stock_id.id
             })
+        for pick in pickings:
+            pick.button_validate()
         return pickings
 
     def create_orther_export(self, pk_type, company):
@@ -182,6 +190,8 @@ class SplitProduct(models.Model):
                 'location_id': record.warehouse_out_id.lot_stock_id.id,
                 'location_dest_id': location_id.id,
             })
+        for pick in pickings:
+            pick.button_validate()
         return pickings
 
 
