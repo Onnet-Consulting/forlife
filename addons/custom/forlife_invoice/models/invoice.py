@@ -243,7 +243,7 @@ class AccountMove(models.Model):
                                             'vendor_price': product.vendor_price,
                                             'price_unit': product.price_unit,
                                             'warehouse': product.location_id.id,
-                                            'taxes_id': product.taxes_id.id,
+                                            'tax_ids': product.taxes_id.ids,
                                             'tax_amount': product.price_tax * pnk.qty_done / product.product_qty,
                                             'price_subtotal': product.price_subtotal,
                                             'discount_percent': product.discount * pnk.qty_done / product.product_qty,
