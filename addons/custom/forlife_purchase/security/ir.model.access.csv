@@ -13,7 +13,7 @@ access_forlife_bom_ingredients,forlife_bom_ingredients,model_forlife_bom_ingredi
 access_stock_warehouse_type,stock_warehouse_type,model_stock_warehouse_type,,1,1,1,1
 access_forlife_synthetic,forlife_synthetic,model_forlife_synthetic,,1,1,1,1
 
-access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
-access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
-access_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
+access_purchase_order_admin,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
+access_purchase_order_user,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
+access_reject_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
+access_cancel_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
