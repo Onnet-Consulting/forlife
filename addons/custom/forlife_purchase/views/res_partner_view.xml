@@ -11,7 +11,7 @@
                     <field name="code"/>
 					<field name="internal_code"/>
 					<field name="is_passersby"/>
-                    <field name="is_inter_company_purchase" invisible="1"/>
+                    <field name="is_purchase_inter_company" invisible="1"/>
                 </xpath>
 				<field name="vat" position="after">
 					<field name="supplier_group"/>
