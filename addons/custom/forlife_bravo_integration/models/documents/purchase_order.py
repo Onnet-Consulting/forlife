@@ -136,9 +136,10 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_purchase_product_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder",
-            "DebitAccount", "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount",
-            "Amount", "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
+            "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
+            "AtchDocFormNo", "AtchDocSerialNo", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder", "DebitAccount",
+            "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount",
+            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
         ]
 
     def bravo_get_purchase_product_value(self):
@@ -148,8 +149,10 @@ class AccountMovePurchaseProduct(models.Model):
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        payable_lines = journal_lines.filtered(lambda l: l.account_id.account_type == 'liability_payable')
-        journal_lines = journal_lines - payable_lines - invoice_lines
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and l.tax_ids)
+        # get only one tax line (assume that all products with the same taxes)
+        tax_line = journal_tax_lines and journal_tax_lines[0]
+        payable_lines = journal_lines - invoice_lines - journal_tax_lines
         payable_line = payable_lines and payable_lines[0]
         payable_account_code = payable_line.account_id.code
         exchange_rate = self.exchange_rate
@@ -166,6 +169,10 @@ class AccountMovePurchaseProduct(models.Model):
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "Description": self.invoice_description,
+            "AtchDocDate": self.invoice_date,
+            "AtchDocNo": self.number_bills,
+            "TaxRegName": partner.name,
+            "TaxRegNo": partner.vat,
             "EmployeeCode": self.env.user.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin == 'TC' else 0,
             "DueDate": self.invoice_date_due,
@@ -180,27 +187,18 @@ class AccountMovePurchaseProduct(models.Model):
                 "BuiltinOrder": idx,
                 "DebitAccount": invoice_line.account_id.code,
                 "CreditAccount": payable_account_code,
+                "DebitAccount3": tax_line.account_id.code,
+                "CreditAccount3": payable_account_code,
+                "TaxCode": tax_line.tax_line_id.code,
                 "OriginalAmount": invoice_line.price_subtotal,
                 "Amount": invoice_line.price_subtotal * exchange_rate,
+                "OriginalAmount3": invoice_line.tax_amount,
+                "Amount3": invoice_line.tax_amount * exchange_rate,
                 "RowId": invoice_line.id,
                 "JobCode": invoice_line.occasion_code_id.code,
                 "DeptCode": invoice_line.analytic_account_id.code,
                 "DocNo_WO": invoice_line.work_order.code,
-                "OriginalAmount3": invoice_line.tax_amount,
-                "Amount3": invoice_line.tax_amount * exchange_rate,
             })
-            invoice_tax_ids = invoice_line.tax_ids
-            # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
-            if journal_tax_lines:
-                tax_line = journal_tax_lines[0]
-                journal_value_line.update({
-                    "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code,
-                    "TaxCode": tax_line.tax_line_id.code,
-                })
-
-            values.append(journal_value_line)
 
         return values
 
@@ -219,14 +217,17 @@ class AccountMoveVendorBack(models.Model):
     def bravo_get_purchase_bill_vendor_back_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "AtchDocNo", "TaxRegName", "TaxRegNo", "DebitAccount",
-            "CreditAccount", "OriginalAmount", "Amount", "OriginalAmount3", "Amount3", "RowId",
+            "CustomerName", "Address", "Description", "JobCode", "AtchDocNo", "TaxRegName", "TaxRegNo",
+            "DebitAccount", "CreditAccount", "OriginalAmount", "Amount", "OriginalAmount3", "Amount3", "RowId",
+            "DeptCode", "AtchDocDate", "AtchDocFormNo", "AtchDocSerialNo", "TaxCode",
         ]
 
     def bravo_get_purchase_bill_vendor_back_value(self):
         self.ensure_one()
         values = []
         vendor_back_ids = self.vendor_back_ids
+        journal_lines = self.line_ids.filtered(lambda l: l.credit > 0)
+        credit_account_code = journal_lines[0].account_id.code if journal_lines else None
         value = {
             "DocCode": "NM",
             "DocNo": self.name,
@@ -241,19 +242,23 @@ class AccountMoveVendorBack(models.Model):
 
         for record in vendor_back_ids:
             line_value = value.copy()
+            debit_accounts = record.tax_percent.invoice_repartition_line_ids.filtered(lambda l: bool(l.account_id))
+            debit_account_code = debit_accounts[0].account_id.code if debit_accounts else None
             line_value.update({
                 "CompanyCode": record.company_id.code,
                 "Stt": record.id,
                 "AtchDocNo": record.invoice_reference,
                 "TaxRegName": record.vendor,
                 "TaxRegNo": record.code_tax,
-                "DebitAccount": False,
-                "CreditAccount": False,
+                "DebitAccount": debit_account_code,
+                "CreditAccount": credit_account_code,
                 "OriginalAmount": record.price_subtotal_back,
                 "Amount": record.price_subtotal_back,
                 "OriginalAmount3": record.tax_back,
                 "Amount3": record.tax_back,
-                "RowId": record.id
+                "RowId": record.id,
+                "AtchDocDate": record._x_invoice_date,
+                "TaxCode": record.tax_percent.code
             })
             values.append(line_value)
 
