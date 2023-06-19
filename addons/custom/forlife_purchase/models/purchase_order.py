@@ -117,7 +117,15 @@ class PurchaseOrder(models.Model):
                                  states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    partner_company_id = fields.Many2one(comodel_name='res.company', compute='_compute_partner_company_id', store=True)
 
+    @api.depends('partner_id')
+    def _compute_partner_company_id(self):
+        cr = self._cr
+        cr.execute('SELECT partner_id, id FROM res_company WHERE partner_id IN %s', (self.mapped('partner_id')._ids, ))
+        partner_company = {rec[0]: rec[1] or self.env.company.id for rec in cr.fetchall()}
+        for rec in self:
+            rec.update({'partner_company_id': partner_company[rec.partner_id.id]})
 
     def action_view_stock(self):
         for item in self:
