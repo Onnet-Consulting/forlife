@@ -125,7 +125,7 @@ class PurchaseOrder(models.Model):
         cr.execute('SELECT partner_id, id FROM res_company WHERE partner_id IN %s', (self.mapped('partner_id')._ids, ))
         partner_company = {rec[0]: rec[1] or self.env.company.id for rec in cr.fetchall()}
         for rec in self:
-            rec.update({'partner_company_id': partner_company[rec.partner_id.id]})
+            rec.update({'partner_company_id': partner_company[rec.partner_id.id] if rec.partner_id.id in partner_company else None})
 
     def action_view_stock(self):
         for item in self:
