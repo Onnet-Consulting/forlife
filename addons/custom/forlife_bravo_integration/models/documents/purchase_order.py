@@ -219,14 +219,17 @@ class AccountMoveVendorBack(models.Model):
     def bravo_get_purchase_bill_vendor_back_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "AtchDocNo", "TaxRegName", "TaxRegNo", "DebitAccount",
-            "CreditAccount", "OriginalAmount", "Amount", "OriginalAmount3", "Amount3", "RowId",
+            "CustomerName", "Address", "Description", "JobCode", "AtchDocNo", "TaxRegName", "TaxRegNo",
+            "DebitAccount", "CreditAccount", "OriginalAmount", "Amount", "OriginalAmount3", "Amount3", "RowId",
+            "DeptCode", "AtchDocDate", "AtchDocFormNo", "AtchDocSerialNo", "TaxCode",
         ]
 
     def bravo_get_purchase_bill_vendor_back_value(self):
         self.ensure_one()
         values = []
         vendor_back_ids = self.vendor_back_ids
+        journal_lines = self.line_ids.filtered(lambda l: l.credit >0)
+        credit_account_code = journal_lines[0].account_id.code if journal_lines else None
         value = {
             "DocCode": "NM",
             "DocNo": self.name,
@@ -241,19 +244,23 @@ class AccountMoveVendorBack(models.Model):
 
         for record in vendor_back_ids:
             line_value = value.copy()
+            debit_accounts = record.tax_percent.invoice_repartition_line_ids.filtered(lambda l: bool(l.account_id))
+            debit_account_code = debit_accounts[0].account_id.code if debit_accounts else None
             line_value.update({
                 "CompanyCode": record.company_id.code,
                 "Stt": record.id,
                 "AtchDocNo": record.invoice_reference,
                 "TaxRegName": record.vendor,
                 "TaxRegNo": record.code_tax,
-                "DebitAccount": False,
-                "CreditAccount": False,
+                "DebitAccount": debit_account_code,
+                "CreditAccount": credit_account_code,
                 "OriginalAmount": record.price_subtotal_back,
                 "Amount": record.price_subtotal_back,
                 "OriginalAmount3": record.tax_back,
                 "Amount3": record.tax_back,
-                "RowId": record.id
+                "RowId": record.id,
+                "AtchDocDate": record._x_invoice_date,
+                "TaxCode": record.tax_percent.code
             })
             values.append(line_value)
 
