@@ -1919,11 +1919,11 @@ class StockPicking(models.Model):
                                 'production_id': rec.work_production.id,
                                 'quantity': rec.quantity_done
                             })
-            account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
-            account_move.update({
-                'currency_id': po.currency_id.id,
-                'exchange_rate': po.exchange_rate
-            })
+                account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
+                account_move.update({
+                    'currency_id': po.currency_id.id,
+                    'exchange_rate': po.exchange_rate
+                })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
