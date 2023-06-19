@@ -149,8 +149,10 @@ class AccountMovePurchaseProduct(models.Model):
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        payable_lines = journal_lines.filtered(lambda l: l.account_id.account_type == 'liability_payable')
-        journal_lines = journal_lines - payable_lines - invoice_lines
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and l.tax_ids)
+        # get only one tax line (assume that all products with the same taxes)
+        tax_line = journal_tax_lines and journal_tax_lines[0]
+        payable_lines = journal_lines - invoice_lines - journal_tax_lines
         payable_line = payable_lines and payable_lines[0]
         payable_account_code = payable_line.account_id.code
         exchange_rate = self.exchange_rate
@@ -185,30 +187,18 @@ class AccountMovePurchaseProduct(models.Model):
                 "BuiltinOrder": idx,
                 "DebitAccount": invoice_line.account_id.code,
                 "CreditAccount": payable_account_code,
+                "DebitAccount3": tax_line.account_id.code,
+                "CreditAccount3": payable_account_code,
+                "TaxCode": tax_line.tax_line_id.code,
                 "OriginalAmount": invoice_line.price_subtotal,
                 "Amount": invoice_line.price_subtotal * exchange_rate,
+                "OriginalAmount3": invoice_line.tax_amount,
+                "Amount3": invoice_line.tax_amount * exchange_rate,
                 "RowId": invoice_line.id,
                 "JobCode": invoice_line.occasion_code_id.code,
                 "DeptCode": invoice_line.analytic_account_id.code,
                 "DocNo_WO": invoice_line.work_order.code,
-                "OriginalAmount3": invoice_line.tax_amount,
-                "Amount3": invoice_line.tax_amount * exchange_rate,
-                "JobCode": invoice_line.occasion_code_id.code,
-                "DeptCode": invoice_line.analytic_account_id.code,
-                "DocNo_WO": invoice_line.work_order.code,
             })
-            invoice_tax_ids = invoice_line.tax_ids
-            # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
-            if journal_tax_lines:
-                tax_line = journal_tax_lines[0]
-                journal_value_line.update({
-                    "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code,
-                    "TaxCode": tax_line.tax_line_id.code,
-                })
-
-            values.append(journal_value_line)
 
         return values
 
