@@ -19,7 +19,7 @@ class StockMove(models.Model):
         if self.picking_id.picking_type_id.code == 'incoming':
             if len(line_ids) == 2:
                 for line in line_ids:
-                    line[2]['balance'] = float(line[2]['balance'] / 1000 * po.exchange_rate)
+                    line[2]['balance'] = float(line[2]['amount_currency'] * po.exchange_rate)
         return res
 
     def write(self, vals):
