@@ -66,6 +66,11 @@ class PurchaseRequest(models.Model):
         res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         return res
 
+    @api.onchange('employee_id')
+    def onchange_department_id(self):
+        if self.employee_id.department_id:
+            self.department_id = self.employee_id.department_id
+
     def submit_action(self):
         for record in self:
             record.write({'state': 'confirm'})
