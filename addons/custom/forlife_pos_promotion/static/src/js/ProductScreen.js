@@ -12,25 +12,28 @@ export const PosPromotionProductScreen = (ProductScreen) =>
         async _onClickPay() {
             // Kiểm tra và áp dụng CT Quà tặng bất ngờ
             const order = this.env.pos.get_order();
-            order.surprise_reward_program_id = null;
-            order.surprise_reward_program_id = null;
-            order.surprising_reward_line_id = null;
-            let {validSurprisingPrograms, validBuyVoucherGetCodePrograms} = order.verifySurprisingProgram();
-            if ((validSurprisingPrograms.length > 0 || validBuyVoucherGetCodePrograms.length > 0) && order.get_partner()) {
-                const { confirmed, payload } = await this.showPopup('SurpriseRewardPopup', {
-                    title: this.env._t('Please select some rewards'),
-                    validSurprisingPrograms: validSurprisingPrograms || [],
-                    validBuyVoucherGetCodePrograms: validBuyVoucherGetCodePrograms || []
-                });
-                let [surprisingReward, buyVoucherRewards] = payload || [];
-                if (surprisingReward) {
-                    order.surprise_reward_program_id = surprisingReward.program_id;
-                    order.surprising_reward_line_id = surprisingReward.line_id;
-                };
-                if (!_.isEmpty(buyVoucherRewards)) {
-                    order.buy_voucher_get_code_rewards = buyVoucherRewards.map(r=> {
-                        return {buy_voucher_reward_program_id: r.program_id, surprising_reward_line_id: r.line_id}
+            // Không áp dụng cho đơn hàng đổi trả
+            if (!(order.is_refund_product || order.is_change_product)) {
+                order.surprise_reward_program_id = null;
+                order.surprise_reward_program_id = null;
+                order.surprising_reward_line_id = null;
+                let {validSurprisingPrograms, validBuyVoucherGetCodePrograms} = order.verifySurprisingProgram();
+                if ((validSurprisingPrograms.length > 0 || validBuyVoucherGetCodePrograms.length > 0) && order.get_partner()) {
+                    const { confirmed, payload } = await this.showPopup('SurpriseRewardPopup', {
+                        title: this.env._t('Please select some rewards'),
+                        validSurprisingPrograms: validSurprisingPrograms || [],
+                        validBuyVoucherGetCodePrograms: validBuyVoucherGetCodePrograms || []
                     });
+                    let [surprisingReward, buyVoucherRewards] = payload || [];
+                    if (surprisingReward) {
+                        order.surprise_reward_program_id = surprisingReward.program_id;
+                        order.surprising_reward_line_id = surprisingReward.line_id;
+                    };
+                    if (!_.isEmpty(buyVoucherRewards)) {
+                        order.buy_voucher_get_code_rewards = buyVoucherRewards.map(r=> {
+                            return {buy_voucher_reward_program_id: r.program_id, surprising_reward_line_id: r.line_id}
+                        });
+                    };
                 };
             };
             // Kiểm tra còn CTKM chưa được áp dụng hết trên đơn
