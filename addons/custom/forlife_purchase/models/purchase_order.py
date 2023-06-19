@@ -1011,7 +1011,7 @@ class PurchaseOrder(models.Model):
                                                 'request_code': line.request_purchases,
                                                 'quantity_purchased': wave_item.quantity_purchase_done - x_return.quantity_purchase_done,
                                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
-                                                'taxes_id': line.taxes_id.id,
+                                                'tax_ids': line.taxes_id.ids,
                                                 'tax_amount': line.price_tax * (wave_item.qty_done / line.product_qty),
                                                 'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
@@ -1052,7 +1052,7 @@ class PurchaseOrder(models.Model):
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': wave_item.quantity_purchase_done,
                                         'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
-                                        'taxes_id': line.taxes_id.id,
+                                        'tax_ids': line.taxes_id.ids,
                                         'tax_amount': line.price_tax * (wave_item.qty_done / line.product_qty),
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
@@ -1295,7 +1295,7 @@ class PurchaseOrder(models.Model):
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': wave_item.quantity_purchase_done,
                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
-                                'taxes_id': line.taxes_id.id,
+                                'tax_ids': line.taxes_id.ids,
                                 'tax_amount': line.price_tax * (wave_item.qty_done / line.product_qty),
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
@@ -1824,6 +1824,18 @@ class PurchaseOrderLine(models.Model):
             'sequence': self.sequence,
         }
 
+    def _prepare_account_move_line(self):
+        if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
+            raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
+        vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
+        if vals and vals.get('display_type') == 'product':
+            quantity = self.received - self.qty_returned - self.billed
+            vals.update({
+                'exchange_quantity': self.exchange_quantity,
+                'quantity': quantity,
+            })
+        return vals
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -1875,23 +1887,23 @@ class StockPicking(models.Model):
                 'currency_id': po.currency_id.id,
                 'exchange_rate': po.exchange_rate
             })
-                for rec in record.move_ids_without_package:
-                    if rec.work_production:
-                        quantity = self.env['quantity.production.order'].search(
-                            [('product_id', '=', rec.product_id.id),
-                             ('location_id', '=', rec.picking_id.location_dest_id.id),
-                             ('production_id', '=', rec.work_production.id)])
-                        if quantity:
-                            quantity.write({
-                                'quantity': quantity.quantity + rec.quantity_done
-                            })
-                        else:
-                            self.env['quantity.production.order'].create({
-                                'product_id': rec.product_id.id,
-                                'location_id': rec.picking_id.location_dest_id.id,
-                                'production_id': rec.work_production.id,
-                                'quantity': rec.quantity_done
-                            })
+            for rec in record.move_ids_without_package:
+                if rec.work_production:
+                    quantity = self.env['quantity.production.order'].search(
+                        [('product_id', '=', rec.product_id.id),
+                         ('location_id', '=', rec.picking_id.location_dest_id.id),
+                         ('production_id', '=', rec.work_production.id)])
+                    if quantity:
+                        quantity.write({
+                            'quantity': quantity.quantity + rec.quantity_done
+                        })
+                    else:
+                        self.env['quantity.production.order'].create({
+                            'product_id': rec.product_id.id,
+                            'location_id': rec.picking_id.location_dest_id.id,
+                            'production_id': rec.work_production.id,
+                            'quantity': rec.quantity_done
+                        })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
