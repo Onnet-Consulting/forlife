@@ -186,6 +186,8 @@ class PromotionProgram(models.Model):
     apply_online = fields.Boolean(string='Apply online', default=False)
     for_new_customer = fields.Boolean(string='For new customer', default=False)
 
+    notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app')
+
     @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
         for program in self:

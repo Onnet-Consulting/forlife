@@ -125,6 +125,7 @@
                                 <field name="tax_to_date" class="oe_inline"
                                        attrs="{'required': [('registering_tax', '=', True)], 'invisible': [('registering_tax', '=', False)]}"/>
                             </div>
+                            <field name="notification_id"/>
                         </group>
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">

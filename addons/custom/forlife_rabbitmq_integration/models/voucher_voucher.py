@@ -26,7 +26,7 @@ class VoucherVoucher(models.Model):
     def push_notification_to_app(self):
         app_api_link = {}
         for l in self.env['forlife.app.api.link'].search([]):
-            app_api_link.update({l.code: l.value})
+            app_api_link.update({l.key: l.value})
         for v in self:
             try:
                 link = app_api_link.get(v.brand_id.code)
