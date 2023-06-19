@@ -17,7 +17,6 @@ class PurchaseOrder(models.Model):
     origin_purchase_id = fields.Many2one('purchase.order', string="Origin Purchase", copy=False)
     count_return_purchase = fields.Integer(compute="_compute_count_return_purchase", store=True, copy=False)
     return_picking_count = fields.Integer("Return Shipment count", compute='_compute_return_picking_count')
-    warehouse_material = fields.Many2one('stock.location', string="Lý do nhập/xuất khác")
 
     @api.depends('picking_ids')
     def _compute_return_picking_count(self):
@@ -57,12 +56,6 @@ class PurchaseOrder(models.Model):
     def _compute_count_return_purchase(self):
         for order in self:
             order.count_return_purchase = len(order.return_purchase_ids.filtered(lambda por: por.custom_state != 'cancel'))
-
-    def action_approved(self):
-        for po in self:
-            if po.is_return and not po.warehouse_material and po.order_line_production_order:
-                raise UserError("Chi tiết đơn hàng trả có sản phẩm đính kèm cần xác định kho nhập NPL. Vui lòng liên hệ thủ kho để xác nhận vị trí nhập kho NPL.")
-        super(PurchaseOrder, self).action_approved()
 
     def _prepare_picking(self):
         vals = super(PurchaseOrder, self)._prepare_picking()

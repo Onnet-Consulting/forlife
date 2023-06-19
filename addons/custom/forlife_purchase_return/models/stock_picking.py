@@ -42,8 +42,10 @@ class StockPicking(models.Model):
             elif po.picking_type_id.return_picking_type_id:
                 picking_type_id = po.picking_type_id.return_picking_type_id
 
-        if po and po.is_return and po.warehouse_material:
-            location_id = po.warehouse_material
+        if po and po.is_return and po.order_line_production_order:
+            location_id = self.env['stock.location'].search([('code', '=', 'N0701'), ('company_id', '=', self.env.company.id)], limit=1)
+            if not location_id:
+                raise ValidationError("Hiện tại sản phẩm xuất trả có sản phẩm đính kèm NPL. Nhưng trong cấu hình Lý Do Nhập Khác chưa định nghĩa loại lý do có Mã = N0701. Yêu cầu liên hệ admin để xử lý")
         elif picking_type_id.other_location_id:
             location_id = picking_type_id.other_location_id
         else:
