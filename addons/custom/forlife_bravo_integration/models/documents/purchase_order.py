@@ -136,9 +136,10 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_purchase_product_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder",
-            "DebitAccount", "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount",
-            "Amount", "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
+            "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
+            "AtchDocFormNo", "AtchDocSerialNo", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder", "DebitAccount",
+            "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount",
+            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
         ]
 
     def bravo_get_purchase_product_value(self):
@@ -166,6 +167,10 @@ class AccountMovePurchaseProduct(models.Model):
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "Description": self.invoice_description,
+            "AtchDocDate": self.invoice_date,
+            "AtchDocNo": self.number_bills,
+            "TaxRegName": partner.name,
+            "TaxRegNo": partner.vat,
             "EmployeeCode": self.env.user.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin == 'TC' else 0,
             "DueDate": self.invoice_date_due,
@@ -188,6 +193,9 @@ class AccountMovePurchaseProduct(models.Model):
                 "DocNo_WO": invoice_line.work_order.code,
                 "OriginalAmount3": invoice_line.tax_amount,
                 "Amount3": invoice_line.tax_amount * exchange_rate,
+                "JobCode": invoice_line.occasion_code_id.code,
+                "DeptCode": invoice_line.analytic_account_id.code,
+                "DocNo_WO": invoice_line.work_order.code,
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
@@ -228,7 +236,7 @@ class AccountMoveVendorBack(models.Model):
         self.ensure_one()
         values = []
         vendor_back_ids = self.vendor_back_ids
-        journal_lines = self.line_ids.filtered(lambda l: l.credit >0)
+        journal_lines = self.line_ids.filtered(lambda l: l.credit > 0)
         credit_account_code = journal_lines[0].account_id.code if journal_lines else None
         value = {
             "DocCode": "NM",
