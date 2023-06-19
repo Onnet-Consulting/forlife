@@ -245,8 +245,8 @@ class Voucher(models.Model):
                                 AccountMove.sudo().create(move_vals)._post()
                             except Exception as e:
                                 _logger.info(e)
-                        for v in vouchers:
-                            v.has_accounted = True
+                            for v in vouchers:
+                                v.has_accounted = True
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
