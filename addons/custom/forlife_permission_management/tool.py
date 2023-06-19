@@ -3,7 +3,7 @@ if __name__ == '__main__':
     # module = "stock_inventory"
     # module = "forlife_stock_report"
     module = "account"
-    model = "account.partial.reconcile"
+    model = "account.root"
     # dvkh = True
     access = "1,0,0,0"
     model_name = model.replace(".", "_")
@@ -12,6 +12,14 @@ if __name__ == '__main__':
     print(",(4, ref('forlife_permission_management.group_manufacture'))")
     print("\n")
 
+
+    group = "group_general_accounting"
+    print("access_%s_%s,access_%s_%s,%s.model_%s,%s,%s" % (model_name, group, model_name, group, module, model_name, group, access))
+    group = "group_manufacturing_accounting"
+    print("access_%s_%s,access_%s_%s,%s.model_%s,%s,%s" % (model_name, group, model_name, group, module, model_name, group, access))
+
+    group = "group_liabilities_accounting"
+    print("access_%s_%s,access_%s_%s,%s.model_%s,%s,%s" % (model_name, group, model_name, group, module, model_name, group, access))
 
     group = "group_purchase_department_manager"
     print("access_%s_%s,access_%s_%s,%s.model_%s,%s,%s" % (model_name, group, model_name, group, module, model_name, group, access))
