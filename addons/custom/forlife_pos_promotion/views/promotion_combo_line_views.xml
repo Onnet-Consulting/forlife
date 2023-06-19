@@ -7,6 +7,7 @@
             <tree editable="bottom" create="1">
                 <field name="quantity"/>
                 <field name="product_ids" widget="many2many_tags"/>
+                <field name="json_valid_product_ids" optional="hide" groups="base.group_no_one"/>
 <!--                <field name="product_categ_ids" widget="many2many_tags"/>-->
                 <field name="product_count" />
                 <button name="open_products"
