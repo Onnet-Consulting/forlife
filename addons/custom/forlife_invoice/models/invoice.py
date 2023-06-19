@@ -396,7 +396,7 @@ class AccountMove(models.Model):
                         'description': line.description,
                         'price_unit': line.price_unit,
                         'quantity': line.quantity,
-                        'price_subtotal': line.total_vnd_amount,
+                        'price_subtotal': invoice.total_vnd_amount,
                         'before_tax': line.before_tax,
                         'discount': line.discount,
                         'synthetic_id': rec.id,
@@ -406,7 +406,7 @@ class AccountMove(models.Model):
                             'quantity': invoice.quantity if invoice.quantity else 0,
                             'discount': invoice.discount_percent if invoice.discount_percent else 0,
                             'price_unit': invoice.price_unit if invoice.price_unit else 0,
-                            'price_subtotal': line.total_vnd_amount,
+                            'price_subtotal': invoice.total_vnd_amount,
                         })
 
     def create_invoice_tnk_db(self):
@@ -1005,7 +1005,7 @@ class SyntheticInvoice(models.Model):
                     sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
                     sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
                     sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
-                    if rec.synthetic_id.type_po_cost == 'tax' and rec.syn_po_id == line.ex_po_id:
+                    if rec.synthetic_id.type_inv == 'tax' and rec.syn_po_id == line.ex_po_id:
                         for item in cost_line_false:
                             if item.vnd_amount and rec.price_subtotal > 0:
                                 total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
