@@ -20,7 +20,7 @@ class AccountMovePurchaseAsset(models.Model):
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
             "EmployeeCode", "IsTransfer", "CreditAccount", "DueDate", "IsCompany", "BuiltinOrder",
             "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
-            "OriginalPriceUnit", "Disscount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
+            "OriginalPriceUnit", "Discount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
             "Amount", "TaxCode", "OriginalAmount3", "Amount3", "IsPromotions",
             "DebitAccount3", "CreditAccount3", "DocNo_PO", "RowId",
             "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode",
