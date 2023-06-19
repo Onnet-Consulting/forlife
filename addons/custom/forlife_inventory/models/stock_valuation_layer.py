@@ -5,6 +5,7 @@ class StockVLayer(models.Model):
     _inherit = 'stock.valuation.layer'
 
     def _validate_accounting_entries(self):
+        res = super(StockVLayer, self)._validate_accounting_entries()
         am_vals = []
         location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202')], limit=1)
         location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
@@ -28,8 +29,4 @@ class StockVLayer(models.Model):
         if am_vals:
             account_moves = self.env['account.move'].sudo().create(am_vals)
             account_moves._post()
-        for svl in self:
-            # Eventually reconcile together the invoice and valuation accounting entries on the stock interim accounts
-            if svl.company_id.anglo_saxon_accounting:
-                svl.stock_move_id._get_related_invoices()._stock_account_anglo_saxon_reconcile_valuation(
-                    product=svl.product_id)
+        return res
