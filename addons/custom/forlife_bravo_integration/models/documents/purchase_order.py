@@ -16,13 +16,14 @@ class AccountMovePurchaseAsset(models.Model):
     @api.model
     def bravo_get_purchase_asset_service_columns(self):
         return [
-            "CompanyCode", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
-            "EmployeeCode", "IsTransfer", "DueDate", "IsCompany", "CreditAccount",
-            "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9",
-            "Quantity", "PriceUnit", "Discount", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount",
-            "IsPromotions", "DocNo_PO", "DeptCode", "DocNo_WO", "RowId",
-            "TaxCode", "OriginalAmount3", "Amount3", "DebitAccount3", "CreditAccount3"
+            "EmployeeCode", "IsTransfer", "CreditAccount", "DueDate", "IsCompany", "BuiltinOrder",
+            "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
+            "OriginalPriceUnit", "Disscount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
+            "Amount", "TaxCode", "OriginalAmount3", "Amount3", "IsPromotions",
+            "DebitAccount3", "CreditAccount3", "DocNo_PO", "RowId",
+            "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode",
         ]
 
     def bravo_get_purchase_asset_service_value(self):
@@ -42,6 +43,7 @@ class AccountMovePurchaseAsset(models.Model):
 
         journal_value = {
             "CompanyCode": self.company_id.code,
+            "Stt": self.name,
             "DocCode": "NK" if is_partner_group_1 else "NM",
             "DocNo": self.name,
             "DocDate": self.date,
@@ -51,43 +53,56 @@ class AccountMovePurchaseAsset(models.Model):
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "Description": self.invoice_description,
-            "AtchDocDate": self.date,
+            "AtchDocDate": self.invoice_date,
             "AtchDocNo": self.number_bills,
             "TaxRegName": partner.name,
             "TaxRegNo": partner.vat,
             "EmployeeCode": self.env.user.employee_id.code,
-            "IsTransfer": 1 if self.x_asset_fin else 0,
+            "IsTransfer": 1 if self.x_asset_fin == 'TC' else 0,
+            "CreditAccount": payable_account_code,
             "DueDate": self.invoice_date_due,
             "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 0,
-            "CreditAccount": payable_account_code,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
             purchase_order = invoice_line.purchase_order_id
             if not purchase_order:
                 continue
+            purchase_order_line = invoice_line.purchase_line_id
             product = invoice_line.product_id
+            discount_amount = invoice_line.discount
+            quantity = invoice_line.quantity
             journal_value_line = journal_value.copy()
+            expense_code = (product.barcode or '')[1:]
+            valid_expense_code = self.env['expense.item'].search(
+                [('code', '=', expense_code), ('company_id', '=', self.company_id.id)], limit=1)
             journal_value_line.update({
                 "BuiltinOrder": idx,
                 "ItemCode": product.barcode,
                 "ItemName": product.name,
-                "UnitPurCode": invoice_line.product_uom_id.code,
+                "UnitPurCode": purchase_order_line.purchase_uom.code,
                 "DebitAccount": invoice_line.account_id.code,
-                "Quantity9": invoice_line.quantity_purchased,
-                "ConvertRate9": invoice_line.exchange_quantity,
+                "Quantity9": invoice_line.quantity,
+                "ConvertRate9": 1,
                 "Quantity": invoice_line.quantity,
-                "PriceUnit": invoice_line.vendor_price,
-                "Discount": invoice_line.discount,
-                "OriginalUnitCost": invoice_line.vendor_price - invoice_line.discount,
-                "UnitCostCode": (invoice_line.vendor_price - invoice_line.discount) * exchange_rate,
+                "PriceUnit": invoice_line.price_unit * exchange_rate,
+                "OriginalPriceUnit": invoice_line.price_unit,
+                "Discount": discount_amount / (quantity * exchange_rate) if quantity else 0,
+                "OriginalDiscount": discount_amount / quantity if quantity else 0,
+                "OriginalUnitCost": invoice_line.price_unit - (discount_amount / quantity if quantity else 0),
+                "UnitCost": (invoice_line.price_unit - (discount_amount / quantity if quantity else 0)) * exchange_rate,
                 "OriginalAmount": invoice_line.price_subtotal,
                 "Amount": invoice_line.price_subtotal * exchange_rate,
-                "IsPromotions": invoice_line.promotions,
-                "DocNo_PO": purchase_order.name,
-                "DeptCode": invoice_line.analytic_account_id.code,
+                "IsPromotions": 1 if invoice_line.promotions else 0,
+                "DocNo_PO": self.reference,
+                "JobCode": invoice_line.occasion_code_id.code,
+                "RowId": invoice_line.id,
                 "DocNo_WO": invoice_line.work_order.code,
-                "RowId": invoice_line.id
+                "DeptCode": invoice_line.analytic_account_id.code,
+                "AssetCode": invoice_line.asset_code.code if invoice_line.asset_code.type in ("CCDC", "TSCD") else None,
+                "ExpenseCatgCode": expense_code if valid_expense_code else None,
+                "ProductCode": invoice_line.asset_code.code if invoice_line.asset_code.type == "XDCB" else None
+
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
