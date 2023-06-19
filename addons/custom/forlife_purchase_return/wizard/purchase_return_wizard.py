@@ -144,6 +144,8 @@ class PurchaseReturnWizard(models.TransientModel):
             'occasion_code_id': return_line.purchase_line_id.occasion_code_id.id,
             'production_id': return_line.purchase_line_id.production_id.id,
             'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
+            'receive_date': return_line.purchase_line_id.receive_date,
+            'location_id': return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id,
         }
         return vals
 
