@@ -82,6 +82,7 @@ class SplitProduct(models.Model):
     def action_approve(self):
         self.ensure_one()
         Quant = self.env['stock.quant']
+        list_line_invalid = []
         for rec in self.split_product_line_ids:
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
@@ -90,8 +91,9 @@ class SplitProduct(models.Model):
             rec.product_quantity_out = product_qty_split
             available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.lot_stock_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
             if rec.product_quantity_out > available_quantity:
-                raise UserError(
-                    _(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}"))
+                list_line_invalid.append(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}")
+        if len(list_line_invalid) > 0:
+            raise ValidationError(_('\n'.join(list_line_invalid)))
         for r in self.split_product_line_sub_ids:
             product = self._create_product(r)
             r.product_new_id = product.id
@@ -137,7 +139,7 @@ class SplitProduct(models.Model):
         pickings = self.env['stock.picking']
         location_id = self.env['stock.location'].search([('code','=','N0301')], limit=1)
         if not location_id:
-            raise ValidationError(_('Không tìm thấy địa điểm Nhậptách/gộp mã nguyên phụ liệu mã N0301'))
+            raise ValidationError(_('Không tìm thấy địa điểm Nhập tách/gộp mã nguyên phụ liệu mã N0301'))
         for record in self.split_product_line_ids:
             data = []
             for rec in self.split_product_line_sub_ids:
