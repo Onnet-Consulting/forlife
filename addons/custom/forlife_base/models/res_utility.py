@@ -198,7 +198,8 @@ select coalesce(pp2.barcode, '')                                      as barcode
        REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_color.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as mau_sac,
        REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_size.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as size,
        REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_gender.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as gioi_tinh,
-       coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban
+       coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban,
+       '' as ma_tham_chieu
 from products
          left join fixed_prices on products.id = fixed_prices.product_id and fixed_prices.num = 1
          left join stock_final sf on sf.product_id = products.id
