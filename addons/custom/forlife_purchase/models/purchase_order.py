@@ -120,7 +120,7 @@ class PurchaseOrder(models.Model):
     @api.depends('partner_id')
     def _compute_partner_company_id(self):
         cr = self._cr
-        cr.execute('SELECT partner_id, id FROM res_company WHERE partner_id IN %s', (self.mapped('partner_id')._ids, ))
+        cr.execute('SELECT partner_id, id FROM res_company WHERE partner_id IN %s', (self.mapped('partner_id')._ids + (0, 0), ))
         partner_company = {rec[0]: rec[1] or self.env.company.id for rec in cr.fetchall()}
         for rec in self:
             rec.update({'partner_company_id': partner_company[rec.partner_id.id] if rec.partner_id.id in partner_company else None})
