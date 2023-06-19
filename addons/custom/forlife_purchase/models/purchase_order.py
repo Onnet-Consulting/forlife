@@ -23,11 +23,13 @@ class PurchaseOrder(models.Model):
         ('service', 'Service'),
         ('asset', 'Asset'),
     ], string='Purchase Type', required=True, default='product')
+
     inventory_status = fields.Selection([
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
     ], string='Inventory Status', default='not_received', compute='compute_inventory_status')
+
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
@@ -183,7 +185,7 @@ class PurchaseOrder(models.Model):
     def onchange_exchange_rate(self):
         if self.currency_id:
             if self.type_po_cost != 'cost':
-                self.exchange_rate = self.currency_id.rate
+                self.exchange_rate = self.currency_id.inverse_rate
             else:
                 self.exchange_rate = 1
 
@@ -408,7 +410,10 @@ class PurchaseOrder(models.Model):
                                 'free_good': orl.free_good,
                                 'purchase_uom': orl.purchase_uom.id,
                                 'quantity_change': orl.exchange_quantity,
-                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
+                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False,
+                                'occasion_code_id': orl.occasion_code_id.id,
+                                'work_production': orl.production_id.id,
+                                'account_analytic_id': orl.account_analytic_id.id,
                             })
                 record.write({'custom_state': 'approved'})
             else:
@@ -689,6 +694,15 @@ class PurchaseOrder(models.Model):
         new_line_count = len(vals.get('order_line', []))
         if (new_line_count > old_line_count) and self.custom_state == "approved":
             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+        for item in self.exchange_rate_line:
+            item.write({
+                'import_tax': item.import_tax,
+                'tax_amount': item.tax_amount,
+                'special_consumption_tax': item.special_consumption_tax,
+                'special_consumption_tax_amount': item.special_consumption_tax_amount,
+                'vat_tax': item.vat_tax,
+                'vat_tax_amount': item.vat_tax_amount,
+            })
         return super(PurchaseOrder, self).write(vals)
 
     @api.onchange('company_id', 'currency_id')
@@ -700,6 +714,8 @@ class PurchaseOrder(models.Model):
                 self.active_manual_currency_rate = False
         else:
             self.active_manual_currency_rate = False
+
+
 
     @api.depends('order_line')
     def _compute_exchange_rate_line_and_cost_line(self):
@@ -715,29 +731,32 @@ class PurchaseOrder(models.Model):
                     'purchase_order_id': rec.id,
                     'qty_product': line.product_qty,
                 })
-                synthetic_line = self.env['forlife.synthetic'].create({
-                    'syn_po_id': line.id,
-                    'product_id': line.product_id.id,
-                    'description': line.name,
-                    'price_unit': line.price_unit,
-                    'quantity': line.product_qty,
-                    'before_tax': line.total_value,
-                    'discount': line.discount,
-                    'synthetic_id': rec.id,
-                })
                 if exchange_rate_line:
                     exchange_rate_line.update({
                         'ex_po_id': line.id,
                         'vnd_amount': line.total_vnd_amount,
                         'qty_product': line.product_qty,
                     })
+                synthetic_line = self.env['forlife.synthetic'].create({
+                    'syn_po_id': line.id,
+                    'product_id': line.product_id.id,
+                    'description': line.name,
+                    'price_unit': line.price_unit,
+                    'price_subtotal': line.total_vnd_amount,
+                    'quantity': line.product_qty,
+                    'before_tax': line.total_value,
+                    'discount': line.discount,
+                    'synthetic_id': rec.id,
+                })
                 if synthetic_line:
                     synthetic_line.update({
                         'syn_po_id': line.id,
                         'quantity': line.product_qty,
+                        'price_subtotal': line.total_vnd_amount,
                         'discount': line.discount,
                         'price_unit': line.price_unit,
                     })
+
 
     # def action_update_import(self):
     #     for item in self:
@@ -839,8 +858,6 @@ class PurchaseOrder(models.Model):
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent,
                                         # 'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                         'discount_percent': line.discount,
@@ -850,6 +867,8 @@ class PurchaseOrder(models.Model):
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                         'occasion_code_id': line.occasion_code_id.id,
+                                        'work_order': line.production_id.id,
+                                        'account_analytic_id': line.account_analytic_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -878,8 +897,6 @@ class PurchaseOrder(models.Model):
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent,
                                 # 'event_id': line.event_id.id,
-                                'work_order': line.production_id.id,
-                                'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': line.purchase_quantity,
                                 'discount_percent': line.discount,
@@ -889,6 +906,8 @@ class PurchaseOrder(models.Model):
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                 'occasion_code_id': line.occasion_code_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
                             }
                             if line.display_type == 'line_section':
                                 pending_section = line
@@ -989,8 +1008,6 @@ class PurchaseOrder(models.Model):
                                                 'warehouse': line.location_id.id,
                                                 'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                                 # 'event_id': line.event_id.id,
-                                                'work_order': line.production_id.id,
-                                                'account_analytic_id': line.account_analytic_id.id,
                                                 'request_code': line.request_purchases,
                                                 'quantity_purchased': wave_item.quantity_purchase_done - x_return.quantity_purchase_done,
                                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -999,7 +1016,9 @@ class PurchaseOrder(models.Model):
                                                 'product_uom_id': line.product_uom.id,
                                                 'price_unit': line.price_unit,
                                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                                'occasion_code_id': line.occasion_code_id.id,
+                                                'occasion_code_id': wave_item.occasion_code_id.id,
+                                                'work_order': wave_item.production_id.id,
+                                                'account_analytic_id': wave_item.account_analytic_id.id,
                                             }
                                             if line.display_type == 'line_section':
                                                 pending_section = line
@@ -1030,8 +1049,6 @@ class PurchaseOrder(models.Model):
                                         'warehouse': line.location_id.id,
                                         'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                         # 'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
                                         'request_code': line.request_purchases,
                                         'quantity_purchased': wave_item.quantity_purchase_done,
                                         'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -1040,7 +1057,9 @@ class PurchaseOrder(models.Model):
                                         'product_uom_id': line.product_uom.id,
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                        'occasion_code_id': line.occasion_code_id.id,
+                                        'occasion_code_id': wave_item.occasion_code_id.id,
+                                        'work_order': wave_item.production_id.id,
+                                        'account_analytic_id': wave_item.account_analytic_id.id,
                                     }
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -1167,8 +1186,6 @@ class PurchaseOrder(models.Model):
                                     'warehouse': line.location_id.id,
                                     'discount': line.discount_percent,
                                     # 'event_id': line.event_id.id,
-                                    'work_order': line.production_id.id,
-                                    'account_analytic_id': line.account_analytic_id.id,
                                     'request_code': line.request_purchases,
                                     'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
                                     'discount_percent': line.discount,
@@ -1178,6 +1195,8 @@ class PurchaseOrder(models.Model):
                                     'price_unit': line.price_unit,
                                     'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                     'occasion_code_id': line.occasion_code_id.id,
+                                    'work_order': line.production_id.id,
+                                    'account_analytic_id': line.account_analytic_id.id,
                                 }
                             sequence += 1
                             key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1212,8 +1231,6 @@ class PurchaseOrder(models.Model):
                             'warehouse': line.location_id.id,
                             'discount': line.discount_percent,
                             # 'event_id': line.event_id.id,
-                            'work_order': line.production_id.id,
-                            'account_analytic_id': line.account_analytic_id.id,
                             'request_code': line.request_purchases,
                             'quantity_purchased': line.purchase_quantity,
                             'discount_percent': line.discount,
@@ -1223,6 +1240,8 @@ class PurchaseOrder(models.Model):
                             'price_unit': line.price_unit,
                             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                             'occasion_code_id': line.occasion_code_id.id,
+                            'work_order': line.production_id.id,
+                            'account_analytic_id': line.account_analytic_id.id,
                         }
                         sequence += 1
                         key = order.purchase_type, order.partner_id.id, order.company_id.id
@@ -1273,8 +1292,6 @@ class PurchaseOrder(models.Model):
                                 'warehouse': line.location_id.id,
                                 'discount': line.discount_percent * (wave_item.qty_done / line.product_qty),
                                 # 'event_id': line.event_id.id,
-                                'work_order': line.production_id.id,
-                                'account_analytic_id': line.account_analytic_id.id,
                                 'request_code': line.request_purchases,
                                 'quantity_purchased': wave_item.quantity_purchase_done,
                                 'discount_percent': line.discount * (wave_item.qty_done / line.product_qty),
@@ -1283,7 +1300,9 @@ class PurchaseOrder(models.Model):
                                 'product_uom_id': line.product_uom.id,
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                'occasion_code_id': line.occasion_code_id.id,
+                                'occasion_code_id': wave_item.occasion_code_id.id,
+                                'work_order': wave_item.production_id.id,
+                                'account_analytic_id': wave_item.account_analytic_id.id,
                             }
                             wave.picking_id.ware_check = True
                     else:
@@ -2275,7 +2294,7 @@ class Synthetic(models.Model):
     product_uom = fields.Many2one(related='product_id.uom_id', string='ĐVT')
     price_unit = fields.Float(string='Đơn giá')
     quantity = fields.Float(string='Số lượng')
-    price_subtotal = fields.Float(string='Thành tiền', compute='_compute_price_subtotal', store=1)
+    price_subtotal = fields.Float(string='Thành tiền (VND)')
     discount = fields.Float(string='Chiết khấu')
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_is_check_pre_tax_costs', store=1)
     tnk_tax = fields.Float(string='Thuế nhập khẩu', compute='_compute_tnk_tax', store=1)
@@ -2283,46 +2302,49 @@ class Synthetic(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs',
+                 'synthetic_id.order_line.total_vnd_amount',
+                 'synthetic_id.exchange_rate_line')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
             cost_line_true = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line in rec.synthetic_id.exchange_rate_line:
+            for line, nine in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.order_line):
                 total_cost_true = 0
+                if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
+                    rec.price_subtotal = nine.total_vnd_amount
                 if cost_line_true:
                     for item in cost_line_true:
                         if item.vnd_amount and rec.price_subtotal > 0:
-                            before_tax = ((rec.price_subtotal - rec.discount) / (sum(self.mapped('price_subtotal')) - sum(self.mapped('discount')))) * item.vnd_amount
+                            before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
-                        rec.before_tax = total_cost_true
+                        if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                            rec.before_tax = total_cost_true
                         rec.after_tax = 0
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax - rec.discount
+                    line.vnd_amount = rec.price_subtotal + rec.before_tax
 
-    @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal', 'discount', 'synthetic_id.exchange_rate_line.vnd_amount')
+    @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
+                 'synthetic_id.exchange_rate_line.tax_amount',
+                 'synthetic_id.exchange_rate_line.special_consumption_tax_amount',)
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line in rec.synthetic_id.exchange_rate_line:
-                total_cost = 0
-                sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
-                sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
-                sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
-                if rec.synthetic_id.type_po_cost == 'tax':
-                    for item in cost_line_false:
-                        if rec.price_subtotal > 0:
-                            total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                            if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                                rec.after_tax = total_cost
-                else:
-                    rec.after_tax = 0
-                    
-    @api.depends('price_unit', 'quantity')
-    def _compute_price_subtotal(self):
-        for record in self:
-            record.price_subtotal = record.price_unit * record.quantity * record.synthetic_id.exchange_rate
+            if cost_line_false:
+                for line in rec.synthetic_id.exchange_rate_line:
+                    total_cost = 0
+                    sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
+                    sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
+                    sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
+                    if rec.synthetic_id.type_po_cost == 'tax' and rec.syn_po_id == line.ex_po_id:
+                        for item in cost_line_false:
+                            if item.vnd_amount and rec.price_subtotal > 0:
+                                total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                                if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                                    rec.after_tax = total_cost
+            else:
+                rec.after_tax = 0
 
     @api.depends('price_subtotal', 'discount', 'before_tax', 'tnk_tax', 'db_tax', 'after_tax')
     def _compute_total_product(self):
@@ -2334,7 +2356,7 @@ class Synthetic(models.Model):
         for record in self:
             tnk_tax_total = 0.0
             for item in record.synthetic_id.exchange_rate_line:
-                if record.product_id.id == item.product_id.id:
+                if record.product_id.id == item.product_id.id and record.syn_po_id == item.ex_po_id:
                     tnk_tax_total += item.tax_amount
             record.tnk_tax = tnk_tax_total
 
@@ -2343,6 +2365,6 @@ class Synthetic(models.Model):
         for record in self:
             db_tax_total = 0.0
             for item in record.synthetic_id.exchange_rate_line:
-                if record.product_id.id == item.product_id.id:
+                if record.product_id.id == item.product_id.id and record.syn_po_id == item.ex_po_id:
                     db_tax_total += item.special_consumption_tax_amount
             record.db_tax = db_tax_total

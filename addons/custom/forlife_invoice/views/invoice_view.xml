@@ -140,7 +140,8 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="discount" string="Chiết khấu %"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
-                             <field name="discount_percent"
+                            <field name="discount_percent"
+                                   widget="monetary"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
                             <field name="tax_ids"
                                    optional="show"
