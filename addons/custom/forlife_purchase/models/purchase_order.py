@@ -1483,6 +1483,18 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
+    @api.constrains('exchange_quantity')
+    def constrains_exchange_quantity(self):
+        list_line_invalid = []
+        for rec in self:
+            if not rec.partner_id.is_passersby:
+                supplier = self.env['product.supplierinfo'].search([('amount_conversion','=',rec.exchange_quantity),('partner_id','=',rec.partner_id.id)], limit=1)
+                if not supplier:
+                    list_line_invalid.append(rec.product_id.name_get()[0][1])
+        if list_line_invalid:
+            mgs = f"Sản phẩm {', '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp này \n"
+            raise UserError(_(mgs))
+
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
         if self.product_id and self.currency_id:
