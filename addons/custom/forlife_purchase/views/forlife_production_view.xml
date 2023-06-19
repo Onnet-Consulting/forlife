@@ -13,6 +13,7 @@
                 <field name="user_id"/>
                 <field name="created_date"/>
                 <field name="company_id"/>
+                <button name="action_open_history" string="History" type="object" class="oe_title"/>
             </tree>
         </field>
     </record>
@@ -23,24 +24,33 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
+                    <button string="Trở về nháp" name="action_draft" type="object"
+                            attrs="{'invisible': [('state', '!=', 'wait_confirm')]}"/>
+                    <button string="Gửi duyệt" name="action_wait_confirm"
+                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                    <button string="Phê duyệt" name="action_approved" type="object"
+                            attrs="{'invisible':[ ('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
+                </header>
+                <header>
+                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="code"/>
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="created_date"/>
+                            <field name="code" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="name" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="created_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="selected_product_ids" invisible="1"/>
                         </group>
                         <group>
-                            <field name="implementation_id"/>
-                            <field name="management_id"/>
-                            <field name="production_department"/>
-                            <field name="brand_id"/>
-                            <field name="produced_from_date"/>
-                            <field name="to_date"/>
+                            <field name="implementation_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="management_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="production_department" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="brand_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="produced_from_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="to_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -144,20 +154,20 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Ingredients" name="ingredients">
-                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">
-                                    <tree editable="bottom">
-                                        <field name="product_id"/>
-                                        <field name="description"/>
-                                        <field name="uom_id"/>
-                                        <field name="production_uom_id"/>
-                                        <field name="conversion_coefficient"/>
-                                        <field name="rated_level"/>
-                                        <field name="loss"/>
-                                        <field name="total"/>
-                                    </tree>
-                                </field>
-                            </page>
+<!--                            <page string="Ingredients" name="ingredients">-->
+<!--                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">-->
+<!--                                    <tree editable="bottom">-->
+<!--                                        <field name="product_id"/>-->
+<!--                                        <field name="description"/>-->
+<!--                                        <field name="uom_id"/>-->
+<!--                                        <field name="production_uom_id"/>-->
+<!--                                        <field name="conversion_coefficient"/>-->
+<!--                                        <field name="rated_level"/>-->
+<!--                                        <field name="loss"/>-->
+<!--                                        <field name="total"/>-->
+<!--                                    </tree>-->
+<!--                                </field>-->
+<!--                            </page>-->
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">

@@ -372,7 +372,7 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
-                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)], limit=1)
+                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
                 picking_in.write({
                     'is_pk_purchase': True
                 })
@@ -1429,7 +1429,7 @@ class PurchaseOrderLine(models.Model):
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
@@ -1875,6 +1875,23 @@ class StockPicking(models.Model):
                 'currency_id': po.currency_id.id,
                 'exchange_rate': po.exchange_rate
             })
+                for rec in record.move_ids_without_package:
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
