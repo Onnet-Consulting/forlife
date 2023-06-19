@@ -55,10 +55,8 @@ class AccountMove(models.Model):
     total_trade_discount = fields.Integer(string='Tổng chiết khấu thương mại')
 
     # field domain cho 2 field đơn mua hàng và phiếu nhập kho
-    receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
-    # partner_domain = fields.Char(compute='_compute_partner_domain', store=1)
-    # partner_domain_2 = fields.Char()
+    receiving_warehouse_id = fields.Many2many('stock.picking')
 
     # field chi phí và thuế nhập khẩu
     exchange_rate_line = fields.One2many('invoice.exchange.rate', 'invoice_rate_id',
@@ -129,7 +127,7 @@ class AccountMove(models.Model):
     def onchange_exchange_rate(self):
         if self.currency_id:
             if self.type_inv != 'cost':
-                self.exchange_rate = self.currency_id.rate
+                self.exchange_rate = self.currency_id.inverse_rate
             else:
                 self.exchange_rate = 1
 
@@ -243,7 +241,7 @@ class AccountMove(models.Model):
                                             'vendor_price': product.vendor_price,
                                             'price_unit': product.price_unit,
                                             'warehouse': product.location_id.id,
-                                            'taxes_id': product.taxes_id.id,
+                                            'tax_ids': product.taxes_id.ids,
                                             'tax_amount': product.price_tax * pnk.qty_done / product.product_qty,
                                             'price_subtotal': product.price_subtotal,
                                             'discount_percent': product.discount * pnk.qty_done / product.product_qty,
@@ -398,6 +396,7 @@ class AccountMove(models.Model):
                         'description': line.description,
                         'price_unit': line.price_unit,
                         'quantity': line.quantity,
+                        'price_subtotal': invoice.total_vnd_amount,
                         'before_tax': line.before_tax,
                         'discount': line.discount,
                         'synthetic_id': rec.id,
@@ -407,6 +406,7 @@ class AccountMove(models.Model):
                             'quantity': invoice.quantity if invoice.quantity else 0,
                             'discount': invoice.discount_percent if invoice.discount_percent else 0,
                             'price_unit': invoice.price_unit if invoice.price_unit else 0,
+                            'price_subtotal': invoice.total_vnd_amount,
                         })
 
     def create_invoice_tnk_db(self):
@@ -886,13 +886,12 @@ class InvoiceExchangeRate(models.Model):
             if item.import_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
 
-    @api.depends('usd_amount', 'invoice_rate_id.exchange_rate')
-    def compute_vnd_amount(self):
+    @api.depends('purchase_order_id.order_line.total_vnd_amount')
+    def _compute_vnd_amount(self):
         for rec in self:
-            if not rec.invoice_rate_id.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id and not rec.invoice_rate_id.type_inv == 'tax':
-                rec.vnd_amount = rec.usd_amount * rec.invoice_rate_id.exchange_rate
-            else:
-                pass
+            for item in rec.invoice_rate_id.invoice_line_ids:
+                if item.total_vnd_amount and rec.ex_po_id == str(item.id):
+                    rec.vnd_amount = item.total_vnd_amount
 
     @api.depends('vnd_amount', 'import_tax')
     def _compute_tax_amount(self):
@@ -932,7 +931,7 @@ class InvoiceCostLine(models.Model):
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
         if self.currency_id:
-            self.exchange_rate = self.currency_id.rate
+            self.exchange_rate = self.currency_id.inverse_rate
 
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
@@ -962,7 +961,7 @@ class SyntheticInvoice(models.Model):
     product_uom = fields.Many2one(related='product_id.uom_id', string='ĐVT')
     price_unit = fields.Float(string='Đơn giá')
     quantity = fields.Float(string='Số lượng')
-    price_subtotal = fields.Float(string='Thành tiền', compute='_compute_price_subtotal', store=1)
+    price_subtotal = fields.Float(string='Thành tiền (VND)')
     discount = fields.Float(string='Chiết khấu')
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_is_check_pre_tax_costs', store=1)
     tnk_tax = fields.Float(string='Thuế nhập khẩu', compute='_compute_tnk_tax', store=1)
@@ -970,47 +969,50 @@ class SyntheticInvoice(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs',
+                 'synthetic_id.invoice_line_ids.total_vnd_amount',
+                 'synthetic_id.exchange_rate_line')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
             cost_line_true = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line in rec.synthetic_id.exchange_rate_line:
+            for line, nine in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.invoice_line_ids):
                 total_cost_true = 0
+                if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
+                    rec.price_subtotal = nine.total_vnd_amount
                 if cost_line_true:
                     for item in cost_line_true:
                         if item.vnd_amount and rec.price_subtotal > 0:
-                            before_tax = ((rec.price_subtotal - rec.discount) / (sum(self.mapped('price_subtotal')) - sum(self.mapped('discount')))) * item.vnd_amount
+                            before_tax = nine.total_vnd_amount / sum(
+                                rec.synthetic_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
-                        rec.before_tax = total_cost_true
+                        if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                            rec.before_tax = total_cost_true
                         rec.after_tax = 0
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax - rec.discount
+                    line.vnd_amount = rec.price_subtotal + rec.before_tax
 
-    @api.depends('before_tax', 'tnk_tax', 'db_tax', 'price_subtotal', 'discount', 'synthetic_id.exchange_rate_line.vnd_amount')
+    @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
+                 'synthetic_id.exchange_rate_line.tax_amount',
+                 'synthetic_id.exchange_rate_line.special_consumption_tax_amount', )
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line in rec.synthetic_id.exchange_rate_line:
-                total_cost = 0
-                sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
-                sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
-                sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
-                if rec.synthetic_id.type_inv == 'tax':
-                    for item in cost_line_false:
-                        if rec.price_subtotal > 0:
-                            total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                            if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                                rec.after_tax = total_cost
-                else:
-                    rec.after_tax = 0
-                    
-    @api.depends('price_unit', 'quantity')
-    def _compute_price_subtotal(self):
-        for record in self:
-            if record.price_unit and record.quantity:
-                record.price_subtotal = record.price_unit * record.quantity * record.synthetic_id.exchange_rate
+            if cost_line_false:
+                for line in rec.synthetic_id.exchange_rate_line:
+                    total_cost = 0
+                    sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
+                    sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
+                    sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
+                    if rec.synthetic_id.type_inv == 'tax' and rec.syn_po_id == line.ex_po_id:
+                        for item in cost_line_false:
+                            if item.vnd_amount and rec.price_subtotal > 0:
+                                total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                                if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                                    rec.after_tax = total_cost
+            else:
+                rec.after_tax = 0
 
     @api.depends('price_subtotal', 'discount', 'before_tax', 'tnk_tax', 'db_tax', 'after_tax')
     def _compute_total_product(self):
@@ -1022,7 +1024,7 @@ class SyntheticInvoice(models.Model):
         for record in self:
             tnk_tax_total = 0.0
             for item in record.synthetic_id.exchange_rate_line:
-                if record.product_id.id == item.product_id.id:
+                if record.product_id.id == item.product_id.id and record.syn_po_id == item.ex_po_id:
                     tnk_tax_total += item.tax_amount
             record.tnk_tax = tnk_tax_total
 
@@ -1031,6 +1033,6 @@ class SyntheticInvoice(models.Model):
         for record in self:
             db_tax_total = 0.0
             for item in record.synthetic_id.exchange_rate_line:
-                if record.product_id.id == item.product_id.id:
+                if record.product_id.id == item.product_id.id and record.syn_po_id == item.ex_po_id:
                     db_tax_total += item.special_consumption_tax_amount
             record.db_tax = db_tax_total
