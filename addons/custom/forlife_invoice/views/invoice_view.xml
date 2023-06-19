@@ -151,7 +151,7 @@
                                    attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
                             <field name="tax_amount"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
-                            <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                            <field name="price_subtotal" string="Thành tiền" widget="monetary" sum="discounted subtotal" force_save="1"/>
                             <field name="total_vnd_amount"
                                    sum="discounted subtotal"
                                    force_save="1"

@@ -1206,6 +1206,7 @@ class PurchaseOrder(models.Model):
                                                  'exchange_rate': order.exchange_rate,
                                                  'currency_id': order.currency_id.id,
                                                  'reference': order.name,
+                                                 # 'is_check': True,
                                                  })
                             order = order.with_company(order.company_id)
                             line_vals = line._prepare_account_move_line()
@@ -1558,7 +1559,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    @api.depends('exchange_quantity', 'purchase_quantity', 'product_id', 'purchase_uom',
+    @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
@@ -1582,16 +1583,17 @@ class PurchaseOrderLine(models.Model):
                         rec.vendor_price = line.price if line else False
                         rec.exchange_quantity = line.amount_conversion
                     else:
-                        if rec.purchase_quantity > max(data.mapped('min_qty')):
-                            closest_quantity = max(data.mapped('min_qty'))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
-                        else:
-                            closest_quantity = min(data.mapped('min_qty'), key=lambda x: abs(x - rec.purchase_quantity))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
+                        if rec.product_qty:
+                            if rec.product_qty > max(data.mapped('min_qty')):
+                                closest_quantity = max(data.mapped('min_qty'))
+                                if closest_quantity == line.min_qty:
+                                    rec.vendor_price = line.price
+                                    rec.exchange_quantity = line.amount_conversion
+                            else:
+                                closest_quantity = min(data.mapped('min_qty'), key=lambda x: abs(x - rec.product_qty))
+                                if closest_quantity == line.min_qty:
+                                    rec.vendor_price = line.price
+                                    rec.exchange_quantity = line.amount_conversion
 
     @api.depends('vendor_price', 'exchange_quantity')
     def compute_price_unit(self):
@@ -1636,6 +1638,8 @@ class PurchaseOrderLine(models.Model):
             if self.discount_percent:
                 self.discount = self.discount_percent * self.price_unit * self.product_qty * 0.01
                 self.readonly_discount = True
+            elif self.discount_percent == 0:
+                self.discount = 0
             else:
                 self.readonly_discount = False
 
@@ -1645,6 +1649,8 @@ class PurchaseOrderLine(models.Model):
             if self.discount and self.price_unit > 0 and self.product_qty > 0:
                 self.discount_percent = self.discount / (self.price_unit * self.product_qty * 0.01)
                 self.readonly_discount_percent = True
+            elif self.discount == 0:
+                self.discount_percent = 0
             else:
                 self.readonly_discount_percent = False
 
