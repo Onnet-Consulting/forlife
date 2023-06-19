@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_combo,product combo,model_product_combo,,1,1,1,1
 access_product_combo_line,product combo line,model_product_combo_line,,1,1,1,1
+access_wizard_increase_decrease_invoice,wizard increase decrease invoice,model_wizard_increase_decrease_invoice,base.group_user,1,1,1,1
+access_wizard_increase_decrease_invoice_line,wizard increase decrease invoice line,model_wizard_increase_decrease_invoice_line,base.group_user,1,1,1,1
