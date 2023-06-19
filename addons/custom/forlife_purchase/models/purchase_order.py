@@ -1888,28 +1888,28 @@ class StockPicking(models.Model):
                 # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
-            account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
-            account_move.update({
-                'currency_id': po.currency_id.id,
-                'exchange_rate': po.exchange_rate
-            })
-            for rec in record.move_ids_without_package:
-                if rec.work_production:
-                    quantity = self.env['quantity.production.order'].search(
-                        [('product_id', '=', rec.product_id.id),
-                         ('location_id', '=', rec.picking_id.location_dest_id.id),
-                         ('production_id', '=', rec.work_production.id)])
-                    if quantity:
-                        quantity.write({
-                            'quantity': quantity.quantity + rec.quantity_done
-                        })
-                    else:
-                        self.env['quantity.production.order'].create({
-                            'product_id': rec.product_id.id,
-                            'location_id': rec.picking_id.location_dest_id.id,
-                            'production_id': rec.work_production.id,
-                            'quantity': rec.quantity_done
-                        })
+                for rec in record.move_ids_without_package:
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
+                account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
+                account_move.update({
+                    'currency_id': po.currency_id.id,
+                    'exchange_rate': po.exchange_rate
+                })
         return res
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
