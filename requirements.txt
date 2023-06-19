@@ -2,7 +2,6 @@ cryptography==2.8
 phonenumbers
 redis
 pandas
-Werkzeug==0.16.1
 xlrd==1.2.0
 openpyxl
 pycryptodome
