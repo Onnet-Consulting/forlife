@@ -1811,6 +1811,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     applyAPricelistProgramToLineVales(PricelistItem, LineList, number_of_product) {
+        let code = null;
+        let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === PricelistItem.program_id)
+        if (activatedCodeObj) {code = activatedCodeObj.id};
         for (let line of LineList) {
             let oldPrice = line.price;
             let fixed_price = PricelistItem.fixed_price;
@@ -1819,7 +1822,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 line.price = fixed_price;
                 line.promotion_usage_ids.push(new PromotionUsageLine(
                     PricelistItem.program_id,
-                    null,
+                    code,
                     PricelistItem.id,
                     oldPrice,
                     fixed_price,
