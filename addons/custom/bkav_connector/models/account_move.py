@@ -42,20 +42,8 @@ def connect_bkav(data, configs):
     # Base64 encode the encrypted data
     encrypted_data = base64.b64encode(encrypted_data).decode("utf-8")
 
-    def get_proxies():
-        http_proxy = "http://10.207.210.3:3128"
-        https_proxy = "https://10.207.210.3:3128"
-        ftp_proxy = "ftp://10.207.210.3:3128"
-
-        proxies = {
-            "http": http_proxy,
-            "https": https_proxy,
-            "ftp": ftp_proxy
-        }
-        return proxies
-
     headers = {
-        "Content-Type": "text/xml",
+        "Content-Type": "text/xml; charset=utf-8",
         "SOAPAction": "http://tempuri.org/ExecCommand"
     }
 
@@ -70,7 +58,6 @@ def connect_bkav(data, configs):
                    </soapenv:Body>
                 </soapenv:Envelope>
             """
-    proxies = get_proxies()
 
     response = requests.post(configs.get('bkav_url'), headers=headers, data=soap_request, timeout=3.5)
 
@@ -85,11 +72,11 @@ def connect_bkav(data, configs):
     plaintext = cipher2.decrypt(decoded_string)
     plaintext = plaintext.rstrip(plaintext[-4:])
     try:
-        decode = gzip.decompress(plaintext).decode()
+        result_decode = gzip.decompress(plaintext).decode()
     except Exception as ex:
         _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
         raise ValidationError(f'Nhận khách từ lỗi của BKAV {ex}')
-    response_bkav = json.loads(decode)
+    response_bkav = json.loads(result_decode)
 
     if response_bkav['Status'] == 0:
         if type(response_bkav['Object']) == int:
@@ -199,13 +186,14 @@ class AccountMoveBKAV(models.Model):
     def create_invoice_bkav(self):
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
+        invoice_date = fields.Datetime.context_timestamp(self, datetime.combine(self.invoice_date, datetime.now().time())) if self.invoice_date else fields.Datetime.context_timestamp(self, datetime.now())
         data = {
             "CmdType": int(configs.get('cmd_addInvoice')),
             "CommandObject": [
                 {
                     "Invoice": {
                         "InvoiceTypeID": 10,
-                        "InvoiceDate": self.invoice_date.isoformat() if self.invoice_date else '',
+                        "InvoiceDate": str(invoice_date).replace(' ', 'T'),
                         "BuyerName": self.partner_id.name if self.partner_id.name else '',
                         "BuyerTaxCode": self.partner_id.vat if self.partner_id.vat else '',
                         "BuyerUnitName": self.partner_id.name if self.partner_id.name else '',
@@ -256,17 +244,14 @@ class AccountMoveBKAV(models.Model):
                 }
             ]
         }
+        _logger.info(f'BKAV - data create invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
         except Exception as ex:
-            _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+            _logger.error(f'BKAV connecto_bkav: {ex}')
             return False
         if response.get('status') == '1':
-            try:
-                self.message_post(body=(response.get('message')))
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            self.message_post(body=(response.get('message')))
         else:
             self.message_post(body=_('Đã tạo thành công hóa đơn trên BKAV!!'))
             self.exists_bkav = True
@@ -275,6 +260,7 @@ class AccountMoveBKAV(models.Model):
             self.getting_invoice_status()
 
     def update_invoice_bkav(self):
+        configs = self.get_bkav_config()
         data = {
             "CmdType": 200,
             "CommandObject": [
@@ -332,19 +318,16 @@ class AccountMoveBKAV(models.Model):
                 }
             ]
         }
-        configs = self.get_bkav_config()
+        _logger.info(f'BKAV - data update invoice to BKAV: {data}')
         response = connect_bkav(data, configs)
         if response.get('status') == '1':
-            try:
-                self.message_post(body=(response.get('message')))
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            self.message_post(body=(response.get('message')))
         else:
             self.message_post(body=_('Đã cập nhật thành công hóa đơn trên BKAV!!'))
 
     def action_download_view_e_invoice(self):
-        data_action_download = {
+        configs = self.get_bkav_config()
+        data = {
             "CmdType": 804,
             "CommandObject": [
                 {
@@ -355,14 +338,10 @@ class AccountMoveBKAV(models.Model):
                 }
             ]
         }
-        configs = self.get_bkav_config()
-        response_action = connect_bkav(data_action_download, configs)
+        _logger.info(f'BKAV - data download invoice to BKAV: {data}')
+        response_action = connect_bkav(data, configs)
         if response_action.get('status') == '1':
-            try:
-                self.message_post(body=(response_action.get('message')))
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            self.message_post(body=(response_action.get('message')))
         else:
             self.message_post(body=('Có thể xem preview và tải xuống HĐĐT'))
             url = 'https://wsdemo.ehoadon.vn' + response_action.get('message')
@@ -373,6 +352,7 @@ class AccountMoveBKAV(models.Model):
             }
 
     def cancel_invoice(self):
+        configs = self.get_bkav_config()
         data = {
             "CmdType": 202,
             "CommandObject": [
@@ -385,20 +365,17 @@ class AccountMoveBKAV(models.Model):
                 }
             ]
         }
-        configs = self.get_bkav_config()
+        _logger.info(f'BKAV - data cancel invoice to BKAV: {data}')
         response = connect_bkav(data, configs)
         if response.get('status') == '1':
-            try:
-                self.message_post(body=(response.get('message')))
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            self.message_post(body=(response.get('message')))
         else:
             self.message_post(body=_('Đã Hủy thành công HĐĐT trên hệ thống BKAV!!'))
             self.is_check_cancel = True
             self.getting_invoice_status()
 
     def delete_invoice(self):
+        configs = self.get_bkav_config()
         data = {
             "CmdType": 301,
             "CommandObject": [
@@ -411,36 +388,30 @@ class AccountMoveBKAV(models.Model):
                 }
             ]
         }
-        configs = self.get_bkav_config()
+        _logger.info(f'BKAV - data delete invoice to BKAV: {data}')
         response = connect_bkav(data, configs)
         if response.get('status') == '1':
-            try:
-                self.message_post(body=(response.get('message')))
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            self.message_post(body=(response.get('message')))
         else:
             self.message_post(body=_('Đã Xóa thành công HĐĐT trên hệ thống BKAV!!'))
 
     def getting_invoice_status(self):
+        configs = self.get_bkav_config()
         data = {
             "CmdType": 801,
             "CommandObject": self.invoice_guid,
         }
-        response = connect_bkav(data)
-        try:
-            pass
-        except Exception as ex:
-            _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-            return False
+        _logger.info(f'BKAV - data get invoice status to BKAV: {data}')
+        response = connect_bkav(data, configs)
         self.data_status = response
 
     def getting_sign_the_bill_hsm(self):
+        configs = self.get_bkav_config()
         data = {
             "CmdType": 205,
             "CommandObject": self.invoice_guid,
         }
-        configs = self.get_bkav_config()
+        _logger.info(f'BKAV - data get sign bill hsm to BKAV: {data}')
         response = connect_bkav(data, configs)
         if not self.invoice_line_ids:
             self.message_post(body=('Không thể kí HSM thành công khi hóa đơn không có sản phẩm!!'))
