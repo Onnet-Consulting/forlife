@@ -1,98 +1,88 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
 
 
-class BravoSyncLiquidationAssetWizard(models.TransientModel):
-    _name = 'bravo.sync.liquidation.asset.wizard'
+class BravoSyncPosExpenseLabel(models.TransientModel):
+    _name = 'bravo.sync.pos.expense.label.wizard'
     _inherit = 'mssql.server'
     _description = 'Bravo synchronize Liquidation Assets wizard'
 
     def sync(self):
-        companies = self.env['res.company'].search_read([('code', '!=', False)], ['code'])
-        for company_data in companies:
-            self.update_odoo_data(company_data)
+        self.create_and_update_data()
         return True
 
     @api.model
-    def update_odoo_data(self, company_data):
-        bravo_data = self.get_update_asset_value_by_company(company_data)
-        if not bravo_data:
+    def create_and_update_data(self):
+        bravo_expense_label_by_code = self.bravo_get_expense_label_data()
+        if not bravo_expense_label_by_code:
             return False
-        asset_asset = self.env['assets.assets'].sudo()
-        for asset_id, data in bravo_data.items():
-            asset_asset.browse(asset_id).write({
-                'state': 'paid' if data[0] == 1 else 'using',
-                'bravo_write_date': data[1]
-            })
+        PosExpenseLabel = self.env['pos.expense.label'].sudo()
+        odoo_existing_expense_label = PosExpenseLabel.with_context(active_test=False).search(
+            [
+                ('code', 'in', list(bravo_expense_label_by_code.keys()))
+            ])
+        odoo_existing_expense_label_by_code = {x.code: x for x in odoo_existing_expense_label}
+        odoo_existing_expense_label_codes = list(odoo_existing_expense_label_by_code.keys())
+        odoo_new_expense_label_data = []
+
+        for code, bravo_data in bravo_expense_label_by_code.items():
+            bravo_expense_name = bravo_data.get("Name", False)
+            bravo_expense_push_date = bravo_data.get("PushDate", False)
+            bravo_expense_active = bravo_data.get('Active', False)
+            if code not in odoo_existing_expense_label_codes:
+                odoo_new_expense_label_data.append({
+                    "code": code,
+                    "name": bravo_expense_name,
+                    "bravo_write_date": bravo_expense_push_date,
+                    "active": bravo_expense_active
+                })
+            else:
+                odoo_expense = odoo_existing_expense_label_by_code.get(code)
+                odoo_expense.write({
+                    "name": bravo_expense_name,
+                    "bravo_write_date": bravo_expense_push_date,
+                    "active": bravo_expense_active
+                })
+        PosExpenseLabel.create(odoo_new_expense_label_data)
         return True
 
     @api.model
-    def get_asset_last_write_date_by_company(self, company_data):
-        """return latest updated asset"""
+    def get_expense_label_last_write_date(self):
+        """return latest updated label"""
         cr = self.env.cr
         query = """
             SELECT max(bravo_write_date)
-            FROM assets_assets
-            WHERE company_id = %s
+            FROM pos_expense_label
         """
-        cr.execute(query, [company_data['id']])
+        cr.execute(query)
         return cr.fetchone()[0]
 
     @api.model
-    def get_update_asset_value_by_company(self, company_data):
-        bravo_table = 'B30AssetLiquidation'
-        update_asset_value_by_id = {}
-
-        odoo_last_write_date = self.get_asset_last_write_date_by_company(company_data)
-        company_code = company_data.get('code')
-        bravo_assets_liquidation_columns = ["PushDate", "Active", "AssetCode"]
-        bravo_assets_liquidation_columns_str = ','.join(bravo_assets_liquidation_columns)
+    def bravo_get_expense_label_data(self):
+        bravo_table = 'B20CashFlow'
+        odoo_last_write_date = self.get_expense_label_last_write_date()
+        bravo_expense_label_columns = ["Code", "Name", "PushDate", "Active"]
+        bravo_expense_label_columns_str = ','.join(bravo_expense_label_columns)
         if not odoo_last_write_date:
             select_query = """
                 SELECT %s
                 FROM %s
-                WHERE CompanyCode = ?
-            """ % (bravo_assets_liquidation_columns_str, bravo_table)
-            data = self._execute_many_read([(select_query, [company_code])])
+            """ % (bravo_expense_label_columns_str, bravo_table)
+            data = self._execute_many_read([(select_query, [])])
         else:
             select_query = """
                 SELECT %s
                 FROM %s
-                WHERE PushDate > ? AND CompanyCode = ?
-            """ % (bravo_assets_liquidation_columns_str, bravo_table)
-            data = self._execute_many_read([(select_query, [odoo_last_write_date, company_code])])
-        bravo_values = []
-        asset_codes = []
+                WHERE PushDate > ?
+            """ % (bravo_expense_label_columns_str, bravo_table)
+            data = self._execute_many_read([(select_query, [odoo_last_write_date])])
+
+        bravo_expense_label_data_by_code = {}
         for records in data:
             for rec in records:
-                rec_value = dict(zip(bravo_assets_liquidation_columns, rec))
-                bravo_asset_code = rec_value.get('AssetCode')
-                if bravo_asset_code:
-                    asset_codes.append(bravo_asset_code)
-                bravo_values.append(rec_value)
-        if not bravo_values:
-            return False
-
-        asset_id_by_code = self.generate_asset_id_by_code(company_data, asset_codes)
-        for rec in bravo_values:
-            update_asset_value_by_id.update({
-                asset_id_by_code[rec['AssetCode']]: [rec['Active'], rec['PushDate']]
-            })
-
-        return update_asset_value_by_id
-
-    def generate_asset_id_by_code(self, company_data, codes):
-        assets = self.env['assets.assets'].search([
-            ('code', 'in', codes),
-            ('company_id', '=', company_data['id'])
-        ])
-        res = {}
-        for acc in assets:
-            res[acc.code] = acc.id
-        missing_codes = list(set(codes) - set(res.keys()))
-        if missing_codes:
-            raise ValidationError(
-                _("Missing Assets codes in company %s: %r") % (company_data.get('code'), missing_codes))
-        return res
+                rec_value = dict(zip(bravo_expense_label_columns, rec))
+                bravo_expense_label_code = rec_value.get("Code")
+                if bravo_expense_label_code:
+                    bravo_expense_label_data_by_code[bravo_expense_label_code] = rec_value
+        return bravo_expense_label_data_by_code
