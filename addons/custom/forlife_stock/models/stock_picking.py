@@ -279,7 +279,7 @@ class StockMove(models.Model):
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
@@ -341,6 +341,10 @@ class StockMoveLine(models.Model):
 
     po_id = fields.Char('')
     ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
+    occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
+                                      domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):

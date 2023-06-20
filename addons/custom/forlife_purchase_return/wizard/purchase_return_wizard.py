@@ -128,6 +128,13 @@ class PurchaseReturnWizard(models.TransientModel):
         return vals
 
     def _prepare_purchase_line_default_values(self, return_line):
+        if return_line.purchase_line_id.discount_percent:
+            discount = return_line.purchase_line_id.discount_percent * return_line.purchase_line_id.price_unit * return_line.quantity * 0.01
+            readonly_discount = True
+        else:
+            readonly_discount = False
+            discount = 0
+        price_unit = return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity and return_line.vendor_price else return_line.purchase_line_id.price_unit
         vals = {
             'product_id': return_line.product_id.id,
             'description': return_line.product_id.name,
@@ -136,8 +143,18 @@ class PurchaseReturnWizard(models.TransientModel):
             'exchange_quantity': return_line.exchange_quantity,
             'product_qty': return_line.quantity,
             'vendor_price': return_line.vendor_price,
-            'price_unit': return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity else 0,
-            'origin_po_line_id': return_line.purchase_line_id.id
+            'price_unit': price_unit,
+            'origin_po_line_id': return_line.purchase_line_id.id,
+            'purchase_uom': return_line.purchase_line_id.purchase_uom.id,
+            'taxes_id': [(6, 0, return_line.purchase_line_id.taxes_id.ids)],
+            'discount_percent': return_line.purchase_line_id.discount_percent,
+            'discount': discount,
+            'readonly_discount': readonly_discount,
+            'occasion_code_id': return_line.purchase_line_id.occasion_code_id.id,
+            'production_id': return_line.purchase_line_id.production_id.id,
+            'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
+            'receive_date': return_line.purchase_line_id.receive_date,
+            'location_id': return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id,
         }
         return vals
 
