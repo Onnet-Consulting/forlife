@@ -852,7 +852,7 @@ class InvoiceExchangeRate(models.Model):
     vnd_amount = fields.Float(string='Thành tiền (VND)', compute='compute_vnd_amount', store=1)
 
     import_tax = fields.Float(string='% Thuế nhập khẩu')
-    tax_amount = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_tax_amount', store=1)
+    tax_amount = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_tax_amount', store=1, inverse='_inverse_tax_amount')
 
     special_consumption_tax = fields.Float(string='% %Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
@@ -865,6 +865,9 @@ class InvoiceExchangeRate(models.Model):
     total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_tax_amount', store=1)
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
     qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
+
+    def _inverse_tax_amount(self):
+        pass
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):

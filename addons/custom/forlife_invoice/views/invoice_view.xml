@@ -191,7 +191,7 @@
                                 <field name="vnd_amount" force_save="1" readonly="1"/>
                                 <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1" force_save="1"/>
+                                <field name="tax_amount" force_save="1"/>
                                 <field name="special_consumption_tax"/>
                                 <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
                                 <field name="vat_tax"/>
