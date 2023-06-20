@@ -80,9 +80,10 @@ class PosOrder(models.Model):
         partner_card_rank_line_ids = PartnerCardRankLine.search(
             [('partner_card_rank_id', '=', partner_card_rank_id.id), ('status', '=', True)])
         if partner_card_rank_line_ids:
-            partner_card_rank_line_ids.write({
-                'status': False
-            })
+            for partner_card_rank_line_id in partner_card_rank_line_ids:
+                partner_card_rank_line_id.write({
+                    'status': False
+                })
     def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id,
                                         total_value_to_up, program_id):
          self.env['partner.card.rank.line'].sudo().create({
