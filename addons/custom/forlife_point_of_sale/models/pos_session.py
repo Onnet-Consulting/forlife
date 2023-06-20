@@ -23,6 +23,8 @@ class PosSession(models.Model):
         if res.get('search_params', False) and res['search_params'].get('domain', False):
             res['search_params']['domain'] = expression.AND(
                 [res['search_params']['domain'], ['|', ('id', 'in', product_id), ('detailed_type', '=', 'service')]])
+        if res.get('search_params', {}).get('fields', False):
+            res.get('search_params').get('fields').append('full_attrs_desc')
         return res
 
     def _get_pos_ui_product_product(self, params):
