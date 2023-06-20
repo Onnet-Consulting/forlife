@@ -13,7 +13,8 @@
                     <field name="company_type"/>
                 </xpath>
                 <xpath expr="//page[@id='aml_tab']" position="after">
-                    <page id="bkav_invoice" string="BKAV Invoice" attrs="{'invisible': [('move_type','!=','out_invoice')]}">
+                    <page id="bkav_invoice" string="BKAV Invoice"
+                          attrs="{'invisible': [('move_type','not in',('out_invoice', 'out_refund'))]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_no', '!=', False),('state','!=','posted')]}"
@@ -24,17 +25,26 @@
                         <button name="update_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_no', '=', False),('state','!=','posted')]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
-<!--                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"-->
-<!--                                attrs="{'invisible':[('invoice_no', '!=', False)]}"-->
-<!--                                string="Publish eInvoice" groups="account.group_account_invoice"/>-->
-                        <button name="action_download_view_e_invoice" type="object" class="btn btn-primary" string="Download eInvoice"
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_no', '!=', False)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
+                                string="Download eInvoice"
                                 attrs="{'invisible':[('invoice_no', '=', False)]}"
                                 groups="account.group_account_invoice"/>
+                        <br/>
                         <group>
                             <group>
+                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
+                                <field name="origin_move_id"
+                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
+                            </group>
+                            <group>
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_form" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
                                 <field name="invoice_state_e" readonly="1"/>
                                 <field name="invoice_guid" readonly="1"/>
-                                <field name="invoice_no" readonly="1"/>
                                 <field name="invoice_e_date" readonly="1"/>
                             </group>
                         </group>
