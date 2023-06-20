@@ -58,7 +58,7 @@ class StockPickingOtherImport(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
-            "Description": picking.note,
+            "Description": picking.note or picking.location_id.name,
             "EmployeeCode": employee.code,
             "IsTransfer": 0,
             "DocumentType": picking.location_id.code,

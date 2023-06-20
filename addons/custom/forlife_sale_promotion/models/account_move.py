@@ -9,8 +9,8 @@ class AccountMove(models.Model):
     promotion_ids = fields.One2many('account.move.promotion', 'move_id', string="Promotion")
     promotion_journal_count = fields.Integer(string="Promotion journal count",
                                              compute="_compute_promotion_journal_count")
-    move_id = fields.Many2one('account.move')
-    promotion_journal_ids = fields.One2many('account.move', 'move_id', string="Promotion entry")
+    promotion_move_id = fields.Many2one('account.move')
+    promotion_journal_ids = fields.One2many('account.move', 'promotion_move_id', string="Promotion entry")
 
     @api.depends('promotion_journal_ids')
     def _compute_promotion_journal_count(self):
@@ -83,7 +83,7 @@ class AccountMove(models.Model):
             default_value = {
                 'date': self.invoice_date,
                 'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
-                'move_id': self.id,
+                'promotion_move_id': self.id,
                 'move_type': 'entry',
                 'line_ids': [(0, 0, line_id) for line_id in line_ids]
             }

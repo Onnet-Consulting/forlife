@@ -29,6 +29,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'security/res_group_security.xml',
 
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',

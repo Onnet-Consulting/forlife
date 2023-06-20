@@ -14,11 +14,15 @@
     'auto_install': True,
     'depends': [
         'point_of_sale',
+        'forlife_invoice',
+        'account',
     ],
     'data': [
         # Views
         'views/product_combo_views.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence.xml',
+        'views/account_move.xml',
+        'wizard/wizard_increase_decrease_invoice_view.xml',
     ],
 }

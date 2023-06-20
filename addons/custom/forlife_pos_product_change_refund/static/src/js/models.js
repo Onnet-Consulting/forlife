@@ -140,6 +140,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = this.is_product_defective || false;
             this.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             this.product_defective_id = this.product_defective_id || 0;
+            this.subtotal_paid = this.subtotal_paid || 0;
         }
 
         init_from_JSON(json) {
@@ -160,6 +161,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = json.is_product_defective || false;
             this.money_reduce_from_product_defective = json.money_reduce_from_product_defective || 0;
             this.product_defective_id = json.product_defective_id || 0;
+            this.subtotal_paid = json.subtotal_paid || 0;
         }
 
         clone() {
@@ -180,6 +182,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.is_product_defective = this.is_product_defective;
             orderline.money_reduce_from_product_defective = this.money_reduce_from_product_defective;
             orderline.product_defective_id = this.product_defective_id;
+            orderline.subtotal_paid = this.subtotal_paid || 0;
             return orderline;
         }
 
@@ -201,29 +204,10 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.is_product_defective = this.is_product_defective || false;
             json.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             json.product_defective_id = this.product_defective_id || 0;
+            json.subtotal_paid = this.subtotal_paid || 0;
             return json;
         }
 
-//        get_unit_display_price_with_reduce(){
-//            var res = this.get_unit_display_price()
-//            if(this.order.is_refund_product && !this.is_new_line){
-//                if(this.get_quantity() !=0){
-//                   var result = (Math.abs(this.get_display_price()) - Math.abs(this.money_is_reduced))/Math.abs(this.get_quantity())
-//                   this.price_unit_refund = result
-//                   return result
-//                }
-//            }
-//            return res
-//        }
-
-        get_unit_display_price() {
-            var res = super.get_unit_display_price()
-            var total = 0;
-            if (this.money_reduce_from_product_defective > 0) {
-                total += this.money_reduce_from_product_defective
-            }
-            return res - total
-        }
 
         set_quantity(quantity, keep_price){
             if(this.is_product_defective && quantity > 1){

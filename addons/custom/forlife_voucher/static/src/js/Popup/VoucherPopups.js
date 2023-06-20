@@ -155,6 +155,36 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             }
 
         }
+        condition_voucher(item, i, data, so_tien_da_tra,list_id_product_apply_condition) {
+                    let item_id = item.id.toString()
+                    if(!so_tien_da_tra[item_id]){
+                        so_tien_da_tra[item_id] = 0;
+                    }
+                    if(!item.point){
+                        item.point = 0
+                    }
+                    let usage_total = 0;
+                    if(!item.promotion_usage_ids){
+                        usage_total = 0;
+                    }else{
+                        for(let k =0; k< item.promotion_usage_ids.length; k++){
+                            usage_total += item.promotion_usage_ids[k].discount_amount
+                        }
+                    }
+                    if(!item.card_rank_discount){
+                        item.card_rank_discount = 0
+                    }
+                    if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total*item.quantity - item.card_rank_discount)){
+                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total*item.quantity - item.card_rank_discount);
+                        so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total*item.quantity - item.card_rank_discount;
+                    }else{
+                        so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
+                        data[i].value.price_residual = 0;
+                    }
+                    if(data[i].value.product_apply_ids.includes(item.product.id)){
+                        list_id_product_apply_condition.push(item.id)
+                    }
+        }
 
         async check() {
             this.state.data = false;
@@ -323,35 +353,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 if(codes[i].value != false && data[i].value != false){
                    gia_tri_con_lai_ban_dau = data[i].value.price_residual
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
-                        if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point||item.promotion_usage_ids.length>0||item.card_rank_discount) && data[i].value.is_full_price_applies)){
-                            let item_id = item.id.toString()
-                            if(!so_tien_da_tra[item_id]){
-                                so_tien_da_tra[item_id] = 0;
-                            }
-                            if(!item.point){
-                                item.point = 0
-                            }
-                            let usage_total = 0;
-                            if(!item.promotion_usage_ids){
-                                usage_total = 0;
-                            }else{
-                                for(let k =0; k< item.promotion_usage_ids.length; k++){
-                                    usage_total += item.promotion_usage_ids[k].discount_amount
-                                }
-                            }
-                            if(!item.card_rank_discount){
-                                item.card_rank_discount = 0
-                            }
-                            if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total - item.card_rank_discount)){
-                                data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total - item.card_rank_discount);
-                                so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total - item.card_rank_discount;
-                            }else{
-                                so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
-                                data[i].value.price_residual = 0;
-                            }
-                            if(data[i].value.product_apply_ids.includes(item.product.id)){
-                                list_id_product_apply_condition.push(item.id)
-                            }
+                        if(data[i].value.has_condition == false){
+                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+                        }
+                        else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0) && data[i].value.is_full_price_applies )){
+                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
                         }
                    })
                 data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;

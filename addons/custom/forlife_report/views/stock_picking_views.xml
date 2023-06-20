@@ -9,10 +9,10 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//header" position="inside">
-                    <button name="%(accountant_print_stock_picking_ingoing)d" string="Print Receive" class="oe_highlight" type="action"/>
-                    <button name="%(warehouse_print_stock_picking_ingoing)d" string="Print Receive" class="oe_highlight" type="action"/>
-                    <button name="%(accountant_print_stock_picking_outgoing)d" string="Print Delivery" class="oe_highlight" type="action"/>
-                    <button name="%(warehouse_print_stock_picking_outgoing)d" string="Print Delivery" class="oe_highlight" type="action"/>
+                    <button name="%(accountant_print_stock_picking_ingoing)d" string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                    <button name="%(warehouse_print_stock_picking_ingoing)d" string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                    <button name="%(accountant_print_stock_picking_outgoing)d" string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                    <button name="%(warehouse_print_stock_picking_outgoing)d" string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
                 </xpath>
 
             </field>

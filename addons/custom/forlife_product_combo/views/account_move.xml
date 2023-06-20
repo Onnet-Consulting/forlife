@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="account_move_forlife_combo_inherit">
+            <field name="name">account.move.forlife.combo.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='button_draft']" position="after">
+                    <button name="button_popup_increase_decrease_invoice"
+                            type="object"
+                            string="Increase/ Decrease Invoice"
+                            attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('payment_state', '!=', 'paid')]}"
+                            groups="account.group_account_invoice"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_invoice_form_view" model="ir.ui.view">
+            <field name="name">inherit.invoice.form.view</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="origin_invoice_id" invisible="1" />
+                    <field name="invoice_type" string="Increase/ Decrease Invoice"
+                           readonly="1"
+                           attrs="{'invisible': [('origin_invoice_id', '=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)]}</attribute>
+                </xpath>
+
+                <xpath expr="//page[@id='invoice_tab']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
+                </xpath>
+
+             </field>
+        </record>
+
+    </data>
+
+</odoo>

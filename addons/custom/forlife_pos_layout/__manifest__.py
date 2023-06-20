@@ -28,6 +28,7 @@
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/ProductScreen.xml',
             'forlife_pos_layout/static/src/js/Screens/ProductScreen/CustomOrderSummary.js',
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/CustomOrderSummary.xml',
+            'forlife_pos_layout/static/src/js/Screens/ProductScreen/ProductsWidgetControlPanel.js',
             'forlife_pos_layout/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml',
             'forlife_pos_layout/static/src/xml/Chrome.xml',
             'forlife_pos_layout/static/src/js/Chrome.js',
