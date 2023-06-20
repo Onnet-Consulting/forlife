@@ -279,7 +279,7 @@
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal" force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False), ('free_good', '=', True)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
@@ -295,11 +295,12 @@
                         />
                         <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
-                        <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="total_vnd_amount" sum="discounted subtotal" force_save="1" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount_percent', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="discount"
+                               widget="monetary"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
