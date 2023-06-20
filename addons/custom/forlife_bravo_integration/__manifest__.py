@@ -31,6 +31,7 @@
         'forlife_voucher',
         'forlife_product',
         'forlife_invoice',
+        'forlife_pos_popup_cash',
     ],
     'auto_install': True,
 
