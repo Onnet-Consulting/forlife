@@ -25,9 +25,9 @@
                         <button name="update_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_no', '=', False),('state','!=','posted')]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
-<!--                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"-->
-<!--                                attrs="{'invisible':[('invoice_no', '!=', False)]}"-->
-<!--                                string="Publish eInvoice" groups="account.group_account_invoice"/>-->
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_no', '!=', False)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                 string="Download eInvoice"
                                 attrs="{'invisible':[('invoice_no', '=', False)]}"

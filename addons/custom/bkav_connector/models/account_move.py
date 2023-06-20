@@ -233,6 +233,7 @@ class AccountMoveBKAV(models.Model):
             'cmd_updateInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.update_einvoice'),
             'cmd_deleteInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.delete_einvoice'),
             'cmd_cancelInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.cancel_einvoice'),
+            'cmd_publishInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.publish_invoice'),
             'cmd_getInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_einvoice'),
             'cmd_getStatusInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_status_einvoice'),
             'cmd_downloadPDF': self.env['ir.config_parameter'].sudo().get_param('bkav.download_pdf'),
@@ -271,12 +272,6 @@ class AccountMoveBKAV(models.Model):
             self.message_post(body=(response.get('Object')))
         else:
             result_data = json.loads(response.get('Object', []))[0]
-            # phát hành
-            data = {
-                "CmdType": 205,
-                "CommandObject": result_data.get('InvoiceGUID'),
-            }
-            connect_bkav(data, configs)
             try:
                 # ghi dữ liệu
                 self.write({
@@ -287,11 +282,30 @@ class AccountMoveBKAV(models.Model):
                     'invoice_form': result_data.get('InvoiceForm'),
                     'invoice_serial': result_data.get('InvoiceSerial'),
                     'invoice_e_date': datetime.strptime(result_data.get('SignedDate'), '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                        hours=7)
+                        hours=7) if result_data.get('SignedDate') else None
                 })
                 self.getting_invoice_status()
             except:
                 self.get_invoice_bkav()
+
+    def publish_invoice_bkav(self):
+        configs = self.get_bkav_config()
+
+        data = {
+            "CmdType": int(configs.get('cmd_publishInvoice')),
+            "CommandObject": self.invoice_guid,
+        }
+        connect_bkav(data, configs)
+        _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
+        try:
+            response = connect_bkav(data, configs)
+        except Exception as ex:
+            _logger.error(f'BKAV connect_bkav: {ex}')
+            return False
+        if response.get('Status') == 1:
+            self.message_post(body=(response.get('Object')))
+        else:
+            self.get_invoice_bkav()
 
     def update_invoice_bkav(self):
         configs = self.get_bkav_config()
@@ -327,7 +341,7 @@ class AccountMoveBKAV(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('SignedDate'), '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                    hours=7),
+                    hours=7) if result_data.get('SignedDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
