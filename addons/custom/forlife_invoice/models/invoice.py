@@ -748,11 +748,11 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('quantity_purchased', 'exchange_quantity')
     def onchange_quantity_purchased(self):
-        self.quantity = self.quantity_purchased * self.exchange_quantity if self.exchange_quantity else self.quantity_purchased
+        self.quantity = self.quantity_purchased * self.exchange_quantity
 
     @api.onchange('quantity', 'exchange_quantity')
     def onchange_quantity(self):
-        self.quantity_purchased = self.quantity / self.exchange_quantity if self.exchange_quantity else self.quantity
+        self.quantity_purchased = self.quantity / self.exchange_quantity
 
     @api.model_create_multi
     def create(self, list_vals):
