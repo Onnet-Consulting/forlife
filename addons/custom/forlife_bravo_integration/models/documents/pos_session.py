@@ -29,6 +29,11 @@ class PosSessionCashInMove(models.Model):
         credit_line = credit_lines and credit_lines[0]
         partner = debit_line.partner_id
         exchange_rate = 1
+        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
+        analytic_account = self.env['account.analytic.account'].search([
+            ('company_id', '=', self.company_id.id),
+            ('code', '=', (warehouse_code or '')[-4:])
+        ], limit=1)
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code,
@@ -49,7 +54,7 @@ class PosSessionCashInMove(models.Model):
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
             "Description1": debit_line.name,
-            "DeptCode": debit_line.account_analytic_id.code,
+            "DeptCode": analytic_account.code,
             "RowId": debit_line.id
         }
         values.append(journal_value)
@@ -76,17 +81,22 @@ class PosSessionCashOutMove(models.Model):
 
     def bravo_get_cash_out_move_value(self):
         self.ensure_one()
-        credit_lines = self.line_ids.filtered(lambda l: l.credit > 0)
-        credit_line = credit_lines and credit_lines[0]
-        debit_lines = self.line_ids - credit_lines
+        debit_lines = self.line_ids.filtered(lambda l: l.debit > 0)
         debit_line = debit_lines and debit_lines[0]
-        partner = credit_line.partner_id
+        credit_lines = self.line_ids - debit_lines
+        credit_line = credit_lines and credit_lines[0]
+        partner = debit_line.partner_id
         exchange_rate = 1
+        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
+        analytic_account = self.env['account.analytic.account'].search([
+            ('company_id', '=', self.company_id.id),
+            ('code', '=', (warehouse_code or '')[-4:])
+        ], limit=1)
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code,
             "Stt": self.name,
-            "DocCode": "PT",
+            "DocCode": "PC",
             "DocNo": self.name,
             "DocDate": self.date,
             "CurrencyCode": self.currency_id.name,
@@ -102,7 +112,7 @@ class PosSessionCashOutMove(models.Model):
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
             "Description1": debit_line.name,
-            "DeptCode": debit_line.account_analytic_id.code,
+            "DeptCode": analytic_account.code,
             "RowId": debit_line.id
         }
         values.append(journal_value)
