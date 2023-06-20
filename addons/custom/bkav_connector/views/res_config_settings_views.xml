@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_bkav_connector" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.bkav_connector</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="41"/>
+            <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='quick_edit_mode']" position="after">
+                    <h2>BKAV Config Parameter</h2>
+                    <div class="row mt16 o_settings_container" id="bkav_config_parameter">
+                        <div class="col-12 col-lg-12 o_setting_box">
+                            <group>
+                                <group>
+                                    <field name="bkav_url"/>
+                                    <field name="bkav_partner_token"/>
+                                    <field name="bkav_partner_guid"/>
+                                    <field name="bkav_add_einvoice"/>
+                                    <field name="bkav_add_einvoice_replace"/>
+                                    <field name="bkav_add_einvoice_edit"/>
+                                    <field name="bkav_add_einvoice_edit_discount"/>
+                                </group>
+                                <group>
+                                    <field name="bkav_update_einvoice"/>
+                                    <field name="bkav_delete_einvoice"/>
+                                    <field name="bkav_cancel_einvoice"/>
+                                    <field name="bkav_get_einvoice"/>
+                                    <field name="bkav_get_status_einvoice"/>
+                                    <field name="bkav_download_pdf"/>
+                                    <field name="bkav_download_xml"/>
+                                </group>
+                            </group>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
