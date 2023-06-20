@@ -103,7 +103,7 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Danh sách hóa đơn bán - đổi - trả',
         'reportTemplate': 'ReportNum17Template',
-        'reportPager': True,
+        'tag': 'report_num17_action',
     },
     'report.num18': {
         'module': 'Mua hàng',

@@ -5,7 +5,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = [
-    'STT', 'Mã CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã hàng', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
+    'STT', 'Mã CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã vạch', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
     'Kích cỡ', 'Màu sắc', 'Đơn vị', 'Dòng hàng', 'Kết cấu', 'Bộ sưu tập', 'SL Bán', 'SL Trả', 'Giá', 'Giảm giá', 'Giảm trên HĐ', 'Thành tiền',
     'Thành tiền NTL', 'Mô tả', 'Hạng', 'Chương trình khuyến mại', 'Mã thẻ GG', 'Voucher', 'Nhân viên', 'Đơn hàng gốc', 'Mã loại', 'Kênh bán'
 ]
@@ -80,7 +80,7 @@ select
     po.pos_reference                                                            as so_hd,
     rp.ref                                                                      as ma_kh,
     rp.name                                                                     as ten_kh,
-    pp.barcode                                                                  as ma_hang,
+    pp.barcode                                                                  as ma_vach,
     pol.full_product_name                                                       as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
     nhan_hieu.value                                                             as nhan_hieu,
@@ -91,7 +91,7 @@ select
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
     pt.collection                                                               as bo_suu_tap,
     greatest(pol.qty, 0)                                                        as sl_ban,
-    - least(pol.qty, 0)                                                         as sl_tra,
+    abs(least(pol.qty, 0))                                                      as sl_tra,
     coalesce(pol.original_price, 0)                                             as gia,
     coalesce((select sum(
             case when type = 'point' then recipe * 1000
@@ -101,11 +101,12 @@ select
             end
         ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0) as giam_gia,
     0                                                                           as giam_tren_hd,
-    greatest(pol.price_subtotal_incl, 0)                                        as thanh_tien,
-    - least(pol.price_subtotal_incl, 0)                                         as thanh_tien_ntl,
     po.note                                                                     as mo_ta,
     cr.name                                                                     as hang,
-    ''                                                                          as ctkm,
+    (select array_agg(name) from (
+        select distinct name from promotion_program where id in (
+            select program_id from promotion_usage_line where order_line_id = pol.id
+            )) as xx)                                                           as ctkm,
     (select array_agg(name) from (
         select distinct name from promotion_code where id in (
             select code_id from promotion_usage_line where order_line_id = pol.id
@@ -138,9 +139,9 @@ from pos_order po
     left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
     left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     left join attribute_data nhan_hieu on nhan_hieu.product_id = pp.id and nhan_hieu.attrs_code = '{attr_value.get('nhan_hieu', '')}'
-where po.brand_id = {self.brand_id.id} and po.company_id = any( array{allowed_company})
+where  po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and pt.voucher <> true
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-    and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any(array{store_ids})))
+    and sto.id = any(array{store_ids})
     {customer_condition}
     {order_filter_condition}
 order by num
@@ -180,7 +181,7 @@ order by num
             sheet.write(row, 4, value.get('so_hd'), formats.get('normal_format'))
             sheet.write(row, 5, value.get('ma_kh'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('ten_kh'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('ma_hang'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('ma_vach'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('ten_hang'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('nhom_hang'), formats.get('normal_format'))
             sheet.write(row, 10, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
@@ -195,15 +196,15 @@ order by num
             sheet.write(row, 19, value.get('gia', 0), formats.get('int_number_format'))
             sheet.write(row, 20, value.get('giam_gia', 0), formats.get('int_number_format'))
             sheet.write(row, 21, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
-            sheet.write(row, 22, value.get('thanh_tien', 0), formats.get('int_number_format'))
-            sheet.write(row, 23, value.get('thanh_tien_ntl', 0), formats.get('int_number_format'))
-            sheet.write(row, 31, value.get('mo_ta'), formats.get('normal_format'))
-            sheet.write(row, 33, value.get('hang'), formats.get('normal_format'))
-            sheet.write(row, 39, value.get('ctkm'), formats.get('normal_format'))
-            sheet.write(row, 40, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
-            sheet.write(row, 40, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
-            sheet.write(row, 40, value.get('nhan_vien'), formats.get('normal_format'))
-            sheet.write(row, 40, value.get('don_hang_goc'), formats.get('normal_format'))
-            sheet.write(row, 40, value.get('ma_loai'), formats.get('normal_format'))
-            sheet.write(row, 40, value.get('kenh_ban'), formats.get('normal_format'))
+            sheet.write(row, 22, value.get('gia', 0) * value.get('sl_ban', 0) - value.get('giam_gia', 0), formats.get('int_number_format'))
+            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_tra', 0), formats.get('int_number_format'))
+            sheet.write(row, 24, value.get('mo_ta'), formats.get('normal_format'))
+            sheet.write(row, 25, value.get('hang'), formats.get('normal_format'))
+            sheet.write(row, 26, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
+            sheet.write(row, 27, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
+            sheet.write(row, 28, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
+            sheet.write(row, 29, value.get('nhan_vien'), formats.get('normal_format'))
+            sheet.write(row, 30, value.get('don_hang_goc'), formats.get('normal_format'))
+            sheet.write(row, 31, value.get('ma_loai'), formats.get('normal_format'))
+            sheet.write(row, 32, value.get('kenh_ban'), formats.get('normal_format'))
             row += 1
