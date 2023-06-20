@@ -956,11 +956,13 @@ class PurchaseOrder(models.Model):
                         refs.add(invoice_vals['ref'])
                     ref_invoice_vals.update({
                         'move_type': 'in_invoice',
+                        'type_inv': self.type_po_cost,
                         'purchase_type': self.purchase_type if len(self) == 1 else 'product',
                         'reference': ', '.join(self.mapped('name')),
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
-                        'is_check': True,
+                        # 'is_check': True,
+                        'is_check_quantity_readonly': True,
                         'purchase_order_product_id': [(6, 0, [self.id])],
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1122,6 +1124,7 @@ class PurchaseOrder(models.Model):
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
                         # 'is_check': True,
+                        'is_check_quantity_readonly': True,
                         'type_inv': self.type_po_cost,
                         'move_type': 'in_invoice',
                         'purchase_order_product_id': [(6, 0, [self.id])],
@@ -1220,7 +1223,9 @@ class PurchaseOrder(models.Model):
                                                  'exchange_rate': order.exchange_rate,
                                                  'currency_id': order.currency_id.id,
                                                  'reference': order.name,
+                                                 'type_inv': order.type_po_cost,
                                                  # 'is_check': True,
+                                                 'is_check_quantity_readonly': True,
                                                  })
                             order = order.with_company(order.company_id)
                             line_vals = line._prepare_account_move_line()
@@ -1266,6 +1271,7 @@ class PurchaseOrder(models.Model):
                                              'exchange_rate': order.exchange_rate,
                                              'currency_id': order.currency_id.id,
                                              'reference': order.name,
+                                             'type_inv': order.type_po_cost,
                                              })
                         order = order.with_company(order.company_id)
                         line_vals = line._prepare_account_move_line()
@@ -1330,12 +1336,15 @@ class PurchaseOrder(models.Model):
                                                                      and r.picking_type_id.code == 'incoming'
                                                                      and r.ware_check == True
                                                                      and r.x_is_check_return == False)
+                    receiving_warehouse_ids = invoice_vals.get('receiving_warehouse_id', [])
+                    receiving_warehouse_ids += picking_incoming.ids
                     invoice_vals.update({'purchase_type': order.purchase_type,
                                          'invoice_date': datetime.now(),
                                          'exchange_rate': order.exchange_rate,
                                          'currency_id': order.currency_id.id,
                                          'reference': order.name,
-                                         'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
+                                         'type_inv': order.type_po_cost,
+                                         'receiving_warehouse_id': [(6, 0, receiving_warehouse_ids)],
                                          })
                     order = order.with_company(order.company_id)
                     line_vals = line._prepare_account_move_line()
@@ -2373,7 +2382,7 @@ class Synthetic(models.Model):
                     if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
                         rec.price_subtotal = nine.total_vnd_amount
                     for item in cost_line_true:
-                        if item.vnd_amount and rec.price_subtotal > 0:
+                        if item.vnd_amount and nine.total_vnd_amount > 0:
                             before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
                         if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
@@ -2399,7 +2408,7 @@ class Synthetic(models.Model):
                     sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
                     if rec.synthetic_id.type_po_cost == 'tax' and rec.syn_po_id == line.ex_po_id:
                         for item in cost_line_false:
-                            if item.vnd_amount and rec.price_subtotal > 0:
+                            if item.vnd_amount and sum_vnd_amount and sum_tnk and sum_db:
                                 total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
                                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
                                     rec.after_tax = total_cost
