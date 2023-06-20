@@ -163,6 +163,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
                 this.get_order().assign_pricelist_item_to_orderline();
             };
         } while(promotionItems.length > 0);
+        if (this.get_order()) {
+            this.get_order().autoApplyPriceListProgram();
+        };
     }
 
     _loadPromotionPriceListItem(promotionItems) {
