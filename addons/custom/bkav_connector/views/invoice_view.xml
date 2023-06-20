@@ -12,6 +12,34 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type"/>
                 </xpath>
+                <xpath expr="//page[@id='aml_tab']" position="after">
+                    <page id="bkav_invoice" string="BKAV Invoice" attrs="{'invisible': [('move_type','!=','out_invoice')]}">
+                        <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
+                        <button name="create_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_no', '!=', False)]}"
+                                string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="update_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_no', '=', False)]}"
+                                string="Update eInvoice" groups="account.group_account_invoice"/>
+<!--                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"-->
+<!--                                attrs="{'invisible':[('invoice_no', '!=', False)]}"-->
+<!--                                string="Publish eInvoice" groups="account.group_account_invoice"/>-->
+                        <button name="preview_e_invoice" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('state', '!=', 'draft'), ('eivoice_file', '=', False)]}"
+                                string="Preview eInvoice" groups="account.group_account_invoice"/>
+                        <button name="download_e_invoice" type="object" class="btn btn-primary" string="Download eInvoice"
+                                attrs="{'invisible':[('state', '!=', 'draft'), ('eivoice_file', '=', False)]}"
+                                groups="account.group_account_invoice"/>
+                        <group>
+                            <group>
+                                <field name="invoice_state_e" readonly="1"/>
+                                <field name="invoice_guid" readonly="1"/>
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_e_date" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
     </data>
