@@ -107,7 +107,7 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
         data = response.json()
         return data
 
@@ -159,7 +159,7 @@ class ResCompany(models.Model):
             "signature": ""
         }
         signature_keys = ['requestId', 'providerId', 'merchantId', 'agencyType', "account",
-                          "notifyType", "cronExpress", "transTime","channel", "version", "clientIP", "language"]
+                          "notifyType", "cronExpress", "transTime", "channel", "version", "clientIP", "language"]
 
         unsigned_signature = ''.join([data[k] for k in signature_keys])
         signed_signature = self._vietin_bank_sign_message(unsigned_signature)

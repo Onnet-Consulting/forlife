@@ -46,6 +46,7 @@
         'wizard/bravo_sync_tax_wizard_views.xml',
         'views/product_category_views.xml',
         'wizard/bravo_sync_asset_wizard_views.xml',
+        'wizard/bravo_sync_pos_expense_label_views.xml',
     ],
     'external_dependencies': {
         'python': ['pyodbc'],
