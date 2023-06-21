@@ -17,7 +17,7 @@ class ResConfigSettings(models.TransientModel):
     bkav_delete_einvoice = fields.Char(string='Mã xóa hóa đơn', config_parameter='bkav.delete_einvoice')
     bkav_cancel_einvoice = fields.Char(string='Mã hủy hóa đơn', config_parameter='bkav.cancel_einvoice')
     bkav_get_einvoice = fields.Char(string='Mã lấy chi tiết hóa đơn', config_parameter='bkav.get_einvoice')
-    bkav_publish_invoice = fields.Char(string='Publish invoice', config_parameter='bkav.publish_invoice')
+    bkav_publish_einvoice = fields.Char(string='Publish invoice', config_parameter='bkav.publish_einvoice')
     bkav_get_status_einvoice = fields.Char(string='Mã lấy trạng thái hóa đơn', config_parameter='bkav.get_status_einvoice')
     bkav_download_pdf = fields.Char(string='Mã Download pdf', config_parameter='bkav.download_pdf')
     bkav_download_xml = fields.Char(string='Mã Download xml', config_parameter='bkav.download_xml')
