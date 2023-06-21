@@ -958,6 +958,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _checkNumberOfCode(codeProgram, order_lines, to_discount_line_vals , count, max_count = false, to_apply_lines = {}) {
         let to_check_order_lines = this._filterOrderLinesToCheckCodePro(codeProgram, order_lines);
+        to_check_order_lines.sort((a, b) => a.cid.localeCompare(b.cid));
         count = count || 0;
         to_discount_line_vals = to_discount_line_vals || [];
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
@@ -981,7 +982,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         var number_product_apply = 0;
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
-            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id) || !valid_product_ids.size)) {
+            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id) || !valid_product_ids.size).sort((a, b) => a.cid.localeCompare(b.cid))) {
                 var ol_quantity = ol.quantity;
                 number_product_apply += ol_quantity
                 if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
@@ -1008,7 +1009,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, 1, to_apply_lines];
         }
-        for (const ol of to_check_order_lines.filter(ol => !valid_product_ids.size || (valid_product_ids.has(ol.product.id)  && ol.quantity >= codeProgram.min_quantity))) {
+        for (const ol of to_check_order_lines.filter(ol => !valid_product_ids.size || (valid_product_ids.has(ol.product.id)  && ol.quantity >= codeProgram.min_quantity)).sort((a, b) => a.cid.localeCompare(b.cid))) {
             var quantity_combo = Math.floor(ol.quantity / min_quantity)
             if (max_count && count + quantity_combo >= max_count){
                 quantity_combo = max_count - count
@@ -1045,7 +1046,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count, to_apply_lines];
         }
 
-        var order_lines_has_valid_product = to_check_order_lines.filter(l => !valid_product_ids.size || valid_product_ids.has(l.product.id));
+        var order_lines_has_valid_product = to_check_order_lines.filter(l => !valid_product_ids.size || valid_product_ids.has(l.product.id)).sort((a, b) => a.cid.localeCompare(b.cid));
 
         var oneCombo = [];
         var total_quantity = order_lines_has_valid_product.reduce((q, {quantity}) => q + quantity, 0);
@@ -1080,7 +1081,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
 
         if (codeProgram.reward_type == "code_percent" && codeProgram.discount_apply_on == "order" && count > 0) {
-            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
+            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id)).sort((a, b) => a.cid.localeCompare(b.cid))) {
                 var ol_quantity = ol.quantity;
                 number_product_apply += ol_quantity;
                 if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
@@ -1106,7 +1107,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         var map_to_discount_line_vals = {};
 
         for (const to_discount_line_val of to_discount_line_vals) {
-            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '');
+            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '') + '-' + to_discount_line_val.is_not_discount;
             if (map_to_discount_line_vals[key]) {
                 map_to_discount_line_vals[key].quantity += to_discount_line_val.quantity;
             } else {
@@ -1125,7 +1126,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let to_take_on_reward_qty = count * codeProgram.reward_quantity;
             let reward_qty_taken = 0;
             let able_be_reward_ols = order_lines.filter(ol=> ol.quantity > 0)
-                                                .filter(ol => reward_products.has(ol.product.id) && ol.price > 0);
+                                                .filter(ol => reward_products.has(ol.product.id) && ol.price > 0).sort((a, b) => a.cid.localeCompare(b.cid));
             for (const ol of able_be_reward_ols) {
                 let taken_reward_qty = Math.min(ol.quantity, to_take_on_reward_qty);
                 ol.quantity = ol.quantity - taken_reward_qty;
@@ -1863,7 +1864,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 remaining_amount -= disc_total_amount;
             }
 
-            if (disc_total_amount > 0) {
+            if (disc_total_amount > 0 || LineList.is_not_discount) {
                 let originalPrice = LineList.price;
                 if (originalPrice*LineList.quantity <  disc_total_amount) {
                     disc_total_amount = originalPrice*LineList.quantity;
@@ -1894,7 +1895,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 }
             }
 
-            if (disc_total_amount > 0) {
+            if (disc_total_amount > 0 || LineList.is_not_discount) {
                 let originalPrice = LineList.price;
                 let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, LineList.quantity);
                 LineList.price = newPrice;
