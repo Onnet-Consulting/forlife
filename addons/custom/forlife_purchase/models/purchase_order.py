@@ -361,7 +361,8 @@ class PurchaseOrder(models.Model):
     def onchange_total_trade_discount(self):
         if self.trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
+                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
+
 
     def action_confirm(self):
         for record in self:
@@ -1465,7 +1466,7 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
-    name = fields.Char(related='product_id.name', store=True, required=False)
+    # name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
