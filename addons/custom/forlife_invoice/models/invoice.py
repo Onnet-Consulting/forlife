@@ -387,7 +387,7 @@ class AccountMove(models.Model):
     def onchange_total_trade_discount(self):
         if self.trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
+                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
 
     @api.depends('purchase_order_product_id', 'purchase_order_product_id.exchange_rate_line', 'invoice_line_ids')
     def _compute_exchange_rate_line_and_cost_line(self):
