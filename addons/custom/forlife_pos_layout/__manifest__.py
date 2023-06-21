@@ -35,7 +35,7 @@
             'forlife_pos_layout/static/src/js/models.js',
             ('replace', 'point_of_sale/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js',
              'forlife_pos_layout/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js'),
-            'forlife_pos_layout/static/src/xml/Screens/ProductScreen/ProductScreen.xml',
+            'forlife_pos_layout/static/src/js/Screens/ProductScreen/ProductScreen.js',
         ],
     }
 }
