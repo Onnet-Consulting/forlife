@@ -79,6 +79,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let product_default_code = line.get_product().default_code || '';
                 let discount_amount = line.get_line_receipt_total_discount();
                 let total_amount = line.get_display_price_after_discount();
+                let total_original_amount = price * qty;
                 if (!(product_id in merge_line_values)) {
                     merge_line_values[product_id] = {
                         'quantity': qty,
@@ -87,16 +88,18 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                         'discount_amount': discount_amount,
                         'total_amount': total_amount,
                         'id': line.id,
-                        'product_name_wrapped': line.generate_wrapped_product_name()
+                        'product_name_wrapped': line.generate_wrapped_product_name(),
+                        'total_original_amount': total_original_amount
                     }
                 } else {
                     merge_line_values[product_id]['quantity'] += qty;
                     merge_line_values[product_id]['discount_amount'] += discount_amount;
                     merge_line_values[product_id]['total_amount'] += total_amount;
+                    merge_line_values[product_id]['total_original_amount'] += total_original_amount
                 }
             }
             for (let [product_id, value] of Object.entries(merge_line_values)) {
-                value['discount_percent'] = parseInt(value['total_amount'] ? (value['discount_amount'] / value['total_amount']) * 100 : 0);
+                value['discount_percent'] = parseInt(value['total_original_amount'] ? (value['discount_amount'] / value['total_original_amount']) * 100 : 0);
             }
             return Object.values(merge_line_values);
         }

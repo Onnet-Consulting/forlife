@@ -1,7 +1,7 @@
 odoo.define('forlife_point_of_sale.models', function (require) {
     "use strict";
 
-    var {PosGlobalState, Order} = require('point_of_sale.models');
+    var {PosGlobalState, Order, Orderline} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
 
@@ -39,5 +39,16 @@ odoo.define('forlife_point_of_sale.models', function (require) {
         }
     }
     Registries.Model.extend(Order, CustomPosOrder);
+
+    const CustomPosOrderline = (Orderline) => class extends Orderline {
+        get_full_product_name () {
+            let res = super.get_full_product_name();
+            if (this.product.full_attrs_desc && !this.full_product_name) {
+                res += ` (${this.product.full_attrs_desc})`;
+            };
+            return res;
+        }
+    }
+    Registries.Model.extend(Orderline, CustomPosOrderline);
 
 });
