@@ -246,7 +246,7 @@ class SaleOrder(models.Model):
         list_location = []
         stock_move_ids = {}
         line_x_scheduled_date = []
-        for line in self.order_line:
+        for line in self.order_line.filtered(lambda line: line.product_id.detailed_type =='product'):
             date = datetime.combine(line.x_scheduled_date,
                                     datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
@@ -502,3 +502,11 @@ class SaleOrderLine(models.Model):
             self.price_unit = [r.get('fixed_price') for r in result][0]
             
             '''
+
+    def _prepare_invoice_line(self, **optional_values):
+        res = super()._prepare_invoice_line(**optional_values)
+        res.update({
+            'x_product_code_id': self.x_product_code_id.id,
+            'work_order': self.x_manufacture_order_code_id.id
+        })
+        return res
