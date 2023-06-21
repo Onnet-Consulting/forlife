@@ -176,6 +176,23 @@ class InheritPosOrder(models.Model):
             if invoice_line[-1] is not None
         ]
 
+    def _handle_invoice_vals(self, values):
+        if values['move_type'] == 'out_invoice':
+            pos_line_has_refund_ids = [pol.id for pol in self.lines if pol.refunded_orderline_id]
+            out_invoice_line_values, out_refund_line_values = [], []
+            for ail in values['invoice_line_ids']:
+                (
+                    out_invoice_line_values if ail['pos_order_line_id'] not in pos_line_has_refund_ids
+                    else out_refund_line_values
+                ).append(ail)
+            values['invoice_line_ids'] = out_invoice_line_values
+            if out_refund_line_values:
+                out_refund_line_values = values
+                out_refund_line_values.update({'move_type': 'out_refund', 'invoice_line_ids': out_refund_line_values})
+                new_move = self._create_invoice(out_refund_line_values)
+                new_move.sudo().with_company(self.company_id)._post()
+        return values
+
     def _prepare_invoice_vals(self):
         result = super(InheritPosOrder, self)._prepare_invoice_vals()
         if self.to_invoice and self.real_to_invoice:
@@ -186,7 +203,7 @@ class InheritPosOrder(models.Model):
                 raise ValidationError(_("Cannot found contact's store (%s)") % self.pos_session_id.config_id.store_id.name)
             result['partner_id'] = partner_id
         result['pos_order_id'] = self.id
-        return result
+        return self._handle_invoice_vals(result)
 
     @api.model
     def _process_order(self, order, draft, existing_order):
