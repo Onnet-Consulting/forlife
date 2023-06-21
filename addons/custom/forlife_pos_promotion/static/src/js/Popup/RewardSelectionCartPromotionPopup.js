@@ -112,36 +112,42 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let selections = this._prepareRewardData(this.state.programOptions);
             let [to_apply_lines, remaining] = order.computeForListOfCartProgram(orderLines, selections);
 
-            let discount_total = 0.0;
-            let no_incl_line_total_amount = 0;
-
-            for (let [program_id, lines] of Object.entries(to_apply_lines)) {
-                discount_total += lines.reduce((acc, line) => {
-                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
-                    if (program.str_id == program_id && program.incl_reward_in_order_type == 'no_incl') {
-                        no_incl_line_total_amount += line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.original_price * line.quantity;}, 0.0);
-                    }; // todo: chỉ xét giảm của CT HĐ đang xét
-                    return acc + amountPerLine;
-                }, 0.0);
-            };
-            let order_total_amount = order.get_total_with_tax();
-            let amount_total_after_discount = 0.0;
-            if (program.incl_reward_in_order_type == 'no_incl') {
-                amount_total_after_discount = order_total_amount - no_incl_line_total_amount;
-            } else if (program.incl_reward_in_order_type == 'discounted_price') {
-                amount_total_after_discount = order_total_amount - discount_total;
-            } else {
-                amount_total_after_discount = order_total_amount;
-            };
-
             let selected_programs = this._get_selected_programs();
             let valid = true;
             let result = {};
             for (let program of selected_programs) {
-                if (program.incl_reward_in_order_type != 'unit_price' && program.order_amount_min > 0 && this.state.program.required_order_amount_min > amount_total_after_discount) {
-                    result[program.id] = false;
-                } else {
+                let option = this.state.programOptions.find(op=>op.id==program.id);
+                let amountCheck = option.amountCheck;
+                let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
+
+                let discount_total = (to_apply_lines[program.str_id] || []).reduce((acc, line) => {
+                    let amountPerLine;
+                    if (program.incl_reward_in_order_type == 'no_incl') {
+                        amountPerLine =
+                            (!reward_products.has(line.product.id) && (program.only_condition_product ? program.valid_product_ids.has(line.product.id) : true))
+                            ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    } else if (program.incl_reward_in_order_type == 'unit_price') {
+                        amountPerLine =
+                            (!program.only_condition_product ? reward_products.has(line.product.id) : false)
+                            ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    } else {
+                        amountPerLine =
+                            (!program.only_condition_product || (program.only_condition_product && program.valid_product_ids.has(line.product.id)))
+                            ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    };
+                    return acc + amountPerLine;
+                }, 0.0);
+                let amount_total_after_discount = amountCheck - discount_total;
+                let check = program.order_amount_min == 0
+                            || (program.order_amount_min > 0 && option.required_order_amount_min <= amount_total_after_discount);
+
+                if (check) {
                     result[program.id] = true;
+                } else {
+                    result[program.id] = false;
                 };
             };
             if (Object.values(result).some(v => !v)) {
