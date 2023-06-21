@@ -993,7 +993,7 @@ class SyntheticInvoice(models.Model):
                     if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
                         rec.price_subtotal = nine.total_vnd_amount
                     for item in cost_line_true:
-                        if item.vnd_amount and rec.price_subtotal > 0:
+                        if item.vnd_amount and nine.total_vnd_amount > 0:
                             before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
                         if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
