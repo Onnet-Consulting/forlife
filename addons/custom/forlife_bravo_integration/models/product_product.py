@@ -63,7 +63,7 @@ class ProductProduct(models.Model):
         ]
         bravo_column_names.extend(attribute_column_names)
         attribute_column_name_code_mapping = {
-            "SeasonCode": "020",
+            "SeasonCode": "AT027",
         }
         if not self:
             if to_update:
