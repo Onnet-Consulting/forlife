@@ -93,7 +93,6 @@
             <t t-call="SeparateLine"/>
 
             <table class="lines-detail">
-                <t t-debug="pdb"/>
                 <tbody>
                     <t t-if="receipt.normal_lines.length > 0">
                         <t t-foreach='receipt.normal_lines' t-as='line' t-key="line.id">

@@ -114,7 +114,11 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
                 line.product_id = this.props.line.product.id;
-                line.price = this.props.line.price;
+                var price = this.props.line.price;
+                if (this.props.line.quantity_canbe_refund > 0) {
+                    price -= (this.props.line.money_is_reduced / this.props.line.quantity_canbe_refund);
+                }
+                line.price = price;
                 line.expire_change_refund_date = this.props.line.expire_change_refund_date;
                 obj.lines = [line];
 
@@ -148,10 +152,11 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
             getPercentDiscountRefund() {
                 var percent_discount = 0;
                 var reduced = Math.abs(this.props.line.money_is_reduced);
-                var unit_price = this.props.line.get_unit_display_price();
-                var quantity = this.props.line.quantity_canbe_refund;
-                if (unit_price !== 0 && quantity !== 0) {
-                    percent_discount = ((reduced / quantity) / unit_price) * 100;
+                var quantity = this.props.line.get_quantity();
+                var order_amount = this.props.line.get_unit_display_price() * quantity;
+                var quantity_can_refund = this.props.line.quantity_canbe_refund;
+                if (order_amount !== 0 && quantity_can_refund !== 0) {
+                    percent_discount = ((reduced * quantity / quantity_can_refund) / order_amount) * 100;
                 }
                 return Math.round(percent_discount * 100) / 100;
             }

@@ -12,6 +12,10 @@
             </p>
             <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.max_reward_quantity"/> sản phẩm</div>
             <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
+            <div t-if="this.state.program.program.reward_type == 'cart_discount_amount'">
+                <span style="font-weight: normal">Số tiền giảm: </span>
+                <strong t-esc="this.env.pos.format_currency(this.state.program.program.disc_amount)"/>
+            </div>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
                 <ul>
@@ -35,8 +39,8 @@
                                         <t t-esc="reward.line.quantity" />
                                     </strong>
                                     <span><t t-esc="this.pricePerUnit(reward)"/></span>
-                                    <i class="fa fa-light fa-arrow-right"/>
-                                    <span><t t-esc="this.getDiscountPrice(reward)"/></span>
+                                    <i t-if="this.state.program.program.reward_type!='cart_discount_amount'" class="fa fa-light fa-arrow-right"/>
+                                    <span t-if="this.state.program.program.reward_type!='cart_discount_amount'"><t t-esc="this.getDiscountPrice(reward)"/></span>
                                 </li>
                             </ul>
                             <div t-if="reward.isSelected" style="margin: 0 0 0 20px;">

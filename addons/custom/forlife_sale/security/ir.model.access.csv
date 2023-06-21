@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sale_order,access_sale_order,model_sale_order,sales_team.group_sale_salesman,1,1,1,1
+access_sale_order,access_sale_order,model_sale_order,sales_team.group_sale_salesman,0,0,0,0
 access_create_sale_order_punish,access_create_sale_order_punish,model_create_sale_order_punish,base.group_user,1,1,1,1
 access_confirm_return_so,access_confirm_return_so,model_confirm_return_so,base.group_user,1,1,1,1
 access_confirm_return_so_line,access_confirm_return_so_line,model_confirm_return_so_line,base.group_user,1,1,1,1

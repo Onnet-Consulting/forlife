@@ -64,8 +64,7 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query(allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

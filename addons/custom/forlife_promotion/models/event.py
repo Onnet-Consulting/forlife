@@ -17,7 +17,7 @@ class Event(models.Model):
     dayofmonth_ids = fields.Many2many('dayofmonth.data', string='DayOfMonth')
     dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
     hour_ids = fields.Many2many('hour.data', string='Hours')
-    store_ids = fields.Many2many('store', string='Stores', required=True)
+    store_ids = fields.Many2many('store', string='Stores')
     customer_conditions = fields.Char(string='Customer Conditions')
     value_conversion = fields.Integer('Value Conversion', required=True)
     point_addition = fields.Integer('Point Addition', required=True)

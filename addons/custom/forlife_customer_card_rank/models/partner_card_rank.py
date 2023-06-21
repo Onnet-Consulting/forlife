@@ -32,7 +32,6 @@ class PartnerCardRank(models.Model):
                 if any(x.status for x in item.line_ids):
                     item.status = True
 
-
     @api.depends('line_ids')
     def compute_value(self):
         for line in self:
@@ -41,7 +40,9 @@ class PartnerCardRank(models.Model):
             record = records and records[0] or False
             if record:
                 line.last_order_date = record.order_date
-                line.accumulated_sales = sum(records.filtered(lambda f: f.order_date >= (record.order_date - timedelta(record.program_cr_id.time_set_rank))).mapped('value_to_upper'))
+                line.accumulated_sales = sum(records.filtered(lambda f: f.order_date >= (
+                            record.order_date - timedelta(record.program_cr_id.time_set_rank))).mapped(
+                    'value_to_upper'))
             else:
                 line.last_order_date = False
                 line.accumulated_sales = 0
@@ -80,14 +81,17 @@ class PartnerCardRankLine(models.Model):
     _description = 'Partner Card Rank Line'
     _order = 'real_date desc, id desc'
 
-    partner_card_rank_id = fields.Many2one("partner.card.rank", string="Partner Card Rank", required=True, ondelete='restrict')
+    partner_card_rank_id = fields.Many2one("partner.card.rank", string="Partner Card Rank", required=True,
+                                           ondelete='restrict')
     order_id = fields.Many2one('pos.order', string="Pos Order", ondelete='restrict')
     order_date = fields.Datetime('Order Date', default=fields.Datetime.now)
     real_date = fields.Datetime('Real Date', default=fields.Datetime.now)
     value_orders = fields.Integer('Value Orders')
     value_to_upper = fields.Integer('Value to upper')
     value_up_rank = fields.Integer('Value up rank')
-    old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
+    old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True,
+                                       default=lambda self: self.env['card.rank'].search([], order='priority asc',
+                                                                                         limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
     program_cr_id = fields.Many2one('member.card', string='Program Card Rank', required=True)
     status = fields.Boolean('Status', default=False, copy=False)
@@ -99,14 +103,15 @@ class PartnerCardRankLine(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        res = super().create(vals_list)
-        self._update_card_rank_line(res)
-        return res
+        recs = super(PartnerCardRankLine, self).create(vals_list)
+        for rec in recs:
+            self._update_card_rank_line(rec)
+        return recs
 
-    def _update_card_rank_line(self, res):
-        line_ids = self.sudo().search([('id', '!=', res.id), ('status', '=', True)])
-        if line_ids:
-            line_ids.write({
+    def _update_card_rank_line(self, rec):
+        line_ids = self.sudo().search(
+            [('id', '!=', rec.id), ('partner_card_rank_id', '=', rec.partner_card_rank_id.id), ('status', '=', True)])
+        for line_id in line_ids:
+            line_id.write({
                 'status': False
             })
-

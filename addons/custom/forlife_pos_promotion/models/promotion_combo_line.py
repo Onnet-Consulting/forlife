@@ -85,3 +85,20 @@ class PromotionComboLineProduct(models.Model):
     def init(self):
         self.env.cr.execute("""
             ALTER TABLE product_product_promotion_combo_line_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        combo_lines = self.promotion_combo_line_id
+        res = super(PromotionComboLineProduct, self).unlink()
+        if combo_lines:
+            combo_lines._compute_json_valid_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        combo_lines = self.env['promotion.combo.line'].search([('id', 'in', self.promotion_combo_line_id.ids)])
+        combo_lines._compute_json_valid_product_ids()

@@ -28,8 +28,8 @@ class StockPicking(models.Model):
     def view_xk_account(self):
         # context = { 'create': True, 'delete': True, 'edit': True}
         account_ids = self.account_xk_id.ids if self.account_xk_id else []
-        stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
-        account_ids += stock_valuation_account.ids
+        # stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
+        # account_ids += stock_valuation_account.ids
         domain = [('id', 'in', account_ids)]
         return {
             'name': _('Forlife Account'),
@@ -69,10 +69,27 @@ class StockPicking(models.Model):
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
+    def _domain_reason_id(self):
+        if self.env.context.get('default_other_import'):
+            return "[('reason_type_id', '=', reason_type_id)]"
+
     free_good = fields.Boolean(string="Hàng tặng")
     purchase_uom = fields.Many2one('uom.uom', string="Đơn vị mua")
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
+    occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
+                                      domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
+    is_production_order = fields.Boolean(default=False, compute='compute_production_order')
+    is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
+
+    @api.depends('reason_id')
+    def compute_production_order(self):
+        for rec in self:
+            rec.is_production_order = rec.reason_id.is_work_order
+            rec.is_amount_total = rec.reason_id.is_price_unit
 
     @api.onchange('quantity_change', 'quantity_purchase_done')
     def onchange_quantity_purchase_done(self):

@@ -16,8 +16,12 @@ class PurchaseOrder(models.Model):
     return_purchase_ids = fields.One2many('purchase.order', 'origin_purchase_id', string="Return Purchases", copy=False)
     origin_purchase_id = fields.Many2one('purchase.order', string="Origin Purchase", copy=False)
     count_return_purchase = fields.Integer(compute="_compute_count_return_purchase", store=True, copy=False)
+    return_picking_count = fields.Integer("Return Shipment count", compute='_compute_return_picking_count')
 
-    warehouse_material = fields.Many2one('stock.location', string="Lý do nhập/xuất khác")
+    @api.depends('picking_ids')
+    def _compute_return_picking_count(self):
+        for order in self:
+            order.return_picking_count = len(order.picking_ids)
 
     @api.onchange('partner_id')
     def _onchange_partner_id_return(self):
@@ -52,12 +56,6 @@ class PurchaseOrder(models.Model):
     def _compute_count_return_purchase(self):
         for order in self:
             order.count_return_purchase = len(order.return_purchase_ids.filtered(lambda por: por.custom_state != 'cancel'))
-
-    def action_approved(self):
-        for po in self:
-            if po.is_return and not po.warehouse_material and po.order_line_production_order:
-                raise UserError("Chi tiết đơn hàng trả có sản phẩm đính kèm cần xác định kho nhập NPL. Vui lòng liên hệ thủ kho để xác nhận vị trí nhập kho NPL.")
-        super(PurchaseOrder, self).action_approved()
 
     def _prepare_picking(self):
         vals = super(PurchaseOrder, self)._prepare_picking()
@@ -579,6 +577,15 @@ class PurchaseOrderLine(models.Model):
             vals.update({'qty_returned': self.qty_returned})
         return vals
 
+    def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
+        vals = super(PurchaseOrderLine, self)._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
+        if self.order_id.is_return:
+            vals.update({
+                'occasion_code_id': self.occasion_code_id.id,
+                'work_production': self.production_id.id,
+                'account_analytic_id': self.account_analytic_id.id,
+            })
+        return vals
 
 class AccountMove(models.Model):
     _inherit = 'account.move'

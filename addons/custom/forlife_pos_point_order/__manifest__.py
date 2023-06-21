@@ -33,7 +33,8 @@
         'views/pos_order.xml',
         'views/res_partner_view.xml',
         'security/ir.model.access.csv',
-        'views/promotion_inherit_view.xml'
+        'views/promotion_inherit_view.xml',
+        'views/point_compensate_request_views.xml',
     ],
     'installable': True,
     'application': True,

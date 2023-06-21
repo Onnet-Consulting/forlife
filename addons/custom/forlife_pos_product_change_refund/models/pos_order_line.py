@@ -44,12 +44,17 @@ class PosOrderLine(models.Model):
 
     def _export_for_ui(self, orderline):
         result = super()._export_for_ui(orderline)
+        money_is_reduced = orderline.money_is_reduced
+        if orderline.refunded_qty and orderline.qty > 0:
+            money_is_reduced = (money_is_reduced/orderline.qty) * (orderline.qty - orderline.refunded_qty)
         result['expire_change_refund_date'] = orderline.expire_change_refund_date
         result['quantity_canbe_refund'] = orderline.quantity_canbe_refund
         result['reason_refund_id'] = orderline.reason_refund_id
-        result['money_is_reduced'] = orderline.money_is_reduced
+        result['money_is_reduced'] = money_is_reduced
         result['money_point_is_reduced'] = orderline.money_point_is_reduced
         result['is_voucher_conditional'] = orderline.is_voucher_conditional
         result['is_product_defective'] = orderline.is_product_defective
+        result['subtotal_paid'] = orderline.subtotal_paid
         result['money_reduce_from_product_defective'] = orderline.money_reduce_from_product_defective
+        result['is_promotion'] = orderline.is_promotion
         return result

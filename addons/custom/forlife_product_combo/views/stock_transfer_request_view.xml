@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="inherit_stock_transfer_request_view_tree" model="ir.ui.view">
+        <field name="name">inherit_stock.transfer.request.tree</field>
+        <field name="model">stock.transfer.request</field>
+        <field name="inherit_id" ref="forlife_stock.stock_transfer_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_planned']" position="replace">
+                <field name="is_expiration_date" invisible='1' />
+                <field name="date_planned" decoration-danger="is_expiration_date==True"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="badge" decoration-danger="is_expiration_date==True"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

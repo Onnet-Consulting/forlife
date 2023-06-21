@@ -5,7 +5,7 @@ from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
 from odoo.exceptions import UserError
-# import pyodbc
+import pyodbc
 from datetime import date, datetime
 from odoo.tests import Form
 
@@ -33,8 +33,8 @@ class SaleOrder(models.Model):
         string='Kênh bán', default='wholesale')
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
-    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công', copy=False)
-    x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
+    x_punish = fields.Boolean(string='Đơn phạt', copy=False)
+    # x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
     x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
@@ -44,12 +44,16 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
-    @api.onchange('x_process_punish', 'partner_id')
+    @api.onchange('x_punish', 'partner_id')
     def _compute_domain_pricelist(self):
         for r in self:
-            if not r.x_process_punish:
+            if not r.partner_id:
+                r.x_domain_pricelist = None
+                continue
+            if not r.x_punish:
                 pricelist = self.env['product.pricelist'].search(
-                    ['|', ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
+                    ['|', ('x_partner_id', '=', r.partner_id.id), ('x_partner_id', '=', False), '|',
+                     ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
             else:
                 pricelist = r.get_pricelist()
             r.x_domain_pricelist = [(6, 0, pricelist)]
@@ -61,7 +65,8 @@ class SaleOrder(models.Model):
                 where 1=1
                 and pp.x_punish is True
                 and pp.x_partner_id = {self.partner_id.id}
-                and '{str(self.date_order)}'::date between ppi.date_start and ppi.date_end
+                and '{str(self.date_order)}' between ppi.date_start and ppi.date_end
+                and (pp.company_id = {self.company_id.id} or pp.company_id is Null)
                 order by pp.id desc
             """
         self._cr.execute(sql)
@@ -70,10 +75,10 @@ class SaleOrder(models.Model):
             return [rec[0] for rec in result]
         else:
             return []
-    @api.onchange('x_process_punish')
-    def onchange_x_process_punish(self):
-        for line in self.order_line:
-            line._compute_price_unit()
+    # @api.onchange('x_process_punish')
+    # def onchange_x_process_punish(self):
+    #     for line in self.order_line:
+    #         line._compute_price_unit()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -128,7 +133,7 @@ class SaleOrder(models.Model):
     def _compute_order_punish_count(self):
         for r in self:
             count = self.env['sale.order'].search(
-                [('x_origin', '=', r.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
+                [('x_origin', '=', r.id), ('x_punish', '=', True)])
             r.x_order_punish_count = len(count)
 
     def _compute_exchange_count(self):
@@ -164,7 +169,7 @@ class SaleOrder(models.Model):
 
     def action_view_so_punish(self):
         count = self.env['sale.order'].search(
-            [('x_origin', '=', self.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
+            [('x_origin', '=', self.id), ('x_punish', '=', True)])
         action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
         if len(count) > 1:
             action['domain'] = [('id', 'in', count.ids)]
@@ -276,7 +281,7 @@ class SaleOrder(models.Model):
                     list_location.append(line.x_location_id.id)
                 else:
                     stock_move_ids[line.x_location_id.id].append((0, 0, detail_data))
-        if self.x_process_punish or self.x_shipping_punish:
+        if self.x_punish:
             condition = True
         else:
             condition = False
@@ -315,9 +320,9 @@ class SaleOrder(models.Model):
         database = ir_config.get_param("mssql.database")
         username = ir_config.get_param("mssql.username")
         password = ir_config.get_param("mssql.password")
-        # return pyodbc.connect(
-        #     f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
-        #     f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
+        return pyodbc.connect(
+            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
 
     def get_DebtBalance(self):
         cnxn = self._conn(True, "no")
@@ -395,9 +400,11 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
+        location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
+        self.x_location_id = location
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
@@ -413,9 +420,18 @@ class SaleOrderLine(models.Model):
                 product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
                 domain = [('id', 'in', product_id.ids)]
                 return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
+                                                  ('company_id', '=', self.order_id.company_id)] + domain,
+                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                         ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
             else:
-                return {'domain': {'product_id': [('id', '=', 0)]}}
+                return {'domain': {'product_id': [('id', '=', 0)],
+                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                         ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
+        else:
+            return {'domain': {'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                     ('company_id', '=', self.order_id.company_id.id)]}}
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
@@ -436,27 +452,33 @@ class SaleOrderLine(models.Model):
             else:
                 self.price_unit = abs(self.price_unit)
 
-    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    def _compute_amount(self):
-        """
-        Compute the amounts of the SO line.
-        """
-        res = super()._compute_amount()
-        for line in self:
-            line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
-        return res
+    @api.onchange('x_cart_discount_fixed_price')
+    def onchange_x_cart_discount_fixed_price(self):
+        if self.x_cart_discount_fixed_price:
+            self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
+                    self.price_unit * self.product_uom_qty) else 0
+
+    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
+    # def _compute_amount(self):
+    #     """
+    #     Compute the amounts of the SO line.
+    #     """
+    #     res = super()._compute_amount()
+    #     # for line in self:
+    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
+    #     return res
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
-            line._set_price_unit()
+            # line._set_price_unit()
             if line.x_product_code_id:
                 line.price_unit = 0
-            if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
-                line.set_price_unit()
+            # if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
+            #     line.set_price_unit()
         return res
-
+    '''
     def set_price_unit(self):
         tmpl_id = self.product_id.product_tmpl_id.id
         sql = f"""
@@ -478,3 +500,5 @@ class SaleOrderLine(models.Model):
             self.price_unit = [r.get('fixed_price') for r in result if r.get('product_tmpl_id') == tmpl_id][0]
         else:
             self.price_unit = [r.get('fixed_price') for r in result][0]
+            
+            '''

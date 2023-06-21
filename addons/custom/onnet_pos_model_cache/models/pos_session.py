@@ -55,7 +55,6 @@ class PosSession(models.Model):
                 'model': 'product.product'
             })
             cache_for_user.refresh_cache()
-
         return cache_for_user[-1].cache2json()
 
     def _get_pos_ui_product_product(self, params):

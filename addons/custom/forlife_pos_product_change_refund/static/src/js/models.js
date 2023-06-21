@@ -111,7 +111,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 if (this.orderlines[i].is_product_defective) {
                     defective += parseInt(this.orderlines[i].money_reduce_from_product_defective)
                 }
-                if (this.orderlines[i].quantity_canbe_refund > 0) {
+                if (this.orderlines[i].quantity_canbe_refund > 0 && !this.orderlines[i].beStatus) {
                     reduced += (this.orderlines[i].money_is_reduced * Math.abs(this.orderlines[i].get_quantity())) / this.orderlines[i].quantity_canbe_refund;
                 }
             }
@@ -132,6 +132,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.beStatus = this.beStatus || false;
             this.check_button = this.check_button || false;
             this.is_new_line = this.is_new_line || false;
+            this.is_promotion = this.is_promotion || false;
             this.handle_change_refund_id = this.handle_change_refund_id || undefined;
             this.money_is_reduced = this.money_is_reduced || 0;
             this.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -140,6 +141,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = this.is_product_defective || false;
             this.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             this.product_defective_id = this.product_defective_id || 0;
+            this.subtotal_paid = this.subtotal_paid || 0;
         }
 
         init_from_JSON(json) {
@@ -152,6 +154,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.beStatus = json.beStatus || false;
             this.check_button = json.check_button || false;
             this.is_new_line = json.is_new_line || false;
+            this.is_promotion = json.is_promotion || false;
             this.handle_change_refund_id = json.handle_change_refund_id || undefined;
             this.money_is_reduced = json.money_is_reduced || 0;
             this.money_point_is_reduced = json.money_point_is_reduced || 0;
@@ -160,6 +163,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = json.is_product_defective || false;
             this.money_reduce_from_product_defective = json.money_reduce_from_product_defective || 0;
             this.product_defective_id = json.product_defective_id || 0;
+            this.subtotal_paid = json.subtotal_paid || 0;
         }
 
         clone() {
@@ -172,6 +176,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.beStatus = this.beStatus;
             orderline.check_button = this.check_button;
             orderline.is_new_line = this.is_new_line;
+            orderline.is_promotion = this.is_promotion;
             orderline.handle_change_refund_id = this.handle_change_refund_id;
             orderline.money_is_reduced = this.money_is_reduced;
             orderline.money_point_is_reduced = this.money_point_is_reduced;
@@ -180,6 +185,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.is_product_defective = this.is_product_defective;
             orderline.money_reduce_from_product_defective = this.money_reduce_from_product_defective;
             orderline.product_defective_id = this.product_defective_id;
+            orderline.subtotal_paid = this.subtotal_paid || 0;
             return orderline;
         }
 
@@ -193,6 +199,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.beStatus = this.beStatus || false;
             json.check_button = this.check_button || false;
             json.is_new_line = this.is_new_line || false;
+            json.is_promotion = this.is_promotion || false;
             json.handle_change_refund_id = this.handle_change_refund_id || undefined;
             json.money_is_reduced = this.money_is_reduced || 0;
             json.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -201,29 +208,10 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.is_product_defective = this.is_product_defective || false;
             json.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             json.product_defective_id = this.product_defective_id || 0;
+            json.subtotal_paid = this.subtotal_paid || 0;
             return json;
         }
 
-//        get_unit_display_price_with_reduce(){
-//            var res = this.get_unit_display_price()
-//            if(this.order.is_refund_product && !this.is_new_line){
-//                if(this.get_quantity() !=0){
-//                   var result = (Math.abs(this.get_display_price()) - Math.abs(this.money_is_reduced))/Math.abs(this.get_quantity())
-//                   this.price_unit_refund = result
-//                   return result
-//                }
-//            }
-//            return res
-//        }
-
-        get_unit_display_price() {
-            var res = super.get_unit_display_price()
-            var total = 0;
-            if (this.money_reduce_from_product_defective > 0) {
-                total += this.money_reduce_from_product_defective
-            }
-            return res - total
-        }
 
         set_quantity(quantity, keep_price){
             if(this.is_product_defective && quantity > 1){
@@ -243,7 +231,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 total -= this.money_reduce_from_product_defective
             }
 
-            if (this.quantity_canbe_refund > 0) {
+            if (this.quantity_canbe_refund > 0 && !this.beStatus) {
                 reduced += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
             }
             return total + reduced;
