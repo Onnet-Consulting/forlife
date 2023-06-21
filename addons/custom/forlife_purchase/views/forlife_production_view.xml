@@ -33,11 +33,15 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <header>
+                    <button string="Đóng" name="action_done" type="object"
+                            attrs="{'invisible':[ ('status', '=', 'done')]}"/>
                     <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
+                            <field name="active" invisible="1"/>
+                            <field name="version" attrs="{'invisible':[ ('version', '=', 0)], 'readonly':True}"/>
                             <field name="code" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="name" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
@@ -64,7 +68,7 @@
                                     <field name="produce_qty"/>
                                     <field name="uom_id"/>
                                     <field name="unit_price" force_save="1"/>
-                                    <field name="stock_qty" readonly="1"/>
+                                    <field name="stock_qty" readonly="1" force_save="1"/>
                                     <field name="remaining_qty"/>
                                     <button name="action_open_bom" string="BOM" type="object"/>
                                 </tree>
