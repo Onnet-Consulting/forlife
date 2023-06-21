@@ -111,7 +111,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 if (this.orderlines[i].is_product_defective) {
                     defective += parseInt(this.orderlines[i].money_reduce_from_product_defective)
                 }
-                if (this.orderlines[i].quantity_canbe_refund > 0) {
+                if (this.orderlines[i].quantity_canbe_refund > 0 && !this.orderlines[i].beStatus) {
                     reduced += (this.orderlines[i].money_is_reduced * Math.abs(this.orderlines[i].get_quantity())) / this.orderlines[i].quantity_canbe_refund;
                 }
             }
@@ -231,7 +231,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 total -= this.money_reduce_from_product_defective
             }
 
-            if (this.quantity_canbe_refund > 0) {
+            if (this.quantity_canbe_refund > 0 && !this.beStatus) {
                 reduced += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
             }
             return total + reduced;
