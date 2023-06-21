@@ -158,6 +158,9 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 if (orderline.quantity_canbe_refund <= 0) {
                     continue;
                 }
+                if (orderline.is_promotion) {
+                    continue;
+                }
                 const toRefundDetail = this._getToRefundDetail(orderline);
                 const refundableQty = toRefundDetail.orderline.qty - toRefundDetail.orderline.refundedQty;
                 toRefundDetail.qty = refundableQty;
