@@ -131,6 +131,7 @@ class PromotionProgram(models.Model):
         compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
+    only_condition_product = fields.Boolean('Only Condition Product?')
     is_original_price = fields.Boolean('Is Price Original?', help='Price of condition product must be original!')
     order_amount_min = fields.Float()
     incl_reward_in_order = fields.Boolean(string='Include Reward in Order')

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-13 08:57+0000\n"
-"PO-Revision-Date: 2023-06-13 08:57+0000\n"
+"POT-Creation-Date: 2023-06-15 06:44+0000\n"
+"PO-Revision-Date: 2023-06-15 06:44+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -901,8 +901,11 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_code_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_condition_product_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_discount_product_view_search
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_reward_product_view_search
 msgid "Group By"
 msgstr "Nhóm theo"
 
@@ -1351,7 +1354,12 @@ msgstr ""
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/CodeInputPopup.js:0
 #, python-format
 msgid "Ok"
-msgstr ""
+msgstr "Đồng ý"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__only_condition_product
+msgid "Only Condition Product?"
+msgstr "Chỉ xét SPĐK?"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__order_ids
@@ -1648,6 +1656,9 @@ msgstr "chi tiết bảng giá KM"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__program_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_product__promotion_program_id
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_code_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_condition_product_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_discount_product_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_reward_product_view_search
 msgid "Promotion Program"
 msgstr "Chương trình Khuyến mãi"
 
@@ -1967,6 +1978,13 @@ msgstr ""
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml:0
 #, python-format
 msgid "Số lượng Combo/SP:"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
+#, python-format
+msgid "Số tiền giảm:"
 msgstr ""
 
 #. module: forlife_pos_promotion
