@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Resource: stock.warehouse -->
         <record id="warehouse_ho" model="stock.warehouse">
             <field name="partner_id" ref="base.main_partner"/>
