@@ -60,8 +60,8 @@
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount"/>
-                    <field name="total_trade_discount"/>
+                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
