@@ -853,45 +853,42 @@ class PurchaseOrder(models.Model):
                         else:
                             for line in order.order_line:
                                 wave = invoi_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
-                                quantity = 0
-                                for nine in wave:
-                                    quantity += nine.quantity
-                                    data_line = {
-                                        'po_id': line.id,
-                                        'product_id': line.product_id.id,
-                                        'sequence': sequence,
-                                        'promotions': line.free_good,
-                                        'exchange_quantity': line.exchange_quantity,
-                                        'quantity': line.product_qty - quantity,
-                                        'vendor_price': line.vendor_price,
-                                        'warehouse': line.location_id.id,
-                                        'discount': line.discount_percent,
-                                        # 'event_id': line.event_id.id,
-                                        'request_code': line.request_purchases,
-                                        'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
-                                        'discount_percent': line.discount,
-                                        'tax_ids': line.taxes_id.ids,
-                                        'tax_amount': line.price_tax,
-                                        'product_uom_id': line.product_uom.id,
-                                        'price_unit': line.price_unit,
-                                        'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                        'occasion_code_id': line.occasion_code_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
-                                    }
-                                    if line.display_type == 'line_section':
-                                        pending_section = line
-                                        continue
-                                    if pending_section:
-                                        line_vals = pending_section._prepare_account_move_line()
-                                        line_vals.update(data_line)
-                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                        sequence += 1
-                                        pending_section = None
-                                    line_vals = line._prepare_account_move_line()
+                                data_line = {
+                                    'po_id': line.id,
+                                    'product_id': line.product_id.id,
+                                    'sequence': sequence,
+                                    'promotions': line.free_good,
+                                    'exchange_quantity': line.exchange_quantity,
+                                    'quantity': line.product_qty,
+                                    'vendor_price': line.vendor_price,
+                                    'warehouse': line.location_id.id,
+                                    'discount': line.discount_percent,
+                                    # 'event_id': line.event_id.id,
+                                    'request_code': line.request_purchases,
+                                    'quantity_purchased': line.purchase_quantity,
+                                    'discount_percent': line.discount,
+                                    'tax_ids': line.taxes_id.ids,
+                                    'tax_amount': line.price_tax,
+                                    'product_uom_id': line.product_uom.id,
+                                    'price_unit': line.price_unit - sum(wave.mapped('price_unit')),
+                                    'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                    'occasion_code_id': line.occasion_code_id.id,
+                                    'work_order': line.production_id.id,
+                                    'account_analytic_id': line.account_analytic_id.id,
+                                }
+                                if line.display_type == 'line_section':
+                                    pending_section = line
+                                    continue
+                                if pending_section:
+                                    line_vals = pending_section._prepare_account_move_line()
                                     line_vals.update(data_line)
                                     invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                     sequence += 1
+                                    pending_section = None
+                                line_vals = line._prepare_account_move_line()
+                                line_vals.update(data_line)
+                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                sequence += 1
                     else:
                         for line in order.order_line:
                             data_line = {
@@ -1183,33 +1180,30 @@ class PurchaseOrder(models.Model):
                         raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng %s!') % order.name)
                     else:
                         for line in order.order_line:
-                            quantity = 0
                             wave = invoi_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
-                            for nine in wave:
-                                quantity += nine.quantity
-                                data_line = {
-                                    'po_id': line.id,
-                                    'product_id': line.product_id.id,
-                                    'sequence': sequence,
-                                    'promotions': line.free_good,
-                                    'exchange_quantity': line.exchange_quantity,
-                                    'quantity': line.product_qty - quantity,
-                                    'vendor_price': line.vendor_price,
-                                    'warehouse': line.location_id.id,
-                                    'discount': line.discount_percent,
-                                    # 'event_id': line.event_id.id,
-                                    'request_code': line.request_purchases,
-                                    'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
-                                    'discount_percent': line.discount,
-                                    'tax_ids': line.taxes_id.ids,
-                                    'tax_amount': line.price_tax,
-                                    'product_uom_id': line.product_uom.id,
-                                    'price_unit': line.price_unit,
-                                    'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                    'occasion_code_id': line.occasion_code_id.id,
-                                    'work_order': line.production_id.id,
-                                    'account_analytic_id': line.account_analytic_id.id,
-                                }
+                            data_line = {
+                                'po_id': line.id,
+                                'product_id': line.product_id.id,
+                                'sequence': sequence,
+                                'promotions': line.free_good,
+                                'exchange_quantity': line.exchange_quantity,
+                                'quantity': line.product_qty,
+                                'vendor_price': line.vendor_price,
+                                'warehouse': line.location_id.id,
+                                'discount': line.discount_percent,
+                                # 'event_id': line.event_id.id,
+                                'request_code': line.request_purchases,
+                                'quantity_purchased': line.purchase_quantity,
+                                'discount_percent': line.discount,
+                                'tax_ids': line.taxes_id.ids,
+                                'tax_amount': line.price_tax,
+                                'product_uom_id': line.product_uom.id,
+                                'price_unit': line.price_unit - sum(wave.mapped('price_unit')),
+                                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                'occasion_code_id': line.occasion_code_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
+                            }
                             sequence += 1
                             key = order.purchase_type, order.partner_id.id, order.company_id.id
                             invoice_vals = order._prepare_invoice()
