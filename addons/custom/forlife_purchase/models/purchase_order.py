@@ -367,6 +367,16 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.partner_id:
                 raise UserError("Bạn chưa chọn nhà cung cấp!!")
+            list_line_invalid = []
+            for r in record.order_line:
+                if not record.partner_id.is_passersby:
+                    supplier = self.env['product.supplierinfo'].search([('amount_conversion', '=', r.exchange_quantity), ('partner_id', '=', record.partner_id.id)],
+                                                                       limit=1)
+                    if not supplier:
+                        list_line_invalid.append(r.product_id.name_get()[0][1])
+            if list_line_invalid:
+                mgs = f"Sản phẩm {',  '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp {record.partner_id.name_get()[0][1]} \n"
+                raise UserError(_(mgs))
             product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
             if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
                 raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
@@ -1483,17 +1493,6 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
-    @api.constrains('exchange_quantity')
-    def constrains_exchange_quantity(self):
-        list_line_invalid = []
-        for rec in self:
-            if not rec.partner_id.is_passersby:
-                supplier = self.env['product.supplierinfo'].search([('amount_conversion','=',rec.exchange_quantity),('partner_id','=',rec.partner_id.id)], limit=1)
-                if not supplier:
-                    list_line_invalid.append(rec.product_id.name_get()[0][1])
-        if list_line_invalid:
-            mgs = f"Sản phẩm {', '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp này \n"
-            raise UserError(_(mgs))
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
