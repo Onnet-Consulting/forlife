@@ -996,7 +996,7 @@ class SyntheticInvoice(models.Model):
                     if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
                         rec.price_subtotal = nine.total_vnd_amount
                     for item in cost_line_true:
-                        if item.vnd_amount and rec.price_subtotal > 0:
+                        if item.vnd_amount and rec.total_vnd_amount > 0:
                             before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
                         if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
@@ -1004,7 +1004,7 @@ class SyntheticInvoice(models.Model):
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax
+                    line.vnd_amount = nine.total_vnd_amount + rec.before_tax
 
     @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
                  'synthetic_id.exchange_rate_line.tax_amount',
@@ -1021,7 +1021,7 @@ class SyntheticInvoice(models.Model):
                     sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
                     if rec.synthetic_id.type_inv == 'tax' and rec.syn_po_id == line.ex_po_id:
                         for item in cost_line_false:
-                            if item.vnd_amount and rec.price_subtotal > 0:
+                            if item.vnd_amount and sum_vnd_amount and sum_tnk and sum_db:
                                 total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
                                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
                                     rec.after_tax = total_cost
