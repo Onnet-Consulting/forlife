@@ -23,5 +23,10 @@
     'data': [
         'security/ir.model.access.csv',
         'data/pos_model_cache_data.xml',
-    ]
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'onnet_pos_model_cache/static/**/*',
+        ],
+    }
 }
