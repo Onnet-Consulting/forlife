@@ -35,9 +35,9 @@ class PromotionConditionProduct(models.Model):
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -468,9 +468,9 @@ class PromotionDiscountProduct(models.Model):
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
 
 class PromotionRewardProduct(models.Model):
@@ -481,6 +481,6 @@ class PromotionRewardProduct(models.Model):
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)

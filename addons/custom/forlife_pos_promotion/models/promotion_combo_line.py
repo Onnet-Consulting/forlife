@@ -82,9 +82,9 @@ class PromotionComboLineProduct(models.Model):
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_combo_line_id = fields.Many2one('promotion.combo.line', required=True, index=True, string='Combo Line')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE product_product_promotion_combo_line_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE product_product_promotion_combo_line_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
     @api.model_create_multi
     def create(self, vals_list):
