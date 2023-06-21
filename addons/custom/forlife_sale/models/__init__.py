@@ -7,3 +7,4 @@ from . import account_move
 from . import stock_move
 from . import product_category
 from . import stock_picking_type
+from . import account_move_line
