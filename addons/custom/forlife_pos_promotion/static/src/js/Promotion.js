@@ -1227,22 +1227,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let applied_this_order = (this._getNumberOfComboApplied()[pricelistItem.program_id] || 0.0);
             max_reward_qty = pricelistItem.reward_quantity - applied_this_order;
             if (programIsVerified) {
-                let appliedOther = Object.entries(programIsVerified).find(([pro_str_id, count]) => {
+                let appliedOthers = Object.entries(programIsVerified).filter(([pro_str_id, count]) => {
                     let [pId, itemId] = pro_str_id.split('p');
                     return pId == pricelistItem.program_id
                 });
-                if (appliedOther) {
-                    max_reward_qty -= appliedOther[1];
+                if (appliedOthers.length > 0) {
+                    max_reward_qty -= appliedOthers.reduce((tmp, el) => tmp + el[1], 0);
                 };
             };
             if (to_apply_lines) {
-                let appliedOther = Object.entries(to_apply_lines).find(([pro_str_id, count]) => {
+                let appliedOthers = Object.entries(to_apply_lines).filter(([pro_str_id, line_vals]) => {
                     let [pId, itemId] = pro_str_id.split('p');
                     return pId == pricelistItem.program_id;
                 });
-                if (appliedOther) {
-                    let appliedQty = appliedOther[1].reduce((tmp, l)=>tmp + l.quantity, 0);
-                    console.log('appliedOther', appliedOther);
+                if (appliedOthers) {
+                    let appliedQty = appliedOthers.reduce((sum, appliedOther) => sum + appliedOther[1].reduce((tmp, l)=>tmp + l.quantity, 0), 0);
                     max_reward_qty -= appliedQty;
                 };
             };
