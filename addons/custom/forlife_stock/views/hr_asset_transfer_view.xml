@@ -50,6 +50,7 @@
                         <group>
                             <field name="employee_id" string="User" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}" />
                             <field name="department_id" string="Department" readonly="1"/>
+                            <field name="company_id" invisible="1"/>
                         </group>
                         <group>
                             <field name="create_date" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
@@ -64,7 +65,8 @@
                         <page string="Product">
                             <field name="hr_asset_transfer_line_ids" widget="section_and_note_one2many" mode="tree"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}">
                                 <tree editable="bottom">
-                                    <field name="asset_code"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="asset_code" domain="['|', ('company_id','=',False),('company_id','=',company_id)]"/>
                                     <field name="employee_from_id" readonly="1" force_save="1"/>
                                     <field name="employee_to_id"/>
                                     <field name="asset_location_from_id" readonly="1" force_save="1"/>
