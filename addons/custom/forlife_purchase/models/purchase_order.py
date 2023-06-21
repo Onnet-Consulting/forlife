@@ -739,8 +739,6 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
-
-
     @api.depends('order_line')
     def _compute_exchange_rate_line_and_cost_line(self):
         for rec in self:
@@ -755,12 +753,6 @@ class PurchaseOrder(models.Model):
                     'purchase_order_id': rec.id,
                     'qty_product': line.product_qty,
                 })
-                if exchange_rate_line:
-                    exchange_rate_line.update({
-                        'ex_po_id': line.id,
-                        'vnd_amount': line.total_vnd_amount,
-                        'qty_product': line.product_qty,
-                    })
                 synthetic_line = self.env['forlife.synthetic'].create({
                     'syn_po_id': line.id,
                     'product_id': line.product_id.id,
@@ -772,6 +764,12 @@ class PurchaseOrder(models.Model):
                     'discount': line.discount,
                     'synthetic_id': rec.id,
                 })
+                if exchange_rate_line:
+                    exchange_rate_line.update({
+                        'ex_po_id': line.id,
+                        # 'vnd_amount': line.total_vnd_amount,
+                        'qty_product': line.product_qty,
+                    })
                 if synthetic_line:
                     synthetic_line.update({
                         'syn_po_id': line.id,
@@ -780,19 +778,6 @@ class PurchaseOrder(models.Model):
                         'discount': line.discount,
                         'price_unit': line.price_unit,
                     })
-
-
-    # def action_update_import(self):
-    #     for item in self:
-    #         item.exchange_rate_line = [(5, 0)]
-    #         for line in item.order_line:
-    #             self.env['purchase.order.exchange.rate'].create({
-    #                 'product_id': line.product_id.id,
-    #                 'name': line.name,
-    #                 'usd_amount': line.price_subtotal,
-    #                 'purchase_order_id': item.id,
-    #                 'qty_product': line.product_qty
-    #             })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
@@ -1455,7 +1440,7 @@ class PurchaseOrderLine(models.Model):
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
+    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM', required=1)
     exchange_quantity = fields.Float('Exchange Quantity')
     # line_sub_total = fields.Monetary(compute='_get_line_subtotal', string='Line Subtotal', readonly=True, store=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
@@ -1987,7 +1972,7 @@ class StockPicking(models.Model):
                                 'sequence': 1,
                                 'account_id': account_1561,
                                 'product_id': item.product_id.id,
-                                'name': item.name,
+                                'name': item.product_id.name,
                                 'text_check_cp_normal': rec.product_id.name,
                                 'debit': values,
                                 'credit': 0,
@@ -2008,7 +1993,7 @@ class StockPicking(models.Model):
                                 'sequence': 1,
                                 'account_id': account_1561,
                                 'product_id': item.product_id.id,
-                                'name': item.name,
+                                'name': item.product_id.name,
                                 'text_check_cp_normal': rec.product_id.name,
                                 'debit': total / total_money * (rec.vnd_amount * pk_l.quantity_done/item.product_qty),
                                 'credit': 0,
@@ -2389,7 +2374,7 @@ class Synthetic(models.Model):
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax
+                    line.vnd_amount = nine.total_vnd_amount + rec.before_tax
 
 
     @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
