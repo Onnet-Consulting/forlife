@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="manage_materialized_tree" model="ir.ui.view">
+            <field name="name">PostgreSQL Materialized Tree</field>
+            <field name="model">manage.materialized</field>
+            <field name="arch" type="xml">
+                <tree string="PostgreSQL Materialized" editable="top">
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <button name="refresh_materialized" type="object" string="Refresh" class="btn-sm btn-success"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="manage_materialized_action" model="ir.actions.act_window">
+            <field name="name">Action Name</field>
+            <field name="res_model">manage.materialized</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem
+            id="manage_materialized_menu"
+            name="Manage Materialized"
+            action="manage_materialized_action"
+            parent="base.menu_custom"
+            sequence="60"/>
+    </data>
+</odoo>
