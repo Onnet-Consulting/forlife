@@ -39,6 +39,23 @@ class PromotionConditionProduct(models.Model):
         self.env.cr.execute("""
             ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        program = self.promotion_program_id
+        res = super(PromotionConditionProduct, self).unlink()
+        if program:
+            program._compute_json_valid_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        programs = self.env['promotion.program'].search([('id', 'in', self.promotion_program_id.ids)])
+        programs._compute_json_valid_product_ids()
+
 
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
