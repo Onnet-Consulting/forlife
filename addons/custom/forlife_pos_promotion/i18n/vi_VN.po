@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-12 08:24+0000\n"
-"PO-Revision-Date: 2023-06-12 08:24+0000\n"
+"POT-Creation-Date: 2023-06-13 08:57+0000\n"
+"PO-Revision-Date: 2023-06-13 08:57+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1021,6 +1021,11 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__is_original_price
+msgid "Is Price Original?"
+msgstr "SPĐK nguyên giá"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order_line__is_reward_line
 msgid "Is Reward Line"
 msgstr "Phần thưởng?"
@@ -1449,6 +1454,11 @@ msgstr "Phiên bán hàng"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__pos_config_ids
 msgid "Point of Sales"
 msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__is_original_price
+msgid "Price of condition product must be original!"
+msgstr "Sản phẩm điều kiện phải là nguyên giá !"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__promotion_type__pricelist
