@@ -1004,7 +1004,7 @@ class SyntheticInvoice(models.Model):
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.nine.total_vnd_amount + rec.before_tax
+                    line.vnd_amount = nine.total_vnd_amount + rec.before_tax
 
     @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
                  'synthetic_id.exchange_rate_line.tax_amount',
