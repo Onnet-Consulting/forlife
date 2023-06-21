@@ -96,7 +96,7 @@ class AccountMove(models.Model):
     ], string='Phân loại tài chính')
 
     x_root = fields.Selection([
-        ('Intel ', 'Intel '),
+        ('Intel', 'Intel'),
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
