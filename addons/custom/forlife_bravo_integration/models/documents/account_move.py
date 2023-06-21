@@ -31,6 +31,10 @@ class AccountMove(models.Model):
             bravo_table = 'B30AccDocAtchDoc'
         elif journal_data == "purchase_product_cost_picking":
             bravo_table = "B30AccDocPurchase"
+        elif journal_data == 'pos_cash_out':
+            bravo_table = "B30AccDocCashPayment"
+        elif journal_data == "pos_cash_in":
+            bravo_table = "B30AccDocCashReceipt"
         elif journal_update:
             bravo_table = "B30UpdateData"
         return bravo_table
@@ -60,6 +64,14 @@ class AccountMove(models.Model):
                           re.match('^CD', m.name)
                 # re.match('^972', m.name)
             )
+        if journal_data == "pos_cash_out":
+            return self.filtered(lambda m: m.journal_id.code == 'CA02'
+                                           and bool(
+                m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.credit > 0)))
+        if journal_data == "pos_cash_in":
+            return self.filtered(lambda m: m.journal_id.code == 'CA02'
+                                           and bool(
+                m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -73,6 +85,10 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_bill_vendor_back_values()
         if journal_data == 'purchase_product_cost_picking':
             return self.bravo_get_picking_purchase_costing_values()
+        if journal_data == "pos_cash_out":
+            return self.bravo_get_cash_out_move_values()
+        if journal_data == "pos_cash_in":
+            return self.bravo_get_cash_in_move_values()
         if update_move_data:
             return self.bravo_get_update_move_values(**kwargs)
         return [], []
@@ -106,6 +122,20 @@ class AccountMove(models.Model):
         purchase_product_cost_picking_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_product_cost_picking_queries:
             queries.extend(purchase_product_cost_picking_queries)
+
+        # POS cash out
+        current_context = {CONTEXT_JOURNAL_ACTION: 'pos_cash_out'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        pos_cash_out_queries = records.bravo_get_insert_sql(**current_context)
+        if pos_cash_out_queries:
+            queries.extend(pos_cash_out_queries)
+
+        # POS cash in
+        current_context = {CONTEXT_JOURNAL_ACTION: 'pos_cash_in'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        pos_cash_in_queries = records.bravo_get_insert_sql(**current_context)
+        if pos_cash_in_queries:
+            queries.extend(pos_cash_in_queries)
 
         return queries
 

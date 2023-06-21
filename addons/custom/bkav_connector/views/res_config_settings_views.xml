@@ -25,6 +25,7 @@
                                     <field name="bkav_update_einvoice"/>
                                     <field name="bkav_delete_einvoice"/>
                                     <field name="bkav_cancel_einvoice"/>
+                                    <field name="bkav_publish_einvoice"/>
                                     <field name="bkav_get_einvoice"/>
                                     <field name="bkav_get_status_einvoice"/>
                                     <field name="bkav_download_pdf"/>

@@ -1831,8 +1831,6 @@ class PurchaseOrderLine(models.Model):
         }
 
     def _prepare_account_move_line(self):
-        if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
-            raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
         if vals and vals.get('display_type') == 'product':
             quantity = self.received - self.qty_returned - self.billed
