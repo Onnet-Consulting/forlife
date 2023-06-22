@@ -18,7 +18,7 @@ class ResPartner(models.Model):
         change_default=True, default=_get_default_category_id, group_expand='_read_group_categ_id',
         required=True)
     is_passersby = fields.Boolean(default=False)
-    is_purchase_inter_company = fields.Boolean(compute='_compute_is_purchase_inter_company', index=True, store=True)
+    is_purchase_inter_company = fields.Boolean()
 
     @api.depends('group_id', 'group_id.code')
     def _compute_is_purchase_inter_company(self):

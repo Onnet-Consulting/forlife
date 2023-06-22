@@ -168,8 +168,8 @@ class StockTransfer(models.Model):
     def _create_move_given(self, picking, location, type_create):
         for d in picking.move_ids_without_package:
             if type_create == 'out':
-                account_id_debit = d.product_id.categ_id.property_stock_valuation_account_id.id
-                account_id_credit = location.account_stock_give.id
+                account_id_debit = location.account_stock_give.id
+                account_id_credit = d.product_id.categ_id.property_stock_valuation_account_id.id
             else:
                 account_id_debit = location.account_stock_give.id
                 account_id_credit = d.product_id.categ_id.property_stock_valuation_account_id.id
@@ -306,9 +306,12 @@ class StockTransfer(models.Model):
         stock_picking_from_ho.button_validate()
 
     def _action_in_approve_in_process(self):
-        company_id = self.env.company.id
+        if 'company_byside' in self._context and self._context.get('company_byside'):
+            company_id = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_byside'))])
+        else:
+            company_id = self.env.company
         pk_type = self.env['stock.picking.type'].sudo().search(
-            [('company_id', '=', company_id), ('code', '=', 'internal')], limit=1)
+            [('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
         origin = self.name
         date_done = self.date_in_approve
         location_id = self.location_id
@@ -360,12 +363,12 @@ class StockTransfer(models.Model):
                     'qty_in': product_quantity,
                 })
         if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
-            picking = self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
-            # if picking.location_dest_id.id_deposit and picking.location_dest_id.account_stock_give:
-            self._create_move_import_int(picking,location_id, location_dest_id)
+            self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
         else:
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
         self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
+        if not self._context.get('endloop'):
+            self.with_context(endloop=True, company_match=self.env.company.id).create_tranfer_with_type_kigui()
         if diff_transfer:
             return {
                 'type': 'ir.actions.client',
