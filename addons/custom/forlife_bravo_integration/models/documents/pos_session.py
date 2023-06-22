@@ -38,7 +38,7 @@ class PosSessionCashInMove(models.Model):
         journal_value = {
             "CompanyCode": self.company_id.code or None,
             "Stt": self.name or None,
-            "DocCode": "PT" or None,
+            "DocCode": "PT",
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
@@ -51,8 +51,8 @@ class PosSessionCashInMove(models.Model):
             "BuiltinOrder": 1,
             "DebitAccount": debit_line.account_id.code or None,
             "CreditAccount": credit_line.account_id.code or None,
-            "OriginalAmount": debit_line.debit or None,
-            "Amount": debit_line.debit or None,
+            "OriginalAmount": debit_line.debit,
+            "Amount": debit_line.debit,
             "Description1": debit_line.name or None,
             "DeptCode": analytic_account.code or None,
             "RowId": debit_line.id or None,
@@ -96,7 +96,7 @@ class PosSessionCashOutMove(models.Model):
         journal_value = {
             "CompanyCode": self.company_id.code or None,
             "Stt": self.name or None,
-            "DocCode": "PC" or None,
+            "DocCode": "PC",
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
@@ -109,11 +109,11 @@ class PosSessionCashOutMove(models.Model):
             "BuiltinOrder": 1,
             "DebitAccount": debit_line.account_id.code or None,
             "CreditAccount": credit_line.account_id.code or None,
-            "OriginalAmount": debit_line.debit or None,
-            "Amount": debit_line.debit or None,
+            "OriginalAmount": debit_line.debit,
+            "Amount": debit_line.debit,
             "Description1": debit_line.name or None,
             "DeptCode": analytic_account.code or None,
-            "RowId": debit_line.id
+            "RowId": debit_line.id or None
         }
         values.append(journal_value)
         return values

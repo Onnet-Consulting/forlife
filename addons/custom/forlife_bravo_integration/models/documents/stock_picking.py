@@ -135,15 +135,15 @@ class StockPicking(models.Model):
         values = []
         for record in self:
             value = {
-                "CompanyCode": record.company_id.code,
+                "CompanyCode": record.company_id.code or None,
                 "UpdateType": "1",
-                "DocNo": record.name,
-                "DocDate": record.date_done,
+                "DocNo": record.name or None,
+                "DocDate": record.date_done or None,
                 "Stt": record.id,
                 "RowId": record.id,
                 "ColumnName": "Description",
-                "OldValue": record.note,
-                "NewValue": kwargs.get('note'),
+                "OldValue": record.note or None,
+                "NewValue": kwargs.get('note') or None,
             }
             values.append(value)
         return columns, values
@@ -171,11 +171,11 @@ class StockPicking(models.Model):
         values = []
         for record in self:
             value = {
-                "CompanyCode": record.company_id.code,
+                "CompanyCode": record.company_id.code or None,
                 "DocCode": "PN" if record.other_import else "PX",
-                "DocNo": record.name,
-                "DocDate": record.date_done,
-                "Stt": record.name
+                "DocNo": record.name or None,
+                "DocDate": record.date_done or None,
+                "Stt": record.name or None,
             }
             values.append(value)
         return columns, values
