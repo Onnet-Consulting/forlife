@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import float_is_zero
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
