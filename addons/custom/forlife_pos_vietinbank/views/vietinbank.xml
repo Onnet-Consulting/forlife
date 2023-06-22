@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="vietinbank_transaction_view_tree" model="ir.ui.view">
+            <field name="name">vietinbank_transaction_view_tree</field>
+            <field name="model">vietinbank.transaction.model</field>
+            <field name="arch" type="xml">
+                <tree string="vietinbank_transaction_tree">
+                    <field name="debit_account"/>
+                    <field name="amount"/>
+                    <field name="benefi_account"/>
+                    <field name="benefi_name"/>
+                    <field name="ref"/>
+                    <field name="ref_no"/>
+                    <field name="effect_date"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

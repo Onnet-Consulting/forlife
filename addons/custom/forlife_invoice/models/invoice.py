@@ -28,7 +28,7 @@ class AccountMove(models.Model):
     type_inv = fields.Selection([('tax', 'Nhập khẩu'), ('cost', 'Nội địa')], string='Loại hóa đơn')
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
-    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
+    exchange_rate = fields.Float(string='Exchange Rate', default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
     payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
@@ -78,7 +78,8 @@ class AccountMove(models.Model):
                                       readonly=False)
 
     # Field check k cho tạo addline khi hóa đơn đã có PO
-    is_check = fields.Boolean(default=False)
+    is_check = fields.Boolean()
+    is_check_quantity_readonly = fields.Boolean()
 
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(compute='_compute_is_check_vendor_page',
@@ -155,6 +156,29 @@ class AccountMove(models.Model):
                 self.exchange_rate = self.currency_id.inverse_rate
             else:
                 self.exchange_rate = 1
+
+    domain_receiving_warehouse_id = fields.Char(compute='_compute_domain_receiving_warehouse_id', store=1)
+
+    @api.depends('purchase_order_product_id')
+    def _compute_domain_receiving_warehouse_id(self):
+        receiving = {}
+        for p in self.env['stock.picking'].search([
+            ('origin', '=', self.mapped('purchase_order_product_id.name')),
+            ('location_dest_id', '=', self.mapped('purchase_order_product_id.location_id.id')),
+            ('state', '=', 'done'), ('picking_type_id.code', '=', 'incoming')
+        ]):
+            receiving_k = '{}{}'.format(p.origin, p.location_dest_id.id)
+            if receiving_k in receiving:
+                receiving[receiving_k] += p._ids
+                continue
+            receiving[receiving_k] = p._ids
+        for rec in self:
+            picking_ids = ()
+            for purchase_order_product_id in rec.purchase_order_product_id:
+                k = '{}{}'.format(purchase_order_product_id.name, purchase_order_product_id.location_id.id)
+                if k in receiving:
+                    picking_ids += receiving[k]
+            rec.domain_receiving_warehouse_id = json.dumps([('id', 'in', picking_ids)])
 
     @api.onchange('purchase_order_product_id')
     def onchange_purchase_order_product_id(self):
@@ -706,7 +730,7 @@ class AccountMoveLine(models.Model):
     is_check_exchange_quantity = fields.Boolean(default=False)
 
     # field check vendor_price khi ncc vãng lại:
-    is_check_is_passersby = fields.Boolean(default=False)
+    is_passersby = fields.Boolean(related='move_id.is_passersby')
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
 
     @api.depends('display_type', 'company_id')
@@ -774,14 +798,12 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('promotions')
     def onchange_vendor_prices(self):
-        if self.promotions:
-            self.vendor_price = False
-            self.price_unit = False
-            self.discount = self.discount_percent = False
+        if self.promotions and (self.partner_id.is_passersby or not self.partner_id.is_passersby):
+            self.vendor_price = self.price_unit = self.discount = self.discount_percent = self.tax_amount = self.total_vnd_amount = False
             self.tax_ids = False
-            self.tax_amount = False
-            self.total_vnd_amount = False
             self.is_check_promotions = True
+        else:
+            self.is_check_promotions = False
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
@@ -911,7 +933,7 @@ class InvoiceCostLine(models.Model):
     product_id = fields.Many2one('product.product', string='Sản phẩm', domain=[('detailed_type', '=', 'service')])
     name = fields.Char(string='Mô tả', related='product_id.name')
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
-    exchange_rate = fields.Float(string='Tỷ giá')
+    exchange_rate = fields.Float(string='Tỷ giá', default=1)
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
     vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
     is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế', default=False)

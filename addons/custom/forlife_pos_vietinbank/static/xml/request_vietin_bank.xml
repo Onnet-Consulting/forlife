@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="RequestLogTransactionVietinbank" t-inherit="point_of_sale.PaymentScreenPaymentLines"
+       t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('electronic_payment')]" position="inside">
+            <t t-if="line.payment_status == 'get_transaction_from_vietinbank'">
+                <div class="electronic_status">
+                    Payment request pending
+                </div>
+                <div class="button send_payment_request highlight" title="Send Payment Request"
+                     t-on-click="() => this.trigger('get-transaction-vietinbank', line)">
+                    Vấn tin
+                </div>
+            </t>
+        </xpath>
+    </t>
+</template>

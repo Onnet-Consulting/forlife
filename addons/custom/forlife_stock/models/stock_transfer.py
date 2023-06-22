@@ -205,6 +205,7 @@ class StockTransfer(models.Model):
         self.ensure_one()
         for line in stock_transfer_line_less:
             self.env['stock.transfer'].create({
+                'reference_document': self.name,
                 'employee_id': self.employee_id.id,
                 'document_type': 'excess_arising_lack_arise',
                 'stock_request_id': self.stock_request_id.id,
@@ -579,10 +580,11 @@ class StockTransferLine(models.Model):
             other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
             quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
                 lambda r: r.product_id == self.product_id)])
-            if start_transfer.stock_transfer_line.product_id == self.product_id:
-                quantity = quantity_old + start_transfer.stock_transfer_line.qty_out if type == 'out' else quantity_old + start_transfer.stock_transfer_line.qty_in
-                if quantity > start_transfer.stock_transfer_line.qty_start * (1 + (tolerance / 100)):
-                    raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
+            for rec in start_transfer.stock_transfer_line:
+                if rec.product_id == self.product_id:
+                    quantity = quantity_old + rec.qty_out if type == 'out' else quantity_old + rec.qty_in
+                    if quantity > rec.qty_start * (1 + (tolerance / 100)):
+                        raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):
