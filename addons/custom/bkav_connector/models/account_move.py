@@ -177,7 +177,7 @@ class AccountMoveBKAV(models.Model):
                             line.product_id.name or line.name) else '',
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
-                    "Price": line.price_unit,
+                    "Price": line.price_unit * (1 - line.discount / 100),
                     "Amount": line.price_subtotal,
                     "TaxRateID": 3,
                     "TaxRate": 10,
@@ -295,7 +295,6 @@ class AccountMoveBKAV(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        connect_bkav(data, configs)
         _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
