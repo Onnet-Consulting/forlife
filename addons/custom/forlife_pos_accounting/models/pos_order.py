@@ -182,7 +182,7 @@ class InheritPosOrder(models.Model):
             out_invoice_line_values, out_refund_line_values = [], []
             for ail in values['invoice_line_ids']:
                 (
-                    out_invoice_line_values if ail['pos_order_line_id'] not in pos_line_has_refund_ids
+                    out_invoice_line_values if ail[-1]['pos_order_line_id'] not in pos_line_has_refund_ids
                     else out_refund_line_values
                 ).append(ail)
             values['invoice_line_ids'] = out_invoice_line_values
