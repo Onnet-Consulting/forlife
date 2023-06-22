@@ -27,13 +27,12 @@ class StockPickingOtherExport(models.Model):
         count = 1
         values = []
         for stock_move in self.move_ids:
-            for account_move in stock_move.account_move_ids:
-                values.append(self.bravo_get_picking_other_export_by_account_move_value(account_move, count))
-                count += 1
+            account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
+            values.append(self.bravo_get_picking_other_export_by_account_move_value(stock_move, account_move, count))
+            count += 1
         return values
 
-    def bravo_get_picking_other_export_by_account_move_value(self, account_move, line_count):
-        stock_move = account_move.stock_move_id
+    def bravo_get_picking_other_export_by_account_move_value(self, stock_move, account_move, line_count):
         product = stock_move.product_id
         picking = stock_move.picking_id
         employee = self.env.user.employee_id
