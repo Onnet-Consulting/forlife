@@ -163,6 +163,7 @@ class PurchaseRequest(models.Model):
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
             po_line_data = []
             po_ex_line_data = []
+            po_syn_line_data = []
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
@@ -185,6 +186,13 @@ class PurchaseRequest(models.Model):
                     'purchase_order_id': line.id,
                     'product_id': line.product_id.id,
                     'name': line.product_id.name,
+                    'qty_product': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
+                }))
+                po_syn_line_data.append((0, 0, {
+                    'synthetic_id': line.id,
+                    'product_id': line.product_id.id,
+                    'description': line.product_id.name,
+                    'quantity': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                 }))
             if po_line_data:
                 name_pr = []
@@ -202,6 +210,7 @@ class PurchaseRequest(models.Model):
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
                     'exchange_rate_line': po_ex_line_data,
+                    'purchase_synthetic_ids': po_syn_line_data,
                     'occasion_code_ids': occasion_code_id,
                     'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
