@@ -22,7 +22,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -263,7 +263,7 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')

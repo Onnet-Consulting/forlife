@@ -437,8 +437,8 @@ class StockTransferLine(models.Model):
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
     stock_transfer_id = fields.Many2one('stock.transfer', string="Stock Transfer")
-    work_from = fields.Many2one('forlife.production', string="LSX From")
-    work_to = fields.Many2one('forlife.production', string="LSX To")
+    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
