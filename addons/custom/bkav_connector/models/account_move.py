@@ -154,6 +154,7 @@ class AccountMoveBKAV(models.Model):
         ('adjust', 'Điều chỉnh'),
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
+    general_invoice_id = fields.Many2one('invoice.not.exists.bkav', 'Đơn tổng')
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status_get_values(self):
