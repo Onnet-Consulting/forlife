@@ -146,7 +146,7 @@
                         </div>
                     </page>
                     <page string="Tổng hợp" name="synthetic">
-                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
+                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1" force_save="1">
                             <tree editable="bottom" class="width-hh">
                                 <field name="description"/>
                                 <field name="product_id"/>
@@ -155,10 +155,10 @@
                                 <field name="quantity" sum="discounted subtotal" force_save="1"/>
                                 <field name="price_subtotal"/>
                                 <field name="discount"/>
-                                <field name="before_tax"/>
-                                <field name="tnk_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="db_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="after_tax"/>
+                                <field name="before_tax" force_save="1"/>
+                                <field name="tnk_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}" force_save="1"/>
+                                <field name="db_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}" force_save="1"/>
+                                <field name="after_tax" force_save="1"/>
                                 <field name="total_product"/>
                             </tree>
                         </field>
