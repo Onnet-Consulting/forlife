@@ -5,4 +5,4 @@ from odoo import api, fields, models, _
 class Store(models.Model):
     _inherit = 'store'
 
-    is_post_bkav = fields.Boolead('Có phát hành hóa đơn bkav')
+    is_post_bkav = fields.Boolean('Có phát hành hóa đơn bkav')
