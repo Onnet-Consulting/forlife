@@ -1154,8 +1154,8 @@ class PurchaseOrder(models.Model):
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
-            moves.filtered(
-                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+            if not order.is_return:
+                moves.filtered(lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
             return {
                 'name': 'Hóa đơn nhà cung cấp',
                 'type': 'ir.actions.act_window',
