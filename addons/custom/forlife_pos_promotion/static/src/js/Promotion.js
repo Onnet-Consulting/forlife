@@ -1378,8 +1378,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return result;
     }
 
-    computeBestCombineOfProgram(){
-        let programs = this.getActivatedPrograms().map(p => p.str_id);
+    computeBestCombineOfProgram(programsList){
+        let programs = programsList.map(p => p.str_id);
         if (programs.length > 6) {
             return [];
         };
