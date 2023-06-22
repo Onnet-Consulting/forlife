@@ -6,9 +6,12 @@ from odoo.exceptions import UserError, ValidationError
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    from_company = fields.Many2one('res.company')
+    to_company = fields.Many2one('res.company')
+
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        if res is not True:
+        if 'endloop' in self._context and self._context.get('endloop'):
             return res
         ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
         if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
@@ -42,7 +45,7 @@ class StockPicking(models.Model):
                     'other_export': True,
                     'move_ids_without_package': data,
                 })
-                orther_export.button_validate()
+                orther_export.with_context(endloop=True).button_validate()
         if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
             data = []
             location_mapping = self.env['stock.location.mapping'].sudo().search(
@@ -73,7 +76,7 @@ class StockPicking(models.Model):
                 'other_import': True,
                 'move_ids_without_package': data,
             })
-            other_import.button_validate()
+            other_import.with_context(endloop=True).button_validate()
         return res
 
     @api.model
