@@ -36,26 +36,26 @@ class PosSessionCashInMove(models.Model):
         ], limit=1)
         values = []
         journal_value = {
-            "CompanyCode": self.company_id.code,
-            "Stt": self.name,
+            "CompanyCode": self.company_id.code or None,
+            "Stt": self.name or None,
             "DocCode": "PT",
-            "DocNo": self.name,
-            "DocDate": self.date,
-            "CurrencyCode": self.currency_id.name,
-            "ExchangeRate": exchange_rate,
-            "CustomerCode": partner.ref,
-            "CustomerName": partner.name,
-            "Address": partner.contact_address_complete,
-            "Description": self.name,
-            "EmployeeCode": self.env.user.employee_id.code,
+            "DocNo": self.name or None,
+            "DocDate": self.date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate or None,
+            "CustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "Description": self.name or None,
+            "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
-            "DebitAccount": debit_line.account_id.code,
-            "CreditAccount": credit_line.account_id.code,
+            "DebitAccount": debit_line.account_id.code or None,
+            "CreditAccount": credit_line.account_id.code or None,
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
-            "Description1": debit_line.name,
-            "DeptCode": analytic_account.code,
-            "RowId": debit_line.id
+            "Description1": debit_line.name or None,
+            "DeptCode": analytic_account.code or None,
+            "RowId": debit_line.id or None,
         }
         values.append(journal_value)
         return values
@@ -94,26 +94,26 @@ class PosSessionCashOutMove(models.Model):
         ], limit=1)
         values = []
         journal_value = {
-            "CompanyCode": self.company_id.code,
-            "Stt": self.name,
+            "CompanyCode": self.company_id.code or None,
+            "Stt": self.name or None,
             "DocCode": "PC",
-            "DocNo": self.name,
-            "DocDate": self.date,
-            "CurrencyCode": self.currency_id.name,
-            "ExchangeRate": exchange_rate,
-            "CustomerCode": partner.ref,
-            "CustomerName": partner.name,
-            "Address": partner.contact_address_complete,
-            "Description": self.name,
-            "EmployeeCode": self.env.user.employee_id.code,
+            "DocNo": self.name or None,
+            "DocDate": self.date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate or None,
+            "CustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "Description": self.name or None,
+            "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
-            "DebitAccount": debit_line.account_id.code,
-            "CreditAccount": credit_line.account_id.code,
+            "DebitAccount": debit_line.account_id.code or None,
+            "CreditAccount": credit_line.account_id.code or None,
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
-            "Description1": debit_line.name,
-            "DeptCode": analytic_account.code,
-            "RowId": debit_line.id
+            "Description1": debit_line.name or None,
+            "DeptCode": analytic_account.code or None,
+            "RowId": debit_line.id or None
         }
         values.append(journal_value)
         return values
