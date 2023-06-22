@@ -50,7 +50,7 @@
                         <group>
                             <field name="employee_id" string="User" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}" />
                             <field name="department_id" string="Department" readonly="1"/>
-                            <field name="company_id" invisible="1"/>
+                            <field name="company_id"/>
                         </group>
                         <group>
                             <field name="create_date" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
