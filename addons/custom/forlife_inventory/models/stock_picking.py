@@ -6,6 +6,9 @@ from odoo.exceptions import UserError, ValidationError
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    from_company = fields.Many2one('res.company')
+    to_company = fields.Many2one('res.company')
+
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         if 'endloop' in self._context and self._context.get('endloop'):

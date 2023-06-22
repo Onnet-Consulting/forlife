@@ -267,6 +267,12 @@ class StockTransfer(models.Model):
     def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         for data_line in data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
+        company = self._check_location_mapping_with_comp(loc_id=location_id.id, loc_dest_id=location_dest_id.id, company=self.env.company)
+        from_company = False
+        to_company = False
+        if company and not self._context.get('company_match', False):
+            from_company = self.env.company.id
+            to_company = company.id
         stock_picking = self.env['stock.picking'].create({
             'transfer_id': self.id,
             'origin': origin,
@@ -275,10 +281,22 @@ class StockTransfer(models.Model):
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
             'move_ids_without_package': data,
+            'from_company': from_company,
+            'to_company': to_company
             }
         )
         stock_picking.button_validate()
         return stock_picking
+
+    def _check_location_mapping_with_comp(self, loc_id, loc_dest_id, company):
+        if company.code == '1300':
+            loc_map = self.env['stock.location.mapping'].sudo().search([('location_id','=', loc_id)])
+            loc_dest_map = self.env['stock.location.mapping'].sudo().search([('location_id','=', loc_dest_id)])
+            if loc_map:
+                return loc_map.location_map_id.company_id
+            if loc_dest_map:
+                return loc_dest_map.location_map_id.company_id
+        return False
 
     def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         location_ho = self.env.ref('forlife_stock.ho_location_stock')
@@ -373,11 +391,10 @@ class StockTransfer(models.Model):
         else:
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
         self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
-        if not self._context.get('endloop'):
+        if not self._context.get('endloop') and self.env.company.code in ['1300', '1400']:
             self.with_context(endloop=True, company_match=self.env.company.id).create_tranfer_with_type_kigui()
-        if diff_transfer:
-            diff_transfer_in |= self._create_diff_transfer(diff_transfer_data_in, state='in_approve', type='excess') if diff_transfer_data_in else diff_transfer_in
-            diff_transfer_out |= self._create_diff_transfer(diff_transfer_data_out, state='out_approve', type='lack') if diff_transfer_data_out else diff_transfer_out
+        diff_transfer_in |= self._create_diff_transfer(diff_transfer_data_in, state='in_approve', type='excess') if diff_transfer_data_in else diff_transfer_in
+        diff_transfer_out |= self._create_diff_transfer(diff_transfer_data_out, state='out_approve', type='lack') if diff_transfer_data_out else diff_transfer_out
         if diff_transfer_in or diff_transfer_out:
             return {
                 'type': 'ir.actions.client',

@@ -129,5 +129,8 @@ class StockTranfer(models.Model):
                 }
                 res = self.env['stock.transfer'].with_company(company_match).sudo().create(vals)
                 res.with_context(company_byside=company_match.id)._action_in_approve()
-            return False
-        return True
+                print(res)
+            return True
+        return False
+    from_company = fields.Many2one('res.company')
+    to_company = fields.Many2one('res.company')
