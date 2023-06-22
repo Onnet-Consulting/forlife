@@ -200,6 +200,8 @@ class AccountMovePurchaseProduct(models.Model):
                 "DocNo_WO": invoice_line.work_order.code or None,
             })
 
+            values.append(journal_value_line)
+
         return values
 
 
