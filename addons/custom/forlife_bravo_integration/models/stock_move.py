@@ -33,13 +33,13 @@ class StockMove(models.Model):
         }
 
     def bravo_get_purchase_picking_data(self):
-        moves = self.filtered(lambda m: m.purchase_line_id and m.account_move_ids)
+        moves = self.filtered(lambda m: m.purchase_line_id)
         bravo_column_names = []
         moves_data = []
         for idx, move in enumerate(moves, start=1):
             picking = move.picking_id
             picking_partner = picking.partner_id
-            account_move = move.account_move_ids[0]
+            account_move = move.account_move_ids and move.account_move_ids[0]
             bravo_data = {
                 'CompanyCode': picking.company_id.code,
                 'Stt': picking.id,
@@ -78,13 +78,13 @@ class StockMove(models.Model):
         return bravo_column_names, moves_data
 
     def bravo_get_sale_picking_data(self):
-        moves = self.filtered(lambda m: m.sale_line_id and m.account_move_ids)
+        moves = self.filtered(lambda m: m.sale_line_id)
         bravo_column_names = []
         moves_data = []
         for idx, move in enumerate(moves, start=1):
             picking = move.picking_id
             picking_partner = picking.partner_id
-            account_move = move.account_move_ids[0]
+            account_move = move.account_move_ids and move.account_move_ids[0]
             quantity_done = move.quantity_done
             product = move.product_id
             bravo_data = {
@@ -99,8 +99,8 @@ class StockMove(models.Model):
                 'TaxRegNo': picking_partner.vat,
                 'EmployeeCode': picking.user_id.employee_id.code,
                 'BuiltinOrder': idx,
-                'DebitAccount': False,
-                'CreditAccount2': False,
+                'DebitAccount': None,
+                'CreditAccount2': None,
                 'ItemCode': product.barcode,
                 'ItemName': product.name,
                 'UnitCode': move.product_uom.code,

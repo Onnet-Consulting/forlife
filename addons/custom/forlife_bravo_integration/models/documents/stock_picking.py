@@ -52,16 +52,14 @@ class StockPicking(models.Model):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == PICKING_PURCHASE_VALUE:
             return self.filtered(
-                lambda p: p.move_ids.mapped('account_move_ids') and p.move_ids.mapped('purchase_line_id')
-                          and not p.x_is_check_return and not p.is_return_po)
+                lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return and not p.is_return_po)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
-            return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.other_import)
+            return self.filtered(lambda m: m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
-            return self.filtered(lambda m: m.move_ids.mapped('account_move_ids') and m.other_export)
+            return self.filtered(lambda m: m.other_export)
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
             return self.filtered(
-                lambda p: p.move_ids.mapped('account_move_ids') and p.move_ids.mapped('purchase_line_id')
-                          and (p.x_is_check_return or p.is_return_po))
+                lambda p: p.move_ids.mapped('purchase_line_id') and (p.x_is_check_return or p.is_return_po))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -116,7 +114,7 @@ class StockPicking(models.Model):
         return queries
 
     def bravo_get_insert_sql(self, **kwargs):
-        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE)\
+        if kwargs.get(CONTEXT_PICKING_ACTION) or kwargs.get(CONTEXT_PICKING_UPDATE) \
                 or kwargs.get(CONTEXT_CANCEL_OTHER_PICKING):
             return super().bravo_get_insert_sql(**kwargs)
         return self.bravo_get_insert_sql_by_picking_action()
