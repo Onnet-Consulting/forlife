@@ -10,12 +10,51 @@ table {
       div {
         display: flex;
         justify-content: space-between;
-        padding: 0 10px;
+        padding: 10px;
+        white-space: nowrap;
       }
+    }
+
+    td {
+      text-align: center;
+      border-right: 1px solid;
     }
   }
 }
 
-.o_control_panel, .btn-close {
+.o_select_button {
+  background: #714B67;
+  color: #FFFFFF;
+}
+
+th.o_list_record_selector.o_list_controller.align-middle.pe-1.cursor-pointer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.o_form_button_cancel {
+  margin-left: 10px;
+}
+
+.o_search_options, .btn-close, .o_cp_top {
   display: none;
+}
+
+.o_cp_pager {
+  text-align: right;
+  margin: 5px;
+}
+.btn-group {
+  button {
+    padding: 0;
+  }
+}
+
+footer {
+  margin: 10px 0;
+}
+
+.o_list_selection_box {
+  margin: 10px 0;
 }

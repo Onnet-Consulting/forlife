@@ -14,7 +14,7 @@
     'category': 'Generic Modules',
     'version': '16.0.1.0.0',
     'depends': [
-        'forlife_payment_terminal_base',
+        'point_of_sale', 'forlife_viettinbank_foreign_exchange_rate'
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -25,5 +25,6 @@
         'security/ir.model.access.csv',
         'views/res_config_settings_views.xml',
         'views/vietinbank.xml',
+        'views/pos_config.xml',
     ],
 }

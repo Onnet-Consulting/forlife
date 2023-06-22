@@ -20,7 +20,7 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
             await rpc.query({
                 model: 'apis.vietinbank',
                 method: 'get_list_transaction_info',
-                args: [[line.pos.config.id, line.payment_method.id]],
+                args: [[line.pos.config.id, line.payment_method.id, line.order.session_id]],
             }).then(async function (res) {
                 if (res[0]) {
                     self.addDialog(SelectCreateDialog, {
@@ -34,18 +34,31 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                             await rpc.query({
                                 model: 'apis.vietinbank',
                                 method: 'total_amount',
-                                args: [[resIds]],
+                                args: [resIds],
                             }).then(async function (res) {
+                                console.log(222222222222)
                                 dataLine.set_amount(res)
                                 dataLine.set_payment_status('done')
                             })
-                        },
+                        }
                     });
                 } else {
                     alert(res[1])
                 }
             })
 
+        }
+
+        deletePaymentLine(event) {
+            super.deletePaymentLine(event);
+            $(this.el).find('.numpad button').css('pointer-events', 'auto')
+        }
+
+        addNewPaymentLine({detail: paymentMethod}) {
+            super.addNewPaymentLine({detail: paymentMethod});
+            if (paymentMethod.use_payment_terminal === 'vietinbank') {
+                $(this.el).find('.numpad button').css('pointer-events', 'none')
+            }
         }
     }
 
