@@ -99,9 +99,9 @@ class AccountMovePurchaseAsset(models.Model):
                 "RowId": invoice_line.id or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
                 "DeptCode": invoice_line.analytic_account_id.code or None,
-                "AssetCode": invoice_line.asset_code.code if invoice_line.asset_code.type in ("CCDC", "TSCD") else None,
+                "AssetCode": invoice_line.asset_code.code if (invoice_line.asset_code and invoice_line.asset_code.type in ("CCDC", "TSCD")) else None,
                 "ExpenseCatgCode": expense_code if valid_expense_code else None,
-                "ProductCode": invoice_line.asset_code.code if invoice_line.asset_code.type == "XDCB" else None,
+                "ProductCode": invoice_line.asset_code.code if (invoice_line.asset_code and invoice_line.asset_code.type == "XDCB") else None,
 
             })
             invoice_tax_ids = invoice_line.tax_ids
@@ -290,13 +290,12 @@ class StockPickingPurchaseProduct(models.Model):
         count = 1
         values = []
         for stock_move in self.move_ids:
-            for account_move in stock_move.account_move_ids:
-                values.append(self.bravo_get_picking_purchase_by_account_move_value(account_move, count))
-                count += 1
+            account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
+            values.append(self.bravo_get_picking_purchase_by_account_move_value(stock_move, account_move, count))
+            count += 1
         return values
 
-    def bravo_get_picking_purchase_by_account_move_value(self, account_move, line_count):
-        stock_move = account_move.stock_move_id
+    def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count):
         purchase_order_line = stock_move.purchase_line_id
         product = stock_move.product_id
         purchase_order = purchase_order_line.order_id
@@ -453,7 +452,7 @@ class StockPickingPurchaseReturn(models.Model):
         return columns, values
 
     def bravo_get_return_picking_purchase_value(self, stock_move, idx):
-        account_move = stock_move.account_move_ids
+        account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
         purchase_order_line = stock_move.purchase_line_id
         purchase_order = purchase_order_line.order_id
         exchange_rate = purchase_order.exchange_rate
@@ -486,12 +485,12 @@ class StockPickingPurchaseReturn(models.Model):
             "ItemName": product.name or None,
             "CreditAccount": credit_account or None,
             "DebitAccount": debit_account or None,
-            "OriginalPriceUnit": vendor_price ,
-            "PriceUnit": vendor_price * exchange_rate ,
-            "OriginalDiscount": discount ,
-            "Discount": discount * exchange_rate ,
-            "OriginalUnitCost": vendor_price - discount ,
-            "UnitCost": (vendor_price - discount) * exchange_rate ,
+            "OriginalPriceUnit": vendor_price,
+            "PriceUnit": vendor_price * exchange_rate,
+            "OriginalDiscount": discount,
+            "Discount": discount * exchange_rate,
+            "OriginalUnitCost": vendor_price - discount,
+            "UnitCost": (vendor_price - discount) * exchange_rate,
             "DocNo_PO": picking.origin or None,
             "WarehouseCode": picking.location_id.warehouse_id.code or None,
             "JobCode": stock_move.occasion_code_id.code or None,
