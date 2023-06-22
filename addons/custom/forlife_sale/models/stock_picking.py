@@ -24,6 +24,8 @@ class StockPicking(models.Model):
     def create_invoice_out_refund(self):
         if not self:
             return
+        if not self.move_ids.mapped('sale_line_id'):
+            return
         invoice_line_ids = []
         for line in self.move_ids:
             invoice_line = {

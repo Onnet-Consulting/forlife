@@ -213,6 +213,51 @@ class StockPicking(models.Model):
                 rec.update(location_values)
         return line
 
+    def button_validate(self):
+        res = super().button_validate()
+        for record in self:
+            for rec in record.move_ids_without_package:
+                if record.other_import:
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
+                if record.other_export:
+                    quantity_prodution = self.env['quantity.production.order'].search(
+                        [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id),
+                         ('production_id', '=', rec.work_production.id)])
+                    if rec.work_production:
+                        if quantity_prodution:
+                            if rec.quantity_done > quantity_prodution.quantity:
+                                raise ValidationError(
+                                    'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                                    rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                            else:
+                                quantity_prodution.update({
+                                    'quantity': quantity_prodution.quantity - rec.quantity_done
+                                })
+                        else:
+                            raise ValidationError(
+                                'Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done':
+                    if rec.work_production and rec.quantity_done > rec.work_production.forlife_production_finished_product_ids.filtered(
+                            lambda r: r.product_id.id == rec.product_id.id).remaining_qty:
+                        raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name))
+
+        return res
+
     @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
@@ -279,7 +324,7 @@ class StockMove(models.Model):
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
@@ -343,7 +388,7 @@ class StockMoveLine(models.Model):
     ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
-                                      domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')

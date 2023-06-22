@@ -236,8 +236,8 @@
 
 
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount"/>
-                    <field name="total_trade_discount"/>
+                    <field name="trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
                     <field name="is_done_picking" invisible="1"/>
 <!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
@@ -279,7 +279,7 @@
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal" force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False), ('free_good', '=', True)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('parent.is_passersby', '=', False), ('free_good', '=', True)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"

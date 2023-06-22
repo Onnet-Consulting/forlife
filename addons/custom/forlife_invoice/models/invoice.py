@@ -28,7 +28,7 @@ class AccountMove(models.Model):
     type_inv = fields.Selection([('tax', 'Nhập khẩu'), ('cost', 'Nội địa')], string='Loại hóa đơn')
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
-    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
+    exchange_rate = fields.Float(string='Exchange Rate', default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
     payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
@@ -387,7 +387,7 @@ class AccountMove(models.Model):
     def onchange_total_trade_discount(self):
         if self.trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
+                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
 
     @api.depends('purchase_order_product_id', 'purchase_order_product_id.exchange_rate_line', 'invoice_line_ids')
     def _compute_exchange_rate_line_and_cost_line(self):
@@ -874,7 +874,7 @@ class InvoiceExchangeRate(models.Model):
     vnd_amount = fields.Float(string='Thành tiền (VND)', compute='compute_vnd_amount', store=1)
 
     import_tax = fields.Float(string='% Thuế nhập khẩu')
-    tax_amount = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_tax_amount', store=1)
+    tax_amount = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_tax_amount', store=1, inverse='_inverse_tax_amount')
 
     special_consumption_tax = fields.Float(string='% %Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
@@ -887,6 +887,9 @@ class InvoiceExchangeRate(models.Model):
     total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_tax_amount', store=1)
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
     qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
+
+    def _inverse_tax_amount(self):
+        pass
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
@@ -933,7 +936,7 @@ class InvoiceCostLine(models.Model):
     product_id = fields.Many2one('product.product', string='Sản phẩm', domain=[('detailed_type', '=', 'service')])
     name = fields.Char(string='Mô tả', related='product_id.name')
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
-    exchange_rate = fields.Float(string='Tỷ giá')
+    exchange_rate = fields.Float(string='Tỷ giá', default=1)
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
     vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
     is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế', default=False)
@@ -993,7 +996,7 @@ class SyntheticInvoice(models.Model):
                     if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
                         rec.price_subtotal = nine.total_vnd_amount
                     for item in cost_line_true:
-                        if item.vnd_amount and rec.price_subtotal > 0:
+                        if item.vnd_amount and nine.total_vnd_amount > 0:
                             before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                             total_cost_true += before_tax
                         if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
@@ -1001,7 +1004,7 @@ class SyntheticInvoice(models.Model):
                 else:
                     rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    line.vnd_amount = rec.price_subtotal + rec.before_tax
+                    line.vnd_amount = nine.total_vnd_amount + rec.before_tax
 
     @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
                  'synthetic_id.exchange_rate_line.tax_amount',
@@ -1018,7 +1021,7 @@ class SyntheticInvoice(models.Model):
                     sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
                     if rec.synthetic_id.type_inv == 'tax' and rec.syn_po_id == line.ex_po_id:
                         for item in cost_line_false:
-                            if item.vnd_amount and rec.price_subtotal > 0:
+                            if item.vnd_amount and sum_vnd_amount and sum_tnk and sum_db:
                                 total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
                                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
                                     rec.after_tax = total_cost

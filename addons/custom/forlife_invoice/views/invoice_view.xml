@@ -60,8 +60,8 @@
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount"/>
-                    <field name="total_trade_discount"/>
+                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
@@ -107,14 +107,14 @@
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
                            context="{'default_company_id': company_id}"
-                           attrs="{'readonly': ['|',('state', '=', 'posted'), ('is_check', '=', True)]}" force_save="1">
+                           attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1">
                         <tree editable="bottom" class="width-hh">
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
                             <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
-                            <field name="is_check_promotions" invisible="0"/>
+                            <field name="is_check_promotions" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                    domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
@@ -194,7 +194,7 @@
                                 <field name="vnd_amount" force_save="1" readonly="1"/>
                                 <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1" force_save="1"/>
+                                <field name="tax_amount" force_save="1"/>
                                 <field name="special_consumption_tax"/>
                                 <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
                                 <field name="vat_tax"/>
