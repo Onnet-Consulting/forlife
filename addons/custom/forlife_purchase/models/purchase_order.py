@@ -741,7 +741,10 @@ class PurchaseOrder(models.Model):
 
 
 
-    @api.depends('order_line')
+    @api.depends('order_line',
+                 'cost_line.is_check_pre_tax_costs',
+                 'exchange_rate_line',
+                 'purchase_synthetic_ids')
     def _compute_exchange_rate_line_and_cost_line(self):
         for rec in self:
             rec.exchange_rate_line = [(5, 0)]
@@ -755,12 +758,6 @@ class PurchaseOrder(models.Model):
                     'purchase_order_id': rec.id,
                     'qty_product': line.product_qty,
                 })
-                if exchange_rate_line:
-                    exchange_rate_line.update({
-                        'ex_po_id': line.id,
-                        'vnd_amount': line.total_vnd_amount,
-                        'qty_product': line.product_qty,
-                    })
                 synthetic_line = self.env['forlife.synthetic'].create({
                     'syn_po_id': line.id,
                     'product_id': line.product_id.id,
@@ -768,7 +765,7 @@ class PurchaseOrder(models.Model):
                     'price_unit': line.price_unit,
                     'price_subtotal': line.total_vnd_amount,
                     'quantity': line.product_qty,
-                    'before_tax': line.total_value,
+                    # 'before_tax': line.total_value,
                     'discount': line.discount,
                     'synthetic_id': rec.id,
                 })
@@ -780,6 +777,13 @@ class PurchaseOrder(models.Model):
                         'discount': line.discount,
                         'price_unit': line.price_unit,
                     })
+                    for item in synthetic_line:
+                        if exchange_rate_line:
+                            exchange_rate_line.update({
+                                'ex_po_id': line.id,
+                                'vnd_amount': line.total_vnd_amount + item.before_tax,
+                                'qty_product': line.product_qty,
+                            })
 
 
     # def action_update_import(self):
@@ -1484,7 +1488,7 @@ class PurchaseOrderLine(models.Model):
     is_change_vendor = fields.Integer()
 
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
-    total_value = fields.Float()
+    # total_value = fields.Float()
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
@@ -2374,7 +2378,8 @@ class Synthetic(models.Model):
 
 
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs',
+                 'synthetic_id.exchange_rate_line')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
             cost_line_true = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
@@ -2397,7 +2402,8 @@ class Synthetic(models.Model):
                         else:
                             line.vnd_amount = nine.total_vnd_amount
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs',
+                 'synthetic_id.exchange_rate_line')
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
