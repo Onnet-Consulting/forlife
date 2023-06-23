@@ -36,14 +36,14 @@ class ApisVietinBank(models.AbstractModel):
         sig = signer.sign(hash_obj)
         return b64encode(sig).decode('utf-8')
 
-    def _prepare_body(self):
+    def _prepare_body(self, pos_id):
         params = self.env['ir.config_parameter'].sudo()
         date_to = datetime.now().strftime('%d/%m/%Y')
         date_from = (datetime.now() - timedelta(days=30)).strftime('%d/%m/%Y')
         request_id = self._ramdom_request()
         provider_id = params.get_param('vietinbank.provider')
         merchant_id = ""
-        account_id = "118649946666"
+        account_id = self.env['pos.config'].browse(pos_id).vietinbank_account_no
         http_request = http.request.httprequest
         # Get the client's IP address from the request headers
         client_ip = http_request.environ.get('REMOTE_ADDR')
@@ -70,12 +70,12 @@ class ApisVietinBank(models.AbstractModel):
         vals.update({'signature': self._vietin_bank_sign_message(unsigned_signature)})
         return vals
 
-    def get_statement_inquiry(self):
+    def get_statement_inquiry(self, pos_id):
         params = self.env['ir.config_parameter'].sudo()
         req = requests.post(
             url=params.get_param('vietinbank.uri') + '/development/erp/v1/statement/inquiry',
             headers=self._get_header(),
-            json=self._prepare_body()
+            json=self._prepare_body(pos_id)
         )
         if req.status_code != 200:
             return False, _("Can't get data from vietinbank")
@@ -86,17 +86,28 @@ class ApisVietinBank(models.AbstractModel):
 
     @api.model
     def get_list_transaction_info(self, args):
-        trans_data = self.get_statement_inquiry()
+        trans_data = self.get_statement_inquiry(pos_id=args[0])
         data = trans_data[1]
+        self.env['vietinbank.transaction.model'].search([
+            ('pos_order_id', '=', args[0]),
+            ('payment_method_id', '=', args[1]),
+            ('session_id', '=', args[2]),
+        ]).unlink()
+        virtual_account = self.env['pos.config'].browse(args[0]).vietinbank_virtual_account
         if not trans_data[0]:
             return trans_data
         vals = []
         for item in data.get('transactions', []):
             if 'order' not in item or not item['order']:
                 continue
+            if 'virtualAccount' not in item:
+                continue
+            if item['virtualAccount'] != virtual_account:
+                continue
             vals.append({
                 'pos_order_id': args[0],
                 'payment_method_id': args[1],
+                'session_id': args[2],
                 'debit_account': item['corresponsiveAccount'],
                 'amount': item['debit'],
                 'benefi_account': data['account'],
@@ -121,6 +132,7 @@ class VietinBankModel(models.TransientModel):
 
     pos_order_id = fields.Many2one('pos.order', string='Pos Order')
     payment_method_id = fields.Many2one('pos.payment.method', string='Payment method')
+    session_id = fields.Many2one('pos.session', string='Session Id')
     company_id = fields.Many2one('res.company', string='Company')
     debit_account = fields.Char(string='Debit account')
     amount = fields.Float(string='Amount')

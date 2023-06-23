@@ -13,9 +13,3 @@ class PosPaymentMethod(models.Model):
 
     def _get_payment_terminal_selection(self):
         return super()._get_payment_terminal_selection() + [('vietinbank', 'Vietinbank')]
-
-    @api.model
-    def vnpay_payment_request(self, url, data):
-        req = requests.post(url, json=data)
-        res = req.json()
-        return res
