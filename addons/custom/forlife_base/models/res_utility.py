@@ -108,10 +108,13 @@ class ResUtility(models.AbstractModel):
     @api.model
     def get_stock_inventory_detail(self, inv_id):
         data = self.env['stock.inventory'].search([('id', '=', inv_id)])
-        return [{
-            'barcode': line.product_id.barcode,
-            'quantity': line.theoretical_qty
-        } for line in data.mapped('line_ids')]
+        return {
+            'total_qty': sum(data.mapped('line_ids.theoretical_qty')),
+            'details': [{
+                'barcode': line.product_id.barcode,
+                'quantity': line.theoretical_qty
+            } for line in data.mapped('line_ids')],
+        }
 
     @api.model
     def get_question_info(self, customer_phone, brand):
