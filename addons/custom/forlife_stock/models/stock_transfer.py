@@ -331,14 +331,14 @@ class StockTransfer(models.Model):
                     'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'product_id': product.id,
                     'uom_id': line.uom_id.id,
-                    'qty_plan': abs(line.qty_plan - product_quantity),
+                    'qty_plan': 0,
                     'qty_in': line.qty_in - line.qty_out,
                     'qty_out': line.qty_in - line.qty_out,
                 })]
                 diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='in_approve', type='excess')
                 line.write({
                     'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
-                    'qty_plan': product_quantity,
+                    'qty_plan': line.qty_plan,
                     'qty_out': product_quantity,
                     'qty_in': product_quantity,
                 })
