@@ -145,7 +145,7 @@ table.available-report-list {
 }
 
 .oe_max_height_500 {
-    max-height: 500px;
+    max-height: 450px;
     margin-top: 7px;
     overflow: scroll;
 }

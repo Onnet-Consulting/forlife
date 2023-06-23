@@ -23,6 +23,7 @@
                     <sheet>
                         <group>
                             <group>
+                                <field name="customer_id"/>
                                 <field name="brand_id"/>
                                 <field name="card_rank_id"/>
                             </group>

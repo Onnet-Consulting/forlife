@@ -50,6 +50,8 @@
                                 <field name="acc_reduce_accumulated_points_id" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}"/>
                                 <field name="acc_tax_reduce_accumulated_points_id" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}"/>
                                 <field name="account_journal_id" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}"/>
+                                <field name="point_compensate_time"/>
+                                <field name="point_compensate_rate"/>
                             </group>
                         </group>
                         <group name="order_point" string="Order Point">

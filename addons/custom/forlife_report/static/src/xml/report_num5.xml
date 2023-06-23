@@ -53,7 +53,8 @@
                             <td><t t-esc="line.customer_phone"/></td>
                             <td><t t-esc="line.customer_name"/></td>
                             <td><t t-esc="line.employee_name"/></td>
-                            <td><t t-esc="format_decimal(line.sl)"/></td>
+                            <td><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.refund_qty, 0)"/></td>
                             <td><t t-esc="format_decimal(line.tt, 0)"/></td>
                             <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
                             <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
@@ -83,10 +84,11 @@
                                 <td><t t-esc="line.product_code"/></td>
                                 <td><t t-esc="line.product_name"/></td>
                                 <td><t t-esc="line.uom_name"/></td>
-                                <td><t t-esc="format_decimal(line.qty, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.refund_qty, 0)"/></td>
                                 <td><t t-esc="format_decimal(line.lst_price, 0)"/></td>
                                 <t t-if="line.price_subtotal">
-                                    <td><t t-esc="(line.money_reduced / line.price_subtotal * 100)"/></td>
+                                    <td><t t-esc="format_decimal(line.money_reduced / line.price_subtotal * 100, 0)"/></td>
                                 </t>
                                 <t t-else="">
                                     <td>0</td>

@@ -47,7 +47,8 @@
                                 <col style="width:12%"/>
                                 <col style="width:12%"/>
                                 <col style="width:12%"/>
-                                <col style="width:27%"/>
+                                <col style="width:12%"/>
+                                <col style="width:15%"/>
                                 <tbody>
                                     <tr class="x_title x_bold x_center">
                                         <td colspan="3" rowspan="2"/>
@@ -55,23 +56,20 @@
                                             PHÒNG BAN ĐỀ NGHỊ
                                             <span t-field="o.department_id"/>
                                         </td>
-                                        <td colspan="3">
-                                            <span t-field="o.account_analytic_id.name"/>
+                                        <td colspan="2" rowspan="2">
+                                            <span t-field="o.use_department_id"/>
                                         </td>
                                     </tr>
                                     <tr class="x_title x_bold x_center">
                                         <td colspan="4">
                                             PHIẾU MUA HÀNG
                                         </td>
-                                        <td colspan="3">
-                                            MỞ MỚI
-                                        </td>
                                     </tr>
                                     <tr class="x_bold">
                                         <td colspan="3">Người yêu cầu:
                                             <span t-field="o.employee_id"/>
                                         </td>
-                                        <td colspan="2">Chức vụ:
+                                        <td colspan="3">Chức vụ:
                                             <span t-field="o.employee_id.job_id"/>
                                         </td>
                                         <td colspan="2">Email:
@@ -85,8 +83,10 @@
                                         <td colspan="3">Người nhận hàng:
                                             <span t-field="o.receiver_id"/>
                                         </td>
-                                        <td colspan="2">Chức vụ:
+                                        <td colspan="3">Chức vụ:
                                             <span t-field="o.receiver_id.job_id"/>
+                                            -
+                                            <span t-field="o.receiver_id.department_id"/>
                                         </td>
                                         <td colspan="2">Email:
                                             <span t-field="o.receiver_id.work_email"/>
@@ -96,17 +96,17 @@
                                         </td>
                                     </tr>
                                     <tr class="x_bold">
-                                        <td colspan="8">Địa chỉ:
+                                        <td colspan="9">Địa chỉ:
                                             <span t-field="o.delivery_address"/>
                                         </td>
                                     </tr>
                                     <tr class="x_bold">
-                                        <td colspan="8">Ngày đặt hàng:
+                                        <td colspan="9">Ngày đặt hàng:
                                             <span t-field="o.request_date"/>
                                         </td>
                                     </tr>
                                     <tr class="x_bold">
-                                        <td colspan="8">Ngày nhận hàng:
+                                        <td colspan="9">Ngày nhận hàng:
                                             <span t-field="o.date_planned" t-options='{"widget": "date"}'/>
                                             (chú ý:<span t-field="o.attention"/>)
                                         </td>
@@ -119,7 +119,7 @@
                                         <td>Số lượng đặt</td>
                                         <td>Số lượng kho</td>
                                         <td>Số lượng mua</td>
-                                        <td>Ghi chú</td>
+                                        <td colspan="2">Ghi chú</td>
                                     </tr>
                                     <t t-set="stt" t-value="1"/>
                                     <t t-set="total" t-value="0"/>
@@ -142,9 +142,11 @@
                                             </td>
                                             <td/>
                                             <td/>
-                                            <td class="x_italic">Thời gian nhận hàng:
-                                                <span t-field="line.date_planned" t-options='{"widget": "date"}'/>
-                                                (Chú ý: đặt hàng theo cột số lượng đặt)
+                                            <td class="x_italic" colspan="2">
+                                                <div>Thời gian nhận hàng:
+                                                    <span t-field="line.date_planned" t-options='{"widget": "date"}'/>
+                                                </div>
+                                                <div>(Chú ý: đặt hàng theo cột số lượng đặt)</div>
                                             </td>
                                         </tr>
                                         <t t-set="stt" t-value="stt + 1"/>
@@ -157,7 +159,7 @@
                                         </td>
                                         <td/>
                                         <td/>
-                                        <td/>
+                                        <td colspan="2"/>
                                     </tr>
                                 </tbody>
                             </table>
@@ -171,9 +173,9 @@
                         </div>
                         <br/>
                         <div class="row">
-                            <div class="col-4 x_center">Tp chức năng</div>
+                            <div class="col-4 x_center x_bold">Tp chức năng</div>
                             <div class="col-4"/>
-                            <div class="col-4 x_center">Người đề nghị</div>
+                            <div class="col-4 x_center x_bold">Người đề nghị</div>
                         </div>
                     </div>
                 </t>

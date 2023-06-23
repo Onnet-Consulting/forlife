@@ -51,6 +51,7 @@ class PurchaseRequest(models.Model):
     receiver_id = fields.Many2one('hr.employee', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
+    use_department_id = fields.Many2one('hr.department', string='Use Department')
 
     @api.model
     def load(self, fields, data):
