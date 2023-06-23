@@ -138,7 +138,7 @@
                             <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" readonly="1"/>
+                            <field name="price_unit" attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('parent.purchase_type', '=', 'product')]}"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount" string="Chiết khấu %"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>

@@ -2215,7 +2215,13 @@ class StockPicking(models.Model):
                                 'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
                                 'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                             }))
-                        ### tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
+                        ### check tồn kho với npl
+                        number_product = self.env['stock.quant'].search(
+                            [('location_id', '=', record.location_dest_id.id),
+                             ('product_id', '=', material_line.product_id.id)])
+                        if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                            raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                        ## tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {
