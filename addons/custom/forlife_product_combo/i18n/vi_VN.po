@@ -409,3 +409,16 @@ msgstr "Chọn tất cả"
 #: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__is_selected
 msgid "Selected"
 msgstr "Chọn"
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/wizard/wizard_increase_decrease_invoice.py:0
+#: code:addons/m_onnet_odoo_mfl2201er/addons/custom/forlife_product_combo/wizard/wizard_increase_decrease_invoice.py:0
+#, python-format
+msgid "Please select at least 1 line to create an Increment/Decrease entry!"
+msgstr "Vui lòng chọn ít nhất 1 dòng để tạo bút toán Tăng/giảm!"
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.account_move_forlife_combo_inherit
+msgid "Increase/Decrease Invoice"
+msgstr "HĐ Tăng/giảm"
