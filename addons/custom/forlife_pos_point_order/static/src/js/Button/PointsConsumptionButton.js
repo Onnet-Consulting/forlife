@@ -185,7 +185,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     }
                }
 
-                this.env.pos.selectedOrder.old_data = data;
+               this.env.pos.selectedOrder.old_data = data;
 //                }
 
                 //--------/
@@ -193,6 +193,12 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 order_lines.forEach(function(item){
                     if(!item.point){
                         item.point = 0;
+                    }
+                    if(item.point != 0){
+                        if(item.card_rank_applied && item.card_rank_discount>0){
+                            item.card_rank_applied = false;
+                            item.card_rank_discount = 0;
+                        }
                     }
                     let point = -item.point
                     total_point_used += point
