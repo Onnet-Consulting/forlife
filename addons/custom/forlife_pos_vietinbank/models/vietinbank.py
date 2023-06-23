@@ -44,9 +44,7 @@ class ApisVietinBank(models.AbstractModel):
         provider_id = params.get_param('vietinbank.provider')
         merchant_id = ""
         account_id = self.env['pos.config'].browse(pos_id).vietinbank_account_no
-        http_request = http.request.httprequest
         # Get the client's IP address from the request headers
-        client_ip = http_request.environ.get('REMOTE_ADDR')
         vals = {
             "requestId": request_id,
             "merchantId": merchant_id,
@@ -61,7 +59,7 @@ class ApisVietinBank(models.AbstractModel):
             "transTime": datetime.now().timestamp(),
             "channel": "ERP",
             "version": "1",
-            "clientIP": client_ip,
+            "clientIP": "",
             "language": "vi",
             "signature": ""
         }
@@ -78,23 +76,29 @@ class ApisVietinBank(models.AbstractModel):
             json=self._prepare_body(pos_id)
         )
         if req.status_code != 200:
-            return False, _("Can't get data from vietinbank")
+            return {'status': False, 'msg': _("Can't get data from vietinbank")}
         data = json.loads(req.text)
         if data['status']['code'] != '1':
-            return False, _("Can't get data from vietinbank: Error: %s" % data['status']['message'])
-        return True, data
+            return {'status': False, 'msg': _("Can't get data from vietinbank: Error: %s" % data['status']['message'])}
+        return {
+            'status': True,
+            'data': data,
+            'msg': 'Success'
+        }
 
     @api.model
     def get_list_transaction_info(self, args):
         trans_data = self.get_statement_inquiry(pos_id=args[0])
-        data = trans_data[1]
+        if not trans_data['status']:
+            return False, 'Server error!: %s' % trans_data['msg']
+        data = trans_data['data']
         self.env['vietinbank.transaction.model'].search([
             ('pos_order_id', '=', args[0]),
             ('payment_method_id', '=', args[1]),
             ('session_id', '=', args[2]),
         ]).unlink()
         virtual_account = self.env['pos.config'].browse(args[0]).vietinbank_virtual_account
-        if not trans_data[0]:
+        if not trans_data['data']:
             return trans_data
         vals = []
         for item in data.get('transactions', []):
