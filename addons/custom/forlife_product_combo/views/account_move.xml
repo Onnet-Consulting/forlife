@@ -13,6 +13,13 @@
                             attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('payment_state', '!=', 'paid')]}"
                             groups="account.group_account_invoice"/>
                 </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" style="width: 150px"
+                            name="action_view_increase_decrease_invoice" type="object" icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('increase_decrease_inv_count', '=', 0)]}">
+                        <field string="Increase/Decrease Invoice" name="increase_decrease_inv_count" widget="statinfo"/>
+                    </button>
+                </xpath>
             </field>
         </record>
 
