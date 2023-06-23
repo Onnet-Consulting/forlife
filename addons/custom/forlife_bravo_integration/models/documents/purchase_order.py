@@ -99,9 +99,9 @@ class AccountMovePurchaseAsset(models.Model):
                 "RowId": invoice_line.id or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
                 "DeptCode": invoice_line.analytic_account_id.code or None,
-                "AssetCode": invoice_line.asset_code.code if (invoice_line.asset_code and invoice_line.asset_code.type in ("CCDC", "TSCD")) else None,
+                "AssetCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
                 "ExpenseCatgCode": expense_code if valid_expense_code else None,
-                "ProductCode": invoice_line.asset_code.code if (invoice_line.asset_code and invoice_line.asset_code.type == "XDCB") else None,
+                "ProductCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
 
             })
             invoice_tax_ids = invoice_line.tax_ids
