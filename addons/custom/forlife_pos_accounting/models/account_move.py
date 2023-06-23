@@ -3,13 +3,6 @@ from odoo import fields, models, api
 
 class InheritAccountMove(models.Model):
     _inherit = 'account.move'
-    #
-    # @api.model
-    # def create(self, vals_list):
-    #     acc = self.env['account.move'].search([('ref','=', vals_list['ref'])])
-    #     if acc:
-    #         raise
-    #     return super(InheritAccountMove, self).create(vals_list)
 
     def _inverse_partner_id(self):
         for invoice in self:
