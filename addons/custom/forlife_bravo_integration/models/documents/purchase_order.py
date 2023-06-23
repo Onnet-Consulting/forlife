@@ -106,7 +106,7 @@ class AccountMovePurchaseAsset(models.Model):
             })
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
             if journal_tax_lines:
                 tax_line = journal_tax_lines[0]
                 journal_value_line.update({
@@ -149,7 +149,7 @@ class AccountMovePurchaseProduct(models.Model):
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and l.tax_ids)
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
         # get only one tax line (assume that all products with the same taxes)
         tax_line = journal_tax_lines and journal_tax_lines[0]
         payable_lines = journal_lines - invoice_lines - journal_tax_lines
