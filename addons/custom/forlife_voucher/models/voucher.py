@@ -96,7 +96,7 @@ class Voucher(models.Model):
                     v.name = v.name
 
     def _generator_charnumber_code(self, size, chars=string.ascii_uppercase + string.digits):
-        string_generate = chars.replace("O", "")
+        string_generate = chars.replace("O", "").replace("0", "").replace("I", "")
         return ''.join(random.choice(string_generate) for _ in range(size))
 
     @api.onchange('phone_number')
