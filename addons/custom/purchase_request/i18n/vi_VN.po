@@ -764,3 +764,8 @@ msgstr "Người nhận"
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
 msgid "Receiver's information"
 msgstr "Thông tin nhận"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__use_department_id
+msgid "Use Department"
+msgstr "Phòng ban sử dụng"

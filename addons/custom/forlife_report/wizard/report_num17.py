@@ -8,8 +8,10 @@ TITLES = [
     'STT', 'Mã chi nhánh', 'Chi nhánh', 'Ngày', 'Số CT', 'Mã KH', 'SĐT', 'Tên KH', 'Mô tả', 'Mã thẻ GG', 'Voucher', 'Số lượng mua',
     'Số lượng trả', 'Cộng', 'Giảm giá', 'Tổng cộng', 'Giảm trên HĐ', 'Cộng lại', 'Tiền đặt cọc', 'Tiền trả lại', 'Tiền tích lũy',
     'Tích lũy HĐ', 'Trừ tích lũy', 'Tiền thẻ GG', 'Phải thu', 'DT cửa hàng', 'Tiền mặt', 'Tiền thẻ', 'Tiền VNPay', 'Tiền SHIPCOD', 'Tiền voucher',
-    'Người lập', 'Ngày lập', 'Người sửa', 'Ngày sửa', 'Số CT nhập', 'Ngày CT nhập', 'Nhân viên', 'Nhóm khách', 'Mã Vận đơn/Mã GD gốc', 'Kênh bán',
+    'Người lập', 'Ngày lập', 'Người sửa', 'Ngày sửa', 'Số CT gốc', 'Ngày CT gốc', 'Nhân viên', 'Nhóm khách', 'Mã Vận đơn/Mã GD gốc', 'Kênh bán',
 ]
+
+TRANSACTION_DETAIL_TITLE = ['STT', 'Mã vạch', 'Tên sản phẩm', 'Đơn vị', 'Sl bán', 'Sl trả', 'Giá bán', '%Giảm giá', 'Tiền giảm giá', 'Thành tiền']
 
 
 class ReportNum17(models.TransientModel):
@@ -51,151 +53,208 @@ class ReportNum17(models.TransientModel):
                 select id from promotion_code where name ilike '%{self.order_filter}%')))""" if self.order_filter else ''
 
         query = f"""
-with po_datas as (
-    select po.id as id
-    from pos_order po
-    {customer_join}
-    where po.brand_id = {self.brand_id.id} and po.company_id = any( array{allowed_company})
-    and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-    and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any(array{store_ids})))
-    {order_filter_condition}
-),
-ma_the_gg_x as (
-    select po_id, array_agg(code) as codes
-    from (select DISTINCT pul.order_id as po_id, pro_code.name as code
-        from promotion_usage_line pul
-            join promotion_code pro_code on pro_code.id = pul.code_id
-        where pul.order_id in (select id from po_datas)
-    ) as xx group by po_id
-),
-voucher_x as (
-    select po_id, array_agg(voucher) as vouchers
-    from (select DISTINCT pvl.pos_order_id as po_id, vv.name as voucher
-        from pos_voucher_line pvl
-            join voucher_voucher vv on vv.id = pvl.voucher_id
-        where pvl.pos_order_id in (select id from po_datas)
-    ) as xx group by po_id
-),
-so_luong_x as (
-    select 
-        po.id                                                       as po_id,
-        sum(greatest(pol.qty, 0))::float                            as sl_mua,
-        - sum(least(pol.qty, 0))                                    as sl_tra,
-        sum(greatest(pol.qty, 0) * pol.original_price)::float       as cong,
-        sum(case when disc.type = 'point' then disc.recipe * 1000
-                when disc.type = 'card' then disc.recipe
-                when disc.type = 'ctkm' then disc.discounted_amount
-                else 0
-            end)::float                                             as giam_gia,
-        sum(- least(pol.qty, 0) * pol.original_price)::float        as tien_tra_lai,
-        sum(pul.discount_amount * pol.qty)::float                   as tien_the_gg
-    from pos_order po
-        join pos_order_line pol on pol.order_id = po.id
-        left join pos_order_line_discount_details disc on disc.pos_order_line_id = pol.id
-        left join promotion_usage_line pul on pul.order_line_id = pol.id and pul.code_id notnull
-    where po.id in (select id from po_datas)
-    group by po_id
-)
-select
-    row_number() over (order by po.id)                                  as num,
-    sto.code                                                            as ma_cn,
-    sto.name                                                            as ten_cn,
-    to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')    as ngay,
-    po.pos_reference                                                    as so_ct,
-    rp.ref                                                              as ma_kh,
-    rp.phone                                                            as sdt,
-    rp.name                                                             as ten_kh,
-    ''                                                                  as mo_ta,
-    gg_x.codes                                                          as ma_the_gg,
-    v_x.vouchers                                                        as voucher,
-    sl_x.sl_mua                                                         as sl_mua,
-    sl_x.sl_tra                                                         as sl_tra,
-    sl_x.cong                                                           as cong,
-    sl_x.giam_gia                                                       as giam_gia,
-    coalesce(sl_x.cong - sl_x.giam_gia, 0)                              as tong_cong,
-    0                                                                   as giam_tren_hd,
-    0                                                                   as tien_dat_coc,
-    coalesce(sl_x.tien_tra_lai, 0)                                      as tien_tra_lai,
-    (select coalesce(sum(points_store), 0) * 1000 from (
-        select points_store from partner_history_point
-        where store = '{store_key}'
-         and date_order < po.date_order and partner_id = po.partner_id
-    ) as xx)                                                            as tien_tich_luy,
-    coalesce((select sum(points_fl_order) from partner_history_point
-     where pos_order_id = po.id), 0) * 1000                             as tich_luy_hd,
-    (select coalesce(sum(points_used), 0) * 1000 from (
-        select points_used from partner_history_point
-        where store = '{store_key}'
-         and date_order < po.date_order and partner_id = po.partner_id
-    ) as xx)                                                            as tru_tich_luy,
-    coalesce(sl_x.tien_the_gg, 0)                                       as tien_the_gg,
-    coalesce(po.amount_total, 0)::float                                 as phai_thu,
-    coalesce((select sum(amount) from pos_payment
-            where pos_order_id = po.id and payment_method_id in (
-                select id from pos_payment_method
-                where (is_voucher = false or is_voucher is null)
-                    and company_id = any( array{allowed_company}) and journal_id in (
-                    select id from account_journal where type = 'cash')
-                )
-        ), 0)                                                                   as tien_mat,
-    coalesce((select sum(amount) from pos_payment
-            where pos_order_id = po.id and payment_method_id in (
-                select id from pos_payment_method
-                where (is_voucher = false or is_voucher is null)
-                    and company_id = any( array{allowed_company}) and journal_id in (
-                    select id from account_journal where type = 'bank')
-                )
-        ), 0)                                                                   as tien_the,
-    0                                                                           as tien_vnpay,
-    0                                                                           as tien_shipcod,
-    coalesce((select sum(amount) from pos_payment
-            where pos_order_id = po.id and payment_method_id in (
-                select id from pos_payment_method
-                where is_voucher = true and company_id = any( array{allowed_company})
-                )
-        ), 0)                                                                   as tien_voucher,
-    nl.name                                                                     as nguoi_lap,
-    to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')           as ngay_lap,
-    ''                                                                          as nguoi_sua,
-    ''                                                                          as ngay_sua,
-    (select array_agg(pos_reference)
-    from pos_order where id in (
-        select order_id from pos_order_line where id in (
-            select refunded_orderline_id
-            from pos_order_line
-            where refunded_orderline_id notnull and order_id = po.id)
-        ))                                                                      as so_ct_nhap,
-    (select array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY'))
-    from pos_order where id in (
-        select order_id from pos_order_line where id in (
-            select refunded_orderline_id
-            from pos_order_line
-            where refunded_orderline_id notnull and order_id = po.id)
-        ))                                                                      as ngay_ct_nhap,
-    (select array_agg(name) from (
-        select distinct name from hr_employee where id in (
-            select employee_id from pos_order_line where order_id = po.id
-            )
-    ) as xx)                                                                    as nhan_vien,
-    (select array_agg(name) from (
-        select distinct name from res_partner_retail
-        where brand_id = {self.brand_id.id} and id in (
-            select res_partner_retail_id from res_partner_res_partner_retail_rel
-            where res_partner_id = po.partner_id
-            )
-     ) as xx)                                                                   as nhom_khach,
-    ''                                                                          as ma_van_don,
-    'Cửa hàng'                                                                  as kenh_ban
+with po_datas as (select po.id  as po_id,
+                         pol.id as pol_id
+                  from pos_order po
+                           {customer_join}
+                           join pos_order_line pol on po.id = pol.order_id
+                           join product_product pp on pp.id = pol.product_id
+                           join product_template pt on pt.id = pp.product_tmpl_id
+                  where po.brand_id = {self.brand_id.id}
+                    and po.company_id = any (array {allowed_company})
+                    and pt.detailed_type <> 'service'
+                    and pt.voucher <> true
+                    and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+                    {order_filter_condition}
+                    and po.session_id in (select id
+                                          from pos_session
+                                          where config_id in (select id
+                                                              from pos_config
+                                                              where store_id = any (array {store_ids})))),
+     ma_the_gg_x as (select po_id, array_agg(code) as codes
+                     from (select DISTINCT pul.order_id as po_id, pro_code.name as code
+                           from promotion_usage_line pul
+                                    join promotion_code pro_code on pro_code.id = pul.code_id
+                           where pul.order_line_id in (select distinct pol_id from po_datas)) as xx
+                     group by po_id),
+     voucher_x as (select po_id, array_agg(voucher) as vouchers
+                   from (select DISTINCT pvl.pos_order_id as po_id, vv.name as voucher
+                         from pos_voucher_line pvl
+                                  join voucher_voucher vv on vv.id = pvl.voucher_id
+                         where pvl.pos_order_id in (select distinct po_id from po_datas)) as xx
+                   group by po_id),
+     chi_tiet_x as (select row_number() over (PARTITION BY pol.order_id order by pol.id)  as num,
+                           pol.order_id                                                   as po_id,
+                           pp.barcode                                                     as ma_vach,
+                           coalesce(pt.name::json -> '{self.env.user.lang}', pt.name::json -> 'en_US')   as ten_sp,
+                           coalesce(uom.name::json -> '{self.env.user.lang}', uom.name::json -> 'en_US') as don_vi,
+                           greatest(pol.qty, 0)::float                                    as sl_mua,
+                           abs(least(pol.qty, 0))                                         as sl_tra,
+                           coalesce(pol.original_price, 0)::float                         as gia_ban,
+                           (case
+                                when disc.type = 'point' then disc.recipe * 1000
+                                when disc.type = 'card' then disc.recipe
+                                when disc.type = 'ctkm' then disc.discounted_amount
+                                else 0
+                               end)::float                                                as tien_giam_gia,
+                           (pul.discount_amount * pol.qty)::float                         as tien_the_gg
+                    from pos_order_line pol
+                             join product_product pp on pp.id = pol.product_id
+                             join product_template pt on pt.id = pp.product_tmpl_id
+                             join uom_uom uom on uom.id = pt.uom_id
+                             left join pos_order_line_discount_details disc on disc.pos_order_line_id = pol.id
+                             left join promotion_usage_line pul on pul.order_line_id = pol.id and pul.code_id notnull
+                    where pol.id in (select distinct pol_id from po_datas)
+                    order by pol.id, num),
+     chi_tiet_s as (select po_id                            as po_id,
+                           array_agg(to_json(chi_tiet_x.*)) as value_detail
+                    from chi_tiet_x
+                    group by po_id),
+     so_luong_x as (select po_id                        as po_id,
+                           sum(sl_mua)::float           as sl_mua,
+                           sum(sl_tra)                  as sl_tra,
+                           sum(sl_mua * gia_ban)::float as cong,
+                           sum(tien_giam_gia)::float    as tien_giam_gia,
+                           sum(sl_tra * gia_ban)::float as tien_tra_lai,
+                           sum(tien_the_gg)::float      as tien_the_gg
+                    from chi_tiet_x
+                    group by po_id)
+"""
+        query += f"""
+select row_number() over (order by po.id)                                                    as num,
+       sto.code                                                                              as ma_cn,
+       sto.name                                                                              as ten_cn,
+       to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')                      as ngay,
+       po.pos_reference                                                                      as so_ct,
+       rp.ref                                                                                as ma_kh,
+       rp.phone                                                                              as sdt,
+       rp.name                                                                               as ten_kh,
+       po.note                                                                               as mo_ta,
+       gg_x.codes                                                                            as ma_the_gg,
+       v_x.vouchers                                                                          as voucher,
+       sl_x.sl_mua                                                                           as sl_mua,
+       sl_x.sl_tra                                                                           as sl_tra,
+       sl_x.cong                                                                             as cong,
+       sl_x.tien_giam_gia                                                                    as giam_gia,
+       coalesce(sl_x.cong - sl_x.tien_giam_gia, 0)                                           as tong_cong,
+       0                                                                                     as giam_tren_hd,
+       0                                                                                     as tien_dat_coc,
+       coalesce(sl_x.tien_tra_lai, 0)                                                        as tien_tra_lai,
+       (select coalesce(sum(points_store), 0) * 1000
+        from (select points_store
+              from partner_history_point
+              where store = '{store_key}'
+                and date_order < po.date_order
+                and partner_id = po.partner_id) as xx)                                       as tien_tich_luy,
+       coalesce((select sum(points_fl_order)
+                 from partner_history_point
+                 where pos_order_id = po.id), 0) * 1000                                      as tich_luy_hd,
+       (select coalesce(sum(points_used), 0) * 1000
+        from (select points_used
+              from partner_history_point
+              where store = '{store_key}'
+                and date_order < po.date_order
+                and partner_id = po.partner_id) as xx)                                       as tru_tich_luy,
+       coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
+       coalesce(po.amount_total, 0)::float                                                   as phai_thu,
+       coalesce((select sum(amount)
+                 from pos_payment
+                 where pos_order_id = po.id
+                   and payment_method_id in (select id
+                                             from pos_payment_method
+                                             where (is_voucher = false or is_voucher is null)
+                                               and company_id = any (array {allowed_company})
+                                               and journal_id in (select id
+                                                                  from account_journal
+                                                                  where type = 'cash'))), 0) as tien_mat,
+       coalesce((select sum(amount)
+                 from pos_payment
+                 where pos_order_id = po.id
+                   and payment_method_id in (select id
+                                             from pos_payment_method
+                                             where (is_voucher = false or is_voucher is null)
+                                               and company_id = any (array {allowed_company})
+                                               and journal_id in (select id
+                                                                  from account_journal
+                                                                  where type = 'bank'
+                                                                  and code = 'BA01'))), 0)   as tien_the,
+       coalesce((select sum(amount)
+                 from pos_payment
+                 where pos_order_id = po.id
+                   and payment_method_id in (select id
+                                             from pos_payment_method
+                                             where (is_voucher = false or is_voucher is null)
+                                               and company_id = any (array {allowed_company})
+                                               and journal_id in (select id
+                                                                  from account_journal
+                                                                  where type = 'bank'
+                                                                  and code in ('VN01','VN02')))), 0) as tien_vnpay,
+       coalesce((select sum(amount)
+                 from pos_payment
+                 where pos_order_id = po.id
+                   and payment_method_id in (select id
+                                             from pos_payment_method
+                                             where (is_voucher = false or is_voucher is null)
+                                               and company_id = any (array {allowed_company})
+                                               and journal_id in (select id
+                                                                  from account_journal
+                                                                  where type = 'bank'
+                                                                  and code = 'NE01'))), 0)  as tien_nextpay,
+       0                                                                                    as tien_shipcod,
+       coalesce((select sum(amount)
+                 from pos_payment
+                 where pos_order_id = po.id
+                   and payment_method_id in (select id
+                                             from pos_payment_method
+                                             where is_voucher = true
+                                               and company_id = any (array {allowed_company}))), 0) as tien_voucher,
+       nl.name                                                                               as nguoi_lap,
+       to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')                     as ngay_lap,
+       ''                                                                                    as nguoi_sua,
+       ''                                                                                    as ngay_sua,
+       (select array_agg(pos_reference)
+        from pos_order
+        where id in (select order_id
+                     from pos_order_line
+                     where id in (select refunded_orderline_id
+                                  from pos_order_line
+                                  where refunded_orderline_id notnull
+                                    and order_id = po.id)))                                  as so_ct_goc,
+       (select array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY'))
+        from pos_order
+        where id in (select order_id
+                     from pos_order_line
+                     where id in (select refunded_orderline_id
+                                  from pos_order_line
+                                  where refunded_orderline_id notnull
+                                    and order_id = po.id)))                                  as ngay_ct_goc,
+       (select array_agg(name)
+        from (select distinct name
+              from hr_employee
+              where id in (select employee_id
+                           from pos_order_line
+                           where order_id = po.id)) as xx)                                   as nhan_vien,
+       (select array_agg(name)
+        from (select distinct name
+              from res_partner_retail
+              where brand_id = {self.brand_id.id}
+                and id in (select res_partner_retail_id
+                           from res_partner_res_partner_retail_rel
+                           where res_partner_id = po.partner_id)) as xx)                     as nhom_khach,
+       ''                                                                                    as ma_van_don,
+       'Cửa hàng'                                                                            as kenh_ban,
+       ct_s.value_detail                                                                     as value_detail
 from pos_order po
-    left join res_partner rp on po.partner_id = rp.id
-    left join res_partner nl on po.user_id = nl.id
-    left join pos_session ses on ses.id = po.session_id
-    left join pos_config conf on conf.id = ses.config_id
-    left join store sto on sto.id = conf.store_id
-    left join ma_the_gg_x gg_x on gg_x.po_id = po.id
-    left join voucher_x v_x on v_x.po_id = po.id
-    left join so_luong_x sl_x on sl_x.po_id = po.id
-where po.id in (select id from po_datas)
+         left join res_partner rp on po.partner_id = rp.id
+         left join res_partner nl on po.user_id = nl.id
+         left join pos_session ses on ses.id = po.session_id
+         left join pos_config conf on conf.id = ses.config_id
+         left join store sto on sto.id = conf.store_id
+         left join ma_the_gg_x gg_x on gg_x.po_id = po.id
+         left join voucher_x v_x on v_x.po_id = po.id
+         left join so_luong_x sl_x on sl_x.po_id = po.id
+         left join chi_tiet_s ct_s on ct_s.po_id = po.id
+where po.id in (select distinct po_id from po_datas)
 order by num
 """
         return query
@@ -209,6 +268,7 @@ order by num
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
+            'transaction_detail_title': TRANSACTION_DETAIL_TITLE,
             "data": data,
         })
         return values
@@ -255,16 +315,17 @@ order by num
             sheet.write(row, 26, value.get('tien_mat', 0), formats.get('int_number_format'))
             sheet.write(row, 27, value.get('tien_the', 0), formats.get('int_number_format'))
             sheet.write(row, 28, value.get('tien_vnpay', 0), formats.get('int_number_format'))
-            sheet.write(row, 29, value.get('tien_shipcod', 0), formats.get('int_number_format'))
-            sheet.write(row, 30, value.get('tien_voucher', 0), formats.get('int_number_format'))
-            sheet.write(row, 31, value.get('nguoi_lap'), formats.get('normal_format'))
-            sheet.write(row, 32, value.get('ngay_lap'), formats.get('center_format'))
-            sheet.write(row, 33, value.get('nguoi_sua'), formats.get('normal_format'))
-            sheet.write(row, 34, value.get('ngay_sua'), formats.get('center_format'))
-            sheet.write(row, 35, ', '.join(value.get('so_ct_nhap') or []), formats.get('normal_format'))
-            sheet.write(row, 36, ', '.join(value.get('ngay_ct_nhap') or []), formats.get('normal_format'))
-            sheet.write(row, 37, ', '.join(value.get('nhan_vien') or []), formats.get('normal_format'))
-            sheet.write(row, 38, ', '.join(value.get('nhom_khach') or []), formats.get('normal_format'))
-            sheet.write(row, 39, value.get('ma_van_don'), formats.get('normal_format'))
-            sheet.write(row, 40, value.get('kenh_ban'), formats.get('normal_format'))
+            sheet.write(row, 29, value.get('tien_nextpay', 0), formats.get('int_number_format'))
+            sheet.write(row, 30, value.get('tien_shipcod', 0), formats.get('int_number_format'))
+            sheet.write(row, 31, value.get('tien_voucher', 0), formats.get('int_number_format'))
+            sheet.write(row, 32, value.get('nguoi_lap'), formats.get('normal_format'))
+            sheet.write(row, 33, value.get('ngay_lap'), formats.get('center_format'))
+            sheet.write(row, 34, value.get('nguoi_sua'), formats.get('normal_format'))
+            sheet.write(row, 35, value.get('ngay_sua'), formats.get('center_format'))
+            sheet.write(row, 36, ', '.join(value.get('so_ct_goc') or []), formats.get('normal_format'))
+            sheet.write(row, 37, ', '.join(value.get('ngay_ct_goc') or []), formats.get('normal_format'))
+            sheet.write(row, 38, ', '.join(value.get('nhan_vien') or []), formats.get('normal_format'))
+            sheet.write(row, 39, ', '.join(value.get('nhom_khach') or []), formats.get('normal_format'))
+            sheet.write(row, 40, value.get('ma_van_don'), formats.get('normal_format'))
+            sheet.write(row, 41, value.get('kenh_ban'), formats.get('normal_format'))
             row += 1

@@ -2230,3 +2230,13 @@ msgstr ""
 #, python-format
 msgid "Đóng"
 msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__notification_id
+msgid "Notification ID"
+msgstr "ID thông báo"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__notification_id
+msgid "Id của thông báo trên trang quản trị app"
+msgstr ""
