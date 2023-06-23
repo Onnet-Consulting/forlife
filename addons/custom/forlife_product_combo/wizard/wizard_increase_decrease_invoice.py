@@ -10,10 +10,15 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     _description = 'Increase Decrease Invoice Wizard'
 
     origin_invoice_id = fields.Many2one('account.move', string='Move Origin')
-    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')],
-                                    string='Type',
-                                    default='increase')
+    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type', default='increase')
+    selected_all = fields.Boolean(string='Selected all')
     line_ids = fields.One2many('wizard.increase.decrease.invoice.line', 'parent_id', string='Detail')
+
+    @api.onchange('selected_all')
+    def onchange_selected_all(self):
+        self.line_ids.write({
+            'is_selected': self.selected_all
+        })
 
     @api.onchange('origin_invoice_id')
     def onchange_origin_invoice_id(self):
@@ -42,33 +47,41 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 })
 
     def action_confirm(self):
-        move_copy_id = self.origin_invoice_id.copy({
-            'invoice_type': self.invoice_type,
-            'move_type': 'in_invoice',
-            'origin_invoice_id': self.origin_invoice_id.id,
-            'line_ids': [],
-        })
-        move_copy_id.write({
-            'line_ids': self.prepare_move_line(),
-            'direction_sign': 1 if self.invoice_type == 'increase' else -1,
-        })
-        return {
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'account.move',
-            'views': [(self.env.ref('account.view_move_form').id, 'form')],
-            'view_id': self.env.ref('account.view_move_form').id,
-            'target': 'current',
-            'res_id': move_copy_id.id,
-        }
+        if self.line_ids.filtered(lambda x: x.is_selected):
+            move_copy_id = self.origin_invoice_id.copy({
+                'invoice_type': self.invoice_type,
+                'move_type': 'in_invoice',
+                'origin_invoice_id': self.origin_invoice_id.id,
+                'reference': self.origin_invoice_id.name,
+                'purchase_order_product_id': False,
+                'receiving_warehouse_id': False,
+                'invoice_date': fields.Date.today(),
+                'line_ids': [],
+            })
+            move_copy_id.write({
+                'line_ids': self.prepare_move_line(),
+                'direction_sign': 1 if self.invoice_type == 'increase' else -1,
+            })
+            return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'account.move',
+                'views': [(self.env.ref('account.view_move_form').id, 'form')],
+                'view_id': self.env.ref('account.view_move_form').id,
+                'target': 'current',
+                'res_id': move_copy_id.id,
+            }
+        else:
+            raise ValidationError(_('Please select at least 1 line to create an Increment/Decrease entry!'))
 
     def prepare_move_line(self):
         move_line_vals = []
         account_payable_id = self.origin_invoice_id.partner_id.property_account_payable_id
-        amount_payable = int(sum(self.line_ids.mapped('price_subtotal')) + sum(self.line_ids.mapped('tax_amount')))
+        line_ids = self.line_ids.filtered(lambda x: x.is_selected)
+        amount_payable = int(sum(line_ids.mapped('price_subtotal')) + sum(line_ids.mapped('tax_amount')))
         tax_lines = []
-        for line in self.line_ids:
+        for line in line_ids:
             account_id = line.product_id.categ_id.property_stock_account_input_categ_id
             taxes_res = []
             if line.tax_ids:
@@ -146,13 +159,10 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'display_type': 'product',
                         'tax_amount': tax_mount,
                         'product_uom_id': line.uom_id.id,
-                        'taxes_id': line.tax_ids.id,
+                        'tax_ids': [(6, 0, line.tax_ids.ids)],
                     })
                 ]
-
-                # move_line_vals += tax
             else:
-                # tax = []
                 tax_mount = 0
                 if taxes_res:
                     for tax in taxes_res['taxes']:
@@ -220,10 +230,9 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'is_refund': line.is_refund,
                         'tax_amount': tax_mount,
                         'product_uom_id': line.uom_id.id,
-                        'taxes_id': line.tax_ids.id,
+                        'tax_ids': [(6, 0, line.tax_ids.ids)],
                     })
                 ]
-                # move_line_vals += tax
 
         if tax_lines:
             for value_tax in tax_lines:
@@ -231,7 +240,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 move_line_vals.append(
                     (0, 0, value_tax)
                 )
-            # move_line_vals += [(0, 0, del value_tax) for value_tax in tax_lines]
         if self.invoice_type == 'increase':
             move_line_vals.append(
                 (0, 0, {
@@ -270,18 +278,12 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     quantity = fields.Float(string='Quantity')
     price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )
     price_total = fields.Monetary(string='Total', compute='_compute_totals', )
-    discount = fields.Float(
-        string='Discount (%)',
-        digits='Discount',
-        default=0.0,
-    )
-    currency_id = fields.Many2one(
-        comodel_name='res.currency',
-        string='Currency'
-    )
+    discount = fields.Float(string='Discount (%)', digits='Discount', default=0.0,)
+    currency_id = fields.Many2one(comodel_name='res.currency', string='Currency')
     is_refund = fields.Boolean()
     tax_amount = fields.Float(string='Tax Amount', )
     vendor_price = fields.Float(string="Vendor Price")
+    is_selected = fields.Boolean(string='Selected')
 
     @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'tax_amount')
     def _compute_totals(self):
