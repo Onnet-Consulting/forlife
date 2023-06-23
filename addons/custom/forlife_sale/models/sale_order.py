@@ -472,7 +472,7 @@ class SaleOrderLine(models.Model):
     def _compute_price_unit(self):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
-            # line._set_price_unit()
+            line._set_price_unit()
             if line.x_product_code_id:
                 line.price_unit = 0
             # if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
