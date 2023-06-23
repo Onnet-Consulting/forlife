@@ -165,3 +165,9 @@ table.available-report-list {
     background: #80808047;
     border-radius: 50%;
 }
+
+.row_subtotal {
+    font-size: 15px;
+    font-weight: bold;
+    background: rgb(198, 231, 209) !important;
+}

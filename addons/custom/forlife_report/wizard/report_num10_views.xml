@@ -22,7 +22,7 @@
                             <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]"/>
                         </group>
                         <group>
-                            <field name="brand_id"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
                             <field name="customer_ids" widget="many2many_tags"/>
                         </group>

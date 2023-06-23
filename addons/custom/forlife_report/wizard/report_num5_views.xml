@@ -11,14 +11,18 @@
                     </div>
                     <group>
                         <group>
-                            <field name="brand_id"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="store_id" domain="[('brand_id', '=', brand_id)]"/>
-                            <field name="view_type" widget="radio" options="{'horizontal': True}"/>
+                            <field name="employee_id"/>
                         </group>
                         <group>
-                            <field name="from_date" class="oe_inline"/>
-                            <field name="to_date" class="oe_inline"/>
-                            <field name="employee_id"/>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="view_type" widget="radio" options="{'horizontal': True}"/>
                         </group>
                     </group>
                 </sheet>
