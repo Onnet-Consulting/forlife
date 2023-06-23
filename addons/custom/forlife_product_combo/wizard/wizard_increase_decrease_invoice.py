@@ -72,6 +72,8 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'target': 'current',
                 'res_id': move_copy_id.id,
             }
+        else:
+            raise ValidationError(_('Please select at least 1 line to create an Increment/Decrease entry!'))
 
     def prepare_move_line(self):
         move_line_vals = []
