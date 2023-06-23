@@ -27,13 +27,10 @@ class PosSessionCashInMove(models.Model):
         debit_line = debit_lines and debit_lines[0]
         credit_lines = self.line_ids - debit_lines
         credit_line = credit_lines and credit_lines[0]
-        partner = debit_line.partner_id
         exchange_rate = 1
-        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
-        analytic_account = self.env['account.analytic.account'].search([
-            ('company_id', '=', self.company_id.id),
-            ('code', '=', (warehouse_code or '')[-4:])
-        ], limit=1)
+        store_id = self.statement_line_id.pos_session_id.config_id.store_id
+        analytic_account = store_id.analytic_account_id
+        partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code or None,
@@ -46,7 +43,7 @@ class PosSessionCashInMove(models.Model):
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
-            "Description": self.name or None,
+            "Description": debit_line.name or None,
             "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
             "DebitAccount": debit_line.account_id.code or None,
@@ -55,7 +52,7 @@ class PosSessionCashInMove(models.Model):
             "Amount": debit_line.debit,
             "Description1": debit_line.name or None,
             "DeptCode": analytic_account.code or None,
-            "RowId": debit_line.id or None,
+            "RowId": debit_line.id or None
         }
         values.append(journal_value)
         return values
@@ -85,13 +82,10 @@ class PosSessionCashOutMove(models.Model):
         debit_line = debit_lines and debit_lines[0]
         credit_lines = self.line_ids - debit_lines
         credit_line = credit_lines and credit_lines[0]
-        partner = debit_line.partner_id
         exchange_rate = 1
-        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
-        analytic_account = self.env['account.analytic.account'].search([
-            ('company_id', '=', self.company_id.id),
-            ('code', '=', (warehouse_code or '')[-4:])
-        ], limit=1)
+        store_id = self.statement_line_id.pos_session_id.config_id.store_id
+        analytic_account = store_id.analytic_account_id
+        partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code or None,
@@ -104,7 +98,7 @@ class PosSessionCashOutMove(models.Model):
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
-            "Description": self.name or None,
+            "Description": debit_line.name or None,
             "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
             "DebitAccount": debit_line.account_id.code or None,
