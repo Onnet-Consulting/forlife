@@ -12,8 +12,7 @@ class VoucherVoucher(models.Model):
     _routing_key = 'notification_plan_routing_key'
 
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.notification_id and f.state == 'sold' and
-                                       f.type == 'e' and (f.order_pos or f.sale_id) and f.partner_id and f.partner_id.phone)
+        return self.filtered(lambda f: f.notification_id and f.state == 'sold' and f.type == 'e' and f.partner_id and f.partner_id.phone)
 
     def get_sync_info_value(self):
         return [{
@@ -26,12 +25,15 @@ class VoucherVoucher(models.Model):
     def push_notification_to_app(self):
         app_api_link = {}
         for l in self.env['forlife.app.api.link'].search([]):
-            app_api_link.update({l.code: l.value})
+            app_api_link.update({l.key: l.value})
         for v in self:
             try:
                 link = app_api_link.get(v.brand_id.code)
                 if link:
-                    param = f'type=pushNotificationVIP&id={v.notification_id}&voucher={v.name}&gift=&customerId={v.partner_id.phone}'
+                    if v.order_pos:
+                        param = f'type=pushNotificationVIP&id={v.notification_id}&voucher={v.name}&gift=&customerId={v.partner_id.phone}'
+                    else:
+                        param = f'type=pushNotificationById&customerId={v.partner_id.phone}&NotiId={v.notification_id}&param={v.name}'
                     requests.get(link + param)
             except:
                 pass
