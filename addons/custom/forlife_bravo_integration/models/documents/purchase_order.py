@@ -298,8 +298,20 @@ class StockPickingPurchaseProduct(models.Model):
         return values
 
     def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count):
-        purchase_order_line = stock_move.purchase_line_id
         product = stock_move.product_id
+        AccountAccount = self.env['account.account']
+        if not account_move:
+            product_accounts = product.get_product_accounts()
+            debit_account = product_accounts.get('stock_valuation') or AccountAccount
+            credit_account = product_accounts.get('stock_input') or AccountAccount
+        else:
+            move_lines = account_move.line_ids
+            debit_lines = move_lines.filtered(lambda l: l.debit > 0)
+            debit_account = (debit_lines and debit_lines[0]).account_id
+            credit_lines = move_lines - debit_lines
+            credit_account = (credit_lines and credit_lines[0]).account_id
+
+        purchase_order_line = stock_move.purchase_line_id
         purchase_order = purchase_order_line.order_id
         picking = stock_move.picking_id
         partner = picking.partner_id
@@ -325,12 +337,12 @@ class StockPickingPurchaseProduct(models.Model):
             "Description": picking.note or "nhập mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": self.env.user.employee_id.code or None,
             "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
-            "CreditAccount": None,
+            "CreditAccount": credit_account.code or None,
             "BuiltinOrder": line_count or None,
             "ItemCode": product.barcode or None,
             "ItemName": product.name or None,
             "UnitPurCode": purchase_order_line.purchase_uom.code or None,
-            "DebitAccount": None,
+            "DebitAccount": debit_account.code or None,
             "Quantity9": stock_move.quantity_purchase_done,
             "ConvertRate9": stock_move.quantity_change,
             "Quantity": stock_move.quantity_done,
@@ -350,16 +362,6 @@ class StockPickingPurchaseProduct(models.Model):
             "DocNo_WO": stock_move.work_production.code or None,
             "DeptCode": stock_move.account_analytic_id.code or None,
         }
-
-        for move_line in account_move.line_ids:
-            if move_line.debit:
-                journal_value.update({
-                    'DebitAccount': move_line.account_id.code
-                })
-            else:
-                journal_value.update({
-                    'CreditAccount': move_line.account_id.code
-                })
 
         return journal_value
 
