@@ -14,4 +14,4 @@ class ProductAttributeValue(models.Model):
 
     def bravo_filter_records(self):
         records = super().bravo_filter_records()
-        return records.filtered(lambda rec: rec.attribute_id.attrs_code == '020')
+        return records.filtered(lambda rec: rec.attribute_id.attrs_code == 'AT027')

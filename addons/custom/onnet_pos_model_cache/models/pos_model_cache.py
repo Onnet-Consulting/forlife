@@ -23,10 +23,18 @@ class PosModelCache(models.Model):
     def refresh_all_model_caches(self):
         self.env['pos.model.cache'].search([]).refresh_cache()
 
+    @api.model
+    def refresh_product_model_caches(self):
+        self.env['pos.model.cache'].search([('model', '=', 'product.product')]).refresh_cache()
+
+    @api.model
+    def refresh_promotion_model_caches(self):
+        self.env['pos.model.cache'].search([('model', '=', 'promotion.pricelist.item')]).refresh_cache()
+
     def refresh_cache(self):
         for cache in self:
-            model_obj = self.env[self.model].with_user(cache.compute_user_id.id)
-            records = model_obj.search(cache.get_model_domain(), order=self.env[self.model]._order)
+            model_obj = self.env[cache.model].with_user(cache.compute_user_id.id)
+            records = model_obj.search(cache.get_model_domain(), order=self.env[cache.model]._order)
             res = records.read(cache.get_model_fields())
             cache.write({
                 'cache': base64.encodebytes(json.dumps(res, default=date_utils.json_default).encode('utf-8')),

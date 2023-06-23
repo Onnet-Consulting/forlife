@@ -10,6 +10,9 @@
                         attrs="{'invisible': ['|', ('user_id', '!=', False), ('id', '=', False)]}"
                         groups="base.group_system"/>
             </xpath>
+            <field name="coach_id" position="after">
+                <field name="code"/>
+            </field>
             <xpath expr="//group[@name='active_group']/field[@name='user_id']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>

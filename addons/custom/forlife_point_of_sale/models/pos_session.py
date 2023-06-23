@@ -23,15 +23,6 @@ class PosSession(models.Model):
         values['search_params']['fields'].append('full_attrs_desc')
         return values
 
-    def _get_pos_ui_product_product(self, params):
-        self = self.with_context(**params['context'])
-        if self.config_id.limited_products_loading:
-            params['search_params']['limit'] = self.config_id.limited_products_amount
-        products = self.env['product.product'].search_read(**params['search_params'])
-
-        self._process_pos_ui_product_product(products)
-        return products
-
     def _get_attributes_by_ptal_id(self):
         return []
 

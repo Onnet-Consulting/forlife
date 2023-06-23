@@ -22,3 +22,4 @@ from . import documents
 from . import warehouse_group
 from . import expense_item
 from . import res_brand
+from . import pos_expense_label

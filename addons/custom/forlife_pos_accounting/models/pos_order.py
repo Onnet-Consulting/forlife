@@ -149,7 +149,7 @@ class InheritPosOrder(models.Model):
             'pos_order_line_id': order_line.id,
             'account_analytic_id': self.session_id.config_id.store_id.analytic_account_id.id,
             'partner_id': order_line.order_id.partner_id.id,
-            'price_unit': order_line.original_price if not order_line.is_reward_line else 0
+            'price_unit': (order_line.original_price or invoice_line['price_unit']) if not order_line.is_reward_line else 0
         })
         if order_line.refunded_orderline_id:
             invoice_line.update({
@@ -176,6 +176,24 @@ class InheritPosOrder(models.Model):
             if invoice_line[-1] is not None
         ]
 
+    def _handle_invoice_vals(self, values):
+        if values['move_type'] == 'out_invoice':
+            out_invoice_line_values, out_refund_line_values = [], []
+            for ail in values['invoice_line_ids']:
+                if ail[-1]['quantity'] > 0:
+                    out_invoice_line_values.append(ail)
+                    continue
+                ail[-1]['quantity'] = -ail[-1]['quantity']
+                out_refund_line_values.append(ail)
+                (out_invoice_line_values if ail[-1]['quantity'] > 0 else out_refund_line_values).append(ail)
+            values['invoice_line_ids'] = out_invoice_line_values
+            if out_refund_line_values:
+                out_refund_values = values.copy()
+                out_refund_values.update({'move_type': 'out_refund', 'invoice_line_ids': out_refund_line_values})
+                new_move = self._create_invoice(out_refund_values)
+                new_move.sudo().with_company(self.company_id)._post()
+        return values
+
     def _prepare_invoice_vals(self):
         result = super(InheritPosOrder, self)._prepare_invoice_vals()
         if self.to_invoice and self.real_to_invoice:
@@ -186,7 +204,7 @@ class InheritPosOrder(models.Model):
                 raise ValidationError(_("Cannot found contact's store (%s)") % self.pos_session_id.config_id.store_id.name)
             result['partner_id'] = partner_id
         result['pos_order_id'] = self.id
-        return result
+        return self._handle_invoice_vals(result)
 
     @api.model
     def _process_order(self, order, draft, existing_order):

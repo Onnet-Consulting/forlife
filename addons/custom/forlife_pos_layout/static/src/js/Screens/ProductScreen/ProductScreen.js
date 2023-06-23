@@ -3,6 +3,7 @@ odoo.define('forlife_pos_layout.ProductScreen', function (require) {
 
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
+    const NumberBuffer = require('point_of_sale.NumberBuffer');
 
     const CustomProductScreen = ProductScreen => class extends ProductScreen {
         // get UTC+7 (Asia/Ho_Chi_Minh) time

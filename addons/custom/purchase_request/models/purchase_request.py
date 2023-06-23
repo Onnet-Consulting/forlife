@@ -51,6 +51,7 @@ class PurchaseRequest(models.Model):
     receiver_id = fields.Many2one('hr.employee', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
+    use_department_id = fields.Many2one('hr.department', string='Use Department')
 
     @api.model
     def load(self, fields, data):
@@ -65,6 +66,11 @@ class PurchaseRequest(models.Model):
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         return res
+
+    @api.onchange('employee_id')
+    def onchange_department_id(self):
+        if self.employee_id.department_id:
+            self.department_id = self.employee_id.department_id
 
     def submit_action(self):
         for record in self:
@@ -286,17 +292,16 @@ class PurchaseRequestLine(models.Model):
             else:
                 line.product_qty = line.purchase_quantity
 
-    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty')
+    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty', 'purchase_order_line_ids.order_id.custom_state')
     def _compute_order_quantity(self):
         for rec in self:
-            # ### yêu cầu cũ là lọc theo trạng thái purchase
-            done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-            rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
+            if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
+                rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
         for rec in self:
-            rec.is_no_more_quantity = rec.purchase_quantity == rec.order_quantity
+            rec.is_no_more_quantity = rec.purchase_quantity <= rec.order_quantity
 
     @api.constrains('purchase_quantity', 'exchange_quantity')
     def constrains_purchase_quantity(self):

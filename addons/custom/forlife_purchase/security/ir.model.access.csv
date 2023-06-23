@@ -1,6 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_forlife_event,forlife event,model_forlife_event,,1,1,1,1
 access_forlife_production,forlife production,model_forlife_production,,1,1,1,1
+access_production_history,production_history,model_production_history,,1,1,1,1
+access_production_history_line,production_history_line,model_production_history_line,,1,1,1,1
+access_material_history,material_history,model_material_history,,1,1,1,1
+access_ingredients_history,ingredients_history,model_ingredients_history,,1,1,1,1
+access_service_cost_history,service_cost_history,model_service_cost_history,,1,1,1,1
 access_forlife_barcode,forlife barcode,model_forlife_barcode,,1,1,1,1
 access_forlife_production_finished_product,forlife_production_finished_product,model_forlife_production_finished_product,,1,1,1,1
 access_forlife_production_material,forlife_production_material,model_forlife_production_material,,1,1,1,1
@@ -13,7 +18,7 @@ access_forlife_bom_ingredients,forlife_bom_ingredients,model_forlife_bom_ingredi
 access_stock_warehouse_type,stock_warehouse_type,model_stock_warehouse_type,,1,1,1,1
 access_forlife_synthetic,forlife_synthetic,model_forlife_synthetic,,1,1,1,1
 
-access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
-access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
-access_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
+access_purchase_order_admin,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
+access_purchase_order_user,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
+access_reject_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
+access_cancel_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
