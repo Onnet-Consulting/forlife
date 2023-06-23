@@ -214,6 +214,9 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
                 }
             }
         }
+        total_discounted = Math.round((total_discounted - 1)/100) * 100;
+        card_rank_disc = Math.round((card_rank_disc - 1)/100) * 100;
+        extra_card_rank_disc = Math.round((extra_card_rank_disc - 1)/100) * 100;
         return {
             id: this.id,
             product_name: this.product.display_name,

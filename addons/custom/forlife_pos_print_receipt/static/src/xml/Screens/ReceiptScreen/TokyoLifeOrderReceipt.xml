@@ -145,33 +145,35 @@
     </t>
 
     <t t-name="TokyoLifeOrderLinesDetailReceipt" owl="1">
-        <tr>
-            <td colspan="5">
-                <t t-esc="line.product_name_wrapped[0]"/>
-            </td>
-        </tr>
-        <tr class="product-price-qty-detail">
-            <td class="num_1 text">
-                <t t-esc="line.product_default_code || ''"/>
-            </td>
-            <td class="num_2 number">
-                <t t-esc="line.quantity"/>
-            </td>
-            <td class="num_3 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
-            </td>
-            <td class="num_4 number">
-                <t t-if="line.discount_amount">
-                    <t t-esc="'-' + env.pos.format_currency_no_symbol(line.discount_amount)"/>
-                </t>
-                <t t-else="">
-                    <t t-esc="env.pos.format_currency_no_symbol(line.discount_amount)"/>
-                </t>
-            </td>
-            <td class="num_5 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
-            </td>
-        </tr>
+        <t t-if="line.quantity != 0">
+            <tr>
+                <td colspan="5">
+                    <t t-esc="line.product_name_wrapped[0]"/>
+                </td>
+            </tr>
+            <tr class="product-price-qty-detail">
+                <td class="num_1 text">
+                    <t t-esc="line.product_default_code || ''"/>
+                </td>
+                <td class="num_2 number">
+                    <t t-esc="line.quantity"/>
+                </td>
+                <td class="num_3 number">
+                    <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
+                </td>
+                <td class="num_4 number">
+                    <t t-if="line.discount_amount">
+                        <t t-esc="'-' + env.pos.format_currency_no_symbol(line.discount_amount)"/>
+                    </t>
+                    <t t-else="">
+                        <t t-esc="env.pos.format_currency_no_symbol(line.discount_amount)"/>
+                    </t>
+                </td>
+                <td class="num_5 number">
+                    <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
+                </td>
+            </tr>
+        </t>
     </t>
 
     <t t-name="TokyoLifeOrderPaymentLinesReceipt" owl="1">

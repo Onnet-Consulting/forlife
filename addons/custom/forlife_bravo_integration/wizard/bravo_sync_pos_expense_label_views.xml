@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="bravo_sync_pos_expense_label_wizard_form" model="ir.ui.view">
+            <field name="name">Bravo synchronize taxes</field>
+            <field name="model">bravo.sync.pos.expense.label.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <h2>You will synchronize POS Expense Label from Bravo to Odoo</h2>
+                    <footer>
+                        <button string="Synchronize" type="object" name="sync" class="btn-primary"/>
+                        <button string="Cancel" special="cancel" data-hotkey="z" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="bravo_sync_pos_expense_label_wizard_action" model="ir.actions.act_window">
+            <field name="name">Bravo synchronize POS Expense Label</field>
+            <field name="res_model">bravo.sync.pos.expense.label.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="bravo_sync_pos_expense_label_wizard_menu"
+                  action="bravo_sync_pos_expense_label_wizard_action"
+                  parent="point_of_sale.menu_point_config_product"
+                  sequence="100"
+        />
+    </data>
+</odoo>

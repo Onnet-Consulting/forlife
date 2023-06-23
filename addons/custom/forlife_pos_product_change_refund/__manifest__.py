@@ -23,6 +23,7 @@
         'forlife_voucher',
         'forlife_pos_assign_employee',
         'forlife_pos_layout',
+        'forlife_pos_accounting'
     ],
     'assets': {
         'point_of_sale.assets': [

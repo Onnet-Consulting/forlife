@@ -30,6 +30,7 @@
         'views/purchase_order_view.xml',
         'views/forlife_event_view.xml',
         'views/forlife_production_view.xml',
+        'views/production_history_view.xml',
         'views/forlife_bom.xml',
         'views/stock_warehouse_type.xml',
         'views/product_view.xml',

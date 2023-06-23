@@ -37,3 +37,8 @@ class SaleOrder(models.Model):
     @api.model
     def bravo_get_filter_domain(self):
         return [('state', 'in', ('sale', 'done'))]
+
+    def bravo_filter_records(self):
+        records = super().bravo_filter_records()
+        return records.filtered(lambda rec: rec.partner_id.group_id !=
+                                            self.env.ref('forlife_pos_app_member.partner_group_c'))

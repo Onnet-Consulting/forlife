@@ -2,6 +2,18 @@
 <odoo>
     <data>
 
+        <record id="purchase_order_form_forlife_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase_request.purchase_order_form_forlife_inherit"/>
+            <field name="arch" type="xml">
+                <field name="location_id" position="replace">
+                    <field name="location_id" string="Kho nhận" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', True),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
+                    <field name="location_id" string="Trả từ kho" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
+                </field>
+            </field>
+        </record>
+
     	<record id="inherit_purchase_order_form_view" model="ir.ui.view">
             <field name="name">purchase.order.form</field>
             <field name="model">purchase.order</field>
@@ -45,20 +57,27 @@
             </field>
         </record>
 
-        <record id="purchase_order_form_forlife_inherit" model="ir.ui.view">
-            <field name="name">purchase.order.form</field>
+        <record id="purchase_order_view_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
             <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase_request.purchase_order_form_forlife_inherit"/>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
-                <field name="location_id" position="replace">
-                    <field name="location_id" string="Kho nhận" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', True),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
-                    <field name="location_id" string="Trả từ kho" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
-                    <field name="warehouse_material" domain="[('type_other', '!=', None)]"  attrs="{'invisible': [('is_return', '=', False)], 'required' : [('is_return', '=', True), ('order_line_production_order', '!=', [])]}"/>
-                </field>
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="replace">
+                    <button type="object"
+                        name="action_view_picking"
+                        class="oe_stat_button"
+                        icon="fa-truck" attrs="{'invisible':['|', ('incoming_picking_count','=', 0), ('is_return', '=', True)]}" groups="stock.group_stock_user">
+                        <field name="incoming_picking_count" widget="statinfo" string="Receipt Products"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_picking"
+                        class="oe_stat_button"
+                        icon="fa-truck" attrs="{'invisible':['|', ('return_picking_count','=', 0), ('is_return', '=', False)]}" groups="stock.group_stock_user">
+                        <field name="return_picking_count" widget="statinfo" string="Return"/>
+                    </button>
+                </xpath>
             </field>
         </record>
-
-        
 
         <record id="action_purchase_order_return" model="ir.actions.act_window">
             <field name="name">Purchase Return Order</field>
