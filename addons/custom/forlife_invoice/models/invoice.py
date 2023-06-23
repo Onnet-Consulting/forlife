@@ -402,7 +402,7 @@ class AccountMove(models.Model):
                             'ex_po_id': invoice.id,
                             'invoice_rate_id': rec.id,
                             'product_id': exchange.product_id.id,
-                            'name': exchange.product_id.name,
+                            'name': exchange.name,
                             'vnd_amount': exchange.vnd_amount,
                             'qty_product': exchange.qty_product,
                             'import_tax': exchange.import_tax,
@@ -422,7 +422,7 @@ class AccountMove(models.Model):
                 for line in po.cost_line:
                     cost_line = self.env['invoice.cost.line'].create({
                         'product_id': line.product_id.id,
-                        'name': line.product_id.name,
+                        'name': line.name,
                         'currency_id': line.currency_id.id,
                         'exchange_rate': line.exchange_rate,
                         'foreign_amount': line.foreign_amount,
@@ -442,7 +442,7 @@ class AccountMove(models.Model):
                     synthetic_line = self.env['forlife.invoice.synthetic'].create({
                         'syn_po_id': invoice.id,
                         'product_id': line.product_id.id,
-                        'description': line.product_id.description,
+                        'description': line.description,
                         'price_unit': line.price_unit,
                         'quantity': line.quantity,
                         'price_subtotal': invoice.total_vnd_amount,

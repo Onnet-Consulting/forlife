@@ -55,6 +55,8 @@ class PurchaseOrder(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True,
+                                         string="Thuế nhập khẩu", compute='_compute_exchange_rate_line_and_cost_line', store=1)
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
@@ -104,9 +106,7 @@ class PurchaseOrder(models.Model):
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
-    purchase_synthetic_ids = fields.One2many('forlife.synthetic', 'synthetic_id')
-    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id',
-                                         string="Thuế nhập khẩu")
+    purchase_synthetic_ids = fields.One2many('forlife.synthetic', 'synthetic_id', compute='_compute_exchange_rate_line_and_cost_line', store=1)
 
     show_check_availability = fields.Boolean(
         compute='_compute_show_check_availability', invisible=True,
@@ -718,6 +718,15 @@ class PurchaseOrder(models.Model):
         new_line_count = len(vals.get('order_line', []))
         if (new_line_count > old_line_count) and self.custom_state == "approved":
             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+        for item in self.exchange_rate_line:
+            item.write({
+                'import_tax': item.import_tax,
+                'tax_amount': item.tax_amount,
+                'special_consumption_tax': item.special_consumption_tax,
+                'special_consumption_tax_amount': item.special_consumption_tax_amount,
+                'vat_tax': item.vat_tax,
+                'vat_tax_amount': item.vat_tax_amount,
+            })
         return super(PurchaseOrder, self).write(vals)
 
     @api.onchange('company_id', 'currency_id')
@@ -730,46 +739,45 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
-    @api.onchange('order_line')
-    def onchange_exchange_rate_line_and_cost_line(self):
-        self.exchange_rate_line = [(5, 0)]
-        self.purchase_synthetic_ids = [(5, 0)]
-        for line in self.order_line:
-            exchange_rate_line = self.env['purchase.order.exchange.rate'].create({
-                'ex_po_id': line.id,
-                'product_id': line.product_id.id,
-                'name': line.product_id.name,
-                'vnd_amount': line.total_vnd_amount,
-                'purchase_order_id': self.id,
-                'qty_product': line.product_qty,
-            })
-            if exchange_rate_line:
-                exchange_rate_line.update({
+    @api.depends('order_line')
+    def _compute_exchange_rate_line_and_cost_line(self):
+        for rec in self:
+            rec.exchange_rate_line = [(5, 0)]
+            rec.purchase_synthetic_ids = [(5, 0)]
+            for line in rec.order_line:
+                exchange_rate_line = self.env['purchase.order.exchange.rate'].create({
+                    'ex_po_id': line.id,
+                    'product_id': line.product_id.id,
+                    'name': line.name,
                     'vnd_amount': line.total_vnd_amount,
+                    'purchase_order_id': rec.id,
+                    'qty_product': line.product_qty,
                 })
-            synthetic_line = self.env['forlife.synthetic'].create({
-                'syn_po_id': line.id,
-                'product_id': line.product_id.id,
-                'description': line.product_id.name,
-                'price_unit': line.price_unit,
-                'price_subtotal': line.total_vnd_amount,
-                'quantity': line.product_qty,
-                'before_tax': line.total_value,
-                'discount': line.discount,
-                'synthetic_id': self.id,
-            })
-            if synthetic_line:
-                exchange_rate_line.update({
-                    'vnd_amount': line.total_vnd_amount,
+                synthetic_line = self.env['forlife.synthetic'].create({
+                    'syn_po_id': line.id,
+                    'product_id': line.product_id.id,
+                    'description': line.name,
+                    'price_unit': line.price_unit,
+                    'price_subtotal': line.total_vnd_amount,
+                    'quantity': line.product_qty,
+                    'before_tax': line.total_value,
+                    'discount': line.discount,
+                    'synthetic_id': rec.id,
                 })
-
-    # @api.depends('order_line')
-    # def _compute_exchange_rate_and_syn(self):
-    #     for rec in self:
-    #         if rec.order_line and rec.exchange_rate_line and rec.purchase_synthetic_ids:
-    #             for order, exchange, synthetic in zip(rec.order_line, rec.exchange_rate_line, rec.purchase_synthetic_ids):
-    #                 exchange.ex_po_id = synthetic.syn_po_id = str(order.id)
-
+                if exchange_rate_line:
+                    exchange_rate_line.update({
+                        'ex_po_id': line.id,
+                        # 'vnd_amount': line.total_vnd_amount,
+                        'qty_product': line.product_qty,
+                    })
+                if synthetic_line:
+                    synthetic_line.update({
+                        'syn_po_id': line.id,
+                        'quantity': line.product_qty,
+                        'price_subtotal': line.total_vnd_amount,
+                        'discount': line.discount,
+                        'price_unit': line.price_unit,
+                    })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
@@ -2331,8 +2339,7 @@ class Synthetic(models.Model):
     _name = 'forlife.synthetic'
 
     synthetic_id = fields.Many2one('purchase.order')
-    syn_po_id = fields.Char('', compute='_compute_syn_po_id', store=1)
-
+    syn_po_id = fields.Char('')
 
     description = fields.Char(string='Mã hàng')
     product_id = fields.Many2one('product.product', string='Tên hàng')
@@ -2347,59 +2354,50 @@ class Synthetic(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
 
-    @api.depends('synthetic_id.order_line')
-    def _compute_syn_po_id(self):
-        for rec in self:
-            orl_l_ids = []
-            for line in rec.synthetic_id.order_line:
-                if rec.product_id.id == line.product_id.id:
-                    po_l_id = line.id
-                    while po_l_id in orl_l_ids:
-                        po_l_id += 1
-                    orl_l_ids.append(po_l_id)
-                    rec.syn_po_id = po_l_id
-
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs',
+                 'synthetic_id.order_line.total_vnd_amount',
+                 'synthetic_id.exchange_rate_line')
     def _compute_is_check_pre_tax_costs(self):
         for rec in self:
             cost_line_true = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
             for line, nine in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.order_line):
                 total_cost_true = 0
+                if cost_line_true:
+                    if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
+                        rec.price_subtotal = nine.total_vnd_amount
+                    for item in cost_line_true:
+                        if item.vnd_amount and nine.total_vnd_amount > 0:
+                            before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
+                            total_cost_true += before_tax
+                        if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
+                            rec.before_tax = total_cost_true
+                else:
+                    rec.before_tax = 0
                 if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    if cost_line_true:
-                        # if nine.total_vnd_amount and rec.syn_po_id == str(nine.id):
-                        #     rec.price_subtotal = nine.total_vnd_amount
-                        for item in cost_line_true:
-                            if item.vnd_amount and nine.total_vnd_amount > 0:
-                                before_tax = nine.total_vnd_amount / sum(rec.synthetic_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
-                                total_cost_true += before_tax
-                                rec.before_tax = total_cost_true
-                        line.vnd_amount = nine.total_vnd_amount + rec.before_tax
-                    else:
-                        rec.before_tax = 0
-                        if rec.before_tax != 0:  # Kiểm tra nếu rec.before_tax khác 0
-                            line.vnd_amount = nine.total_vnd_amount + rec.before_tax
-                        else:
-                            line.vnd_amount = nine.total_vnd_amount
+                    line.vnd_amount = nine.total_vnd_amount + rec.before_tax
 
-    @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
+
+    @api.depends('synthetic_id.exchange_rate_line.vnd_amount',
+                 'synthetic_id.exchange_rate_line.tax_amount',
+                 'synthetic_id.exchange_rate_line.special_consumption_tax_amount',
+                 'synthetic_id.cost_line.is_check_pre_tax_costs',)
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line, nine in zip(rec.synthetic_id.exchange_rate_line, rec.synthetic_id.order_line):
-                total_cost = 0
-                sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
-                sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
-                sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
-                if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
-                    if cost_line_false:
-                        if rec.synthetic_id.type_po_cost == 'tax' and rec.syn_po_id == line.ex_po_id:
-                            for item in cost_line_false:
-                                if item.vnd_amount and line.vnd_amount > 0:
-                                    total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+            for line in rec.synthetic_id.exchange_rate_line:
+                if cost_line_false:
+                    total_cost = 0
+                    sum_vnd_amount = sum(rec.synthetic_id.exchange_rate_line.mapped('vnd_amount'))
+                    sum_tnk = sum(rec.synthetic_id.exchange_rate_line.mapped('tax_amount'))
+                    sum_db = sum(rec.synthetic_id.exchange_rate_line.mapped('special_consumption_tax_amount'))
+                    if rec.synthetic_id.type_po_cost == 'tax' and rec.syn_po_id == line.ex_po_id:
+                        for item in cost_line_false:
+                            if item.vnd_amount and sum_vnd_amount and sum_tnk and sum_db:
+                                total_cost += (line.vnd_amount + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                                if rec.product_id.id == line.product_id.id and rec.syn_po_id == line.ex_po_id:
                                     rec.after_tax = total_cost
-                    else:
-                        rec.after_tax = 0
+                else:
+                    rec.after_tax = 0
 
     @api.depends('price_subtotal', 'discount', 'before_tax', 'tnk_tax', 'db_tax', 'after_tax')
     def _compute_total_product(self):
