@@ -682,6 +682,15 @@ class AccountMoveLine(models.Model):
     vendor_price = fields.Float(string='Giá nhà cung cấp', compute='compute_vendor_price_ncc', store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
+    price_subtotal = fields.Monetary(
+        string='Subtotal',
+        compute='_compute_totals', store=True,
+        currency_field='currency_id',
+        readonly=False
+    )
+
+
+
     @api.depends('exchange_quantity', 'quantity', 'product_id', 'purchase_uom',
                  'move_id.partner_id', 'move_id.partner_id.is_passersby', 'move_id', 'move_id.currency_id')
     def compute_vendor_price_ncc(self):
