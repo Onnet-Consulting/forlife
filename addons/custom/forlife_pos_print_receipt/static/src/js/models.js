@@ -118,7 +118,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let {promotion_usage_ids, point, original_price} = line;
                 let line_quantity = line.get_quantity();
                 order_total_discount += line.get_line_receipt_total_discount()
-                order_total += original_price * line_quantity;
+                order_total += line.get_line_receipt_total_amount();
                 if (point && point !== 0) {
                     applied_point_lines.push(line);
                     total_applied_points += Math.abs(point);
@@ -238,6 +238,15 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 percent_discount = ((discount / quantity) / unit_price) * 100;
             }
             return parseInt(percent_discount);
+        }
+
+        get_line_receipt_total_amount() {
+            let line_quantity = this.get_quantity();
+            let total = this.original_price * line_quantity;
+            if (line_quantity < 0) {
+                total -= this.get_line_receipt_total_discount();
+            }
+            return total;
         }
 
         export_for_printing() {
