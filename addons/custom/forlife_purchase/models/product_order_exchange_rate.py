@@ -5,38 +5,13 @@ class PurchaseOrderExchangeRate(models.Model):
     _name = "purchase.order.exchange.rate"
     _description = 'Purchase Order Exchange Rate'
 
-    ex_po_id = fields.Char('', compute='_compute_ex_po_id', store=1)
-
-    @api.depends('purchase_order_id.order_line')
-    def _compute_ex_po_id(self):
-        for rec in self:
-            orl_l_ids = []
-            for line in rec.purchase_order_id.order_line:
-                if rec.product_id.id == line.product_id.id:
-                    po_l_id = line.id
-                    while po_l_id in orl_l_ids:
-                        po_l_id += 1
-                    orl_l_ids.append(po_l_id)
-                    rec.ex_po_id = po_l_id
+    ex_po_id = fields.Char('')
 
     name = fields.Char(string='Name')
     product_id = fields.Many2one('product.product', string='Mã sản phẩm')
 
     usd_amount = fields.Float(string='Thành tiền USF')  # đây chính là cột Thành tiền bên tab Sản phầm, a Trung đã viết trước
     vnd_amount = fields.Float(string='Thành tiền', compute='_compute_vnd_amount', store=1)
-
-    # @api.depends('purchase_order_id.purchase_synthetic_ids.before_tax',
-    #              'purchase_order_id.purchase_synthetic_ids.price_subtotal')
-    # def _compute_vnd_amount(self):
-    #     for rec in self:
-    #         for item in rec.purchase_order_id.purchase_synthetic_ids:
-    #             if rec.ex_po_id == item.syn_po_id and rec.product_id.id == item.product_id.id:
-    #                 if not all(rec.purchase_order_id.purchase_synthetic_ids.mapped('before_tax')):
-    #                     rec.vnd_amount = rec.vnd_amount - item.price_unit * item.quantity + rec.vnd_amount
-    #                 else:
-    #                     rec.vnd_amount = rec.vnd_amount + item.before_tax
-
-
 
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     tax_amount = fields.Float(string='Tax Amount', compute='_compute_tax_amount', store=1)
@@ -66,6 +41,13 @@ class PurchaseOrderExchangeRate(models.Model):
     def _compute_tax_amount(self):
         for rec in self:
             rec.tax_amount = rec.vnd_amount * rec.import_tax / 100\
+
+    @api.depends('purchase_order_id.order_line.total_vnd_amount')
+    def _compute_vnd_amount(self):
+        for rec in self:
+            for item in rec.purchase_order_id.order_line:
+                if item.total_vnd_amount and rec.ex_po_id == str(item.id):
+                    rec.vnd_amount = item.total_vnd_amount
 
     @api.depends('tax_amount', 'special_consumption_tax')
     def _compute_special_consumption_tax_amount(self):
