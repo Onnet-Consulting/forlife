@@ -367,10 +367,10 @@ class AccountMoveBKAV(models.Model):
             self.is_check_cancel = True
             self.getting_invoice_status()
 
-    def button_cancel(self):
-        res = super(AccountMoveBKAV, self).button_cancel()
-        self.cancel_invoice()
-        return res
+    # def button_cancel(self):
+    #     res = super(AccountMoveBKAV, self).button_cancel()
+    #     self.cancel_invoice()
+    #     return res
 
     def delete_invoice(self):
         configs = self.get_bkav_config()
