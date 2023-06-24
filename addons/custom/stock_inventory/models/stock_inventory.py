@@ -390,6 +390,7 @@ class InventoryLine(models.Model):
     partner_id = fields.Many2one('res.partner', 'Owner', check_company=True)
     product_id = fields.Many2one('product.product', 'Sản phẩm', check_company=True,
                                  domain=lambda self: self._domain_product_id(), index=True, required=True)
+    barcode = fields.Char('Mã vạch', related='product_id.barcode')
     product_uom_id = fields.Many2one('uom.uom', 'Đơn vị tính', required=True, readonly=True)
     product_qty = fields.Float('Đếm được', default=0)
     categ_id = fields.Many2one(related='product_id.categ_id', store=True)
