@@ -144,7 +144,8 @@ class PosOrder(models.Model):
             'product_apply_ids': [(6, False, voucher_program.product_apply_ids.ids)],
             'is_full_price_applies': voucher_program.is_full_price_applies,
             'promotion_program_id': program.id,
-            'orig_pos_order_id': pos_order.id
+            'orig_pos_order_id': pos_order.id,
+            'notification_id': voucher_program.product_id.get_notification_id(program.voucher_price),
         })
         pos_order.cart_promotion_program_id = program
         pos_order.reward_voucher_id = voucher

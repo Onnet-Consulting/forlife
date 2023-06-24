@@ -103,6 +103,7 @@
                             <field name="receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="attention" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="use_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

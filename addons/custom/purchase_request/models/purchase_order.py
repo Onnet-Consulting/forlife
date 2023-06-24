@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    production_id = fields.Many2many('forlife.production', string='Production Order')
+    production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
