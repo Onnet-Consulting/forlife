@@ -197,8 +197,7 @@
                     <group>
                         <field name="warehouse_id" options="{'no_create': True}"/>
                         <field name="location_ids" options="{'no_create': True}"
-                               widget="many2many_tags"
-                               domain="[('warehouse_id', '=', warehouse_id)]"
+                               domain="[('warehouse_id', '=', warehouse_id), ('usage', 'in', ['internal', 'transit'])]"
                                force_save="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
