@@ -2,7 +2,3 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_vendor_back,vendor_back,model_vendor_back,,1,1,1,1
 access_invoice_cost_line,invoice_cost_line,model_invoice_cost_line,,1,1,1,1
 access_e_invoice,e_invoice,model_e_invoice,,1,1,1,1
-access_expense_category_user,expense.category.user,model_expense_category,base.group_user,1,0,0,0
-access_expense_category_accounting_user,expense.category.accounting.user,model_expense_category,account.group_account_user,1,1,1,1
-access_expense_item_user,expense.item.user,model_expense_item,base.group_user,1,0,0,0
-access_expense_item_accounting_user,expense.item.accounting.user,model_expense_item,account.group_account_user,1,1,1,1
