@@ -163,6 +163,17 @@
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="account_analytic_id"/>
+                            <field name="total_vnd_exchange" invisible="1"/>
+                            <field name="import_tax" invisible="1"/>
+                            <field name="amount_tax" invisible="1"/>
+                            <field name="special_consumption_tax" invisible="1"/>
+                            <field name="special_consumption_tax_amount" invisible="1"/>
+                            <field name="vat_tax" invisible="1"/>
+                            <field name="vat_tax_amount" invisible="1"/>
+                            <field name="total_tax_amount" invisible="1"/>
+                            <field name="before_tax" invisible="1"/>
+                            <field name="after_tax" invisible="1"/>
+                            <field name="total_product" invisible="1"/>
                         </tree>
                     </field>
                 </xpath>
@@ -184,21 +195,20 @@
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
                     <page string="Thuế nhập khẩu"
                           attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
-                        <field name="exchange_rate_line" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
+                        <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
-                                <field name="vnd_amount" force_save="1" readonly="1"/>
-                                <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>
+                                <field name="description" readonly="1"/>
+                                <field name="total_vnd_exchange" readonly="1"/>
+                                <field name="quantity" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1" force_save="1"/>
+                                <field name="amount_tax" readonly="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
+                                <field name="special_consumption_tax_amount" readonly="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1" force_save="1"/>
-                                <!--                                <field name="total_vnd_amount" readonly="1"/>-->
-                                <field name="total_tax_amount" readonly="1" force_save="1"/>
+                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
                     </page>
@@ -214,7 +224,16 @@
                                 <field name="vnd_amount"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
-                        </field>
+                         </field>
+                        <div class="xl-12 d-flex" style="justify-content: end;">
+                            <group class="xl-4">
+                            </group>
+                              <group class="xl-4">
+                            </group>
+                              <group class="xl-4">
+                                <field name="cost_total"/>
+                            </group>
+                        </div>
                     </page>
                     <field name="is_check_vendor_page" force_save="1" invisible="1"/>
                     <page string="NCC vãng lai" name="supplier_info"
@@ -242,18 +261,18 @@
                     <page string="Tổng hợp" invisible="context.get('default_move_type', False) == 'out_invoice'" name="synthetic">
                         <field name="invoice_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
-                                <field name="description"/>
                                 <field name="product_id"/>
-                                <field name="product_uom"/>
-                                <field name="price_unit"/>
-                                <field name="quantity"/>
-                                <field name="price_subtotal" sum="discounted subtotal" force_save="1"/>
-                                <field name="discount"/>
+                                <field name="description"/>
+                                <field name="product_uom_id"/>
+                                <field name="price_unit" string="Đơn giá"/>
+                                <field name="quantity" sum="discounted subtotal"/>
+                                <field name="total_vnd_amount"/>
+                                <field name="discount_percent"/>
                                 <field name="before_tax"/>
-                                <field name="tnk_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
-                                <field name="db_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
+                                <field name="tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="after_tax"/>
-                                <field name="total_product" sum="discounted subtotal" force_save="1"/>
+                                <field name="total_product"/>
                             </tree>
                         </field>
                     </page>

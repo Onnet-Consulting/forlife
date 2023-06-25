@@ -103,26 +103,23 @@
                 <xpath expr="//notebook" position="inside">
                     <field name="type_po_cost" invisible="1"/>
                     <page string="Product Exchange Rate" attrs="{'invisible': [('type_po_cost', '!=', 'tax')]}">
-                        <field name="exchange_rate_line" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many" force_save="1">
+                        <field name="exchange_rate_line_ids" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many" force_save="1">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
-                                <field name="usd_amount" readonly="1" invisible="1"/>
-                                <field name="vnd_amount" readonly="1" force_save="1"/>
-                                <field name="qty_product" readonly="1" string="Số lượng đặt mua" force_save="1"/>
+                                <field name="description" readonly="1"/>
+                                <field name="total_vnd_exchange" readonly="1"/>
+                                <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1" force_save="1"/>
+                                <field name="tax_amount" readonly="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
+                                <field name="special_consumption_tax_amount" readonly="1"/>
                                 <field name="vat_tax"/>
                                 <field name="vat_tax_amount" readonly="1"/>
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
-<!--                        <button string="Câp nhật thuế nhập  khẩu" name="action_update_import"-->
-<!--                                type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>-->
                     </page>
-                    <page string="Product Cost" name="product_cost" attrs="{'invisible': ['|', ('exchange_rate_line', '=', True), ('is_inter_company', '=', True)]}">
+                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('is_inter_company', '=', True)]}">
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
@@ -148,16 +145,16 @@
                     <page string="Tổng hợp" name="synthetic">
                         <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
-                                <field name="description"/>
                                 <field name="product_id"/>
+                                <field name="description"/>
                                 <field name="product_uom"/>
-                                <field name="price_unit"/>
-                                <field name="quantity" sum="discounted subtotal" force_save="1"/>
-                                <field name="price_subtotal"/>
+                                <field name="price_unit" string="Đơn giá"/>
+                                <field name="product_qty" sum="discounted subtotal"/>
+                                <field name="total_vnd_amount"/>
                                 <field name="discount"/>
                                 <field name="before_tax"/>
-                                <field name="tnk_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="db_tax" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="tax_amount" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
                                 <field name="after_tax"/>
                                 <field name="total_product"/>
                             </tree>
@@ -272,7 +269,7 @@
                         <field name="purchase_quantity"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="domain_uom" invisible="1"/>
-                        <field name="purchase_uom" domain="domain_uom"
+                        <field name="purchase_uom"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" force_save="1"/>
@@ -282,6 +279,7 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('parent.is_passersby', '=', False), ('free_good', '=', True)]}"
                                force_save="1"/>
                         <field name="price_unit"
+                               string="Đơn giá"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
@@ -337,6 +335,17 @@
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
                         <field name="company_id" invisible="1"/>
+                        <field name="total_vnd_exchange" invisible="1"/>
+                        <field name="import_tax" invisible="1"/>
+                        <field name="tax_amount" invisible="1"/>
+                        <field name="special_consumption_tax" invisible="1"/>
+                        <field name="special_consumption_tax_amount" invisible="1"/>
+                        <field name="vat_tax" invisible="1"/>
+                        <field name="vat_tax_amount" invisible="1"/>
+                        <field name="total_tax_amount" invisible="1"/>
+                        <field name="before_tax" invisible="1"/>
+                        <field name="after_tax" invisible="1"/>
+                        <field name="total_product" invisible="1"/>
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='notes']" position="attributes">
