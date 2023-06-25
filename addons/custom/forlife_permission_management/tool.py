@@ -2,8 +2,8 @@ if __name__ == '__main__':
     # module = "forlife_stock"
     # module = "stock_inventory"
     # module = "forlife_stock_report"
-    module = "stock"
-    model = "stock.warehouse.orderpoint"
+    module = "point_of_sale"
+    model = "pos.config"
     # dvkh = True
     access = "1,0,0,0"
     model_name = model.replace(".", "_")
