@@ -33,8 +33,8 @@ class Inventory(models.Model):
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
         ('cancel', 'Hủy'),
-        ('first_inv', 'Kiểm kê bước 1'),
-        ('second_inv', 'Kiểm kê bước 2'),
+        ('first_inv', 'Xác nhận lần 1'),
+        ('second_inv', 'Xác nhận lần 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -45,9 +45,9 @@ class Inventory(models.Model):
                                     states={'draft': [('readonly', False)]}, required=True)
     view_location_id = fields.Many2one(related='warehouse_id.view_location_id')
 
-    location_ids = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
+    location_id = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
         states={'draft': [('readonly', False)]},
-        domain="[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', view_location_id)]")
+        domain="[('usage', 'in', ['internal']), ('id', 'child_of', view_location_id)]")
 
     #
     # filter_by = fields.Selection(string='Filtrer par', selection=[
@@ -85,7 +85,7 @@ class Inventory(models.Model):
         if not self.user_has_groups('stock.group_stock_multi_locations'):
             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
             if warehouse:
-                self.location_ids = warehouse.lot_stock_id
+                self.location_id = warehouse.lot_stock_id
 
     def copy_data(self, default=None):
         name = _("%s (copy)") % (self.name)
@@ -96,7 +96,7 @@ class Inventory(models.Model):
         for inventory in self:
             if (inventory.state not in ('draft', 'cancel')
                and not self.env.context.get(MODULE_UNINSTALL_FLAG, False)):
-                raise UserError(_('You can only delete a draft inventory adjustment. If the inventory adjustment is not done, you can cancel it.'))
+                raise UserError(_('Bạn chỉ có thể xóa bản ghi kiểm kê ở trạng thái nháp. Nếu việc kiểm kê không được thực hiện, bạn có thể hủy bỏ nó.'))
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
@@ -189,6 +189,7 @@ class Inventory(models.Model):
                 self.env['stock.inventory.line'].create(inventory._get_inventory_lines_values())
             inventory.write(vals)
 
+    '''
     def action_open_inventory_lines(self):
         self.ensure_one()
         action = {
@@ -239,6 +240,8 @@ class Inventory(models.Model):
             'domain': domain,
         }
         return action
+        '''
+
     def init(self):
         get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
         self.env.cr.execute(get_quantity_inventory)
@@ -255,8 +258,8 @@ class Inventory(models.Model):
         :rtype: dict
         """
         self.ensure_one()
-        if self.location_ids:
-            domain_loc = [('id', 'child_of', self.location_ids.ids)]
+        if self.location_id:
+            domain_loc = [('id', 'child_of', self.location_id.ids)]
         else:
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
@@ -312,8 +315,8 @@ class Inventory(models.Model):
                 ('active', '=', True)], ['id'])
             product_ids = [p['id'] for p in product_ids]
 
-        if self.location_ids:
-            location_ids = self.location_ids.ids
+        if self.location_id:
+            location_ids = self.location_id.ids
         else:
             location_ids = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)]).lot_stock_id.ids
 
@@ -338,6 +341,7 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
+        '''
         product_ids = tuple([p['product_id'] for p in quants_groups])
         query = f"""
             SELECT pp.id product_id, pt.uom_id 
@@ -347,6 +351,7 @@ class Inventory(models.Model):
         self._cr.execute(query)
         product_uom_data = self._cr.dictfetchall()
         uom_data = {x['product_id']:x['uom_id']  for x in product_uom_data} if product_uom_data else {}
+        '''
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
@@ -355,7 +360,7 @@ class Inventory(models.Model):
                 'x_first_qty': data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
-                'product_uom_id': uom_data.get(data.get('product_id'), False)
+                'product_uom_id': data.get('uom_id')
             }
             vals.append(line)
         if self.exhausted:
@@ -372,9 +377,9 @@ class InventoryLine(models.Model):
     def _domain_location_id(self):
         if self.env.context.get('active_model') == 'stock.inventory':
             inventory = self.env['stock.inventory'].browse(self.env.context.get('active_id'))
-            if inventory.exists() and inventory.location_ids:
-                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_ids.ids
-        return "[('usage', 'in', ['internal', 'transit'])]"
+            if inventory.exists() and inventory.location_id:
+                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_id.ids
+        return "[('usage', 'in', ['internal'])]"
 
     @api.model
     def _domain_product_id(self):
@@ -440,8 +445,10 @@ class InventoryLine(models.Model):
 
     @api.onchange('product_id')
     def get_line_default(self):
-        if self.inventory_id.location_ids:
-            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_ids.ids)]}}
+        if self.inventory_id.location_id:
+            self.location_id = self.inventory_id.location_id
+        if self.inventory_id.location_id:
+            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_id.ids)]}}
         elif self.inventory_id.warehourse_id:
             return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
         else:
