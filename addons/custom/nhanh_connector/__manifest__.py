@@ -18,6 +18,7 @@
         'views/stock_warehouse.xml',
         'wizards/disable_nhanh_product.xml',
         'views/product_category.xml',
+        'views/delivery_carrier.xml',
     ],
     "application": True,
     "installable": True,
