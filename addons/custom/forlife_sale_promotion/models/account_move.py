@@ -64,7 +64,13 @@ class AccountMove(models.Model):
                 account_credit_id = False
                 line_allow = False
                 property_account_receivable_id = self.partner_id.property_account_receivable_id
+                if not property_account_receivable_id:
+                    raise UserWarning("Chưa cấu hình tài khoản thu cho khách hàng")
+
                 account_payable_customer_id = self.partner_id.property_account_payable_id
+                if not account_payable_customer_id:
+                    raise UserWarning("Chưa cấu hình tài khoản phải trả cho khách hàng")
+
                 account_tax = pr.product_id.taxes_id
                 account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
 
@@ -99,7 +105,10 @@ class AccountMove(models.Model):
                         'debit': 0,
                         'credit': abs(pr.value)
                     })
-                    if pr.promotion_type == 'nhanh_shipping_fee' and account_repartition_tax:
+                    if pr.promotion_type == 'nhanh_shipping_fee':
+                        if not account_repartition_tax or not account_repartition_tax[0].account_id:
+                            raise UserWarning("Chưa cấu hình tài khoản thuế cho sản phầm!")
+
                         line_ids.append({
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
