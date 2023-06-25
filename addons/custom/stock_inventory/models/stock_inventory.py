@@ -119,7 +119,7 @@ class Inventory(models.Model):
         lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
         if inventory_lines and not lines:
             wiz_lines = [(0, 0, {'product_id': product.id, 'tracking': product.tracking}) for product in inventory_lines.mapped('product_id')]
-            wiz = self.env['stock.track.confirmation'].create({'inventory_id': self.id, 'tracking_line_ids': wiz_lines})
+            wiz = self.env['stock.track.confirmation'].create({'tracking_line_ids': wiz_lines})
             return {
                 'name': _('Tracked Products in Inventory Adjustment'),
                 'type': 'ir.actions.act_window',
