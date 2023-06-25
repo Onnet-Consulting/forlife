@@ -7,6 +7,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
                 <field name="source_record"/>
+                <field name="nhanh_id"/>
+                <field name="order_partner_id"/>
+                <field name="nhanh_order_status"/>
             </xpath>
         </field>
     </record>

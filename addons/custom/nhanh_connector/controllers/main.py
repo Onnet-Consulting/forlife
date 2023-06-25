@@ -71,17 +71,19 @@ class MainController(http.Controller):
                         'name': 'Nhanh.Vn',
                         'customer_rank': 1
                     })
+                partner_group_id = request.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
                 partner = self.partner_model().sudo().search(
-                    ['|', ('mobile', '=', order['customerMobile']), ('phone', '=', order['customerMobile'])], limit=1)
+                    ['|', ('mobile', '=', order['customerMobile']), ('phone', '=', order['customerMobile']),
+                     ('group_id', '=', partner_group_id.id)], limit=1)
                 if partner:
                     name_customer = order['customerName']
                 if not partner:
-                    partner_group_id = request.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
                     partner_value = {
                         'phone': order['customerMobile'],
                         'mobile': order['customerMobile'],
                         'name': order['customerName'],
                         'email': order['customerEmail'],
+                        'street': order['customerAddress'],
                         'contact_address_complete': order['customerAddress'],
                         'customer_nhanh_id': order['customerId'],
                         'retail_type_ids': [(6, 0, request.env['res.partner.retail'].sudo().search(
