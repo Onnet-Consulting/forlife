@@ -16,6 +16,7 @@
         'views/nhanh_webhook_value.xml',
         'views/stock_location.xml',
         'views/stock_warehouse.xml',
+        'wizards/disable_nhanh_product.xml',
     ],
     "application": True,
     "installable": True,
