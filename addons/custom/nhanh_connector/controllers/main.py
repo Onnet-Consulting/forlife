@@ -58,7 +58,8 @@ class MainController(http.Controller):
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
-                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get('returnFromOrderId', 0)):
+                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
+                        'returnFromOrderId', 0)):
                     webhook_value_id.unlink()
                     return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
@@ -122,6 +123,16 @@ class MainController(http.Controller):
                 # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
                 # if not warehouse_id:
                 #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
+                # delivery carrier
+                delivery_carrier_id = request.env['delivery.carrier'].sudo().search(
+                    [('nhanh_id', '=', order['carrierId'])], limit=1)
+                if not delivery_carrier_id:
+                    delivery_carrier_id = request.env['delivery.carrier'].sudo().create({
+                        'nhanh_id': order['carrierId'],
+                        'name': order['carrierName'],
+                        'code': order['carrierCode'],
+                        'service_name': order['carrierServiceName']
+                    })
                 value = {
                     'nhanh_id': order['id'],
                     'partner_id': nhanh_partner.id,
@@ -140,6 +151,7 @@ class MainController(http.Controller):
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
                     'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+                    'delivery_carrier_id': delivery_carrier_id.id,
                     'order_line': order_line
                 }
                 # đổi trả hàng
