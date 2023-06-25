@@ -410,6 +410,21 @@
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
 
+        <record model="ir.ui.menu" id="forlife_pos_promotion.menu_pos_promotion_config_root">
+            <field name="groups_id"
+                   eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_pos_promotion.menu_promotion_campaign">
+            <field name="groups_id"
+                   eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_promotion.promotion_root">
+            <field name="groups_id"
+                   eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+        </record>
+
         <record model="ir.ui.menu" id="point_of_sale.menu_point_rep">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
@@ -488,7 +503,7 @@
         <!--Bán hàng/Đơn hàng/Đơn hàng-->
         <record model="ir.ui.menu" id="sale.menu_sale_order">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_ec_manager')), (4, ref('forlife_permission_management.group_ec_user')), (4, ref('forlife_permission_management.group_stock'))]"/>
         </record>
         <!--Bán hàng/Đơn hàng/khách hàng-->
         <record model="ir.ui.menu" id="sale.res_partner_menu">
