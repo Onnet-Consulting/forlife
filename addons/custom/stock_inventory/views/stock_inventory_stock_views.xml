@@ -195,9 +195,11 @@
                 </div>
                 <group>
                     <group>
-                        <field name="warehouse_id" options="{'no_create': True}"/>
+                        <field name="warehouse_id" options="{'no_create': True}"
+                               attrs="{'readonly': [('state','not in',('draft'))]}"/>
                         <field name="location_id" options="{'no_create': True}"
                                domain="[('warehouse_id', '=', warehouse_id), ('usage', 'in', ['internal'])]"
+                               attrs="{'readonly': ['|', ('state','not in',('draft')), ('warehouse_id','=',False)]}"
                                required="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
@@ -218,7 +220,7 @@
                 </group>
                 <notebook>
                     <page string="Chi tiết kiểm kê" name="page_line_ids">
-                        <field name="line_ids" nolabel="1">
+                        <field name="line_ids" nolabel="1" attrs="{'readonly': [('location_id','=',False)]}">
                             <tree editable="bottom">
                                 <field name="product_id" attrs="{'readonly': [('state','not in',('draft'))]}"/>
                                 <field name="barcode"/>
@@ -228,8 +230,8 @@
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
                                 <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
                                 <field name="x_first_qty" string="SL xác nhận lần 1"
-                                       attrs="{'readonly': [('state','not in',('draft'))]}"/>
-                                <field name="product_qty" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
+                                       attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
+                                <field name="product_qty" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
                                 <field name="difference_qty" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
                                 <field name="state" invisible="1"/>
