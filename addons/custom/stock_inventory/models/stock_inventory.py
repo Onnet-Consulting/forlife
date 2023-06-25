@@ -449,8 +449,8 @@ class InventoryLine(models.Model):
             self.location_id = self.inventory_id.location_id
         if self.inventory_id.location_id:
             return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_id.ids)]}}
-        elif self.inventory_id.warehourse_id:
-            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
+        elif self.inventory_id.warehouse_id:
+            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehouse_id.id)]}}
         else:
             return False
 
