@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from datetime import datetime, timedelta, time
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
 from odoo.exceptions import ValidationError
 
@@ -39,9 +40,149 @@ def _action_done(self):
 InheritPicking._action_done = _action_done
 
 
+class StockPickingOverPopupConfirm(models.TransientModel):
+    _name = 'stock.picking.over.popup.confirm'
+    _description = 'Stock Picking Over Popup Confirm'
+
+    picking_id = fields.Many2one('stock.picking')
+
+    def process(self):
+        self.ensure_one()
+        list_line_over = []
+        list_line_less = []
+        for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+            if pk.qty_done != pk_od.product_uom_qty:
+                if pk.qty_done > pk_od.product_uom_qty:
+                    list_line_over.append((0, 0, {
+                        'product_id': pk_od.product_id.id,
+                        'product_uom_qty': pk.qty_done - pk_od.product_uom_qty,
+                        'quantity_done': pk.qty_done - pk_od.product_uom_qty,
+                        'product_uom': pk_od.product_uom.id,
+                        'free_good': pk_od.free_good,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk.qty_done - pk_od.product_uom_qty,
+                        'occasion_code_id': pk.occasion_code_id.id,
+                        'work_production': pk.work_production.id,
+                        'account_analytic_id': pk.account_analytic_id.id,
+                        'price_unit': pk_od.price_unit,
+                        'location_id': pk_od.location_id.id,
+                        'location_dest_id': pk_od.location_dest_id.id,
+                        'amount_total': pk_od.amount_total,
+                        'reason_type_id': pk_od.reason_type_id.id,
+                        'reason_id': pk_od.reason_id.id,
+                        'purchase_line_id': pk_od.purchase_line_id.id,
+                    }))
+                if pk.qty_done < pk_od.product_uom_qty:
+                    list_line_less.append((0, 0, {
+                        'product_id': pk_od.product_id.id,
+                        'product_uom_qty': pk_od.product_uom_qty - pk.qty_done,
+                        'quantity_done': pk_od.product_uom_qty - pk.qty_done,
+                        'product_uom': pk_od.product_uom.id,
+                        'free_good': pk_od.free_good,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk_od.product_uom_qty - pk.qty_done,
+                        'occasion_code_id': pk.occasion_code_id.id,
+                        'work_production': pk.work_production.id,
+                        'account_analytic_id': pk.account_analytic_id.id,
+                        'price_unit': pk_od.price_unit,
+                        'location_id': pk_od.location_id.id,
+                        'location_dest_id': pk_od.location_dest_id.id,
+                        'amount_total': pk_od.amount_total,
+                        'reason_type_id': pk_od.reason_type_id.id,
+                        'reason_id': pk_od.reason_id.id,
+                        'purchase_line_id': pk_od.purchase_line_id.id,
+                    }))
+        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+               zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package)):
+            master_data_over = {
+                'location_id': self.picking_id.location_id.id,
+                'partner_id': self.picking_id.partner_id.id,
+                'location_dest_id': self.picking_id.location_dest_id.id,
+                'scheduled_date': datetime.now(),
+                'origin': self.picking_id.origin,
+                'is_pk_purchase': self.picking_id.is_pk_purchase,
+                'leftovers_id': self.picking_id.id,
+                'state': 'assigned',
+                'picking_type_id': self.picking_id.picking_type_id.id,
+                'move_ids_without_package': list_line_over,
+            }
+            xk_picking = self.env['stock.picking'].create(master_data_over)
+        if any(pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+               zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package)):
+            master_data_less = {
+                'location_id': self.picking_id.location_id.id,
+                'partner_id': self.picking_id.partner_id.id,
+                'location_dest_id': self.picking_id.location_dest_id.id,
+                'scheduled_date': datetime.now(),
+                'origin': self.picking_id.origin,
+                'is_pk_purchase': self.picking_id.is_pk_purchase,
+                'backorder_id': self.picking_id.id,
+                'state': 'assigned',
+                'picking_type_id': self.picking_id.picking_type_id.id,
+                'move_ids_without_package': list_line_less,
+            }
+            xk_picking = self.env['stock.picking'].create(master_data_less)
+        for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+            pk.write({
+                'qty_done': pk_od.product_uom_qty
+            })
+        data_pk_over = self.env['stock.picking'].search([('leftovers_id', '=', self.picking_id.id)])
+        for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
+            pk.write({
+                'quantity_change': pk_od.quantity_change,
+                'quantity_purchase_done': pk.qty_done
+            })
+        data_pk_less = self.env['stock.picking'].search([('backorder_id', '=', self.picking_id.id)])
+        for pk, pk_od in zip(data_pk_less.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
+            pk.write({
+                'quantity_change': pk_od.quantity_change,
+                'quantity_purchase_done': pk.qty_done
+            })
+        self.picking_id.button_validate()
+
+
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
+
+    def button_forlife_validate(self):
+        self.ensure_one()
+        view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
+        view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
+        for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
+            if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
+                tolerance = pk.product_id.tolerance
+                if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
+                    raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
+        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+               zip(self.move_line_ids_without_package, self.move_ids_without_package)) and not any(
+            pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+            zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+            return {
+                'name': 'Tạo phần dở dang thừa?',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'stock.picking.over.popup.confirm',
+                'views': [(view_over.id, 'form')],
+                'view_id': view_over.id,
+                'target': 'new',
+                'context': dict(self.env.context, default_picking_id=self.id),
+            }
+        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+               zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
+            pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+            zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+            return {
+                'name': 'Tạo phần dở dang thừa/thiếu?',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'stock.picking.over.popup.confirm',
+                'views': [(view_over_less.id, 'form')],
+                'view_id': view_over_less.id,
+                'target': 'new',
+                'context': dict(self.env.context, default_picking_id=self.id),
+            }
+        return super(StockPicking, self).button_validate()
 
     def action_confirm(self):
         for picking in self:
@@ -103,6 +244,10 @@ class StockPicking(models.Model):
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
+    leftovers_id = fields.Many2one(
+        'stock.picking', 'Left over of',
+        copy=False, readonly=True,
+        check_company=True)
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)
@@ -391,14 +536,14 @@ class StockMoveLine(models.Model):
                                       domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
-    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    def constrains_qty_done(self):
-        for rec in self:
-            for line in rec.picking_id.move_ids_without_package:
-                if rec.move_id.id == line.id:
-                    if str(rec.po_id) == str(line.po_l_id):
-                        if rec.qty_done > line.product_uom_qty:
-                            raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    # def constrains_qty_done(self):
+    #     for rec in self:
+    #         for line in rec.picking_id.move_ids_without_package:
+    #             if rec.move_id.id == line.id:
+    #                 if str(rec.po_id) == str(line.po_l_id):
+    #                     if rec.qty_done > line.product_uom_qty:
+    #                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
