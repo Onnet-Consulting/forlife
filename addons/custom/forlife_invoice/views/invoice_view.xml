@@ -215,7 +215,7 @@
                     <page string="Chi phí" invisible="context.get('default_move_type', False) == 'out_invoice'" name="product_cost" attrs="{'invisible': [('move_type', '=', 'entry')]}">
                         <field name="cost_line" widget="section_and_note_one2many"
                                attrs="{'readonly': [('state', 'not in', ('draft'))]}">
-                            <tree editable="bottom" class="width-hh" create="0" delete="0">
+                            <tree editable="bottom" class="width-hh">
                                 <field name="product_id"/>
                                 <field name="name" readonly="1" string='Mô tả'/>
                                 <field name="currency_id"/>
