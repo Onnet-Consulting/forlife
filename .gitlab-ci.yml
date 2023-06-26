@@ -4,6 +4,7 @@ variables:
 stages:
   - alpha
   - beta
+  - beta-02
   - production
 
 default:
@@ -36,6 +37,19 @@ build-beta:
     - docker-compose restart
   tags:
     - build-beta
+
+build-beta-02:
+  stage: beta-02
+  only:
+    refs:
+      - beta-02
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-beta-02
 
 build-production:
   stage: production
