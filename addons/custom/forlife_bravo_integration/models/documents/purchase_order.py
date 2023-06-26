@@ -396,9 +396,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             return []
         values = []
         lines = self.line_ids
-        credit_lines = lines.filtered(lambda l: l.credit > 0)
-        debit_lines = lines - credit_lines
-        credit_account_code = credit_lines[0].account_id.code if credit_lines else None
+
         partner = picking.partner_id
         purchase = self.env['purchase.order'].sudo().search([('name', '=', self.reference)], limit=1)
         journal_value = {
@@ -415,27 +413,49 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "Description": picking.note or "Phân bổ chi phí mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": self.env.user.employee_id.code or None,
             "IsTransfer": 1 if purchase.has_contract_commerce else 0,
-            "CreditAccount": credit_account_code or None,
         }
-        for idx, line in enumerate(debit_lines, start=1):
-            line_value = journal_value.copy()
-            line_value.update({
-                "BuiltinOrder": idx or None,
-                "ItemCode": line.product_id.barcode or None,
-                "ItemName": line.product_id.name or None,
-                "DebitAccount": line.account_id.code or None,
-                "OriginalAmount": line.debit,
-                "Amount": line.debit,
-                "DocNo_PO": self.reference or None,
-                "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
-                "JobCode": line.occasion_code_id.code or None,
-                "RowId": line.id or None,
-                "DeptCode": line.analytic_account_id.code or None,
-            })
-
-            if is_reversed:
-                pass
-            values.append(line_value)
+        if not is_reversed:
+            credit_lines = lines.filtered(lambda l: l.credit > 0)
+            debit_lines = lines - credit_lines
+            credit_account_code = credit_lines[0].account_id.code if credit_lines else None
+            for idx, line in enumerate(debit_lines, start=1):
+                line_value = journal_value.copy()
+                line_value.update({
+                    "BuiltinOrder": idx or None,
+                    "ItemCode": line.product_id.barcode or None,
+                    "ItemName": line.product_id.name or None,
+                    "DebitAccount": line.account_id.code or None,
+                    "OriginalAmount": line.debit,
+                    "Amount": line.debit,
+                    "DocNo_PO": self.reference or None,
+                    "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
+                    "JobCode": line.occasion_code_id.code or None,
+                    "RowId": line.id or None,
+                    "DeptCode": line.analytic_account_id.code or None,
+                    "CreditAccount": credit_account_code or None,
+                })
+                values.append(line_value)
+        else:
+            debit_lines = lines.filtered(lambda l: l.debit > 0)
+            credit_lines = lines - debit_lines
+            debit_account_code = debit_lines[0].account_id.code if debit_lines else None
+            for idx, line in enumerate(credit_lines, start=1):
+                line_value = journal_value.copy()
+                line_value.update({
+                    "BuiltinOrder": idx or None,
+                    "ItemCode": line.product_id.barcode or None,
+                    "ItemName": line.product_id.name or None,
+                    "DebitAccount": line.account_id.code or None,
+                    "OriginalAmount": line.credit,
+                    "Amount": line.credit,
+                    "DocNo_PO": self.reference or None,
+                    "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
+                    "JobCode": line.occasion_code_id.code or None,
+                    "RowId": line.id or None,
+                    "DeptCode": line.analytic_account_id.code or None,
+                    "CreditAccount": debit_account_code or None,
+                })
+                values.append(line_value)
 
         return values
 
