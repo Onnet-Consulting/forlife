@@ -97,7 +97,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu mua hàng'),
-            'template': '/purchase_request/static/src/xlsx/import_template_pr.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/template_purchase_request.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
