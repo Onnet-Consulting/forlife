@@ -34,14 +34,14 @@
                     <button string="Approve" name="action_approve"
                             type="object"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
-                            confirm="Bạn có thực sự muốn phê duyệt cân đối tồn kho?"/>
+                            confirm="Bạn có thực sự muốn phê duyệt phiếu không?"/>
                     <button string="Reject" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" id="reject"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
                             context="{'click_button': 'reject'}"/>
                     <button string="Cancel" id="cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject'))]}"
-                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu kiểm kê cân tồn không?"/>
+                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu không?"/>
                      <button string="Trở về nháp" name="action_draft"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
