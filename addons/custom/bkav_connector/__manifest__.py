@@ -12,7 +12,6 @@
         'views/invoice_view.xml',
         'views/invoice_not_exists_bkav_view.xml',
         'views/res_config_settings_views.xml',
-        'views/pos_config.xml',
     ],
     "application": True,
     "installable": True,
