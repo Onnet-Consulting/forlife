@@ -731,7 +731,7 @@ class AccountMoveLine(models.Model):
 
     # field check vendor_price khi ncc vãng lại:
     is_passersby = fields.Boolean(related='move_id.is_passersby')
-    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
+    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
 
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
