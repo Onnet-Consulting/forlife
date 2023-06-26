@@ -24,6 +24,7 @@ class ProductDefective(models.Model):
     program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá")
     from_date = fields.Datetime(readonly=True, string='Hiệu lực', related='program_pricelist_item_id.program_id.campaign_id.from_date')
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
+    reason_refuse_product = fields.Char('Lí do từ chối')
 
     def unlink(self):
         for rec in self:

@@ -54,6 +54,7 @@
                                 <field name="total_reduce" required="1"/>
                                 <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
+                                <field name="reason_refuse_product" states="refuse" readonly="True"/>
                             </group>
                         </group>
                     </sheet>
