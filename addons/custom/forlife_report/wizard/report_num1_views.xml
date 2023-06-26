@@ -21,7 +21,7 @@
                             <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
                         </group>
                         <group>
-                            <field name="picking_type"/>
+                            <field name="picking_type" widget="radio" options="{'horizontal': True}"/>
                             <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
                         </group>
                     </group>

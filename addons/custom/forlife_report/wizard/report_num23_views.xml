@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num11_form" model="ir.ui.view">
+    <record id="report_num23_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num11</field>
+        <field name="model">report.num23</field>
         <field name="arch" type="xml">
-            <form string="About to rank up" create="0">
+            <form string="Card rank discount report" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -12,14 +12,17 @@
                     </div>
                     <group>
                         <group>
-                            <field name="to_date" class="oe_inline" required="1"/>
-                            <field name="from_rank_ids" class="oe_inline" widget="many2many_tags"/>
-                            <field name="number_of_days"/>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="type" widget="radio" options="{'horizontal': True}"/>
                         </group>
                         <group>
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
-                            <field name="customer_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                 </sheet>
@@ -27,15 +30,15 @@
         </field>
     </record>
 
-    <record id="report_num11_window_action" model="ir.actions.act_window">
-        <field name="name">About to rank up</field>
-        <field name="res_model">report.num11</field>
+    <record id="report_num23_window_action" model="ir.actions.act_window">
+        <field name="name">Card rank discount report</field>
+        <field name="res_model">report.num23</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="report_num11_menu"
-              action="report_num11_window_action"
-              parent="report_menu_card_rank"
-              sequence="10"/>
+    <menuitem id="report_num23_menu"
+              action="report_num23_window_action"
+              parent="report_menu_sale"
+              sequence="23"/>
 </odoo>

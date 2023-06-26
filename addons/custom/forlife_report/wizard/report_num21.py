@@ -84,17 +84,21 @@ account_by_categ_id as (
     full outer join acc_cost on acc_whs.cate_id = acc_cost.cate_id
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids})
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ),
 prepare_data_tb as (
     select '{{"out_approve":"Xác nhận xuất","in_approve":"Xác nhận nhập","done":"Hoàn thành"}}'::json as status
@@ -115,14 +119,14 @@ select
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
-    case when pc.name ilike '%hàng hóa%' then 'Nhập mua'
-        when pc.name ilike '%thành phẩm%' then 'Sản xuất' else ''
+    case when pc.name ilike '%%hàng hóa%%' then 'Nhập mua'
+        when pc.name ilike '%%thành phẩm%%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ad_color.value                                                              as mau_sac,
-    ad_size.value                                                               as kich_co,
+    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
+    ad.attrs::json -> '{attr_value.get('size', '')}'                            as kich_co,
     ''                                                                          as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    kieu_dang.value                                                             as kieu_dang,
+    ad.attrs::json -> '{attr_value.get('subclass1', '')}'                       as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -132,8 +136,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    doi_tuong.value                                                             as doi_tuong,
-    nam_sx.value                                                                as nam_sx
+    ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                       as doi_tuong,
+    ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                    as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id
@@ -143,11 +147,7 @@ from stock_transfer st
     left join product_template pt on pt.id = product_tmpl_id
     left join product_category pc on pc.id = pt.categ_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
-    left join attribute_data ad_size on ad_size.product_id = stl.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-    left join attribute_data ad_color on ad_color.product_id = stl.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data kieu_dang on kieu_dang.product_id = stl.product_id and kieu_dang.attrs_code = '{attr_value.get('subclass1', '')}'
-    left join attribute_data doi_tuong on doi_tuong.product_id = stl.product_id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
-    left join attribute_data nam_sx on nam_sx.product_id = stl.product_id and nam_sx.attrs_code = '{attr_value.get('nam_san_xuat', '')}'
+    left join attribute_data ad on ad.product_id = stl.product_id    
 where {format_date_query("st.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and stl.product_id = any (array{product_ids})
     and (s_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids}))
