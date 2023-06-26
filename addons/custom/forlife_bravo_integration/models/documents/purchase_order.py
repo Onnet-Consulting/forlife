@@ -35,8 +35,9 @@ class AccountMovePurchaseAsset(models.Model):
         is_partner_group_1 = partner.group_id == \
                              self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        payable_lines = journal_lines.filtered(lambda l: l.account_id.account_type == 'liability_payable')
-        journal_lines = journal_lines - payable_lines - invoice_lines
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
+        tax_line = journal_tax_lines and journal_tax_lines[0]
+        payable_lines = journal_lines - invoice_lines - journal_tax_lines
         payable_line = payable_lines and payable_lines[0]
         payable_account_code = payable_line.account_id.code
         exchange_rate = self.exchange_rate
@@ -99,23 +100,17 @@ class AccountMovePurchaseAsset(models.Model):
                 "RowId": invoice_line.id or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
                 "DeptCode": invoice_line.analytic_account_id.code or None,
-                "AssetCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
+                "AssetCode": invoice_line.asset_id.code if (
+                        invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
                 "ExpenseCatgCode": expense_code if valid_expense_code else None,
-                "ProductCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
-
+                "ProductCode": invoice_line.asset_id.code if (
+                        invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
+                "TaxCode": tax_line.tax_line_id.code or None,
+                "OriginalAmount3": tax_line.tax_amount,
+                "Amount3": tax_line.tax_amount * exchange_rate,
+                "DebitAccount3": tax_line.account_id.code,
+                "CreditAccount3": payable_account_code
             })
-            invoice_tax_ids = invoice_line.tax_ids
-            # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
-            if journal_tax_lines:
-                tax_line = journal_tax_lines[0]
-                journal_value_line.update({
-                    "TaxCode": tax_line.tax_line_id.code or None,
-                    "OriginalAmount3": tax_line.tax_amount,
-                    "Amount3": tax_line.tax_amount * exchange_rate,
-                    "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code
-                })
 
             values.append(journal_value_line)
 
