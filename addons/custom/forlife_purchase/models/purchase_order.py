@@ -359,17 +359,6 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.partner_id:
                 raise UserError("Bạn chưa chọn nhà cung cấp!!")
-            list_line_invalid = []
-            for r in record.order_line:
-                if not record.partner_id.is_passersby:
-                    supplier = self.env['product.supplierinfo'].search([('partner_id', '=', record.partner_id.id),('product_id','=',r.product_id.id)],limit=1)
-                    if not supplier:
-                        pass
-                    else:
-                        #validate
-                        supplier_exits = self.env['product.supplierinfo'].search([('amount_conversion','=',r.exchange_quantity),('partner_id', '=', record.partner_id.id),('product_id','=',r.product_id.id)],limit=1)
-                        if not supplier_exits:
-                            list_line_invalid.append(r.product_id.name_get()[0][1])
             if list_line_invalid:
                 mgs = f"Sản phẩm {',  '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp {record.partner_id.name_get()[0][1]} \n"
                 raise UserError(_(mgs))
