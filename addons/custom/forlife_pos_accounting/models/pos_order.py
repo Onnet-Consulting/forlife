@@ -185,7 +185,6 @@ class InheritPosOrder(models.Model):
                     continue
                 ail[-1]['quantity'] = -ail[-1]['quantity']
                 out_refund_line_values.append(ail)
-                (out_invoice_line_values if ail[-1]['quantity'] > 0 else out_refund_line_values).append(ail)
             values['invoice_line_ids'] = out_invoice_line_values
             if out_refund_line_values:
                 out_refund_values = values.copy()
