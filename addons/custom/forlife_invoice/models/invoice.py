@@ -585,6 +585,21 @@ class AccountMoveLine(models.Model):
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
+    # asset invoice!!
+    asset_code = fields.Char('Mã tài sản cố định')
+    asset_name = fields.Char('Mô tả tài sản cố định')
+    code_tax = fields.Char(string='Mã số thuế')
+    invoice_reference = fields.Char(string='Invoice Reference')
+    invoice_description = fields.Char(string="Invoice Description")
+    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
+
+    # field check exchange_quantity khi ncc vãng lại:
+    is_check_exchange_quantity = fields.Boolean(default=False)
+
+    # field check vendor_price khi ncc vãng lại:
+    is_passersby = fields.Boolean(related='move_id.is_passersby')
+    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
+
     # goods invoice!!
     promotions = fields.Boolean(string='Promotions', default=False)
     quantity_purchased = fields.Integer(string='Quantity Purchased', default=1)
@@ -594,36 +609,36 @@ class AccountMoveLine(models.Model):
                                 compute='compute_vendor_price_ncc',
                                 store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ',
-                                    compute='_compute_total_vnd_amount',
+                                    # compute='_compute_total_vnd_amount',
                                     store=1)
     total_vnd_exchange = fields.Float('Thành tiền VND',
-                                      compute='_compute_total_vnd_amount',
+                                      # compute='_compute_total_vnd_amount',
                                       store=1)
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_tax_amount',
+                              # compute='_compute_tax_amount',
                               store=1)
     special_consumption_tax = fields.Float(string='% %Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
-                                                  compute='_compute_special_consumption_tax_amount',
+                                                  # compute='_compute_special_consumption_tax_amount',
                                                   store=1)
     vat_tax = fields.Float(string='% Thuế GTGT')
     vat_tax_amount = fields.Float(string='Thuế GTGT',
-                                  compute='_compute_vat_tax_amount',
+                                  # compute='_compute_vat_tax_amount',
                                   store=1)
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
-                                    compute='compute_tax_amount',
+                                    # compute='compute_tax_amount',
                                     store=1)
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
-                              compute='_compute_before_tax',
+                              # compute='_compute_before_tax',
                               store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)',
-                             compute='_compute_after_tax',
+                             # compute='_compute_after_tax',
                              store=1)
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
-                                 compute='_compute_total_product',
+                                 # compute='_compute_total_product',
                                  store=1)
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
@@ -636,72 +651,72 @@ class AccountMoveLine(models.Model):
             if item.vat_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
 
-    @api.depends('total_vnd_exchange', 'import_tax')
-    def _compute_tax_amount(self):
-        for rec in self:
-            rec.amount_tax = rec.total_vnd_exchange * rec.import_tax / 100
-
-    @api.depends('amount_tax', 'special_consumption_tax')
-    def _compute_special_consumption_tax_amount(self):
-        for rec in self:
-            rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
-
-    @api.depends('special_consumption_tax_amount', 'vat_tax')
-    def _compute_vat_tax_amount(self):
-        for rec in self:
-            rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
-
-    @api.depends('vat_tax_amount')
-    def compute_tax_amount(self):
-        for rec in self:
-            rec.total_tax_amount = rec.amount_tax + rec.special_consumption_tax_amount + rec.vat_tax_amount
-
-    @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
-    def _compute_total_vnd_amount(self):
-        for rec in self:
-            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
-
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.invoice_line_ids')
-    def _compute_before_tax(self):
-        for rec in self:
-            cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
-                total_cost_true = 0
-                if cost_line_true and line.total_vnd_amount > 0:
-                    for item in cost_line_true:
-                        before_tax = line.total_vnd_amount / sum(rec.move_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
-                        total_cost_true += before_tax
-                        nine.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
-                else:
-                    nine.before_tax = 0
-                    if nine.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
-                    else:
-                        line.total_vnd_exchange = line.total_vnd_amount
-
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.exchange_rate_line_ids')
-    def _compute_after_tax(self):
-        for rec in self:
-            cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
-                total_cost = 0
-                sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
-                sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
-                sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
-                if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
-                    for item in cost_line_false:
-                        total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        nine.after_tax = total_cost
-                else:
-                    nine.after_tax = 0
-
-    @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
-    def _compute_total_product(self):
-        for record in self:
-            record.total_product = record.total_vnd_amount + record.before_tax + record.tax_amount + record.special_consumption_tax_amount + record.after_tax
+    # @api.depends('total_vnd_exchange', 'import_tax')
+    # def _compute_tax_amount(self):
+    #     for rec in self:
+    #         rec.amount_tax = rec.total_vnd_exchange * rec.import_tax / 100
+    #
+    # @api.depends('amount_tax', 'special_consumption_tax')
+    # def _compute_special_consumption_tax_amount(self):
+    #     for rec in self:
+    #         rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
+    #
+    # @api.depends('special_consumption_tax_amount', 'vat_tax')
+    # def _compute_vat_tax_amount(self):
+    #     for rec in self:
+    #         rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
+    #
+    # @api.depends('vat_tax_amount')
+    # def compute_tax_amount(self):
+    #     for rec in self:
+    #         rec.total_tax_amount = rec.amount_tax + rec.special_consumption_tax_amount + rec.vat_tax_amount
+    #
+    # @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
+    # def _compute_total_vnd_amount(self):
+    #     for rec in self:
+    #         rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
+    #
+    # @api.depends('move_id.cost_line.is_check_pre_tax_costs',
+    #              'move_id.invoice_line_ids')
+    # def _compute_before_tax(self):
+    #     for rec in self:
+    #         cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
+    #         for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+    #             total_cost_true = 0
+    #             if cost_line_true and line.total_vnd_amount > 0:
+    #                 for item in cost_line_true:
+    #                     before_tax = line.total_vnd_amount / sum(rec.move_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
+    #                     total_cost_true += before_tax
+    #                     nine.before_tax = total_cost_true
+    #                 line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+    #             else:
+    #                 nine.before_tax = 0
+    #                 if nine.before_tax != 0:
+    #                     line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+    #                 else:
+    #                     line.total_vnd_exchange = line.total_vnd_amount
+    #
+    # @api.depends('move_id.cost_line.is_check_pre_tax_costs',
+    #              'move_id.exchange_rate_line_ids')
+    # def _compute_after_tax(self):
+    #     for rec in self:
+    #         cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
+    #         for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+    #             total_cost = 0
+    #             sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
+    #             sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
+    #             sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
+    #             if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
+    #                 for item in cost_line_false:
+    #                     total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+    #                     nine.after_tax = total_cost
+    #             else:
+    #                 nine.after_tax = 0
+    #
+    # @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
+    # def _compute_total_product(self):
+    #     for record in self:
+    #         record.total_product = record.total_vnd_amount + record.before_tax + record.tax_amount + record.special_consumption_tax_amount + record.after_tax
 
     @api.depends('exchange_quantity', 'quantity', 'product_id', 'purchase_uom',
                  'move_id.partner_id', 'move_id.partner_id.is_passersby', 'move_id', 'move_id.currency_id')
@@ -738,21 +753,6 @@ class AccountMoveLine(models.Model):
                                 if closest_quantity == line.min_qty:
                                     rec.vendor_price = line.price
                                     rec.exchange_quantity = line.amount_conversion
-
-    # asset invoice!!
-    asset_code = fields.Char('Mã tài sản cố định')
-    asset_name = fields.Char('Mô tả tài sản cố định')
-    code_tax = fields.Char(string='Mã số thuế')
-    invoice_reference = fields.Char(string='Invoice Reference')
-    invoice_description = fields.Char(string="Invoice Description")
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
-
-    # field check exchange_quantity khi ncc vãng lại:
-    is_check_exchange_quantity = fields.Boolean(default=False)
-
-    # field check vendor_price khi ncc vãng lại:
-    is_passersby = fields.Boolean(related='move_id.is_passersby')
-    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
 
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
