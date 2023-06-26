@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="disable_nhanh_product_view_form" model="ir.ui.view">
+        <field name="name">disable_nhanh_product_view_form</field>
+        <field name="model">disable.nhanh.product</field>
+        <field name="arch" type="xml">
+            <form string="Update File">
+                <sheet>
+                    <group>
+                        <field name="import_file" filename="import_file_name"/>
+                        <field name="import_file_name" invisible="1"/>
+                        <field name="brand_id"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_import" type="object" string="Import" class="oe_highlight"
+                            attrs="{'invisible': [('import_file', '=', False)]}"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="disable_nhanh_product_action" model="ir.actions.act_window">
+        <field name="name">Ẩn sản phẩm Nhanh</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">disable.nhanh.product</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="disable_nhanh_product_menu" name="Ẩn sản phẩm Nhanh" parent="sale.product_menu_catalog"
+              action="disable_nhanh_product_action"/>
+
+</odoo>

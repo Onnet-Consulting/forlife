@@ -147,3 +147,25 @@ msgstr "Nhận hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_purchase_return.purchase_order_view_form_inherit
 msgid "Return"
 msgstr "Trả hàng"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard__selected_all
+msgid "Selected all"
+msgstr "Chọn tất cả"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__is_selected
+msgid "Selected"
+msgstr "Chọn"
+
+#. module: forlife_purchase_return
+#. odoo-python
+#: code:addons/forlife_purchase_return/wizard/purchase_return_wizard.py:0
+#, python-format
+msgid "Please select at least 1 line to create an PO return!"
+msgstr "Vui lòng chọn ít nhất 1 dòng để tạo Đơn trả hàng mua!"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard__company_id
+msgid "Company"
+msgstr "Công ty"
