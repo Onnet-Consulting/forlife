@@ -675,19 +675,19 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_liencongtys.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_liencongty.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidias.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_noidia.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhaus.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_thuenhapkhau.xlsx?download=true'
             }]
         else:
             return True
@@ -1489,6 +1489,7 @@ class PurchaseOrderLine(models.Model):
 
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
     total_value = fields.Float()
+    sequence = fields.Integer(default=1)
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
