@@ -129,11 +129,11 @@ class AccountMovePurchaseAsset(models.Model):
 class AccountMovePurchaseProduct(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_product_values(self):
+    def bravo_get_purchase_product_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_product_columns()
         for record in self:
-            res.extend(record.bravo_get_purchase_product_value())
+            res.extend(record.bravo_get_purchase_product_value(is_reversed))
         return columns, res
 
     @api.model
@@ -146,7 +146,7 @@ class AccountMovePurchaseProduct(models.Model):
             "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
         ]
 
-    def bravo_get_purchase_product_value(self):
+    def bravo_get_purchase_product_value(self, is_reversed):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -203,6 +203,15 @@ class AccountMovePurchaseProduct(models.Model):
                 "DeptCode": invoice_line.analytic_account_id.code or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
             })
+
+            if is_reversed:
+                reversed_account_values = {
+                    "DebitAccount": journal_value_line.get("CreditAccount"),
+                    "CreditAccount": journal_value_line.get("DebitAccount"),
+                    "DebitAccount3": journal_value_line.get("CreditAccount3"),
+                    "CreditAccount3": journal_value_line.get("DebitAccount3"),
+                }
+                journal_value_line.update(reversed_account_values)
 
             values.append(journal_value_line)
 

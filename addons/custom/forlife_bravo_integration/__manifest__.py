@@ -27,6 +27,7 @@
         'forlife_base',
         'forlife_pos_app_member',
         'forlife_purchase',
+        'forlife_purchase_return',
         'forlife_stock',
         'forlife_voucher',
         'forlife_product',

@@ -30,7 +30,7 @@ class AccountMove(models.Model):
                 'purchase_product_cost_picking_reversed',
         ):
             bravo_table = 'B30AccDocPurchase'
-        elif journal_data == "purchase_product":
+        elif journal_data in ('purchase_product_reserved', "purchase_product"):
             bravo_table = 'B30AccDocOther'
         elif journal_data == "purchase_bill_vendor_back":
             bravo_table = 'B30AccDocAtchDoc'
@@ -59,8 +59,31 @@ class AccountMove(models.Model):
                 lambda m: m.invoice_type == "decrease" and m.invoice_line_ids.mapped('purchase_order_id').
                 filtered(lambda order: order.purchase_type in ['service', 'asset']))
         if journal_data == 'purchase_product':
-            return self.filtered(lambda m: m.invoice_line_ids.mapped('purchase_order_id').
-                                 filtered(lambda order: order.purchase_type == 'product'))
+            initial_records = self.env['account.move']
+            for move in self.filtered(
+                    lambda m: bool(m.invoice_line_ids.mapped('purchase_order_id')) and m.purchase_type == 'product'):
+                if move.invoice_type == "increase":
+                    initial_records |= move
+                if move.invoice_line_ids.mapped('purchase_order_id').filtered(lambda o: not o.is_return):
+                    initial_records |= move
+                if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped(
+                        'purchase_order_id').filtered(lambda o: o.is_return):
+                    initial_records |= move
+            return initial_records
+
+        if journal_data == 'purchase_product_reserved':
+            initial_records = self.env['account.move']
+            for move in self.filtered(
+                    lambda m: bool(m.invoice_line_ids.mapped('purchase_order_id')) and m.purchase_type == 'product'):
+                if move.invoice_type == "decrease":
+                    initial_records |= move
+                if move.invoice_line_ids.mapped('purchase_order_id').filtered(lambda o: o.is_return):
+                    initial_records |= move
+                if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped(
+                        'purchase_order_id').filtered(lambda o: not o.is_return):
+                    initial_records |= move
+            return initial_records
+
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
                 lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0 and len(m.vendor_back_ids) > 0)
@@ -109,6 +132,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_asset_service_values(is_reversed=True)
         if journal_data == 'purchase_product':
             return self.bravo_get_purchase_product_values()
+        if journal_data == 'purchase_product_reserved':
+            return self.bravo_get_purchase_product_values(is_reversed=True)
         if journal_data == 'purchase_bill_vendor_back':
             return self.bravo_get_purchase_bill_vendor_back_values()
         if journal_data == 'purchase_product_cost_picking':
@@ -145,6 +170,13 @@ class AccountMove(models.Model):
         purchase_product_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_product_queries:
             queries.extend(purchase_product_queries)
+
+        # Purchase Product reversed (return)
+        current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_product_reserved'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_product_reversed_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_product_reversed_queries:
+            queries.extend(purchase_product_reversed_queries)
 
         # Vendor Back in Purchase Bill
         current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_bill_vendor_back'}
