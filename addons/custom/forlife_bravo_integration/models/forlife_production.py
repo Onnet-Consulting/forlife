@@ -39,7 +39,8 @@ class ForLifeProduction(models.Model):
                                   "npl": 2
                               })
     br9 = BravoMany2oneField('res.brand', odoo_name="brand_id", bravo_name="BrandsCode", field_detail="code")
-    br10 = BravoMany2oneField('hr.employee', odoo_name="user_id", bravo_name="EmployeeCode", field_detail="code")
+    br10 = BravoMany2oneField('hr.employee', odoo_name="user_id", bravo_name="EmployeeCode",
+                              field_detail="employee_id.code")
     br11 = BravoMany2oneField('account.analytic.account', odoo_name='management_id', bravo_name='ManagementDeptCode',
                               field_detail="code")
     br12 = BravoMany2oneField('uom.uom', odoo_name="br_line_uom_id", bravo_name="UnitCode", field_detail="code")
