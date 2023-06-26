@@ -81,17 +81,21 @@ with account_by_categ_id as (
     order by cate.id 
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ),
 stock_moves as (
     select move_id,
@@ -108,23 +112,23 @@ select row_number() over ()                                                     
        coalesce(wh2.name, sl2.name)                                                 as kho_nhap,
        rp.barcode                                                                   as ma_khach,
        rp.name                                                                      as ten_khach,
-       doi_tuong.value                                                              as doi_tuong,
+       ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                        as doi_tuong,
        split_part(cate.complete_name, ' / ', 2)                                     as nhom_hang,
        split_part(cate.complete_name, ' / ', 3)                                     as dong_hang,
        split_part(cate.complete_name, ' / ', 4)                                     as ket_cau,
        pp.barcode                                                                   as ma_vach,
-       pp.sku_code                                                                  as ma_hang,
+       pt.sku_code                                                                  as ma_hang,
        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')      as ten_hang,
-       mau_sac.value                                                                as mau_sac,
-       kich_co.value                                                                as kich_co,
-       nam_sx.value                                                                 as nam_sx,
+       ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                          as mau_sac,
+       ad.attrs::json -> '{attr_value.get('size', '')}'                             as kich_co,
+       ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                     as nam_sx,
        pt.collection                                                                as bo_suu_tap,
-       xuat_xu.value                                                                as xuat_xu,
-       subclass1.value                                                              as subclass1,
-       subclass2.value                                                              as subclass2,
-       subclass3.value                                                              as subclass3,
-       subclass4.value                                                              as subclass4,
-       subclass5.value                                                              as subclass5,
+       ad.attrs::json -> '{attr_value.get('xuat_xu', '')}'                          as xuat_xu,
+       ad.attrs::json -> '{attr_value.get('subclass1', '')}'                        as subclass1,
+       ad.attrs::json -> '{attr_value.get('subclass2', '')}'                        as subclass2,
+       ad.attrs::json -> '{attr_value.get('subclass3', '')}'                        as subclass3,
+       ad.attrs::json -> '{attr_value.get('subclass4', '')}'                        as subclass4,
+       ad.attrs::json -> '{attr_value.get('subclass5', '')}'                        as subclass5,
        coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')    as dv_tinh,
        sms.qty_in                                                                   as nhap,
        sms.qty_out                                                                  as xuat,
@@ -146,16 +150,7 @@ from stock_move sm
     left join uom_uom uom on uom.id = sm.product_uom
     join product_category cate on cate.id = pt.categ_id
     left join account_by_categ_id acc on acc.cate_id = cate.id
-    left join attribute_data doi_tuong on doi_tuong.product_id = pp.id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
-    left join attribute_data mau_sac on mau_sac.product_id = pp.id and mau_sac.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data kich_co on kich_co.product_id = pp.id and kich_co.attrs_code = '{attr_value.get('size', '')}'
-    left join attribute_data nam_sx on nam_sx.product_id = pp.id and nam_sx.attrs_code = '{attr_value.get('nam_san_xuat', '')}'
-    left join attribute_data xuat_xu on xuat_xu.product_id = pp.id and xuat_xu.attrs_code = '{attr_value.get('xuat_xu', '')}'
-    left join attribute_data subclass1 on subclass1.product_id = pp.id and subclass1.attrs_code = '{attr_value.get('subclass1', '')}'
-    left join attribute_data subclass2 on subclass2.product_id = pp.id and subclass2.attrs_code = '{attr_value.get('subclass2', '')}'
-    left join attribute_data subclass3 on subclass3.product_id = pp.id and subclass3.attrs_code = '{attr_value.get('subclass3', '')}'
-    left join attribute_data subclass4 on subclass4.product_id = pp.id and subclass4.attrs_code = '{attr_value.get('subclass4', '')}'
-    left join attribute_data subclass5 on subclass5.product_id = pp.id and subclass5.attrs_code = '{attr_value.get('subclass5', '')}'
+    left join attribute_data ad on ad.product_id = pp.id
 order by stt
 """
         return query_final
