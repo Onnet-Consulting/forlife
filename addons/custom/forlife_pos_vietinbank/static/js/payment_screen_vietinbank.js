@@ -36,7 +36,6 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                                 method: 'total_amount',
                                 args: [resIds],
                             }).then(async function (res) {
-                                console.log(222222222222)
                                 dataLine.set_amount(res)
                                 dataLine.set_payment_status('done')
                             })
