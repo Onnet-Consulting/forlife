@@ -32,6 +32,7 @@
         'forlife_product',
         'forlife_invoice',
         'forlife_pos_popup_cash',
+        'forlife_product_combo',
     ],
     'auto_install': True,
 

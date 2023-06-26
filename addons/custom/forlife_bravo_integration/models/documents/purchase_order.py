@@ -6,11 +6,11 @@ from odoo import api, fields, models, _
 class AccountMovePurchaseAsset(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_asset_service_values(self):
+    def bravo_get_purchase_asset_service_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_asset_service_columns()
         for record in self:
-            res.extend(record.bravo_get_purchase_asset_service_value())
+            res.extend(record.bravo_get_purchase_asset_service_value(is_reversed))
         return columns, res
 
     @api.model
@@ -26,7 +26,7 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode",
         ]
 
-    def bravo_get_purchase_asset_service_value(self):
+    def bravo_get_purchase_asset_service_value(self, is_reversed):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -111,6 +111,15 @@ class AccountMovePurchaseAsset(models.Model):
                 "DebitAccount3": tax_line.account_id.code,
                 "CreditAccount3": payable_account_code
             })
+            if is_reversed:
+                reversed_account_values = {
+                    "DebitAccount": journal_value_line.get('CreditAccount'),
+                    "CreditAccount": journal_value_line.get('DebitAccount'),
+                    "DebitAccount3": journal_value_line.get('CreditAccount3'),
+                    "CreditAccount3": journal_value_line.get('DebitAccount3'),
+
+                }
+                journal_value_line.update(reversed_account_values)
 
             values.append(journal_value_line)
 

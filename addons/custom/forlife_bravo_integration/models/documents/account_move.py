@@ -23,14 +23,16 @@ class AccountMove(models.Model):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         journal_update = kwargs.get(CONTEXT_UPDATE_JOURNAL)
         bravo_table = 'DEFAULT'
-        if journal_data == 'purchase_asset_service':
+        if journal_data in (
+                'purchase_asset_service',
+                'purchase_asset_service_reversed',
+                'purchase_product_cost_picking'
+        ):
             bravo_table = 'B30AccDocPurchase'
         elif journal_data == "purchase_product":
             bravo_table = 'B30AccDocOther'
         elif journal_data == "purchase_bill_vendor_back":
             bravo_table = 'B30AccDocAtchDoc'
-        elif journal_data == "purchase_product_cost_picking":
-            bravo_table = "B30AccDocPurchase"
         elif journal_data == 'pos_cash_out':
             bravo_table = "B30AccDocCashPayment"
         elif journal_data == "pos_cash_in":
@@ -48,8 +50,13 @@ class AccountMove(models.Model):
     def bravo_filter_record_by_context(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         if journal_data == 'purchase_asset_service':
-            return self.filtered(lambda m: m.invoice_line_ids.mapped('purchase_order_id').
-                                 filtered(lambda order: order.purchase_type in ['service', 'asset']))
+            return self.filtered(
+                lambda m: m.invoice_type == "increase" and m.invoice_line_ids.mapped('purchase_order_id').
+                filtered(lambda order: order.purchase_type in ['service', 'asset']))
+        if journal_data == 'purchase_asset_service_reversed':
+            return self.filtered(
+                lambda m: m.invoice_type == "decrease" and m.invoice_line_ids.mapped('purchase_order_id').
+                filtered(lambda order: order.purchase_type in ['service', 'asset']))
         if journal_data == 'purchase_product':
             return self.filtered(lambda m: m.invoice_line_ids.mapped('purchase_order_id').
                                  filtered(lambda order: order.purchase_type == 'product'))
@@ -79,6 +86,8 @@ class AccountMove(models.Model):
         update_move_data = kwargs.get(CONTEXT_UPDATE_JOURNAL)
         if journal_data == 'purchase_asset_service':
             return self.bravo_get_purchase_asset_service_values()
+        if journal_data == 'purchase_asset_service_reversed':
+            return self.bravo_get_purchase_asset_service_values(is_reversed=True)
         if journal_data == 'purchase_product':
             return self.bravo_get_purchase_product_values()
         if journal_data == 'purchase_bill_vendor_back':
@@ -101,6 +110,13 @@ class AccountMove(models.Model):
         purchase_asset_service_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_asset_service_queries:
             queries.extend(purchase_asset_service_queries)
+
+        # Purchase Asset + Service reversed (return)
+        current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_asset_service_reversed'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_asset_service_reversed_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_asset_service_reversed_queries:
+            queries.extend(purchase_asset_service_reversed_queries)
 
         # Purchase Product
         current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_product'}
