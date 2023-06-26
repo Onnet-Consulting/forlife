@@ -23,7 +23,7 @@ class SaleOrderNhanh(models.Model):
     name_customer = fields.Char(string='Tên khách hàng mới')
     note_customer = fields.Text(string='Ghi chú khách hàng')
     order_partner_id = fields.Many2one('res.partner', 'Khách Order')
-    carrier_name = fields.Char('Carrier Name')
+    # carrier_name = fields.Char('Carrier Name')
 
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
@@ -47,6 +47,7 @@ class SaleOrderNhanh(models.Model):
         ('returning', 'Đang chuyển hoàn'),
         ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
+    delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
 
     # def write(self, vals):
     #     res = super().write(vals)
@@ -210,10 +211,20 @@ class SaleOrderNhanh(models.Model):
                 # đội ngũ bán hàng
                 team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
                 default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-                warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
-                if not warehouse_id:
-                    warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
-                                                                      limit=1)
+                # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                # if not warehouse_id:
+                #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
+                #                                                       limit=1)
+                # delivery carrier
+                delivery_carrier_id = self.env['delivery.carrier'].sudo().search(
+                    [('nhanh_id', '=', v['carrierId'])], limit=1)
+                if not delivery_carrier_id:
+                    delivery_carrier_id = self.env['delivery.carrier'].sudo().create({
+                        'nhanh_id': v['carrierId'],
+                        'name': v['carrierName'],
+                        'code': v['carrierCode'],
+                        'service_name': v['carrierServiceName']
+                    })
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_order_status': v['statusCode'].lower(),
@@ -229,11 +240,12 @@ class SaleOrderNhanh(models.Model):
                     'note': v['privateDescription'],
                     'note_customer': v['description'],
                     'x_sale_chanel': 'online',
-                    'carrier_name': v['carrierName'],
+                    # 'carrier_name': v['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id  else None,
+                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+                    'delivery_carrier_id': delivery_carrier_id.id,
                     'order_line': order_line
                 }
                 # đổi hàng

@@ -18,6 +18,11 @@ class PosSession(models.Model):
         data = self.env.cr.fetchall()
         return [id[0] for id in data]
 
+    def _loader_params_product_product(self):
+        values = super(PosSession, self)._loader_params_product_product()
+        values['search_params']['fields'].append('full_attrs_desc')
+        return values
+
     def _get_pos_ui_product_product(self, params):
         self = self.with_context(**params['context'])
         if self.config_id.limited_products_loading:

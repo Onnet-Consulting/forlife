@@ -107,7 +107,7 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
         data = response.json()
         return data
 
@@ -115,17 +115,17 @@ class ResCompany(models.Model):
         request_data = {
             "requestId": "343q433410001",
             "merchantId": "",
-            "providerId": "khaianh",
+            "providerId": "HONDA",
             "model": "1",
             "account": "118649946666 ",
             "fromDate": "12/06/2023",
             "accountType": "D",
             "collectionType": "d",
             "agencyType": "a",
-            "transTime": "20210915050101",
+            "transTime": "20230618050101",
             "channel": "ERP",
             "version": "1",
-            "clientIP": "10.10.2.201",
+            "clientIP": "",
             "language": "vi",
             "signature": ""
         }
@@ -136,6 +136,52 @@ class ResCompany(models.Model):
         signed_signature = self._vietin_bank_sign_message(unsigned_signature)
         request_data.update({"signature": signed_signature})
         return request_data
+
+    def _vietin_bank_prepare_register_request_data(self):
+
+        data = {
+            "requestId": "VNPT1577878788",
+            "providerId": "HONDA",
+            "merchantId": "",
+            "model": "1",
+            "account": "118649946666",
+            "accountType": "D",
+            "agencyType": "",
+            "collectionType": "",
+            "notifyType": "A",
+            "outputFolder": "ERP/CASPER/OUT",
+            "cronExpress": "00/1****",
+            "transTime": "20230618050101",
+            "channel": "ERP",
+            "version": "1",
+            "clientIP": "",
+            "language": "vi",
+            "signature": ""
+        }
+        signature_keys = ['requestId', 'providerId', 'merchantId', 'agencyType', "account",
+                          "notifyType", "cronExpress", "transTime", "channel", "version", "clientIP", "language"]
+
+        unsigned_signature = ''.join([data[k] for k in signature_keys])
+        signed_signature = self._vietin_bank_sign_message(unsigned_signature)
+        data.update({"signature": signed_signature})
+
+        return data
+
+    def _vietin_bank_send_register_request(self):
+        company_sudo = self.env.company.sudo()
+        url = company_sudo.vietin_bank_exchange_rate_url
+        url = "https://api-uat.vietinbank.vn/vtb-api-uat/development/erp/v1/statement/register"
+        client_id = company_sudo.vietin_bank_client_id
+        client_secret = company_sudo.vietin_bank_client_secret
+        request_data = self._vietin_bank_prepare_register_request_data()
+        headers = {
+            'Content-Type': 'application/json',
+            'x-ibm-client-secret': client_secret,
+            'x-ibm-client-id': client_id
+        }
+        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        data = response.json()
+        return data
 
     def _vietin_bank_sign_message(self, message):
         company_sudo = self.env.company.sudo()

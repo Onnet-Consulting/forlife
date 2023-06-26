@@ -235,12 +235,15 @@ class SalaryRecord(models.Model):
 
     def generate_account_moves(self):
         self.ensure_one()
-        self.generate_account_move_with_tc_options(True)
-        self.generate_account_move_with_tc_options(False)
+        self.generate_account_move_with_tc_options_and_work_order(True, True)
+        self.generate_account_move_with_tc_options_and_work_order(True, False)
+        self.generate_account_move_with_tc_options_and_work_order(False, True)
+        self.generate_account_move_with_tc_options_and_work_order(False, False)
         return True
 
-    def generate_account_move_with_tc_options(self, is_tc_entry):
-        salary_accounting_ids = self.salary_accounting_ids.filtered(lambda l: l.is_tc_entry == is_tc_entry)
+    def generate_account_move_with_tc_options_and_work_order(self, is_tc_entry, has_work_order):
+        salary_accounting_ids = self.salary_accounting_ids.filtered(
+            lambda l: l.is_tc_entry == is_tc_entry and bool(l.production_id) == has_work_order)
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}

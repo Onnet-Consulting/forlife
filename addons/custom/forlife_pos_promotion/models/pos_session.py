@@ -156,6 +156,8 @@ class PosSession(models.Model):
                     'json_valid_product_ids',
                     'min_quantity',
                     'order_amount_min',
+                    'is_original_price',
+                    'only_condition_product',
                     'incl_reward_in_order',
                     'incl_reward_in_order_type',
                     'reward_type',

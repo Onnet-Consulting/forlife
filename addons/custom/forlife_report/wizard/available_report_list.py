@@ -103,7 +103,7 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Danh sách hóa đơn bán - đổi - trả',
         'reportTemplate': 'ReportNum17Template',
-        'reportPager': True,
+        'tag': 'report_num17_action',
     },
     'report.num18': {
         'module': 'Mua hàng',
@@ -134,5 +134,11 @@ AVAILABLE_REPORT = {
         'name': 'Báo cáo thu chi tiền mặt tại cửa hàng',
         'reportTemplate': 'ReportNum22Template',
         'tag': 'report_num22_action',
+    },
+    'report.num23': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo giá trị chiết khấu hạng thẻ',
+        'reportTemplate': 'ReportNum23Template',
+        'reportPager': True,
     },
 }

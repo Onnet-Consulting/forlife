@@ -197,8 +197,7 @@
                     <group>
                         <field name="warehouse_id" options="{'no_create': True}"/>
                         <field name="location_ids" options="{'no_create': True}"
-                               widget="many2many_tags"
-                               domain="[('warehouse_id', '=', warehouse_id)]"
+                               domain="[('warehouse_id', '=', warehouse_id), ('usage', 'in', ['internal', 'transit'])]"
                                force_save="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
@@ -222,14 +221,15 @@
                         <field name="line_ids" nolabel="1" attrs="{'invisible': [('state', '=', 'draft')]}">
                             <tree editable="bottom">
                                 <field name="product_id"/>
+                                <field name="barcode"/>
                                 <field name="location_id"/>
                                 <field name="inventory_date" optional="hide" width="0.8"/>
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
                                 <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
-                                <field name="x_first_qty" string="Đã đếm"
+                                <field name="x_first_qty" string="SL xác nhận lần 1"
                                        attrs="{'readonly': [('state','!=','first_inv')]}"/>
-                                <field name="product_qty" string="SL xác nhận"/>
+                                <field name="product_qty" string="SL xác nhận lần 2"/>
                                 <field name="difference_qty" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
                                 <field name="state" invisible="1"/>

@@ -125,6 +125,7 @@
                                 <field name="tax_to_date" class="oe_inline"
                                        attrs="{'required': [('registering_tax', '=', True)], 'invisible': [('registering_tax', '=', False)]}"/>
                             </div>
+                            <field name="notification_id"/>
                         </group>
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
@@ -138,6 +139,8 @@
                         <field name="with_code" attrs="{'invisible': [('promotion_type', 'not in', ('cart', 'code', 'pricelist'))]}"/>
                         <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
 <!--                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>-->
+                        <field name="only_condition_product" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
+                        <field name="is_original_price" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="incl_reward_in_order_type"
                                attrs="{'invisible': [('promotion_type', 'not in', ('cart'))], 'required': [('promotion_type', '=', 'cart')]}"/>
                         <field name="product_ids"
@@ -167,7 +170,10 @@
                     <group string="Rewards">
                         <group>
                             <field name="discount_based_on"
-                                   attrs="{'invisible': ['&amp;', ('reward_type', 'not in', ('code_amount', 'code_percent', 'cart_discount_amount')), ('promotion_type', '!=', 'pricelist')],
+                                   attrs="{'invisible': ['&amp;', ('reward_type', 'not in',
+                                            ('code_amount', 'code_percent', 'cart_discount_amount', 'cart_discount_percent',
+                                            'cart_discount_fixed_price', 'cart_get_x_free')),
+                                            ('promotion_type', '!=', 'pricelist')],
                                             'readonly': [('promotion_type', '=', 'pricelist')]}" force_save="1"/>
                             <field name="discount_apply_on"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>

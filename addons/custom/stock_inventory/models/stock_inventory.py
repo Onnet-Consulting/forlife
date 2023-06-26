@@ -45,7 +45,7 @@ class Inventory(models.Model):
                                     states={'draft': [('readonly', False)]}, required=True)
     view_location_id = fields.Many2one(related='warehouse_id.view_location_id')
 
-    location_ids = fields.Many2many('stock.location', string='Địa điểm', readonly=True, check_company=True,
+    location_ids = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
         states={'draft': [('readonly', False)]},
         domain="[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', view_location_id)]")
 
@@ -338,6 +338,15 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
+        product_ids = tuple([p['product_id'] for p in quants_groups])
+        query = f"""
+            SELECT pp.id product_id, pt.uom_id 
+            FROM product_product pp JOIN product_template pt ON pp.product_tmpl_id = pt.id 
+            WHERE pp.id in {product_ids}
+        """
+        self._cr.execute(query)
+        product_uom_data = self._cr.dictfetchall()
+        uom_data = {x['product_id']:x['uom_id']  for x in product_uom_data} if product_uom_data else {}
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
@@ -346,7 +355,7 @@ class Inventory(models.Model):
                 'x_first_qty': data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
-                'product_uom_id': self.env['product.product'].browse(data.get('product_id')).uom_id.id
+                'product_uom_id': uom_data.get(data.get('product_id'), False)
             }
             vals.append(line)
         if self.exhausted:
@@ -381,6 +390,7 @@ class InventoryLine(models.Model):
     partner_id = fields.Many2one('res.partner', 'Owner', check_company=True)
     product_id = fields.Many2one('product.product', 'Sản phẩm', check_company=True,
                                  domain=lambda self: self._domain_product_id(), index=True, required=True)
+    barcode = fields.Char('Mã vạch', related='product_id.barcode')
     product_uom_id = fields.Many2one('uom.uom', 'Đơn vị tính', required=True, readonly=True)
     product_qty = fields.Float('Đếm được', default=0)
     categ_id = fields.Many2one(related='product_id.categ_id', store=True)

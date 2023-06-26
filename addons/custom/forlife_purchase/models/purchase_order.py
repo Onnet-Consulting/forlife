@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
-    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
+    exchange_rate = fields.Float(string='Exchange Rate', default=1)
 
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
     manual_currency_exchange_rate = fields.Float('Rate', digits=(12, 6))
@@ -957,18 +957,14 @@ class PurchaseOrder(models.Model):
                 # 1) Prepare invoice vals and clean-up the section lines
                 invoice_vals_list = []
                 sequence = 10
-                picking_in = self.env['stock.picking'].search([('origin', '=', self.name),
-                                                               ('state', '=', 'done'),
-                                                               ('ware_check', '=', False),
-                                                               ('x_is_check_return', '=', False),
-                                                               ('picking_type_id.code', '=', 'incoming')
-                                                               ])
-                picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
-                                                                      ('state', '=', 'done'),
-                                                                      ('ware_check', '=', False),
-                                                                      ('picking_type_id.code', '=', 'incoming'),
-                                                                      ('x_is_check_return', '=', True)
-                                                                      ])
+                domain_in = [('origin', '=', self.name), ('state', '=', 'done'), ('ware_check', '=', False), ('x_is_check_return', '=', False)]
+                domain_in_return = [('origin', '=', self.name), ('state', '=', 'done'), ('ware_check', '=', False), ('x_is_check_return', '=', True)]
+                if not self.filtered(lambda x: x.is_return):
+                    domain_in.append(('picking_type_id.code', '=', 'incoming'))
+                    domain_in_return.append(('picking_type_id.code', '=', 'incoming'))
+
+                picking_in = self.env['stock.picking'].search(domain_in)
+                picking_in_return = self.env['stock.picking'].search(domain_in_return)
                 # ('x_is_check_return', '=', False)
                 for order in self:
                     if order.custom_state != 'approved':
@@ -981,10 +977,15 @@ class PurchaseOrder(models.Model):
                                          'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                     # Invoice line values (keep only necessary sections).
                     for line in order.order_line:
-                        wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                 and w.product_id.id == line.product_id.id
-                                                                                 and w.picking_type_id.code == 'incoming'
-                                                                                 and w.picking_id.x_is_check_return == False)
+                        if not order.is_return:
+                            wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                             and w.product_id.id == line.product_id.id
+                                                                                             and w.picking_type_id.code == 'incoming'
+                                                                                             and w.picking_id.x_is_check_return == False)
+                        else:
+                            wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                             and w.product_id.id == line.product_id.id
+                                                                                             and w.picking_id.x_is_check_return == False)
                         if picking_in:
                             for wave_item in wave:
                                 purchase_return = picking_in_return.move_line_ids_without_package.filtered(
@@ -1080,11 +1081,17 @@ class PurchaseOrder(models.Model):
                             raise UserError(_('Đơn mua đã có hóa đơn liên quan tương ứng với phiếu nhập kho!'))
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
-                picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
-                                                       and r.state == 'done'
-                                                       and r.picking_type_id.code == 'incoming'
-                                                       and r.ware_check == True
-                                                       and r.x_is_check_return == False)
+                if not order.is_return:
+                    picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
+                                                                   and r.state == 'done'
+                                                                   and r.picking_type_id.code == 'incoming'
+                                                                   and r.ware_check == True
+                                                                   and r.x_is_check_return == False)
+                else:
+                    picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
+                                                                     and r.state == 'done'
+                                                                     and r.ware_check == True
+                                                                     and r.x_is_check_return == False)
                 list_picking_in = []
                 for item in picking_incoming:
                     list_picking_in.append(item.id)
@@ -1145,8 +1152,8 @@ class PurchaseOrder(models.Model):
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
-            moves.filtered(
-                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+            if not order.is_return:
+                moves.filtered(lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
             return {
                 'name': 'Hóa đơn nhà cung cấp',
                 'type': 'ir.actions.act_window',
@@ -1267,16 +1274,19 @@ class PurchaseOrder(models.Model):
                 if order.custom_state != 'approved':
                     raise UserError(
                         _('Tạo hóa đơn không hợp lệ!'))
-                picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
-                                                               ('state', '=', 'done'),
-                                                               ('ware_check', '=', False),
-                                                               ('x_is_check_return', '=', False),
-                                                               ('picking_type_id.code', '=', 'incoming')
-                                                               ])
+                domain_in = [('origin', '=', order.name), ('state', '=', 'done'), ('ware_check', '=', False), ('x_is_check_return', '=', False)]
+                if not order.is_return:
+                    domain_in.append(('picking_type_id.code', '=', 'incoming'))
+                picking_in = self.env['stock.picking'].search(domain_in)
                 for line in order.order_line:
-                    wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                    if not order.is_return:
+                        wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
                                                                                        and w.product_id.id == line.product_id.id
                                                                                        and w.picking_type_id.code == 'incoming'
+                                                                                       and w.picking_id.x_is_check_return == False)
+                    else:
+                        wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                       and w.product_id.id == line.product_id.id
                                                                                        and w.picking_id.x_is_check_return == False)
                     if wave:
                         for wave_item in wave:
@@ -1311,11 +1321,18 @@ class PurchaseOrder(models.Model):
                     sequence += 1
                     key = order.purchase_type, order.partner_id.id, order.company_id.id
                     invoice_vals = order._prepare_invoice()
-                    picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
+                    if not order.is_return:
+                        picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
                                                                      and r.state == 'done'
                                                                      and r.picking_type_id.code == 'incoming'
                                                                      and r.ware_check == True
                                                                      and r.x_is_check_return == False)
+                    else:
+                        picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
+                                                                         and r.state == 'done'
+                                                                         and r.ware_check == True
+                                                                         and r.x_is_check_return == False)
+
                     invoice_vals.update({'purchase_type': order.purchase_type,
                                          'invoice_date': datetime.now(),
                                          'exchange_rate': order.exchange_rate,
@@ -1518,6 +1535,12 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if len(item.taxes_id) > 1:
                 raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
+
+    @api.constrains('purchase_uom')
+    def _constrains_purchase_uom(self):
+        for rec in self:
+            if not rec.purchase_uom:
+                raise ValidationError(_('Đơn vị mua của sản phẩm %s chưa được chọn!') % rec.product_id.name)
 
     _sql_constraints = [
         (
@@ -1829,8 +1852,6 @@ class PurchaseOrderLine(models.Model):
         }
 
     def _prepare_account_move_line(self):
-        if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
-            raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
         if vals and vals.get('display_type') == 'product':
             quantity = self.received - self.qty_returned - self.billed
