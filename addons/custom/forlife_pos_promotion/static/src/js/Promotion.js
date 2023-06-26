@@ -599,7 +599,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             priceItem = this._getPricelistItem(product);
         }
         else {
-            priceItem = this.validOnOrderPricelistItem.find(item => {return this.pos.pro_pricelist_item_by_id[item].product_id == product.id});
+            priceItem = this.validOnOrderPricelistItem.find(item => {
+                return this.pos.pro_pricelist_item_by_id[item] && this.pos.pro_pricelist_item_by_id[item].product_id == product.id;
+            });
             priceItem = this.pos.pro_pricelist_item_by_id[priceItem];
         };
         if (priceItem) {
@@ -2467,6 +2469,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         } else {
             Gui.showNotification(_t('Successfully activate a promotion code.'),3000);
         };
+    }
+
+    clearCode(code) {
+        let self = this;
+        let indexOfCode = this.activatedInputCodes.indexOf(code);
+        let theSameProgramCodes = this.activatedInputCodes.filter(c => c.program_id == code.program_id);
+        let program = this.pos.get_program_by_id(code.program_id);
+        if (indexOfCode !== -1) {
+            this.activatedInputCodes.splice(indexOfCode, 1);
+            program.codes[this.access_token] = null;
+        };
+        if (theSameProgramCodes.length > 1) {
+            program.codes[this.access_token] = this.activatedInputCodes.find(c => c.program_id == code.program_id);
+        } else if (theSameProgramCodes.length == 1) {
+            if (this.get_orderlines().some(l => {return self._get_program_ids_in_usages(l).has(program.program_id)})) {
+                this._resetPromotionPrograms(false);
+            };
+        }
     }
 
 }
