@@ -26,9 +26,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_pricelist_item(self, ):
         return {
             'search_params': {
-                'domain': ['&',
-                           ('program_id', 'in', self.config_id._get_promotion_program_ids().ids),
-                           ('active', '=', True)],
+                'domain': [('active', '=', True)],
                 'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price', 'lst_price', 'with_code']
             }
         }
@@ -42,12 +40,15 @@ class PosSession(models.Model):
         res = []
         product_set = set()
         product_ids = set(self._get_product_ids_by_store())
+        program_ids = set(self.config_id._get_promotion_program_ids().ids)
         for item in items:
             product_id = item.get('product_id') and item.get('product_id')[0] or None
             with_code = item.get('with_code', False)
             if with_code:
                 res.append(item)
-            elif product_id not in product_set and item.get('lst_price', 0) > item.get('fixed_price', 0) and product_id in product_ids:
+            elif product_id not in product_set and item.get('lst_price') > item.get('fixed_price') \
+                    and product_id in product_ids\
+                    and item.get('program_id')[0] in program_ids:
                 res.append(item)
                 product_set.add(product_id)
         items[:] = res
