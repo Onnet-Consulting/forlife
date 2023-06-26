@@ -373,11 +373,11 @@ class StockPickingPurchaseProduct(models.Model):
 class AccountMovePurchaseCostingAllocation(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_picking_purchase_costing_values(self):
+    def bravo_get_picking_purchase_costing_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_picking_purchase_costing_columns()
         for record in self:
-            res.extend(record.bravo_get_picking_purchase_costing_value())
+            res.extend(record.bravo_get_picking_purchase_costing_value(is_reversed))
         return columns, res
 
     @api.model
@@ -389,7 +389,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "WarehouseCode", "JobCode", "RowId", "DeptCode",
         ]
 
-    def bravo_get_picking_purchase_costing_value(self):
+    def bravo_get_picking_purchase_costing_value(self, is_reversed):
         self.ensure_one()
         picking = self.env['stock.picking'].search([('name', '=', self.ref)], limit=1)
         if not picking:
@@ -433,6 +433,8 @@ class AccountMovePurchaseCostingAllocation(models.Model):
                 "DeptCode": line.analytic_account_id.code or None,
             })
 
+            if is_reversed:
+                pass
             values.append(line_value)
 
         return values
