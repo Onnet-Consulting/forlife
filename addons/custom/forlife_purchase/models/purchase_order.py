@@ -1407,7 +1407,7 @@ class PurchaseOrderLine(models.Model):
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
-    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
+    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
     name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
