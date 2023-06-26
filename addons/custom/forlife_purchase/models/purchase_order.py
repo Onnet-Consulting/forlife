@@ -359,9 +359,6 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.partner_id:
                 raise UserError("Bạn chưa chọn nhà cung cấp!!")
-            if list_line_invalid:
-                mgs = f"Sản phẩm {',  '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp {record.partner_id.name_get()[0][1]} \n"
-                raise UserError(_(mgs))
             product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
             if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
                 raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
