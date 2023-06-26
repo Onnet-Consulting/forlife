@@ -7,7 +7,7 @@ odoo.define('forlife_pos_vietinbank.models', function (require) {
             /* ---- Payment Lines --- */
             add_paymentline(payment_method) {
                 const newPaymentline = super.add_paymentline(payment_method);
-                if (payment_method.use_payment_terminal === "vietinbank") {
+                if (payment_method.use_payment_terminal === "vietinbank" && newPaymentline) {
                     newPaymentline.set_payment_status('get_transaction_from_vietinbank');
                 }
                 return newPaymentline;
