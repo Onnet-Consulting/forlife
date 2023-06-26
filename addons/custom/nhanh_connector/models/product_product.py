@@ -16,6 +16,7 @@ class ProductProduct(models.Model):
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width', copy=False)
     height_product = fields.Float('Height', copy=False)
+    weight = fields.Float('Weight', digits='Stock Weight', default=0.2)
 
     def get_nhanh_name(self):
         product_name = f"{self.name} {self.barcode}"
@@ -35,7 +36,7 @@ class ProductProduct(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        if not res.brand_id.id:
+        if not res.brand_id.id or not res.categ_id.x_sync_nhanh:
             return res
         self.synchronized_create_product(res)
         return res
@@ -95,7 +96,7 @@ class ProductProduct(models.Model):
             return res
         data = []
         for item in self:
-            if not item.nhanh_id:
+            if not item.nhanh_id or not item.categ_id.x_sync_nhanh:
                 continue
             data.append({
                 "id": item._origin.id,
@@ -116,7 +117,7 @@ class ProductProduct(models.Model):
     def unlink(self):
         data = []
         for item in self:
-            if not item.nhanh_id:
+            if not item.nhanh_id or not item.categ_id.x_sync_nhanh:
                 continue
             data.append({
                 "id": item._origin.id,

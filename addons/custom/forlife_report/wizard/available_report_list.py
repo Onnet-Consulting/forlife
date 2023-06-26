@@ -135,4 +135,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum22Template',
         'tag': 'report_num22_action',
     },
+    'report.num23': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo giá trị chiết khấu hạng thẻ',
+        'reportTemplate': 'ReportNum23Template',
+        'reportPager': True,
+    },
 }

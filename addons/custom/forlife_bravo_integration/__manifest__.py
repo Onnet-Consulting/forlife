@@ -27,11 +27,13 @@
         'forlife_base',
         'forlife_pos_app_member',
         'forlife_purchase',
+        'forlife_purchase_return',
         'forlife_stock',
         'forlife_voucher',
         'forlife_product',
         'forlife_invoice',
         'forlife_pos_popup_cash',
+        'forlife_product_combo',
     ],
     'auto_install': True,
 

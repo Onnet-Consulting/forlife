@@ -13,12 +13,16 @@
                     <group>
                         <group>
                             <field name="lock_date" class="oe_inline"/>
-                            <field name="from_date" class="oe_inline"/>
-                            <field name="to_date" class="oe_inline"/>
-                            <field name="type"/>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="type" widget="radio" options="{'horizontal': True}"/>
                         </group>
                         <group>
-                            <field name="brand_id"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="store_id" domain="[('brand_id', '=', brand_id)]"/>
                             <field name="customer"/>
                             <field name="order_filter"/>

@@ -6,11 +6,11 @@ from odoo import api, fields, models, _
 class AccountMovePurchaseAsset(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_asset_service_values(self):
+    def bravo_get_purchase_asset_service_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_asset_service_columns()
         for record in self:
-            res.extend(record.bravo_get_purchase_asset_service_value())
+            res.extend(record.bravo_get_purchase_asset_service_value(is_reversed))
         return columns, res
 
     @api.model
@@ -26,7 +26,7 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode",
         ]
 
-    def bravo_get_purchase_asset_service_value(self):
+    def bravo_get_purchase_asset_service_value(self, is_reversed):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -35,8 +35,9 @@ class AccountMovePurchaseAsset(models.Model):
         is_partner_group_1 = partner.group_id == \
                              self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        payable_lines = journal_lines.filtered(lambda l: l.account_id.account_type == 'liability_payable')
-        journal_lines = journal_lines - payable_lines - invoice_lines
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
+        tax_line = journal_tax_lines and journal_tax_lines[0]
+        payable_lines = journal_lines - invoice_lines - journal_tax_lines
         payable_line = payable_lines and payable_lines[0]
         payable_account_code = payable_line.account_id.code
         exchange_rate = self.exchange_rate
@@ -99,23 +100,26 @@ class AccountMovePurchaseAsset(models.Model):
                 "RowId": invoice_line.id or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
                 "DeptCode": invoice_line.analytic_account_id.code or None,
-                "AssetCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
+                "AssetCode": invoice_line.asset_id.code if (
+                        invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
                 "ExpenseCatgCode": expense_code if valid_expense_code else None,
-                "ProductCode": invoice_line.asset_id.code if (invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
-
+                "ProductCode": invoice_line.asset_id.code if (
+                        invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
+                "TaxCode": tax_line.tax_line_id.code or None,
+                "OriginalAmount3": tax_line.tax_amount,
+                "Amount3": tax_line.tax_amount * exchange_rate,
+                "DebitAccount3": tax_line.account_id.code,
+                "CreditAccount3": payable_account_code
             })
-            invoice_tax_ids = invoice_line.tax_ids
-            # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and invoice_tax_ids)
-            if journal_tax_lines:
-                tax_line = journal_tax_lines[0]
-                journal_value_line.update({
-                    "TaxCode": tax_line.tax_line_id.code or None,
-                    "OriginalAmount3": tax_line.tax_amount,
-                    "Amount3": tax_line.tax_amount * exchange_rate,
-                    "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code
-                })
+            if is_reversed:
+                reversed_account_values = {
+                    "DebitAccount": journal_value_line.get('CreditAccount'),
+                    "CreditAccount": journal_value_line.get('DebitAccount'),
+                    "DebitAccount3": journal_value_line.get('CreditAccount3'),
+                    "CreditAccount3": journal_value_line.get('DebitAccount3'),
+
+                }
+                journal_value_line.update(reversed_account_values)
 
             values.append(journal_value_line)
 
@@ -125,11 +129,11 @@ class AccountMovePurchaseAsset(models.Model):
 class AccountMovePurchaseProduct(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_product_values(self):
+    def bravo_get_purchase_product_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_product_columns()
         for record in self:
-            res.extend(record.bravo_get_purchase_product_value())
+            res.extend(record.bravo_get_purchase_product_value(is_reversed))
         return columns, res
 
     @api.model
@@ -142,14 +146,14 @@ class AccountMovePurchaseProduct(models.Model):
             "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
         ]
 
-    def bravo_get_purchase_product_value(self):
+    def bravo_get_purchase_product_value(self, is_reversed):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
         # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id and l.tax_ids)
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
         # get only one tax line (assume that all products with the same taxes)
         tax_line = journal_tax_lines and journal_tax_lines[0]
         payable_lines = journal_lines - invoice_lines - journal_tax_lines
@@ -199,6 +203,15 @@ class AccountMovePurchaseProduct(models.Model):
                 "DeptCode": invoice_line.analytic_account_id.code or None,
                 "DocNo_WO": invoice_line.work_order.code or None,
             })
+
+            if is_reversed:
+                reversed_account_values = {
+                    "DebitAccount": journal_value_line.get("CreditAccount"),
+                    "CreditAccount": journal_value_line.get("DebitAccount"),
+                    "DebitAccount3": journal_value_line.get("CreditAccount3"),
+                    "CreditAccount3": journal_value_line.get("DebitAccount3"),
+                }
+                journal_value_line.update(reversed_account_values)
 
             values.append(journal_value_line)
 
@@ -298,8 +311,20 @@ class StockPickingPurchaseProduct(models.Model):
         return values
 
     def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count):
-        purchase_order_line = stock_move.purchase_line_id
         product = stock_move.product_id
+        AccountAccount = self.env['account.account']
+        if not account_move:
+            product_accounts = product.get_product_accounts()
+            debit_account = product_accounts.get('stock_valuation') or AccountAccount
+            credit_account = product_accounts.get('stock_input') or AccountAccount
+        else:
+            move_lines = account_move.line_ids
+            debit_lines = move_lines.filtered(lambda l: l.debit > 0)
+            debit_account = (debit_lines and debit_lines[0]).account_id
+            credit_lines = move_lines - debit_lines
+            credit_account = (credit_lines and credit_lines[0]).account_id
+
+        purchase_order_line = stock_move.purchase_line_id
         purchase_order = purchase_order_line.order_id
         picking = stock_move.picking_id
         partner = picking.partner_id
@@ -325,12 +350,12 @@ class StockPickingPurchaseProduct(models.Model):
             "Description": picking.note or "nhập mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": self.env.user.employee_id.code or None,
             "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
-            "CreditAccount": None,
+            "CreditAccount": credit_account.code or None,
             "BuiltinOrder": line_count or None,
             "ItemCode": product.barcode or None,
             "ItemName": product.name or None,
             "UnitPurCode": purchase_order_line.purchase_uom.code or None,
-            "DebitAccount": None,
+            "DebitAccount": debit_account.code or None,
             "Quantity9": stock_move.quantity_purchase_done,
             "ConvertRate9": stock_move.quantity_change,
             "Quantity": stock_move.quantity_done,
@@ -351,27 +376,17 @@ class StockPickingPurchaseProduct(models.Model):
             "DeptCode": stock_move.account_analytic_id.code or None,
         }
 
-        for move_line in account_move.line_ids:
-            if move_line.debit:
-                journal_value.update({
-                    'DebitAccount': move_line.account_id.code
-                })
-            else:
-                journal_value.update({
-                    'CreditAccount': move_line.account_id.code
-                })
-
         return journal_value
 
 
 class AccountMovePurchaseCostingAllocation(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_picking_purchase_costing_values(self):
+    def bravo_get_picking_purchase_costing_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_picking_purchase_costing_columns()
         for record in self:
-            res.extend(record.bravo_get_picking_purchase_costing_value())
+            res.extend(record.bravo_get_picking_purchase_costing_value(is_reversed))
         return columns, res
 
     @api.model
@@ -383,16 +398,14 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "WarehouseCode", "JobCode", "RowId", "DeptCode",
         ]
 
-    def bravo_get_picking_purchase_costing_value(self):
+    def bravo_get_picking_purchase_costing_value(self, is_reversed):
         self.ensure_one()
         picking = self.env['stock.picking'].search([('name', '=', self.ref)], limit=1)
         if not picking:
             return []
         values = []
         lines = self.line_ids
-        credit_lines = lines.filtered(lambda l: l.credit > 0)
-        debit_lines = lines - credit_lines
-        credit_account_code = credit_lines[0].account_id.code if credit_lines else None
+
         partner = picking.partner_id
         purchase = self.env['purchase.order'].sudo().search([('name', '=', self.reference)], limit=1)
         journal_value = {
@@ -409,25 +422,49 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "Description": picking.note or "Phân bổ chi phí mua hàng hóa/nguyên vật liệu",
             "EmployeeCode": self.env.user.employee_id.code or None,
             "IsTransfer": 1 if purchase.has_contract_commerce else 0,
-            "CreditAccount": credit_account_code or None,
         }
-        for idx, line in enumerate(debit_lines, start=1):
-            line_value = journal_value.copy()
-            line_value.update({
-                "BuiltinOrder": idx or None,
-                "ItemCode": line.product_id.barcode or None,
-                "ItemName": line.product_id.name or None,
-                "DebitAccount": line.account_id.code or None,
-                "OriginalAmount": line.debit,
-                "Amount": line.debit,
-                "DocNo_PO": self.reference or None,
-                "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
-                "JobCode": line.occasion_code_id.code or None,
-                "RowId": line.id or None,
-                "DeptCode": line.analytic_account_id.code or None,
-            })
-
-            values.append(line_value)
+        if not is_reversed:
+            credit_lines = lines.filtered(lambda l: l.credit > 0)
+            debit_lines = lines - credit_lines
+            credit_account_code = credit_lines[0].account_id.code if credit_lines else None
+            for idx, line in enumerate(debit_lines, start=1):
+                line_value = journal_value.copy()
+                line_value.update({
+                    "BuiltinOrder": idx or None,
+                    "ItemCode": line.product_id.barcode or None,
+                    "ItemName": line.product_id.name or None,
+                    "DebitAccount": line.account_id.code or None,
+                    "OriginalAmount": line.debit,
+                    "Amount": line.debit,
+                    "DocNo_PO": self.reference or None,
+                    "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
+                    "JobCode": line.occasion_code_id.code or None,
+                    "RowId": line.id or None,
+                    "DeptCode": line.analytic_account_id.code or None,
+                    "CreditAccount": credit_account_code or None,
+                })
+                values.append(line_value)
+        else:
+            debit_lines = lines.filtered(lambda l: l.debit > 0)
+            credit_lines = lines - debit_lines
+            debit_account_code = debit_lines[0].account_id.code if debit_lines else None
+            for idx, line in enumerate(credit_lines, start=1):
+                line_value = journal_value.copy()
+                line_value.update({
+                    "BuiltinOrder": idx or None,
+                    "ItemCode": line.product_id.barcode or None,
+                    "ItemName": line.product_id.name or None,
+                    "DebitAccount": line.account_id.code or None,
+                    "OriginalAmount": line.credit,
+                    "Amount": line.credit,
+                    "DocNo_PO": self.reference or None,
+                    "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
+                    "JobCode": line.occasion_code_id.code or None,
+                    "RowId": line.id or None,
+                    "DeptCode": line.analytic_account_id.code or None,
+                    "CreditAccount": debit_account_code or None,
+                })
+                values.append(line_value)
 
         return values
 

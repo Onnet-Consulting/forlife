@@ -17,7 +17,7 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="brand_id" class="oe_inline"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
                         </group>
                         <group>
