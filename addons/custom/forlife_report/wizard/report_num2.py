@@ -30,17 +30,21 @@ class ReportNum2(models.TransientModel):
 
         query = f"""
 with attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ), 
 stock_product as (
     select
@@ -60,16 +64,15 @@ select  pp.id                                                                   
         sw.id                                                                   as warehouse_id,
         sw.name                                                                 as warehouse_name,
         stp.quantity                                                            as quantity,
-        ad_size.value                                                           as product_size,
-        ad_color.value                                                          as product_color,
+        ad.attrs::json -> '{attr_value.get('size', '')}'                        as product_size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                     as product_color,
         pt.list_price                                                           as list_price,
         ''                                                                      as discount_price
 from stock_product stp
     left join product_product pp on pp.id = stp.product_id
     left join product_template pt on pp.product_tmpl_id = pt.id
     left join stock_warehouse sw on sw.id = stp.warehouse_id
-    left join attribute_data ad_size on ad_size.product_id = stp.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-    left join attribute_data ad_color on ad_color.product_id = stp.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+    left join attribute_data ad on ad.product_id = pp.id
 """
 
         return query

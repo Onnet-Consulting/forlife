@@ -61,16 +61,21 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     order by cate.id 
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 )
 select
     row_number() over (order by po.id)                                          as num,
@@ -83,9 +88,9 @@ select
     pp.barcode                                                                  as ma_vach,
     pol.full_product_name                                                       as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
-    nhan_hieu.value                                                             as nhan_hieu,
-    ad_size.value                                                               as kich_co,
-    ad_color.value                                                              as mau_sac,
+    ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                       as nhan_hieu,
+    ad.attrs::json -> '{attr_value.get('size', '')}'                            as kich_co,
+    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
     coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')   as don_vi,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
@@ -136,9 +141,7 @@ from pos_order po
     left join card_rank cr on cr.id = pcr.card_rank_id
     left join hr_employee emp on emp.id = pol.employee_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
-    left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-    left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data nhan_hieu on nhan_hieu.product_id = pp.id and nhan_hieu.attrs_code = '{attr_value.get('nhan_hieu', '')}'
+    left join attribute_data ad on ad.product_id = pp.id
 where  po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and pt.voucher <> true
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and sto.id = any(array{store_ids})
