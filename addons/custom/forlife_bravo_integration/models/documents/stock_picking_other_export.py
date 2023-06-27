@@ -19,7 +19,7 @@ class StockPickingOtherExport(models.Model):
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
             "ItemCode", "ItemName", "UnitPurCode", "CreditAccount", "Quantity9", "ConvertRate9", "Quantity",
-            "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
+            "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
             "DocNo_WO", "ProductCode", "DeptCode",
         ]
 
@@ -66,7 +66,7 @@ class StockPickingOtherExport(models.Model):
             "ConvertRate9": 1,
             "Quantity": stock_move.quantity_done,
             "OriginalUnitCost": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
-            "UnitCostCode": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
+            "UnitCost": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
             "OriginalAmount": debit,
             "Amount": debit,
             "WarehouseCode": picking.location_id.code or None,
