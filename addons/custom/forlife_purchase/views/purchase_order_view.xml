@@ -143,7 +143,7 @@
                         </div>
                     </page>
                     <page string="Tổng hợp" name="synthetic">
-                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
+                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1" force_save="1">
                             <tree editable="bottom" class="width-hh">
                                 <field name="product_id"/>
                                 <field name="description"/>

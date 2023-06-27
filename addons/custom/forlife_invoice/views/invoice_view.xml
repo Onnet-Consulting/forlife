@@ -114,7 +114,7 @@
                             </control>
                             <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
-                            <field name="is_check_promotions" invisible="0"/>
+                            <field name="is_check_promotions" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                    domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
@@ -153,7 +153,7 @@
                                    attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_amount"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
-                            <field name="price_subtotal" string="Thành tiền" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                            <field name="price_subtotal" string="Thành tiền" widget="monetary" sum="discounted subtotal" force_save="1" readonly="0"/>
                             <field name="total_vnd_amount"
                                    sum="discounted subtotal"
                                    force_save="1"

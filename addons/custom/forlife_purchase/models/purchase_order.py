@@ -415,7 +415,8 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
-                data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
+                data = {'partner_id': record.partner_id.id,
+                        'purchase_type': record.purchase_type,
                         'is_purchase_request': record.is_purchase_request,
                         'production_id': record.production_id.id,
                         'event_id': record.event_id,
@@ -456,18 +457,21 @@ class PurchaseOrder(models.Model):
                         raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
                     data_product = {
                         'product_tmpl_id': line.product_id.product_tmpl_id.id,
-                        'product_id': line.product_id.id, 'name': line.product_id.name,
+                        'product_id': line.product_id.id,
+                        'name': line.product_id.name,
                         'purchase_quantity': line.purchase_quantity,
                         'purchase_uom': line.purchase_uom.id,
                         'exchange_quantity': line.exchange_quantity,
-                        'product_quantity': line.product_qty, 'vendor_price': line.vendor_price,
+                        'product_quantity': line.product_qty,
+                        'vendor_price': line.vendor_price,
                         'price_unit': line.price_unit,
                         'product_uom': line.product_id.uom_id.id if line.product_id.uom_id else uom,
                         'location_id': line.location_id.id,
                         'tax_ids': line.taxes_id.ids,
                         'price_tax': line.price_tax,
                         'discount_percent': line.discount_percent,
-                        'discount': line.discount, 'event_id': line.event_id.id,
+                        'discount': line.discount,
+                        'event_id': line.event_id.id,
                         'production_id': line.production_id.id,
                         'billed': line.billed,
                         'account_analytic_id': line.account_analytic_id.id,
@@ -873,11 +877,13 @@ class PurchaseOrder(models.Model):
                         refs.add(invoice_vals['ref'])
                     ref_invoice_vals.update({
                         'move_type': 'in_invoice',
+                        'type_inv': self.type_po_cost,
                         'purchase_type': self.purchase_type if len(self) == 1 else 'product',
                         'reference': ', '.join(self.mapped('name')),
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
-                        'is_check': True,
+                        # 'is_check': True,
+                        'is_check_quantity_readonly': True,
                         'purchase_order_product_id': [(6, 0, [self.id])],
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1046,6 +1052,7 @@ class PurchaseOrder(models.Model):
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
                         # 'is_check': True,
+                        'is_check_quantity_readonly': True,
                         'type_inv': self.type_po_cost,
                         'move_type': 'in_invoice',
                         'purchase_order_product_id': [(6, 0, [self.id])],
@@ -1392,7 +1399,7 @@ class PurchaseOrderLine(models.Model):
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
-    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc')
+    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
     name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
@@ -1574,18 +1581,15 @@ class PurchaseOrderLine(models.Model):
             ])
             rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
             if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                closest_quantity = None  # Khởi tạo giá trị biến tạm
                 for line in data:
-                    if rec.product_qty:
-                        if rec.product_qty >= max(data.mapped('min_qty')):
-                            closest_quantity = max(data.mapped('min_qty'))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
-                        else:
-                            closest_quantity = min(data.mapped('min_qty'), key=lambda x: abs(rec.product_qty + x - 1000))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
+                    if rec.product_qty and rec.product_qty >= line.min_qty:
+                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                        if closest_quantity is None or line.min_qty > closest_quantity:
+                            closest_quantity = line.min_qty
+                            rec.vendor_price = line.price
+                            rec.exchange_quantity = line.amount_conversion
+
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
@@ -1983,7 +1987,7 @@ class StockPicking(models.Model):
                                 'sequence': 1,
                                 'account_id': account_1561,
                                 'product_id': item.product_id.id,
-                                'name': item.name,
+                                'name': item.product_id.name,
                                 'text_check_cp_normal': rec.product_id.name,
                                 'debit': values,
                                 'credit': 0,
@@ -2004,7 +2008,7 @@ class StockPicking(models.Model):
                                 'sequence': 1,
                                 'account_id': account_1561,
                                 'product_id': item.product_id.id,
-                                'name': item.name,
+                                'name': item.product_id.name,
                                 'text_check_cp_normal': rec.product_id.name,
                                 'debit': total / total_money * (rec.vnd_amount * pk_l.quantity_done/item.product_qty),
                                 'credit': 0,
