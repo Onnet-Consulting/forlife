@@ -51,21 +51,30 @@ class AccountMove(models.Model):
     def bravo_filter_record_by_context(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         if journal_data == 'purchase_asset_service':
-            #
-            return self.filtered(
-                lambda m: m.invoice_type == "increase" and m.invoice_line_ids.mapped('purchase_order_id').
-                filtered(lambda order: order.purchase_type in ['service', 'asset']))
-        if journal_data == 'purchase_asset_service_reversed':
-            return self.filtered(
-                lambda m: m.invoice_type == "decrease" and m.invoice_line_ids.mapped('purchase_order_id').
-                filtered(lambda order: order.purchase_type in ['service', 'asset']))
-        if journal_data == 'purchase_product':
             initial_records = self.env['account.move']
-            for move in self.filtered(
-                    lambda m: bool(m.invoice_line_ids.mapped('purchase_order_id')) and m.purchase_type == 'product'):
+            for move in self.filtered(lambda m: m.purchase_type in ['service', 'asset']):
                 if move.invoice_type == "increase":
                     initial_records |= move
-                if move.invoice_line_ids.mapped('purchase_order_id').filtered(lambda o: not o.is_return):
+                if not move.reversed_entry_id and move.invoice_line_ids.mapped('purchase_order_id'):
+                    initial_records |= move
+            return initial_records
+
+        if journal_data == 'purchase_asset_service_reversed':
+            initial_records = self.env['account.move']
+            for move in self.filtered(lambda m: m.purchase_type in ['service', 'asset']):
+                if move.invoice_type == "decrease":
+                    initial_records |= move
+                if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped('purchase_order_id'):
+                    initial_records |= move
+            return initial_records
+
+        if journal_data == 'purchase_product':
+            initial_records = self.env['account.move']
+            for move in self.filtered(lambda m: m.purchase_type == 'product'):
+                if move.invoice_type == "increase":
+                    initial_records |= move
+                if not move.reversed_entry_id and move.invoice_line_ids.mapped('purchase_order_id').filtered(
+                        lambda o: not o.is_return):
                     initial_records |= move
                 if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped(
                         'purchase_order_id').filtered(lambda o: o.is_return):
@@ -74,11 +83,11 @@ class AccountMove(models.Model):
 
         if journal_data == 'purchase_product_reserved':
             initial_records = self.env['account.move']
-            for move in self.filtered(
-                    lambda m: bool(m.invoice_line_ids.mapped('purchase_order_id')) and m.purchase_type == 'product'):
+            for move in self.filtered(lambda m: m.purchase_type == 'product'):
                 if move.invoice_type == "decrease":
                     initial_records |= move
-                if move.invoice_line_ids.mapped('purchase_order_id').filtered(lambda o: o.is_return):
+                if not move.reversed_entry_id and move.invoice_line_ids.mapped('purchase_order_id').filtered(
+                        lambda o: o.is_return):
                     initial_records |= move
                 if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped(
                         'purchase_order_id').filtered(lambda o: not o.is_return):
