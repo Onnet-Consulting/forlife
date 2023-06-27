@@ -20,4 +20,3 @@ access_purchase_order_admin,purchase_order,model_purchase_order,forlife_purchase
 access_purchase_order_user,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
 access_reject_purchase_order,reject_purchase_order,model_reject_purchase_order,,1,1,1,1
 access_cancel_purchase_order,cancel_purchase_order,model_cancel_purchase_order,,1,1,1,1
-access_select_type_invoice,select_type_invoice,model_select_type_invoice,,1,1,1,1
