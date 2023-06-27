@@ -19,6 +19,7 @@ class StockQuant(models.Model):
             'store_data': [{
                 'store_id': line.location_id.warehouse_id.id,
                 'location_id': line.location_id.id,
+                'location_code': line.location_id.code or '',
                 'sku': line.product_id.default_code or None,
                 'remain': line.quantity,
                 'available': line.available_quantity,

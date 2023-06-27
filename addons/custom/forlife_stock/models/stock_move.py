@@ -16,8 +16,7 @@ class StockMove(models.Model):
         if self.picking_id.picking_type_id.code != 'incoming':
             return res
         line_ids = res[0].get('line_ids')
-        po = self.env['purchase.order'].search(
-            [('name', '=', self.picking_id.origin), ('is_inter_company', '=', False)], limit=1)
+        po = self.env['purchase.order'].search([('name', '=', self.picking_id.origin), ('is_inter_company', '=', False)], limit=1)
         if not po:
             return res
         for line in line_ids:

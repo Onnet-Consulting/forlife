@@ -11,7 +11,7 @@ class Store(models.Model):
     _update_action = 'update'
 
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.warehouse_id and f.warehouse_id.code in ('3', '4', '5'))
+        return self.filtered(lambda f: f.warehouse_id and f.warehouse_id.whs_type.code in ('3', '4', '5'))
 
     def get_sync_info_value(self):
         return [{

@@ -218,10 +218,6 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             if (this.money_reduce_from_product_defective > 0) {
                 total += this.money_reduce_from_product_defective
             }
-            // refund
-            if (this.money_is_reduced > 0){
-                total += this.money_is_reduced;
-            }
             // promotion
             const applied_promotions = this.get_applied_promotion_str();
             for (const applied_promotion of applied_promotions) {
@@ -246,11 +242,8 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
         get_line_receipt_total_amount() {
             let line_quantity = this.get_quantity();
-            let total = this.original_price * line_quantity;
-            if (line_quantity < 0) {
-                total -= this.get_line_receipt_total_discount();
-            }
-            return total;
+            if (line_quantity < 0) return this.get_display_price_after_discount();
+            return this.original_price * line_quantity;
         }
 
         export_for_printing() {
