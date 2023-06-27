@@ -36,7 +36,6 @@ class StockMove(models.Model):
                     raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_id.name_get()[0][1]}')
                 rslt['debit_line_vals']['account_id'] = self.location_id.account_stock_give.id
                 rslt['credit_line_vals']['account_id'] = self.product_id.categ_id.property_stock_valuation_account_id.id
-        print(rslt)
         return rslt
 
     @api.model
