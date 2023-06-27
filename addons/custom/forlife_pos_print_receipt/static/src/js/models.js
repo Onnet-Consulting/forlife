@@ -218,6 +218,10 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             if (this.money_reduce_from_product_defective > 0) {
                 total += this.money_reduce_from_product_defective
             }
+            // refund
+            if (this.money_is_reduced > 0){
+                total += this.money_is_reduced;
+            }
             // promotion
             const applied_promotions = this.get_applied_promotion_str();
             for (const applied_promotion of applied_promotions) {
