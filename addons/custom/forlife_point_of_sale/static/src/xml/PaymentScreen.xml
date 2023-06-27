@@ -8,7 +8,7 @@
                        style="display: block; margin: 2px" name="invoice_info_company_name" placeholder="Tên công ty"/>
                 <textarea t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
                        style="display: block; margin: 2px" name="invoice_info_address" placeholder="Địa chỉ"/>
-                <input type="text" t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
+                <textarea t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
                        style="display: block; margin: 2px" name="invoice_info_tax_number" placeholder="Mã số thuế"/>
             </div>
         </xpath>
