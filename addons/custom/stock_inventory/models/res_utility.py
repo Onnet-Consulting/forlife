@@ -33,12 +33,11 @@ class ResUtility(models.AbstractModel):
         }
 
     @api.model
-    def create_inventory_session(self, inv_id, warehouse_code, data, note=None):
+    def create_inventory_session(self, inv_id, data, note=None):
         if not isinstance(data, list):
             raise ValueError('Dữ liệu kiểm kê phải là 1 danh sách')
         res = self.env['inventory.session'].sudo().create({
             'inv_id': inv_id,
-            'warehouse_code': warehouse_code,
             'data': base64.b64encode((json.dumps(data)).encode('utf-8')),
             'note': note,
         })
@@ -81,42 +80,65 @@ class ResUtility(models.AbstractModel):
 
     @api.model
     def action_update_stock_inventory(self, inv_id):
-        inv = self.env['stock.inventory'].sudo().search([('id', '=', inv_id), ('state', 'in', ('first_inv', 'second_inv'))])
+        inv = self.env['stock.inventory'].sudo().search([('id', '=', inv_id), ('state', 'in', ('first_inv', 'second_inv'))], limit=1)
         if not inv:
             raise ValueError('Không thể xác nhận kiểm đếm tại thời điểm này')
-        inv = inv and inv[0]
         self.with_delay(description=f"Cập nhật dữ liệu kiểm đếm cho phiếu kiểm kê [{inv.id} - {inv.name}]").action_confirm_inventory_session(inv.id)
         return 'Cập nhật dữ liệu tổng kiểm đếm thành công'
 
     @api.model
     def action_confirm_inventory_session(self, inv_id):
-        inventory = self.env['stock.inventory'].sudo().search([('id', '=', inv_id)])
+        def get_value(type, qty):
+            if type == 'first_inv':
+                return {
+                    'x_first_qty': qty or 0,
+                    'product_qty': qty or 0,
+                }
+            if type == 'second_inv':
+                return {
+                    'product_qty': qty or 0,
+                }
+
+        inventory = self.env['stock.inventory'].sudo().search([('id', '=', inv_id)], limit=1)
         sessions = self.env['inventory.session'].sudo().search_read([('inv_id', '=', inv_id)], ['data'])
         if not inventory or not sessions:
             return False
-        value = {}
+        value_exits = {}
+        value_not_exits = {}
         data = []
         for s in sessions:
             data.extend(json.loads(base64.b64decode(s['data']).decode()))
         for line in data:
-            barcode = line.get('ItemId')
+            barcode = line.get('ItemID')
             qty = (line.get('Check') or 0) + (line.get('Loss') or 0) + (line.get('Err') or 0) + (line.get('Add') or 0) - (line.get('Sub') or 0)
             if barcode:
-                value.update({
-                    barcode: (value.get(barcode) or 0) + qty
-                })
-        if not value:
-            return False
-        if inventory.state == 'first_inv':
-            for detail in inventory.line_ids:
-                if detail.barcode in list(value.keys()):
-                    detail.write({
-                        'x_first_qty': value.get(detail.barcode) or 0,
-                        'product_qty': value.get(detail.barcode) or 0,
+                if line.get('notInList'):
+                    value_not_exits.update({
+                        barcode: (value_not_exits.get(barcode) or 0) + qty
                     })
-        if inventory.state == 'second_inv':
-            for detail in inventory.line_ids:
-                if detail.barcode in list(value.keys()):
-                    detail.write({
-                        'product_qty': value.get(detail.barcode) or 0
+                else:
+                    value_exits.update({
+                        barcode: (value_exits.get(barcode) or 0) + qty
                     })
+        if value_exits:
+            for k, v in value_exits.items():
+                inv = inventory.line_ids.filtered(lambda f: f.barcode == k)
+                if inv:
+                    inv.sudo().write(get_value(inventory.state, v))
+        if value_not_exits:
+            products = self.env['product.product'].search([('barcode', 'in', list(value_not_exits.keys()))])
+            values = []
+            for k, v in value_not_exits.items():
+                product = products.filtered(lambda f: f.barcode == k)
+                if product:
+                    product = product[0]
+                    val = dict(get_value(inventory.state, v))
+                    val.update({
+                        'inventory_id': inventory.id,
+                        'product_id': product.id,
+                        'product_uom_id': product.uom_id.id,
+                        'location_id': inventory.location_id.id
+                    })
+                    values.extend([val])
+            if values:
+                self.env['stock.inventory.line'].sudo().create(values)
