@@ -1592,18 +1592,15 @@ class PurchaseOrderLine(models.Model):
             ])
             rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
             if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                closest_quantity = None  # Khởi tạo giá trị biến tạm
                 for line in data:
-                    if rec.product_qty:
-                        if rec.product_qty >= max(data.mapped('min_qty')):
-                            closest_quantity = max(data.mapped('min_qty'))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
-                        else:
-                            closest_quantity = min(data.mapped('min_qty'), key=lambda x: abs(rec.product_qty + x - 1000))
-                            if closest_quantity == line.min_qty:
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
+                    if rec.product_qty and rec.product_qty >= line.min_qty:
+                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                        if closest_quantity is None or line.min_qty > closest_quantity:
+                            closest_quantity = line.min_qty
+                            rec.vendor_price = line.price
+                            rec.exchange_quantity = line.amount_conversion
+
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
