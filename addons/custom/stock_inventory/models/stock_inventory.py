@@ -264,7 +264,7 @@ class Inventory(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        sql = f"""select * from get_quantity_inventory('{str(fields.Datetime.now())}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         return data
