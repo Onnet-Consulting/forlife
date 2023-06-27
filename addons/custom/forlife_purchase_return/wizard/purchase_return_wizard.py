@@ -13,7 +13,7 @@ class PurchaseReturnWizardLine(models.TransientModel):
     purchase_returned = fields.Integer("Returned Quantity", required=True)
     purchase_remain = fields.Integer("Remain Quantity", required=True)
     exchange_quantity = fields.Float("Exchange", digits='Product Unit of Measure', required=True)
-    quantity = fields.Integer("Quantity", digits='Product Unit of Measure', required=True)
+    quantity = fields.Integer("Quantity", digits='Product Unit of Measure')
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
     vendor_price = fields.Float(string="Vendor Price")
     price_unit = fields.Float(string="Unit Price")
@@ -165,8 +165,11 @@ class PurchaseReturnWizard(models.TransientModel):
         return new_purchase.id, picking_type_id
 
     def create_returns(self):
-        if not self.purchase_return_lines.filtered(lambda x: x.is_selected):
+        line_selected = self.purchase_return_lines.filtered(lambda x: x.is_selected)
+        if not line_selected:
             raise ValidationError(_('Please select at least 1 line to create an PO return!'))
+        if line_selected.filtered(lambda x: x.quantity == 0):
+            raise ValidationError(_('Please input quantity greater than 0 in line selected!'))
         for wizard in self:
             new_purchase_id, pick_type_id = wizard._create_returns()
         # Override the context to disable all the potential filters that could have been set previously
