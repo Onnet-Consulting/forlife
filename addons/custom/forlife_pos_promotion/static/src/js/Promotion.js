@@ -661,12 +661,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.buy_voucher_get_code_rewards = [];
         this.surprising_reward_line_id = null;
         this._get_reward_lines().forEach(reward_line => {
-//            this.orderlines.remove(reward_line);
             reward_line.is_reward_line = false;
             reward_line.reset_unit_price()
         });
-//        this.remove_orderline(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
-        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
+        let orderlines = this.orderlines.filter(line => !line.is_product_defective)
+                                        .filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
         this.pos.promotionPrograms.forEach(p => {
