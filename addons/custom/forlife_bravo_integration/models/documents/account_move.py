@@ -51,6 +51,7 @@ class AccountMove(models.Model):
     def bravo_filter_record_by_context(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         if journal_data == 'purchase_asset_service':
+            #
             return self.filtered(
                 lambda m: m.invoice_type == "increase" and m.invoice_line_ids.mapped('purchase_order_id').
                 filtered(lambda order: order.purchase_type in ['service', 'asset']))

@@ -248,6 +248,7 @@ class SalaryRecord(models.Model):
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}
+        default_journal_id = self.get_default_journal_id_for_salary_move()
         for line in salary_accounting_ids:
             line_value = dict(
                 partner_id=line.partner_id.id,
@@ -277,7 +278,8 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if is_tc_entry else 'QT'
+            'x_asset_fin': 'TC' if is_tc_entry else 'QT',
+            'journal_id': default_journal_id
         }
 
         accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)
@@ -302,6 +304,16 @@ class SalaryRecord(models.Model):
         credit_lines = journal_lines - debit_lines
         if len(debit_lines) > 1 and len(credit_lines) > 1:
             raise ValidationError(_("Bút toán không được phép nhiều nợ - nhiều có!"))
+
+    def get_default_journal_id_for_salary_move(self):
+        JOURNAL_CODE = '971'
+        salary_journal = self.env['account.journal'].search([
+            ('code', '=', JOURNAL_CODE),
+            ('company_id', '=', self.company_id.id)
+        ], limit=1)
+        if not salary_journal:
+            raise ValidationError(_("Không tìm thấy sổ nhật ký có mã %s") % JOURNAL_CODE)
+        return salary_journal.id
 
     def reverse_account_moves(self):
         if not self.move_ids:
