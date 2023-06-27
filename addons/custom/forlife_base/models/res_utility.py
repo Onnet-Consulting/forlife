@@ -93,30 +93,6 @@ class ResUtility(models.AbstractModel):
         return self.env['stock.warehouse'].search_read([('whs_type.code', '=', wh_type_code), ('company_id.code', '=', company_code)], ['id', 'code', 'name'])
 
     @api.model
-    def get_stock_inventory_by_wh_id(self, wh_id):
-        data = self.env['stock.inventory'].search([('company_id', '=', self.env.user.company_id.id),
-                                                   ('warehouse_id', '=', wh_id),
-                                                   ('state', 'in', ('first_inv', 'second_inv'))])
-        return [{
-            'id_phieu_kk': inv.id,
-            'so_phieu_kk': inv.name,
-            'dia_diem': inv.mapped('location_ids.complete_name'),
-            'trang_thai': 'kk_b1' if inv.state == 'first_inv' else 'kk_b2',
-            'tong_ton': sum(inv.mapped('line_ids.theoretical_qty'))
-        } for inv in data]
-
-    @api.model
-    def get_stock_inventory_detail(self, inv_id):
-        data = self.env['stock.inventory'].search([('id', '=', inv_id)])
-        return {
-            'total_qty': sum(data.mapped('line_ids.theoretical_qty')),
-            'details': [{
-                'barcode': line.product_id.barcode,
-                'quantity': line.theoretical_qty
-            } for line in data.mapped('line_ids')],
-        }
-
-    @api.model
     def get_question_info(self, customer_phone, brand):
         question_id = self.env['forlife.comment'].search([("customer_code", "=", customer_phone), ("brand", "=", brand), ("status", "=", 0)], limit=1).question_id or 0
         question_data = self.env['forlife.question'].search_read(
@@ -159,16 +135,20 @@ with products as (select id
                                                                where pp.barcode = '{barcode}'))),
      companys as (select company_id as id from stock_warehouse where id = {wh_id}),
      locatoins as (select id from stock_location where warehouse_id = {wh_id}),
-     attribute_data as (select pp.id                                                                                as product_id,
-                               pa.attrs_code                                                                        as attrs_code,
-                               array_agg(coalesce(pav.name::json -> '{self.env.user.lang}', pav.name::json -> 'en_US')) as value
-                        from product_template_attribute_line ptal
-                                 left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-                                 left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-                                 left join product_attribute pa on ptal.attribute_id = pa.id
-                                 left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-                        where pp.id in (select id from products)
-                        group by pp.id, pa.attrs_code),
+     attribute_data as (select product_id                         as product_id,
+                               json_object_agg(attrs_code, value) as attrs
+                        from (select pp.id                                                                                    as product_id,
+                                     pa.attrs_code                                                                            as attrs_code,
+                                     array_agg(distinct coalesce(pav.name::json ->> '{self.env.user.lang}', pav.name::json ->> 'en_US')) as value
+                              from product_template_attribute_line ptal
+                                       left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+                                       left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+                                       left join product_attribute pa on ptal.attribute_id = pa.id
+                                       left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+                              where pp.id in (select id from products)
+                                and pa.attrs_code notnull
+                              group by pp.id, pa.attrs_code) as att
+                        group by product_id),
      stocks as (select product_id as product_id, sum(product_qty) as qty
                 from stock_move
                 where state = 'done'
@@ -198,9 +178,9 @@ with products as (select id
 select coalesce(pp2.barcode, '')                                      as barcode,
        coalesce(pt2.name::json -> '{self.env.user.lang}', pt2.name::json -> 'en_US') as ten_san_pham,
        coalesce(sf.qty, 0)                                            as so_luong,
-       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_color.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as mau_sac,
-       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_size.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as size,
-       REPLACE(REPLACE(REPLACE(REPLACE(coalesce(attr_gender.value, array[]::json[])::text, '"\\"', ''), '\\""', ''), '{{', ''), '}}', '') as gioi_tinh,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('mau_sac', '')}', ''), '"', ''), '[', ''), ']', '') as mau_sac,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('size', '')}', ''), '"', ''), '[', ''), ']', '') as size,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('doi_tuong', '')}', ''), '"', ''), '[', ''), ']', '') as gioi_tinh,
        coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban,
        '' as ma_tham_chieu
 from products
@@ -208,9 +188,7 @@ from products
          left join stock_final sf on sf.product_id = products.id
          left join product_product pp2 on pp2.id = products.id
          left join product_template pt2 on pt2.id = pp2.product_tmpl_id
-         left join attribute_data attr_color on attr_color.product_id = products.id and attr_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-         left join attribute_data attr_size on attr_size.product_id = products.id and attr_size.attrs_code = '{attr_value.get('size', '')}'
-         left join attribute_data attr_gender on attr_gender.product_id = products.id and attr_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
+         left join attribute_data ad on ad.product_id = products.id
 """
         self._cr.execute(sql)
         return self._cr.dictfetchall()
