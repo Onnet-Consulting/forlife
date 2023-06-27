@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.tools import date_utils
+from odoo.exceptions import ValidationError
 
 MONTH_SELECTION = [
     ('1', '1'),
@@ -289,10 +290,18 @@ class SalaryRecord(models.Model):
                 'line_ids': [(0, 0, line_value) for line_value in move_lines]
             })
             move = account_move.create(move_value)
+            self.check_valid_salary_move(move)
             move.action_post()
             accounting_lines = accounting_line_by_entry[entry_id]
             accounting_lines.write({'move_id': move.id})
         return True
+
+    def check_valid_salary_move(self, move):
+        journal_lines = move.line_ids
+        debit_lines = journal_lines.filtered(lambda l: l.debit > 0)
+        credit_lines = journal_lines - debit_lines
+        if len(debit_lines) > 1 and len(credit_lines) > 1:
+            raise ValidationError(_("Bút toán không được phép nhiều nợ - nhiều có!"))
 
     def reverse_account_moves(self):
         if not self.move_ids:

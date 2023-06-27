@@ -314,7 +314,7 @@ class StockPickingPurchaseProduct(models.Model):
         product = stock_move.product_id
         AccountAccount = self.env['account.account']
         if not account_move:
-            product_accounts = product.get_product_accounts()
+            product_accounts = product.product_tmpl_id.get_product_accounts()
             debit_account = product_accounts.get('stock_valuation') or AccountAccount
             credit_account = product_accounts.get('stock_input') or AccountAccount
         else:
