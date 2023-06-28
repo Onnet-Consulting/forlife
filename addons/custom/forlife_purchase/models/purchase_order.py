@@ -2232,19 +2232,18 @@ class StockPicking(models.Model):
                     else:
                         if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
                             raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
-                        if item.location_id == r.location_dest_id:
-                            list_line_xk.append((0, 0, {
-                                'product_id': material_line.product_id.id,
-                                'product_uom': material_line.uom.id,
-                                'price_unit': material_line.price_unit,
-                                'location_id': record.location_dest_id.id,
-                                'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                                'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
-                                'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
-                                'amount_total': material_line.price_unit * material_line.product_qty,
-                                'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                                'reason_id': self.env.ref('forlife_stock.export_production_order').id,
-                            }))
+                        list_line_xk.append((0, 0, {
+                            'product_id': material_line.product_id.id,
+                            'product_uom': material_line.uom.id,
+                            'price_unit': material_line.price_unit,
+                            'location_id': record.location_dest_id.id,
+                            'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                            'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
+                            'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
+                            'amount_total': material_line.price_unit * material_line.product_qty,
+                            'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                            'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                        }))
                         ### check tồn kho với npl
                         # number_product = self.env['stock.quant'].search(
                         #     [('location_id', '=', record.location_dest_id.id),
