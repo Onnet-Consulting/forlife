@@ -7,19 +7,27 @@
             <form string="Product Combo">
                 <header>
                     <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                    <button name="action_approve" string="Áp dụng" class="oe_highlight"
+                                type="object"/>
+                        <button name="action_finished" string="Kết thúc"
+                                type="object"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="code" string="combo code"/>
+                        <label for="code" string="Mã bộ"/>
                         <h1>
-                            <field name="code">Combo Sequence</field>
+                            <field name="code"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="description_combo"/>
-                            <field name="from_date"/>
-                            <field name="to_date"/>
+                            <label for="from_date" string="Hiệu lực"/>
+                            <div class="o_row">
+                                <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
+                                <span> đến </span>
+                                <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}"/>
+                            </div>
                         </group>
                         <group>
                             <label for="size_attribute_id"/>
@@ -36,17 +44,17 @@
                         <page string="Products">
                             <field name="combo_product_ids">
                                 <tree editable="bottom">
-                                    <field name="sku"/>
                                     <field name="product_id"/>
-                                    <field name="max_quantity"/>
+                                    <field name="sku"/>
+                                    <field name="max_quantity" string="Số lượng"/>
                                     <field name="product_uom_id"/>
                                 </tree>
                                 <form>
                                     <sheet>
                                         <group>
-                                            <field name="sku"/>
                                             <field name="product_id"/>
-                                            <field name="max_quantity"/>
+                                            <field name="sku"/>
+                                            <field name="max_quantity" string="Số lượng"/>
                                             <field name="product_uom_id"/>
                                         </group>
                                     </sheet>

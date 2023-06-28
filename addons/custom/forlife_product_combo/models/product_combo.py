@@ -12,8 +12,7 @@ class ProductCombo(models.Model):
     state = fields.Selection([
         ('new', _('New')),
         ('in_progress', _('In Progress')),
-        ('finished', _('Finished')),
-        ('canceled', _('Canceled'))], string='State', default='new')
+        ('finished', _('Finished'))], string='State', default='new')
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     combo_product_ids = fields.One2many('product.combo.line', 'combo_id', string='Combo Applied Products')
@@ -26,22 +25,51 @@ class ProductCombo(models.Model):
 
     @api.model
     def create(self, vals):
-
-        vals['code'] = self.env['ir.sequence'].next_by_code('product.combo')
+        product_template_ids = []
+        if vals.get('code', 'New') == 'New':
+            vals['code'] = self.env['ir.sequence'].next_by_code('product.combo') or 'New'
+        if 'from_date' in vals and vals['from_date'] and 'to_date' in vals and vals['to_date']:
+            product_template_ids = self.constrains_combo(vals)
         result = super(ProductCombo, self).create(vals)
-        for pr in result.combo_product_ids:
-            pr.product_id.write({
-                'combo_id': result.id if vals['state'] in ['in_progress'] else None
-            })
-
+        if product_template_ids:
+            for r in result.combo_product_ids:
+                if r.product_id.id in product_template_ids:
+                    raise ValidationError(_(f'Khoảng thời gian và sản phẩm {r.product_id.name_get()[0][1]} đã được khai báo trong bản ghi khác !'))
         return result
 
-    def write(self, values):
-        if not self.code:
-            values['code'] = self.env['ir.sequence'].next_by_code('product.combo')
-        res = super().write(values)
-        for pr in self.combo_product_ids:
-            pr.product_id.write({
-                'combo_id': self.id if self.state in ['in_progress'] else None
-            })
-        return res
+    def write(self, vals):
+        rslt = super(ProductCombo, self).write(vals)
+        if 'from_date' in vals and vals['from_date'] and 'to_date' in vals and vals['to_date']:
+            product_template_ids = self.constrains_combo(vals)
+        else:
+            product_template_ids = self.constrains_combo({'from_date': self.from_date,
+                                                          'to_date': self.to_date})
+        if product_template_ids:
+            for r in self.combo_product_ids:
+                if r.product_id.id in product_template_ids:
+                    raise ValidationError(_(f'Khoảng thời gian và sản phẩm {r.product_id.name_get()[0][1]} đã được khai báo trong bản ghi khác !'))
+        return rslt
+
+    def constrains_combo(self, val):
+        from_date = val['from_date']
+        to_date = val['to_date']
+        sql = f"SELECT ptl.id FROM product_combo pc " \
+              f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
+              f" JOIN product_template ptl on ptl.id = pcl.product_id" \
+              f" WHERE (from_date < '{from_date}' and to_date > '{from_date}' and to_date < '{to_date}')" \
+              f" OR (from_date <= '{from_date}' and to_date >= '{to_date}')" \
+              f" OR (from_date < '{to_date}' and to_date > '{to_date}' and from_date > '{from_date}') "
+        self._cr.execute(sql)
+        data = self._cr.fetchall()
+        product_template_ids = []
+        if data:
+            product_template_ids = [x[0] for x in data]
+        return product_template_ids
+
+
+    def action_approve(self):
+        pass
+
+
+    def action_finished(self):
+        pass
