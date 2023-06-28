@@ -9,6 +9,9 @@
                 <xpath expr="//button[@name='btn_approve']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_print_stamps_barcode_approve</attribute>
                 </xpath>
+                <xpath expr="//field[@name='start_print']" position="after">
+                    <field name="store_id" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                </xpath>
             </field>
         </record>
     </data>
