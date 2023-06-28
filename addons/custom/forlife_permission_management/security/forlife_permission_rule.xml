@@ -415,6 +415,7 @@
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record model="ir.rule" id="pos_order_write_create">
@@ -427,6 +428,7 @@
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record model="ir.rule" id="pos_order_unlink">
@@ -439,6 +441,7 @@
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="True"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record model="ir.rule" id="pos_session_read">
