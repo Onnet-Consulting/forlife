@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
 
 class StockMove(models.Model):
@@ -15,29 +15,27 @@ class StockMove(models.Model):
     def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description):
         # This method returns a dictionary to provide an easy extension hook to modify the valuation lines (see purchase for an example)
         self.ensure_one()
-        s_location_pos = self.env.ref('forlife_stock.warehouse_for_pos', raise_if_not_found=False).id
-        s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
         warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
         rslt = super(StockMove, self)._generate_valuation_lines_data(partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description)
         if '_is_give' in self._context and self._context.get('_is_give'):
-            if self.location_id.warehouse_id.whs_type.id in [warehouse_type_master] and self.location_dest_id.stock_location_type_id.id in [s_location_pos] and self.location_dest_id.id_deposit:
+            if self.location_id.warehouse_id.whs_type.id in [warehouse_type_master] and self.location_dest_id.id_deposit:
+                if not self.location_dest_id.account_stock_give:
+                    raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_dest_id.name_get()[0][1]}')
                 rslt['credit_line_vals']['account_id'] = self.location_dest_id.account_stock_give.id
-            if self.location_id.stock_location_type_id.id in [s_location_pos] and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master] and self.location_id.id_deposit:
-                rslt['credit_line_vals']['account_id'] = self.product_id.categ_id.property_stock_valuation_account_id.id
+            if self.location_id.id_deposit and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master]:
+                if not self.location_id.account_stock_give:
+                    raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_id.name_get()[0][1]}')
                 rslt['debit_line_vals']['account_id'] = self.location_id.account_stock_give.id
-            if self.location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and self.location_dest_id.stock_location_type_id.id in [s_location_pos, s_location_sell_ecommerce]:
-                if self.location_id.id_deposit and self.location_id.account_stock_give:
-                    account_stock_give_id = self.location_id.account_stock_give.id
-                    if not account_stock_give_id:
-                        raise ValidationError('Chưa cấu hình tài khoản kí gửi!')
-                    else:
-                        rslt['credit_line_vals']['account_id'] = account_stock_give_id
-                if self.location_dest_id.id_deposit and self.location_dest_id.id_deposit:
-                    account_stock_give_id = self.location_dest_id.account_stock_give.id
-                    if not account_stock_give_id:
-                        raise ValidationError('Chưa cấu hình tài khoản kí gửi!')
-                    else:
-                        rslt['credit_line_vals']['account_id'] = account_stock_give_id
+                rslt['credit_line_vals']['account_id'] = self.product_id.categ_id.property_stock_valuation_account_id.id
+            if self.location_dest_id.id_deposit:
+                if not self.location_dest_id.account_stock_give:
+                    raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_dest_id.name_get()[0][1]}')
+                rslt['credit_line_vals']['account_id'] = self.location_dest_id.account_stock_give.id
+            if self.location_id.id_deposit:
+                if not self.location_id.account_stock_give:
+                    raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_id.name_get()[0][1]}')
+                rslt['debit_line_vals']['account_id'] = self.location_id.account_stock_give.id
+                rslt['credit_line_vals']['account_id'] = self.product_id.categ_id.property_stock_valuation_account_id.id
         return rslt
 
     @api.model
@@ -63,10 +61,16 @@ class StockMove(models.Model):
     def _get_give_move_lines(self):
         res = self.env['stock.move.line']
         for move_line in self.move_line_ids:
+            warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
             if move_line.owner_id and move_line.owner_id != move_line.company_id.partner_id:
                 continue
             if move_line.picking_id.from_company and move_line.picking_id.from_company.code == '1300' and move_line.picking_id.to_company and move_line.picking_id.to_company.code == '1400':
-                res |= move_line
+                if (move_line.picking_id.location_id.warehouse_id.whs_type.id in [warehouse_type_master]
+                    and move_line.picking_id.location_dest_id.id_deposit) \
+                    or (move_line.picking_id.location_id.id_deposit
+                    and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master])\
+                    or (move_line.picking_id.location_id.id_deposit or move_line.picking_id.location_dest_id.id_deposit):
+                    res |= move_line
         return res
 
     def _create_give_svl(self, forced_quantity=None):
