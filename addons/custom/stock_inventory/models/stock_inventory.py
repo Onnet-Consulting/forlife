@@ -22,8 +22,7 @@ class Inventory(models.Model):
     _order = "date desc, id desc"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char('Mã phiếu', default="Phiếu kiểm kê", readonly=True, required=True,
-                       states={'draft': [('readonly', False)]})
+    name = fields.Char('Mã phiếu', default="/", readonly=True, required=True)
     date = fields.Datetime('Ngày kiểm kho', required=True, default=fields.Datetime.now)
     accounting_date = fields.Date('Ngày kế toán')
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Chi tiết tồn kho',
@@ -147,6 +146,30 @@ class Inventory(models.Model):
         self.post_inventory()
         return True
 
+    def get_ir_sequence_inventory(self, location_id=None):
+        code = 'PKK_LOCATION_'+self.env['stock.location'].browse(location_id).code
+        ir_sequence = self.env['ir.sequence'].search([('code', '=', code)])
+        if ir_sequence:
+            return ir_sequence
+        vals = {
+            'name': 'Kiểm kê kho: ' + code,
+            'code': code,
+            'company_id': None,
+            'prefix': '%(y)s',
+            'padding': 6,
+            'number_increment': 1,
+            'number_next_actual': 1
+        }
+        ir_sequence = self.env['ir.sequence'].create(vals)
+        return ir_sequence
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for val in vals_list:
+            ir = self.get_ir_sequence_inventory(val.get('location_id'))
+            val['name'] = 'PKK'+str(val.get('location_id'))+ir.next_by_id()
+        res = super(Inventory, self).create(vals_list)
+        return res
     def post_inventory(self):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
@@ -378,7 +401,7 @@ class InventoryLine(models.Model):
         if self.env.context.get('active_model') == 'stock.inventory':
             inventory = self.env['stock.inventory'].browse(self.env.context.get('active_id'))
             if inventory.exists() and inventory.location_id:
-                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_id.ids
+                return "[('usage', 'in', ['internal']), ('id', 'child_of', %s)]" % inventory.location_id.ids
         return "[('usage', 'in', ['internal'])]"
 
     @api.model

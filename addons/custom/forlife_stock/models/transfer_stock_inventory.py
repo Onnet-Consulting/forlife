@@ -15,7 +15,7 @@ class TransferStockInventory(models.Model):
 
     code = fields.Char(string="Code", default='New', copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
-    location_id = fields.Many2one('stock.location', string='Location')
+    location_id = fields.Many2one('stock.location', string='Location', domain="[('usage', 'in', ['internal'])]")
     note = fields.Text(string="Note")
     transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id',
                                                         copy=True)
