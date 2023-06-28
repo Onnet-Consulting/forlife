@@ -251,5 +251,35 @@
         <record model="ir.rule" id="account_followup.ir_rule_sms_template_account_manager">
             <field name="active" eval="False"/>
         </record>
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'account_invoice_line_rule_see_all')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record model="ir.rule" id="sale.account_invoice_line_rule_see_all">
+            <field name="active" eval="False"/>
+        </record>
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'account_invoice_rule_see_all')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record model="ir.rule" id="sale.account_invoice_rule_see_all">
+            <field name="active" eval="False"/>
+        </record>
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'account_invoice_send_rule_see_all')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record model="ir.rule" id="sale.account_invoice_send_rule_see_all">
+            <field name="active" eval="False"/>
+        </record>
     </data>
 </odoo>
