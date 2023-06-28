@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
+
 class ProductCombo(models.Model):
     _name = 'product.combo'
     _description = 'product combo'
@@ -16,12 +17,13 @@ class ProductCombo(models.Model):
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     combo_product_ids = fields.One2many('product.combo.line', 'combo_id', string='Combo Applied Products')
-    size_attribute_id = fields.Many2one('product.attribute', string="Size Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', color_attribute_id)]")
-    color_attribute_id = fields.Many2one('product.attribute', string="Color Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', size_attribute_id)]")
+    size_attribute_id = fields.Many2one('product.attribute', string="Size Deviation Allowed",
+                                        domain="[('create_variant', '=', 'always'), ('id', '!=', color_attribute_id)]")
+    color_attribute_id = fields.Many2one('product.attribute', string="Color Deviation Allowed",
+                                         domain="[('create_variant', '=', 'always'), ('id', '!=', size_attribute_id)]")
 
     _sql_constraints = [
         ('combo_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
-
 
     @api.model
     def create(self, vals):
@@ -39,11 +41,8 @@ class ProductCombo(models.Model):
 
     def write(self, vals):
         rslt = super(ProductCombo, self).write(vals)
-        if 'from_date' in vals and vals['from_date'] and 'to_date' in vals and vals['to_date']:
-            product_template_ids = self.constrains_combo(vals)
-        else:
-            product_template_ids = self.constrains_combo({'from_date': self.from_date,
-                                                          'to_date': self.to_date})
+        product_template_ids = self.constrains_combo({'from_date': self.from_date,
+                                                      'to_date': self.to_date})
         if product_template_ids:
             for r in self.combo_product_ids:
                 if r.product_id.id in product_template_ids:
@@ -66,10 +65,8 @@ class ProductCombo(models.Model):
             product_template_ids = [x[0] for x in data]
         return product_template_ids
 
-
     def action_approve(self):
         pass
-
 
     def action_finished(self):
         pass
