@@ -1652,11 +1652,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 if (program.order_amount_min > 0 && program.min_quantity > 0 && is_required_check_products) {
                     let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
                     let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
-                    floor = Math.min(amountOrderFloor, qtyFloor);
+//                  floor = Math.min(amountOrderFloor, qtyFloor);
+                    floor = amountOrderFloor;
 
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
-                    required_min_quantity       = floor * program.min_quantity;
+//                  required_min_quantity       = floor * program.min_quantity;
+                    required_min_quantity       = program.min_quantity;
                 } else if (program.order_amount_min > 0) {
                     floor = Math.floor(amountCheck/program.order_amount_min);
                     max_reward_quantity         = floor * program.reward_quantity;
@@ -1747,7 +1749,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     program: program,
                     max_reward_quantity: program.reward_quantity * floor,
                     required_order_amount_min: program.order_amount_min * floor,
-                    required_min_quantity: program.min_quantity * floor,
+                    required_min_quantity: program.min_quantity,
                     amountCheck,
                     voucher_program_id,
                     to_reward_lines,
