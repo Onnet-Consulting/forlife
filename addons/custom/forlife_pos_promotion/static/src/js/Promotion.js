@@ -1348,6 +1348,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let accumValidCombs = [];
         let max = 0.0;
         let result = null;
+        let RUNNING_TIMEOUT = 15000;
+        let start_time = new Date();
         const permute = (arr, m = []) => {
             if (arr.length === 0) {
                 let hasChecked = accumValidCombs.some((comb, i, a) => {
@@ -1370,6 +1372,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             else {
                 for (let i = 0; i < arr.length; i++) {
+                    if (new Date() - start_time > RUNNING_TIMEOUT) {
+                        break;
+                    };
                     let curr = arr.slice();
                     let next = curr.splice(i, 1);
                         permute(curr.slice(), m.concat(next));
@@ -1382,9 +1387,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     computeBestCombineOfProgram(programsList){
         let programs = programsList.map(p => p.str_id);
-        if (programs.length > 6) {
-            return [];
-        };
         let programs_combines = this.permutator(programs);
         return programs_combines;
     }
