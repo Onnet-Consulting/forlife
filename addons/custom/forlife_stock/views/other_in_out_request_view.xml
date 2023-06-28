@@ -65,14 +65,16 @@
                             <field name="type_other"/>
                             <field name="type_other_id"/>
                             <label for="location_id" string="Lý do nhập khác" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
-                            <label for="location_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
+                            <label for="location_dest_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
-                                <field name="location_id"/>
+                                <field name="location_id" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             </div>
                             <label for="location_dest_id" string="Địa điểm đích" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
-                            <label for="location_dest_id" string="Lý do xuất khác" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
+                            <label for="location_id" string="Lý do xuất khác" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
-                                <field name="location_dest_id"/>
+                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                                <field name="location_id" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             </div>
                             <field name="quantity_match" invisible="1"/>
                         </group>
@@ -83,12 +85,13 @@
                     </group>
                     <notebook>
                         <page string="Product" name="product">
-                            <field name="other_in_out_request_line_ids" widget="section_and_note_one2many" mode="tree" context="{'default_whs_from_id': location_id, 'default_reason_to_id': location_id, 'default_whs_to_id': location_dest_id, 'default_reason_from_id': location_dest_id}">
+                            <field name="other_in_out_request_line_ids" widget="section_and_note_one2many" mode="tree" context="{'default_whs_from_id': location_dest_id, 'default_reason_to_id': location_id, 'default_whs_to_id': location_dest_id, 'default_reason_from_id': location_id, 'default_type_other_id': type_other_id}">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="description"/>
                                     <field name="asset_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')]}"/>
                                     <field name="date_expected"/>
+                                    <field name="type_other_id" invisible="1"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
                                     <field name="whs_from_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')]}"/>
