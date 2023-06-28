@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="business_objective_employee_view_tree" model="ir.ui.view">
+            <field name="name">business_objective_employee_view_tree</field>
+            <field name="model">business.objective.employee</field>
+            <field name="arch" type="xml">
+                <tree string="business_objective_employee_tree">
+                    <field name="bo_plan_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="sale_province_id"/>
+                    <field name="store_id" context="{'show_code_name': 1}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}"/>
+                    <field name="job_id"/>
+                    <field name="revenue_target"/>
+                    <button name="btn_employee_transfer" type="object" string="Transfer" title="Transfer" aria-label="Transfer"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="business_objective_employee_action" model="ir.actions.act_window">
+            <field name="name">BO Employee</field>
+            <field name="res_model">business.objective.employee</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>

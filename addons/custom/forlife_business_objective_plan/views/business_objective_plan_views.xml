@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="business_objective_plan_view_tree" model="ir.ui.view">
+            <field name="name">business_objective_plan_view_tree</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <tree string="business_objective_plan_tree">
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="brand_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_view_form" model="ir.ui.view">
+            <field name="name">business_objective_plan_view_form</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <form string="business_objective_plan_form">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="e.g. X 2023"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <label for="from_date" string="Date"/>
+                                <div>from
+                                    <field name="from_date" class="oe_inline" required="1"/>
+                                    to
+                                    <field name="to_date" class="oe_inline" required="1"/>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_filter" model="ir.ui.view">
+            <field name="name">business_objective_plan_filter</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name"/>
+                    <field name="brand_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_action" model="ir.actions.act_window">
+            <field name="name">Objective Plan</field>
+            <field name="res_model">business.objective.plan</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

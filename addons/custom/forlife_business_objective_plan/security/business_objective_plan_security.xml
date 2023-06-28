@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="bo_plan_user" model="res.groups">
+            <field name="name">Business objective plan user</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="bo_plan_manager" model="res.groups">
+            <field name="name">Business objective plan manager</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+            <field name="implied_ids" eval="[(4, ref('forlife_business_objective_plan.bo_plan_user'))]"/>
+        </record>
+
+    </data>
+</odoo>
