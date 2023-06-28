@@ -51,15 +51,19 @@ class PurchaseRequest(models.Model):
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
-            if 'employee_id' not in fields or 'department_id' not in fields or 'request_date' not in fields:
-                raise ValidationError(_("The import file must contain the required column"))
+            if 'employee_id' not in fields:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if 'department_id' not in fields:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban cho nhân viên"))
+            if 'request_date' not in fields:
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
         return super().load(fields, data)
 
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
+        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
         return res
 
     @api.onchange('employee_id')
@@ -97,7 +101,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu mua hàng'),
-            'template': '/purchase_request/static/src/xlsx/template_purchase_request.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/import_pr.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
