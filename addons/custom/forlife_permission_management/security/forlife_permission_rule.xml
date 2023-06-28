@@ -662,7 +662,7 @@
             <field name="name">print_stamps_barcode_read</field>
             <field name="model_id" ref="forlife_print_stamps_barcode.model_print_stamps_barcode"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('store_id.id,'in', user.get_store())]
+            <field name="domain_force">[('store_id.id','in', user.get_store())]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -674,7 +674,7 @@
             <field name="name">print_stamps_barcode_write_create</field>
             <field name="model_id" ref="forlife_print_stamps_barcode.model_print_stamps_barcode"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('store_id.id,'in', user.get_store())]</field>
+            <field name="domain_force">[('store_id.id','in', user.get_store())]</field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
@@ -685,7 +685,7 @@
             <field name="name">print_stamps_barcode_unlink</field>
             <field name="model_id" ref="forlife_print_stamps_barcode.model_print_stamps_barcode"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
-            <field name="domain_force">[('store_id.id,'in', user.get_store())]</field>
+            <field name="domain_force">[('store_id.id','in', user.get_store())]</field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
