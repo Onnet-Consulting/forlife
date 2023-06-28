@@ -61,5 +61,7 @@
         'views/product_defective_views.xml',
         'views/stock_inventory_views.xml',
         'views/print_stamps_barcode_view.xml',
+        'views/defective_type_view.xml',
+        'views/product_supplierinfo_views.xml',
     ],
 }
