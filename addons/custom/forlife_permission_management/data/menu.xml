@@ -395,7 +395,7 @@
         <!--        Điểm bán lẻ/Đơn hàng-->
         <record model="ir.ui.menu" id="point_of_sale.menu_point_of_sale">
             <field name="groups_id"
-                   eval="[(5, 0, 0),(4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_mer'))]"/>
+                   eval="[(5, 0, 0),(4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
 
         <!--        Điểm bán lẻ/Đơn hàng/Đơn hàng-->
