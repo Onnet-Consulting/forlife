@@ -176,6 +176,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             let voucher_data = this.receipt_order_get_applied_voucher_values();
 
             normal_lines = this.receipt_merge_line_same_product_and_price(normal_lines);
+            normal_lines = _.sortBy(normal_lines, line => line.quantity)
             applied_point_lines = this.receipt_merge_line_same_product_and_price(applied_point_lines);
 
             return [normal_lines, promotion_lines, applied_point_lines, applied_code_value,
@@ -242,11 +243,8 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
         get_line_receipt_total_amount() {
             let line_quantity = this.get_quantity();
-            let total = this.original_price * line_quantity;
-            if (line_quantity < 0) {
-                total -= this.get_line_receipt_total_discount();
-            }
-            return total;
+            if (line_quantity < 0) return this.get_display_price_after_discount();
+            return this.original_price * line_quantity;
         }
 
         export_for_printing() {

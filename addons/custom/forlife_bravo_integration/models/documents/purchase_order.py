@@ -62,13 +62,10 @@ class AccountMovePurchaseAsset(models.Model):
             "IsTransfer": 1 if self.x_asset_fin == 'TC' else 0,
             "CreditAccount": payable_account_code or None,
             "DueDate": self.invoice_date_due or None,
-            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 0,
+            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or None,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
-            purchase_order = invoice_line.purchase_order_id
-            if not purchase_order:
-                continue
             purchase_order_line = invoice_line.purchase_line_id
             product = invoice_line.product_id
             discount_amount = invoice_line.discount
@@ -106,8 +103,8 @@ class AccountMovePurchaseAsset(models.Model):
                 "ProductCode": invoice_line.asset_id.code if (
                         invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
                 "TaxCode": tax_line.tax_line_id.code or None,
-                "OriginalAmount3": tax_line.tax_amount,
-                "Amount3": tax_line.tax_amount * exchange_rate,
+                "OriginalAmount3": invoice_line.tax_amount,
+                "Amount3": invoice_line.tax_amount * exchange_rate,
                 "DebitAccount3": tax_line.account_id.code,
                 "CreditAccount3": payable_account_code
             })
@@ -117,7 +114,6 @@ class AccountMovePurchaseAsset(models.Model):
                     "CreditAccount": journal_value_line.get('DebitAccount'),
                     "DebitAccount3": journal_value_line.get('CreditAccount3'),
                     "CreditAccount3": journal_value_line.get('DebitAccount3'),
-
                 }
                 journal_value_line.update(reversed_account_values)
 
@@ -183,9 +179,6 @@ class AccountMovePurchaseProduct(models.Model):
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
-            purchase_order = invoice_line.purchase_order_id
-            if not purchase_order:
-                continue
             journal_value_line = journal_value.copy()
             journal_value_line.update({
                 "BuiltinOrder": idx or None,
@@ -314,7 +307,7 @@ class StockPickingPurchaseProduct(models.Model):
         product = stock_move.product_id
         AccountAccount = self.env['account.account']
         if not account_move:
-            product_accounts = product.get_product_accounts()
+            product_accounts = product.product_tmpl_id.get_product_accounts()
             debit_account = product_accounts.get('stock_valuation') or AccountAccount
             credit_account = product_accounts.get('stock_input') or AccountAccount
         else:

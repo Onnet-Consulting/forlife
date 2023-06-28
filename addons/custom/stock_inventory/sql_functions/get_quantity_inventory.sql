@@ -25,7 +25,8 @@ begin
                 left join stock_picking sp on sp.id = sm.picking_id
                 left join product_template pt ON pp.product_tmpl_id = pt.id
                 where pp.active is True
-                and sp.date_done <= _date_stop::timestamp
+                and sm.date <= _date_stop::timestamp
+                and sm.state = 'done'
                 and sl.id in (select unnest(_kho))
                 and (case when _mat_hang != array[]::integer[] then (pp.id IN (select unnest(_mat_hang))) else 1 = 1 end)
                 group by sm.product_id , sl.id, pt.uom_id ) as data_import
@@ -36,7 +37,8 @@ begin
                 left join stock_picking sp on sp.id = sm.picking_id
                 left join product_template pt ON pp.product_tmpl_id = pt.id
                 where pp.active is True
-                and sp.date_done <= _date_stop::timestamp
+                and sm.date <= _date_stop::timestamp
+                and sm.state = 'done'
                 and sl.id in (select unnest(_kho))
                 and (case when _mat_hang != array[]::integer[] then (pp.id IN (select unnest(_mat_hang))) else 1 = 1 end)
                 group by sm.product_id , sl.id, pt.uom_id )	as data_export

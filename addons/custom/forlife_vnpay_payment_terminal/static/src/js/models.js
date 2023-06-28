@@ -1,6 +1,7 @@
 odoo.define('forlife_vnpay_payment_terminal.models', function (require) {
     const {Payment} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
+    const {Order} = require('point_of_sale.models');
 
 
     const PosVNPayPayment = (Payment) => class PosVNPayPayment extends Payment {
@@ -40,5 +41,18 @@ odoo.define('forlife_vnpay_payment_terminal.models', function (require) {
 
     Registries.Model.extend(Payment, PosVNPayPayment);
 
+    const PosVNPayModel = (Order) =>
+        class PosVNPayModel extends Order {
+            /* ---- Payment Lines --- */
+            add_paymentline(payment_method) {
+                const newPaymentline = super.add_paymentline(payment_method);
+                if (payment_method.use_payment_terminal === "vnpay" && this.amount_return > 0) {
+                    newPaymentline.set_payment_status('done');
+                }
+                return newPaymentline;
+            }
+        }
+
+    Registries.Model.extend(Order, PosVNPayModel);
 
 });
