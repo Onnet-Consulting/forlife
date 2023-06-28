@@ -56,8 +56,12 @@ class PurchaseRequest(models.Model):
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
-            if 'employee_id' not in fields or 'department_id' not in fields or 'request_date' not in fields:
-                raise ValidationError(_("The import file must contain the required column"))
+            if 'employee_id' not in fields:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if 'department_id' not in fields:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban cho nhân viên"))
+            if 'request_date' not in fields:
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
         return super().load(fields, data)
 
     @api.model
