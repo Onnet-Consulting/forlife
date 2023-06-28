@@ -75,17 +75,21 @@ group by sm.product_id, src_wh.id, des_wh.id
 
         query = f"""
 with attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ), 
 product_cate_info as (
     select 
@@ -94,20 +98,16 @@ product_cate_info as (
         pp.barcode                                                                as product_barcode,
         coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
         coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
-        ad_size.value                                                             as size,
-        ad_color.value                                                            as color,
-        ad_season.value                                                           as season,
-        ad_gender.value                                                           as gender,
-        ad_label.value                                                            as label
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as color,
+        ad.attrs::json -> '{attr_value.get('mua_vu', '')}'                        as season,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender,
+        ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                     as label
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join uom_uom uom on pt.uom_id = uom.id
         join product_category cate on cate.id = pt.categ_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-        left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-        left join attribute_data ad_season on ad_season.product_id = pp.id and ad_season.attrs_code = '{attr_value.get('mua_vu', '')}'
-        left join attribute_data ad_gender on ad_gender.product_id = pp.id and ad_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
-        left join attribute_data ad_label on ad_label.product_id = pp.id and ad_label.attrs_code = '{attr_value.get('nhan_hieu', '')}'
+        left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
 ),
 stock as (

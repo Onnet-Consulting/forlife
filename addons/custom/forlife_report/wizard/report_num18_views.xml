@@ -18,7 +18,7 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="state" class="oe_inline"/>
+                            <field name="state" widget="radio" options="{'horizontal': True}"/>
                         </group>
                         <group>
                             <field name="pr_number" placeholder="PR001,PR002,..."/>

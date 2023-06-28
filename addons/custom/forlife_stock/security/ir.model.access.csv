@@ -5,7 +5,7 @@ access_stock_transfer,stock_transfer,model_stock_transfer,stock.group_stock_user
 access_stock_transfer_line,stock_transfer_line,model_stock_transfer_line,stock.group_stock_user,0,0,0,0
 access_stock_location_type,stock_location_type,model_stock_location_type,base.group_user,1,1,1,
 access_approval_logs_stock,approval_logs_stock,model_approval_logs_stock,base.group_user,1,1,1,1
-access_hr_asset_transfer,hr_asset_transfer,model_hr_asset_transfer,base.group_user,1,1,1,1
+access_hr_asset_transfer,hr_asset_transfer,model_hr_asset_transfer,base.group_user,0,0,0,0
 access_hr_asset_transfer_line,hr_asset_transfer_line,model_hr_asset_transfer_line,base.group_user,1,1,1,1
 access_reject_asset_transfer,reject_asset_transfer,model_reject_asset_transfer,stock.group_stock_user,1,1,1,1
 access_reject_in_out_request,reject_in_out_request,model_reject_in_out_request,stock.group_stock_user,1,1,1,1

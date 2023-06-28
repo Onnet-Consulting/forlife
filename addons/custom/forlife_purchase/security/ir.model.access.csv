@@ -10,13 +10,11 @@ access_forlife_barcode,forlife barcode,model_forlife_barcode,,1,1,1,1
 access_forlife_production_finished_product,forlife_production_finished_product,model_forlife_production_finished_product,,1,1,1,1
 access_forlife_production_material,forlife_production_material,model_forlife_production_material,,1,1,1,1
 access_forlife_production_service_cost,forlife_production_service_cost,model_forlife_production_service_cost,,1,1,1,1
-access_purchase_order_exchange_rate,purchase_order_exchange_rate,model_purchase_order_exchange_rate,,1,1,1,1
 access_purchase_order_cost_line,purchase_order_cost_line,model_purchase_order_cost_line,,1,1,1,1
 access_forlife_bom,forlife_bom,model_forlife_bom,,1,1,1,1
 access_forlife_bom_service_cost,forlife_bom_service_cost,model_forlife_bom_service_cost,,1,1,1,1
 access_forlife_bom_ingredients,forlife_bom_ingredients,model_forlife_bom_ingredients,,1,1,1,1
 access_stock_warehouse_type,stock_warehouse_type,model_stock_warehouse_type,,1,1,1,1
-access_forlife_synthetic,forlife_synthetic,model_forlife_synthetic,,1,1,1,1
 
 access_purchase_order_admin,purchase_order,model_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
 access_purchase_order_user,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
