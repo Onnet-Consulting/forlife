@@ -16,7 +16,7 @@ class ResUtility(models.AbstractModel):
         return [{
             'id_phieu_kk': inv.id,
             'so_phieu_kk': inv.name,
-            'dia_diem': inv.mapped('location_ids.complete_name'),
+            'dia_diem': inv.location_id.complete_name or '',
             'trang_thai': 'kk_b1' if inv.state == 'first_inv' else 'kk_b2',
             'tong_ton': sum(inv.mapped('line_ids.theoretical_qty'))
         } for inv in data]
