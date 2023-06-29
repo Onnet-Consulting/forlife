@@ -8,9 +8,9 @@
                 <header>
                     <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
                     <button name="action_approve" string="Áp dụng" class="oe_highlight"
-                                type="object"/>
+                                type="object" states="new"/>
                         <button name="action_finished" string="Kết thúc"
-                                type="object"/>
+                                type="object" states="in_progress"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -24,25 +24,25 @@
                             <field name="description_combo"/>
                             <label for="from_date" string="Hiệu lực"/>
                             <div class="o_row">
-                                <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
+                                <field attrs="{'readonly': [('state','in',['in_progress','finished'])]}" name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
                                 <span> đến </span>
-                                <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}"/>
+                                <field attrs="{'readonly': [('state','in',['in_progress','finished'])]}" name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}"/>
                             </div>
                         </group>
                         <group>
                             <label for="size_attribute_id"/>
                             <div>
-                                <field name="size_attribute_id" class="oe_inline"/>
+                                <field attrs="{'readonly': [('state','in',['in_progress','finished'])]}" name="size_attribute_id" class="oe_inline"/>
                             </div>
                             <label for="color_attribute_id"/>
                             <div>
-                                <field name="color_attribute_id" class="oe_inline"/>
+                                <field attrs="{'readonly': [('state','in',['in_progress','finished'])]}" name="color_attribute_id" class="oe_inline"/>
                             </div>
                         </group>
                     </group>
                     <notebook>
                         <page string="Products">
-                            <field name="combo_product_ids">
+                            <field name="combo_product_ids" attrs="{'readonly': [('state','in',['in_progress','finished'])]}">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="sku"/>

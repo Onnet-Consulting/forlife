@@ -368,9 +368,14 @@ class PurchaseOrder(models.Model):
             list_line_invalid = []
             for r in record.order_line:
                 if not record.partner_id.is_passersby:
-                    supplier = self.env['product.supplierinfo'].search([('amount_conversion','=',r.exchange_quantity),('partner_id','=',record.partner_id.id)], limit=1)
+                    supplier = self.env['product.supplierinfo'].search([('partner_id', '=', record.partner_id.id),('product_id','=',r.product_id.id)],limit=1)
                     if not supplier:
-                        list_line_invalid.append(r.product_id.name_get()[0][1])
+                        pass
+                    else:
+                        #validate
+                        supplier_exits = self.env['product.supplierinfo'].search([('amount_conversion','=',r.exchange_quantity),('partner_id', '=', record.partner_id.id),('product_id','=',r.product_id.id)],limit=1)
+                        if not supplier_exits:
+                            list_line_invalid.append(r.product_id.name_get()[0][1])
             if list_line_invalid:
                 mgs = f"Sản phẩm {',  '.join(list_line_invalid)} có số lượng quy đổi không khớp với nhà cung cấp {record.partner_id.name_get()[0][1]} \n"
                 raise UserError(_(mgs))
@@ -2227,26 +2232,25 @@ class StockPicking(models.Model):
                     else:
                         if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
                             raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
-                        if item.location_id == r.location_dest_id:
-                            list_line_xk.append((0, 0, {
-                                'product_id': material_line.product_id.id,
-                                'product_uom': material_line.uom.id,
-                                'price_unit': material_line.price_unit,
-                                'location_id': record.location_dest_id.id,
-                                'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                                'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
-                                'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
-                                'amount_total': material_line.price_unit * material_line.product_qty,
-                                'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                                'reason_id': self.env.ref('forlife_stock.export_production_order').id,
-                            }))
-                        ### check tồn kho với npl
-                        # number_product = self.env['stock.quant'].search(
-                        #     [('location_id', '=', record.location_dest_id.id),
-                        #      ('product_id', '=', material_line.product_id.id)])
-                        # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                        #     raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
-                        ## tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
+                        list_line_xk.append((0, 0, {
+                            'product_id': material_line.product_id.id,
+                            'product_uom': material_line.uom.id,
+                            'price_unit': material_line.price_unit,
+                            'location_id': record.location_dest_id.id,
+                            'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                            'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
+                            'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
+                            'amount_total': material_line.price_unit * material_line.product_qty,
+                            'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                            'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                        }))
+                        ## check tồn kho với npl
+                        number_product = self.env['stock.quant'].search(
+                            [('location_id', '=', record.location_dest_id.id),
+                             ('product_id', '=', material_line.product_id.id)])
+                        if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                            raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                        # tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {

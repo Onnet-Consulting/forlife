@@ -174,7 +174,6 @@ class StockMove(models.Model):
         if 'extend_account_npl' in self._context and self.include_move_id and len(am_vals) == 1:
             include_move_id = self.include_move_id
             account_1561 = include_move_id.product_id.categ_id.property_stock_valuation_account_id.id
-
             if self.reason_id.type_other == 'incoming':
                 debit_account_id = self.reason_id.x_property_valuation_out_account_id.id
                 credit_account_id = account_1561
