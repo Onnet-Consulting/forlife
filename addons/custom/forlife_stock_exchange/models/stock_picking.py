@@ -82,38 +82,36 @@ class InheritStockPicking(models.Model):
             raise ValidationError(_('Please configure the materials export operation type for company %s!', company.name))
         picking_outgoing_id = self.create({'location_id': self.location_dest_id.id, 'origin': self.name})
         picking_outgoing_id._generate_outgoing_move(self.move_ids)
-        '''
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
         if picking_outgoing_id.state != 'assigned':
             raise ValidationError(_('The stock "%s" dose not enough goods to export materials!', picking_outgoing_id.location_id.name))
-        '''
+        validate_results = picking_outgoing_id.button_validate()
+        if isinstance(validate_results, dict):
+            self.env[validate_results['res_model']].with_context(validate_results['context']).create({}).process()
         return picking_outgoing_id
 
     def button_validate(self):
-        results = super(InheritStockPicking, self).button_validate()
-        if self.picking_type_id.exchange_code == 'incoming' and self.state == 'done':
+        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
             self._update_forlife_production()
-            bom_ids = {
-                bom.product_id.id: bom
-                for bom in self.env['forlife.production.finished.product'].sudo().search(
-                    [('product_id', 'in', self.move_ids.mapped('product_id.id'))]
-                )
-            }
             for move_in in self.move_ids:
-                if move_in.product_id.id not in bom_ids:
-                    raise ValidationError(_('Cannot find BOM for product "%s"!', move_in.product_id.name))
-                price_unit = move_in.price_unit or bom_ids[move_in.product_id.id].unit_price
+                bom = move_in.work_production.forlife_production_finished_product_ids.filtered(lambda b: b.product_id.id == move_in.product_id.id)
+                if len(bom) != 1:
+                    raise ValidationError(
+                        not bom and _('Cannot find BOM for product "%s"!', move_in.product_id.name)
+                        or _('There are too many BOM for product "%s"!', move_in.product_id.name)
+                    )
+                price_unit = move_in.price_unit or bom.unit_price
                 move_in.write({
-                    'bom_model': bom_ids[move_in.product_id.id]._name,
-                    'bom_id': bom_ids[move_in.product_id.id].id,
+                    'bom_model': bom._name,
+                    'bom_id': bom.id,
                     'price_unit': price_unit,
                     'amount_total': price_unit * move_in.product_uom_qty
                 })
             picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
             self = self.with_context(exchange_code='incoming')
             self.write({'picking_outgoing_id': picking_outgoing_id.id})
-        return results
+        return super(InheritStockPicking, self).button_validate()
 
     def _update_forlife_production(self):
         for line in self.move_ids_without_package:

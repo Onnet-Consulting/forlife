@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <record id="forlife_reason_type_incoming_exchange" model="forlife.reason.type">
             <field name="name">Nhập kho thành phẩm</field>
         </record>
@@ -15,6 +15,7 @@
             <field name="type_other">incoming</field>
             <field name="active" eval="True"/>
             <field name="company_id" eval="False"/>
+            <field name="is_work_order" eval="True"/>
             <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_incoming_exchange"/>
         </record>
 
@@ -24,6 +25,7 @@
             <field name="type_other">outcoming</field>
             <field name="active" eval="True"/>
             <field name="company_id" eval="False"/>
+            <field name="is_work_order" eval="True"/>
             <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_outgoing_exchange"/>
         </record>
     </data>
