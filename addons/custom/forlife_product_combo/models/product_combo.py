@@ -27,12 +27,12 @@ class ProductCombo(models.Model):
 
     @api.model
     def create(self, vals):
-        product_template_ids = []
         if vals.get('code', 'New') == 'New':
             vals['code'] = self.env['ir.sequence'].next_by_code('product.combo') or 'New'
-        if 'from_date' in vals and vals['from_date'] and 'to_date' in vals and vals['to_date']:
-            product_template_ids = self.constrains_combo(vals)
         result = super(ProductCombo, self).create(vals)
+        product_template_ids = self.constrains_combo({'from_date': result.from_date,
+                                                      'to_date': result.to_date,
+                                                      'id': result.id})
         if product_template_ids:
             for r in result.combo_product_ids:
                 if r.product_id.id in product_template_ids:
@@ -42,7 +42,8 @@ class ProductCombo(models.Model):
     def write(self, vals):
         rslt = super(ProductCombo, self).write(vals)
         product_template_ids = self.constrains_combo({'from_date': self.from_date,
-                                                      'to_date': self.to_date})
+                                                      'to_date': self.to_date,
+                                                      'id': self.id})
         if product_template_ids:
             for r in self.combo_product_ids:
                 if r.product_id.id in product_template_ids:
@@ -52,18 +53,21 @@ class ProductCombo(models.Model):
     def constrains_combo(self, val):
         from_date = val['from_date']
         to_date = val['to_date']
-        sql = f"SELECT ptl.id FROM product_combo pc " \
-              f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
-              f" JOIN product_template ptl on ptl.id = pcl.product_id" \
-              f" WHERE (from_date < '{from_date}' and to_date > '{from_date}' and to_date < '{to_date}')" \
-              f" OR (from_date <= '{from_date}' and to_date >= '{to_date}')" \
-              f" OR (from_date < '{to_date}' and to_date > '{to_date}' and from_date > '{from_date}') "
-        self._cr.execute(sql)
-        data = self._cr.fetchall()
-        product_template_ids = []
-        if data:
-            product_template_ids = [x[0] for x in data]
-        return product_template_ids
+        record_id = val['id']
+        if from_date and to_date:
+            sql = f"SELECT ptl.id, pc.id FROM product_combo pc " \
+                  f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
+                  f" JOIN product_template ptl on ptl.id = pcl.product_id" \
+                  f" WHERE (pc.from_date < '{from_date}' and pc.to_date > '{from_date}' and pc.to_date < '{to_date}')" \
+                  f" OR (pc.from_date <= '{from_date}' and pc.to_date >= '{to_date}')" \
+                  f" OR (pc.from_date < '{to_date}' and pc.to_date > '{to_date}' and pc.from_date > '{from_date}')"
+            self._cr.execute(sql)
+            data = self._cr.fetchall()
+            product_template_ids = []
+            if data:
+                product_template_ids = [x[0] if x[1] != record_id else False for x in data]
+            return product_template_ids
+        return False
 
     def action_approve(self):
         pass
