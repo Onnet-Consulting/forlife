@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="product_category_type_view_tree_nhanh_sync_inherit" model="ir.ui.view">
+        <field name="name">product_category_type_view_tree_nhanh_sync_inherit</field>
+        <field name="model">product.category.type</field>
+        <field name="inherit_id" ref="forlife_base.product_category_type_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_sync_nhanh"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
