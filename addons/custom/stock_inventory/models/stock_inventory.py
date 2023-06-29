@@ -167,7 +167,8 @@ class Inventory(models.Model):
     def create(self, vals_list):
         for val in vals_list:
             ir = self.get_ir_sequence_inventory(val.get('location_id'))
-            val['name'] = 'PKK'+str(val.get('location_id'))+ir.next_by_id()
+            location_code = self.env['stock.location'].browse(val.get('location_id')).code
+            val['name'] = 'PKK' + location_code + ir.next_by_id()
         res = super(Inventory, self).create(vals_list)
         return res
 
