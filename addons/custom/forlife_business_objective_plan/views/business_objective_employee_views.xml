@@ -6,16 +6,16 @@
             <field name="name">business_objective_employee_view_tree</field>
             <field name="model">business.objective.employee</field>
             <field name="arch" type="xml">
-                <tree string="business_objective_employee_tree">
-                    <field name="bo_plan_id"/>
+                <tree string="business_objective_employee_tree" editable="top" create="1">
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
-                    <field name="sale_province_id"/>
-                    <field name="store_id" context="{'show_code_name': 1}"/>
-                    <field name="employee_id" context="{'show_code_name': 1}"/>
-                    <field name="job_id"/>
+                    <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="revenue_target"/>
-                    <button name="btn_employee_transfer" type="object" string="Transfer" title="Transfer" aria-label="Transfer"/>
+                    <button name="btn_employee_transfer" class="oe_highlight" type="object" string="Transfer" title="Transfer" aria-label="Transfer"/>
                 </tree>
             </field>
         </record>
@@ -24,6 +24,7 @@
             <field name="name">BO Employee</field>
             <field name="res_model">business.objective.employee</field>
             <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
         </record>
 
     </data>
