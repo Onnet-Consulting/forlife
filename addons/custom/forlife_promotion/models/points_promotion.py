@@ -28,6 +28,8 @@ class PointsPromotion(models.Model):
     point_addition = fields.Integer('Point Addition', required=True, default=0)
     points_product_ids = fields.One2many('points.product', inverse_name='points_promotion_id', string='Points Product')
     event_ids = fields.One2many('event', inverse_name='points_promotion_id', string='Events')
+    point_compensate_time = fields.Integer('Point compensate time (day)', default=3)
+    point_compensate_rate = fields.Float('Point compensate rate (%)', default=1)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),

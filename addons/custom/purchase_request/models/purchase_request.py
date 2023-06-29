@@ -22,7 +22,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -51,6 +51,7 @@ class PurchaseRequest(models.Model):
     receiver_id = fields.Many2one('hr.employee', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
+    use_department_id = fields.Many2one('hr.department', string='Use Department')
 
     @api.model
     def load(self, fields, data):
@@ -185,11 +186,6 @@ class PurchaseRequest(models.Model):
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
                 }))
-                po_ex_line_data.append((0, 0, {
-                    'purchase_order_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.product_id.name,
-                }))
             if po_line_data:
                 name_pr = []
                 for key in keys:
@@ -205,7 +201,6 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
-                    'exchange_rate_line': po_ex_line_data,
                     'occasion_code_ids': occasion_code_id,
                     'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
@@ -258,7 +253,7 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')

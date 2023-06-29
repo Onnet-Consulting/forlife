@@ -18,6 +18,9 @@ class HrAssetTransferLine(models.Model):
     _inherit = ['hr.asset.transfer.line', 'bravo.model.insert.action']
     _bravo_table = 'B30TransferAsset'
 
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+
+
     br1 = BravoMany2oneField('hr.asset.transfer', odoo_name='hr_asset_transfer_id', bravo_name='CompanyCode',
                              field_detail='company_id.code')
     br2 = BravoMany2oneField('hr.asset.transfer', odoo_name='hr_asset_transfer_id', bravo_name='Stt', field_detail='id')

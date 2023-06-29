@@ -2,6 +2,7 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_round
 import logging
 _logger = logging.getLogger(__name__)
 

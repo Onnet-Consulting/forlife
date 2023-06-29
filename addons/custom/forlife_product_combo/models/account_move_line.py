@@ -6,6 +6,14 @@ from contextlib import contextmanager
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
+    @api.onchange('amount_currency', 'currency_id')
+    def _inverse_amount_currency(self):
+        if self.move_id.origin_invoice_id:
+            for line in self:
+                line.amount_currency = line.balance
+        else:
+            return super()._inverse_amount_currency()
+
     def _convert_to_tax_line_dict(self):
         """ Convert the current record to a dictionary in order to use the generic taxes computation method
         defined on account.tax.

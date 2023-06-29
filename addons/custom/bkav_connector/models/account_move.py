@@ -233,7 +233,7 @@ class AccountMoveBKAV(models.Model):
             'cmd_updateInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.update_einvoice'),
             'cmd_deleteInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.delete_einvoice'),
             'cmd_cancelInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.cancel_einvoice'),
-            'cmd_publishInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.publish_invoice'),
+            'cmd_publishInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.publish_einvoice'),
             'cmd_getInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_einvoice'),
             'cmd_getStatusInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_status_einvoice'),
             'cmd_downloadPDF': self.env['ir.config_parameter'].sudo().get_param('bkav.download_pdf'),
@@ -367,10 +367,10 @@ class AccountMoveBKAV(models.Model):
             self.is_check_cancel = True
             self.getting_invoice_status()
 
-    def button_cancel(self):
-        res = super(AccountMoveBKAV, self).button_cancel()
-        self.cancel_invoice()
-        return res
+    # def button_cancel(self):
+    #     res = super(AccountMoveBKAV, self).button_cancel()
+    #     self.cancel_invoice()
+    #     return res
 
     def delete_invoice(self):
         configs = self.get_bkav_config()

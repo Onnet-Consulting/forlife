@@ -4,6 +4,8 @@
         <field name="name">Purchase Request</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('company_id','in',allowed_company_ids)]</field>
+
     </record>
 
     <record id="action_create_purchase_order" model="ir.actions.server">
@@ -103,6 +105,7 @@
                             <field name="receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="attention" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="use_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

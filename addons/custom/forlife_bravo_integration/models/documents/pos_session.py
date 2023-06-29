@@ -27,35 +27,32 @@ class PosSessionCashInMove(models.Model):
         debit_line = debit_lines and debit_lines[0]
         credit_lines = self.line_ids - debit_lines
         credit_line = credit_lines and credit_lines[0]
-        partner = debit_line.partner_id
         exchange_rate = 1
-        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
-        analytic_account = self.env['account.analytic.account'].search([
-            ('company_id', '=', self.company_id.id),
-            ('code', '=', (warehouse_code or '')[-4:])
-        ], limit=1)
+        store_id = self.statement_line_id.pos_session_id.config_id.store_id
+        analytic_account = store_id.analytic_account_id
+        partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
         values = []
         journal_value = {
-            "CompanyCode": self.company_id.code,
-            "Stt": self.name,
+            "CompanyCode": self.company_id.code or None,
+            "Stt": self.name or None,
             "DocCode": "PT",
-            "DocNo": self.name,
-            "DocDate": self.date,
-            "CurrencyCode": self.currency_id.name,
-            "ExchangeRate": exchange_rate,
-            "CustomerCode": partner.ref,
-            "CustomerName": partner.name,
-            "Address": partner.contact_address_complete,
-            "Description": self.name,
-            "EmployeeCode": self.env.user.employee_id.code,
+            "DocNo": self.name or None,
+            "DocDate": self.date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate or None,
+            "CustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "Description": debit_line.name or None,
+            "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
-            "DebitAccount": debit_line.account_id.code,
-            "CreditAccount": credit_line.account_id.code,
+            "DebitAccount": debit_line.account_id.code or None,
+            "CreditAccount": credit_line.account_id.code or None,
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
-            "Description1": debit_line.name,
-            "DeptCode": analytic_account.code,
-            "RowId": debit_line.id
+            "Description1": debit_line.name or None,
+            "DeptCode": analytic_account.code or None,
+            "RowId": debit_line.id or None
         }
         values.append(journal_value)
         return values
@@ -85,35 +82,32 @@ class PosSessionCashOutMove(models.Model):
         debit_line = debit_lines and debit_lines[0]
         credit_lines = self.line_ids - debit_lines
         credit_line = credit_lines and credit_lines[0]
-        partner = debit_line.partner_id
         exchange_rate = 1
-        warehouse_code = self.statement_line_id.pos_session_id.config_id.store_id.warehouse_id.code
-        analytic_account = self.env['account.analytic.account'].search([
-            ('company_id', '=', self.company_id.id),
-            ('code', '=', (warehouse_code or '')[-4:])
-        ], limit=1)
+        store_id = self.statement_line_id.pos_session_id.config_id.store_id
+        analytic_account = store_id.analytic_account_id
+        partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
         values = []
         journal_value = {
-            "CompanyCode": self.company_id.code,
-            "Stt": self.name,
+            "CompanyCode": self.company_id.code or None,
+            "Stt": self.name or None,
             "DocCode": "PC",
-            "DocNo": self.name,
-            "DocDate": self.date,
-            "CurrencyCode": self.currency_id.name,
-            "ExchangeRate": exchange_rate,
-            "CustomerCode": partner.ref,
-            "CustomerName": partner.name,
-            "Address": partner.contact_address_complete,
-            "Description": self.name,
-            "EmployeeCode": self.env.user.employee_id.code,
+            "DocNo": self.name or None,
+            "DocDate": self.date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate or None,
+            "CustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "Description": debit_line.name or None,
+            "EmployeeCode": self.env.user.employee_id.code or None,
             "BuiltinOrder": 1,
-            "DebitAccount": debit_line.account_id.code,
-            "CreditAccount": credit_line.account_id.code,
+            "DebitAccount": debit_line.account_id.code or None,
+            "CreditAccount": credit_line.account_id.code or None,
             "OriginalAmount": debit_line.debit,
             "Amount": debit_line.debit,
-            "Description1": debit_line.name,
-            "DeptCode": analytic_account.code,
-            "RowId": debit_line.id
+            "Description1": debit_line.name or None,
+            "DeptCode": analytic_account.code or None,
+            "RowId": debit_line.id or None
         }
         values.append(journal_value)
         return values

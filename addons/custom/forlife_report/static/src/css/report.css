@@ -145,7 +145,7 @@ table.available-report-list {
 }
 
 .oe_max_height_500 {
-    max-height: 500px;
+    max-height: 450px;
     margin-top: 7px;
     overflow: scroll;
 }
@@ -164,4 +164,10 @@ table.available-report-list {
     color: #023a3f;
     background: #80808047;
     border-radius: 50%;
+}
+
+.row_subtotal {
+    font-size: 15px;
+    font-weight: bold;
+    background: rgb(198, 231, 209) !important;
 }

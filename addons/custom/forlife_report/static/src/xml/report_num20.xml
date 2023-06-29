@@ -20,7 +20,7 @@
                         <td><t t-esc="line.so_hd"/></td>
                         <td><t t-esc="line.ma_kh"/></td>
                         <td><t t-esc="line.ten_kh"/></td>
-                        <td><t t-esc="line.ma_hang"/></td>
+                        <td><t t-esc="line.ma_vach"/></td>
                         <td><t t-esc="line.ten_hang"/></td>
                         <td><t t-esc="line.nhom_hang"/></td>
                         <td><t t-esc="line.nhan_hieu"/></td>
@@ -35,8 +35,8 @@
                         <td><t t-esc="format_decimal(line.gia, 0)"/></td>
                         <td><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
                         <td><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.thanh_tien, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.thanh_tien_ntl, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.gia * line.sl_ban - line.giam_gia, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.gia * line.sl_tra, 0)"/></td>
                         <td><t t-esc="line.mo_ta"/></td>
                         <td><t t-esc="line.hang"/></td>
                         <td><t t-esc="line.ctkm"/></td>

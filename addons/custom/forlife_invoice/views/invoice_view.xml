@@ -38,6 +38,7 @@
                 </xpath>
                 <xpath expr="//field[@name='ref']" position="attributes">
                     <attribute name="invisible">1</attribute>
+                    <attribute name="readonly">1</attribute>
                 </xpath>
                 <xpath expr="//label[@for='ref']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -59,8 +60,8 @@
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount"/>
-                    <field name="total_trade_discount"/>
+                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
@@ -86,31 +87,34 @@
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="domain_receiving_warehouse_id" invisible="1"/>
                     <field name="purchase_order_product_id"
-                           domain="[('partner_id', '=', partner_id), ('type_po_cost', '=', type_inv), ('custom_state', '=', 'approved'), ('is_inter_company', '=', False)]"
                            widget="many2many_tags"
                            options="{'no_open': False}"
+                           domain="[('partner_id','=', partner_id), ('type_po_cost','=', type_inv),('custom_state','=', 'approved')]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="receiving_warehouse_id"
                            widget="many2many_tags"
+                           domain="domain_receiving_warehouse_id"
                            options="{'no_open': False}"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="x_asset_fin" widget="radio"/>
                     <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
+                    <field name="is_check_quantity_readonly" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
                            context="{'default_company_id': company_id}"
-                           attrs="{'readonly': ['|',('state', '=', 'posted'), ('is_check', '=', True)]}" force_save="1">
+                           attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1">
                         <tree editable="bottom" class="width-hh">
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
+                            <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_promotions" invisible="1"/>
-                            <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                    domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
@@ -124,43 +128,52 @@
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="quantity_purchased" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.is_check', '=', True), ('parent.is_check_quantity_readonly', '=', True)]}"/>
                             <field name="product_uom_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="exchange_quantity" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_check_exchange_quantity', '=', False)]}"/>
-                            <field name="quantity"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_quantity_readonly', '=', True)]}"/>
+                            <field name="quantity" readonly="1"/>
                             <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_is_passersby', '=', False), ('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" force_save="1" required="1"
-                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
-                            <field name="warehouse"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                            <field name="price_unit" attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('parent.purchase_type', '=', 'product')]}"/>
+                            <field name="warehouse" invisible="1"/>
                             <field name="discount" string="Chiết khấu %"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="discount_percent"
                                    widget="monetary"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_ids"
                                    optional="show"
                                    widget="many2many_tags"
                                    string="Thuế %"
                                    domain="[('active', '=', True)]"
-                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_amount"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
-                            <field name="price_subtotal" string="Thành tiền" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
+                            <field name="price_subtotal" string="Thành tiền" widget="monetary" sum="discounted subtotal" force_save="1" readonly="0"/>
                             <field name="total_vnd_amount"
                                    sum="discounted subtotal"
                                    force_save="1"
-                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', 'True')]}"/>
+                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="account_analytic_id"/>
+                            <field name="total_vnd_exchange" invisible="1"/>
+                            <field name="import_tax" invisible="1"/>
+                            <field name="amount_tax" invisible="1"/>
+                            <field name="special_consumption_tax" invisible="1"/>
+                            <field name="special_consumption_tax_amount" invisible="1"/>
+                            <field name="vat_tax" invisible="1"/>
+                            <field name="vat_tax_amount" invisible="1"/>
+                            <field name="total_tax_amount" invisible="1"/>
+                            <field name="before_tax" invisible="1"/>
+                            <field name="after_tax" invisible="1"/>
+                            <field name="total_product" invisible="1"/>
                         </tree>
                     </field>
                 </xpath>
@@ -182,22 +195,20 @@
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
                     <page string="Thuế nhập khẩu"
                           attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
-                        <field name="exchange_rate_line" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
+                        <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
-                                <!--                                <field name="usd_amount" readonly="1" invisible="1"/>-->
-                                <field name="vnd_amount" force_save="1" readonly="1"/>
-                                <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>
+                                <field name="description" readonly="1"/>
+                                <field name="total_vnd_exchange" readonly="1"/>
+                                <field name="quantity" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1" force_save="1"/>
+                                <field name="amount_tax" readonly="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
+                                <field name="special_consumption_tax_amount" readonly="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1" force_save="1"/>
-                                <!--                                <field name="total_vnd_amount" readonly="1"/>-->
-                                <field name="total_tax_amount" readonly="1" force_save="1"/>
+                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
                     </page>
@@ -213,7 +224,16 @@
                                 <field name="vnd_amount"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
-                        </field>
+                         </field>
+                        <div class="xl-12 d-flex" style="justify-content: end;">
+                            <group class="xl-4">
+                            </group>
+                              <group class="xl-4">
+                            </group>
+                              <group class="xl-4">
+                                <field name="cost_total"/>
+                            </group>
+                        </div>
                     </page>
                     <field name="is_check_vendor_page" force_save="1" invisible="1"/>
                     <page string="NCC vãng lai" name="supplier_info"
@@ -241,18 +261,18 @@
                     <page string="Tổng hợp" invisible="context.get('default_move_type', False) == 'out_invoice'" name="synthetic">
                         <field name="invoice_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
-                                <field name="description"/>
                                 <field name="product_id"/>
-                                <field name="product_uom"/>
-                                <field name="price_unit"/>
-                                <field name="quantity"/>
-                                <field name="price_subtotal" sum="discounted subtotal" force_save="1"/>
-                                <field name="discount"/>
+                                <field name="description"/>
+                                <field name="product_uom_id"/>
+                                <field name="price_unit" string="Đơn giá"/>
+                                <field name="quantity" sum="discounted subtotal"/>
+                                <field name="total_vnd_amount"/>
+                                <field name="discount_percent"/>
                                 <field name="before_tax"/>
-                                <field name="tnk_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
-                                <field name="db_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
+                                <field name="tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="after_tax"/>
-                                <field name="total_product" sum="discounted subtotal" force_save="1"/>
+                                <field name="total_product"/>
                             </tree>
                         </field>
                     </page>

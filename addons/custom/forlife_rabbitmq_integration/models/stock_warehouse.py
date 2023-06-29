@@ -54,8 +54,8 @@ class StockWarehouse(models.Model):
             } if line.manager_id else None,
             'storages': [{
                 'location_id': location.id,
-                'location_code': location.code,
-                'location_name': location.name,
+                'location_code': location.code or '',
+                'location_name': location.name or '',
             } for location in line.view_location_id.child_internal_location_ids],
         } for line in self]
 

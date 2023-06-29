@@ -23,6 +23,7 @@
         'forlife_stock_report',
         'forlife_report',
         'forlife_pos_product_change_refund',
+        'forlife_print_stamps_barcode',
         'point_of_sale',
         'forlife_pos_promotion',
         'forlife_promotion',
@@ -60,5 +61,7 @@
         'views/product_defective_views.xml',
         'views/stock_inventory_views.xml',
         'views/print_stamps_barcode_view.xml',
+        'views/defective_type_view.xml',
+        'views/product_supplierinfo_views.xml',
     ],
 }

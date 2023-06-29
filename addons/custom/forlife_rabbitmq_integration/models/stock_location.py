@@ -17,7 +17,7 @@ class StockLocation(models.Model):
             'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             'storages': [{
                 'location_id': location.id,
-                'location_code': location.code,
-                'location_name': location.name,
+                'location_code': location.code or '',
+                'location_name': location.name or '',
             } for location in line.warehouse_id.view_location_id.child_internal_location_ids],
         } for line in self]
