@@ -48,9 +48,9 @@
                     <field name="to_date"/>
                     <field name="state" widget="badge" readonly="1"/>
                     <button name="btn_confirm_reduce" class="oe_highlight" type="object" string="Confirm reduce" title="Confirm reduce"
-                            aria-label="Confirm reduce" states="waiting_reduce" groups="confirm_transfer_group"/>
+                            aria-label="Confirm reduce" states="waiting_reduce" groups="forlife_business_objective_plan.confirm_transfer_group"/>
                     <button name="btn_cancel" class="oe_highlight" type="object" string="Cancel" title="Cancel"
-                            aria-label="Cancel" states="confirmed_reduce" groups="cancel_confirm_transfer_group"/>
+                            aria-label="Cancel" states="confirmed_reduce" groups="forlife_business_objective_plan.cancel_confirm_transfer_group"/>
                 </tree>
             </field>
         </record>
@@ -81,7 +81,7 @@
                     <field name="to_date"/>
                     <field name="state" widget="badge" readonly="1"/>
                     <button name="btn_receipt_transfer" class="oe_highlight" type="object" string="Confirm receipt" title="Confirm receipt"
-                            aria-label="Confirm receipt" states="confirmed_reduce" groups="receipt_transfer_group"/>
+                            aria-label="Confirm receipt" states="confirmed_reduce" groups="forlife_business_objective_plan.receipt_transfer_group"/>
                 </tree>
             </field>
         </record>
@@ -113,9 +113,9 @@
                     <field name="to_date" attrs="{'readonly': [('state', '=', 'approved')]}"/>
                     <field name="state" widget="badge" readonly="1"/>
                     <button name="btn_approve_transfer" class="oe_highlight" type="object" string="Approve" title="Approve"
-                            aria-label="Approve" states="waiting_increase" groups="approve_transfer_group"/>
+                            aria-label="Approve" states="waiting_increase" groups="forlife_business_objective_plan.approve_transfer_group"/>
                     <button name="btn_cancel" class="oe_highlight" type="object" string="Cancel" title="Cancel"
-                            aria-label="Cancel" states="approved" groups="cancel_approve_transfer_group"/>
+                            aria-label="Cancel" states="approved" groups="forlife_business_objective_plan.cancel_approve_transfer_group"/>
                 </tree>
             </field>
         </record>

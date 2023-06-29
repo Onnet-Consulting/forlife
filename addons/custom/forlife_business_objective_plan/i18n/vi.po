@@ -119,6 +119,16 @@ msgid "Cancel"
 msgstr "Hủy"
 
 #. module: forlife_business_objective_plan
+#: model:res.groups,name:forlife_business_objective_plan.cancel_approve_transfer_group
+msgid "Cancel approve transfer"
+msgstr "Hủy duyệt điều chuyển"
+
+#. module: forlife_business_objective_plan
+#: model:res.groups,name:forlife_business_objective_plan.cancel_confirm_transfer_group
+msgid "Cancel confirm transfer"
+msgstr "Hủy chờ nhận điều chuyển"
+
+#. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
 #: model:ir.model.fields.selection,name:forlife_business_objective_plan.selection__employee_transfer__state__cancelled
@@ -139,7 +149,7 @@ msgstr "Danh sách chờ duyệt điều chuyển"
 #. module: forlife_business_objective_plan
 #: model:res.groups,name:forlife_business_objective_plan.confirm_transfer_group
 msgid "Confirm transfer"
-msgstr ""
+msgstr "Xác nhận điều chuyển đi"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
@@ -147,19 +157,19 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_business_objective_plan.selection__employee_transfer__state__confirmed_reduce
 #, python-format
 msgid "Confirmed reduce"
-msgstr ""
+msgstr "Chờ nhận"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/business_objective_plan.py:0
 #, python-format
 msgid "Create"
-msgstr ""
+msgstr "Tạo mới"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "Create manual"
-msgstr ""
+msgstr "Tạo thủ công"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__create_uid
@@ -168,7 +178,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__create_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Được tạo bởi"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__create_date
@@ -177,25 +187,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__create_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Được tạo vào"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__currency_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__currency_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Loại tiền"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "Date"
-msgstr ""
+msgstr "Ngày"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "Detail"
-msgstr ""
+msgstr "Xem chi tiết"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__display_name
@@ -204,12 +214,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__display_name
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Tên hiển thị"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
 msgid "Download Template"
-msgstr ""
+msgstr "Tải mẫu"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model,name:forlife_business_objective_plan.model_hr_employee
@@ -222,41 +232,41 @@ msgstr "Nhân viên"
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.employee_approve_transfer_action
 #: model:ir.ui.menu,name:forlife_business_objective_plan.employee_approve_transfer_menu
 msgid "Employee Approve Transfer"
-msgstr ""
+msgstr "Duyệt điều chuyển"
 
 #. module: forlife_business_objective_plan
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.employee_confirm_transfer_action
 #: model:ir.ui.menu,name:forlife_business_objective_plan.employee_confirm_transfer_menu
 msgid "Employee Confirm Transfer"
-msgstr ""
+msgstr "Nhận điều chuyển"
 
 #. module: forlife_business_objective_plan
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.create_employee_transfer_action
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.employee_transfer_action
 #: model:ir.ui.menu,name:forlife_business_objective_plan.employee_transfer_menu
 msgid "Employee Transfer"
-msgstr ""
+msgstr "Điều chuyển nhân viên"
 
 #. module: forlife_business_objective_plan
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.employee_waiting_transfer_action
 #: model:ir.ui.menu,name:forlife_business_objective_plan.employee_waiting_transfer_menu
 msgid "Employee Waiting Transfer"
-msgstr ""
+msgstr "Chờ xác nhận chuyển đi"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model,name:forlife_business_objective_plan.model_employee_transfer
 msgid "Employee transfer"
-msgstr ""
+msgstr "Điều chuyển nhân viên"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__error_file_name
 msgid "Error File Name"
-msgstr ""
+msgstr "Tên file lỗi"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__error_file
 msgid "Error file"
-msgstr ""
+msgstr "File lỗi"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
@@ -265,14 +275,14 @@ msgstr ""
 #: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
 #, python-format
 msgid "From Date must be less than or equal To Date"
-msgstr ""
+msgstr "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__from_date
 msgid "From date"
-msgstr ""
+msgstr "Từ ngày"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__id
@@ -286,29 +296,29 @@ msgstr ""
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
 msgid "Import"
-msgstr ""
+msgstr "Nhập"
 
 #. module: forlife_business_objective_plan
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.bo_import_excel_wizard_action
 #: model:ir.model,name:forlife_business_objective_plan.model_bo_import_excel_wizard
 msgid "Import BO"
-msgstr ""
+msgstr "Nhập mục tiêu kinh doanh"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__import_file_name
 msgid "Import File Name"
-msgstr ""
+msgstr "Tên file nhập"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "Import excel"
-msgstr ""
+msgstr "Nhập excel"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__job_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__job_id
 msgid "Job Position"
-msgstr ""
+msgstr "Vị trí công việc"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard____last_update
@@ -340,7 +350,7 @@ msgstr ""
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__name
 msgid "Name"
-msgstr ""
+msgstr "Tên"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form_create_temp
@@ -352,45 +362,45 @@ msgstr ""
 #: model:ir.ui.menu,name:forlife_business_objective_plan.business_objective_plan_menu
 #: model:ir.ui.menu,name:forlife_business_objective_plan.business_objective_plan_root
 msgid "Objective Plan"
-msgstr ""
+msgstr "Mục tiêu kinh doanh"
 
 #. module: forlife_business_objective_plan
 #: model:res.groups,name:forlife_business_objective_plan.receipt_transfer_group
 msgid "Receipt transfer"
-msgstr ""
+msgstr "Nhận điều chuyển"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__revenue_target
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__revenue_target
 msgid "Revenue target"
-msgstr ""
+msgstr "Mục tiêu"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__sale_province_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__sale_province_id
 msgid "Sale Province"
-msgstr ""
+msgstr "Khu vực"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_filter
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_filter
 msgid "Search"
-msgstr ""
+msgstr "Tìm kiếm"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.constraint,message:forlife_business_objective_plan.constraint_business_objective_store_unique_store
 msgid "Some stores already exist"
-msgstr ""
+msgstr "Cửa hàng đã tồn tại trên phiếu, vui lòng kiểm tra lại"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__state
 msgid "State"
-msgstr ""
+msgstr "Trạng thái"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model,name:forlife_business_objective_plan.model_store
@@ -402,48 +412,48 @@ msgstr "Cửa hàng"
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__store_dest_id
 msgid "Store Dest"
-msgstr ""
+msgstr "Cửa hàng nhận"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__store_source_id
 msgid "Store Source"
-msgstr ""
+msgstr "Cửa hàng chuyển"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
 #, python-format
 msgid "Store source must be different from store destination"
-msgstr ""
+msgstr "Cửa hàng chuyển phải khác với cửa hàng nhận"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__target_increase
 msgid "Target increase"
-msgstr ""
+msgstr "Tăng MTCN"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__target_reduce
 msgid "Target reduce"
-msgstr ""
+msgstr "Giảm MTCN"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/business_objective_plan.py:0
 #, python-format
 msgid "Time of BOL '%s' is overlapping."
-msgstr ""
+msgstr "Khoảng thời gian của phiếu mục tiêu kinh doanh '%s' bị trùng lặp"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__to_date
 msgid "To date"
-msgstr ""
+msgstr "Đến ngày"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_employee_view_tree
 msgid "Transfer"
-msgstr ""
+msgstr "Điều chuyển"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__import_file
@@ -456,7 +466,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_business_objective_plan.selection__employee_transfer__state__waiting_increase
 #, python-format
 msgid "Waiting increase"
-msgstr ""
+msgstr "Chờ duyệt tăng"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
@@ -464,7 +474,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_business_objective_plan.selection__employee_transfer__state__waiting_reduce
 #, python-format
 msgid "Waiting reduce"
-msgstr ""
+msgstr "Chờ duyệt giảm"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
@@ -495,7 +505,7 @@ msgstr ""
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "e.g. X 2023"
-msgstr ""
+msgstr "ví dụ: Phiếu tháng 12/2023"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
@@ -514,10 +524,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "from"
-msgstr ""
+msgstr "từ"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "to"
-msgstr ""
+msgstr "đến"
