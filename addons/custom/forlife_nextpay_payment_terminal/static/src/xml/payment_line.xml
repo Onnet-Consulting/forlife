@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="PaymentLineNextPay" t-inherit="point_of_sale.PaymentScreenPaymentLines"
+       t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('selected')]" position="inside">
+            <t t-if="line.payment_method.use_payment_terminal === 'nextpay' and line.payment_status === 'done' and line.get_amount() &lt; 0">
+                <div class="delete-button"
+                     t-on-click="() => this.trigger('delete-payment-line', { cid: line.cid })"
+                     aria-label="Delete" title="Delete">
+                    <i class="fa fa-times-circle"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</template>
