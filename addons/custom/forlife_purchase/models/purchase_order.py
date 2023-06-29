@@ -693,13 +693,13 @@ class PurchaseOrder(models.Model):
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_noidia.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/po_noidia.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_thuenhapkhau.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/po_thuenhapkhau.xlsx?download=true'
             }]
         else:
             return True
@@ -1355,6 +1355,13 @@ class PurchaseOrder(models.Model):
             })
         return vals
 
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            if 'order_line/occasion_code_id' in fields:
+                fields[fields.index('order_line/occasion_code_id')] = 'order_line/occasion_id'
+        return super().load(fields, data)
+
     def _prepare_invoice(self):
         values = super(PurchaseOrder, self)._prepare_invoice()
         values.update({
@@ -1384,7 +1391,7 @@ class PurchaseOrderLine(models.Model):
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
+    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM', compute='compute_product_id')
     exchange_quantity = fields.Float('Exchange Quantity')
     # line_sub_total = fields.Monetary(compute='_get_line_subtotal', string='Line Subtotal', readonly=True, store=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
@@ -1441,7 +1448,16 @@ class PurchaseOrderLine(models.Model):
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
+    occasion_id = fields.Char(related="occasion_code_id.code", string="Ocasion Code", store=1)
 
+    @api.model
+    def create(self, vals):
+        if vals.get('occasion_id') and not vals.get('occasion_code_id'):
+            partner_id = self.env['occasion.code'].search([('code', '=', vals.get('occasion_id'))], limit=1).id
+            vals.update({
+                'occasion_code_id': partner_id
+            })
+        return super(PurchaseOrderLine, self).create(vals)
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
@@ -1482,19 +1498,25 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.order_id.exchange_rate)
 
-    @api.onchange('product_id', 'is_change_vendor')
-    def onchange_product_id(self):
-        if self.product_id and self.currency_id:
-            self.product_uom = self.product_id.uom_id.id
-            date_item = datetime.now().date()
-            supplier_info = self.search_product_sup(
-                [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
-                 ('date_start', '<', date_item),
-                 ('date_end', '>', date_item),
-                 ('currency_id', '=', self.currency_id.id)
-                 ])
-            if supplier_info:
-                self.purchase_uom = supplier_info[-1].product_uom
+    @api.depends('product_id', 'is_change_vendor')
+    def compute_product_id(self):
+        for rec in self:
+            if rec.product_id and rec.currency_id:
+                rec.product_uom = rec.product_id.uom_id.id
+                date_item = datetime.now().date()
+                supplier_info = self.search_product_sup(
+                    [('product_id', '=', rec.product_id.id), ('partner_id', '=', rec.supplier_id.id),
+                     ('date_start', '<', date_item),
+                     ('date_end', '>', date_item),
+                     ('currency_id', '=', rec.currency_id.id)
+                     ])
+                if supplier_info:
+                    rec.purchase_uom = supplier_info[-1].product_uom.id
+                else:
+                    rec.purchase_uom = False
+            else:
+                rec.product_uom = False
+                rec.purchase_uom = False
 
     @api.depends('supplier_id', 'product_id', )
     def compute_domain_uom(self):
