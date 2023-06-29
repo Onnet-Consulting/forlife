@@ -139,12 +139,12 @@ msgstr "Đã hủy"
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_increase_view_tree
 msgid "Confirm receipt"
-msgstr "Danh sách chờ nhận điều chuyển"
+msgstr "Nhận điều chuyển"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_reduce_view_tree
 msgid "Confirm reduce"
-msgstr "Danh sách chờ duyệt điều chuyển"
+msgstr "Duyệt giảm"
 
 #. module: forlife_business_objective_plan
 #: model:res.groups,name:forlife_business_objective_plan.confirm_transfer_group
