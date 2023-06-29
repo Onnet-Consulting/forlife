@@ -122,11 +122,11 @@
                         <button string="TẠO HÓA ĐƠN"
                                 class="btn btn-primary ms-md-2"
                                 name="%(forlife_purchase.action_select_type_invoice_wizard)d"
-                                type="action"/>
-<!--                                attrs="{'invisible':['|',('is_inter_company', '=', True),('is_done_picking', '=', False),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>-->
+                                type="action"
+                                attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
 
 
-<!--                        <button name="action_create_invoice" string="Create Invoice"-->
+                        <!--                        <button name="action_create_invoice" string="Create Invoice"-->
 <!--                                class="btn btn-primary ms-md-2" type="object"-->
 <!--                                attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>-->
                         <button string="Gửi duyệt" name="action_confirm"
