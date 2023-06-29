@@ -15,4 +15,4 @@ class ProductCategoryNhanh(models.Model):
     nhanh_parent_id = fields.Integer('Parent Category')
 
     # tuuh
-    x_sync_nhanh = fields.Boolean('Đồng bộ lên nhanh')
+    # x_sync_nhanh = fields.Boolean('Đồng bộ lên nhanh')
