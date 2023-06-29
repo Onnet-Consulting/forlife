@@ -27,6 +27,10 @@ class BusinessObjectiveEmployee(models.Model):
 
     def btn_employee_transfer(self):
         self.ensure_one()
+        context = dict(self._context, )
+        action = self.env.ref('forlife_business_objective_plan.employee_transfer_action_confirm').read()[0]
+        action['context'] = context
+        return action
 
     @api.onchange('store_id')
     def onchange_store(self):

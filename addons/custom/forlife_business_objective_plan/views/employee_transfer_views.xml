@@ -7,6 +7,7 @@
             <field name="model">employee.transfer</field>
             <field name="arch" type="xml">
                 <tree string="employee_transfer_tree" editable="top" create="0">
+                    <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
@@ -14,7 +15,7 @@
                     <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="target_reduce" attrs="{'readonly': [('state', 'in', ('waiting_increase','done'))]}"/>
-                    <field name="target_increase" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                    <field name="target_increase" attrs="{'readonly': [('state', '=', 'done')], 'invisible': [('state', '=', 'waiting_reduce')]}"/>
                     <field name="from_date" attrs="{'readonly': [('state', '=', 'done')]}"/>
                     <field name="to_date" attrs="{'readonly': [('state', '=', 'done')]}"/>
                     <field name="state" widget="badge" decoration-muted="state == 'cancelled'" decoration-success="state == 'done'" readonly="1"/>
@@ -23,11 +24,19 @@
             </field>
         </record>
 
-        <record id="employee_transfer_action" model="ir.actions.act_window">
-            <field name="name">Employee Transfer</field>
+        <record id="employee_waiting_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Waiting Transfer</field>
             <field name="res_model">employee.transfer</field>
             <field name="view_mode">tree</field>
             <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('state', 'in', ('waiting_reduce','confirmed_reduce','cancelled'))]</field>
+        </record>
+        <record id="employee_confirm_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Confirm Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('state', 'in', ('confirmed_reduce','waiting_increase','done'))]</field>
         </record>
 
         <record id="employee_transfer_view_form" model="ir.ui.view">
@@ -38,8 +47,17 @@
                 <form string="employee_transfer_form">
                     <sheet>
                         <group>
+                            <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                            <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                            <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
                             <field name="target_reduce"/>
+                            <field name="from_date"/>
+                            <field name="to_date"/>
                         </group>
+                        <field name="bo_plan_id" invisible="1"/>
+                        <field name="bo_employee_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
                     </sheet>
                     <footer>
                         <button string="OK" type="object" name="btn_confirm_employee_transfer" class="btn-primary"/>

@@ -6,7 +6,8 @@
             <menuitem id="business_objective_plan_menu" action="business_objective_plan_action"/>
             <menuitem id="business_objective_plan_menu" action="business_objective_plan_action"/>
             <menuitem id="business_objective_employee_menu" action="business_objective_employee_action"/>
-            <menuitem id="employee_transfer_menu" action="employee_transfer_action"/>
+            <menuitem id="employee_waiting_transfer_menu" action="employee_waiting_transfer_action"/>
+            <menuitem id="employee_confirm_transfer_menu" action="employee_confirm_transfer_action"/>
         </menuitem>
 
     </data>

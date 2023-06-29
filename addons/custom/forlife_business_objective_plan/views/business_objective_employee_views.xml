@@ -7,6 +7,7 @@
             <field name="model">business.objective.employee</field>
             <field name="arch" type="xml">
                 <tree string="business_objective_employee_tree" editable="top" create="0">
+                    <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_open': True}" readonly="1"/>
                     <field name="from_date"/>
                     <field name="to_date"/>

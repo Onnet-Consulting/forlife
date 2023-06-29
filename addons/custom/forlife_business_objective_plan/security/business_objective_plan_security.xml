@@ -13,5 +13,20 @@
             <field name="implied_ids" eval="[(4, ref('forlife_business_objective_plan.bo_plan_user'))]"/>
         </record>
 
+        <record id="confirm_transfer_group" model="res.groups">
+            <field name="name">Confirm transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="receipt_transfer_group" model="res.groups">
+            <field name="name">Receipt transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="approve_transfer_group" model="res.groups">
+            <field name="name">Approve transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
     </data>
 </odoo>

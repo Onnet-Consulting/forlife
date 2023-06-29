@@ -24,6 +24,16 @@ class BusinessObjectivePlan(models.Model):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
+    @api.constrains("from_date", "to_date", "brand_id")
+    def validate_time(self):
+        for record in self:
+            domain = ['&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id),
+                      '|', '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
+                      '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date),
+                      '&', ('from_date', '>', self.from_date), ('to_date', '<', self.to_date)]
+            if self.search_count(domain) > 0:
+                raise ValidationError(_("Time of BOL '%s' is overlapping.") % record.name)
+
     def btn_import_excel(self):
         self.ensure_one()
         action = self.env.ref('forlife_business_objective_plan.bo_import_excel_wizard_action').read()[0]
