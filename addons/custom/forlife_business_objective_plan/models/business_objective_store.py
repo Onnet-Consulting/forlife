@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
 
 
 class BusinessObjectiveStore(models.Model):
@@ -14,7 +13,7 @@ class BusinessObjectiveStore(models.Model):
     bo_plan_temp_id = fields.Many2one('business.objective.plan', 'BOP temp')
     sale_province_id = fields.Many2one('res.sale.province', 'Sale Province', ondelete='restrict')
     store_id = fields.Many2one('store', 'Store', ondelete='restrict', required=True)
-    revenue_target = fields.Monetary('Revenue target')
+    revenue_target = fields.Monetary('Revenue target', default=0)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
 
     _sql_constraints = [

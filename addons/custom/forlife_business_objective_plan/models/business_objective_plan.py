@@ -41,7 +41,7 @@ class BusinessObjectivePlan(models.Model):
 
     def btn_create_manual(self):
         view = self.env.ref('forlife_business_objective_plan.business_objective_plan_view_form_create_temp')
-        context = dict(self.env.context,
+        context = dict(self._context,
                        default_bo_plan_temp_id=self.id,
                        default_bo_plan_id=self.id,
                        from_date=self.from_date.strftime('%Y-%m-%d'),

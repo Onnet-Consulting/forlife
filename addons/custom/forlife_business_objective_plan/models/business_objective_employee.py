@@ -16,7 +16,7 @@ class BusinessObjectiveEmployee(models.Model):
     sale_province_id = fields.Many2one('res.sale.province', 'Sale Province', ondelete='restrict')
     employee_id = fields.Many2one('hr.employee', 'Employee', ondelete='restrict', required=True)
     job_id = fields.Many2one('hr.job', 'Job Position', ondelete='restrict')
-    revenue_target = fields.Monetary('Revenue target')
+    revenue_target = fields.Monetary('Revenue target', default=0)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
 
     @api.constrains('from_date', 'to_date')
@@ -27,8 +27,13 @@ class BusinessObjectiveEmployee(models.Model):
 
     def btn_employee_transfer(self):
         self.ensure_one()
-        context = dict(self._context, )
-        action = self.env.ref('forlife_business_objective_plan.employee_transfer_action_confirm').read()[0]
+        context = dict(self._context,
+                       default_employee_id=self.employee_id.id,
+                       default_bo_plan_id=self.bo_plan_id.id,
+                       default_store_source_id=self.store_id.id,
+                       default_bo_employee_id=self.id,
+                       default_job_id=self.job_id.id)
+        action = self.env.ref('forlife_business_objective_plan.create_employee_transfer_action').read()[0]
         action['context'] = context
         return action
 

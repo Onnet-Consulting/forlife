@@ -3,11 +3,12 @@
     <data>
 
         <menuitem id="business_objective_plan_root" name="Objective Plan" parent="point_of_sale.menu_point_root" sequence="99">
-            <menuitem id="business_objective_plan_menu" action="business_objective_plan_action"/>
-            <menuitem id="business_objective_plan_menu" action="business_objective_plan_action"/>
-            <menuitem id="business_objective_employee_menu" action="business_objective_employee_action"/>
-            <menuitem id="employee_waiting_transfer_menu" action="employee_waiting_transfer_action"/>
-            <menuitem id="employee_confirm_transfer_menu" action="employee_confirm_transfer_action"/>
+            <menuitem id="business_objective_plan_menu" action="business_objective_plan_action" sequence="10"/>
+            <menuitem id="business_objective_employee_menu" action="business_objective_employee_action" sequence="20"/>
+            <menuitem id="employee_transfer_menu" action="employee_transfer_action" sequence="30"/>
+            <menuitem id="employee_waiting_transfer_menu" action="employee_waiting_transfer_action" sequence="40"/>
+            <menuitem id="employee_confirm_transfer_menu" action="employee_confirm_transfer_action" sequence="50"/>
+            <menuitem id="employee_approve_transfer_menu" action="employee_approve_transfer_action" sequence="60"/>
         </menuitem>
 
     </data>
