@@ -2362,9 +2362,7 @@ class StockPicking(models.Model):
                     })
                     entry_npls.action_post()
                     if record.state == 'done':
-                        pass
-                        # Comment do lỗi k có stock.move
-                        # master_xk = self.create_xk_picking(po, record, list_line_xk, entry_npls)
+                        master_xk = self.create_xk_picking(po, record, list_line_xk, entry_npls)
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, account_move=None):
