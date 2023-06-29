@@ -36,7 +36,7 @@ class ProductProduct(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        if not res.brand_id.id or not res.categ_id.x_sync_nhanh:
+        if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
             return res
         self.synchronized_create_product(res)
         return res
@@ -96,7 +96,7 @@ class ProductProduct(models.Model):
             return res
         data = []
         for item in self:
-            if not item.nhanh_id or not item.categ_id.x_sync_nhanh:
+            if not item.nhanh_id or not item.categ_id.category_type_id.x_sync_nhanh:
                 continue
             data.append({
                 "id": item._origin.id,
@@ -117,7 +117,7 @@ class ProductProduct(models.Model):
     def unlink(self):
         data = []
         for item in self:
-            if not item.nhanh_id or not item.categ_id.x_sync_nhanh:
+            if not item.nhanh_id or not item.categ_id.category_type_id.x_sync_nhanh:
                 continue
             data.append({
                 "id": item._origin.id,
