@@ -660,12 +660,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.buy_voucher_get_code_rewards = [];
         this.surprising_reward_line_id = null;
         this._get_reward_lines().forEach(reward_line => {
-//            this.orderlines.remove(reward_line);
             reward_line.is_reward_line = false;
             reward_line.reset_unit_price()
         });
-//        this.remove_orderline(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
-        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
+        let orderlines = this.orderlines.filter(line => !line.is_product_defective)
+                                        .filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
         this.pos.promotionPrograms.forEach(p => {
@@ -1349,6 +1348,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let accumValidCombs = [];
         let max = 0.0;
         let result = null;
+        let RUNNING_TIMEOUT = 15000;
+        let start_time = new Date();
         const permute = (arr, m = []) => {
             if (arr.length === 0) {
                 let hasChecked = accumValidCombs.some((comb, i, a) => {
@@ -1371,6 +1372,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             else {
                 for (let i = 0; i < arr.length; i++) {
+                    if (new Date() - start_time > RUNNING_TIMEOUT) {
+                        break;
+                    };
                     let curr = arr.slice();
                     let next = curr.splice(i, 1);
                         permute(curr.slice(), m.concat(next));
@@ -1381,11 +1385,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return result;
     }
 
-    computeBestCombineOfProgram(){
-        let programs = this.getActivatedPrograms().map(p => p.str_id);
-        if (programs.length > 6) {
-            return [];
-        };
+    computeBestCombineOfProgram(programsList){
+        let programs = programsList.map(p => p.str_id);
         let programs_combines = this.permutator(programs);
         return programs_combines;
     }
@@ -1653,11 +1654,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 if (program.order_amount_min > 0 && program.min_quantity > 0 && is_required_check_products) {
                     let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
                     let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
-                    floor = Math.min(amountOrderFloor, qtyFloor);
+//                  floor = Math.min(amountOrderFloor, qtyFloor);
+                    floor = amountOrderFloor;
 
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
-                    required_min_quantity       = floor * program.min_quantity;
+//                  required_min_quantity       = floor * program.min_quantity;
+                    required_min_quantity       = program.min_quantity;
                 } else if (program.order_amount_min > 0) {
                     floor = Math.floor(amountCheck/program.order_amount_min);
                     max_reward_quantity         = floor * program.reward_quantity;
@@ -1748,7 +1751,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     program: program,
                     max_reward_quantity: program.reward_quantity * floor,
                     required_order_amount_min: program.order_amount_min * floor,
-                    required_min_quantity: program.min_quantity * floor,
+                    required_min_quantity: program.min_quantity,
                     amountCheck,
                     voucher_program_id,
                     to_reward_lines,
