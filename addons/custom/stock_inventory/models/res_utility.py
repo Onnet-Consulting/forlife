@@ -70,6 +70,7 @@ class ResUtility(models.AbstractModel):
                 'Err': err,
                 'Add': add,
                 'Sub': sub,
+                'total': check + loss + err + add + sub,
             })
         return res
 
