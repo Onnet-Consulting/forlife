@@ -148,7 +148,7 @@ class Inventory(models.Model):
 
     def get_ir_sequence_inventory(self, location_id=None):
         code = 'PKK_LOCATION_'+self.env['stock.location'].browse(location_id).code
-        ir_sequence = self.env['ir.sequence'].search([('code', '=', code)])
+        ir_sequence = self.env['ir.sequence'].search([('code', '=', code)], limit=1)
         if ir_sequence:
             return ir_sequence
         vals = {
@@ -170,6 +170,7 @@ class Inventory(models.Model):
             val['name'] = 'PKK'+str(val.get('location_id'))+ir.next_by_id()
         res = super(Inventory, self).create(vals_list)
         return res
+
     def post_inventory(self):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
