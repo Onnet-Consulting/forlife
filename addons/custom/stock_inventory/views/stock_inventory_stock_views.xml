@@ -229,10 +229,10 @@
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
                                 <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
-                                <field name="x_first_qty" string="SL xác nhận lần 1"
+                                <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1"
                                        attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
-                                <field name="product_qty" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
-                                <field name="difference_qty" optional="show"/>
+                                <field name="product_qty" force_save="1" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
+                                <field name="difference_qty" force_save="1" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
                                 <field name="state" invisible="1"/>
                             </tree>
