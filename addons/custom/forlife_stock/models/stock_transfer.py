@@ -627,6 +627,8 @@ class HREmployee(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
+        if name and self._context.get('show_code_name'):
+            return super().name_search(name, args, operator, limit)
         args = args or []
         recs = self.search([('name', operator, name)] + args, limit=limit)
         return recs.name_get()
