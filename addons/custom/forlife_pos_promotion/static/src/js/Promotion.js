@@ -673,6 +673,51 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this._updateActivatedPromotionPrograms();
     }
 
+    _resetLinePromotionPrograms(selected_line) {
+        let self = this;
+        function get_cids_applied_programs(set_programs) {
+            let cids = new Set();
+            self.get_orderlines().forEach(line => {
+                line.promotion_usage_ids.forEach(usage => {
+                    if (set_programs.has(usage.program_id)) {
+                        cids.add(line.cid);
+                    };
+                });
+            });
+            return cids;
+        };
+        let used_programs = this._get_program_ids_in_usages(selected_line);
+        // Chỉ reset CTKM trên dòng này nếu là CT làm giá, và không đồng thời áp dụng CT khác
+        if (used_programs.size == 1) {
+            let program = this.pos.get_program_by_id(Array.from(used_programs)[0]);
+            if (program && program.promotion_type == 'pricelist' && program.with_code == false) {
+                selected_line.reset_unit_price();
+                selected_line.promotion_usage_ids = [];
+                return true;
+            };
+        };
+        let to_reset_cids = get_cids_applied_programs(used_programs);
+        // Kiểm tra và tìm tất cả order_line bị ảnh hưởng (các line chứa CTKM giống CTKM của dòng sắp reset)
+        while (true) {
+            let new_used_programs = [];
+            for (let cid of to_reset_cids) {
+                new_used_programs.push(...this._get_program_ids_in_usages(self.orderlines.find(l => l.cid == cid)));
+            };
+            new_used_programs = new Set(new_used_programs);
+            let new_to_reset_cids = get_cids_applied_programs(new_used_programs);
+            if (new_to_reset_cids.size > to_reset_cids.size) {
+                to_reset_cids = new_to_reset_cids;
+            } else break;
+        };
+        // Reset tất cả các orderline đã tìm được
+        let to_reset_orderline = self.orderlines.filter(l => to_reset_cids.has(l.cid));
+        for (let orderLine of to_reset_orderline) {
+            orderLine.reset_unit_price();
+            orderLine.promotion_usage_ids = [];
+        };
+        return true;
+    }
+
     _get_reward_lines_of_cart_pro() {
         const orderLines = super.get_orderlines(...arguments);
         if (orderLines) {
