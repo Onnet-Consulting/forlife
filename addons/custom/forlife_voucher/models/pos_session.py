@@ -42,7 +42,7 @@ class PosSession(models.Model):
                     (0, 0, {
                         'name': vouchers[0].pos_order_id.name,
                         'display_type': 'product',
-                        'account_id': payment_mothod.account_other_income.id,
+                        'account_id': payment_mothod.journal_id.default_account_id.id,
                         'debit': 0.0,
                         'credit': sum(vouchers.mapped('price_used')),
                     }),
