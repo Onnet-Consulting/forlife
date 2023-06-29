@@ -360,7 +360,6 @@ class PurchaseOrder(models.Model):
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
                 self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
 
-
     def action_confirm(self):
         for record in self:
             if not record.partner_id:
@@ -388,6 +387,28 @@ class PurchaseOrder(models.Model):
                 if orl.price_subtotal <= 0:
                     raise UserError(_('Đơn hàng chứa sản phẩm %s có tổng tiền bằng 0!') % orl.product_id.name)
             record.write({'custom_state': 'confirm'})
+
+    def action_approved_vendor(self, data, order_line, invoice_line_ids):
+        so = self.env['sale.order'].sudo().create({
+            'company_id': self.source_location_id.company_id.id,
+            'origin': data.get('name'),
+            'partner_id': self.env.user.partner_id.id,
+            'payment_term_id': data.get('payment_term_id'),
+            'state': 'sent',
+            'date_order': data.get('date_order'),
+            'warehouse_id': self.source_location_id.warehouse_id.id,
+            'order_line': [(0, 0, {
+                'product_id': item.get('product_id'),
+                'name': item.get('name'),
+                'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
+                'product_uom': item.get('product_uom'),
+                'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'is_expense': True,
+                'qty_delivered_method': 'analytic',
+                'discount': item.get('discount_percent')
+            }) for item in order_line]
+        })
+        so.with_context(from_inter_company=True, company_po=self.source_location_id.company_id.id).action_confirm()
+        return so
 
     def action_approved(self):
         self.check_purchase_tool_and_equipment()
@@ -526,7 +547,10 @@ class PurchaseOrder(models.Model):
                         'work_order': line.production_id.id
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
+                '''
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
+                '''
+                self.action_approved_vendor(data, order_line, invoice_line_ids)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
 
