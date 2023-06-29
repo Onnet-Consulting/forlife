@@ -6,15 +6,19 @@
             <field name="name">employee_transfer_view_tree</field>
             <field name="model">employee.transfer</field>
             <field name="arch" type="xml">
-                <tree string="employee_transfer_tree" editable="top" create="1">
-                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="from_date"/>
-                    <field name="to_date"/>
-                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                <tree string="employee_transfer_tree" editable="top" create="0">
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'readonly': [('state', 'in', ('waiting_increase','done'))]}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
-                    <button name="btn_confirm_employee_transfer" class="oe_highlight" type="object" string="Confirm" title="Confirm" aria-label="Confirm"/>
+                    <field name="target_reduce" attrs="{'readonly': [('state', 'in', ('waiting_increase','done'))]}"/>
+                    <field name="target_increase" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                    <field name="from_date" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                    <field name="to_date" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                    <field name="state" widget="badge" decoration-muted="state == 'cancelled'" decoration-success="state == 'done'" readonly="1"/>
+                    <button name="btn_confirm_employee_transfer" class="oe_highlight" type="object" string="Confirm" title="Confirm" aria-label="Confirm" icon="fa-reply"/>
                 </tree>
             </field>
         </record>
@@ -29,11 +33,12 @@
         <record id="employee_transfer_view_form" model="ir.ui.view">
             <field name="name">employee_transfer_view_form</field>
             <field name="model">employee.transfer</field>
+            <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <form string="employee_transfer_form">
                     <sheet>
                         <group>
-                            <field name="revenue_target"/>
+                            <field name="target_reduce"/>
                         </group>
                     </sheet>
                     <footer>

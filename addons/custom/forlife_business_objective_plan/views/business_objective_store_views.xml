@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="business_objective_store_view_tree" model="ir.ui.view">
+            <field name="name">business_objective_store_view_tree</field>
+            <field name="model">business.objective.store</field>
+            <field name="arch" type="xml">
+                <tree string="business_objective_store_tree" editable="top" create="0">
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" required="1"/>
+                    <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="revenue_target" options="{'no_create': True, 'no_open': True}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="bo_store_view" model="ir.actions.act_window">
+            <field name="name">BO store</field>
+            <field name="res_model">business.objective.store</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('bo_plan_id', '=', active_id)]</field>
+        </record>
+
+    </data>
+</odoo>
