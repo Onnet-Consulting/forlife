@@ -94,7 +94,7 @@ class PurchaseOrder(models.Model):
     count_delivery_inter_company = fields.Integer(compute='compute_count_delivery_inter_company')
     count_delivery_import_inter_company = fields.Integer(compute='compute_count_delivery_import_inter_company')
     cost_total = fields.Float(string='Tổng chi phí', compute='compute_cost_total', store=1)
-    is_done_picking = fields.Boolean(default=False, compute='compute_is_done_picking', store=1)
+    is_done_picking = fields.Boolean(default=False, compute='compute_is_done_picking')
     date_order = fields.Datetime('Order Deadline', required=True, states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
                                  help="Depicts the date within which the Quotation should be confirmed and converted into a purchase order.")
@@ -155,31 +155,35 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.receive_date = self.receive_date
 
-    @api.onchange('partner_id', 'currency_id')
+    @api.onchange('partner_id')
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
-        if self.partner_id and self.order_line and self.currency_id:
-            for item in self.order_line:
-                if item.product_id:
-                    item.product_uom = item.product_id.uom_id.id
-                    date_item = datetime.now().date()
-                    supplier_info = self.env['product.supplierinfo'].search(
-                        [('product_id', '=', item.product_id.id),
-                         ('partner_id', '=', self.partner_id.id),
-                         ('date_start', '<', date_item),
-                         ('date_end', '>', date_item),
-                         ('currency_id', '=', self.currency_id.id)
-                         ])
-                    if supplier_info:
-                        item.purchase_uom = supplier_info[-1].product_uom
-                        data = self.env['product.supplierinfo'].search([
-                            ('product_tmpl_id', '=', item.product_id.product_tmpl_id.id),
-                            ('partner_id', '=', self.partner_id.id),
-                            ('product_uom', '=', item.purchase_uom.id),
-                            ('amount_conversion', '=', item.exchange_quantity)
-                        ], limit=1)
-                        item.vendor_price = data.price if data else False
-                        item.price_unit = item.vendor_price / item.exchange_quantity if item.exchange_quantity else False
+        if self.purchase_type == 'product':
+            if self.partner_id and self.order_line and self.currency_id:
+                for item in self.order_line:
+                    if item.product_id:
+                        item.product_uom = item.product_id.uom_id.id
+                        date_item = datetime.now().date()
+                        supplier_info = self.env['product.supplierinfo'].search(
+                            [('product_id', '=', item.product_id.id),
+                             ('partner_id', '=', self.partner_id.id),
+                             ('date_start', '<', date_item),
+                             ('date_end', '>', date_item),
+                             ('currency_id', '=', self.currency_id.id)
+                             ])
+                        if supplier_info:
+                            item.purchase_uom = supplier_info[-1].product_uom
+                            data = self.env['product.supplierinfo'].search([
+                                ('product_tmpl_id', '=', item.product_id.product_tmpl_id.id),
+                                ('partner_id', '=', self.partner_id.id),
+                                ('product_uom', '=', item.purchase_uom.id),
+                                ('amount_conversion', '=', item.exchange_quantity)
+                            ], limit=1)
+                            item.vendor_price = data.price if data else False
+                            item.price_unit = item.vendor_price / item.exchange_quantity if item.exchange_quantity else False
+        else:
+            pass
+
         # Do something with res
         return res
 
@@ -1301,9 +1305,6 @@ class PurchaseOrder(models.Model):
                         'type_inv': self.type_po_cost,
                         'select_type_inv': self.select_type_inv,
                         'move_type': 'in_invoice',
-                        'purchase_order_product_id': [(6, 0, [self.id])],
-                        # 'receiving_warehouse_id': [(6, 0,
-                        #             list_picking_incoming_normal or list_picking_incoming_expense or list_picking_incoming_labor)],
                         'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1953,34 +1954,36 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    @api.depends('exchange_quantity', 'product_qty', 'product_id', 'product_uom',
+    @api.depends('exchange_quantity', 'product_qty', 'product_id', 'product_uom', 'order_id.purchase_type',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
-                rec.is_red_color = False
-                continue
-            data = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                ('partner_id', '=', rec.order_id.partner_id.id),
-                ('currency_id', '=', rec.order_id.currency_id.id),
-                ('amount_conversion', '=', rec.exchange_quantity),
-                ('product_uom', '=', rec.purchase_uom.id),
-                ('date_start', '<=', today),
-                ('date_end', '>=', today)
-            ])
-            rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-            if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                closest_quantity = None  # Khởi tạo giá trị biến tạm
-                for line in data:
-                    if rec.product_qty and rec.product_qty >= line.min_qty:
-                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                        if closest_quantity is None or line.min_qty > closest_quantity:
-                            closest_quantity = line.min_qty
-                            rec.vendor_price = line.price
-                            rec.exchange_quantity = line.amount_conversion
-
+            if rec.order_id.purchase_type == 'product':
+                if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+                    rec.is_red_color = False
+                    continue
+                data = self.env['product.supplierinfo'].search([
+                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                    ('partner_id', '=', rec.order_id.partner_id.id),
+                    ('currency_id', '=', rec.order_id.currency_id.id),
+                    ('amount_conversion', '=', rec.exchange_quantity),
+                    ('product_uom', '=', rec.purchase_uom.id),
+                    ('date_start', '<=', today),
+                    ('date_end', '>=', today)
+                ])
+                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+                if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                    closest_quantity = None  # Khởi tạo giá trị biến tạm
+                    for line in data:
+                        if rec.product_qty and rec.product_qty >= line.min_qty:
+                            ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                            if closest_quantity is None or line.min_qty > closest_quantity:
+                                closest_quantity = line.min_qty
+                                rec.vendor_price = line.price
+                                rec.exchange_quantity = line.amount_conversion
+            else:
+                pass
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
