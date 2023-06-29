@@ -203,11 +203,11 @@
                                 <field name="total_vnd_exchange" readonly="1"/>
                                 <field name="quantity" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_tax"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount"/>
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
