@@ -13,7 +13,7 @@ class PromotionCode(models.Model):
     _rec_name = 'name'
 
     def _get_code(self):
-        letters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789'
+        letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789'
         code = ''.join(random.choices(letters, k=8))
         if self.env['promotion.code'].search([('name', 'like', code)]):
             self._get_code()
