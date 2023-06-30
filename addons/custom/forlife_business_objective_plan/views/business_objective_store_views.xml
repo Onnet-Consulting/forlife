@@ -12,6 +12,7 @@
                     <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="revenue_target" options="{'no_create': True, 'no_open': True}"/>
                     <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
                 </tree>
             </field>
         </record>

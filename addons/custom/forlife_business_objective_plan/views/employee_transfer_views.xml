@@ -14,6 +14,7 @@
                       decoration-success="state == 'approved'"
                       decoration-it="state == 'cancelled'">
                     <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
@@ -50,6 +51,7 @@
                       decoration-warning="state == 'waiting_reduce'"
                       decoration-danger="state == 'confirmed_reduce'">
                     <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
@@ -87,6 +89,7 @@
                       decoration-danger="state == 'confirmed_reduce'"
                       decoration-info="state == 'waiting_increase'">
                     <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
@@ -124,6 +127,7 @@
                       decoration-info="state == 'waiting_increase'"
                       decoration-success="state == 'approved'">
                     <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
@@ -179,6 +183,7 @@
                         <field name="bo_plan_id" invisible="1"/>
                         <field name="bo_employee_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
+                        <field name="brand_id" invisible="1"/>
                     </sheet>
                     <footer>
                         <button string="Save" special="save" class="btn-primary"/>

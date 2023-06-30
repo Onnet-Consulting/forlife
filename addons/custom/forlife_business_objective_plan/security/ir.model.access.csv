@@ -8,6 +8,6 @@ access_bo_store_user,bo_store_user,model_business_objective_store,forlife_busine
 
 access_bo_employee,bo_employee,model_business_objective_employee,forlife_business_objective_plan.bo_plan_user,1,1,1,1
 
-access_employee_transfer,employee_transfer,model_employee_transfer,forlife_business_objective_plan.bo_plan_user,1,1,1,1
+access_employee_transfer,employee_transfer,model_employee_transfer,forlife_business_objective_plan.bo_plan_user,1,1,1,0
 
 access_bo_import_excel_wizard,bo.import.excel.wizard,model_bo_import_excel_wizard,forlife_business_objective_plan.bo_plan_user,1,1,1,1

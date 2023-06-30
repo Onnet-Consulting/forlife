@@ -9,8 +9,9 @@ class EmployeeTransfer(models.Model):
     _description = 'Employee transfer'
 
     bo_plan_id = fields.Many2one('business.objective.plan', 'Business objective plan', ondelete='restrict')
-    store_source_id = fields.Many2one('store', 'Store Source', ondelete='restrict', required=True)
-    store_dest_id = fields.Many2one('store', 'Store Dest', ondelete='restrict', required=True)
+    brand_id = fields.Many2one("res.brand", string="Brand", related='bo_plan_id.brand_id', store=True)
+    store_source_id = fields.Many2one('store', 'Store Source', ondelete='restrict', required=True, domain="[('brand_id', '=', brand_id)]")
+    store_dest_id = fields.Many2one('store', 'Store Dest', ondelete='restrict', required=True, domain="[('brand_id', '=', brand_id)]")
     employee_id = fields.Many2one('hr.employee', 'Employee', ondelete='restrict', required=True)
     job_id = fields.Many2one('hr.job', 'Job Position', ondelete='restrict')
     target_reduce = fields.Monetary('Target reduce', default=0)
@@ -49,10 +50,12 @@ class EmployeeTransfer(models.Model):
 
     def btn_receipt_transfer(self):
         self.ensure_one()
+        self.check_target_increase()
         self.write({'state': 'waiting_increase'})
 
     def btn_approve_transfer(self):
         self.ensure_one()
+        self.check_target_increase()
         BOE = self.env['business.objective.employee']
         bo_employee = BOE.search([('bo_plan_id', '=', self.bo_plan_id.id),
                                   ('store_id', '=', self.store_dest_id.id),
@@ -84,3 +87,8 @@ class EmployeeTransfer(models.Model):
         self.ensure_one()
         self.bo_employee_dest_id.write({'revenue_target': self.bo_employee_dest_id.revenue_target - self.target_increase})
         self.write({'state': 'confirmed_reduce'})
+
+    def check_target_increase(self):
+        self.ensure_one()
+        if self.target_increase <= 0:
+            raise ValidationError(_('Target increase must be greater than 0'))

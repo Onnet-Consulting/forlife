@@ -17,6 +17,15 @@ class BusinessObjectivePlan(models.Model):
     bo_employee_ids = fields.One2many('business.objective.employee', 'bo_plan_id', 'Business objective employee')
     bo_store_temp_ids = fields.One2many('business.objective.store', 'bo_plan_temp_id', 'BOS temp')
     bo_employee_temp_ids = fields.One2many('business.objective.employee', 'bo_plan_temp_id', 'BOE temp')
+    is_lock_brand = fields.Boolean(compute='_compute_lock_brand', store=True)
+
+    @api.depends('bo_store_ids', 'bo_employee_ids')
+    def _compute_lock_brand(self):
+        for line in self:
+            if line.bo_store_ids or line.bo_employee_ids:
+                line.is_lock_brand = True
+            else:
+                line.is_lock_brand = False
 
     @api.constrains("from_date", "to_date", "brand_id")
     def validate_time(self):
@@ -33,11 +42,12 @@ class BusinessObjectivePlan(models.Model):
     def btn_import_excel(self):
         self.ensure_one()
         action = self.env.ref('forlife_business_objective_plan.bo_import_excel_wizard_action').read()[0]
+        action['context'] = dict(self._context, default_bo_plan_id=self.id)
         return action
 
     def btn_create_manual(self):
         view = self.env.ref('forlife_business_objective_plan.business_objective_plan_view_form_create_temp')
-        context = dict(self._context, default_bo_plan_temp_id=self.id, default_bo_plan_id=self.id)
+        context = dict(self._context, default_bo_plan_temp_id=self.id, default_bo_plan_id=self.id, brand_id=self.brand_id.id)
         return {
             'name': _('Create'),
             'type': 'ir.actions.act_window',

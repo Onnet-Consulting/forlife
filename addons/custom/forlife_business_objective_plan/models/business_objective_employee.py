@@ -9,10 +9,11 @@ class BusinessObjectiveEmployee(models.Model):
     _description = 'Business objective employee'
 
     bo_plan_id = fields.Many2one('business.objective.plan', 'Business objective plan', ondelete='restrict', required=True)
+    brand_id = fields.Many2one("res.brand", string="Brand", related='bo_plan_id.brand_id', store=True)
     bo_plan_temp_id = fields.Many2one('business.objective.plan', 'BOP temp')
     from_date = fields.Date(string='From date', related='bo_plan_id.from_date', store=True)
     to_date = fields.Date(string='To date', related='bo_plan_id.to_date', store=True)
-    store_id = fields.Many2one('store', 'Store', ondelete='restrict', required=True)
+    store_id = fields.Many2one('store', 'Store', ondelete='restrict', required=True, domain="[('brand_id', '=', brand_id)]")
     sale_province_id = fields.Many2one('res.sale.province', 'Sale Province', ondelete='restrict')
     employee_id = fields.Many2one('hr.employee', 'Employee', ondelete='restrict', required=True)
     job_id = fields.Many2one('hr.job', 'Job Position', ondelete='restrict')

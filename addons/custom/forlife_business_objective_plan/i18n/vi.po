@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-30 02:32+0000\n"
-"PO-Revision-Date: 2023-06-30 02:32+0000\n"
+"POT-Creation-Date: 2023-06-30 06:20+0000\n"
+"PO-Revision-Date: 2023-06-30 06:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -95,7 +95,10 @@ msgid "BOS temp"
 msgstr ""
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__brand_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__brand_id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__brand_id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__brand_id
 msgid "Brand"
 msgstr "Thương hiệu"
 
@@ -107,6 +110,7 @@ msgstr "Mục tiêu cá nhân"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model,name:forlife_business_objective_plan.model_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__bo_plan_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__bo_plan_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__bo_plan_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__bo_plan_id
@@ -337,9 +341,19 @@ msgid "Import File Name"
 msgstr "Tên file nhập"
 
 #. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
+msgid "Import error"
+msgstr "Lỗi nhập liệu"
+
+#. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "Import excel"
 msgstr "Nhập excel"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__is_lock_brand
+msgid "Is Lock Brand"
+msgstr "Khóa thương hiệu"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__job_id
@@ -390,6 +404,13 @@ msgstr ""
 #: model:ir.ui.menu,name:forlife_business_objective_plan.business_objective_plan_root
 msgid "Objective Plan"
 msgstr "Mục tiêu kinh doanh"
+
+#. module: forlife_business_objective_plan
+#. odoo-python
+#: code:addons/forlife_business_objective_plan/wizard/bo_import_excel_wizard.py:0
+#, python-format
+msgid "Please upload file template before click Import button !"
+msgstr "Vui lòng tải lên file dữ liệu trước khi nhấn nút Nhập !"
 
 #. module: forlife_business_objective_plan
 #: model:res.groups,name:forlife_business_objective_plan.receipt_transfer_group
@@ -457,6 +478,13 @@ msgstr "Cửa hàng chuyển phải khác với cửa hàng nhận"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__target_increase
 msgid "Target increase"
 msgstr "Tăng MTCN"
+
+#. module: forlife_business_objective_plan
+#. odoo-python
+#: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
+#, python-format
+msgid "Target increase must be greater than 0"
+msgstr "Tăng mục tiêu cá nhân phải lớn hơn 0"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__target_reduce

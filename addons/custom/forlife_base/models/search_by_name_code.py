@@ -19,7 +19,7 @@ class SearchByNameCode(models.AbstractModel):
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if self._context.get('show_code_name') and name:
-            args = ['|', ('code', 'ilike', name), ('name', 'ilike', name)]
+            args = list(args or []) + ['|', ('code', 'ilike', name), ('name', 'ilike', name)]
             return self._search(args, limit=limit, access_rights_uid=name_get_uid)
         return super()._name_search(name, args, operator, limit, name_get_uid)
 

@@ -8,12 +8,13 @@
             <field name="arch" type="xml">
                 <form string="bo_import_excel_wizard_form">
                     <sheet>
-                        <group attrs="{'invisible': [('error_file', '!=', False)]}">
+                        <group>
                             <field name="import_file" filename="import_file_name"/>
                             <field name="import_file_name" invisible="1"/>
+                            <field name="bo_plan_id" invisible="1" force_save="1"/>
                         </group>
-                        <group attrs="{'invisible': [('error_file', '=', False)]}">
-                            <field name="error_file" filename="error_file_name"/>
+                        <group string="Import error" attrs="{'invisible': [('error_file', '=', False)]}">
+                            <field name="error_file" filename="error_file_name" readonly="1" force_save="1"/>
                             <field name="error_file_name" invisible="1"/>
                         </group>
                     </sheet>

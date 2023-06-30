@@ -37,7 +37,7 @@
                                 </div>
                             </group>
                             <group>
-                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('is_lock_brand', '=', True)]}"/>
                             </group>
                         </group>
                         <div class="row">
@@ -60,6 +60,7 @@
                                         aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_employee', 'bo_employee': 1}"/>
                             </div>
                         </div>
+                        <field name="is_lock_brand" invisible="1"/>
                     </sheet>
                 </form>
             </field>
@@ -96,7 +97,8 @@
                             <separator string="BO store"/>
                             <field name="bo_store_temp_ids">
                                 <tree editable="top">
-                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" required="1"/>
+                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                                           domain="[('brand_id', '=', context.get('brand_id'))]" required="1"/>
                                     <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="revenue_target" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="currency_id" invisible="1"/>
@@ -107,7 +109,8 @@
                             <separator string="BO employee"/>
                             <field name="bo_employee_temp_ids">
                                 <tree editable="top">
-                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" required="1"/>
+                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                                           domain="[('brand_id', '=', context.get('brand_id'))]" required="1"/>
                                     <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" required="1"/>
                                     <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
