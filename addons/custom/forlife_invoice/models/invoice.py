@@ -693,7 +693,7 @@ class AccountMoveLine(models.Model):
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:
-            if line.move_id.select_type_inv in ('labor', 'expense','service'):
+            if line.move_id.select_type_inv in ('labor', 'expense', 'service'):
                 pass
             else:
                 if line.product_uom_id and line.product_id and line.product_uom_id.category_id != line.product_id.product_tmpl_id.uom_id.category_id:
