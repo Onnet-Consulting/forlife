@@ -694,6 +694,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (program && program.promotion_type == 'pricelist' && program.with_code == false) {
                 selected_line.reset_unit_price();
                 selected_line.promotion_usage_ids = [];
+                this._updateActivatedPromotionPrograms();
                 return true;
             };
         };
@@ -716,6 +717,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             orderLine.reset_unit_price();
             orderLine.promotion_usage_ids = [];
         };
+        this._updateActivatedPromotionPrograms();
         return true;
     }
 
