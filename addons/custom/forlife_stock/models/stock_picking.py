@@ -238,6 +238,8 @@ class StockPicking(models.Model):
         return res
 
     ware_check = fields.Boolean('', default=False)
+    labor_check = fields.Boolean('', default=True)
+    expense_check = fields.Boolean('', default=True)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
