@@ -418,7 +418,15 @@
                   action="forlife_purchase.action_purchase_order_not_inter_company_cost" name="Đơn mua hàng nội địa" sequence="2"/>
         <menuitem id="menu_purchase_order_not_inter_company_tax" parent="purchase.menu_procurement_management"
                   action="forlife_purchase.action_purchase_order_not_inter_company_tax" name="Đơn mua hàng nhập khẩu" sequence="2"/>
-
+        <menuitem
+           action="product.product_supplierinfo_type_action" id="menu_product_pricelist_action2_purchase"
+           parent="purchase.menu_procurement_management" sequence="1" name="Bảng giá nhà cung cấp" />
+        <menuitem id="stock.menu_action_inventory_tree" active="False"/>
+        <menuitem id="stock_landed_costs.menu_stock_landed_cost" active="False"/>
+        <menuitem id="stock.menu_stock_scrap" active="False"/>
+        <menuitem id="studio_customization.ton_kho_ghep_bo_c3501856-3eed-4d11-bfaa-a90b1416d93b" active="False"/>
+<!--        <menuitem id="purchase_request.forlife_event_menu" active="True"/>-->
+<!--        <menuitem id="purchase_request.purchase_material_menu" active="False"/>-->
         <!--Inactive menu purchase order-->
         <menuitem id="purchase.menu_purchase_form_action" parent="purchase.menu_procurement_management" active="False"/>
         <!-- Inactive menu Request for quatation-->
