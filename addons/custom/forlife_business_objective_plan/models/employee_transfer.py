@@ -23,6 +23,7 @@ class EmployeeTransfer(models.Model):
                               ('approved', _('Approved')),
                               ('cancelled', _('Cancelled'))], 'State', required=True, default='waiting_reduce')
     bo_employee_id = fields.Many2one('business.objective.employee', 'BOE source', ondelete='restrict')
+    bo_employee_dest_id = fields.Many2one('business.objective.employee', 'BOE destination', ondelete='restrict')
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
 
     @api.constrains('from_date', 'to_date')
@@ -52,20 +53,34 @@ class EmployeeTransfer(models.Model):
 
     def btn_approve_transfer(self):
         self.ensure_one()
-        self.write({'state': 'approved'})
-        self.env['business.objective.employee'].create({
-            'bo_plan_id': self.bo_plan_id.id,
-            'store_id': self.store_dest_id.id,
-            'employee_id': self.employee_id.id,
-            'job_id': self.job_id.id,
-            'currency_id': self.currency_id.id,
-            'sale_province_id': self.store_dest_id.warehouse_id.sale_province_id.id,
-            'from_date': self.from_date,
-            'to_date': self.to_date,
-            'revenue_target': self.target_increase,
+        BOE = self.env['business.objective.employee']
+        bo_employee = BOE.search([('bo_plan_id', '=', self.bo_plan_id.id),
+                                  ('store_id', '=', self.store_dest_id.id),
+                                  ('employee_id', '=', self.employee_id.id),
+                                  ('job_id', '=', self.job_id.id)], limit=1)
+        if bo_employee:
+            bo_employee.write({'revenue_target': bo_employee.revenue_target + self.target_increase})
+        else:
+            bo_employee = BOE.create({
+                'bo_plan_id': self.bo_plan_id.id,
+                'store_id': self.store_dest_id.id,
+                'employee_id': self.employee_id.id,
+                'job_id': self.job_id.id,
+                'currency_id': self.currency_id.id,
+                'sale_province_id': self.store_dest_id.warehouse_id.sale_province_id.id,
+                'revenue_target': self.target_increase,
+            })
+        self.write({
+            'state': 'approved',
+            'bo_employee_dest_id': bo_employee.id,
         })
 
     def btn_cancel(self):
         self.ensure_one()
         self.bo_employee_id.write({'revenue_target': self.bo_employee_id.revenue_target + self.target_reduce})
         self.write({'state': 'cancelled'})
+
+    def btn_cancel_approve(self):
+        self.ensure_one()
+        self.bo_employee_dest_id.write({'revenue_target': self.bo_employee_dest_id.revenue_target - self.target_increase})
+        self.write({'state': 'confirmed_reduce'})

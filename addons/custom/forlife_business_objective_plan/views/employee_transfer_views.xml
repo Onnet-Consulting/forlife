@@ -7,7 +7,12 @@
             <field name="model">employee.transfer</field>
             <field name="priority">1</field>
             <field name="arch" type="xml">
-                <tree string="employee_transfer_tree" create="0">
+                <tree string="employee_transfer_tree" create="0"
+                      decoration-warning="state == 'waiting_reduce'"
+                      decoration-danger="state == 'confirmed_reduce'"
+                      decoration-info="state == 'waiting_increase'"
+                      decoration-success="state == 'approved'"
+                      decoration-it="state == 'cancelled'">
                     <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
@@ -18,7 +23,12 @@
                     <field name="target_increase"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
-                    <field name="state" widget="badge" readonly="1"/>
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-warning="state == 'waiting_reduce'"
+                           decoration-danger="state == 'confirmed_reduce'"
+                           decoration-info="state == 'waiting_increase'"
+                           decoration-success="state == 'approved'"
+                           decoration-it="state == 'cancelled'"/>
                 </tree>
             </field>
         </record>
@@ -36,7 +46,9 @@
             <field name="model">employee.transfer</field>
             <field name="priority">10</field>
             <field name="arch" type="xml">
-                <tree string="employee_transfer_tree" editable="top" create="0">
+                <tree string="employee_transfer_tree" editable="top" create="0"
+                      decoration-warning="state == 'waiting_reduce'"
+                      decoration-danger="state == 'confirmed_reduce'">
                     <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
@@ -46,10 +58,12 @@
                     <field name="target_reduce"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
-                    <field name="state" widget="badge" readonly="1"/>
-                    <button name="btn_confirm_reduce" class="oe_highlight" type="object" string="Confirm reduce" title="Confirm reduce"
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-warning="state == 'waiting_reduce'"
+                           decoration-danger="state == 'confirmed_reduce'"/>
+                    <button name="btn_confirm_reduce" class="oe_highlight" type="object" string="Confirm reduce" title="Confirm reduce" confirm="Are you sure you want confirm reduce ?"
                             aria-label="Confirm reduce" states="waiting_reduce" groups="forlife_business_objective_plan.confirm_transfer_group"/>
-                    <button name="btn_cancel" class="oe_highlight" type="object" string="Cancel" title="Cancel"
+                    <button name="btn_cancel" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
                             aria-label="Cancel" states="confirmed_reduce" groups="forlife_business_objective_plan.cancel_confirm_transfer_group"/>
                 </tree>
             </field>
@@ -69,7 +83,9 @@
             <field name="model">employee.transfer</field>
             <field name="priority">20</field>
             <field name="arch" type="xml">
-                <tree string="employee_transfer_tree" editable="top" create="0">
+                <tree string="employee_transfer_tree" editable="top" create="0"
+                      decoration-danger="state == 'confirmed_reduce'"
+                      decoration-info="state == 'waiting_increase'">
                     <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
@@ -79,9 +95,13 @@
                     <field name="target_increase"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
-                    <field name="state" widget="badge" readonly="1"/>
-                    <button name="btn_receipt_transfer" class="oe_highlight" type="object" string="Confirm receipt" title="Confirm receipt"
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-danger="state == 'confirmed_reduce'"
+                           decoration-info="state == 'waiting_increase'"/>
+                    <button name="btn_receipt_transfer" class="oe_highlight" type="object" string="Confirm receipt" title="Confirm receipt" confirm="Are you sure you want confirm receipt ?"
                             aria-label="Confirm receipt" states="confirmed_reduce" groups="forlife_business_objective_plan.receipt_transfer_group"/>
+                    <button name="btn_cancel" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
+                            aria-label="Cancel" states="confirmed_reduce" groups="forlife_business_objective_plan.cancel_confirm_transfer_group"/>
                 </tree>
             </field>
         </record>
@@ -100,7 +120,9 @@
             <field name="model">employee.transfer</field>
             <field name="priority">30</field>
             <field name="arch" type="xml">
-                <tree string="employee_transfer_tree" create="0">
+                <tree string="employee_transfer_tree" create="0"
+                      decoration-info="state == 'waiting_increase'"
+                      decoration-success="state == 'approved'">
                     <field name="currency_id" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                     <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
@@ -111,10 +133,12 @@
                     <field name="target_increase" attrs="{'readonly': [('state', '=', 'approved')]}"/>
                     <field name="from_date" attrs="{'readonly': [('state', '=', 'approved')]}"/>
                     <field name="to_date" attrs="{'readonly': [('state', '=', 'approved')]}"/>
-                    <field name="state" widget="badge" readonly="1"/>
-                    <button name="btn_approve_transfer" class="oe_highlight" type="object" string="Approve" title="Approve"
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-info="state == 'waiting_increase'"
+                           decoration-success="state == 'approved'"/>
+                    <button name="btn_approve_transfer" class="oe_highlight" type="object" string="Approve" title="Approve" confirm="Are you sure you want approve ?"
                             aria-label="Approve" states="waiting_increase" groups="forlife_business_objective_plan.approve_transfer_group"/>
-                    <button name="btn_cancel" class="oe_highlight" type="object" string="Cancel" title="Cancel"
+                    <button name="btn_cancel_approve" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
                             aria-label="Cancel" states="approved" groups="forlife_business_objective_plan.cancel_approve_transfer_group"/>
                 </tree>
             </field>

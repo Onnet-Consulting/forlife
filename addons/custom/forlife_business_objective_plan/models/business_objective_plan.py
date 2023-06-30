@@ -18,15 +18,11 @@ class BusinessObjectivePlan(models.Model):
     bo_store_temp_ids = fields.One2many('business.objective.store', 'bo_plan_temp_id', 'BOS temp')
     bo_employee_temp_ids = fields.One2many('business.objective.employee', 'bo_plan_temp_id', 'BOE temp')
 
-    @api.constrains('from_date', 'to_date')
-    def check_dates(self):
-        for record in self:
-            if record.from_date and record.to_date and record.from_date > record.to_date:
-                raise ValidationError(_('From Date must be less than or equal To Date'))
-
     @api.constrains("from_date", "to_date", "brand_id")
     def validate_time(self):
         for record in self:
+            if record.from_date and record.to_date and record.from_date > record.to_date:
+                raise ValidationError(_('From Date must be less than or equal To Date'))
             domain = ['&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id),
                       '|', '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
                       '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date),
@@ -41,11 +37,7 @@ class BusinessObjectivePlan(models.Model):
 
     def btn_create_manual(self):
         view = self.env.ref('forlife_business_objective_plan.business_objective_plan_view_form_create_temp')
-        context = dict(self._context,
-                       default_bo_plan_temp_id=self.id,
-                       default_bo_plan_id=self.id,
-                       from_date=self.from_date.strftime('%Y-%m-%d'),
-                       to_date=self.to_date.strftime('%Y-%m-%d'))
+        context = dict(self._context, default_bo_plan_temp_id=self.id, default_bo_plan_id=self.id)
         return {
             'name': _('Create'),
             'type': 'ir.actions.act_window',
