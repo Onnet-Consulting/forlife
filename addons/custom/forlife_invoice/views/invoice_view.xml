@@ -66,7 +66,8 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
                     <field name="purchase_type" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="select_type_inv" widget="radio" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="is_check_select_type_inv" invisible="1"/>
+                    <field name="select_type_inv" widget="radio" attrs="{'readonly': ['|',('state', '=', 'posted'),('is_check_select_type_inv', '=', True)]}"/>
                     <field name="tax_totals" invisible="1"/>
                     <field name="number_bills" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="invoice_description" attrs="{'readonly': [('state', '=', 'posted')]}"/>
@@ -103,7 +104,6 @@
                     <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
-                    <field name="is_check_quantity_readonly" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='line_ids']//tree//field[@name='account_id']" position="after">
                     <field name="product_id"/>
@@ -137,12 +137,12 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="exchange_quantity" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_quantity_readonly', '=', True)]}"/>
-                            <field name="quantity" attrs="{'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_select_type_inv', '=', True)]}"/>
+                            <field name="quantity" attrs="{'readonly': ['|', ('parent.purchase_type', '==', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit"/>
+                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount" string="Chiết khấu %"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
@@ -260,7 +260,7 @@
                                 <field name="invoice_description"/>
                                 <field name="price_subtotal_back" force_save="1"/>
                                 <field name="tax_back" force_save="1"/>
-                                <field name="tax_percent_back" force_save="1"/>
+<!--                                <field name="tax_percent_back" force_save="1"/>-->
                                 <field name="tax_percent" force_save="1"/>
                                 <field name="_x_invoice_date" force_save="1"/>
                                 <field name="totals_back" force_save="1"/>
