@@ -79,7 +79,7 @@ class SummaryAccountMovePosLine(models.Model):
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    invoice_ids = fields.One2many('pos.order', 'move_pos_line_id', string='Hóa đơn')
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):

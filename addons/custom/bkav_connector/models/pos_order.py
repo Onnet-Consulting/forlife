@@ -3,12 +3,6 @@ from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
 
 
-class PosOrder(models.Model):
-    _inherit = 'pos.order'
-
-    move_pos_line_id = fields.Many2one('summary.account.move.pos.line')
-
-
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
