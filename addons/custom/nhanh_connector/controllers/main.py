@@ -133,6 +133,14 @@ class MainController(http.Controller):
                         'code': order['carrierCode'],
                         'service_name': order['carrierServiceName']
                     })
+
+                # nguồn đơn hàng
+                utm_source_id = request.env['utm.source'].sudo().search([('x_nhanh_id', '=', order['trafficSourceId'])])
+                if not utm_source_id:
+                    utm_source_id = request.env['utm.source'].sudo().create({
+                        'x_nhanh_id': order['trafficSourceId'],
+                        'name': order['trafficSourceName'],
+                    })
                 value = {
                     'nhanh_id': order['id'],
                     'partner_id': nhanh_partner.id,
@@ -152,7 +160,9 @@ class MainController(http.Controller):
                     'company_id': default_company_id.id if default_company_id else None,
                     'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
                     'delivery_carrier_id': delivery_carrier_id.id,
-                    'order_line': order_line
+                    'order_line': order_line,
+                    'nhanh_customer_phone': order['customerMobile'],
+                    'source_id': utm_source_id.id if utm_source_id else None,
                 }
                 # đổi trả hàng
                 if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
@@ -167,7 +177,11 @@ class MainController(http.Controller):
                 if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
                         order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
                         not webhook_value_id.order_id.picking_ids:
-                    webhook_value_id.order_id.action_create_picking()
+                    try:
+                        webhook_value_id.order_id.check_sale_promotion()
+                        webhook_value_id.order_id.action_create_picking()
+                    except:
+                        return self.result_request(200, 0, _('Create sale order success'))
                 elif data['status'] in ['Canceled', 'Aborted']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
                             'state'):
