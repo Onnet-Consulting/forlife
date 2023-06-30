@@ -37,9 +37,4 @@ class PromotionPricelistItem(models.Model):
                    line.product_id.name + ': ' +\
                    tools.format_amount(self.env, line.fixed_price, line.program_id.currency_id)
             res += [(line.id, name)]
-        if 'fixed_frice_defect' in self._context and self._context.get('fixed_frice_defect'):
-            for line in self:
-                record_name = str(line.fixed_price)
-                result.append((line.id, record_name))
-            return result
         return res
