@@ -51,16 +51,17 @@ class StockPickingOverPopupConfirm(models.TransientModel):
         list_line_over = []
         list_line_less = []
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+            tolerance = pk.product_id.tolerance
             if pk.qty_done != pk_od.product_uom_qty:
                 if pk.qty_done > pk_od.product_uom_qty:
                     list_line_over.append((0, 0, {
                         'product_id': pk_od.product_id.id,
-                        'product_uom_qty': pk.qty_done - pk_od.product_uom_qty,
-                        'quantity_done': pk.qty_done - pk_od.product_uom_qty,
+                        'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100)) if tolerance else pk.qty_done) - pk_od.product_uom_qty,
+                        'quantity_done': (pk_od.product_uom_qty * (1 + (tolerance / 100)) if tolerance else pk.qty_done) - pk_od.product_uom_qty,
                         'product_uom': pk_od.product_uom.id,
                         'free_good': pk_od.free_good,
                         'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.qty_done - pk_od.product_uom_qty,
+                        'quantity_purchase_done': (pk_od.product_uom_qty * (1 + (tolerance / 100)) if tolerance else pk.qty_done) - pk_od.product_uom_qty,
                         'occasion_code_id': pk.occasion_code_id.id,
                         'work_production': pk.work_production.id,
                         'account_analytic_id': pk.account_analytic_id.id,
@@ -149,11 +150,11 @@ class StockPicking(models.Model):
         self.ensure_one()
         view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
         view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
-        for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
-            if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
-                tolerance = pk.product_id.tolerance
-                if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
-                    raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
+        # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
+        #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
+        #         tolerance = pk.product_id.tolerance
+        #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
+        #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
         if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
                zip(self.move_line_ids_without_package, self.move_ids_without_package)) and not any(
             pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
