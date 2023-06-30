@@ -777,6 +777,7 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         default = dict(default or {})
         default['custom_state'] = 'draft'
+        default['purchase_type'] = self.purchase_type
         return super().copy(default)
 
     def action_view_invoice_normal_new(self):
@@ -2232,6 +2233,17 @@ class StockPicking(models.Model):
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
                                                    limit=1)
             if po:
+                ### Check tồn npl ử tab npl po:
+                if record.state == 'done':
+                    for item in po.order_line_production_order:
+                        material = self.env['purchase.order.line.material.line'].search(
+                            [('purchase_order_line_id', '=', item.id)])
+                        for material_line in material:
+                            number_product = self.env['stock.quant'].search(
+                                [('location_id', '=', record.location_dest_id.id),
+                                 ('product_id', '=', material_line.product_id.id)])
+                            if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                                raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',
