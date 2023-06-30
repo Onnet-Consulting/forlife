@@ -30,10 +30,16 @@ class PromotionPricelistItem(models.Model):
 
     def name_get(self):
         res = []
+        result = []
         for line in self:
             name = line.program_id.name + ': ' + \
                    (line.product_id.barcode and '[' + line.product_id.barcode + ']' + ' ' or '') + \
                    line.product_id.name + ': ' +\
                    tools.format_amount(self.env, line.fixed_price, line.program_id.currency_id)
             res += [(line.id, name)]
+        if 'fixed_frice_defect' in self._context and self._context.get('fixed_frice_defect'):
+            for line in self:
+                record_name = str(line.fixed_price)
+                result.append((line.id, record_name))
+            return result
         return res
