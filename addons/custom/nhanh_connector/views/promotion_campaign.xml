@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="promotion_campaign_view_form_nhanh_inherit" model="ir.ui.view">
+        <field name="name">promotion_campaign_view_form_nhanh_inherit</field>
+        <field name="model">promotion.campaign</field>
+        <field name="inherit_id" ref="forlife_pos_promotion.promotion_campaign_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='brand_id']" position="after">
+                <field name="is_for_nhanh"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

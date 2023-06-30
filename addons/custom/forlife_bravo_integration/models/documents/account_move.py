@@ -25,11 +25,13 @@ class AccountMove(models.Model):
         bravo_table = 'DEFAULT'
         if journal_data in (
                 'purchase_asset_service',
-                'purchase_asset_service_reversed',
                 'purchase_product_cost_picking',
-                'purchase_product_cost_picking_reversed',
         ):
             bravo_table = 'B30AccDocPurchase'
+        elif journal_data in (
+                'purchase_asset_service_reversed',
+                'purchase_product_cost_picking_reversed'):
+            bravo_table = 'B30AccDocPurchaseReturn'
         elif journal_data in ('purchase_product_reserved', "purchase_product"):
             bravo_table = 'B30AccDocOther'
         elif journal_data == "purchase_bill_vendor_back":

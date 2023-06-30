@@ -298,14 +298,14 @@ class StockTransfer(models.Model):
                     'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'product_id': product.id,
                     'uom_id': line.uom_id.id,
-                    'qty_plan': abs(line.qty_plan - product_quantity),
+                    'qty_plan': 0,
                     'qty_in': line.qty_in - line.qty_out,
                     'qty_out': line.qty_in - line.qty_out,
                 }))
                 # diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='in_approve', type='excess')
                 line.write({
                     'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
-                    'qty_plan': product_quantity,
+                    'qty_plan': line.qty_plan,
                     'qty_out': product_quantity,
                     'qty_in': product_quantity,
                 })
@@ -611,7 +611,7 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
     forlife_production_stock_move_ids = fields.Many2many('stock.move')
-    remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
+    remaining_qty = fields.Float(string='Còn lại', compute='_compute_remaining_qty', store=1)
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):

@@ -46,9 +46,10 @@ odoo.define('forlife_vnpay_payment_terminal.models', function (require) {
             /* ---- Payment Lines --- */
             add_paymentline(payment_method) {
                 const newPaymentline = super.add_paymentline(payment_method);
-                if (payment_method.use_payment_terminal === "vnpay" && this.amount_return > 0) {
+                if (payment_method.use_payment_terminal === "vnpay" && this.selected_paymentline.get_amount() < 0) {
                     newPaymentline.set_payment_status('done');
                 }
+
                 return newPaymentline;
             }
         }

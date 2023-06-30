@@ -53,6 +53,9 @@
                     <attribute name="attrs">{'invisible': ['|',('is_return', '=', True),('default_location_dest_id_usage', '!=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer'), ('is_return', '=', False)]}</attribute>
                     =""
                 </field>
+                <field name="vendor_price" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('free_good', '=', True), '&amp;', ('parent.is_passersby', '=', False), ('parent.is_return', '=', False)]}</attribute>
+                </field>
 
             </field>
         </record>
