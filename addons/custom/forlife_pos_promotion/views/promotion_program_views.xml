@@ -209,14 +209,14 @@
 
                             <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent', 'combo_discount_percent_x'))]}"/>
-                            <field name="discount_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">
-                                <tree limit="20">
-                                    <field name="name"/>
-                                    <field name="barcode"/>
-                                    <field name="lst_price"/>
-                                </tree>
-                            </field>
+<!--                            <field name="discount_product_ids"-->
+<!--                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">-->
+<!--                                <tree limit="20">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="barcode"/>-->
+<!--                                    <field name="lst_price"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
                             <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
                                  attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"/>
                             <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">
@@ -224,14 +224,14 @@
                                     <span>Import Discount Products</span>
                                 </button>
                             </div>
-                            <field name="reward_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">
-                                <tree limit="20">
-                                    <field name="name"/>
-                                    <field name="barcode"/>
-                                    <field name="lst_price"/>
-                                </tree>
-                            </field>
+<!--                            <field name="reward_product_ids"-->
+<!--                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">-->
+<!--                                <tree limit="20">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="barcode"/>-->
+<!--                                    <field name="lst_price"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
                             <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
                             attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
                             <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">
