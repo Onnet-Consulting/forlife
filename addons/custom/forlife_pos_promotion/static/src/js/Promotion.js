@@ -2533,10 +2533,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (theSameProgramCodes.length > 1) {
             program.codes[this.access_token] = this.activatedInputCodes.find(c => c.program_id == code.program_id);
         } else if (theSameProgramCodes.length == 1) {
-            if (this.get_orderlines().some(l => {return self._get_program_ids_in_usages(l).has(program.program_id)})) {
-                this._resetPromotionPrograms(false);
+            let to_reset_lines = this.get_orderlines().filter(l => {return self._get_program_ids_in_usages(l).has(program.program_id)});
+            if (to_reset_lines.length > 0) {
+                for (let orderLine of to_reset_lines) {
+                    this._resetLinePromotionPrograms(orderLine);
+                };
+                this._updateActivatedPromotionPrograms();
             };
-        }
+        };
     }
 
 }
