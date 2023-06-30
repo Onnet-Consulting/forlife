@@ -38,16 +38,85 @@ class BoImportExcelWizard(models.TransientModel):
         return getattr(self, self._context.get('template_xml_id').replace('template', ''), None)(values)
 
     def _import_bo_store(self, values):
-        for line in values:
-            print(line[0], line[1], line[2])
-        # return self.return_error_log('ok')
+        brand_id = self.bo_plan_id.brand_id
+        store_exist = self.bo_plan_id.bo_store_ids.store_id.ids
+        self._cr.execute(f"""
+select (select json_object_agg(code, id) from res_sale_province)                                    as sale_province,
+       (select json_object_agg(code, id) from store where brand_id = {brand_id.id}) as store
+""")
+        data = self._cr.dictfetchone()
+        sale_provinces = data.get('sale_province') or {}
+        stores = data.get('store') or {}
+        vals = []
+        error = []
+        for index, val in enumerate(values):
+            sale_province_id = sale_provinces.get(val[0])
+            store_id = stores.get(val[1])
+            if not sale_province_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy khu vực có mã là '{val[0]}'")
+            if not store_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
+            if store_id in store_exist:
+                error.append(f"Dòng {index + 1}, cửa hàng có mã là '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
+            if not error:
+                vals.append({
+                    'bo_plan_id': self.bo_plan_id.id,
+                    'brand_id': brand_id.id,
+                    'sale_province_id': sale_province_id,
+                    'store_id': store_id,
+                    'revenue_target': int(val[2]),
+                })
+        if error:
+            return self.return_error_log('\n'.join(error))
+        if vals:
+            self.env['business.objective.store'].create(vals)
+        return self.bo_plan_id.open_business_objective()
 
     def _import_bo_employee(self, values):
-        sale_provinces = self.env['res.sale.province'].search_read([], ['code'])
-        stores = self.env['store'].search_read([('brand_id', '=', self.bo_plan_id.brand_id.id)], ['code'])
-        for line in values:
-            print(line[0], line[1], line[2], line[3], line[4])
-        # return self.return_error_log('ok')
+        brand_id = self.bo_plan_id.brand_id
+        store_exist = self.bo_plan_id.bo_store_ids.store_id.ids
+        self._cr.execute(f"""
+select (select json_object_agg(code, id) from res_sale_province)                                   as sale_province,
+       (select json_object_agg(code, id) from store where brand_id = {brand_id.id})                as store,
+       (select json_object_agg(code, id) from hr_employee where code notnull)                      as employee,
+       (select json_object_agg(coalesce(name::json ->> 'vi_VN', name::json ->> 'en_US'), id)
+        from hr_job where name notnull and company_id = any(array{self._context.get('allowed_company_ids') or [-1]})) as job
+""")
+        data = self._cr.dictfetchone()
+        sale_provinces = data.get('sale_province') or {}
+        stores = data.get('store') or {}
+        employees = data.get('employee') or {}
+        jobs = data.get('job') or {}
+        vals = []
+        error = []
+        for index, val in enumerate(values):
+            sale_province_id = sale_provinces.get(val[0])
+            store_id = stores.get(val[1])
+            employee_id = employees.get(val[2])
+            job_id = jobs.get(val[3])
+            if not sale_province_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy khu vực có mã là '{val[0]}'")
+            if not store_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
+            if not employee_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy nhân viên có mã là '{val[2]}'")
+            if not job_id:
+                error.append(f"Dòng {index + 1}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
+            if not error:
+                vals.append({
+                    'bo_plan_id': self.bo_plan_id.id,
+                    'brand_id': brand_id.id,
+                    'sale_province_id': sale_province_id,
+                    'store_id': store_id,
+                    'employee_id': employee_id,
+                    'job_id': job_id,
+                    'revenue_target': int(val[4]),
+                })
+        if error:
+            return self.return_error_log('\n'.join(error))
+        if vals:
+            self.env['business.objective.employee'].create(vals)
+        return self.bo_plan_id.open_business_objective()
 
     def return_error_log(self, error=''):
         self.write({

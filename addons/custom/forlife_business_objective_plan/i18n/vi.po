@@ -333,7 +333,7 @@ msgstr "Nhập"
 #: model:ir.actions.act_window,name:forlife_business_objective_plan.bo_import_excel_wizard_action
 #: model:ir.model,name:forlife_business_objective_plan.model_bo_import_excel_wizard
 msgid "Import BO"
-msgstr "Nhập mục tiêu kinh doanh"
+msgstr "Nhập dữ liệu"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__import_file_name

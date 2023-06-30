@@ -61,12 +61,13 @@ class BusinessObjectivePlan(models.Model):
         }
 
     def btn_save(self):
-        self.bo_store_temp_ids.write({
+        self.bo_store_temp_ids.filtered(lambda x: x.bo_plan_temp_id).write({
             'bo_plan_temp_id': False,
         })
-        self.bo_employee_temp_ids.write({
+        self.bo_employee_temp_ids.filtered(lambda x: x.bo_plan_temp_id).write({
             'bo_plan_temp_id': False,
         })
+        return self.open_business_objective()
 
     def open_business_objective(self):
         self.ensure_one()

@@ -46,18 +46,18 @@
                                 <button name="open_business_objective" class="oe_highlight margin_btn" type="object" string=" Detail"
                                         title="Detail" aria-label="Detail" icon="fa-users" context="{'action_xml_id': 'bo_store_view'}"/>
                                 <button name="btn_create_manual" class="oe_highlight margin_btn" type="object" string=" Create manual"
-                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{'bo_store': 1}"/>
+                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{ 'action_xml_id': 'bo_store_view', 'bo_store': 1}"/>
                                 <button name="btn_import_excel" class="oe_highlight margin_btn" type="object" string=" Import excel" title="Import excel"
-                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_store', 'bo_store': 1}"/>
+                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_store', 'action_xml_id': 'bo_store_view'}"/>
                             </div>
                             <div class="col-6">
                                 <separator string="BO employee"/>
                                 <button name="open_business_objective" class="oe_highlight margin_btn" type="object" string=" Detail"
                                         title="Detail" aria-label="Detail" icon="fa-user" context="{'action_xml_id': 'bo_employee_view'}"/>
                                 <button name="btn_create_manual" class="oe_highlight margin_btn" type="object" string=" Create manual"
-                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{'bo_employee': 1}"/>
+                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{'action_xml_id': 'bo_employee_view', 'bo_employee': 1}"/>
                                 <button name="btn_import_excel" class="oe_highlight margin_btn" type="object" string=" Import excel" title="Import excel"
-                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_employee', 'bo_employee': 1}"/>
+                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_employee', 'action_xml_id': 'bo_employee_view'}"/>
                             </div>
                         </div>
                         <field name="is_lock_brand" invisible="1"/>
