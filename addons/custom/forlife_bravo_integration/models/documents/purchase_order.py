@@ -23,7 +23,7 @@ class AccountMovePurchaseAsset(models.Model):
             "OriginalPriceUnit", "Discount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
             "Amount", "TaxCode", "OriginalAmount3", "Amount3", "IsPromotions",
             "DebitAccount3", "CreditAccount3", "DocNo_PO", "RowId",
-            "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode",
+            "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode", "JobCode",
         ]
 
     def bravo_get_purchase_asset_service_value(self, is_reversed):
