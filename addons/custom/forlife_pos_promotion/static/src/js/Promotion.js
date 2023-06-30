@@ -2517,6 +2517,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     async activatePromotionCode(code) {
+        if (code) {
+            code = code.toUpperCase();
+        };
         const res = await this._activatePromotionCode(code);
         if (res !== true) {
             Gui.showNotification(res);
