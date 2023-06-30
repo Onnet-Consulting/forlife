@@ -131,16 +131,17 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="quantity_purchased" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
+                            <field name="quantity_purchased"
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="product_uom_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="product_uom_category_id" invisible="1"/>
-                            <field name="exchange_quantity" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_select_type_inv', '=', True)]}"/>
+<!--                            invisible="context.get('default_move_type', False) == 'out_invoice'"-->
+                            <field name="exchange_quantity"
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_select_type_inv', '=', True)]}"/>
                             <field name="quantity" attrs="{'readonly': ['|', ('parent.purchase_type', '==', 'product'), ('parent.state', '=', 'posted')]}"/>
-                            <field name="vendor_price" invisible="context.get('default_move_type', False) == 'out_invoice'"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
+                            <field name="vendor_price"
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
                             <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
                             <field name="warehouse" invisible="1"/>
