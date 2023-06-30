@@ -754,6 +754,21 @@ class AccountMoveLine(models.Model):
                                     rec.vendor_price = line.price
                                     rec.exchange_quantity = line.amount_conversion
 
+    # asset invoice!!
+    asset_code = fields.Char('Mã tài sản cố định')
+    asset_name = fields.Char('Mô tả tài sản cố định')
+    code_tax = fields.Char(string='Mã số thuế')
+    invoice_reference = fields.Char(string='Invoice Reference')
+    invoice_description = fields.Char(string="Invoice Description")
+    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
+
+    # field check exchange_quantity khi ncc vãng lại:
+    is_check_exchange_quantity = fields.Boolean(default=False)
+
+    # field check vendor_price khi ncc vãng lại:
+    is_passersby = fields.Boolean(related='move_id.is_passersby')
+    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
+
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         res = super()._compute_account_id()

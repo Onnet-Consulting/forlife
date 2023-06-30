@@ -34,6 +34,13 @@ class ForlifeOtherInOutRequest(models.Model):
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
 
+    @api.onchange('type_other')
+    def onchange_type_other(self):
+        if self.type_other:
+            self.type_other_id = False
+            self.location_id = False
+            self.location_dest_id = False
+
     @api.depends('other_import_export_ids', 'other_import_export_ids.state')
     def compute_qty_match(self):
         for rec in self:
@@ -76,11 +83,11 @@ class ForlifeOtherInOutRequest(models.Model):
                            'product_uom': item.uom_id.id,
                            'name': item.description,
                            'reason_type_id': record.type_other_id.id,
-                           'reason_id': item.reason_to_id.id,
+                           'reason_id': item.reason_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
                            'is_amount_total': item.reason_to_id.is_price_unit,
                            'is_production_order': item.reason_to_id.is_work_order,
-                           'location_id': record.location_id.id,
-                           'location_dest_id': record.location_dest_id.id,
+                           'location_id': record.location_id.id if record.type_other == 'other_import' else record.location_dest_id.id,
+                           'location_dest_id': record.location_dest_id.id if record.type_other == 'other_import' else record.location_id.id,
                            'amount_total': item.product_id.standard_price if not item.reason_to_id.is_price_unit else 0,
                            'occasion_code_id': item.occasion_id.id,
                            'work_production': item.production_id.id,
@@ -89,9 +96,10 @@ class ForlifeOtherInOutRequest(models.Model):
                            'picking_id': record.id})
                 dict_data = {'state': 'draft',
                              'reason_type_id': record.type_other_id.id,
-                             'other_import': True,
-                             'location_id': record.location_id.id,
-                             'location_dest_id': record.location_dest_id.id,
+                             'other_import': True if record.type_other == 'other_import' else False,
+                             'other_export': True if record.type_other == 'other_export' else False,
+                             'location_id': record.location_id.id if record.type_other == 'other_import' else record.location_dest_id.id,
+                             'location_dest_id': record.location_dest_id.id if record.type_other == 'other_import' else record.location_id.id,
                              'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
                              'company_id': self.env.company.id,
                              'scheduled_date': record.date_planned,
@@ -151,17 +159,20 @@ class ForlifeOtherInOutRequestLine(models.Model):
     _name = 'forlife.other.in.out.request.line'
     _description = 'Forlife Other In Out Request Line'
 
+    def _domain_location_id(self):
+        return "[('reason_type_id', '=', type_other_id)]"
     other_in_out_request_id = fields.Many2one('forlife.other.in.out.request', ondelete='cascade', required=True)
     product_id = fields.Many2one('product.product', required=True, string='Sản phẩm')
     description = fields.Char(string='Mô tả', related="product_id.name")
     asset_id = fields.Many2one('assets.assets', string='Tài sản')
     date_expected = fields.Datetime(string='Ngày dự kiến')
+    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do', required=True)
     quantity = fields.Float(string='Số lượng', required=True)
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
     whs_from_id = fields.Many2one('stock.location', string='Từ kho')
-    reason_from_id = fields.Many2one('stock.location', string='Lý do')
+    reason_from_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
-    reason_to_id = fields.Many2one('stock.location', string='Lý do')
+    reason_to_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
     occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')

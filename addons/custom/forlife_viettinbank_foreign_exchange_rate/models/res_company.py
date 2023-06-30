@@ -45,7 +45,7 @@ class ResCompany(models.Model):
         data = self._vietin_bank_send_request_exchange_rate()
         if data['status']['code'] != '0':
             return
-        response_exchange_rates = data['ForeignExchangeRateInfo']
+        response_exchange_rates = data.get('ForeignExchangeRateInfo', [])
         available_currency_names = available_currencies.mapped('name')
         date_rate = fields.Date.context_today(self)
         rates_dict = {}
@@ -71,7 +71,7 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
         data = response.json()
         return data
 
@@ -179,7 +179,7 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
         data = response.json()
         return data
 

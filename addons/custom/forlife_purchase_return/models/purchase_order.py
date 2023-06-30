@@ -530,7 +530,7 @@ class PurchaseOrderLine(models.Model):
                                     total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
 
                 # Include qty of PO return
-                return_line = line.return_line_ids.filtered(lambda rl: rl.order_id.inventory_status == 'done')
+                return_line = line.return_line_ids.filtered(lambda rl: rl.qty_received)
                 total += sum(return_line.mapped('qty_received'))
                 line.qty_returned = total
 
