@@ -1002,7 +1002,7 @@ class PurchaseOrder(models.Model):
                                                 'price_unit': line.price_unit,
                                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                                 'occasion_code_id': wave_item.occasion_code_id.id,
-                                                'work_order': wave_item.production_id.id,
+                                                'work_order': wave_item.work_production.id,
                                                 'account_analytic_id': wave_item.account_analytic_id.id,
                                             }
                                             if line.display_type == 'line_section':
@@ -1043,7 +1043,7 @@ class PurchaseOrder(models.Model):
                                         'price_unit': line.price_unit,
                                         'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                         'occasion_code_id': wave_item.occasion_code_id.id,
-                                        'work_order': wave_item.production_id.id,
+                                        'work_order': wave_item.work_production.id,
                                         'account_analytic_id': wave_item.account_analytic_id.id,
                                     }
                                     if line.display_type == 'line_section':
@@ -1288,7 +1288,7 @@ class PurchaseOrder(models.Model):
                                 'price_unit': line.price_unit,
                                 'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                 'occasion_code_id': wave_item.occasion_code_id.id,
-                                'work_order': wave_item.production_id.id,
+                                'work_order': wave_item.work_production.id,
                                 'account_analytic_id': wave_item.account_analytic_id.id,
                             }
                             wave.picking_id.ware_check = True
