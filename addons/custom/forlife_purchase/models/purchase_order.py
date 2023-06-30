@@ -2270,9 +2270,15 @@ class StockPicking(models.Model):
                     if po.exchange_rate_line_ids:
                         vat = self.create_invoice_po_tax(po, record)
                     if po.cost_line:
+                        self.create_expense_entries(po)
+                        '''
                         cp = self.create_invoice_po_cost(po, record)
+                        '''
                 elif po.type_po_cost == 'cost':
+                    self.create_expense_entries(po)
+                    '''
                     cp = self.create_invoice_po_cost(po, record)
+                    '''
                 # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
@@ -2299,6 +2305,54 @@ class StockPicking(models.Model):
                     'exchange_rate': po.exchange_rate
                 })
         return res
+
+    def create_expense_entries(self, po):
+        self.ensure_one()
+        results = self.env['account.move']
+        if self.state != 'done':
+            return results
+        po_total_qty = sum(line.product_qty for line in po.order_line)
+        sp_total_qty = sum(line.quantity_done for line in self.move_ids_without_package)
+        entries_values = [{
+            'ref': f"{self.name} - {expense.product_id.name}",
+            'purchase_type': po.purchase_type,
+            'move_type': 'entry',
+            'reference': po.name,
+            'exchange_rate': po.exchange_rate,
+            'date': datetime.utcnow(),
+            'invoice_payment_term_id': po.payment_term_id.id,
+            'invoice_date_due': po.date_planned,
+            'restrict_mode_hash_table': False,
+            'invoice_line_ids': [(0, 0, {
+                'sequence': 1,
+                'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
+                'product_id': expense.product_id.id,
+                'name': expense.product_id.name,
+                'text_check_cp_normal': expense.product_id.name,
+                'credit': expense.vnd_amount / po_total_qty * sp_total_qty,
+                'debit': 0
+            })] + [(0, 0, {
+                'sequence': 2,
+                'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                'product_id': move.product_id.id,
+                'name': move.product_id.name,
+                'text_check_cp_normal': move.product_id.name,
+                'credit': 0,
+                'debit': expense.vnd_amount / po_total_qty * move.quantity_done
+            }) for move in self.move_ids_without_package],
+        } for expense in po.cost_line if expense.vnd_amount]
+        for value in entries_values:
+            debit = 0.0
+            for line in value['invoice_line_ids'][1:]:
+                if debit:
+                    line[-1]['debit'] += debit
+                    debit = 0.0
+                else:
+                    debit = line[-1]['debit'] - round(line[-1]['debit'])
+                    line[-1]['debit'] = round(line[-1]['debit'])
+        results = results.create(entries_values)
+        results._post()
+        return results
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
     def create_invoice_po_cost(self, po, record):
