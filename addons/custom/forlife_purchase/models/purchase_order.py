@@ -2552,7 +2552,7 @@ class StockPicking(models.Model):
                              ('product_id', '=', material_line.product_id.id)])
                         if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
                             raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
-                        tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
+                        #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {
