@@ -74,7 +74,6 @@ select (select json_object_agg(code, id) from res_sale_province)                
 
     def _import_bo_employee(self, values):
         brand_id = self.bo_plan_id.brand_id
-        store_exist = self.bo_plan_id.bo_store_ids.store_id.ids
         self._cr.execute(f"""
 select (select json_object_agg(code, id) from res_sale_province)                                   as sale_province,
        (select json_object_agg(code, id) from store where brand_id = {brand_id.id})                as store,
