@@ -22,7 +22,7 @@ class PurchaseOrder(models.Model):
         ('product', 'Hàng hóa'),
         ('service', 'Dịch vụ'),
         ('asset', 'Tài sản'),
-    ], string='Purchase Type', required=True, default='product')
+    ], string='Purchase Type', required=True, default='product', copy=False)
 
     inventory_status = fields.Selection([
         ('not_received', 'Not Received'),
@@ -73,8 +73,8 @@ class PurchaseOrder(models.Model):
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES,
                                  change_default=True, tracking=True, domain=False,
                                  help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
-    occasion_code_ids = fields.Many2many('occasion.code', string="Case Code")
-    account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref',
+    occasion_code_ids = fields.Many2many('occasion.code', string="Case Code", copy=False)
+    account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref', copy=False,
                                             string="Cost Center")
     is_purchase_request = fields.Boolean(default=False)
     is_check_readonly_partner_id = fields.Boolean()
@@ -1142,8 +1142,8 @@ class PurchaseOrder(models.Model):
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
                         # 'is_check': True,
-                        'is_check_quantity_readonly': True,
                         'select_type_inv': self.select_type_inv,
+                        'is_check_select_type_inv': True,
                         'purchase_order_product_id': [(6, 0, [self.id])],
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1359,9 +1359,9 @@ class PurchaseOrder(models.Model):
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
                         # 'is_check': True,
-                        'is_check_quantity_readonly': True,
                         'type_inv': self.type_po_cost,
                         'select_type_inv': self.select_type_inv,
+                        'is_check_select_type_inv': True,
                         'move_type': 'in_invoice',
                         'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
@@ -1452,6 +1452,7 @@ class PurchaseOrder(models.Model):
                                              'reference': order.name,
                                              'type_inv': order.type_po_cost,
                                              'select_type_inv': order.select_type_inv,
+                                             'is_check_select_type_inv': True,
                                              })
                         order = order.with_company(order.company_id)
                         line_vals = line._prepare_account_move_line()
@@ -1490,6 +1491,7 @@ class PurchaseOrder(models.Model):
                                                  'reference': order.name,
                                                  'type_inv': order.type_po_cost,
                                                  'select_type_inv': order.select_type_inv,
+                                                 'is_check_select_type_inv': True,
                                                  'purchase_order_product_id': self.ids,
                                                  # 'receiving_warehouse_id': [(6, 0, receiving_warehouse_ids)],
                                                  })
@@ -1531,6 +1533,7 @@ class PurchaseOrder(models.Model):
                                              'reference': order.name,
                                              'type_inv': order.type_po_cost,
                                              'select_type_inv': order.select_type_inv,
+                                             'is_check_select_type_inv': True,
                                              'purchase_order_product_id': self.ids,
                                              # 'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
                                              })
@@ -1573,6 +1576,7 @@ class PurchaseOrder(models.Model):
                                          'reference': order.name,
                                          'type_inv': order.type_po_cost,
                                          'select_type_inv': order.select_type_inv,
+                                         'is_check_select_type_inv': True,
                                          'purchase_order_product_id': self.ids,
                                          # 'receiving_warehouse_id': [(6, 0, receiving_warehouse_ids)],
                                          })
@@ -1681,7 +1685,7 @@ class PurchaseOrderLine(models.Model):
             })
 
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=True,
-                               compute='_compute_product_qty', store=True, readonly=False)
+                               compute='_compute_product_qty', store=True, readonly=False, copy=True)
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
@@ -1718,10 +1722,10 @@ class PurchaseOrderLine(models.Model):
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
-    total_vnd_amount = fields.Float('Tổng tiền VND',
+    total_vnd_amount = fields.Monetary('Tổng tiền VND',
                                     compute='_compute_total_vnd_amount',
                                     store=1)
-    total_vnd_exchange = fields.Float('Thành tiền VND',
+    total_vnd_exchange = fields.Monetary('Thành tiền VND',
                                     compute='_compute_total_vnd_amount',
                                     store=1)
     import_tax = fields.Float(string='% Thuế nhập khẩu')
@@ -1779,7 +1783,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_total_vnd_amount(self):
         for rec in self:
             if rec.price_subtotal and rec.order_id.exchange_rate:
-                rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.order_id.exchange_rate)
+                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
@@ -1998,84 +2002,90 @@ class PurchaseOrderLine(models.Model):
 
 
     # exchange rate
-    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'product_uom', 'vendor_price')
+    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'product_uom', 'vendor_price', 'order_id.purchase_type')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
-            if line.vendor_price:
-                line.price_unit = line.vendor_price
-            if not line.product_id or line.invoice_lines:
-                continue
-            params = {'order_id': line.order_id}
-            uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
-            seller = line.product_id._select_seller(
-                partner_id=line.partner_id,
-                quantity=line.product_qty,
-                date=line.order_id.date_order and line.order_id.date_order.date(),
-                uom_id=uom_id,
-                params=params)
-
-            if seller or not line.date_planned:
-                line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-
-            # If not seller, use the standard price. It needs a proper currency conversion.
-            if not seller:
-                if line.product_id.detailed_type == 'product':
+            if line.order_id.purchase_type == 'product':
+                if line.vendor_price:
+                    line.price_unit = line.vendor_price
+                if not line.product_id or line.invoice_lines:
                     continue
-                unavailable_seller = line.product_id.seller_ids.filtered(
-                    lambda s: s.partner_id == line.order_id.partner_id)
-                if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
-                    # Avoid to modify the price unit if there is no price list for this partner and
-                    # the line has already one to avoid to override unit price set manually.
+                params = {'order_id': line.order_id}
+                uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
+                seller = line.product_id._select_seller(
+                    partner_id=line.partner_id,
+                    quantity=line.product_qty,
+                    date=line.order_id.date_order and line.order_id.date_order.date(),
+                    uom_id=uom_id,
+                    params=params)
+
+                if seller or not line.date_planned:
+                    line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+
+                # If not seller, use the standard price. It needs a proper currency conversion.
+                if not seller:
+                    if line.product_id.detailed_type == 'product':
+                        continue
+                    unavailable_seller = line.product_id.seller_ids.filtered(
+                        lambda s: s.partner_id == line.order_id.partner_id)
+                    if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
+                        # Avoid to modify the price unit if there is no price list for this partner and
+                        # the line has already one to avoid to override unit price set manually.
+                        continue
+                    po_line_uom = line.product_uom or line.product_id.uom_po_id
+                    price_unit = line.env['account.tax']._fix_tax_included_price_company(
+                        line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
+                        line.product_id.supplier_taxes_id,
+                        line.taxes_id,
+                        line.company_id,
+                    )
+                    price_unit = line.product_id.currency_id._convert(
+                        price_unit,
+                        line.currency_id,
+                        line.company_id,
+                        line.date_order,
+                        False
+                    )
+                    line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                                   self.env[
+                                                                                       'decimal.precision'].precision_get(
+                                                                                       'Product Price')))
                     continue
-                po_line_uom = line.product_uom or line.product_id.uom_po_id
-                price_unit = line.env['account.tax']._fix_tax_included_price_company(
-                    line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
-                    line.product_id.supplier_taxes_id,
-                    line.taxes_id,
-                    line.company_id,
-                )
-                price_unit = line.product_id.currency_id._convert(
-                    price_unit,
-                    line.currency_id,
-                    line.company_id,
-                    line.date_order,
-                    False
-                )
-                line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
-                                                                               self.env[
-                                                                                   'decimal.precision'].precision_get(
-                                                                                   'Product Price')))
-                continue
 
-            price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
-                                                                                 line.product_id.supplier_taxes_id,
-                                                                                 line.taxes_id,
-                                                                                 line.company_id) if seller else 0.0
-            price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
+                price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
+                                                                                     line.product_id.supplier_taxes_id,
+                                                                                     line.taxes_id,
+                                                                                     line.company_id) if seller else 0.0
+                price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-            # if line.product_id.detailed_type == 'product':
-            #     line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
-            #     line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
-            # else:
-            #     line.price_unit = seller.product_uom._compute_0price(price_unit, line.product_uom)
+                # if line.product_id.detailed_type == 'product':
+                #     line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
+                #     line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
+                # else:
+                #     line.price_unit = seller.product_uom._compute_0price(price_unit, line.product_uom)
 
-            # record product names to avoid resetting custom descriptions
-            default_names = []
-            vendors = line.product_id._prepare_sellers({})
-            for vendor in vendors:
-                product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
-            if not line.name or line.name in default_names:
-                product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+                # record product names to avoid resetting custom descriptions
+                default_names = []
+                vendors = line.product_id._prepare_sellers({})
+                for vendor in vendors:
+                    product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                    default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
+                if not line.name or line.name in default_names:
+                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                    line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+            else:
+                pass
 
-    @api.depends('purchase_quantity', 'exchange_quantity')
+    @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
         for line in self:
-            if line.purchase_quantity and line.exchange_quantity:
-                line.product_qty = line.purchase_quantity * line.exchange_quantity
+            if line.order_id.purchase_type == 'product':
+                if line.purchase_quantity and line.exchange_quantity:
+                    line.product_qty = line.purchase_quantity * line.exchange_quantity
+                else:
+                    line.product_qty = line.purchase_quantity
             else:
-                line.product_qty = line.purchase_quantity
+                pass
 
     def _suggest_quantity(self):
         '''
