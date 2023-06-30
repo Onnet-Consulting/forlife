@@ -4,6 +4,9 @@ import PosComponent from 'point_of_sale.PosComponent';
 import ProductScreen from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import { useListener } from "@web/core/utils/hooks";
+import { Gui } from 'point_of_sale.Gui';
+import core from 'web.core';
+const _t = core._t;
 
 export class ResetLinePromotionProgramsButton extends PosComponent {
     setup() {
@@ -13,7 +16,11 @@ export class ResetLinePromotionProgramsButton extends PosComponent {
 
     async onClick() {
         let selected_line = this.env.pos.get_order().get_orderlines().find(l=>l.is_selected());
-        this.env.pos.get_order()._resetLinePromotionPrograms(selected_line);
+        if (selected_line) {
+            this.env.pos.get_order()._resetLinePromotionPrograms(selected_line);
+        } else {
+            Gui.showNotification(_t(`Vui lòng chọn một dòng đơn hàng để đặt lại CTKM.`), 3000);
+        }
     }
 }
 
