@@ -30,6 +30,7 @@ class PromotionPricelistItem(models.Model):
 
     def name_get(self):
         res = []
+        result = []
         for line in self:
             name = line.program_id.name + ': ' + \
                    (line.product_id.barcode and '[' + line.product_id.barcode + ']' + ' ' or '') + \

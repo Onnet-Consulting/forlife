@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="utm_source_view_tree_nhanh_sync_inherit" model="ir.ui.view">
+        <field name="name">utm_source_view_tree_nhanh_sync_inherit</field>
+        <field name="model">utm.source</field>
+        <field name="inherit_id" ref="utm.utm_source_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_nhanh_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

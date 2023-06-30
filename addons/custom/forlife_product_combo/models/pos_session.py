@@ -34,6 +34,7 @@ class PosSession(models.Model):
             'product_combo': product_combo_lines,
         })
         return loaded_data
+
     def _loader_params_product_product(self):
         result = super()._loader_params_product_product()
         result['search_params']['fields'].append('attribute_ids')

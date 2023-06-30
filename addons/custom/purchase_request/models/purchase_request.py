@@ -51,10 +51,6 @@ class PurchaseRequest(models.Model):
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
-            if 'employee_id' not in fields:
-                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
-            if 'department_id' not in fields:
-                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban cho nhân viên"))
             if 'request_date' not in fields:
                 raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
         return super().load(fields, data)
@@ -64,6 +60,11 @@ class PurchaseRequest(models.Model):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
     @api.onchange('employee_id')
