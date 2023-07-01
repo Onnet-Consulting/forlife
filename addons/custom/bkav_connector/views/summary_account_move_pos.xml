@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="code"/>
+                <field name="store_id"/>
                 <field name="company_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
@@ -37,14 +38,15 @@
                                 <tree editable="bottom" create="0">
                                     <field name="product_id"/>
                                     <field name="description"/>
+                                    <field name="barcode"/>
                                     <field name="account_id"/>
                                     <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
                                     <field name="x_free_good"/>
-                                    <field name="discount"/>
-                                    <field name="discount_amount"/>
+<!--                                    <field name="discount"/>-->
+<!--                                    <field name="discount_amount"/>-->
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="tax_amount"/>
                                     <field name="price_subtotal"/>

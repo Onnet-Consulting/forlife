@@ -26,6 +26,7 @@ class SummaryAccountMovePosReturnLine(models.Model):
 
     return_id = fields.Many2one('summary.account.move.pos.return')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
+    barcode = fields.Char(related='product_id.barcode')
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
     quantity = fields.Float('Số lượng')
