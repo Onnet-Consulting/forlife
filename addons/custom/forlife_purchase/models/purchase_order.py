@@ -2239,11 +2239,16 @@ class StockPicking(models.Model):
                         material = self.env['purchase.order.line.material.line'].search(
                             [('purchase_order_line_id', '=', item.id)])
                         for material_line in material:
-                            if material_line.product_id.product_tmpl_id.x_type_cost_product not in ('labor_costs', 'internal_costs'):
-                                number_product = self.env['stock.quant'].search(
-                                    [('location_id', '=', record.location_dest_id.id),
-                                     ('product_id', '=', material_line.product_id.id)])
-                                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                            if not material_line.product_id.product_tmpl_id.x_type_cost_product:
+                                sql_check_npl = """
+                                                SELECT sum(quantity) FROM stock_quant
+                                                JOIN product_product on stock_quant.product_id = product_product.id
+                                                JOIN product_template on product_template.id = product_product.product_tmpl_id
+                                                WHERE location_id = %s and product_product.id = %s and product_template.x_type_cost_product is null
+                                """ % (record.location_dest_id.id, material_line.product_id.id)
+                                self.env.cr.execute(sql_check_npl)
+                                quantity = self.env.cr.fetchall()
+                                if not quantity or quantity[0][0] < material_line.product_plan_qty:
                                     raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                 po.write({
                     'inventory_status': 'done',
