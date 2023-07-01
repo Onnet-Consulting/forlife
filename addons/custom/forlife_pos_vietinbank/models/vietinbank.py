@@ -71,7 +71,7 @@ class ApisVietinBank(models.AbstractModel):
     def get_statement_inquiry(self, pos_id):
         params = self.env['ir.config_parameter'].sudo()
         req = requests.post(
-            url=params.get_param('vietinbank.uri') + '/development/erp/v1/statement/inquiry',
+            url=params.get_param('vietinbank.uri'),
             headers=self._get_header(),
             json=self._prepare_body(pos_id)
         )

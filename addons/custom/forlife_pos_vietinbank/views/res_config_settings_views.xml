@@ -21,6 +21,7 @@
                                     <field name="vietinbank_client_id"/>
                                     <field name="vietinbank_client_secret"/>
                                     <field name="vietinbank_provider"/>
+                                    <field name="vietin_bank_server_private_key"/>
                                 </group>
                             </div>
                         </div>
