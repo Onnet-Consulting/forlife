@@ -9,6 +9,7 @@ class SummaryAccountMovePos(models.Model):
 
     code = fields.Char('Code')
     partner_id = fields.Many2one('res.partner')
+    store_id = fields.Many2one('store')
     invoice_date = fields.Date('Date')
     state = fields.Selection([('draft', 'Draft'),
                               ('posted', 'Posted')], string="State")
@@ -19,8 +20,7 @@ class SummaryAccountMovePos(models.Model):
     einvoice_date = fields.Date(string="Ngày phát hành")
 
     def collect_bills_the_end_day(self):
-        self.collect_invoice_sale_end_day()
-        self.collect_invoice_return_end_day()
+        self.collect_clearing_the_end_day()
 
     def collect_invoice_return_end_day(self):
         moves = self.env['account.move']
@@ -85,7 +85,8 @@ class SummaryAccountMovePos(models.Model):
 
     def collect_invoice_sale_end_day(self):
         moves = self.env['account.move']
-        today = date.today() - timedelta(days=1)
+        sale_ids = []
+        today = date.today() - timedelta(days=1) # Do job chạy 2h sáng nên gom đơn ngày hqua phải - 1
         invoices = moves.search([('move_type', '=', 'out_invoice'),
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
@@ -106,21 +107,33 @@ class SummaryAccountMovePos(models.Model):
                 for line2 in move_line:
                     line2_id = self.env['pos.order.line'].browse(line2)
                     if line_id.product_id.barcode == line2_id.product_id.barcode \
-                            and line_id.product_id.standard_price == line2_id.product_id.standard_price and line_id.id != line2_id.id:
+                            and line_id.price_bkav == line2_id.price_bkav and line_id.id != line2_id.id:
                         qty += line2_id.qty
                         invoice_ids.append(line2_id.order_id.id)
                         move_line.remove(line2)
                 move_line_vals.append((0, 0, {
                     'product_id': line_id.product_id.id,
                     'quantity': qty,
-                    'price_unit': line_id.product_id.standard_price,
+                    'price_unit': line_id.price_bkav,
                     'invoice_ids': [(6, 0, invoice_ids)]
                 }))
-            self.env['summary.account.move.pos'].create({
+            sale = self.env['summary.account.move.pos'].create({
+                'store_id': store.id,
                 'partner_id': store.contact_id.id,
                 'invoice_date': date.today(),
                 'line_ids': move_line_vals
             })
+            sale_ids.append(sale.id)
+        return sale_ids
+
+    def collect_clearing_the_end_day(self):
+        vals = []
+        sale_ids = self.collect_invoice_sale_end_day()
+        sales = self.env['summary.account.move.pos'].browse(sale_ids)
+        refund_ids = self.collect_invoice_return_end_day()
+        refunds = self.env['summary.account.move.pos.return'].browse(refund_ids)
+       
+        return vals
 
 
 class SummaryAccountMovePosLine(models.Model):
@@ -135,7 +148,7 @@ class SummaryAccountMovePosLine(models.Model):
     price_unit = fields.Float('Đơn giá')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
-    discount_amount = fields.Monetary('% chiết khấu')
+    discount_amount = fields.Monetary('Số tiền chiết khấu')
     tax_ids = fields.Many2many('account.tax', string='Thuế', related="product_id.taxes_id")
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")

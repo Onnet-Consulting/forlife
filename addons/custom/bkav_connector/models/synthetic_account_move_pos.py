@@ -3,9 +3,8 @@ from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
 
 
-class SummaryAccountMovePosReturn(models.Model):
-    _name = 'summary.account.move.pos.return'
-    _rec_name = 'code'
+class SyntheticAccountMovePos(models.Model):
+    _name = 'synthetic.account.move.pos'
 
     code = fields.Char('Code')
     store_id = fields.Many2one('store')
@@ -13,18 +12,17 @@ class SummaryAccountMovePosReturn(models.Model):
     invoice_date = fields.Date('Date')
     state = fields.Selection([('draft', 'Draft'),
                               ('posted', 'Posted')], string="State")
-
-    line_ids = fields.One2many('summary.account.move.pos.return.line', 'return_id')
+    line_ids = fields.One2many('synthetic.account.move.pos.line', 'synthetic_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
 
 
-class SummaryAccountMovePosReturnLine(models.Model):
-    _name = 'summary.account.move.pos.return.line'
+class SyntheticAccountMovePosLine(models.Model):
+    _name = 'synthetic.account.move.pos.line'
 
-    return_id = fields.Many2one('summary.account.move.pos.return')
+    synthetic_id = fields.Many2one('synthetic.account.move.pos')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
@@ -55,6 +53,9 @@ class SummaryAccountMovePosReturnLine(models.Model):
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_subtotal * tax.amount) / 100
+                r.tax_amount = tax_amount
             else:
                 r.tax_amount = 0
