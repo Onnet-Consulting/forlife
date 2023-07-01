@@ -20,14 +20,77 @@ class SummaryAccountMovePos(models.Model):
 
     def collect_bills_the_end_day(self):
         self.collect_invoice_sale_end_day()
+        self.collect_invoice_return_end_day()
+
+    def collect_invoice_return_end_day(self):
+        moves = self.env['account.move']
+        today = date.today() - timedelta(days=1)
+        invoice_pos = moves.search([('is_post_bkav', '=', False),
+                                 ('pos_order_id', '!=', False),
+                                 ('move_type', 'in', ('out_refund', 'out_invoice')),
+                                 ('invoice_date', '<=', today)])
+        invoice_pos_return = invoice_pos.filtered(lambda x: x.pos_order_id.refunded_order_ids)
+        data_store = {}
+        stores = invoice_pos_return.mapped('pos_order_id.store_id')
+        for store in stores:
+            data_store.update({
+                store.id: {
+                    'products': {}
+                }
+            })
+
+        for move in invoice_pos_return:
+            pos_order_id = move.pos_order_id
+            store_id = pos_order_id.store_id
+            products = data_store.get(store_id.id).get('products')
+            for line in pos_order_id.lines:
+                if not line.product_id.barcode:
+                    continue
+                item = (line.product_id.barcode, line.price_bkav)
+                if not products.get(item):
+                    products.update({
+                        item: {
+                            'product_id': line.product_id.id,
+                            'quantity': line.qty,
+                            'price_unit': line.price_bkav,
+                            'pos_order_ids': [line.order_id.id]
+                        }
+                    })
+                else:
+                    pos_order_ids = products.get(item).get('pos_order_ids')
+                    quantity = products.get(item).get('quantity')
+                    products.get(item).update({
+                        'quantity': quantity + line.qty,
+                        'pos_order_ids': pos_order_ids + [line.order_id.id]
+                    })
+        record_ids = []
+        for store in stores:
+            products = data_store.get(store.id).get('products')
+            lines = []
+            for item in products:
+                lines.append((0, 0, {
+                    'product_id': products.get(item).get('product_id'),
+                    'quantity': products.get(item).get('quantity'),
+                    'price_unit': products.get(item).get('price_unit'),
+                    'invoice_ids': [(6, 0, products.get(item).get('pos_order_ids'))]
+                }))
+            vals = {
+                'partner_id': store.contact_id.id,
+                'invoice_date': date.today(),
+                'line_ids': lines
+            }
+            record = self.env['summary.account.move.pos.return'].create(vals)
+            record_ids.append(record.id)
+        return record_ids
 
     def collect_invoice_sale_end_day(self):
         moves = self.env['account.move']
-        today = date.today()
+        today = date.today() - timedelta(days=1)
         invoices = moves.search([('move_type', '=', 'out_invoice'),
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
                                  ('invoice_date', '<=', today)])
+        invoices = invoices.filtered(lambda x: not x.pos_order_id.refunded_order_ids)
         stores = invoices.mapped('pos_order_id.store_id')
         for store in stores:
             move_line = []
@@ -51,7 +114,6 @@ class SummaryAccountMovePos(models.Model):
                     'product_id': line_id.product_id.id,
                     'quantity': qty,
                     'price_unit': line_id.product_id.standard_price,
-                    'product_uom_id': line_id.product_id.standard_price,
                     'invoice_ids': [(6, 0, invoice_ids)]
                 }))
             self.env['summary.account.move.pos'].create({

@@ -13,7 +13,7 @@ class SummaryAccountMovePosReturn(models.Model):
     state = fields.Selection([('draft', 'Draft'),
                               ('posted', 'Posted')], string="State")
 
-    line_ids = fields.One2many('summary.account.move.pos.return.line', 'summary_id')
+    line_ids = fields.One2many('summary.account.move.pos.return.line', 'return_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
@@ -22,7 +22,7 @@ class SummaryAccountMovePosReturn(models.Model):
 class SummaryAccountMovePosReturnLine(models.Model):
     _name = 'summary.account.move.pos.return.line'
 
-    summary_id = fields.Many2one('summary.account.move.pos')
+    return_id = fields.Many2one('summary.account.move.pos.return')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
