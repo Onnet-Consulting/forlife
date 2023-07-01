@@ -75,6 +75,7 @@ class SummaryAccountMovePos(models.Model):
                     'invoice_ids': [(6, 0, products.get(item).get('pos_order_ids'))]
                 }))
             vals = {
+                'store_id': store.id,
                 'partner_id': store.contact_id.id,
                 'invoice_date': date.today(),
                 'line_ids': lines
