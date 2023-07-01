@@ -26,8 +26,9 @@ class AccountMove(models.Model):
         ('service', 'Dịch vụ'),
     ], string='PO Type', default='product')
     type_inv = fields.Selection([('tax', 'Nhập khẩu'), ('cost', 'Nội địa')], string='Loại hóa đơn')
+
     select_type_inv = fields.Selection(
-        # default='normal',\
+        default='normal',
         copy=True,
         string="Loại hóa đơn",
         selection=[('expense', 'Hóa đơn chi phí'),
@@ -35,6 +36,7 @@ class AccountMove(models.Model):
                    ('normal', 'Hóa đơn bình thường'),
                    ('service', 'Hóa đơn dịch vụ và tài sản'),
                    ])
+    is_check_select_type_inv = fields.Boolean(default=False)
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string='Exchange Rate', default=1)
@@ -87,8 +89,6 @@ class AccountMove(models.Model):
 
     # Field check k cho tạo addline khi hóa đơn đã có PO
     is_check = fields.Boolean()
-    is_check_quantity_readonly = fields.Boolean()
-
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(compute='_compute_is_check_vendor_page',
                                           store=1)
@@ -658,18 +658,18 @@ class AccountMoveLine(models.Model):
     vendor_price = fields.Float(string='Giá nhà cung cấp',
                                 compute='compute_vendor_price_ncc',
                                 store=1)
-    total_vnd_amount = fields.Float('Tổng tiền VNĐ',
+    total_vnd_amount = fields.Monetary('Tổng tiền VNĐ',
                                     compute='_compute_total_vnd_amount',
                                     store=1)
-    total_vnd_exchange = fields.Float('Thành tiền VND',
+    total_vnd_exchange = fields.Monetary('Thành tiền VND',
                                       compute='_compute_total_vnd_amount',
                                       store=1)
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_tax_amount',
+                              compute='_compute_amount_tax',
                               store=1)
-    special_consumption_tax = fields.Float(string='% %Thuế tiêu thụ đặc biệt')
+    special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
                                                   compute='_compute_special_consumption_tax_amount',
                                                   store=1)
@@ -678,7 +678,7 @@ class AccountMoveLine(models.Model):
                                   compute='_compute_vat_tax_amount',
                                   store=1)
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
-                                    # compute='compute_tax_amount',
+                                    compute='compute_total_tax_amount',
                                     store=1)
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
@@ -693,7 +693,7 @@ class AccountMoveLine(models.Model):
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:
-            if line.move_id.select_type_inv in ('labor', 'expense','service'):
+            if line.move_id.select_type_inv in ('labor', 'expense', 'service'):
                 pass
             else:
                 if line.product_uom_id and line.product_id and line.product_uom_id.category_id != line.product_id.product_tmpl_id.uom_id.category_id:
@@ -716,7 +716,7 @@ class AccountMoveLine(models.Model):
                 raise ValidationError('% thuế GTGT >= 0 !')
 
     @api.depends('total_vnd_exchange', 'import_tax')
-    def _compute_tax_amount(self):
+    def _compute_amount_tax(self):
         for rec in self:
             rec.amount_tax = rec.total_vnd_exchange * rec.import_tax / 100
 
@@ -731,7 +731,7 @@ class AccountMoveLine(models.Model):
             rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
 
     @api.depends('vat_tax_amount')
-    def compute_tax_amount(self):
+    def compute_total_tax_amount(self):
         for rec in self:
             rec.total_tax_amount = rec.amount_tax + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
@@ -906,7 +906,7 @@ class RespartnerVendor(models.Model):
     invoice_description = fields.Char(string="Diễn giải hóa đơn")
     price_subtotal_back = fields.Float(string='Thành tiền')
     tax_back = fields.Float(string='Tiền thuế')
-    tax_percent_back = fields.Float(string='% Thuế')
+    # tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
     _x_invoice_date = fields.Date(string='Ngày hóa đơn')
     tax_percent = fields.Many2one('account.tax', string='% Thuế')
