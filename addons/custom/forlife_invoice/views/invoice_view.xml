@@ -65,8 +65,9 @@
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
-                    <field name="purchase_type" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="select_type_inv" widget="radio" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="purchase_type" attrs="{'readonly': ['|', ('state', '=', 'posted'),('is_check_select_type_inv', '=', True)]}"/>
+                    <field name="is_check_select_type_inv" invisible="1"/>
+                    <field name="select_type_inv" widget="radio" attrs="{'readonly': ['|',('state', '=', 'posted'),('is_check_select_type_inv', '=', True)]}"/>
                     <field name="tax_totals" invisible="1"/>
                     <field name="number_bills" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="invoice_description" attrs="{'readonly': [('state', '=', 'posted')]}"/>
@@ -214,9 +215,9 @@
                                 <field name="import_tax"/>
                                 <field name="amount_tax"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount"/>
-                                <field name="vat_tax"/>
-                                <field name="vat_tax_amount"/>
+                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="vat_tax" string="% Thuế GTGT"/>
+                                <field name="vat_tax_amount" readonly="1"/>
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
@@ -278,7 +279,7 @@
                                 <field name="total_vnd_amount"/>
                                 <field name="discount_percent"/>
                                 <field name="before_tax"/>
-                                <field name="tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
+                                <field name="amount_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="after_tax"/>
                                 <field name="total_product"/>

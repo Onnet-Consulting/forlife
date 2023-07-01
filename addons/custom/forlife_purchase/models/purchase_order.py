@@ -1727,8 +1727,8 @@ class PurchaseOrderLine(models.Model):
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
-    billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed', store=1)
-    received = fields.Integer(string='Đã nhận', compute='compute_received', store=1)
+    billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
+    received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char(related='product_id.name', store=True, required=False, string='Mô tả')
     # Phục vụ import
@@ -1903,8 +1903,7 @@ class PurchaseOrderLine(models.Model):
     def compute_billed(self):
         for item in self:
             if item.order_id:
-                acc_move = self.env['account.move'].search(
-                    [('reference', '=', item.order_id.name), ('state', '=', 'posted')])
+                acc_move = self.env['account.move'].search([('purchase_order_product_id', '=', item.order_id.id), ('state', '=', 'posted'), ('select_type_inv', '=', 'normal')])
                 if acc_move:
                     acc_move_line = self.env['account.move.line'].search(
                         [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id)]).mapped('quantity')
@@ -2259,6 +2258,17 @@ class StockPicking(models.Model):
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
                                                    limit=1)
             if po:
+                ### Check tồn npl ử tab npl po:
+                if record.state == 'done':
+                    for item in po.order_line_production_order:
+                        material = self.env['purchase.order.line.material.line'].search(
+                            [('purchase_order_line_id', '=', item.id)])
+                        for material_line in material:
+                            number_product = self.env['stock.quant'].search(
+                                [('location_id', '=', record.location_dest_id.id),
+                                 ('product_id', '=', material_line.product_id.id)])
+                            if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                                raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',
