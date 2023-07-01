@@ -14,6 +14,7 @@
         'views/res_config_settings_views.xml',
         'views/store.xml',
         'views/summary_account_move_pos.xml',
+        'views/summary_account_move_pos_return.xml',
     ],
     "application": True,
     "installable": True,
