@@ -1734,6 +1734,7 @@ class PurchaseOrderLine(models.Model):
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
     billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
     received = fields.Integer(string='Đã nhận', compute='compute_received')
+    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char(related='product_id.name', store=True, required=False, string='Mô tả')
     # Phục vụ import
@@ -1911,7 +1912,7 @@ class PurchaseOrderLine(models.Model):
                 acc_move = self.env['account.move'].search([('purchase_order_product_id', '=', item.order_id.id), ('state', '=', 'posted'), ('select_type_inv', '=', 'normal')])
                 if acc_move:
                     acc_move_line = self.env['account.move.line'].search(
-                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id)]).mapped('quantity')
+                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id), ('po_id', '=', str(item.id))]).mapped('quantity')
                     item.billed = sum(acc_move_line)
                 else:
                     item.billed = False
@@ -2275,11 +2276,12 @@ class StockPicking(models.Model):
                         material = self.env['purchase.order.line.material.line'].search(
                             [('purchase_order_line_id', '=', item.id)])
                         for material_line in material:
-                            number_product = self.env['stock.quant'].search(
-                                [('location_id', '=', record.location_dest_id.id),
-                                 ('product_id', '=', material_line.product_id.id)])
-                            if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                                raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                            if material_line.product_id.product_tmpl_id.x_type_cost_product not in ('labor_costs', 'internal_costs'):
+                                number_product = self.env['stock.quant'].search(
+                                    [('location_id', '=', record.location_dest_id.id),
+                                     ('product_id', '=', material_line.product_id.id)])
+                                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                                    raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',
