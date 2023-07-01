@@ -128,13 +128,125 @@ class SummaryAccountMovePos(models.Model):
         return sale_ids
 
     def collect_clearing_the_end_day(self):
-        vals = []
         sale_ids = self.collect_invoice_sale_end_day()
         sales = self.env['summary.account.move.pos'].browse(sale_ids)
         refund_ids = self.collect_invoice_return_end_day()
         refunds = self.env['summary.account.move.pos.return'].browse(refund_ids)
-       
-        return vals
+        matching_records, different_records = self.find_matching_store_id(sales, refunds)
+        data_match = self.get_value_synthetic_move_match(matching_records)
+        data_diff = self.get_value_synthetic_move_diff(different_records)
+        vals_posi = data_match[0] + data_diff[0]
+        vals_neg = data_match[1] + data_diff[1]
+        return vals_posi, vals_neg
+
+    def find_matching_store_id(self, sales, refunds):
+        matching_records = {}
+        different_records = []
+        merge = []
+        for sale in sales:
+            for refund in refunds:
+                if sale.store_id == refund.store_id:
+                    matching_records.update({
+                        sale.store_id.id: [sale, refund]
+                    })
+                    merge.append(sale)
+                    merge.append(refund)
+        for sale in sales:
+            if sale not in merge:
+                different_records.append(sale)
+        for refund in refunds:
+            if refund not in merge:
+                different_records.append(refund)
+        return matching_records, different_records
+
+    def get_value_synthetic_move_match(self, matching_records):
+        vals_posi = []
+        vals_neg = []
+        for item in matching_records:
+            store_id = self.env['store'].browse(int(item))
+            sale_id = matching_records[item][0]
+            refund_id = matching_records[item][1]
+            dict_item = {}
+            move_line_posi_val = []
+            move_line_neg_val = []
+            for sale in sale_id.line_ids:
+                if not sale.barcode:
+                    continue
+                dict_item.update({
+                    (sale.barcode, sale.price_unit): {
+                        'product_id': sale.product_id.id,
+                        'quantity': sale.quantity,
+                        'price_unit': sale.price_unit,
+                        'summary_line_id': sale.id
+                    }
+                })
+            for ref in refund_id.line_ids:
+                if not ref.barcode:
+                    continue
+                if (ref.barcode, ref.price_unit) in dict_item:
+                    dict_item[(ref.barcode, ref.price_unit)]['quantity'] += ref.quantity
+                    dict_item[(ref.barcode, ref.price_unit)]['return_line_id'] = ref.id
+                else:
+                    dict_item.update({
+                        (ref.barcode, ref.price_unit): {
+                            'product_id': ref.product_id.id,
+                            'quantity': ref.quantity,
+                            'price_unit': ref.price_unit,
+                            'return_line_id': ref.id
+                        }
+                    })
+            for line in dict_item:
+                if dict_item.get(line).get('quantity') > 0:
+                    move_line_posi_val.append((0, 0, dict_item.get(line)))
+                elif dict_item.get(line).get('quantity') < 0:
+                    move_line_neg_val.append((0, 0, dict_item.get(line)))
+            if move_line_posi_val:
+                vals_posi.append({
+                    'store_id': store_id.id,
+                    'partner_id': store_id.contact_id.id,
+                    'invoice_date': date.today(),
+                    'line_ids': move_line_posi_val
+                })
+            if move_line_neg_val:
+                vals_neg.append({
+                    'store_id': store_id.id,
+                    'partner_id': store_id.contact_id.id,
+                    'invoice_date': date.today(),
+                    'line_ids': move_line_neg_val
+                })
+        return vals_posi, vals_neg
+
+    def get_value_synthetic_move_diff(self, different_records):
+        vals_posi = []
+        vals_neg = []
+        move_line_posi_val = []
+        move_line_neg_val = []
+        for item in different_records:
+            for line in item.line_ids:
+                lines = (0, 0, {
+                    'product_id': line.product_id.id,
+                    'quantity': line.quantity,
+                    'price_unit': line.price_unit
+                })
+                if line.quantity > 0:
+                    move_line_posi_val.append(lines)
+                elif line.quantity < 0:
+                    move_line_neg_val.append(lines)
+            if move_line_posi_val:
+                vals_posi.append({
+                    'store_id': item.store_id.id,
+                    'partner_id': item.store_id.contact_id.id,
+                    'invoice_date': date.today(),
+                    'line_ids': move_line_posi_val
+                })
+            if move_line_neg_val:
+                vals_neg.append({
+                    'store_id': item.store_id.id,
+                    'partner_id': item.store_id.contact_id.id,
+                    'invoice_date': date.today(),
+                    'line_ids': move_line_neg_val
+                })
+        return vals_posi, vals_neg
 
 
 class SummaryAccountMovePosLine(models.Model):
@@ -142,6 +254,7 @@ class SummaryAccountMovePosLine(models.Model):
 
     summary_id = fields.Many2one('summary.account.move.pos')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
+    barcode = fields.Char(related='product_id.barcode')
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
     quantity = fields.Float('Số lượng')
