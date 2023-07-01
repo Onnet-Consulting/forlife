@@ -18,6 +18,7 @@ class SyntheticAccountMovePos(models.Model):
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
+    account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
 
 
 class SyntheticAccountMovePosLine(models.Model):

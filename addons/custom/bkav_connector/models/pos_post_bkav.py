@@ -112,11 +112,12 @@ def connect_bkav(data, configs):
 class SummaryAccountMovePos(models.Model):
     _inherit = 'summary.account.move.pos'
 
-    def get_bkav_data(self):
+    def get_bkav_data(self, data):
         bkav_data = []
-        data = self.get_val_synthetic_account()
         for invoice in data:
-            invoice_date = False
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
+                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(
+                invoice, datetime.now())
             list_invoice_detail = []
             for line in invoice.line_ids:
                 item = {
@@ -146,7 +147,7 @@ class SummaryAccountMovePos(models.Model):
                     "BuyerTaxCode": invoice.partner_id.vat if invoice.partner_id.vat else '',
                     "BuyerUnitName": invoice.partner_id.name if invoice.partner_id.name else '',
                     "BuyerAddress": invoice.partner_id.country_id.name if invoice.partner_id.country_id.name else '',
-                    # "BuyerBankAccount": invoice.partner_id.partner_bank_id.id if invoice.partner_id.partner_bank_id.id else '',
+                    "BuyerBankAccount": '321312434535453',
                     "PayMethodID": 1,
                     "ReceiveTypeID": 3,
                     "ReceiverEmail": invoice.company_id.email if invoice.company_id.email else '',
@@ -155,7 +156,7 @@ class SummaryAccountMovePos(models.Model):
                     "ReceiverName": invoice.company_id.name if invoice.company_id.name else '',
                     "Note": "Hóa đơn mới tạo",
                     "BillCode": "",
-                    "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
+                    "CurrencyID": self.env.company.currency_id.name if self.env.company.currency_id.name else '',
                     "ExchangeRate": 1.0,
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
@@ -199,12 +200,12 @@ class SummaryAccountMovePos(models.Model):
         else:
             raise ValidationError(_("Don't have any eInvoice in this invoice. Please check again!"))
 
-    def create_invoice_bkav(self, cmd_type, data):
+    def create_invoice_bkav(self, cmd_type, data_invoice):
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
             "CmdType": cmd_type,
-            "CommandObject": data
+            "CommandObject": data_invoice
         }
         _logger.info(f'BKAV - data create invoice to BKAV: {data}')
         try:
@@ -233,5 +234,10 @@ class SummaryAccountMovePos(models.Model):
                 return False
 
     def collect_bills_the_end_day(self):
-        data_posi = self.get_bkav_data()
-        self.create_invoice_bkav(101, data_posi)
+        data_posi = self.get_val_synthetic_account()
+        data_posi_bkav = self.get_bkav_data(data_posi)
+        invoice = self.create_invoice_bkav(101, data_posi_bkav)
+        for line in data_posi:
+            line.number_bill = invoice.get('invoice_guid')
+            line.einvoice_date = invoice.get('invoice_e_date')
+            line.account_einvoice_serial = invoice.get('invoice_serial')
