@@ -469,6 +469,7 @@ class PurchaseOrderLine(models.Model):
     origin_po_line_id = fields.Many2one('purchase.order.line')
     return_line_ids = fields.One2many('purchase.order.line', 'origin_po_line_id', string="Return Lines")
 
+
     # FIX received: not add return picking
     # def compute_received(self):
     #     for item in self:
