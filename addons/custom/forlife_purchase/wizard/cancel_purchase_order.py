@@ -5,7 +5,7 @@ class CancelPurchaseOrder(models.TransientModel):
     _name = "cancel.purchase.order"
     _description = "Cancel purchase order"
 
-    cancel_reason = fields.Text(string='Lý do hủy')
+    cancel_reason = fields.Text(string='Lý do hủy', required=True)
 
     def cancel_confirm_action(self):
         req_id = self._context.get('active_id')
