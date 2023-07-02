@@ -289,7 +289,8 @@ class SummaryAccountMovePos(models.Model):
                         'product_id': sale.product_id.id,
                         'quantity': sale.quantity,
                         'price_unit': sale.price_unit,
-                        'summary_line_id': sale.id
+                        'summary_line_id': sale.id,
+                        'invoice_ids': [(6, 0, sale.invoice_ids.ids)]
                     }
                 })
             for ref in refund_id.line_ids:
@@ -297,6 +298,9 @@ class SummaryAccountMovePos(models.Model):
                     continue
                 if (ref.barcode, ref.price_unit) in dict_item:
                     dict_item[(ref.barcode, ref.price_unit)]['quantity'] += ref.quantity
+                    invoice_ids = dict_item[(ref.barcode, ref.price_unit)]['invoice_ids'][0][2]
+                    new_invoice_ids = invoice_ids + ref.invoice_ids.ids
+                    dict_item[(ref.barcode, ref.price_unit)]['invoice_ids'] = [(6, 0, new_invoice_ids)]
                     dict_item[(ref.barcode, ref.price_unit)]['return_line_id'] = ref.id
                 else:
                     dict_item.update({
@@ -304,7 +308,8 @@ class SummaryAccountMovePos(models.Model):
                             'product_id': ref.product_id.id,
                             'quantity': ref.quantity,
                             'price_unit': ref.price_unit,
-                            'return_line_id': ref.id
+                            'return_line_id': ref.id,
+                            'invoice_ids': [(6, 0, ref.invoice_ids.ids)]
                         }
                     })
             for line in dict_item:
