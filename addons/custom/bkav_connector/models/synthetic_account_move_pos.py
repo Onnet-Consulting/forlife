@@ -16,7 +16,7 @@ class SyntheticAccountMovePos(models.Model):
     line_ids = fields.One2many('synthetic.account.move.pos.line', 'synthetic_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
-    einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
+    einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT', readonly=1)
     einvoice_date = fields.Date(string="Ngày phát hành")
     account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
 

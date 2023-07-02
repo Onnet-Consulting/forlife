@@ -235,11 +235,43 @@ class SummaryAccountMovePos(models.Model):
 
     def collect_bills_the_end_day(self):
         synthetic, adjusted = self.get_val_synthetic_account()
-        synthetic_bkav = self.get_bkav_data(synthetic)
-        adjusted_bkav = self.get_bkav_data(adjusted)
-        # invoice_synthetic = self.create_invoice_bkav(101, synthetic_bkav)
-        invoice_adjusted = self.create_invoice_bkav(124, adjusted_bkav)
-        for line in synthetic:
-            line.number_bill = invoice_adjusted.get('invoice_guid')
-            line.einvoice_date = invoice_adjusted.get('invoice_e_date')
-            line.account_einvoice_serial = invoice_adjusted.get('invoice_serial')
+        self.synthetic_post_bkav(synthetic)
+        # adjusted_bkav = self.get_bkav_data(adjusted)
+        # invoice_adjusted = self.create_invoice_bkav(124, adjusted_bkav)
+
+    def synthetic_post_bkav(self, synthetic):
+        gui_id_list = []
+        for item in synthetic:
+            synthetic_bkav = self.get_bkav_data(item)
+            invoice_synthetic = self.create_invoice_bkav(101, synthetic_bkav)
+            gui_id_list.append(invoice_synthetic.get('invoice_guid'))
+            item.number_bill = '[{}]_[{}]_[{}]'.format(invoice_synthetic.get('invoice_form'),
+                                                       invoice_synthetic.get('invoice_serial'),
+                                                       invoice_synthetic.get('invoice_no'))
+            item.code = item.number_bill
+            item.einvoice_date = invoice_synthetic.get('invoice_e_date')
+            item.account_einvoice_serial = invoice_synthetic.get('invoice_serial')
+
+        self.sign_invoice_bkav(gui_id_list, synthetic)
+
+    def sign_invoice_bkav(self, gui_id_list, records):
+        configs = self.get_bkav_config()
+        invoice_guid_list = []
+        for gui_id in gui_id_list:
+            invoice_guid_list.append({
+                "InvoiceGUID": gui_id
+            })
+        body = {
+            "CmdType": 206,
+            "CommandObject": invoice_guid_list
+        }
+        try:
+            response = connect_bkav(body, configs)
+        except Exception as ex:
+            _logger.error(f'BKAV connect_bkav: {ex}')
+            return False
+        if response.get('Status') == 1:
+            _logger.error(response.get('Object'))
+        else:
+            for item in records:
+                item.einvoice_status = 'sign'
