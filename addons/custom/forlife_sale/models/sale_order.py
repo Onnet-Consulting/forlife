@@ -410,21 +410,25 @@ class SaleOrderLine(models.Model):
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 
+    def get_product_code(self):
+        account = self.x_product_code_id.asset_account.id
+        product_categ_id = self.env['product.category'].search(
+            [('property_stock_valuation_account_id', '=', account)])
+        product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+        if not product_id:
+            return False
+        if len(product_id) == 1:
+            self.product_id = product_id
+            return True
+        else:
+            raise UserError(_('Không có sản phẩm nào phù hợp với mã tài sản!'))
+
     @api.onchange('x_product_code_id')
     def x_product_code_id_get_domain(self):
         if self.x_product_code_id:
-            account = self.x_product_code_id.asset_account.id
-            product_categ_id = self.env['product.category'].search(
-                [('property_stock_valuation_account_id', '=', account)])
-            if product_categ_id:
-                product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
-                domain = [('id', 'in', product_id.ids)]
-                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain,
-                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                         ('company_id', '=', self.order_id.company_id.id)]
-                                   }}
-            else:
+            if not self.get_product_code():
+                self.product_id = None
+                self.name = None
                 return {'domain': {'product_id': [('id', '=', 0)],
                                    'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                          ('company_id', '=', self.order_id.company_id.id)]
