@@ -140,8 +140,9 @@ class SummaryAccountMovePos(models.Model):
 
     def find_summary(self, res):
         summary_return_line_id = self.env['summary.account.move.pos.return.line'].browse(res.get('return_line_id'))
-        pos_order_ids = summary_return_line_id.invoice_ids
-        pos_order_ids_sorted = pos_order_ids.sorted('create_date')
+        pos_order_return_ids = summary_return_line_id.invoice_ids
+        pos_order_sale_ids = pos_order_return_ids.mapped('refunded_order_ids')
+        pos_order_ids_sorted = pos_order_sale_ids.sorted('create_date')
         quantity = res.get('quantity')
         product_id = self.env['product.product'].browse(res.get('product_id'))
         price_unit = res.get('price_unit')
@@ -151,6 +152,8 @@ class SummaryAccountMovePos(models.Model):
             if quantity == 0:
                 break
             pos_order = pos_order_ids_sorted[i]
+            products = pos_order.lines.mapped('product_id')
+            price_bkavs = pos_order.lines.mapped('price_bkav')
             lines = pos_order.lines.filtered(lambda x: x.product_id.id == product_id.id and
                                             x.price_bkav == price_unit)
             invoice_date_from = pos_order.create_date.replace(hour=0, minute=0, second=0)
@@ -164,7 +167,7 @@ class SummaryAccountMovePos(models.Model):
                     continue
                 if quantity == 0:
                     break
-                if quantity - line.qty < 0:
+                if quantity + line.qty < 0:
                     synthetic_ids.append({
                         'product_id': product_id,
                         'quantity': line.qty,
@@ -172,11 +175,11 @@ class SummaryAccountMovePos(models.Model):
                         'synthetic_id': synthetic_id.id,
                         'pos_order': pos_order.id
                     })
-                    quantity -= line.qty
+                    quantity += line.qty
                 else:
                     synthetic_ids.append({
                         'product_id': product_id,
-                        'quantity': quantity,
+                        'quantity': abs(quantity),
                         'price_unit': price_unit,
                         'synthetic_id': synthetic_id.id,
                         'pos_order': pos_order.id
