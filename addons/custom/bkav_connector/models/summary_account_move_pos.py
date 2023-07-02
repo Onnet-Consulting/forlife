@@ -55,12 +55,9 @@ class SummaryAccountMovePos(models.Model):
                         }
                     })
                 else:
-                    pos_order_ids = products.get(item).get('pos_order_ids')
-                    quantity = products.get(item).get('quantity')
-                    products.get(item).update({
-                        'quantity': quantity + line.qty,
-                        'pos_order_ids': pos_order_ids + [line.order_id.id]
-                    })
+                    products[item]['quantity'] += line.qty
+                    products[item]['pos_order_ids'] += [line.order_id.id]
+
         record_ids = []
         for store in stores:
             products = data_store.get(store.id).get('products')
@@ -140,7 +137,6 @@ class SummaryAccountMovePos(models.Model):
         return vals_posi, vals_neg
 
     def find_summary(self, res):
-        print(res)
         summary_return_line_id = self.env['summary.account.move.pos.return.line'].browse(res.get('return_line_id'))
         pos_order_ids = summary_return_line_id.invoice_ids
         pos_order_ids_sorted = pos_order_ids.sorted('create_date')
@@ -150,7 +146,8 @@ class SummaryAccountMovePos(models.Model):
         synthetic_ids = []
 
         for i in range(len(pos_order_ids_sorted)):
-            if quantity == 0: break
+            if quantity == 0:
+                break
             pos_order = pos_order_ids_sorted[i]
             lines = pos_order.lines.filtered(lambda x: x.product_id.id == product_id.id and
                                             x.price_bkav == price_unit)
@@ -163,6 +160,10 @@ class SummaryAccountMovePos(models.Model):
             # synthetic_id = self.env['synthetic.account.move.pos'].search([],
             #                                                              limit=1)
             for line in lines:
+                if not line.product_id.barcode:
+                    continue
+                if quantity == 0:
+                    break
                 if quantity - line.qty < 0:
                     synthetic_ids.append({
                         'product_id': product_id,
