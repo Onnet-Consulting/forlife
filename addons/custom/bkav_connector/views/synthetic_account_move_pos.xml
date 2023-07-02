@@ -55,12 +55,20 @@
                             </field>
                         </page>
                         <page name="HĐĐT" string="Invoices">
-                            <field name="number_bill"/>
-                            <field name="einvoice_status"/>
-                            <field name="einvoice_date"/>
+                            <group>
+                                <field name="number_bill"/>
+                                <field name="einvoice_status"/>
+                                <field name="einvoice_date"/>
+                                <field name="account_einvoice_serial"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
             </form>
         </field>
     </record>

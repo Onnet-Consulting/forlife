@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 
 class SummaryAccountMovePos(models.Model):
     _name = 'summary.account.move.pos'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'image.mixin']
     _rec_name = 'code'
 
     code = fields.Char('Code')
@@ -18,9 +19,6 @@ class SummaryAccountMovePos(models.Model):
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
-
-    def collect_bills_the_end_day(self):
-        self.collect_clearing_the_end_day()
 
     def collect_invoice_return_end_day(self):
         moves = self.env['account.move']
@@ -245,6 +243,10 @@ class SummaryAccountMovePos(models.Model):
                 self.env['summary.adjusted.invoice.pos'].create(vals)
 
         aaa = 1
+    def get_val_synthetic_account(self):
+        vals, vals_neg = self.collect_clearing_the_end_day()
+        synthetic = self.env['synthetic.account.move.pos'].create(vals)
+        return synthetic
 
     def find_matching_store_id(self, sales, refunds):
         matching_records = {}

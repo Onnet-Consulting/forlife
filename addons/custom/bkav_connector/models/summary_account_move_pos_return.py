@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'image.mixin']
     _rec_name = 'code'
 
     code = fields.Char('Code')

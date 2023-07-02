@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 
 class SyntheticAccountMovePos(models.Model):
     _name = 'synthetic.account.move.pos'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'image.mixin']
 
     code = fields.Char('Code')
     store_id = fields.Many2one('store')
@@ -17,6 +18,7 @@ class SyntheticAccountMovePos(models.Model):
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
+    account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
 
 
 class SyntheticAccountMovePosLine(models.Model):
