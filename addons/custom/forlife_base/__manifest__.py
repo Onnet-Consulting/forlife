@@ -53,4 +53,9 @@
         'views/menu_item.xml',
     ],
     "post_init_hook": "post_init_hook",
+    'assets': {
+        'web.assets_backend': [
+            'forlife_base/static/src/css/**/*',
+        ]
+    },
 }
