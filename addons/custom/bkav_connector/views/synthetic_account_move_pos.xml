@@ -80,7 +80,7 @@
     </record>
 
     <menuitem id="synthetic_account_move_pos_menu"
-              parent="point_of_sale.menu_point_root"
+              parent="summary_account_move_menu"
               name="Hóa đơn bù trừ cuối ngày"
               action="synthetic_account_move_pos_action"
               sequence="10"/>

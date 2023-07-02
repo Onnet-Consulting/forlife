@@ -71,13 +71,19 @@
     </record>
 
     <record id="summary_account_move_pos_action" model="ir.actions.act_window">
-        <field name="name">Invoice not exists BKAV</field>
+        <field name="name">Hóa đơn bán tổng cuối ngày</field>
         <field name="res_model">summary.account.move.pos</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="summary_account_move_pos_menu"
+    <menuitem id="summary_account_move_menu"
+              name="Hóa đơn tổng hợp cuối ngày"
               parent="point_of_sale.menu_point_root"
+              sequence="10"/>
+
+    <menuitem id="summary_account_move_pos_menu"
+              name="Hóa đơn bán tổng cuối ngày"
+              parent="summary_account_move_menu"
               action="summary_account_move_pos_action"
               sequence="10"/>
 </odoo>

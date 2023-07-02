@@ -71,13 +71,14 @@
     </record>
 
     <record id="summary_account_move_pos_return_action" model="ir.actions.act_window">
-        <field name="name">Invoice Return not exists BKAV</field>
+        <field name="name">Hóa đơn đổi trả tổng cuối ngày</field>
         <field name="res_model">summary.account.move.pos.return</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem id="summary_account_move_pos_return_menu"
-              parent="point_of_sale.menu_point_root"
+              name="Hóa đơn đổi trả tổng cuối ngày"
+              parent="summary_account_move_menu"
               action="summary_account_move_pos_return_action"
               sequence="10"/>
 </odoo>

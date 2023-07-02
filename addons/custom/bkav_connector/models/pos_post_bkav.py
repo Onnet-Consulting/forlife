@@ -242,7 +242,7 @@ class SummaryAccountMovePos(models.Model):
     def collect_bills_the_end_day(self):
         synthetic, adjusted = self.get_val_synthetic_account()
         self.summary_post_bkav(synthetic, 101)
-        # self.summary_post_bkav(adjusted, 124)
+        self.summary_post_bkav(adjusted, 124)
 
     def summary_post_bkav(self, data, cmd_type=None):
         gui_id_list = []
