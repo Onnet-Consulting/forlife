@@ -112,7 +112,7 @@ def connect_bkav(data, configs):
 class SummaryAccountMovePos(models.Model):
     _inherit = 'summary.account.move.pos'
 
-    def get_bkav_data(self, data):
+    def get_bkav_data(self, data, cmd_type=None):
         bkav_data = []
         for invoice in data:
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
@@ -139,7 +139,7 @@ class SummaryAccountMovePos(models.Model):
                     # gốc là out_refund => điều chỉnh tăng
                 #     item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
                 list_invoice_detail.append(item)
-            bkav_data.append({
+            invoice_json = {
                 "Invoice": {
                     "InvoiceTypeID": 1,
                     "InvoiceDate": str(invoice_date).replace(' ', 'T'),
@@ -166,7 +166,13 @@ class SummaryAccountMovePos(models.Model):
                 },
                 "PartnerInvoiceID": invoice.id,
                 "ListInvoiceDetailsWS": list_invoice_detail
-            })
+            }
+            if cmd_type == 124:
+                invoice_json["Invoice"].update({
+                    "Reason": "Huỷ/thay thế/điều chỉnh Hoá đơn với lý do abc",
+                    "OriginalInvoiceIdentify": "[1]_[C23TAC]_[153]"
+                })
+            bkav_data.append(invoice_json)
         return bkav_data
 
     def get_bkav_config(self):
@@ -236,7 +242,7 @@ class SummaryAccountMovePos(models.Model):
     def collect_bills_the_end_day(self):
         synthetic, adjusted = self.get_val_synthetic_account()
         synthetic_bkav = self.get_bkav_data(synthetic)
-        adjusted_bkav = self.get_bkav_data(adjusted)
+        adjusted_bkav = self.get_bkav_data(adjusted, 124)
         # invoice_synthetic = self.create_invoice_bkav(101, synthetic_bkav)
         invoice_adjusted = self.create_invoice_bkav(124, adjusted_bkav)
         for line in synthetic:
