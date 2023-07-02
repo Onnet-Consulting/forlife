@@ -132,8 +132,6 @@ class SummaryAccountMovePos(models.Model):
         data_diff = self.get_value_synthetic_move_diff(different_records)
         vals_posi = data_match[0] + data_diff[0]
         vals_neg = data_match[1] + data_diff[1]
-
-        self.make_adjusted_invoice_pos(vals_neg)
         return vals_posi, vals_neg
 
     def find_summary(self, res):
@@ -157,8 +155,6 @@ class SummaryAccountMovePos(models.Model):
                                                                           ('invoice_date', '<=', invoice_date_to)],
                                                                          limit=1)
 
-            # synthetic_id = self.env['synthetic.account.move.pos'].search([],
-            #                                                              limit=1)
             for line in lines:
                 if not line.product_id.barcode:
                     continue
@@ -185,14 +181,12 @@ class SummaryAccountMovePos(models.Model):
         return synthetic_ids
 
     def make_adjusted_invoice_pos(self, vals_neg):
-        ppp = []
+        record_ids = []
         for data_store in vals_neg:
             source_invoices = {}
             summary_parents = []
-            ppp.append(summary_parents)
             for line in data_store.get('line_ids'):
                 summary_parents += self.find_summary(line[2])
-            tmp = 1
             for item in summary_parents:
                 if not source_invoices.get(item.get('synthetic_id')):
                     source_invoices.update({
@@ -240,13 +234,16 @@ class SummaryAccountMovePos(models.Model):
                     'invoice_date': date.today(),
                     'line_ids': lines
                 }
-                self.env['summary.adjusted.invoice.pos'].create(vals)
+                record = self.env['summary.adjusted.invoice.pos'].create(vals)
+                record_ids.append(record.id)
+        res = self.env['summary.adjusted.invoice.pos'].browse(record_ids)
+        return res
 
-        aaa = 1
     def get_val_synthetic_account(self):
         vals, vals_neg = self.collect_clearing_the_end_day()
         synthetic = self.env['synthetic.account.move.pos'].create(vals)
-        return synthetic
+        adjusted_invoice = self.make_adjusted_invoice_pos(vals_neg)
+        return synthetic, adjusted_invoice
 
     def find_matching_store_id(self, sales, refunds):
         matching_records = {}
