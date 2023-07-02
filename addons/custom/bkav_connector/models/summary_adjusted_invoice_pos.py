@@ -14,8 +14,8 @@ class SummaryAdjustedInvoicePos(models.Model):
     source_einvoice = fields.Char(string='Hóa đơn điện tử gốc')
 
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Draft'),
-                              ('posted', 'Posted')], string="State")
+    state = fields.Selection([('draft', 'Nháp'),
+                              ('posted', 'Đã phát hành')], string="State", default='draft')
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'adjusted_invoice_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
