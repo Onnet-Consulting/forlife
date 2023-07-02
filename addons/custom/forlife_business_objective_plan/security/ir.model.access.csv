@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_bo_plan_manager,bo_plan_manager,model_business_objective_plan,forlife_business_objective_plan.bo_plan_manager,1,1,1,1
+access_bo_plan_user,bo_plan_user,model_business_objective_plan,forlife_business_objective_plan.bo_plan_user,1,0,0,0
+
+access_bo_store_manager,bo_store_manager,model_business_objective_store,forlife_business_objective_plan.bo_plan_manager,1,1,1,1
+access_bo_store_user,bo_store_user,model_business_objective_store,forlife_business_objective_plan.bo_plan_user,1,0,0,0
+
+access_bo_employee,bo_employee,model_business_objective_employee,forlife_business_objective_plan.bo_plan_user,1,1,1,1
+
+access_employee_transfer,employee_transfer,model_employee_transfer,forlife_business_objective_plan.bo_plan_user,1,1,1,0
+
+access_bo_import_excel_wizard,bo.import.excel.wizard,model_bo_import_excel_wizard,forlife_business_objective_plan.bo_plan_user,1,1,1,1
