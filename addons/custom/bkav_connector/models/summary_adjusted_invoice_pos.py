@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
+import json
+import logging
+
+from odoo.addons.bkav_connector.models.pos_post_bkav import connect_bkav
+
+_logger = logging.getLogger(__name__)
 
 
 class SummaryAdjustedInvoicePos(models.Model):
@@ -25,6 +31,39 @@ class SummaryAdjustedInvoicePos(models.Model):
     account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT',
                                        readonly=1)
+    partner_invoice_id = fields.Integer(string='Số hóa đơn')
+    eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+
+    def action_download_view_e_invoice(self):
+        if not self.eivoice_file:
+            configs = self.env['summary.account.move.pos'].get_bkav_config()
+            data = {
+                "CmdType": int(configs.get('cmd_downloadPDF')),
+                "CommandObject": self.partner_invoice_id,
+            }
+            _logger.info(f'BKAV - data download invoice to BKAV: {data}')
+            response_action = connect_bkav(data, configs)
+            if response_action.get('Status') == '1':
+                self.message_post(body=(response_action.get('Object')))
+            else:
+                attachment_id = self.env['ir.attachment'].sudo().create({
+                    'name': f"{self.number_bill}.pdf",
+                    'datas': json.loads(response_action.get('Object')).get('PDF', ''),
+                })
+                self.eivoice_file = attachment_id
+                return {
+                    'type': 'ir.actions.act_url',
+                    'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
+                           % (self.eivoice_file.id, self.eivoice_file.name),
+                    'target': 'self',
+                }
+        else:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
+                       % (self.eivoice_file.id, self.eivoice_file.name),
+                'target': 'self',
+            }
 
 
 class SummaryAdjustedInvoicePosLine(models.Model):

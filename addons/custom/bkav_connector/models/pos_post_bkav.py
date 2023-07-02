@@ -231,6 +231,7 @@ class SummaryAccountMovePos(models.Model):
                 return {
                     'exists_bkav': True,
                     'is_post_bkav': True,
+                    'partner_invoice_id': result_data.get('PartnerInvoiceID'),
                     'invoice_guid': result_data.get('InvoiceGUID'),
                     'invoice_no': result_data.get('InvoiceNo'),
                     'invoice_form': result_data.get('InvoiceForm'),
@@ -260,6 +261,7 @@ class SummaryAccountMovePos(models.Model):
             item.code = item.number_bill
             item.einvoice_date = einvoice.get('invoice_e_date')
             item.account_einvoice_serial = einvoice.get('invoice_serial')
+            item.partner_invoice_id = einvoice.get('partner_invoice_id')
 
         self.sign_invoice_bkav(gui_id_list, data)
 
