@@ -13,6 +13,7 @@ from Crypto.Signature import pkcs1_15
 
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA1
+from odoo.exceptions import ValidationError, UserError
 
 VN_COMPANY_CODES = [
     '1200'
@@ -44,7 +45,7 @@ class ResCompany(models.Model):
     def _parse_vietin_data(self, available_currencies):
         data = self._vietin_bank_send_request_exchange_rate()
         if data['status']['code'] != '0':
-            return
+            raise ValidationError(data)
         response_exchange_rates = data.get('ForeignExchangeRateInfo', [])
         available_currency_names = available_currencies.mapped('name')
         date_rate = fields.Date.context_today(self)
