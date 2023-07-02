@@ -9,6 +9,10 @@ class SummaryAdjustedInvoicePos(models.Model):
     code = fields.Char('Code')
     store_id = fields.Many2one('store')
     partner_id = fields.Many2one('res.partner')
+    source_invoice = fields.Many2one('synthetic.account.move.pos',
+                                     string='Hóa đơn gốc')
+    source_einvoice = fields.Char(string='Hóa đơn điện tử gốc')
+
     invoice_date = fields.Date('Date')
     state = fields.Selection([('draft', 'Draft'),
                               ('posted', 'Posted')], string="State")

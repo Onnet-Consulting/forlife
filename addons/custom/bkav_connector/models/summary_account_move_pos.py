@@ -137,7 +137,114 @@ class SummaryAccountMovePos(models.Model):
         data_diff = self.get_value_synthetic_move_diff(different_records)
         vals_posi = data_match[0] + data_diff[0]
         vals_neg = data_match[1] + data_diff[1]
+
+        self.make_adjusted_invoice_pos(vals_neg)
         return vals_posi, vals_neg
+
+    def find_summary(self, res):
+        print(res)
+        summary_return_line_id = self.env['summary.account.move.pos.return.line'].browse(res.get('return_line_id'))
+        pos_order_ids = summary_return_line_id.invoice_ids
+        pos_order_ids_sorted = pos_order_ids.sorted('create_date')
+        quantity = res.get('quantity')
+        product_id = self.env['product.product'].browse(res.get('product_id'))
+        price_unit = res.get('price_unit')
+        synthetic_ids = []
+
+        for i in range(len(pos_order_ids_sorted)):
+            if quantity == 0: break
+            pos_order = pos_order_ids_sorted[i]
+            lines = pos_order.lines.filtered(lambda x: x.product_id.id == product_id.id and
+                                            x.price_bkav == price_unit)
+            invoice_date_from = pos_order.create_date.replace(hour=0, minute=0, second=0)
+            invoice_date_to = pos_order.create_date.replace(hour=23, minute=59, second=59)
+            synthetic_id = self.env['synthetic.account.move.pos'].search([('invoice_date', '>=', invoice_date_from),
+                                                                          ('invoice_date', '<=', invoice_date_to)],
+                                                                         limit=1)
+
+            # synthetic_id = self.env['synthetic.account.move.pos'].search([],
+            #                                                              limit=1)
+            for line in lines:
+                if quantity - line.qty < 0:
+                    synthetic_ids.append({
+                        'product_id': product_id,
+                        'quantity': line.qty,
+                        'price_unit': price_unit,
+                        'synthetic_id': synthetic_id.id,
+                        'pos_order': pos_order.id
+                    })
+                    quantity -= line.qty
+                else:
+                    synthetic_ids.append({
+                        'product_id': product_id,
+                        'quantity': quantity,
+                        'price_unit': price_unit,
+                        'synthetic_id': synthetic_id.id,
+                        'pos_order': pos_order.id
+                    })
+                    quantity = 0
+        print(quantity, "==================")
+        return synthetic_ids
+
+    def make_adjusted_invoice_pos(self, vals_neg):
+        ppp = []
+        for data_store in vals_neg:
+            source_invoices = {}
+            summary_parents = []
+            ppp.append(summary_parents)
+            for line in data_store.get('line_ids'):
+                summary_parents += self.find_summary(line[2])
+            tmp = 1
+            for item in summary_parents:
+                if not source_invoices.get(item.get('synthetic_id')):
+                    source_invoices.update({
+                        item.get('synthetic_id'): [item]
+                    })
+                else:
+                    source_invoices.update({
+                        item.get('synthetic_id'): source_invoices.get(item.get('synthetic_id')) + [item]
+                    })
+
+            for invoice in source_invoices:
+                products = {}
+                for pos_order_line in source_invoices.get(invoice):
+                    item = (pos_order_line.get('product_id').barcode, pos_order_line.get('price_unit'))
+                    if not products.get(item):
+                        products.update({
+                            item: {
+                                'product_id': pos_order_line.get('product_id').id,
+                                'quantity': pos_order_line.get('quantity'),
+                                'price_unit': pos_order_line.get('price_unit'),
+                                'pos_order_ids': [pos_order_line.get('pos_order')]
+                            }
+                        })
+                    else:
+                        pos_order_ids = products.get(item).get('pos_order_ids')
+                        quantity = products.get(item).get('quantity')
+                        products.get(item).update({
+                            'quantity': quantity + pos_order_line.get('quantity'),
+                            'pos_order_ids': pos_order_ids + [pos_order_line.get('pos_order')]
+                        })
+                lines = []
+                for item in products:
+                    lines.append((0, 0, {
+                        'product_id': products.get(item).get('product_id'),
+                        'quantity': products.get(item).get('quantity'),
+                        'price_unit': products.get(item).get('price_unit'),
+                        'invoice_ids': [(6, 0, products.get(item).get('pos_order_ids'))]
+                    }))
+
+                store = self.env['store'].browse(data_store.get('store_id'))
+                vals = {
+                    'store_id': store.id,
+                    'source_invoice': invoice,
+                    'partner_id': store.contact_id.id,
+                    'invoice_date': date.today(),
+                    'line_ids': lines
+                }
+                self.env['summary.adjusted.invoice.pos'].create(vals)
+
+        aaa = 1
 
     def find_matching_store_id(self, sales, refunds):
         matching_records = {}
