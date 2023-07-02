@@ -235,6 +235,7 @@ class SummaryAccountMovePos(models.Model):
                     'company_id': self.env.company.id,
                     'store_id': store.id,
                     'source_invoice': invoice,
+                    'source_einvoice': invoice.number_bill if invoice else '',
                     'partner_id': store.contact_id.id,
                     'invoice_date': date.today(),
                     'line_ids': lines

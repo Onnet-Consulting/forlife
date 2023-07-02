@@ -168,9 +168,12 @@ class SummaryAccountMovePos(models.Model):
                 "ListInvoiceDetailsWS": list_invoice_detail
             }
             if cmd_type == 124:
+                OriginalInvoiceIdentify = invoice.source_einvoice
+                if not invoice.source_invoice:
+                    OriginalInvoiceIdentify = "[1]_[C23TAC]_[153]"
                 invoice_json["Invoice"].update({
-                    "Reason": "Huỷ/thay thế/điều chỉnh Hoá đơn với lý do abc",
-                    "OriginalInvoiceIdentify": "[1]_[C23TAC]_[153]"
+                    "Reason": f"Điều chỉnh Hoá đơn {invoice.source_einvoice}",
+                    "OriginalInvoiceIdentify": OriginalInvoiceIdentify
                 })
             bkav_data.append(invoice_json)
         return bkav_data
@@ -242,7 +245,7 @@ class SummaryAccountMovePos(models.Model):
     def collect_bills_the_end_day(self):
         synthetic, adjusted = self.get_val_synthetic_account()
         self.summary_post_bkav(synthetic, 101)
-        # self.summary_post_bkav(adjusted, 124)
+        self.summary_post_bkav(adjusted, 124)
 
     def summary_post_bkav(self, data, cmd_type=None):
         gui_id_list = []
