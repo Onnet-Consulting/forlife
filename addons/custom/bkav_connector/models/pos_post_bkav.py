@@ -234,10 +234,12 @@ class SummaryAccountMovePos(models.Model):
                 return False
 
     def collect_bills_the_end_day(self):
-        data_posi = self.get_val_synthetic_account()
-        data_posi_bkav = self.get_bkav_data(data_posi)
-        invoice = self.create_invoice_bkav(101, data_posi_bkav)
-        for line in data_posi:
-            line.number_bill = invoice.get('invoice_guid')
-            line.einvoice_date = invoice.get('invoice_e_date')
-            line.account_einvoice_serial = invoice.get('invoice_serial')
+        synthetic, adjusted = self.get_val_synthetic_account()
+        synthetic_bkav = self.get_bkav_data(synthetic)
+        adjusted_bkav = self.get_bkav_data(adjusted)
+        # invoice_synthetic = self.create_invoice_bkav(101, synthetic_bkav)
+        invoice_adjusted = self.create_invoice_bkav(124, adjusted_bkav)
+        for line in synthetic:
+            line.number_bill = invoice_adjusted.get('invoice_guid')
+            line.einvoice_date = invoice_adjusted.get('invoice_e_date')
+            line.account_einvoice_serial = invoice_adjusted.get('invoice_serial')
