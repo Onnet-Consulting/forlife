@@ -12,8 +12,8 @@ class SummaryAccountMovePosReturn(models.Model):
     store_id = fields.Many2one('store')
     partner_id = fields.Many2one('res.partner')
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Draft'),
-                              ('posted', 'Posted')], string="State")
+    state = fields.Selection([('draft', 'Nháp'),
+                              ('posted', 'Đã phát hành')], string="State", default='draft')
 
     line_ids = fields.One2many('summary.account.move.pos.return.line', 'return_id')
     company_id = fields.Many2one('res.company')

@@ -54,9 +54,12 @@
                             </field>
                         </page>
                         <page name="HĐĐT" string="Invoices">
-                            <field name="number_bill"/>
-                            <field name="einvoice_status"/>
-                            <field name="einvoice_date"/>
+                            <group>
+                                <field name="number_bill"/>
+                                <field name="einvoice_status"/>
+                                <field name="einvoice_date"/>
+                                <field name="account_einvoice_serial"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

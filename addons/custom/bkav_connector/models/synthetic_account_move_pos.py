@@ -11,8 +11,8 @@ class SyntheticAccountMovePos(models.Model):
     store_id = fields.Many2one('store')
     partner_id = fields.Many2one('res.partner')
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Draft'),
-                              ('posted', 'Posted')], string="State")
+    state = fields.Selection([('draft', 'Nháp'),
+                              ('posted', 'Đã vào sổ')], string="State", default='draft')
     line_ids = fields.One2many('synthetic.account.move.pos.line', 'synthetic_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')

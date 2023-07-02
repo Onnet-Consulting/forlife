@@ -12,8 +12,8 @@ class SummaryAccountMovePos(models.Model):
     partner_id = fields.Many2one('res.partner')
     store_id = fields.Many2one('store')
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Draft'),
-                              ('posted', 'Posted')], string="State")
+    state = fields.Selection([('draft', 'Nháp'),
+                              ('posted', 'Đã phát hành')], string="State", default='draft')
     line_ids = fields.One2many('summary.account.move.pos.line', 'summary_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
@@ -23,7 +23,8 @@ class SummaryAccountMovePos(models.Model):
     def collect_invoice_return_end_day(self):
         moves = self.env['account.move']
         today = date.today() - timedelta(days=1)
-        invoice_pos = moves.search([('is_post_bkav', '=', False),
+        invoice_pos = moves.search([('company_id', '=', self.env.company.id),
+                                 ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
                                  ('move_type', 'in', ('out_refund', 'out_invoice')),
                                  ('invoice_date', '<=', today)])
@@ -70,6 +71,7 @@ class SummaryAccountMovePos(models.Model):
                     'invoice_ids': [(6, 0, products.get(item).get('pos_order_ids'))]
                 }))
             vals = {
+                'company_id': self.env.company.id,
                 'store_id': store.id,
                 'partner_id': store.contact_id.id,
                 'invoice_date': date.today(),
@@ -83,7 +85,8 @@ class SummaryAccountMovePos(models.Model):
         moves = self.env['account.move']
         sale_ids = []
         today = date.today() - timedelta(days=1) # Do job chạy 2h sáng nên gom đơn ngày hqua phải - 1
-        invoices = moves.search([('move_type', '=', 'out_invoice'),
+        invoices = moves.search([('company_id', '=', self.env.company.id),
+                                 ('move_type', '=', 'out_invoice'),
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
                                  ('invoice_date', '<=', today)])
@@ -114,6 +117,7 @@ class SummaryAccountMovePos(models.Model):
                     'invoice_ids': [(6, 0, invoice_ids)]
                 }))
             sale = self.env['summary.account.move.pos'].create({
+                'company_id': self.env.company.id,
                 'store_id': store.id,
                 'partner_id': store.contact_id.id,
                 'invoice_date': date.today(),
@@ -228,6 +232,7 @@ class SummaryAccountMovePos(models.Model):
 
                 store = self.env['store'].browse(data_store.get('store_id'))
                 vals = {
+                    'company_id': self.env.company.id,
                     'store_id': store.id,
                     'source_invoice': invoice,
                     'partner_id': store.contact_id.id,
@@ -308,6 +313,7 @@ class SummaryAccountMovePos(models.Model):
                     move_line_neg_val.append((0, 0, dict_item.get(line)))
             if move_line_posi_val:
                 vals_posi.append({
+                    'company_id': self.env.company.id,
                     'store_id': store_id.id,
                     'partner_id': store_id.contact_id.id,
                     'invoice_date': date.today(),
@@ -315,6 +321,7 @@ class SummaryAccountMovePos(models.Model):
                 })
             if move_line_neg_val:
                 vals_neg.append({
+                    'company_id': self.env.company.id,
                     'store_id': store_id.id,
                     'partner_id': store_id.contact_id.id,
                     'invoice_date': date.today(),
@@ -340,6 +347,7 @@ class SummaryAccountMovePos(models.Model):
                     move_line_neg_val.append(lines)
             if move_line_posi_val:
                 vals_posi.append({
+                    'company_id': self.env.company.id,
                     'store_id': item.store_id.id,
                     'partner_id': item.store_id.contact_id.id,
                     'invoice_date': date.today(),
@@ -347,6 +355,7 @@ class SummaryAccountMovePos(models.Model):
                 })
             if move_line_neg_val:
                 vals_neg.append({
+                    'company_id': self.env.company.id,
                     'store_id': item.store_id.id,
                     'partner_id': item.store_id.contact_id.id,
                     'invoice_date': date.today(),
