@@ -150,6 +150,21 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.location_id = self.location_id
 
+    @api.onchange('account_analytic_ids')
+    def _onchange_line_account_analytic_id(self):
+        for rec in self.order_line:
+            rec.account_analytic_id = self.account_analytic_ids[0]
+
+    @api.onchange('occasion_code_ids')
+    def _onchange_line_occasion_code_ids(self):
+        for rec in self.order_line:
+            rec.occasion_code_ids = self.occasion_code_ids[0]
+
+    @api.onchange('production_id')
+    def _onchange_line_production_id(self):
+        for rec in self.order_line:
+            rec.production_id = self.production_id[0]
+
     @api.onchange('receive_date')
     def _onchange_line_receive_date(self):
         for rec in self.order_line:
@@ -192,6 +207,24 @@ class PurchaseOrder(models.Model):
         for item in self:
             if not item.currency_id:
                 raise ValidationError('Trường tiền tệ không tồn tại')
+
+    @api.constrains('account_analytic_ids')
+    def constrains_account_analytic_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.account_analytic_ids and len(item.account_analytic_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 trung tâm chi phí')
+
+    @api.constrains('occasion_code_ids')
+    def constrains_occasion_code_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.occasion_code_ids and len(item.occasion_code_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 mã vụ việc')
+
+    @api.constrains('production_id')
+    def constrains_production_id(self):
+        for item in self:
+            if not item.is_purchase_request and item.production_id and len(item.production_id) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 lệnh sản xuất')
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
