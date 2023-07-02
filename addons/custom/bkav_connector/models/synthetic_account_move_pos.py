@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 class SyntheticAccountMovePos(models.Model):
     _name = 'synthetic.account.move.pos'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'image.mixin']
+    _rec_name = 'code'
 
     code = fields.Char('Code')
     store_id = fields.Many2one('store')

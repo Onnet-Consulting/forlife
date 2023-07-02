@@ -63,6 +63,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
             </form>
         </field>
     </record>
@@ -74,7 +79,7 @@
     </record>
 
     <menuitem id="summary_adjusted_invoice_pos_menu"
-              parent="point_of_sale.menu_point_root"
+              parent="summary_account_move_menu"
               name="Hóa đơn điều chỉnh cuối ngày"
               action="summary_adjusted_invoice_pos_action"
               sequence="10"/>

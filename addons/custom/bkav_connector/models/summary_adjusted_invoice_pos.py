@@ -5,6 +5,8 @@ from datetime import date, datetime, timedelta
 
 class SummaryAdjustedInvoicePos(models.Model):
     _name = 'summary.adjusted.invoice.pos'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'image.mixin']
+    _rec_name = 'code'
 
     code = fields.Char('Code')
     store_id = fields.Many2one('store')
