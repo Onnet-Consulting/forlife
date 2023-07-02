@@ -138,7 +138,7 @@ class SummaryAccountMovePos(models.Model):
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
                 #     item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
-                # list_invoice_detail.append(item)
+                list_invoice_detail.append(item)
             bkav_data.append({
                 "Invoice": {
                     "InvoiceTypeID": 1,

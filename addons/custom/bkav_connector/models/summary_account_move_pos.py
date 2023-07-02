@@ -181,7 +181,6 @@ class SummaryAccountMovePos(models.Model):
                         'pos_order': pos_order.id
                     })
                     quantity = 0
-        print(quantity, "==================")
         return synthetic_ids
 
     def make_adjusted_invoice_pos(self, vals_neg):
@@ -242,7 +241,6 @@ class SummaryAccountMovePos(models.Model):
                 }
                 self.env['summary.adjusted.invoice.pos'].create(vals)
 
-        aaa = 1
     def get_val_synthetic_account(self):
         vals, vals_neg = self.collect_clearing_the_end_day()
         synthetic = self.env['synthetic.account.move.pos'].create(vals)
