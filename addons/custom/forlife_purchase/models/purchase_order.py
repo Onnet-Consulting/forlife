@@ -1736,7 +1736,7 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
+    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent', 'price_subtotal')
     def _compute_amount(self):
         for line in self:
             tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
@@ -1744,7 +1744,7 @@ class PurchaseOrderLine(models.Model):
             amount_untaxed = totals['amount_untaxed']
             amount_tax = totals['amount_tax']
             line.update({
-                'price_subtotal': amount_untaxed,
+                'price_subtotal': amount_untaxed if amount_untaxed else self.price_subtotal,
                 'price_tax': amount_tax,
                 'price_total': amount_untaxed + amount_tax,
             })
@@ -1860,10 +1860,10 @@ class PurchaseOrderLine(models.Model):
             if rec.price_subtotal and rec.order_id.exchange_rate:
                 rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
 
-    @api.depends('product_id', 'is_change_vendor')
+    @api.depends('product_id', 'is_change_vendor', 'is_passersby')
     def compute_product_id(self):
         for rec in self:
-            if rec.product_id and rec.currency_id:
+            if rec.product_id and rec.currency_id and not rec.is_passersby:
                 rec.product_uom = rec.product_id.uom_id.id
                 date_item = datetime.now().date()
                 supplier_info = self.search_product_sup(
@@ -1915,12 +1915,6 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if len(item.taxes_id) > 1:
                 raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
-
-    @api.constrains('purchase_uom')
-    def _constrains_purchase_uom(self):
-        for rec in self:
-            if not rec.purchase_uom:
-                raise ValidationError(_('Đơn vị mua của sản phẩm %s chưa được chọn!') % rec.product_id.name)
 
     _sql_constraints = [
         (
@@ -2078,6 +2072,9 @@ class PurchaseOrderLine(models.Model):
                     and s.product_id == line.product_id
                 )
                 moves.write({"price_unit": line._get_discounted_price_unit()})
+        for rec in self:
+            if not rec.purchase_uom:
+                raise ValidationError(_('Đơn vị mua của sản phẩm %s chưa được chọn!') % rec.product_id.name)
         return res
 
 
