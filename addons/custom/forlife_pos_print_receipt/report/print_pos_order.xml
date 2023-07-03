@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="print_order_pos_tmpl">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="datas" t-value="o.prepare_data_receipt_report()"/>
+                    <t t-foreach="datas" t-as="doc">
+                        <div class="page">
+                            <div t-if="doc['brand'] == 'TKL'" class="logo text-center">
+                                <img class="pos-receipt-logo tokyolife"
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
+                            </div>
+                            <div t-if="doc['brand'] == 'FMT'" class="logo text-center">
+                                <img class="pos-receipt-logo tokyolife"
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+                            </div>
+                            <div class="text-center mt-2">
+                                <t t-esc="doc['address']"/>
+                            </div>
+                            <div class="text-center mt-2">
+                                <t t-esc="doc['phone']"/>
+                            </div>
+                            <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2">
+                                <div class="text-center">
+                                    Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa đơn sau 24h và nhận thông
+                                    tin các ưu đãi mới nhất, lớn nhất
+                                </div>
+                                <img class="mt-2"
+                                     t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', 'text', 150, 150)"/>
+                                <div class="text-center mt-2">
+                                    Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng
+                                </div>
+                            </div>
+                            <div class="section mt-2">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td>Ngày giờ:</td>
+                                            <td>
+                                                <t t-esc="doc['date_order']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Số hóa đơn:</td>
+                                            <td>
+                                                <t t-esc="doc['order_name']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Khách hàng:</td>
+                                            <td>
+                                                <t t-esc="doc['partner']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nhân viên:</td>
+                                            <td>
+                                                <t t-esc="doc['employee']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ghi chú:</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="section">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>Tên hàng</td>
+                                            <td>SL</td>
+                                            <td>Đơn giá</td>
+                                            <td t-if="doc['brand'] == 'TKL'">GG</td>
+                                            <td t-if="doc['brand'] == 'FMT'">-%GG</td>
+                                            <td>Tổng tiền</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <t t-foreach="doc['line_products']" t-as="line">
+                                            <t t-if="len(line['promotion_list']) &gt; 0">
+                                                <t t-foreach="line['promotion_list']" t-as="prom">
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            <strong>-
+                                                                <t t-esc="prom"/>
+                                                            </strong>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <t t-esc="line['name']"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="line['barcode']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line['qty']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line['price_unit']"/>
+                                                </td>
+                                                <td style="text-align: right !important; white-space: nowrap;">
+                                                    <t t-esc="line['discount']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line['subtotal_paid']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="5">
+                                                <hr/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tổng cộng</td>
+                                            <td style="text-align: right !important;">
+                                                <t t-esc="doc['total_qty']"/>
+                                            </td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['amount_total']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Chiết khấu</td>
+                                            <td colspan="4" style="text-align: right !important;">
+                                                <t t-esc="doc['total_reduced']"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['gif_code']" t-as="code">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="code['code']"/>
+                                                </td>
+                                                <td colspan="4" style="text-align: right !important;">
+                                                    <t t-esc="code['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="5">
+                                                <hr/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tổng tiền thanh toán</td>
+                                            <td colspan="4" style="text-align: right !important;">
+                                                <t t-esc="doc['amount_paid']"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['payment_method']" t-as="pm">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="pm['name']"/>
+                                                </td>
+                                                <td colspan="4" style="text-align: right !important;">
+                                                    <t t-esc="pm['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td>Tiêu tích lũy</td>
+                                            <td colspan="4" style="text-align: right !important;">
+                                                <t t-esc="doc['accumulation']"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td colspan="5">
+                                                <hr/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td>Tích lũy HĐ</td>
+                                            <td colspan="4" style="text-align: right !important;">
+                                                <t t-esc="doc['total_point']"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td>Điểm tích lũy</td>
+                                            <td colspan="4" style="text-align: right !important;">
+                                                <t t-esc="doc['sum_total_point']"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <t t-esc="doc['receipt_footer']"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="paperformat_pos_A6" model="report.paperformat">
+            <field name="name">POS A6</field>
+            <field name="default" eval="True"/>
+            <field name="format">A6</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">3</field>
+            <field name="margin_bottom">3</field>
+            <field name="margin_left">3</field>
+            <field name="margin_right">3</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">96</field>
+        </record>
+
+        <record id="print_print_order_pos_action" model="ir.actions.report">
+            <field name="name">Print Pos Order</field>
+            <field name="model">pos.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_pos_print_receipt.print_order_pos_tmpl</field>
+            <field name="report_file">forlife_pos_print_receipt.print_order_pos_tmpl</field>
+            <field name="print_report_name">'Bill - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_pos_A6"/>
+        </record>
+
+    </data>
+</odoo>
