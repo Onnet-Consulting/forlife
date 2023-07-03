@@ -359,6 +359,11 @@ class PromotionProgram(models.Model):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
 
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name=_("%s (copy)") % self.name)
+        return super().copy(default)
+
     def action_recompute_new_field_binary(self):
         self.search([])._compute_json_valid_product_ids()
         self.search([]).combo_line_ids._compute_json_valid_product_ids()
