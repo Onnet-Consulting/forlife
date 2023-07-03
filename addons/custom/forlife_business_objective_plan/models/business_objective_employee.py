@@ -16,6 +16,7 @@ class BusinessObjectiveEmployee(models.Model):
     sale_province_id = fields.Many2one('res.sale.province', 'Sale Province', ondelete='restrict')
     employee_id = fields.Many2one('hr.employee', 'Employee', ondelete='restrict', required=True)
     job_id = fields.Many2one('hr.job', 'Job Position', ondelete='restrict')
+    concurrent_position_id = fields.Many2one('hr.job', 'Concurrent Position', ondelete='restrict')
     revenue_target = fields.Monetary('Revenue target', default=10000000)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
 
