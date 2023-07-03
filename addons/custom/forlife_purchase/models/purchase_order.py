@@ -1774,6 +1774,7 @@ class PurchaseOrderLine(models.Model):
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
+    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
@@ -2303,25 +2304,42 @@ class AccountMove(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    def check_quant_goods_import(self, po):
+        self.ensure_one()
+        if self.state == 'done':
+            material_product_ids = [
+                polml.product_id.id
+                for polml in self.env['purchase.order.line.material.line'].sudo().search([
+                    ('purchase_order_line_id', 'in', po.order_line_production_order.ids),
+                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False)
+                ])
+            ]
+            if not material_product_ids:
+                return
+            product_ids = [
+                (quant['product_id'][0], quant['quantity'] or 0)
+                for quant in self.env['stock.quant'].read_group(
+                    domain=[('location_id', '=', self.location_dest_id.id),  ('product_id', 'in', material_product_ids)],
+                    fields=['quantity'],
+                    groupby='product_id')
+            ]
+            product_not_quant = self.env['product.product'].sudo().search([
+                '|', ('id', 'in', [product[0] for product in product_ids if product[1] <= 0]),
+                '&', ('id', 'not in', [product[0] for product in product_ids]), ('id', 'in', material_product_ids)
+            ])
+            if product_not_quant:
+                raise ValidationError('Các NPL sau không đủ tồn kho: \n%s' % '\n'.join(product.name for product in product_not_quant))
+
+
     def button_validate(self):
         res = super().button_validate()
         if self._context.get('endloop'):
             return True
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
-                                                   limit=1)
+            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
             if po:
-                ### Check tồn npl ử tab npl po:
-                if record.state == 'done':
-                    for item in po.order_line_production_order:
-                        material = self.env['purchase.order.line.material.line'].search(
-                            [('purchase_order_line_id', '=', item.id)])
-                        for material_line in material:
-                            number_product = self.env['stock.quant'].search(
-                                [('location_id', '=', record.location_dest_id.id),
-                                 ('product_id', '=', material_line.product_id.id)])
-                            if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                                raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                ### check npl tồn:
+                self.check_quant_goods_import(po)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',

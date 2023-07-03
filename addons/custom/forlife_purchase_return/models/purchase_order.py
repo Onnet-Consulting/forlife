@@ -412,24 +412,27 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     origin_po_line_id = fields.Many2one('purchase.order.line')
-    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     return_line_ids = fields.One2many('purchase.order.line', 'origin_po_line_id', string="Return Lines")
 
+
     # FIX received: not add return picking
-    def compute_received(self):
-        for item in self:
-            if item.order_id:
-                st_picking = self.env['stock.picking'].search(
-                    [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
-                if st_picking:
-                    acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-                        'quantity_done')
-                    item.received = sum(acc_move_line)
-                else:
-                    item.received = False
-            else:
-                item.received = False
+    # def compute_received(self):
+    #     for item in self:
+    #         if item.order_id:
+    #             st_picking = self.env['stock.picking'].search(
+    #                 [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
+    #             if st_picking:
+    #                 acc_move_line = self.env['stock.move'].search(
+    #                     [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
+    #                     'quantity_done')
+    #                 if item.qty_returned:
+    #                     item.received = sum(acc_move_line) - item.qty_returned
+    #                 else:
+    #                     item.received = sum(acc_move_line)
+    #             else:
+    #                 item.received = False
+    #         else:
+    #             item.received = False
 
     # TODO: to using tracking msg
     # def _track_qty_returned(self, new_qty):
