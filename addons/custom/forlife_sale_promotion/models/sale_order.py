@@ -168,7 +168,7 @@ class SaleOrder(models.Model):
 
                     # Customer shipping fee
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
-                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_shipping_fee')
+                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
                         account_id = product_id and product_id.property_account_expense_id
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
