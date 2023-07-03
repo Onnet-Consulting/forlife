@@ -16,6 +16,7 @@ class PurchaseOrder(models.Model):
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
+    exchange_rate_line_ids_pppp = fields.One2many(related='order_line')
     order_line_production_order = fields.Many2many('purchase.order.line',
                                                   compute='_compute_order_line_production_order',
                                                   inverse='_inverse_order_line_production_order')
@@ -26,7 +27,7 @@ class PurchaseOrder(models.Model):
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
-            rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
+            rec.order_line_production_order = order_line_production_order.ids
             if not order_line_production_order or not rec.order_line:
                 rec.is_check_line_material_line = True
             else:
