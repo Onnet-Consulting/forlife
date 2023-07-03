@@ -30,7 +30,7 @@ class ProductDefective(models.Model):
     def change_product(self):
         if self.product_id:
             program_pricelist_item_id = self.env['promotion.pricelist.item'].search([('product_id', '=', self.product_id.id)], limit=1, order='id desc')
-            self.program_pricelist_item_id = program_pricelist_item_id.id
+            self.with_context(show_price=True).program_pricelist_item_id = program_pricelist_item_id.id
 
     def unlink(self):
         for rec in self:
