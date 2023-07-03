@@ -136,14 +136,15 @@
                             <field name="purchase_uom"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="quantity_purchased"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted'),('parent.select_type_inv', '=', 'service')]}"/>
                             <field name="product_uom_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="product_uom_category_id" invisible="1"/>
 <!--                            invisible="context.get('default_move_type', False) == 'out_invoice'"-->
                             <field name="exchange_quantity"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_select_type_inv', '=', True)]}"/>
-                            <field name="quantity" attrs="{'readonly': ['|', ('parent.purchase_type', '==', 'product'), ('parent.state', '=', 'posted')]}"/>
+                                   readonly="1"/>
+                            <field name="quantity"
+                                   readonly="1"/>
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
