@@ -6,6 +6,7 @@ from base64 import (b64encode, b64decode)
 import json
 import requests
 import time
+import logging
 
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
@@ -18,6 +19,7 @@ from odoo.exceptions import ValidationError, UserError
 VN_COMPANY_CODES = [
     '1200'
 ]
+_logger = logging.getLogger(__name__)
 
 
 class ResCompany(models.Model):
@@ -73,6 +75,8 @@ class ResCompany(models.Model):
             'x-ibm-client-id': client_id
         }
         response = requests.post(url, json=request_data, headers=headers)
+        if response.status_code != 200:
+            raise ValidationError(response.text)
         data = response.json()
         return data
 
@@ -192,3 +196,38 @@ class ResCompany(models.Model):
         hash_obj = SHA256.new(message.encode('utf-8'))
         sig = signer.sign(hash_obj)
         return b64encode(sig).decode('utf-8')
+
+    # sửa lại hàm base enterprice để hiển thị lỗi trả về rõ dàng hơn.
+    def update_currency_rates(self):
+        ''' This method is used to update all currencies given by the provider.
+        It calls the parse_function of the selected exchange rates provider automatically.
+
+        For this, all those functions must be called _parse_xxx_data, where xxx
+        is the technical name of the provider in the selection field. Each of them
+        must also be such as:
+            - It takes as its only parameter the recordset of the currencies
+              we want to get the rates of
+            - It returns a dictionary containing currency codes as keys, and
+              the corresponding exchange rates as its values. These rates must all
+              be based on the same currency, whatever it is. This dictionary must
+              also include a rate for the base currencies of the companies we are
+              updating rates from, otherwise this will result in an error
+              asking the user to choose another provider.
+
+        :return: True if the rates of all the records in self were updated
+                 successfully, False if at least one wasn't.
+        '''
+        active_currencies = self.env['res.currency'].search([])
+        rslt = True
+        error = ''
+        for (currency_provider, companies) in self._group_by_provider().items():
+            parse_function = getattr(companies, '_parse_' + currency_provider + '_data')
+            try:
+                parse_results = parse_function(active_currencies)
+                companies._generate_currency_rates(parse_results)
+            except Exception as e:
+                rslt = False
+                error = e
+                _logger.exception(
+                    'Unable to connect to the online exchange rate platform %s. The web service may be temporary down' % (currency_provider))
+        return rslt, error
