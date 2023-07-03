@@ -116,6 +116,8 @@
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
+                            <field name="readonly_discount" invisible="1"/>
+                            <field name="readonly_discount_percent" invisible="1"/>
                             <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_promotions" invisible="1"/>
@@ -131,6 +133,8 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
+                            <field name="purchase_uom"
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="quantity_purchased"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="product_uom_id"
@@ -145,11 +149,14 @@
                                    force_save="1"/>
                             <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
                             <field name="warehouse" invisible="1"/>
-                            <field name="discount" string="Chiết khấu %"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
+                            <field name="discount"
+                                   force_save="1"
+                                   string="Chiết khấu %"
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('readonly_discount', '=', True), ('is_check_promotions', '=', True)]}"/>
                             <field name="discount_percent"
+                                   force_save="1"
                                    widget="monetary"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('readonly_discount_percent', '=', True), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_ids"
                                    optional="show"
                                    widget="many2many_tags"
