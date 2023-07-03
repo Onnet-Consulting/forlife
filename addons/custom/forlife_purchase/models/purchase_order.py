@@ -199,6 +199,12 @@ class PurchaseOrder(models.Model):
         else:
             pass
 
+        if self.partner_id and self.sudo().source_location_id.company_id and self.env['res.company'].sudo().search([
+            ('partner_id', '=', self.partner_id.id),
+            ('id', '!=', self.sudo().source_location_id.company_id.id)
+        ]):
+            self.source_location_id = None
+
         # Do something with res
         return res
 
@@ -510,6 +516,7 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
+                self = self.sudo().with_context(inter_company=True)
                 data = {'partner_id': record.partner_id.id,
                         'purchase_type': record.purchase_type,
                         'is_purchase_request': record.is_purchase_request,
@@ -545,7 +552,7 @@ class PurchaseOrder(models.Model):
                     if line.price_subtotal <= 0:
                         raise UserError(
                             'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
-                    product_ncc = self.env['stock.quant'].search(
+                    product_ncc = self.env['stock.quant'].sudo().search(
                         [('location_id', '=', record.source_location_id.id),
                          ('product_id', '=', line.product_id.id)]).mapped('quantity')
                     if sum(product_ncc) < line.product_qty:
@@ -600,7 +607,9 @@ class PurchaseOrder(models.Model):
                 '''
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
                 '''
-                self.action_approved_vendor(data, order_line, invoice_line_ids)
+                self.sudo().with_context(inter_company=True).action_approved_vendor(data, order_line, invoice_line_ids)
+                if self._context.get('inter_company'):
+                    self = self.sudo().with_context(inter_company=False)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
 
