@@ -141,4 +141,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum23Template',
         'reportPager': True,
     },
+    'report.num24': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo tích - tiêu điểm theo cửa hàng',
+        'reportTemplate': 'ReportNum24Template',
+        'reportPager': True,
+    },
 }
