@@ -59,10 +59,12 @@ class SaleOrder(models.Model):
             'payment_method': ['cod'],
             'order_date': line.date_order.strftime('%Y-%m-%d %H:%M:%S'),
             'coupons': None,
+            'nhanh_order': line.source_record or False,
+            'nhanh_order_status': line.nhanh_order_status or None,
         } for line in self]
 
     def get_field_update(self):
-        return ['note', 'state', 'order_line', 'warehouse_id', 'partner_id', 'order_date']
+        return ['note', 'state', 'order_line', 'warehouse_id', 'partner_id', 'order_date', 'nhanh_order', 'nhanh_order_status']
 
     def action_delete_record(self, record_ids):
         data = [{'id': f'sale_order_{res_id}'} for res_id in record_ids]
