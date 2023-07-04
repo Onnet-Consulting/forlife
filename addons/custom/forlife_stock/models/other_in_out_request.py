@@ -103,6 +103,7 @@ class ForlifeOtherInOutRequest(models.Model):
                              'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
                              'company_id': self.env.company.id,
                              'scheduled_date': record.date_planned,
+                             'is_from_request': True,
                              'origin': record.name,
                              'other_import_export_request_id': record.id,
                              'move_ids_without_package': [data_other_line]

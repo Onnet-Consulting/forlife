@@ -112,6 +112,8 @@ class StockTransfer(models.Model):
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }
+        if self.type == 'excess':
+            self.write({'state': 'done'})
 
     def _update_forlife_production(self):
         for line in self.stock_transfer_line:
