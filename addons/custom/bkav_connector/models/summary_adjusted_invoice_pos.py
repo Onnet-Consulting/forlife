@@ -29,6 +29,8 @@ class SummaryAdjustedInvoicePos(models.Model):
     number_bill = fields.Char('Số hóa đơn')
     einvoice_date = fields.Date(string="Ngày phát hành")
     account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
+    invoice_guid = fields.Char('GUID HDDT')
+    invoice_form = fields.Char('Mẫu số HDDT')
     einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT',
                                        readonly=1)
     partner_invoice_id = fields.Integer(string='Số hóa đơn')

@@ -248,6 +248,26 @@ class SummaryAccountMovePos(models.Model):
         self.summary_post_bkav(synthetic, 101)
         self.summary_post_bkav(adjusted, 124)
 
+        today = date.today() - timedelta(days=1)
+        summary_adjusted_pos = self.env['summary.adjusted.invoice.pos'].search([
+            ('invoice_date', '=', today)
+        ])
+        moves = self.env['account.move']
+        invoices = moves.search([('company_id', '=', self.env.company.id),
+                                 ('move_type', 'in', ('out_invoice', 'out_refund')),
+                                 ('is_post_bkav', '=', False),
+                                 ('pos_order_id', '!=', False),
+                                 ('invoice_date', '<=', today)])
+        # for inv in invoices:
+        #     inv.write({
+        #         'is_post_bkav': True,
+        #         'invoice_no': summary_adjusted_pos.number_bill,
+        #         'invoice_serial': summary_adjusted_pos.account_einvoice_serial,
+        #         'invoice_e_date': summary_adjusted_pos.einvoice_date,
+        #         'invoice_form': summary_adjusted_pos.invoice_form,
+        #         'invoice_guid': summary_adjusted_pos.invoice_guid
+        #     })
+
     def summary_post_bkav(self, data, cmd_type=None):
         gui_id_list = []
         for item in data:
@@ -259,6 +279,8 @@ class SummaryAccountMovePos(models.Model):
                                                        einvoice.get('invoice_serial'),
                                                        einvoice.get('invoice_no'))
             item.code = item.number_bill
+            item.invoice_guid = einvoice.get('invoice_guid')
+            item.invoice_form = einvoice.get('invoice_form')
             item.einvoice_date = einvoice.get('invoice_e_date')
             item.account_einvoice_serial = einvoice.get('invoice_serial')
             item.partner_invoice_id = einvoice.get('partner_invoice_id')
