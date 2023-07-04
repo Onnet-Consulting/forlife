@@ -21,7 +21,7 @@
                                    t-att-disabled="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'selectable' : ''"
                             />
                             <label t-att-for="reward.line.cid">
-                                [<t t-esc="reward.line.cid"/>]
+                                [<t t-esc="reward.line.product.barcode or reward.line.product.default_code"/>]
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
                             <ul class="info-list">
