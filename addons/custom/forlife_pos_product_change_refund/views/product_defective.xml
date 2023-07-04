@@ -29,7 +29,7 @@
                     <header>
                         <button name="action_send_request_approve" type="object" class="oe_highlight" string="Gửi duyệt" states="new"/>
                         <button name="action_approve" type="object" class="oe_highlight" string="Duyệt" states="waiting approve"/>
-                        <button name="action_refuse" type="object" string="Từ chối (alpha)" states="waiting approve"/>
+                        <button name="action_refuse" type="object" string="Từ chối (alpha)" invisible="1" states="waiting approve"/>
                         <button name="%(action_reason_refuse_product_defective)d" type="action" string="Từ chối (beta)" states="waiting approve"/>
                         <field name="state" widget="statusbar"/>
                     </header>
@@ -44,9 +44,17 @@
                                 <field name="price"/>
                                 <field name="money_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
                                 <field name="percent_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
+                                <field name="program_pricelist_item_id" attrs="{'readonly':[('state','in',['waiting approve','refuse','approved'])]}"/>
+                                <label for="from_date" string="Hiệu lực"/>
+                                <div class="o_row">
+                                    <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
+                                    <span> đến </span>
+                                    <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}"/>
+                                </div>
                                 <field name="total_reduce" required="1"/>
                                 <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
+                                <field name="reason_refuse_product" states="refuse" readonly="True"/>
                             </group>
                         </group>
                     </sheet>
@@ -62,6 +70,7 @@
             <field name="name">Xử lí hàng lỗi</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.defective</field>
+            <field name="context">{'show_price':True}</field>
             <field name="view_mode">tree,form</field>
         </record>
 
