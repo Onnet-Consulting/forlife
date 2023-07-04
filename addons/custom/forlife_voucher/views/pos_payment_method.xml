@@ -9,6 +9,8 @@
                 <field name="account_other_income"/>
                 <field name="account_general" />
                 <field name="account_other_fee" />
+                <field name="is_voucher" invisible="True"/>
+                <field name="day_accounting" attrs="{'invisible':[('is_voucher','=', False)]}" />
             </xpath>
         </field>
     </record>
