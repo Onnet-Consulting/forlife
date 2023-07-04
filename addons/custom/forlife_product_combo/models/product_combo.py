@@ -95,6 +95,5 @@ class ProductCombo(models.Model):
                                                f" WHERE pc.id in {combo_ids}"
                 self._cr.execute(sql_get_all_product_in_combo)
                 product_ids_fetch = self._cr.dictfetchall()
-                print(product_ids_fetch)
                 return product_ids_fetch
         return False
