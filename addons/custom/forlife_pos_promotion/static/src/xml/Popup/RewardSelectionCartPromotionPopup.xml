@@ -14,13 +14,13 @@
                         <li class="program-item"
                             t-att-class="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'unselectable' : 'selectable'">
                             <input type="checkbox" name="programs"
-                                   t-att-id="reward.line.cid"
+                                   t-att-id="reward.line.cid+this.state.program.program.str_id"
                                    t-att-checked="'checked' ? reward.isSelected : ''"
                                    t-att-value="reward.line.cid"
                                    t-on-click="() => this.selectItem(reward.line.cid)"
                                    t-att-disabled="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'selectable' : ''"
                             />
-                            <label t-att-for="reward.line.cid">
+                            <label t-att-for="reward.line.cid+this.state.program.program.str_id">
                                 [<t t-esc="reward.line.product.barcode or reward.line.product.default_code"/>]
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
