@@ -9,6 +9,7 @@ class StockTransfer(models.Model):
     _name = 'stock.transfer'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Stock Transfer'
+    _check_company_auto = True
     _order = "write_date desc"
 
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
@@ -111,6 +112,8 @@ class StockTransfer(models.Model):
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }
+        if self.type == 'excess':
+            self.write({'state': 'done'})
 
     def _update_forlife_production(self):
         for line in self.stock_transfer_line:

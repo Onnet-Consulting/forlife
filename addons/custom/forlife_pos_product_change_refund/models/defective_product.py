@@ -26,6 +26,12 @@ class ProductDefective(models.Model):
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
     reason_refuse_product = fields.Char('Lí do từ chối')
 
+    @api.onchange('product_id')
+    def change_product(self):
+        if self.product_id:
+            program_pricelist_item_id = self.env['promotion.pricelist.item'].search([('product_id', '=', self.product_id.id)], limit=1, order='id desc')
+            self.with_context(show_price=True).program_pricelist_item_id = program_pricelist_item_id.id
+
     def unlink(self):
         for rec in self:
             if rec.is_already_in_use:

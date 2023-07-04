@@ -49,11 +49,11 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//div[@name='date_planned_div']" position="after">
-                    <field name="partner_company_id" invisible="1"/>
+<!--                    <field name="partner_company_id" invisible="1"/>-->
                     <field name="source_location_id"
                            context="{'company_purchase': True}"
-                           attrs="{'invisible': [('is_inter_company', '=', False)], 'required': [('is_inter_company', '=', True)], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"
-                           domain="[('company_id', '=', partner_company_id), ('usage', '=', 'internal')]"
+                           attrs="{'invisible': ['|', ('partner_id', '=', False), ('is_inter_company', '=', False)], 'required': [('is_inter_company', '=', True)], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           domain="[('usage', '=', 'internal')]"
                            string="Kho nguồn"/>
                     <field name="location_id" string="Kho nhận"
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
@@ -72,7 +72,7 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
-                    <page string="Nguyên phụ liệu" name="production_order_domain"
+                    <page string="Nguyên phụ liệu"
                           attrs="{'invisible': ['|', ('is_check_line_material_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="order_line_production_order" class="width-hh" widget="one2many" mode="tree"
                                options="{'no_create': True}">
@@ -83,7 +83,7 @@
                                 <field name="product_id" readonly="1" force_save="1"/>
                                 <field name="name" readonly="1" force_save="1"/>
                                 <field name="purchase_quantity" readonly="0"/>
-                                <field name="product_uom" readonly="1" force_save="1"/>
+                                <field name="product_uom" readonly="1" force_save="1" string="Đơn vị tính"/>
                                 <field name="exchange_quantity" readonly="0"/>
                                 <field name="product_qty" readonly="1" force_save="1"/>
                                 <button name="action_npl" string="NPL" type="object" style="text-align: center;"

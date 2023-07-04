@@ -44,7 +44,7 @@
                                 <field name="price"/>
                                 <field name="money_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
                                 <field name="percent_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
-                                <field name="program_pricelist_item_id"/>
+                                <field name="program_pricelist_item_id" attrs="{'readonly':[('state','in',['waiting approve','refuse','approved'])]}"/>
                                 <label for="from_date" string="Hiệu lực"/>
                                 <div class="o_row">
                                     <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
@@ -70,6 +70,7 @@
             <field name="name">Xử lí hàng lỗi</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.defective</field>
+            <field name="context">{'show_price':True}</field>
             <field name="view_mode">tree,form</field>
         </record>
 
