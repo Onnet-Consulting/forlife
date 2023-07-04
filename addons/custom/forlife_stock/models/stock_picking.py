@@ -85,6 +85,7 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                 'is_pk_purchase': self.picking_id.is_pk_purchase,
                 'leftovers_id': self.picking_id.id,
                 'state': 'assigned',
+                'other_import_export_request_id': self.picking_id.other_import_export_request_id.id,
                 'picking_type_id': self.picking_id.picking_type_id.id,
                 'move_ids_without_package': list_line_over,
             }
@@ -245,6 +246,7 @@ class StockPicking(models.Model):
         required=False, readonly=False, index=True,
         states={'draft': [('readonly', False)]})
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
+    is_from_request = fields.Boolean('', default=False)
 
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
@@ -456,6 +458,12 @@ class StockMove(models.Model):
     product_other_id = fields.Many2one('forlife.other.in.out.request.line')
     previous_qty = fields.Float(compute='compute_previous_qty', store=1)
 
+    @api.constrains('amount_total')
+    def constrains_amount_total(self):
+        for item in self:
+            if not item.picking_id.is_from_request and item.picking_id.other_import and item.reason_id.is_price_unit and item.amount_total <= 0:
+                raise ValidationError('Bạn chưa nhập tổng tiền cho sản phẩm %s' % item.product_id.name)
+
     @api.depends('reason_id')
     def compute_production_order(self):
         for rec in self:
@@ -482,15 +490,19 @@ class StockMove(models.Model):
                 if rec.picking_id.state != 'done':
                     rec.previous_qty = rec.product_uom_qty
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'reason_id')
     def _onchange_product_id(self):
         self.name = self.product_id.name
-        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
         if not self.reason_id:
             self.reason_id = self.picking_id.location_id.id \
                 if self.picking_id.other_import else self.picking_id.location_dest_id.id
         if not self.reason_type_id:
             self.reason_type_id = self.picking_id.reason_type_id.id
+        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
+
+    # @api.onchange('reason_id')
+    # def _onchange_reason_id(self):
+    #     self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
 
 
 class StockMoveLine(models.Model):
