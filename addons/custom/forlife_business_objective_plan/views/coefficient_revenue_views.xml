@@ -45,7 +45,7 @@
                                 <field name="name"/>
                                 <field name="percentage"/>
                                 <field name="pc_by_store_ids" widget="many2many_tags"/>
-                                <button name="clone_pc_by_employee" type="object" string="Duplicate" icon="fa-clone"/>
+                                <button name="clone_pc_by_employee" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
                             </tree>
                             <form>
                                 <group>
@@ -57,7 +57,7 @@
                                         <field name="name"/>
                                         <field name="percentage"/>
                                         <field name="ratio"/>
-                                        <button name="clone_pc_by_store" type="object" string="Duplicate" icon="fa-clone"/>
+                                        <button name="clone_pc_by_store" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
                                     </tree>
                                     <form>
                                         <group>
@@ -75,7 +75,7 @@
                                 <field name="name"/>
                                 <field name="percentage"/>
                                 <field name="ratio" string="LDT ratio"/>
-                                <button name="clone_pc_by_store" type="object" string="Duplicate" icon="fa-clone"/>
+                                <button name="clone_pc_by_store" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
                             </tree>
                             <form>
                                 <group>
