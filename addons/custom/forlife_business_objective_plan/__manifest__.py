@@ -30,6 +30,7 @@
         'views/business_objective_plan_views.xml',
         'views/business_objective_store_views.xml',
         'views/employee_transfer_views.xml',
+        'views/coefficient_revenue_views.xml',
 
         'wizard/bo_import_excel_wizard_views.xml',
         

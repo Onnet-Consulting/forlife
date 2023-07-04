@@ -93,6 +93,7 @@ select (select json_object_agg(code, id) from res_sale_province)                
             store_id = stores.get(val[1])
             employee_id = employees.get(val[2])
             job_id = jobs.get(val[3])
+
             if not sale_province_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy khu vực có mã là '{val[0]}'")
             if not store_id:
@@ -101,6 +102,10 @@ select (select json_object_agg(code, id) from res_sale_province)                
                 error.append(f"Dòng {index + 1}, không tìm thấy nhân viên có mã là '{val[2]}'")
             if not job_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
+            if val[4]:
+                concurrent_position_id = jobs.get(val[4])
+                if not concurrent_position_id:
+                    error.append(f"Dòng {index + 1}, không tìm thấy vị trí kiêm nhiệm có tên là '{val[4]}'")
             if not error:
                 vals.append({
                     'bo_plan_id': self.bo_plan_id.id,
@@ -109,7 +114,7 @@ select (select json_object_agg(code, id) from res_sale_province)                
                     'store_id': store_id,
                     'employee_id': employee_id,
                     'job_id': job_id,
-                    'revenue_target': int(val[4]),
+                    'revenue_target': int(val[5]),
                 })
         if error:
             return self.return_error_log('\n'.join(error))
