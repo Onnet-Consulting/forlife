@@ -63,7 +63,7 @@ with po_datas as (select po.id  as po_id,
                   where po.brand_id = {self.brand_id.id}
                     and po.company_id = any (array {allowed_company})
                     and pt.detailed_type <> 'service'
-                    and pt.voucher <> true
+                    and (pt.voucher = false or pt.voucher is null)
                     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
                     {order_filter_condition}
                     and po.session_id in (select id

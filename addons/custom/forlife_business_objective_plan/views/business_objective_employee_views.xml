@@ -16,6 +16,7 @@
                     <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
                     <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="concurrent_position_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="revenue_target"/>
                     <button name="btn_employee_transfer" class="oe_highlight" type="object" string=" Transfer" title="Transfer" aria-label="Transfer"/>
                 </tree>

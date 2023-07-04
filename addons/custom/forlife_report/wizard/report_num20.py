@@ -142,7 +142,7 @@ from pos_order po
     left join hr_employee emp on emp.id = pol.employee_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
     left join attribute_data ad on ad.product_id = pp.id
-where  po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and pt.voucher <> true
+where  po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and sto.id = any(array{store_ids})
     {customer_condition}

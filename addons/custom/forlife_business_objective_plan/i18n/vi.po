@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-30 06:20+0000\n"
-"PO-Revision-Date: 2023-06-30 06:20+0000\n"
+"POT-Creation-Date: 2023-07-03 09:16+0000\n"
+"PO-Revision-Date: 2023-07-03 09:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -98,6 +98,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__brand_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__brand_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__brand_id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__brand_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__brand_id
 msgid "Brand"
 msgstr "Thương hiệu"
@@ -162,6 +163,24 @@ msgid "Cancelled"
 msgstr "Đã hủy"
 
 #. module: forlife_business_objective_plan
+#: model:ir.actions.act_window,name:forlife_business_objective_plan.coefficient_revenue_action
+#: model:ir.model,name:forlife_business_objective_plan.model_coefficient_revenue
+#: model:ir.ui.menu,name:forlife_business_objective_plan.coefficient_revenue_menu
+msgid "Coefficient Revenue"
+msgstr "Hệ số doanh thu"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__coefficient_revenue_id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__coefficient_revenue_id
+msgid "Coefficient revenue"
+msgstr "Hệ số doanh thu"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__concurrent_position_id
+msgid "Concurrent Position"
+msgstr "Vị trí kiêm nhiệm"
+
+#. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_increase_view_tree
 msgid "Confirm receipt"
 msgstr "Tăng mục tiêu"
@@ -201,7 +220,10 @@ msgstr "Tạo thủ công"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__create_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__create_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__create_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__create_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__create_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__create_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__create_uid
 msgid "Created by"
 msgstr "Được tạo bởi"
 
@@ -210,7 +232,10 @@ msgstr "Được tạo bởi"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__create_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__create_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__create_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__create_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__create_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__create_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
 
@@ -223,6 +248,7 @@ msgstr "Loại tiền"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "Date"
 msgstr "Ngày"
@@ -233,11 +259,19 @@ msgid "Detail"
 msgstr "Xem chi tiết"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__pc_by_employee_ids
+msgid "Direct revenue"
+msgstr "Doanh thu trực tiếp"
+
+#. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard__display_name
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__display_name
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__display_name
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__display_name
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__display_name
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__display_name
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__display_name
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -252,6 +286,11 @@ msgstr "Bạn có thực sự muốn hủy bỏ?"
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
 msgid "Download Template"
 msgstr "Tải mẫu"
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "Duplicate"
+msgstr "Nhân bản"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model,name:forlife_business_objective_plan.model_hr_employee
@@ -301,8 +340,15 @@ msgid "Error file"
 msgstr "File lỗi"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__fixed_coefficient
+msgid "Fixed Coefficient"
+msgstr "Hệ số vị trí nhóm gián tiếp"
+
+#. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/business_objective_plan.py:0
+#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
+#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
 #: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
 #, python-format
 msgid "From Date must be less than or equal To Date"
@@ -311,6 +357,7 @@ msgstr "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc"
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__from_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__from_date
 msgid "From date"
 msgstr "Từ ngày"
@@ -320,7 +367,10 @@ msgstr "Từ ngày"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__id
 msgid "ID"
 msgstr ""
 
@@ -351,22 +401,36 @@ msgid "Import excel"
 msgstr "Nhập excel"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__pc_by_store_ids
+msgid "Indirect revenue"
+msgstr "Doanh thu gián tiếp"
+
+#. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__is_lock_brand
 msgid "Is Lock Brand"
 msgstr "Khóa thương hiệu"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__job_id
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__job_id
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__job_id
 msgid "Job Position"
 msgstr "Vị trí công việc"
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "LDT ratio"
+msgstr "Tỉ lệ LDT (%)"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_bo_import_excel_wizard____last_update
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee____last_update
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan____last_update
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store____last_update
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue____last_update
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer____last_update
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee____last_update
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -375,7 +439,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__write_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__write_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__write_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__write_uid
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__write_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__write_uid
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -384,12 +451,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__write_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__write_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_store__write_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__write_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__write_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__write_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__write_date
 msgid "Last Updated on"
 msgstr ""
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__name
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__name
 msgid "Name"
 msgstr "Tên"
 
@@ -406,6 +477,42 @@ msgid "Objective Plan"
 msgstr "Mục tiêu kinh doanh"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__pc_by_employee_id
+msgid "PC by Employee"
+msgstr "% hoàn thành có nhân"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__name
+msgid "PC by employee"
+msgstr "% hoàn thành có nhân"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__name
+msgid "PC by store"
+msgstr "% hoàn thành cửa hàng"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__pc_by_store_ids
+msgid "Pc by store"
+msgstr "% hoàn thành cửa hàng"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_employee__percentage
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__percentage
+msgid "Percentage"
+msgstr "% từ"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model,name:forlife_business_objective_plan.model_percentage_complete_by_employee
+msgid "Percentage Complete By Employee"
+msgstr "% hoàn thành có nhân"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model,name:forlife_business_objective_plan.model_percentage_complete_by_store
+msgid "Percentage Complete By Store"
+msgstr "% hoàn thành cửa hàng"
+
+#. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/wizard/bo_import_excel_wizard.py:0
 #, python-format
@@ -413,9 +520,24 @@ msgid "Please upload file template before click Import button !"
 msgstr "Vui lòng tải lên file dữ liệu trước khi nhấn nút Nhập !"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_percentage_complete_by_store__ratio
+msgid "Ratio"
+msgstr "Tỉ lệ"
+
+#. module: forlife_business_objective_plan
 #: model:res.groups,name:forlife_business_objective_plan.receipt_transfer_group
 msgid "Receipt transfer"
 msgstr "Nhận điều chuyển"
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "Revenue coefficient based on sales (direct)"
+msgstr "Hệ số tính thu nhập theo doanh thu (trực tiếp)"
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "Revenue coefficient based on sales (indirect)"
+msgstr "Hệ số tính thu nhập theo doanh thu (gián tiếp)"
 
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__revenue_target
@@ -499,8 +621,16 @@ msgid "Time of BOL '%s' is overlapping."
 msgstr "Khoảng thời gian của phiếu mục tiêu kinh doanh '%s' bị trùng lặp"
 
 #. module: forlife_business_objective_plan
+#. odoo-python
+#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
+#, python-format
+msgid "Time of coefficient revenue '[%s] %s' is overlapping."
+msgstr "Khoảng thời gian của phiếu hệ số doanh thu '[%s] %s' bị trùng lặp"
+
+#. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__to_date
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__to_date
 msgid "To date"
 msgstr "Đến ngày"
@@ -558,6 +688,16 @@ msgid "business_objective_store_tree"
 msgstr ""
 
 #. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "coefficient_revenue_form"
+msgstr ""
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_tree
+msgid "coefficient_revenue_tree"
+msgstr ""
+
+#. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
 msgid "e.g. X 2023"
 msgstr "ví dụ: Phiếu tháng 12/2023"
@@ -577,12 +717,14 @@ msgstr ""
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "from"
 msgstr "từ"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "to"
 msgstr "đến"
