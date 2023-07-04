@@ -14,14 +14,14 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="code" string="Mã bộ"/>
+                        <label for="name" string="Mã bộ"/>
                         <h1>
-                            <field name="code"/>
+                            <field name="name"/>
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="description_combo"/>
+                            <field name="description_combo" attrs="{'readonly': [('state','in',['in_progress','finished'])]}" />
                             <label for="from_date" string="Hiệu lực"/>
                             <div class="o_row">
                                 <field attrs="{'readonly': [('state','in',['in_progress','finished'])]}" name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
@@ -46,7 +46,7 @@
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="sku"/>
-                                    <field name="max_quantity" string="Số lượng"/>
+                                    <field name="quantity" string="Số lượng"/>
                                     <field name="product_uom_id"/>
                                 </tree>
                                 <form>
@@ -54,7 +54,7 @@
                                         <group>
                                             <field name="product_id"/>
                                             <field name="sku"/>
-                                            <field name="max_quantity" string="Số lượng"/>
+                                            <field name="quantity" string="Số lượng"/>
                                             <field name="product_uom_id"/>
                                         </group>
                                     </sheet>
@@ -72,8 +72,8 @@
         <field name="name">product.combo.view.tree</field>
         <field name="model">product.combo</field>
         <field name="arch" type="xml">
-            <tree default_order="code desc">
-                <field name="code"/>
+            <tree default_order="name desc">
+                <field name="name"/>
                 <field name="state"/>
                 <field name="from_date"/>
                 <field name="to_date"/>
@@ -86,7 +86,7 @@
         <field name="model">product.combo</field>
         <field name="arch" type="xml">
             <search>
-                <field name="code"/>
+                <field name="name"/>
                 <filter string="In Progress" domain="[('state','=','in_progress')]" name="in_progress"/>
                 <separator/>
                 <group expand="0" string="Group By">

@@ -225,8 +225,8 @@ msgstr ""
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__max_quantity
-msgid "Maximum Quantity"
-msgstr ""
+msgid "Quantity"
+msgstr "Số lượng"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__invoice_line_id

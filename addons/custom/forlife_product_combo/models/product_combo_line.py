@@ -15,6 +15,6 @@ class ProductComboLine(models.Model):
         ('finished', _('Finished')),
         ('canceled', _('Canceled'))], string='State', default='new', related='combo_id.state', store=True)
     product_id = fields.Many2one('product.template', string='Product', required=True, domain="[('available_in_pos', '=', True), ('combo_id', '=', None)]")
-    max_quantity = fields.Float('Maximum Quantity')
+    quantity = fields.Float('Quantity')
     product_uom_id = fields.Many2one('uom.uom', 'Unit of Measure', related='product_id.uom_id', store=True)
 
