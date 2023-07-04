@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Product Combo">
                 <header>
-                    <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                    <field name="state" widget="statusbar"/>
                     <button name="action_approve" string="Áp dụng" class="oe_highlight"
                                 type="object" states="new"/>
                         <button name="action_finished" string="Kết thúc"
