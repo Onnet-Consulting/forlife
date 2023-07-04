@@ -153,17 +153,17 @@ class PurchaseOrder(models.Model):
     @api.onchange('account_analytic_ids')
     def _onchange_line_account_analytic_id(self):
         for rec in self.order_line:
-            rec.account_analytic_id = self.account_analytic_ids[0]
+            rec.account_analytic_id = self.account_analytic_ids[-1]._origin if self.account_analytic_ids else None
 
     @api.onchange('occasion_code_ids')
     def _onchange_line_occasion_code_ids(self):
         for rec in self.order_line:
-            rec.occasion_code_ids = self.occasion_code_ids[0]
+            rec.occasion_code_id = self.occasion_code_ids[-1]._origin if self.occasion_code_ids else None
 
     @api.onchange('production_id')
     def _onchange_line_production_id(self):
         for rec in self.order_line:
-            rec.production_id = self.production_id[0]
+            rec.production_id = self.production_id[-1]._origin if self.production_id else None
 
     @api.onchange('receive_date')
     def _onchange_line_receive_date(self):
@@ -1992,23 +1992,23 @@ class PurchaseOrderLine(models.Model):
             else:
                 pass
 
-    @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
-                  'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
-    def onchange_receive_date(self):
-        if self.order_id:
-            self.receive_date = self.order_id.receive_date
-            self.location_id = self.order_id.location_id
-            self.production_id = self.order_id.production_id
-            if self.order_id.account_analytic_ids:
-                self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
-            self.event_id = self.order_id.event_id
-            if self.order_id.occasion_code_ids:
-                self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
-
-    @api.onchange('product_id', 'order_id', 'order_id.location_id')
-    def onchange_location_id(self):
-        if self.order_id and self.order_id.location_id:
-            self.location_id = self.order_id.location_id
+    # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
+    #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
+    # def onchange_receive_date(self):
+    #     if self.order_id:
+    #         self.receive_date = self.order_id.receive_date
+    #         self.location_id = self.order_id.location_id
+    #         self.production_id = self.order_id.production_id
+    #         if self.order_id.account_analytic_ids:
+    #             self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
+    #         self.event_id = self.order_id.event_id
+    #         if self.order_id.occasion_code_ids:
+    #             self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
+    #
+    # @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    # def onchange_location_id(self):
+    #     if self.order_id and self.order_id.location_id:
+    #         self.location_id = self.order_id.location_id
 
     # discount
     @api.onchange("free_good")
