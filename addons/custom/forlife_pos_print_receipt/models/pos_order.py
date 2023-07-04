@@ -73,7 +73,7 @@ class PosOrder(models.Model):
             for pm in item.payment_ids:
                 payment_method.append({
                     'name': pm.payment_method_id.name,
-                    'amount': locale.format_string('%d', pm.amount, grouping=True)
+                    'amount': f"({locale.format_string('%d', pm.amount, grouping=True)})",
                 })
             history_point = self.env['partner.history.point'].search([
                 ('partner_id', '=', item.partner_id.id),
