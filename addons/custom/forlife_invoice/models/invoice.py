@@ -254,10 +254,8 @@ class AccountMove(models.Model):
                         product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
                         for product in product_cost.order_line:
                             for pnk in rec.receiving_warehouse_id.move_line_ids_without_package:
-                                if not product.product_id.categ_id and not product.product_id.categ_id.with_company(
-                                        rec.company_id).property_stock_account_input_categ_id:
-                                    raise ValidationError(
-                                        _("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
+                                if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                                    raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
                                 else:
                                     if str(product.id) == str(pnk.po_id):
                                         invoice_line_ids += self.env['account.move.line'].new({
@@ -641,7 +639,11 @@ class AccountMoveLine(models.Model):
     code_tax = fields.Char(string='Mã số thuế')
     invoice_reference = fields.Char(string='Invoice Reference')
     invoice_description = fields.Char(string="Invoice Description")
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
+    purchase_uom = fields.Many2one('uom.uom', string='Đơn vị mua')
+
+    # field check readonly discount and discount_percent:
+    readonly_discount = fields.Boolean(default=False)
+    readonly_discount_percent = fields.Boolean(default=False)
 
     # field check exchange_quantity khi ncc vãng lại:
     is_check_exchange_quantity = fields.Boolean(default=False)
@@ -787,36 +789,31 @@ class AccountMoveLine(models.Model):
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            if not (rec.product_id and rec.move_id.partner_id and rec.purchase_uom and rec.move_id.currency_id):
-                rec.is_red_color = False
-                continue
-            data = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                ('partner_id', '=', rec.move_id.partner_id.id),
-                ('currency_id', '=', rec.move_id.currency_id.id),
-                ('amount_conversion', '=', rec.exchange_quantity),
-                ('date_start', '<=', today),
-                ('date_end', '>=', today)
-            ])
-            rec.is_red_color = True if rec.exchange_quantity not in data.mapped(
-                'amount_conversion') else False
-            if rec.product_id and rec.move_id.partner_id and rec.purchase_uom and rec.move_id.currency_id and not rec.is_red_color and not rec.move_id.partner_id.is_passersby:
-                for line in data:
-                    if line.product_uom.id == rec.purchase_uom.id:
-                        rec.vendor_price = line.price if line else False
-                        rec.exchange_quantity = line.amount_conversion
-                    else:
-                        if rec.quantity:
-                            if rec.quantity > max(data.mapped('min_qty')):
-                                closest_quantity = max(data.mapped('min_qty'))
-                                if closest_quantity == line.min_qty:
-                                    rec.vendor_price = line.price
-                                    rec.exchange_quantity = line.amount_conversion
-                            else:
-                                closest_quantity = min(data.mapped('min_qty'), key=lambda x: abs(x - rec.quantity))
-                                if closest_quantity == line.min_qty:
-                                    rec.vendor_price = line.price
-                                    rec.exchange_quantity = line.amount_conversion
+            if rec.move_id.purchase_type == 'product':
+                if not (rec.product_id and rec.move_id.partner_id and rec.purchase_uom and rec.move_id.currency_id):
+                    rec.is_red_color = False
+                    continue
+                data = self.env['product.supplierinfo'].search([
+                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                    ('partner_id', '=', rec.move_id.partner_id.id),
+                    ('currency_id', '=', rec.move_id.currency_id.id),
+                    ('amount_conversion', '=', rec.exchange_quantity),
+                    ('product_uom', '=', rec.purchase_uom.id),
+                    ('date_start', '<=', today),
+                    ('date_end', '>=', today)
+                ])
+                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+                if rec.product_id and rec.move_id.partner_id and rec.purchase_uom and rec.move_id.currency_id and not rec.is_red_color and not rec.move_id.partner_id.is_passersby:
+                    closest_quantity = None  # Khởi tạo giá trị biến tạm
+                    for line in data:
+                        if rec.quantity and rec.quantity >= line.min_qty:
+                            ### closest_quantity chỉ được cập nhật khi rec.quantity lớn hơn giá trị hiện tại của line.min_qty
+                            if closest_quantity is None or line.min_qty > closest_quantity:
+                                closest_quantity = line.min_qty
+                                rec.vendor_price = line.price
+                                rec.exchange_quantity = line.amount_conversion
+            else:
+                pass
 
     # asset invoice!!
     asset_code = fields.Char('Mã tài sản cố định')
@@ -879,15 +876,23 @@ class AccountMoveLine(models.Model):
     def _onchange_discount_percent(self):
         if self.discount:
             self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
+            self.readonly_discount_percent = True
         elif self.discount == 0:
             self.discount_percent = 0
+            self.readonly_discount_percent = False
+        else:
+            self.readonly_discount_percent = False
 
     @api.onchange("discount_percent")
     def _onchange_discount(self):
         if self.discount_percent and self.price_unit > 0 and self.quantity > 0:
-            self.discount = self.discount_percent / (self.price_unit * self.quantity * 0.01)
+            self.discount = (self.discount_percent / (self.price_unit * self.quantity * 0.01))
+            self.readonly_discount = True
         elif self.discount_percent == 0:
             self.discount = 0
+            self.readonly_discount = False
+        else:
+            self.readonly_discount = False
 
     is_check_promotions = fields.Boolean('Dùng để readonly line nếu self.promotions = True')
 

@@ -27,6 +27,8 @@
     'data': [
         'data/brand_data.xml',
         'views/res_brand_views.xml',
+        'views/pos_orderx.xml',
+        'report/print_pos_order.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

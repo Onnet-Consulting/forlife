@@ -110,6 +110,8 @@ class StockTranfer(models.Model):
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)])
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
+            if not location_mapping or not location_dest_mapping:
+                raise UserError(_(f'Có thể cần cấu hình Location Mapping của 1 trong 2 địa điểm này khi tạo phiếu!'))
             if location_mapping and location_dest_mapping:
                 line = []
                 for l in self.stock_transfer_line:
@@ -129,7 +131,6 @@ class StockTranfer(models.Model):
                 }
                 res = self.env['stock.transfer'].with_company(company_match).sudo().create(vals)
                 res.with_context(company_byside=company_match.id)._action_in_approve()
-                print(res)
             return True
         return False
     from_company = fields.Many2one('res.company')
