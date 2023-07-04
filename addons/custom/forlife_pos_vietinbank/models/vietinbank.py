@@ -54,7 +54,7 @@ class ApisVietinBank(models.AbstractModel):
             "fromDate": date_from,
             "toDate": date_to,
             "accountType": "D",
-            "collectionType": "d",
+            "collectionType": "c",
             "agencyType": "a",
             "transTime": datetime.now().timestamp(),
             "channel": "ERP",
@@ -104,21 +104,19 @@ class ApisVietinBank(models.AbstractModel):
         for item in data.get('transactions', []):
             if 'order' not in item or not item['order']:
                 continue
-            if 'virtualAccount' not in item:
-                continue
-            if item['virtualAccount'] != virtual_account:
+            if virtual_account and item['virtualAccount'] != virtual_account:
                 continue
             vals.append({
                 'pos_order_id': args[0],
                 'payment_method_id': args[1],
                 'session_id': args[2],
                 'debit_account': item['corresponsiveAccount'],
-                'amount': item['debit'],
+                'amount': item['credit'],
                 'benefi_account': data['account'],
                 'benefi_name': data['companyName'],
                 'ref': item['transactionContent'],
                 'ref_no': "",
-                'effect_date': item['transactionDate'],
+                'effect_date': datetime.strptime(item['transactionDate'], '%d-%m-%Y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S'),
                 'channel': item['channel'],
             })
         self.env['vietinbank.transaction.model'].create(vals)
@@ -144,5 +142,5 @@ class VietinBankModel(models.TransientModel):
     benefi_name = fields.Char(string='Beneficiary name')
     ref = fields.Char(string='Reference')
     ref_no = fields.Char(string='Ref no')
-    effect_date = fields.Date(string='Effective date')
+    effect_date = fields.Datetime(string='Effective date')
     channel = fields.Char(string='Channel')
