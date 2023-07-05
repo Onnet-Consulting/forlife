@@ -20,6 +20,7 @@ class PosModelCache(models.Model):
     model_fields = fields.Text(required=True)
 
     compute_user_id = fields.Many2one('res.users', 'Cache compute user', required=True)
+    compute_company_id = fields.Many2one('res.company', 'Cache compute company', required=True)
     search_context = fields.Text(string="Search Context")
     last_update = fields.Datetime(string="Last update", default=datetime.now())
 
@@ -71,7 +72,7 @@ class PosModelCache(models.Model):
 
     def refresh_cache(self):
         for cache in self:
-            model_obj = self.env[cache.model].with_user(cache.compute_user_id.id)
+            model_obj = self.env[cache.model].with_user(cache.compute_user_id.id).with_company(cache.compute_company_id)
             records = model_obj.search(cache.get_model_domain(), order=self.env[cache.model]._order)
             res = records.read(cache.get_model_fields())
             cache.write({

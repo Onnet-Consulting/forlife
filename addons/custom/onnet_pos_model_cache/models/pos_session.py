@@ -44,7 +44,8 @@ class PosSession(models.Model):
             ('compute_user_id', '=', SUPERUSER_ID),
             ('domain', '=', domain_str),
             ('model_fields', '=', fields_str),
-            ('model', '=', 'product.product')
+            ('model', '=', 'product.product'),
+            ('compute_company_id', '=', self.env.user.company_id.id)
         ])
 
         if not cache_for_user:
@@ -52,7 +53,8 @@ class PosSession(models.Model):
                 'domain': domain_str,
                 'model_fields': fields_str,
                 'compute_user_id': SUPERUSER_ID,
-                'model': 'product.product'
+                'model': 'product.product',
+                'compute_company_id': self.env.user.company_id.id
             })
             cache_for_user.refresh_cache()
         return cache_for_user[-1].cache2json()
