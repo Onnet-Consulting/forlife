@@ -651,6 +651,7 @@ class AccountMoveLine(models.Model):
     # field check vendor_price khi ncc vãng lại:
     is_passersby = fields.Boolean(related='move_id.is_passersby')
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
+    move_type = fields.Selection(related='move_id.move_type')
 
     # goods invoice!!
     promotions = fields.Boolean(string='Promotions', default=False)

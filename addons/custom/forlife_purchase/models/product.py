@@ -101,8 +101,9 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
-        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and not self.env.context.get('is_passersby', False):
-            sql = """
+        context = self.env.context
+        if context and context.get('move_type', False) == 'in_invoice' and context.get('purchase_type', False) == 'product' and context.get('supplier_id', False) and not context.get('is_passersby', False):
+            sql = """   
             select id from product_product
             where product_tmpl_id in
                 ( select distinct(product_tmpl_id)
@@ -113,18 +114,18 @@ class ProductProduct(models.Model):
             where product_tmpl_id not in 
                 ( select distinct(product_tmpl_id)
                 from product_supplierinfo)
-            """ % (self.env.context.get('supplier_id'))
+            """ % (context.get('supplier_id'))
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))
-        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and self.env.context.get('is_passersby', False):
+        if context and context.get('move_type', False) == 'in_invoice' and context.get('purchase_type', False) == 'product' and context.get('supplier_id', False) and context.get('is_passersby', False):
             sql = """
                         select id from product_product
                         """
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))
-        if self.env.context and self.env.context.get('type', False) == 'phantom':
+        if context and context.get('type', False) == 'phantom':
             sql = """
                         select pp.id from product_product pp join product_template pt on pp.product_tmpl_id = pt.id where pt.detailed_type = 'product'
                         """
