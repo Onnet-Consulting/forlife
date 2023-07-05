@@ -5,7 +5,7 @@ from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
 from odoo.exceptions import UserError
-# import pyodbc
+import pyodbc
 from datetime import date, datetime
 from odoo.tests import Form
 
