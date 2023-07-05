@@ -23,12 +23,11 @@ class SummaryAccountMovePos(models.Model):
     def collect_invoice_return_end_day(self):
         moves = self.env['account.move']
         today = date.today() - timedelta(days=1)
-        invoice_pos = moves.search([('company_id', '=', self.env.company.id),
+        invoice_pos_return = moves.search([('company_id', '=', self.env.company.id),
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
-                                 ('move_type', 'in', ('out_refund', 'out_invoice')),
+                                 ('move_type', '=', 'out_refund'),
                                  ('invoice_date', '<=', today)])
-        invoice_pos_return = invoice_pos.filtered(lambda x: x.pos_order_id.refunded_order_ids)
         data_store = {}
         stores = invoice_pos_return.mapped('pos_order_id.store_id')
         for store in stores:
@@ -43,6 +42,8 @@ class SummaryAccountMovePos(models.Model):
             store_id = pos_order_id.store_id
             products = data_store.get(store_id.id).get('products')
             for line in pos_order_id.lines:
+                if line.qty >=0:
+                    continue
                 if not line.product_id.barcode:
                     continue
                 item = (line.product_id.barcode, line.price_bkav)
@@ -90,14 +91,14 @@ class SummaryAccountMovePos(models.Model):
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
                                  ('invoice_date', '<=', today)])
-        invoices = invoices.filtered(lambda x: not x.pos_order_id.refunded_order_ids)
         stores = invoices.mapped('pos_order_id.store_id')
         for store in stores:
             move_line = []
             move_line_vals = []
             for inv in invoices:
                 if inv.pos_order_id.store_id.id == store.id:
-                    move_line.extend(inv.pos_order_id.lines.ids)
+                    pos_order = inv.pos_order_id
+                    move_line.extend(pos_order.lines.filtered(lambda x: x.qty > 0).ids)
             for line in move_line:
                 invoice_ids = []
                 line_id = self.env['pos.order.line'].browse(line)
@@ -139,57 +140,53 @@ class SummaryAccountMovePos(models.Model):
         return vals_posi, vals_neg
 
     def find_summary(self, res):
-        summary_return_line_id = self.env['summary.account.move.pos.return.line'].browse(res.get('return_line_id'))
-        pos_order_return_ids = summary_return_line_id.invoice_ids
-        pos_order_sale_ids = pos_order_return_ids.mapped('refunded_order_ids')
-        pos_order_ids_sorted = pos_order_sale_ids.sorted('create_date')
+        summary_date = date.today() - timedelta(days=1)
         quantity = res.get('quantity')
         product_id = self.env['product.product'].browse(res.get('product_id'))
         price_unit = res.get('price_unit')
+
         synthetic_ids = []
-
-        for i in range(len(pos_order_ids_sorted)):
-            if quantity == 0:
-                break
-            pos_order = pos_order_ids_sorted[i]
-            products = pos_order.lines.mapped('product_id')
-            price_bkavs = pos_order.lines.mapped('price_bkav')
-            lines = pos_order.lines.filtered(lambda x: x.product_id.id == product_id.id and
-                                            x.price_bkav == price_unit)
-            invoice_date_from = pos_order.create_date.replace(hour=0, minute=0, second=0)
-            invoice_date_to = pos_order.create_date.replace(hour=23, minute=59, second=59)
-            synthetic_id = self.env['synthetic.account.move.pos'].search([('invoice_date', '>=', invoice_date_from),
-                                                                          ('invoice_date', '<=', invoice_date_to)],
-                                                                         limit=1)
-
-            for line in lines:
-                if not line.product_id.barcode:
-                    continue
-                if quantity == 0:
-                    break
-                if quantity + line.qty < 0:
-                    synthetic_ids.append({
-                        'product_id': product_id,
-                        'quantity': line.qty,
-                        'price_unit': price_unit,
-                        'synthetic_id': synthetic_id.id,
-                        'pos_order': pos_order.id
-                    })
-                    quantity += line.qty
-                else:
-                    synthetic_ids.append({
-                        'product_id': product_id,
-                        'quantity': abs(quantity),
-                        'price_unit': price_unit,
-                        'synthetic_id': synthetic_id.id,
-                        'pos_order': pos_order.id
-                    })
-                    quantity = 0
+        while quantity < 0:
+            summary_date = summary_date - timedelta(days=1)
+            synthetic_id = self.env['synthetic.account.move.pos'].search([
+                ('invoice_date', '=', summary_date)
+            ], limit=1)
+            if not synthetic_id:
+                synthetic_ids.append({
+                    'product_id': product_id,
+                    'quantity': abs(quantity),
+                    'price_unit': price_unit,
+                    'synthetic_id': False
+                })
+                quantity = 0
+            else:
+                lines = synthetic_id.line_ids.filtered(lambda x: x.product_id.barcode == product_id.barcode and
+                                                      x.price_bkav == price_unit)
+                if len(lines) > 0:
+                    sl = sum(lines.mapped('quantity'))
+                    if quantity + sl <= 0:
+                        synthetic_ids.append({
+                            'product_id': product_id,
+                            'quantity': sl,
+                            'price_unit': price_unit,
+                            'synthetic_id': synthetic_id.id
+                        })
+                        quantity += sl
+                    else:
+                        synthetic_ids.append({
+                            'product_id': product_id,
+                            'quantity': abs(quantity),
+                            'price_unit': price_unit,
+                            'synthetic_id': synthetic_id.id
+                        })
+                        quantity = 0
         return synthetic_ids
 
     def make_adjusted_invoice_pos(self, vals_neg):
         record_ids = []
         for data_store in vals_neg:
+            summary_return_line_id = self.env['summary.account.move.pos.return.line'].browse(data_store.get('return_line_id'))
+            pos_order_return_ids = summary_return_line_id.invoice_ids
             source_invoices = {}
             summary_parents = []
             for line in data_store.get('line_ids'):
@@ -214,15 +211,12 @@ class SummaryAccountMovePos(models.Model):
                                 'product_id': pos_order_line.get('product_id').id,
                                 'quantity': pos_order_line.get('quantity'),
                                 'price_unit': pos_order_line.get('price_unit'),
-                                'pos_order_ids': [pos_order_line.get('pos_order')]
                             }
                         })
                     else:
-                        pos_order_ids = products.get(item).get('pos_order_ids')
                         quantity = products.get(item).get('quantity')
                         products.get(item).update({
                             'quantity': quantity + pos_order_line.get('quantity'),
-                            'pos_order_ids': pos_order_ids + [pos_order_line.get('pos_order')]
                         })
                 lines = []
                 for item in products:
@@ -230,7 +224,7 @@ class SummaryAccountMovePos(models.Model):
                         'product_id': products.get(item).get('product_id'),
                         'quantity': products.get(item).get('quantity'),
                         'price_unit': products.get(item).get('price_unit'),
-                        'invoice_ids': [(6, 0, products.get(item).get('pos_order_ids'))]
+                        'invoice_ids': [(6, 0, pos_order_return_ids.ids)]
                     }))
 
                 store = self.env['store'].browse(data_store.get('store_id'))
