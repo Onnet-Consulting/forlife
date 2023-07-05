@@ -59,7 +59,7 @@ class PurchaseRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        # res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
+        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
         return res
 
     @api.onchange('employee_id')
