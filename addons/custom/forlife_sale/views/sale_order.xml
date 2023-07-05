@@ -60,6 +60,7 @@
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
                     <field name="x_sale_type"/>
                     <field name="x_sale_chanel"/>
+                    <field name="x_location_id" required="1" attrs="{'readonly': [('state', '=', 'sale')]}"/>
                     <field name="x_account_analytic_ids" widget="many2many_tags"/>
                     <field name="x_occasion_code_ids" widget="many2many_tags"/>
                 </xpath>
@@ -98,8 +99,8 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='partner_id']" position="after">
-                    <xpath expr="//field[@name='warehouse_id'][2]" position="move"/>
+                <xpath expr="//field[@name='warehouse_id'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
                 </xpath>
             </field>
         </record>

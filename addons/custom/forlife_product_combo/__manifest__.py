@@ -20,7 +20,6 @@
     ],
     'assets': {
         'point_of_sale.assets': [
-            'forlife_product_combo/static/src/js/models.js',
             'forlife_product_combo/static/src/js/Screens/ProductScreen/ProductScreen.js',
         ],
     },

@@ -30,14 +30,15 @@ REWARD_TYPE = [
 
 class PromotionConditionProduct(models.Model):
     _name = 'promotion.condition.product'
+    _rec_name = 'product_product_id'
     _table = 'product_product_promotion_program_rel'
 
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -187,6 +188,8 @@ class PromotionProgram(models.Model):
 
     discount_product_ids = fields.Many2many(
         'product.product', 'promotion_program_discount_product_rel', domain="[('available_in_pos', '=', True)]")
+    discount_product_count = fields.Integer(compute='_compute_discount_product_count')
+    reward_product_count = fields.Integer(compute='_compute_reward_product_count')
     reward_product_ids = fields.Many2many(
         'product.product', 'promotion_program_reward_product_rel', domain="[('available_in_pos', '=', True)]")
     reward_quantity = fields.Float()
@@ -265,6 +268,36 @@ class PromotionProgram(models.Model):
         for line in self:
             product_ids_list = line._get_valid_product_ids()
             line.product_count = len(product_ids_list)
+
+    @api.depends('discount_product_ids')
+    def _compute_discount_product_count(self):
+        sql = """
+        SELECT promotion_program_id, count(product_product_id) FROM promotion_program_discount_product_rel
+        WHERE promotion_program_id in %(promotion_programs)s
+        GROUP BY promotion_program_id
+        """
+        self.env.cr.execute(sql, {'promotion_programs': tuple(self.ids)})
+        result = {
+            promotion_program_id: count
+            for promotion_program_id, count in self.env.cr.fetchall()
+        }
+        for pro in self:
+            pro.discount_product_count = result.get(pro.id, 0)
+
+    @api.depends('reward_product_ids')
+    def _compute_reward_product_count(self):
+        sql = """
+        SELECT promotion_program_id, count(product_product_id) FROM promotion_program_reward_product_rel
+        WHERE promotion_program_id in %(promotion_programs)s
+        GROUP BY promotion_program_id
+        """
+        self.env.cr.execute(sql, {'promotion_programs': tuple(self.ids)})
+        result = {
+            promotion_program_id: count
+            for promotion_program_id, count in self.env.cr.fetchall()
+        }
+        for pro in self:
+            pro.reward_product_count = result.get(pro.id, 0)
 
     @api.depends('product_ids', 'product_categ_ids')
     def _compute_json_valid_product_ids(self):
@@ -358,6 +391,11 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name=_("%s (copy)") % self.name)
+        return super().copy(default)
 
     def action_recompute_new_field_binary(self):
         self.search([])._compute_json_valid_product_ids()
@@ -465,25 +503,27 @@ class PromotionProgram(models.Model):
 
 class PromotionDiscountProduct(models.Model):
     _name = 'promotion.discount.product'
+    _rec_name = 'product_product_id'
     _description = 'Promotion Discount Product'
     _table = 'promotion_program_discount_product_rel'
 
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
 
 class PromotionRewardProduct(models.Model):
     _name = 'promotion.reward.product'
+    _rec_name = 'product_product_id'
     _description = 'Promotion Reward Product'
     _table = 'promotion_program_reward_product_rel'
 
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
     promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
 
-    def init(self):
-        self.env.cr.execute("""
-            ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+    # def init(self):
+    #     self.env.cr.execute("""
+    #         ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)

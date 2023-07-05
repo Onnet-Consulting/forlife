@@ -72,6 +72,7 @@ class SplitProduct(models.Model):
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
+                    r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
             rec.product_quantity_out = product_qty_split
             available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.lot_stock_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)

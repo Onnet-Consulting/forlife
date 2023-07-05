@@ -5,6 +5,9 @@ import re
 import base64
 import xlsxwriter
 from io import BytesIO
+import pytz
+from pytz import UTC
+
 
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
@@ -115,12 +118,19 @@ class PurchaseRequest(models.Model):
             'domain': [('purchase_request_ids', '=', self.id)],
         }
 
+    def convert_to_local(self, datetime=datetime.today(), tz=False):
+        if not tz:
+            tz = self._context.get('tz') or self.env.user.tz or 'UTC'
+        local_time = pytz.utc.localize(datetime).astimezone(pytz.timezone(tz))
+        return local_time.replace(tzinfo=None)
+
     @api.constrains('request_date', 'date_planned')
     def constrains_request_date(self):
         for item in self:
             if item.request_date and item.date_planned:
+                time_plan = self.convert_to_local(item.date_planned)
                 time_request = datetime(item.request_date.year, item.request_date.month, item.request_date.day)
-                if time_request > item.date_planned:
+                if time_request > time_plan:
                     raise ValidationError(_("Expected Arrival must be greater than request date"))
 
     @api.model

@@ -150,6 +150,21 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.location_id = self.location_id
 
+    @api.onchange('account_analytic_ids')
+    def _onchange_line_account_analytic_id(self):
+        for rec in self.order_line:
+            rec.account_analytic_id = self.account_analytic_ids[-1]._origin if self.account_analytic_ids else None
+
+    @api.onchange('occasion_code_ids')
+    def _onchange_line_occasion_code_ids(self):
+        for rec in self.order_line:
+            rec.occasion_code_id = self.occasion_code_ids[-1]._origin if self.occasion_code_ids else None
+
+    @api.onchange('production_id')
+    def _onchange_line_production_id(self):
+        for rec in self.order_line:
+            rec.production_id = self.production_id[-1]._origin if self.production_id else None
+
     @api.onchange('receive_date')
     def _onchange_line_receive_date(self):
         for rec in self.order_line:
@@ -184,6 +199,12 @@ class PurchaseOrder(models.Model):
         else:
             pass
 
+        if self.partner_id and self.sudo().source_location_id.company_id and self.env['res.company'].sudo().search([
+            ('partner_id', '=', self.partner_id.id),
+            ('id', '!=', self.sudo().source_location_id.company_id.id)
+        ]):
+            self.source_location_id = None
+
         # Do something with res
         return res
 
@@ -192,6 +213,24 @@ class PurchaseOrder(models.Model):
         for item in self:
             if not item.currency_id:
                 raise ValidationError('Trường tiền tệ không tồn tại')
+
+    @api.constrains('account_analytic_ids')
+    def constrains_account_analytic_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.account_analytic_ids and len(item.account_analytic_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 trung tâm chi phí')
+
+    @api.constrains('occasion_code_ids')
+    def constrains_occasion_code_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.occasion_code_ids and len(item.occasion_code_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 mã vụ việc')
+
+    @api.constrains('production_id')
+    def constrains_production_id(self):
+        for item in self:
+            if not item.is_purchase_request and item.production_id and len(item.production_id) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 lệnh sản xuất')
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
@@ -477,6 +516,7 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
+                self = self.sudo().with_context(inter_company=True)
                 data = {'partner_id': record.partner_id.id,
                         'purchase_type': record.purchase_type,
                         'is_purchase_request': record.is_purchase_request,
@@ -512,7 +552,7 @@ class PurchaseOrder(models.Model):
                     if line.price_subtotal <= 0:
                         raise UserError(
                             'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
-                    product_ncc = self.env['stock.quant'].search(
+                    product_ncc = self.env['stock.quant'].sudo().search(
                         [('location_id', '=', record.source_location_id.id),
                          ('product_id', '=', line.product_id.id)]).mapped('quantity')
                     if sum(product_ncc) < line.product_qty:
@@ -567,7 +607,9 @@ class PurchaseOrder(models.Model):
                 '''
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
                 '''
-                self.action_approved_vendor(data, order_line, invoice_line_ids)
+                self.sudo().with_context(inter_company=True).action_approved_vendor(data, order_line, invoice_line_ids)
+                if self._context.get('inter_company'):
+                    self = self.sudo().with_context(inter_company=False)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
 
@@ -1732,8 +1774,9 @@ class PurchaseOrderLine(models.Model):
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
-    billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed', store=1)
-    received = fields.Integer(string='Đã nhận', compute='compute_received', store=1)
+    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
+    billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
+    received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char(related='product_id.name', store=True, required=False, string='Mô tả')
     # Phục vụ import
@@ -1908,11 +1951,10 @@ class PurchaseOrderLine(models.Model):
     def compute_billed(self):
         for item in self:
             if item.order_id:
-                acc_move = self.env['account.move'].search(
-                    [('reference', '=', item.order_id.name), ('state', '=', 'posted')])
+                acc_move = self.env['account.move'].search([('purchase_order_product_id', '=', item.order_id.id), ('state', '=', 'posted'), ('select_type_inv', '=', 'normal')])
                 if acc_move:
                     acc_move_line = self.env['account.move.line'].search(
-                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id)]).mapped('quantity')
+                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id), ('po_id', '=', str(item.id))]).mapped('quantity')
                     item.billed = sum(acc_move_line)
                 else:
                     item.billed = False
@@ -1950,23 +1992,23 @@ class PurchaseOrderLine(models.Model):
             else:
                 pass
 
-    @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
-                  'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
-    def onchange_receive_date(self):
-        if self.order_id:
-            self.receive_date = self.order_id.receive_date
-            self.location_id = self.order_id.location_id
-            self.production_id = self.order_id.production_id
-            if self.order_id.account_analytic_ids:
-                self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
-            self.event_id = self.order_id.event_id
-            if self.order_id.occasion_code_ids:
-                self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
-
-    @api.onchange('product_id', 'order_id', 'order_id.location_id')
-    def onchange_location_id(self):
-        if self.order_id and self.order_id.location_id:
-            self.location_id = self.order_id.location_id
+    # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
+    #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
+    # def onchange_receive_date(self):
+    #     if self.order_id:
+    #         self.receive_date = self.order_id.receive_date
+    #         self.location_id = self.order_id.location_id
+    #         self.production_id = self.order_id.production_id
+    #         if self.order_id.account_analytic_ids:
+    #             self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
+    #         self.event_id = self.order_id.event_id
+    #         if self.order_id.occasion_code_ids:
+    #             self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
+    #
+    # @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    # def onchange_location_id(self):
+    #     if self.order_id and self.order_id.location_id:
+    #         self.location_id = self.order_id.location_id
 
     # discount
     @api.onchange("free_good")
@@ -2262,25 +2304,42 @@ class AccountMove(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    def check_quant_goods_import(self, po):
+        self.ensure_one()
+        if self.state == 'done':
+            material_product_ids = [
+                polml.product_id.id
+                for polml in self.env['purchase.order.line.material.line'].sudo().search([
+                    ('purchase_order_line_id', 'in', po.order_line_production_order.ids),
+                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False)
+                ])
+            ]
+            if not material_product_ids:
+                return
+            product_ids = [
+                (quant['product_id'][0], quant['quantity'] or 0)
+                for quant in self.env['stock.quant'].read_group(
+                    domain=[('location_id', '=', self.location_dest_id.id),  ('product_id', 'in', material_product_ids)],
+                    fields=['quantity'],
+                    groupby='product_id')
+            ]
+            product_not_quant = self.env['product.product'].sudo().search([
+                '|', ('id', 'in', [product[0] for product in product_ids if product[1] <= 0]),
+                '&', ('id', 'not in', [product[0] for product in product_ids]), ('id', 'in', material_product_ids)
+            ])
+            if product_not_quant:
+                raise ValidationError('Các NPL sau không đủ tồn kho: \n%s' % '\n'.join(product.name for product in product_not_quant))
+
+
     def button_validate(self):
         res = super().button_validate()
         if self._context.get('endloop'):
             return True
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
-                                                   limit=1)
+            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
             if po:
-                ### Check tồn npl ử tab npl po:
-                if record.state == 'done':
-                    for item in po.order_line_production_order:
-                        material = self.env['purchase.order.line.material.line'].search(
-                            [('purchase_order_line_id', '=', item.id)])
-                        for material_line in material:
-                            number_product = self.env['stock.quant'].search(
-                                [('location_id', '=', record.location_dest_id.id),
-                                 ('product_id', '=', material_line.product_id.id)])
-                            if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                                raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                ### check npl tồn:
+                self.check_quant_goods_import(po)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-29 09:59+0000\n"
-"PO-Revision-Date: 2023-06-29 09:59+0000\n"
+"POT-Creation-Date: 2023-07-03 09:51+0000\n"
+"PO-Revision-Date: 2023-07-03 09:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,13 @@ msgstr " của CT: "
 #, python-format
 msgid " of %s"
 msgstr " của %s"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#, python-format
+msgid "%s (copy)"
+msgstr "%s (sao chép)"
 
 #. module: forlife_pos_promotion
 #. odoo-python
@@ -235,7 +242,6 @@ msgstr "Chương trình hóa đơn đã áp dụng"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
-#: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml:0
 #, python-format
 msgid "Apply"
@@ -348,7 +354,6 @@ msgstr "Không thể xóa chương trình khuyến mãi đã được sử dụn
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js:0
-#: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
 #, python-format
 msgid "Cancel"
@@ -429,13 +434,6 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
 msgid "Chương trình làm giá"
-msgstr ""
-
-#. module: forlife_pos_promotion
-#. odoo-javascript
-#: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
-#, python-format
-msgid "Chọn phần thưởng"
 msgstr ""
 
 #. module: forlife_pos_promotion
@@ -2156,6 +2154,13 @@ msgstr "Sản phẩm Voucher"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__voucher_program_id
 msgid "Voucher Program"
 msgstr "Chương trình Voucher"
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/ControlButtons/ResetLinePromotionProgramsButton.js:0
+#, python-format
+msgid "Vui lòng chọn một dòng đơn hàng để đặt lại CTKM."
+msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__website_message_ids

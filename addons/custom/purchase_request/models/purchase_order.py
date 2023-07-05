@@ -16,6 +16,7 @@ class PurchaseOrder(models.Model):
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
+    exchange_rate_line_ids_pppp = fields.One2many(related='order_line')
     order_line_production_order = fields.Many2many('purchase.order.line',
                                                   compute='_compute_order_line_production_order',
                                                   inverse='_inverse_order_line_production_order')
@@ -26,7 +27,7 @@ class PurchaseOrder(models.Model):
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
-            rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
+            rec.order_line_production_order = order_line_production_order.ids
             if not order_line_production_order or not rec.order_line:
                 rec.is_check_line_material_line = True
             else:
@@ -128,7 +129,7 @@ class PurchaseOrderLine(models.Model):
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'production_line_price_unit': production_line.price,
-                    'price_unit': production_line.price,
+                    'price_unit': production_line.price if production_line.product_id.product_tmpl_id.x_type_cost_product else 0,
                     'is_from_po': True,
                 }))
             self.write({
@@ -173,7 +174,8 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
-    price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False)
+    price_unit = fields.Float(string='Giá')
+
 
     @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
     def _compute_product_plan_qty(self):
@@ -183,11 +185,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
             else:
                 rec.product_qty = 0
 
-    @api.depends('production_line_price_unit', 'product_qty')
-    def _compute_price_unit(self):
-        for rec in self:
-            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
-                rec.price_unit = rec.product_qty * rec.production_line_price_unit
 
     def _inverse_product_plan_qty(self):
         pass

@@ -13,6 +13,11 @@ class StockPicking(models.Model):
     picking_xk_id = fields.Many2one('stock.picking', index=True, copy=False)
     account_xk_id = fields.Many2one('account.move', copy=False)
 
+    def _check_company(self, fnames=None):
+        if self._context.get('inter_company'):
+            return
+        return super(StockPicking, self)._check_company(fnames=fnames)
+
     def view_xk_picking(self):
         # context = { 'create': True, 'delete': True, 'edit': True}
         return {
