@@ -179,6 +179,7 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                            <field name="occasion_code_id"/>
                             <field name="account_analytic_id"/>
                             <field name="total_vnd_exchange" invisible="1"/>
                             <field name="import_tax" invisible="1"/>
