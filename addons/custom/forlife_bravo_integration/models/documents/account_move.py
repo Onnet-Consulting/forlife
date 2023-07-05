@@ -133,6 +133,8 @@ class AccountMove(models.Model):
             return self.filtered(lambda m: m.journal_id.code == 'CA02'
                                            and bool(
                 m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
+        if journal_data == "journal_entry_payroll":
+            return self.filtered(lambda am: am.journal_id.code == '971')
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -156,6 +158,8 @@ class AccountMove(models.Model):
             return self.bravo_get_cash_out_move_values()
         if journal_data == "pos_cash_in":
             return self.bravo_get_cash_in_move_values()
+        if journal_data == "journal_entry_payroll":
+            return self.bravo_get_journal_entry_payroll_values()
         if update_move_data:
             return self.bravo_get_update_move_values(**kwargs)
         return [], []
@@ -224,6 +228,13 @@ class AccountMove(models.Model):
         pos_cash_in_queries = records.bravo_get_insert_sql(**current_context)
         if pos_cash_in_queries:
             queries.extend(pos_cash_in_queries)
+
+        # Journal entry payroll
+        current_context = {CONTEXT_JOURNAL_ACTION: 'journal_entry_payroll'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        journal_entry_payroll_queries = records.bravo_get_insert_sql(**current_context)
+        if journal_entry_payroll_queries:
+            queries.extend(journal_entry_payroll_queries)
 
         return queries
 
