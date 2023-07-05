@@ -114,6 +114,8 @@ class StockPicking(models.Model):
 
     def button_forlife_validate(self):
         self.ensure_one()
+        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+            self._update_forlife_production()
         view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
         view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
         # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
@@ -151,6 +153,9 @@ class StockPicking(models.Model):
 
     def action_confirm(self):
         for picking in self:
+            for line in picking.move_ids_without_package:
+                if picking.other_import and line.reason_id.is_price_unit and line.amount_total <= 0:
+                    raise ValidationError('Bạn chưa nhập tổng tiền cho sản phẩm %s' % line.product_id.name)
             if (not picking.other_import and not picking.other_export):
                 continue
             if (picking.other_import and not picking.location_id.is_assets) or (picking.other_export and not picking.location_dest_id.is_assets):
@@ -458,11 +463,6 @@ class StockMove(models.Model):
     product_other_id = fields.Many2one('forlife.other.in.out.request.line')
     previous_qty = fields.Float(compute='compute_previous_qty', store=1)
 
-    @api.constrains('amount_total')
-    def constrains_amount_total(self):
-        for item in self:
-            if not item.picking_id.is_from_request and item.picking_id.other_import and item.reason_id.is_price_unit and item.amount_total <= 0:
-                raise ValidationError('Bạn chưa nhập tổng tiền cho sản phẩm %s' % item.product_id.name)
 
     @api.depends('reason_id')
     def compute_production_order(self):
