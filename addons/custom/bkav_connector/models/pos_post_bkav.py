@@ -258,15 +258,15 @@ class SummaryAccountMovePos(models.Model):
                                  ('is_post_bkav', '=', False),
                                  ('pos_order_id', '!=', False),
                                  ('invoice_date', '<=', today)])
-        # for inv in invoices:
-        #     inv.write({
-        #         'is_post_bkav': True,
-        #         'invoice_no': summary_adjusted_pos.number_bill,
-        #         'invoice_serial': summary_adjusted_pos.account_einvoice_serial,
-        #         'invoice_e_date': summary_adjusted_pos.einvoice_date,
-        #         'invoice_form': summary_adjusted_pos.invoice_form,
-        #         'invoice_guid': summary_adjusted_pos.invoice_guid
-        #     })
+        for inv in invoices:
+            inv.write({
+                'is_post_bkav': True,
+                'invoice_no': summary_adjusted_pos.number_bill,
+                'invoice_serial': summary_adjusted_pos.account_einvoice_serial,
+                'invoice_e_date': summary_adjusted_pos.einvoice_date,
+                'invoice_form': summary_adjusted_pos.invoice_form,
+                'invoice_guid': summary_adjusted_pos.invoice_guid
+            })
 
     def summary_post_bkav(self, data, cmd_type=None):
         gui_id_list = []
