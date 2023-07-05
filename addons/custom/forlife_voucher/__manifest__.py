@@ -41,6 +41,7 @@
         'views/pos_order.xml',
         'views/pos_payment_method.xml',
         'views/product_program_import_view.xml',
+        'views/quick_config_voucher.xml',
         'views/menu_views.xml',
     ],
     'assets': {

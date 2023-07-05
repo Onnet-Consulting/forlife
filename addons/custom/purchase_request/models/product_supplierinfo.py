@@ -10,7 +10,7 @@ class SupplierInfo(models.Model):
     min_qty = fields.Float(
         'Quantity', default=1, required=True, digits="Product Unit Of Measure",
         help="The quantity to purchase from this vendor to benefit from the price, expressed in the vendor Product Unit of Measure if not any, in the default unit of measure of the product otherwise.")
-    supplier_code = fields.Char(related="partner_id.code", string="Supplier Code", store=1)
+    supplier_code = fields.Char(related="partner_id.ref", string="Supplier Code", store=1)
 
     @api.model
     def load(self, fields, data):
@@ -22,7 +22,7 @@ class SupplierInfo(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('supplier_code') and not vals.get('partner_id'):
-            partner_id = self.env['res.partner'].search([('code', '=', vals.get('supplier_code'))], limit=1).id
+            partner_id = self.env['res.partner'].search([('ref', '=', vals.get('supplier_code'))], limit=1).id
             vals.update({
                 'partner_id': partner_id
             })
