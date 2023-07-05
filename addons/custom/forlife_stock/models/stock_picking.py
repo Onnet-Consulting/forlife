@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from datetime import datetime, timedelta, time
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
 from odoo.exceptions import ValidationError
 
@@ -39,12 +40,122 @@ def _action_done(self):
 InheritPicking._action_done = _action_done
 
 
+class StockPickingOverPopupConfirm(models.TransientModel):
+    _name = 'stock.picking.over.popup.confirm'
+    _description = 'Stock Picking Over Popup Confirm'
+
+    picking_id = fields.Many2one('stock.picking')
+
+    def process(self):
+        self.ensure_one()
+        list_line_over = []
+        list_line_less = []
+        for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+            tolerance = pk.product_id.tolerance
+            if pk.qty_done != pk_od.product_uom_qty:
+                if pk.qty_done > pk_od.product_uom_qty:
+                    list_line_over.append((0, 0, {
+                        'product_id': pk_od.product_id.id,
+                        'product_uom_qty': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
+                        'quantity_done': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
+                        'product_uom': pk_od.product_uom.id,
+                        'free_good': pk_od.free_good,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
+                        'occasion_code_id': pk.occasion_code_id.id,
+                        'work_production': pk.work_production.id,
+                        'account_analytic_id': pk.account_analytic_id.id,
+                        'price_unit': pk_od.price_unit,
+                        'location_id': pk_od.location_id.id,
+                        'location_dest_id': pk_od.location_dest_id.id,
+                        'amount_total': pk_od.amount_total,
+                        'reason_type_id': pk_od.reason_type_id.id,
+                        'reason_id': pk_od.reason_id.id,
+                        'purchase_line_id': pk_od.purchase_line_id.id,
+                    }))
+        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+               zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package)):
+            master_data_over = {
+                'reason_type_id': self.picking_id.reason_type_id.id,
+                'location_id': self.picking_id.location_id.id,
+                'partner_id': self.picking_id.partner_id.id,
+                'location_dest_id': self.picking_id.location_dest_id.id,
+                'scheduled_date': datetime.now(),
+                'origin': self.picking_id.origin,
+                'is_pk_purchase': self.picking_id.is_pk_purchase,
+                'leftovers_id': self.picking_id.id,
+                'state': 'assigned',
+                'other_import_export_request_id': self.picking_id.other_import_export_request_id.id,
+                'picking_type_id': self.picking_id.picking_type_id.id,
+                'move_ids_without_package': list_line_over,
+            }
+            xk_picking = self.env['stock.picking'].create(master_data_over)
+        for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+            tolerance = pk.product_id.tolerance
+            if pk.qty_done > pk_od.product_uom_qty:
+                pk.write({
+                    'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+                })
+                pk_od.write({
+                    'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+                })
+        data_pk_over = self.env['stock.picking'].search([('leftovers_id', '=', self.picking_id.id)])
+        for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
+            pk.write({
+                'quantity_change': pk_od.quantity_change,
+                'quantity_purchase_done': pk.qty_done
+            })
+        return self.picking_id.button_validate()
+
+
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    def button_forlife_validate(self):
+        self.ensure_one()
+        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+            self._update_forlife_production()
+        view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
+        view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
+        # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
+        #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
+        #         tolerance = pk.product_id.tolerance
+        #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
+        #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
+        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+               zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+            return {
+                'name': 'Tạo phần dở dang thừa?',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'stock.picking.over.popup.confirm',
+                'views': [(view_over.id, 'form')],
+                'view_id': view_over.id,
+                'target': 'new',
+                'context': dict(self.env.context, default_picking_id=self.id),
+            }
+        # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+        #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
+        #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+        #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+        #     return {
+        #         'name': 'Tạo phần dở dang thừa/thiếu?',
+        #         'type': 'ir.actions.act_window',
+        #         'view_mode': 'form',
+        #         'res_model': 'stock.picking.over.popup.confirm',
+        #         'views': [(view_over_less.id, 'form')],
+        #         'view_id': view_over_less.id,
+        #         'target': 'new',
+        #         'context': dict(self.env.context, default_picking_id=self.id),
+        #     }
+        return super(StockPicking, self).button_validate()
+
     def action_confirm(self):
         for picking in self:
+            for line in picking.move_ids_without_package:
+                if picking.other_import and line.reason_id.is_price_unit and line.amount_total <= 0:
+                    raise ValidationError('Bạn chưa nhập tổng tiền cho sản phẩm %s' % line.product_id.name)
             if (not picking.other_import and not picking.other_export):
                 continue
             if (picking.other_import and not picking.location_id.is_assets) or (picking.other_export and not picking.location_dest_id.is_assets):
@@ -96,6 +207,8 @@ class StockPicking(models.Model):
         return res
 
     ware_check = fields.Boolean('', default=False)
+    labor_check = fields.Boolean('', default=True)
+    expense_check = fields.Boolean('', default=True)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -103,6 +216,10 @@ class StockPicking(models.Model):
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
+    leftovers_id = fields.Many2one(
+        'stock.picking', 'Left over of',
+        copy=False, readonly=True,
+        check_company=True)
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)
@@ -134,6 +251,7 @@ class StockPicking(models.Model):
         required=False, readonly=False, index=True,
         states={'draft': [('readonly', False)]})
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
+    is_from_request = fields.Boolean('', default=False)
 
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
@@ -208,10 +326,56 @@ class StockPicking(models.Model):
                 location_values = {}
                 if rec.location_id != line.location_id:
                     location_values['location_id'] = line.location_id.id
-                if rec.location_dest_id != line.location_dest_id.id:
+                if rec.location_dest_id != line.location_dest_id:
                     location_values['location_dest_id'] = line.location_dest_id.id
-                rec.update(location_values)
+                if location_values:
+                    rec.update(location_values)
         return line
+
+    def button_validate(self):
+        res = super().button_validate()
+        for record in self:
+            for rec in record.move_ids_without_package:
+                if record.other_import:
+                    if rec.work_production:
+                        quantity = self.env['quantity.production.order'].search(
+                            [('product_id', '=', rec.product_id.id),
+                             ('location_id', '=', rec.picking_id.location_dest_id.id),
+                             ('production_id', '=', rec.work_production.id)])
+                        if quantity:
+                            quantity.write({
+                                'quantity': quantity.quantity + rec.quantity_done
+                            })
+                        else:
+                            self.env['quantity.production.order'].create({
+                                'product_id': rec.product_id.id,
+                                'location_id': rec.picking_id.location_dest_id.id,
+                                'production_id': rec.work_production.id,
+                                'quantity': rec.quantity_done
+                            })
+                if record.other_export:
+                    quantity_prodution = self.env['quantity.production.order'].search(
+                        [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id),
+                         ('production_id', '=', rec.work_production.id)])
+                    if rec.work_production:
+                        if quantity_prodution:
+                            if rec.quantity_done > quantity_prodution.quantity:
+                                raise ValidationError(
+                                    'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                                    rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                            else:
+                                quantity_prodution.update({
+                                    'quantity': quantity_prodution.quantity - rec.quantity_done
+                                })
+                        else:
+                            raise ValidationError(
+                                'Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done':
+                    if rec.work_production and rec.quantity_done > rec.work_production.forlife_production_finished_product_ids.filtered(
+                            lambda r: r.product_id.id == rec.product_id.id).remaining_qty:
+                        raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name))
+
+        return res
 
     @api.model
     def get_import_templates(self):
@@ -279,7 +443,7 @@ class StockMove(models.Model):
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
@@ -298,6 +462,7 @@ class StockMove(models.Model):
         help="Scheduled date until move is done, then date of actual move processing")
     product_other_id = fields.Many2one('forlife.other.in.out.request.line')
     previous_qty = fields.Float(compute='compute_previous_qty', store=1)
+
 
     @api.depends('reason_id')
     def compute_production_order(self):
@@ -325,15 +490,19 @@ class StockMove(models.Model):
                 if rec.picking_id.state != 'done':
                     rec.previous_qty = rec.product_uom_qty
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'reason_id')
     def _onchange_product_id(self):
         self.name = self.product_id.name
-        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
         if not self.reason_id:
             self.reason_id = self.picking_id.location_id.id \
                 if self.picking_id.other_import else self.picking_id.location_dest_id.id
         if not self.reason_type_id:
             self.reason_type_id = self.picking_id.reason_type_id.id
+        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
+
+    # @api.onchange('reason_id')
+    # def _onchange_reason_id(self):
+    #     self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
 
 
 class StockMoveLine(models.Model):
@@ -343,17 +512,17 @@ class StockMoveLine(models.Model):
     ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
-                                      domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
-    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    def constrains_qty_done(self):
-        for rec in self:
-            for line in rec.picking_id.move_ids_without_package:
-                if rec.move_id.id == line.id:
-                    if str(rec.po_id) == str(line.po_l_id):
-                        if rec.qty_done > line.product_uom_qty:
-                            raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    # def constrains_qty_done(self):
+    #     for rec in self:
+    #         for line in rec.picking_id.move_ids_without_package:
+    #             if rec.move_id.id == line.id:
+    #                 if str(rec.po_id) == str(line.po_l_id):
+    #                     if rec.qty_done > line.product_uom_qty:
+    #                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'

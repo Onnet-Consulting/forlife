@@ -54,10 +54,15 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             var quantity_product_apply_all = 0;
             var quantity_product_valid = 0;
             for (let index = 0; index < this.env.pos.selectedOrder.orderlines.length; index++) {
-                quantity_product_apply_all += this.env.pos.selectedOrder.orderlines[index].quantity
+                if(!this.env.pos.selectedOrder.orderlines[index].is_product_defective){
+                    quantity_product_apply_all += this.env.pos.selectedOrder.orderlines[index].quantity
+                }
+
             }
             for (let index = 0; index < product_valid.length; index++) {
-                quantity_product_valid += product_valid[index].quantity
+                if(!product_valid[index].is_product_defective){
+                    quantity_product_valid += product_valid[index].quantity
+                }
             }
             var value = $('.o_input')
             if (promotion.approve_consumption_point){

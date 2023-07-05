@@ -100,6 +100,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
+                                        'promotion_type': 'vip_amount',
                                         'account_id': promotion_account_id and promotion_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu theo chính sách vip"
@@ -111,6 +112,7 @@ class SaleOrder(models.Model):
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                                        'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
                         else:
@@ -166,7 +168,7 @@ class SaleOrder(models.Model):
 
                     # Customer shipping fee
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
-                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_shipping_fee')
+                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
                         account_id = product_id and product_id.property_account_expense_id
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,

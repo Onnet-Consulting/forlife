@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'wizard/reject_purchase_order.xml',
         'wizard/cancel_purchase_order.xml',
+        'wizard/select_type_invoice.xml',
         'views/purchase_order_view.xml',
         'views/forlife_event_view.xml',
         'views/forlife_production_view.xml',
@@ -40,7 +41,7 @@
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
-        'views/stock_picking_view.xml'
+        'views/stock_picking_view.xml',
     ],
     "assets": {
         "web.assets_backend": [

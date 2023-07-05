@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <record id="ir_cron_post_invoice_to_bkav_end_day" model="ir.cron">-->
-<!--        <field name="name">Schedule: Post invoice to BKAV end day</field>-->
-<!--        <field name="model_id" ref="model_account_move"/>-->
-<!--        <field name="state">code</field>-->
-<!--        <field name="code">model.post_invoice_to_bkav_end_day()</field>-->
-<!--        <field name="active" eval="True"/>-->
-<!--        <field name="interval_number">1</field>-->
-<!--        <field name="interval_type">days</field>-->
-<!--        <field name="numbercall">-1</field>-->
-<!--        <field name="nextcall" eval="(DateTime.now() + relativedelta(day=0)).strftime('%Y-%m-%d 23:59:00')"/>-->
-<!--    </record>-->
+    <record id="ir_cron_post_invoice_to_bkav_end_day" model="ir.cron">
+        <field name="name">Schedule: Post invoice to BKAV end day</field>
+        <field name="model_id" ref="model_summary_account_move_pos"/>
+        <field name="state">code</field>
+        <field name="code">model.collect_bills_the_end_day()</field>
+        <field name="active" eval="True"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 19:00:00')"/>
+    </record>
 
     <!--    Job general invoice not exists bkav-->
     <record id="ir_cron_general_invoice_not_exists_bkav" model="ir.cron">

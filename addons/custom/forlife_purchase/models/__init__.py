@@ -1,6 +1,5 @@
 from . import ir_rule
 from . import product_order_cost_line
-from . import product_order_exchange_rate
 from . import purchase_order
 from . import forlife_event
 from . import forlife_production

@@ -22,8 +22,7 @@ class Inventory(models.Model):
     _order = "date desc, id desc"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char('Mã phiếu', default="Phiếu kiểm kê", readonly=True, required=True,
-                       states={'draft': [('readonly', False)]})
+    name = fields.Char('Mã phiếu', default="/", readonly=True, required=True)
     date = fields.Datetime('Ngày kiểm kho', required=True, default=fields.Datetime.now)
     accounting_date = fields.Date('Ngày kế toán')
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Chi tiết tồn kho',
@@ -33,8 +32,8 @@ class Inventory(models.Model):
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
         ('cancel', 'Hủy'),
-        ('first_inv', 'Kiểm kê bước 1'),
-        ('second_inv', 'Kiểm kê bước 2'),
+        ('first_inv', 'Xác nhận lần 1'),
+        ('second_inv', 'Xác nhận lần 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -45,9 +44,9 @@ class Inventory(models.Model):
                                     states={'draft': [('readonly', False)]}, required=True)
     view_location_id = fields.Many2one(related='warehouse_id.view_location_id')
 
-    location_ids = fields.Many2many('stock.location', string='Địa điểm', readonly=True, check_company=True,
+    location_id = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
         states={'draft': [('readonly', False)]},
-        domain="[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', view_location_id)]")
+        domain="[('usage', 'in', ['internal']), ('id', 'child_of', view_location_id)]")
 
     #
     # filter_by = fields.Selection(string='Filtrer par', selection=[
@@ -85,7 +84,7 @@ class Inventory(models.Model):
         if not self.user_has_groups('stock.group_stock_multi_locations'):
             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
             if warehouse:
-                self.location_ids = warehouse.lot_stock_id
+                self.location_id = warehouse.lot_stock_id
 
     def copy_data(self, default=None):
         name = _("%s (copy)") % (self.name)
@@ -96,7 +95,7 @@ class Inventory(models.Model):
         for inventory in self:
             if (inventory.state not in ('draft', 'cancel')
                and not self.env.context.get(MODULE_UNINSTALL_FLAG, False)):
-                raise UserError(_('You can only delete a draft inventory adjustment. If the inventory adjustment is not done, you can cancel it.'))
+                raise UserError(_('Bạn chỉ có thể xóa bản ghi kiểm kê ở trạng thái nháp. Nếu việc kiểm kê không được thực hiện, bạn có thể hủy bỏ nó.'))
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
@@ -119,7 +118,7 @@ class Inventory(models.Model):
         lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
         if inventory_lines and not lines:
             wiz_lines = [(0, 0, {'product_id': product.id, 'tracking': product.tracking}) for product in inventory_lines.mapped('product_id')]
-            wiz = self.env['stock.track.confirmation'].create({'inventory_id': self.id, 'tracking_line_ids': wiz_lines})
+            wiz = self.env['stock.track.confirmation'].create({'tracking_line_ids': wiz_lines})
             return {
                 'name': _('Tracked Products in Inventory Adjustment'),
                 'type': 'ir.actions.act_window',
@@ -146,6 +145,32 @@ class Inventory(models.Model):
         self.write({'state': 'done'})
         self.post_inventory()
         return True
+
+    def get_ir_sequence_inventory(self, location_id=None):
+        code = 'PKK_LOCATION_'+self.env['stock.location'].browse(location_id).code
+        ir_sequence = self.env['ir.sequence'].search([('code', '=', code)], limit=1)
+        if ir_sequence:
+            return ir_sequence
+        vals = {
+            'name': 'Kiểm kê kho: ' + code,
+            'code': code,
+            'company_id': None,
+            'prefix': '%(y)s',
+            'padding': 6,
+            'number_increment': 1,
+            'number_next_actual': 1
+        }
+        ir_sequence = self.env['ir.sequence'].create(vals)
+        return ir_sequence
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for val in vals_list:
+            ir = self.get_ir_sequence_inventory(val.get('location_id'))
+            location_code = self.env['stock.location'].browse(val.get('location_id')).code
+            val['name'] = 'PKK' + location_code + ir.next_by_id()
+        res = super(Inventory, self).create(vals_list)
+        return res
 
     def post_inventory(self):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
@@ -189,6 +214,7 @@ class Inventory(models.Model):
                 self.env['stock.inventory.line'].create(inventory._get_inventory_lines_values())
             inventory.write(vals)
 
+    '''
     def action_open_inventory_lines(self):
         self.ensure_one()
         action = {
@@ -239,6 +265,8 @@ class Inventory(models.Model):
             'domain': domain,
         }
         return action
+        '''
+
     def init(self):
         get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
         self.env.cr.execute(get_quantity_inventory)
@@ -255,13 +283,13 @@ class Inventory(models.Model):
         :rtype: dict
         """
         self.ensure_one()
-        if self.location_ids:
-            domain_loc = [('id', 'child_of', self.location_ids.ids)]
+        if self.location_id:
+            domain_loc = [('id', 'child_of', self.location_id.ids)]
         else:
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        sql = f"""select * from get_quantity_inventory('{str(fields.Datetime.now())}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         return data
@@ -312,8 +340,8 @@ class Inventory(models.Model):
                 ('active', '=', True)], ['id'])
             product_ids = [p['id'] for p in product_ids]
 
-        if self.location_ids:
-            location_ids = self.location_ids.ids
+        if self.location_id:
+            location_ids = self.location_id.ids
         else:
             location_ids = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)]).lot_stock_id.ids
 
@@ -338,6 +366,17 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
+        '''
+        product_ids = tuple([p['product_id'] for p in quants_groups])
+        query = f"""
+            SELECT pp.id product_id, pt.uom_id 
+            FROM product_product pp JOIN product_template pt ON pp.product_tmpl_id = pt.id 
+            WHERE pp.id in {product_ids}
+        """
+        self._cr.execute(query)
+        product_uom_data = self._cr.dictfetchall()
+        uom_data = {x['product_id']:x['uom_id']  for x in product_uom_data} if product_uom_data else {}
+        '''
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
@@ -346,7 +385,7 @@ class Inventory(models.Model):
                 'x_first_qty': data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
-                'product_uom_id': self.env['product.product'].browse(data.get('product_id')).uom_id.id
+                'product_uom_id': data.get('uom_id')
             }
             vals.append(line)
         if self.exhausted:
@@ -363,9 +402,9 @@ class InventoryLine(models.Model):
     def _domain_location_id(self):
         if self.env.context.get('active_model') == 'stock.inventory':
             inventory = self.env['stock.inventory'].browse(self.env.context.get('active_id'))
-            if inventory.exists() and inventory.location_ids:
-                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_ids.ids
-        return "[('usage', 'in', ['internal', 'transit'])]"
+            if inventory.exists() and inventory.location_id:
+                return "[('usage', 'in', ['internal']), ('id', 'child_of', %s)]" % inventory.location_id.ids
+        return "[('usage', 'in', ['internal'])]"
 
     @api.model
     def _domain_product_id(self):
@@ -381,6 +420,7 @@ class InventoryLine(models.Model):
     partner_id = fields.Many2one('res.partner', 'Owner', check_company=True)
     product_id = fields.Many2one('product.product', 'Sản phẩm', check_company=True,
                                  domain=lambda self: self._domain_product_id(), index=True, required=True)
+    barcode = fields.Char('Mã vạch', related='product_id.barcode')
     product_uom_id = fields.Many2one('uom.uom', 'Đơn vị tính', required=True, readonly=True)
     product_qty = fields.Float('Đếm được', default=0)
     categ_id = fields.Many2one(related='product_id.categ_id', store=True)
@@ -430,10 +470,12 @@ class InventoryLine(models.Model):
 
     @api.onchange('product_id')
     def get_line_default(self):
-        if self.inventory_id.location_ids:
-            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_ids.ids)]}}
-        elif self.inventory_id.warehourse_id:
-            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
+        if self.inventory_id.location_id:
+            self.location_id = self.inventory_id.location_id
+        if self.inventory_id.location_id:
+            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_id.ids)]}}
+        elif self.inventory_id.warehouse_id:
+            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehouse_id.id)]}}
         else:
             return False
 

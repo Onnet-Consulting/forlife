@@ -137,30 +137,8 @@ class PurchaseOrder(models.Model):
                                 price_subtotal = 0
                                 for nine in wave:
                                     quantity += nine.quantity
+                                    data_line = self.get_data_line(line, False, sequence, order, quantity)
                                     # total += nine.price_subtotal
-                                    data_line = {
-                                        'po_id': line.id,
-                                        'product_id': line.product_id.id,
-                                        'sequence': sequence,
-                                        # 'price_subtotal': line.price_subtotal - total,
-                                        'promotions': line.free_good,
-                                        'exchange_quantity': line.exchange_quantity,
-                                        'quantity': line.product_qty - quantity,
-                                        'vendor_price': line.vendor_price,
-                                        'warehouse': line.location_id.id,
-                                        'discount': line.discount,
-                                        'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
-                                        'request_code': line.request_purchases,
-                                        'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
-                                        'discount_percent': line.discount_percent,
-                                        'taxes_id': line.taxes_id.id,
-                                        'tax_amount': line.price_tax,
-                                        'product_uom_id': line.product_uom.id,
-                                        'price_unit': line.price_unit,
-                                        'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                    }
                                     if line.display_type == 'line_section':
                                         pending_section = line
                                         continue
@@ -177,29 +155,7 @@ class PurchaseOrder(models.Model):
                         # invoice_vals_list.append(invoice_vals)
                     else:
                         for line in order.order_line:
-                            data_line = {
-                                'po_id': line.id,
-                                'product_id': line.product_id.id,
-                                'sequence': sequence,
-                                'price_subtotal': line.price_subtotal,
-                                'promotions': line.free_good,
-                                'exchange_quantity': line.exchange_quantity,
-                                'quantity': line.product_qty,
-                                'vendor_price': line.vendor_price,
-                                'warehouse': line.location_id.id,
-                                'discount': line.discount,
-                                'event_id': line.event_id.id,
-                                'work_order': line.production_id.id,
-                                'account_analytic_id': line.account_analytic_id.id,
-                                'request_code': line.request_purchases,
-                                'quantity_purchased': line.purchase_quantity,
-                                'discount_percent': line.discount_percent,
-                                'taxes_id': line.taxes_id.id,
-                                'tax_amount': line.price_tax,
-                                'product_uom_id': line.product_uom.id,
-                                'price_unit': line.price_unit,
-                                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                            }
+                            data_line = self.get_data_line(line, False, sequence, order, quantity=0)
                             if line.display_type == 'line_section':
                                 pending_section = line
                                 continue
@@ -284,30 +240,7 @@ class PurchaseOrder(models.Model):
                                 if purchase_return:
                                     for x_return in purchase_return:
                                         if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                            data_line = {
-                                                'ware_name': wave_item.picking_id.name,
-                                                'po_id': line.id,
-                                                'product_id': line.product_id.id,
-                                                'sequence': sequence,
-                                                'price_subtotal': line.price_subtotal,
-                                                'promotions': line.free_good,
-                                                'exchange_quantity': wave_item.quantity_change - x_return.quantity_change,
-                                                'quantity': wave_item.qty_done - x_return.qty_done,
-                                                'vendor_price': line.vendor_price,
-                                                'warehouse': line.location_id.id,
-                                                'discount': line.discount,
-                                                'event_id': line.event_id.id,
-                                                'work_order': line.production_id.id,
-                                                'account_analytic_id': line.account_analytic_id.id,
-                                                'request_code': line.request_purchases,
-                                                'quantity_purchased': wave_item.quantity_purchase_done - x_return.quantity_purchase_done,
-                                                'discount_percent': line.discount_percent,
-                                                'taxes_id': line.taxes_id.id,
-                                                'tax_amount': line.price_tax,
-                                                'product_uom_id': line.product_uom.id,
-                                                'price_unit': line.price_unit,
-                                                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                            }
+                                            data_line = self.get_data_line(line, wave_item, sequence, order, quantity=0)
                                             if line.display_type == 'line_section':
                                                 pending_section = line
                                                 continue
@@ -324,30 +257,7 @@ class PurchaseOrder(models.Model):
                                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                             sequence += 1
                                 else:
-                                    data_line = {
-                                        'ware_name': wave_item.picking_id.name,
-                                        'po_id': line.id,
-                                        'product_id': line.product_id.id,
-                                        'sequence': sequence,
-                                        'price_subtotal': line.price_subtotal,
-                                        'promotions': line.free_good,
-                                        'exchange_quantity': wave_item.quantity_change,
-                                        'quantity': wave_item.qty_done,
-                                        'vendor_price': line.vendor_price,
-                                        'warehouse': line.location_id.id,
-                                        'discount': line.discount,
-                                        'event_id': line.event_id.id,
-                                        'work_order': line.production_id.id,
-                                        'account_analytic_id': line.account_analytic_id.id,
-                                        'request_code': line.request_purchases,
-                                        'quantity_purchased': wave_item.quantity_purchase_done,
-                                        'discount_percent': line.discount_percent,
-                                        'taxes_id': line.taxes_id.id,
-                                        'tax_amount': line.price_tax,
-                                        'product_uom_id': line.product_uom.id,
-                                        'price_unit': line.price_unit,
-                                        'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                                    }
+                                    data_line = self.get_data_line(line, wave_item, sequence, order, quantity=0)
                                     if line.display_type == 'line_section':
                                         pending_section = line
                                         continue
@@ -440,6 +350,41 @@ class PurchaseOrder(models.Model):
                 'domain': [('id', 'in', moves.ids)],
             }
 
+    def get_data_line(self, line, wave_item, sequence, order, quantity):
+        ware_name = wave_item.picking_id.name if wave_item.picking_id.name else ''
+        exchange_quantity = wave_item.quantity_change if wave_item else line.exchange_quantity
+        if quantity:
+            qty = line.product_qty - quantity
+        else:
+            qty = wave_item.qty_done if wave_item else line.product_qty
+        quantity_purchased = wave_item.quantity_purchase_done if wave_item else line.purchase_quantity
+        data_line = {
+            'ware_name': ware_name,
+            'po_id': line.id,
+            'product_id': line.product_id.id,
+            'sequence': sequence,
+            'price_subtotal': line.price_subtotal,
+            'promotions': line.free_good,
+            'exchange_quantity': exchange_quantity,
+            'quantity': qty,
+            'vendor_price': line.vendor_price,
+            'warehouse': line.location_id.id,
+            'discount': line.discount,
+            'event_id': line.event_id.id,
+            'work_order': line.production_id.id,
+            'account_analytic_id': line.account_analytic_id.id,
+            'request_code': line.request_purchases,
+            'quantity_purchased': quantity_purchased,
+            'discount_percent': line.discount_percent,
+            'tax_ids': [(6, 0, line.taxes_id.ids)],
+            'tax_amount': line.price_tax,
+            'product_uom_id': line.product_uom.id,
+            'price_unit': line.price_unit,
+            'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+            'company_id': line.company_id.id,
+        }
+        return data_line
+
     def compute_count_invoice_inter_fix(self):
         po_return = self.filtered(lambda po: po.is_return)
         super(PurchaseOrder, self - po_return).compute_count_invoice_inter_fix()
@@ -467,24 +412,27 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     origin_po_line_id = fields.Many2one('purchase.order.line')
-    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     return_line_ids = fields.One2many('purchase.order.line', 'origin_po_line_id', string="Return Lines")
 
+
     # FIX received: not add return picking
-    def compute_received(self):
-        for item in self:
-            if item.order_id:
-                st_picking = self.env['stock.picking'].search(
-                    [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
-                if st_picking:
-                    acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-                        'quantity_done')
-                    item.received = sum(acc_move_line)
-                else:
-                    item.received = False
-            else:
-                item.received = False
+    # def compute_received(self):
+    #     for item in self:
+    #         if item.order_id:
+    #             st_picking = self.env['stock.picking'].search(
+    #                 [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
+    #             if st_picking:
+    #                 acc_move_line = self.env['stock.move'].search(
+    #                     [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
+    #                     'quantity_done')
+    #                 if item.qty_returned:
+    #                     item.received = sum(acc_move_line) - item.qty_returned
+    #                 else:
+    #                     item.received = sum(acc_move_line)
+    #             else:
+    #                 item.received = False
+    #         else:
+    #             item.received = False
 
     # TODO: to using tracking msg
     # def _track_qty_returned(self, new_qty):
@@ -530,7 +478,7 @@ class PurchaseOrderLine(models.Model):
                                     total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
 
                 # Include qty of PO return
-                return_line = line.return_line_ids.filtered(lambda rl: rl.order_id.inventory_status == 'done')
+                return_line = line.return_line_ids.filtered(lambda rl: rl.qty_received)
                 total += sum(return_line.mapped('qty_received'))
                 line.qty_returned = total
 

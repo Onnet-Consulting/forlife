@@ -6,6 +6,16 @@ class StockTransferRequest(models.Model):
     _inherit = 'stock.transfer.request'
     _description = 'Forlife Stock Transfer'
 
+    is_expiration_date = fields.Boolean(compute='_compute_is_expiration_date')
+    def _compute_is_expiration_date(self):
+        for item in self:
+            date_check = datetime.now() - relativedelta(days=7)
+            if item.date_planned <= date_check and item.state == 'wait_confirm':
+                item.is_expiration_date = True
+            else:
+                item.is_expiration_date = False
+
+
     def check_wait_confirm_stock_transfer_request(self):
         date_check = datetime.now() - relativedelta(days=7)
         stocks = self.search([('date_planned', '<=', date_check), ('state', '=', 'wait_confirm')])

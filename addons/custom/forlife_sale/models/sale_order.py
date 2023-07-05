@@ -44,6 +44,18 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
+    @api.depends('warehouse_id')
+    def _compute_location_id(self):
+        for r in self:
+            r.x_location_id = r.warehouse_id.lot_stock_id
+
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+
+    @api.onchange('x_location_id')
+    def _onchange_location(self):
+        for line in self.order_line:
+            line.x_location_id = self.x_location_id
+
     @api.onchange('x_punish', 'partner_id')
     def _compute_domain_pricelist(self):
         for r in self:
@@ -246,7 +258,7 @@ class SaleOrder(models.Model):
         list_location = []
         stock_move_ids = {}
         line_x_scheduled_date = []
-        for line in self.order_line:
+        for line in self.order_line.filtered(lambda line: line.product_id.detailed_type =='product'):
             date = datetime.combine(line.x_scheduled_date,
                                     datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
@@ -339,7 +351,7 @@ class SaleOrder(models.Model):
             """
         cursor.execute(sql)
         result = cursor.fetchone()
-        debtBalance = float(result[0]) if result else 0
+        debtBalance = float(result[0] if result[0] else 0)
         cursor.close()
         return debtBalance
 
@@ -400,31 +412,35 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
+        # location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        self.x_location_id = location
+        self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 
+    def get_product_code(self):
+        account = self.x_product_code_id.asset_account.id
+        product_categ_id = self.env['product.category'].search(
+            [('property_stock_valuation_account_id', '=', account)])
+        product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+        if not product_id:
+            return False
+        if len(product_id) == 1:
+            self.product_id = product_id
+            return True
+        else:
+            raise UserError(_('Không có sản phẩm nào phù hợp với mã tài sản!'))
+
     @api.onchange('x_product_code_id')
     def x_product_code_id_get_domain(self):
         if self.x_product_code_id:
-            account = self.x_product_code_id.asset_account.id
-            product_categ_id = self.env['product.category'].search(
-                [('property_stock_valuation_account_id', '=', account)])
-            if product_categ_id:
-                product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
-                domain = [('id', 'in', product_id.ids)]
-                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain,
-                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                         ('company_id', '=', self.order_id.company_id.id)]
-                                   }}
-            else:
+            if not self.get_product_code():
+                self.product_id = None
+                self.name = None
                 return {'domain': {'product_id': [('id', '=', 0)],
                                    'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                          ('company_id', '=', self.order_id.company_id.id)]
@@ -457,6 +473,8 @@ class SaleOrderLine(models.Model):
         if self.x_cart_discount_fixed_price:
             self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
                     self.price_unit * self.product_uom_qty) else 0
+        else:
+            self.discount = 0
 
     # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
     # def _compute_amount(self):
@@ -472,7 +490,7 @@ class SaleOrderLine(models.Model):
     def _compute_price_unit(self):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
-            # line._set_price_unit()
+            line._set_price_unit()
             if line.x_product_code_id:
                 line.price_unit = 0
             # if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
@@ -502,3 +520,11 @@ class SaleOrderLine(models.Model):
             self.price_unit = [r.get('fixed_price') for r in result][0]
             
             '''
+
+    def _prepare_invoice_line(self, **optional_values):
+        res = super()._prepare_invoice_line(**optional_values)
+        res.update({
+            'x_product_code_id': self.x_product_code_id.id,
+            'work_order': self.x_manufacture_order_code_id.id
+        })
+        return res

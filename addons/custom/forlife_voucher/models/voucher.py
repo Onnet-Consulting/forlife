@@ -96,7 +96,7 @@ class Voucher(models.Model):
                     v.name = v.name
 
     def _generator_charnumber_code(self, size, chars=string.ascii_uppercase + string.digits):
-        string_generate = chars.replace("O", "")
+        string_generate = chars.replace("O", "").replace("0", "").replace("I", "")
         return ''.join(random.choice(string_generate) for _ in range(size))
 
     @api.onchange('phone_number')
@@ -206,13 +206,14 @@ class Voucher(models.Model):
         departments = self.env['hr.department'].search([])
         now = datetime.now()
         payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True),('company_id','=',self.env.company.id)], limit=1)
+        day_accounting = payment_mothod.day_accounting if payment_mothod.day_accounting else 90
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
                     vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
-                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=90)).day == now.day))
+                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day == now.day))
                         if vouchers:
                             try:
                                 move_vals = {
@@ -250,7 +251,7 @@ class Voucher(models.Model):
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
-                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=90)).day == now.day))
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day == now.day))
                         if vouchers:
                             try:
                                 move_vals = {

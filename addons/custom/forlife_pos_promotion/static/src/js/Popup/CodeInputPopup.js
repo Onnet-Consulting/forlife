@@ -30,7 +30,7 @@ odoo.define('forlife_pos_promotion.CodeInputPopup', function(require) {
             } else if  (ev.key === "Escape" && ev.target.value.trim() !== '') {
                 this.trigger('cancel-code');
             } else {
-                const pattern = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-'
+                const pattern = 'ABCDOEFGHIJKLMNPQRSTUVWXYZ0123456789-'
                 let value = ev.target.value.toUpperCase();
                 let newValue = ''
                 for (var i = 0; i < value.length; i++) {

@@ -19,6 +19,7 @@ class SaleOrderPromotion(models.Model):
         ('vip_amount_remain', 'vip_amount_remain'),
         ('vip_amount', 'vip_amount'),
         ('nhanh_shipping_fee', 'nhanh_shipping_fee'),
-        ('customer_shipping_fee', 'customer_shipping_fee')
+        ('customer_shipping_fee', 'customer_shipping_fee'),
+        ('reward', 'reward')
     ], string='promotion_type')
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")

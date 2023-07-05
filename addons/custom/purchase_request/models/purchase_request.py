@@ -5,6 +5,9 @@ import re
 import base64
 import xlsxwriter
 from io import BytesIO
+import pytz
+from pytz import UTC
+
 
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
@@ -22,7 +25,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -51,8 +54,8 @@ class PurchaseRequest(models.Model):
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
-            if 'employee_id' not in fields or 'department_id' not in fields or 'request_date' not in fields:
-                raise ValidationError(_("The import file must contain the required column"))
+            if 'request_date' not in fields:
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
         return super().load(fields, data)
 
     @api.model
@@ -60,6 +63,11 @@ class PurchaseRequest(models.Model):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
     @api.onchange('employee_id')
@@ -97,7 +105,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu mua hàng'),
-            'template': '/purchase_request/static/src/xlsx/import_template_pr.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/import_pr.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
@@ -110,12 +118,19 @@ class PurchaseRequest(models.Model):
             'domain': [('purchase_request_ids', '=', self.id)],
         }
 
+    def convert_to_local(self, datetime=datetime.today(), tz=False):
+        if not tz:
+            tz = self._context.get('tz') or self.env.user.tz or 'UTC'
+        local_time = pytz.utc.localize(datetime).astimezone(pytz.timezone(tz))
+        return local_time.replace(tzinfo=None)
+
     @api.constrains('request_date', 'date_planned')
     def constrains_request_date(self):
         for item in self:
             if item.request_date and item.date_planned:
+                time_plan = self.convert_to_local(item.date_planned)
                 time_request = datetime(item.request_date.year, item.request_date.month, item.request_date.day)
-                if time_request > item.date_planned:
+                if time_request > time_plan:
                     raise ValidationError(_("Expected Arrival must be greater than request date"))
 
     @api.model
@@ -163,6 +178,7 @@ class PurchaseRequest(models.Model):
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
             po_line_data = []
             po_ex_line_data = []
+            po_syn_line_data = []
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
@@ -181,11 +197,18 @@ class PurchaseRequest(models.Model):
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
                 }))
-                po_ex_line_data.append((0, 0, {
-                    'purchase_order_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.product_id.name,
-                }))
+                # po_ex_line_data.append((0, 0, {
+                #     'purchase_order_id': line.id,
+                #     'product_id': line.product_id.id,
+                #     'name': line.product_id.name,
+                #     'qty_product': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
+                # }))
+                # po_syn_line_data.append((0, 0, {
+                #     'synthetic_id': line.id,
+                #     'product_id': line.product_id.id,
+                #     'description': line.product_id.name,
+                #     'quantity': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
+                # }))
             if po_line_data:
                 name_pr = []
                 for key in keys:
@@ -201,7 +224,8 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
-                    'exchange_rate_line': po_ex_line_data,
+                    # 'exchange_rate_line': po_ex_line_data,
+                    # 'purchase_synthetic_ids': po_syn_line_data,
                     'occasion_code_ids': occasion_code_id,
                     'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
@@ -254,7 +278,7 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')

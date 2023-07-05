@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class StockPicking(models.Model):
@@ -23,6 +24,8 @@ class StockPicking(models.Model):
 
     def create_invoice_out_refund(self):
         if not self:
+            return
+        if not self.move_ids.mapped('sale_line_id'):
             return
         invoice_line_ids = []
         for line in self.move_ids:
@@ -65,5 +68,7 @@ class StockPicking(models.Model):
                 account_move = self.env['account.move'].search([('stock_move_id', '=', move.id)])
                 account_move_line = account_move.line_ids.filtered(lambda line: line.debit > 0)
                 account_id = move.product_id.product_tmpl_id.categ_id.x_property_account_return_id
+                if not account_id:
+                    raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
         return res

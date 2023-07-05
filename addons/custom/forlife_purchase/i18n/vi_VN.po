@@ -1008,10 +1008,14 @@ msgstr "Hệ số quy đổi"
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__rated_level
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__rated_level
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__rated_level
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__rated_level
 msgid "Rated Level"
 msgstr "Định mức"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__rated_level
+msgid "Rated Level"
+msgstr "Định mức (VNĐ)"
 
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__loss

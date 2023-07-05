@@ -29,6 +29,7 @@
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="price_subtotal"/>
+                                    <field name="account_id"/>
                                 </tree>
                             </field>
                         </page>
@@ -42,6 +43,8 @@
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="price_subtotal"/>
+                                    <field name="invoice_action"/>
+                                    <field name="account_id"/>
                                 </tree>
                             </field>
                         </page>

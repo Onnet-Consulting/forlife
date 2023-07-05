@@ -142,22 +142,22 @@
                         <field name="is_original_price" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="incl_reward_in_order_type"
                                attrs="{'invisible': [('promotion_type', 'not in', ('cart'))], 'required': [('promotion_type', '=', 'cart')]}"/>
-                        <field name="product_ids"
-                               attrs="{ 'invisible': [('promotion_type', 'not in', ('code', 'cart'))],
-                                        'required': [('promotion_type', '=', 'code'), ('discount_apply_on', '=', 'specific_products')]}">
-                            <tree limit="20">
-                                <field name="name"/>
-                                <field name="barcode"/>
-                                <field name="lst_price"/>
-                            </tree>
-                        </field>
+<!--                        <field name="product_ids"-->
+<!--                               attrs="{ 'invisible': [('promotion_type', 'not in', ('code', 'cart'))],-->
+<!--                                        'required': [('promotion_type', '=', 'code'), ('discount_apply_on', '=', 'specific_products')]}">-->
+<!--                            <tree limit="20">-->
+<!--                                <field name="name"/>-->
+<!--                                <field name="barcode"/>-->
+<!--                                <field name="lst_price"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
                         <field name="json_valid_product_ids" invisible="1"/>
 <!--                        <field name="product_categ_ids" widget="many2many_tags"-->
 <!--                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>-->
                         <field name="min_quantity" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <label for="product_count" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <div class="o_row" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
-                            <button name="open_products" type="object" string="Products" class="btn-secondary" attrs="{'invisible':[('product_count','=',0)]}">
+                            <button name="action_open_condition_product" type="object" string="Products" class="btn-secondary" attrs="{'invisible':[('product_count','=',0)]}">
                               <field name="product_count" string="Products"/>
                             </button>
                             <button name="action_open_condition_product" type="object" string="Import Products" class="btn-secondary"
@@ -166,8 +166,7 @@
                             </button>
                         </div>
                     </group>
-                    <group string="Rewards">
-                        <group>
+                        <group string="Rewards">
                             <field name="discount_based_on"
                                    attrs="{'invisible': ['&amp;', ('reward_type', 'not in',
                                             ('code_amount', 'code_percent', 'cart_discount_amount', 'cart_discount_percent',
@@ -209,24 +208,38 @@
 
                             <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent', 'combo_discount_percent_x'))]}"/>
-                            <field name="discount_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"
-                                   widget="many2many_tags"/>
-                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
-                                 attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"/>
+<!--                            <field name="discount_product_ids"-->
+<!--                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">-->
+<!--                                <tree limit="20">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="barcode"/>-->
+<!--                                    <field name="lst_price"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""-->
+<!--                                 attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"/>-->
+                            <label for="discount_product_count" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}"/>
                             <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount'))]}">
                                 <button name="action_open_discount_product" type="object" string="Import Discount Products" class="btn-secondary">
                                     <span>Import Discount Products</span>
+                                    (<field name="discount_product_count" class="oe_inline"/>)
                                 </button>
                             </div>
-                            <field name="reward_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
-                                   widget="many2many_tags"/>
-                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
-                            attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
+<!--                            <field name="reward_product_ids"-->
+<!--                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">-->
+<!--                                <tree limit="20">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="barcode"/>-->
+<!--                                    <field name="lst_price"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""-->
+<!--                            attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>-->
+                            <label for="reward_product_count" attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
                             <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">
                                 <button name="action_open_reward_product" type="object" string="Import Reward Products" class="btn-secondary">
                                     <span>Import Reward Products</span>
+                                    (<field name="reward_product_count" class="oe_inline"/>)
                                 </button>
                             </div>
                             <label for="reward_quantity" string="Maximum Reward Quantity"
@@ -245,8 +258,7 @@
                             </div>
 
                         </group>
-                        <group/>
-                        <group>
+                        <group string="Rewards" attrs="{'invisible': [('reward_type', 'not in', ('combo_percent_by_qty', 'combo_fixed_price_by_qty'))]}">
                             <field name="reward_ids" colspan="2" mode="tree,form" nolabel="1" add-label="Add a reward"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent_by_qty', 'combo_fixed_price_by_qty'))]}"
                                    class="o_loyalty_kanban_inline" context="{'default_program_id': active_id}">
@@ -286,7 +298,6 @@
                                 </form>
                             </field>
                         </group>
-                    </group>
                 </sheet>
             </form>
         </field>
