@@ -604,9 +604,7 @@ class PurchaseOrder(models.Model):
                         'work_order': line.production_id.id
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
-                '''
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-                '''
                 self.sudo().with_context(inter_company=True).action_approved_vendor(data, order_line, invoice_line_ids)
                 if self._context.get('inter_company'):
                     self = self.sudo().with_context(inter_company=False)
@@ -646,6 +644,10 @@ class PurchaseOrder(models.Model):
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
+        # fixme: Why find a random (3000) partner?
+        if not company_partner:
+            company_partner = self.env['res.partner'].search([('group_id.code', '=', '3000')], limit=1)
+
         company_id = self.env.company.id
         picking_type_in = self.env['stock.picking.type'].search([
             ('code', '=', 'incoming'),
@@ -1858,7 +1860,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_total_vnd_amount(self):
         for rec in self:
             if rec.price_subtotal and rec.order_id.exchange_rate:
-                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
 
     @api.depends('product_id', 'is_change_vendor')
     def compute_product_id(self):
@@ -2283,6 +2285,34 @@ class PurchaseOrderLine(models.Model):
         for record in self:
             record.total_product = record.total_vnd_amount + record.before_tax + record.tax_amount + record.special_consumption_tax_amount + record.after_tax
 
+    def _handle_stock_move_price_unit(self):
+        price_unit = self.price_unit
+        if self.discount:
+            price_unit -= self.discount / self.product_qty
+        elif self.discount_percent:
+            price_unit -= (price_unit * self.discount_percent / 100)
+        return price_unit
+
+    def _get_stock_move_price_unit(self):
+        self.ensure_one()
+        order = self.order_id
+        price_unit = self._handle_stock_move_price_unit()
+        price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
+        if self.taxes_id:
+            qty = self.product_qty or 1
+            price_unit = self.taxes_id.with_context(round=False).compute_all(
+                price_unit, currency=self.order_id.currency_id, quantity=qty, product=self.product_id,
+                partner=self.order_id.partner_id
+            )['total_void']
+            price_unit = price_unit / qty
+        if self.product_uom.id != self.product_id.uom_id.id:
+            price_unit *= self.product_uom.factor / self.product_id.uom_id.factor
+        if order.currency_id != order.company_id.currency_id:
+            price_unit = order.currency_id._convert(
+                price_unit, order.company_id.currency_id, self.company_id, self.date_order or fields.Date.today(),
+                round=False)
+        return float_round(price_unit, precision_digits=price_unit_prec)
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -2390,7 +2420,7 @@ class StockPicking(models.Model):
     def create_expense_entries(self, po):
         self.ensure_one()
         results = self.env['account.move']
-        if self.state != 'done':
+        if self.state != 'done' or not po:
             return results
         po_total_qty = sum(line.product_qty for line in po.order_line)
         sp_total_qty = sum(line.quantity_done for line in self.move_ids_without_package)
@@ -2404,6 +2434,16 @@ class StockPicking(models.Model):
             'invoice_payment_term_id': po.payment_term_id.id,
             'invoice_date_due': po.date_planned,
             'restrict_mode_hash_table': False,
+            'stock_valuation_layer_ids': [(0, 0, {
+                'value': expense.vnd_amount / po_total_qty * move.quantity_done,
+                'unit_cost': expense.vnd_amount / po_total_qty,
+                'quantity': move.quantity_done,
+                'remaining_qty': 0,
+                'description': f"{self.name} - {expense.product_id.name}",
+                'product_id': move.product_id.id,
+                'company_id': self.env.company.id,
+                'stock_move_id': move.id
+            }) for move in self.move_ids_without_package],
             'invoice_line_ids': [(0, 0, {
                 'sequence': 1,
                 'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
