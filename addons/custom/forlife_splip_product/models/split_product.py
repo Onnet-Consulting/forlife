@@ -75,7 +75,7 @@ class SplitProduct(models.Model):
                     r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
             rec.product_quantity_out = product_qty_split
-            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
+            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
             if rec.product_quantity_out > available_quantity:
                 list_line_invalid.append(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}")
         if len(list_line_invalid) > 0:
