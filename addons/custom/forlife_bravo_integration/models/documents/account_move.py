@@ -40,6 +40,8 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocCashPayment"
         elif journal_data == "pos_cash_in":
             bravo_table = "B30AccDocCashReceipt"
+        elif journal_data == "journal_entry_payroll":
+            bravo_table = "B30AccDocJournalEntry"
         elif journal_update:
             bravo_table = "B30UpdateData"
         return bravo_table
