@@ -19,7 +19,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_department(self):
-        if not self.department_ids:
+        if not self.department_ids and not self.department_default_id:
             department_ids = self.department_ids.search([]).mapped('id')
         else:
             department_ids = (self.department_ids + self.department_default_id).mapped('id')
@@ -27,7 +27,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_team(self):
-        if not self.team_default_id:
+        if not self.team_default_id and not self.team_ids:
             team_ids = self.team_default_id.search([]).mapped('id')
         else:
             team_ids = (self.team_default_id + self.team_ids).mapped('id')
@@ -35,7 +35,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_company(self):
-        if not self.company_ids:
+        if not self.company_ids and not self.company_id:
             conpany_ids = self.company_ids.search([]).mapped('id')
         else:
             conpany_ids = (self.company_ids + self.company_id).mapped('id')
@@ -43,7 +43,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_stock(self):
-        if not self.stock_ids:
+        if not self.stock_ids and not self.stock_default_id:
             stock_ids = self.stock_ids.search([]).mapped('id')
         else:
             stock_ids = (self.stock_ids + self.stock_default_id).mapped('id')
@@ -51,7 +51,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_brand(self):
-        if not self.brand_ids:
+        if not self.brand_ids and not self.brand_default_id:
             brand_ids = self.brand_ids.search([]).mapped('id')
         else:
             brand_ids = (self.brand_ids + self.brand_default_id).mapped('id')
@@ -59,7 +59,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_store(self):
-        if not self.store_ids:
+        if not self.store_ids and not self.store_default_id:
             store_ids = self.store_ids.search([]).mapped('id')
         else:
             store_ids = (self.store_ids + self.store_default_id).mapped('id')
