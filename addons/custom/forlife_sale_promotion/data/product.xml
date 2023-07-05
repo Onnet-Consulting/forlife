@@ -8,5 +8,12 @@
             <field name="detailed_type">service</field>
             <field name="categ_id" ref="product.product_category_all"/>
         </record>
+        <record id="product_product_promotion_customer_shipping_fee" model="product.product">
+            <field name="name">Promotion customer shipping fee</field>
+            <field name="list_price">0</field>
+            <field name="standard_price">0</field>
+            <field name="detailed_type">service</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
     </data>
 </odoo>
