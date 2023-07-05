@@ -669,15 +669,17 @@ class AccountMoveLine(models.Model):
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_amount_tax',
+                              compute='_compute_amount_tax', inverse='inverse_amount_tax',
                               store=1)
     special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
                                                   compute='_compute_special_consumption_tax_amount',
+                                                  inverse='inverse_special_consumption_tax_amount',
                                                   store=1)
     vat_tax = fields.Float(string='% Thuế GTGT')
     vat_tax_amount = fields.Float(string='Thuế GTGT',
                                   compute='_compute_vat_tax_amount',
+                                  inverse='inverse_vat_tax_amount',
                                   store=1)
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
                                     compute='compute_total_tax_amount',
@@ -716,6 +718,15 @@ class AccountMoveLine(models.Model):
                 raise ValidationError('% thuế tiêu thụ đặc biệt phải >= 0 !')
             if item.vat_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
+
+    def inverse_vat_tax_amount(self):
+        pass
+
+    def inverse_special_consumption_tax_amount(self):
+        pass
+
+    def inverse_amount_tax(self):
+        pass
 
     @api.depends('total_vnd_exchange', 'import_tax')
     def _compute_amount_tax(self):
