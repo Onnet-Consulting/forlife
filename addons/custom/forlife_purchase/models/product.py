@@ -104,16 +104,22 @@ class ProductProduct(models.Model):
         context = self.env.context
         if context and context.get('move_type', False) == 'in_invoice' and context.get('purchase_type', False) == 'product' and context.get('supplier_id', False) and not context.get('is_passersby', False):
             sql = """   
-            select id from product_product
-            where product_tmpl_id in
-                ( select distinct(product_tmpl_id)
-                from product_supplierinfo
-                where  partner_id = %s)
-            union 
-            select id from product_product
-            where product_tmpl_id not in 
-                ( select distinct(product_tmpl_id)
-                from product_supplierinfo)
+                select id
+                from product_product
+                where product_tmpl_id in ( 
+                    select distinct(product_tmpl_id)
+                    from product_supplierinfo
+                    where partner_id = %s
+                )
+                
+                union 
+                
+                select id 
+                from product_product
+                where product_tmpl_id not in ( 
+                    select distinct(product_tmpl_id)
+                    from product_supplierinfo
+                )
             """ % (context.get('supplier_id'))
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
