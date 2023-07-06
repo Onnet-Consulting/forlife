@@ -60,7 +60,7 @@ class PurchaseOrder(models.Model):
         # default='normal',
         string="Loại hóa đơn",
         required=True,
-        selection=[('expense', 'Hóa đơn chi phí'),
+        selection=[('expense', 'Hóa đơn chi phí mua hàng'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
                    ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
@@ -1121,39 +1121,8 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def create_invoice_normal_control(self, order, line, matching_item_ids, matching_nine, total_nine_quantity):
-        data_lines = []
-        for matching_item_id in matching_item_ids:
-            matching_item = self.env['stock.move.line'].browse(matching_item_id)  # Truy xuất đối tượng matching_item từ ID
-            data_line = {
-                'ware_id': matching_item.id,
-                'ware_name': matching_item.picking_id.name,
-                'po_id': line.id,
-                'product_id': matching_item.product_id.id,
-                'promotions': line.free_good,
-                'exchange_quantity': matching_item.quantity_change,
-                'quantity': matching_item.qty_done - total_nine_quantity,
-                'vendor_price': line.vendor_price,
-                'warehouse': line.location_id.id,
-                'discount': line.discount_percent,
-                'request_code': line.request_purchases,
-                'quantity_purchased': 0,
-                'discount_percent': line.discount,
-                'tax_ids': line.taxes_id.ids,
-                'tax_amount': line.price_tax,
-                'product_uom_id': matching_item.product_uom_id.id,
-                'price_unit': line.price_unit,
-                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
-                'occasion_code_id': matching_item.occasion_code_id.id,
-                'work_order': matching_item.production_id.id,
-                'account_analytic_id': matching_item.account_analytic_id.id,
-            }
-            data_lines.append(data_line)
-        return data_lines
-
     def create_invoice_normal_control_len(self, order, line,
                                           matching_item,
-                                          matching_nine,
                                           total_nine_quantity):
         quantity = matching_item.qty_done - total_nine_quantity
         data_line = {
@@ -1216,11 +1185,12 @@ class PurchaseOrder(models.Model):
                                     ('labor_check', '=', True), ('picking_type_id.code', '=', 'incoming')]
                     picking_labor_in = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', False)])
                     picking_labor_in_return = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', True)])
-                    for line in order.order_line:
-                        if order.order_line_production_order:
+                    if order.order_line_production_order:
+                        material_lines = self.env['purchase.order.line.material.line'].search(
+                            [('purchase_order_line_id', 'in', order.order_line_production_order.mapped('id'))])
+                        for line in order.order_line:
                             for nine in order.order_line_production_order:
-                                material = self.env['purchase.order.line.material.line'].search(
-                                    [('purchase_order_line_id', '=', nine.id)])
+                                material = material_lines.filtered(lambda m: m.purchase_order_line_id.id == nine)
                                 if not order.is_return:
                                     wave = picking_labor_in.move_line_ids_without_package.filtered(
                                         lambda w: str(w.po_id) == str(nine.id)
@@ -1384,7 +1354,6 @@ class PurchaseOrder(models.Model):
                                             if matching_item.qty_done - total_nine_quantity:
                                                 data_line = self.create_invoice_normal_control_len(order, line,
                                                                                                matching_item,
-                                                                                               matching_nine,
                                                                                                total_nine_quantity)
                                                 if line.display_type == 'line_section':
                                                     pending_section = line
@@ -1503,7 +1472,7 @@ class PurchaseOrder(models.Model):
                 if not picking_expense_in and not picking_labor_in and not picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, [])]
             for line in moves.invoice_line_ids:
-                if line.product_id:
+                if line.product_id and line.move_id.purchase_type == 'product':
                     if line.product_id.property_account_expense_id:
                         account_id = line.product_id.property_account_expense_id.id
                     else:
@@ -1666,9 +1635,9 @@ class PurchaseOrder(models.Model):
                                                                          ('picking_type_id.code', '=', 'incoming')
                                                                          ])
                     if self.order_line_production_order:
+                        material = self.env['purchase.order.line.material.line'].search(
+                            [('purchase_order_line_id', '=', self.order_line_production_order.mapped('id'))])
                         for nine in self.order_line_production_order:
-                            material = self.env['purchase.order.line.material.line'].search(
-                                [('purchase_order_line_id', '=', self.order_line_production_order.mapped('id'))])
                             for material_line in material:
                                 if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
                                     for wave_item in picking_labor_in.move_line_ids_without_package:
@@ -1705,7 +1674,7 @@ class PurchaseOrder(models.Model):
         for data in vals_all_invoice:
             move = moves.create(vals_all_invoice.get(data))
             for line in move.invoice_line_ids:
-                if line.product_id:
+                if line.product_id and line.move_id.purchase_type == 'product':
                     account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                     line.account_id = account_id
             for line in move:
