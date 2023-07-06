@@ -1268,12 +1268,13 @@ class PurchaseOrder(models.Model):
                                 elif picking_in_true:
                                     # all_equal = True  # Biến kiểm tra tất cả các cặp item và nine có bằng nhau hay không
                                     matching_nine = None
+                                    invoice_relationship = self.env['account.move.line'].search(
+                                        [('ware_id', '=', picking_in_true.move_line_ids_without_package.mapped('id'))])
                                     for item in picking_in_true.move_line_ids_without_package:
-                                        if int(item.po_id) == line.id:
+                                        invoice_l = invoice_relationship.filtered(lambda x: x.ware_id == item.id)
+                                        if int(invoice_l.po_id) == line.id:
                                             total_nine_quantity = 0
-                                            matching_item = item
-                                            invoice_relationship = self.env['account.move.line'].search(
-                                                [('ware_id', '=', item.id)])
+                                            matching_item = invoice_l
                                             for nine in invoice_relationship:
                                                 total_nine_quantity += nine.quantity
                                                 matching_nine = nine
