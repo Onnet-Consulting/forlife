@@ -124,12 +124,6 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
-    @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        res = super(PurchaseOrder, self).name_search(name, args, operator, limit)
-        return res
-
-
     def action_view_stock(self):
         for item in self:
             context = {'create': True, 'delete': True, 'edit': True}
