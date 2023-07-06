@@ -246,7 +246,7 @@ class ForlifeProductionFinishedProduct(models.Model):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
                           'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
-                                        + sum(rec.rated_level * rec.product_id.standard_price for rec in record.forlife_bom_service_cost_ids)})
+                                        + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids)})
 
     # @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
     # def _onchange_forlife_bom_material_ids(self):

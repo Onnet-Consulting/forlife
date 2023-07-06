@@ -122,7 +122,7 @@
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_promotions" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
-                                   context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
+                                   context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby, 'move_type': parent.move_type}"
                                    domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
