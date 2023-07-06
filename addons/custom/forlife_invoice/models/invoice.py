@@ -31,10 +31,11 @@ class AccountMove(models.Model):
         default='normal',
         copy=True,
         string="Loại hóa đơn",
-        selection=[('expense', 'Hóa đơn chi phí'),
+        selection=[('expense', 'Hóa đơn chi phí mua hàng'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
                    ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
+
     is_check_select_type_inv = fields.Boolean(default=False)
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
@@ -360,7 +361,7 @@ class AccountMove(models.Model):
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if rec.is_check_cost_view or rec.is_check_cost_out_source:
+            if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
@@ -847,7 +848,7 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         res = super()._compute_account_id()
         for line in self:
-            if line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
+            if line.move_id.purchase_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
                 line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                 line.name = line.product_id.name
         return res
