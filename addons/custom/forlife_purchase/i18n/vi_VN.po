@@ -876,6 +876,7 @@ msgid "Materials"
 msgstr "Nguyên liệu chính"
 
 #. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__forlife_bom_service_cost_ids
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_bom_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_finished_form

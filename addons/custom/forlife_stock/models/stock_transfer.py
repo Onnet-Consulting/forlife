@@ -15,8 +15,8 @@ class StockTransfer(models.Model):
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     location_id = fields.Many2one('stock.location', string="Whs From", required=1)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1)
-    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
-    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -32,7 +32,7 @@ class StockTransfer(models.Model):
     type = fields.Selection([
         ('excess', 'Điều chuyển phát sinh thừa'),
         ('lack', 'Điều chuyển phát sinh thiếu'),
-    ], string='Type')
+    ], string='Type', copy=False)
     method_transfer = fields.Selection(
         string="Method",
         selection=[('transfer_between_warehouse', 'Transfer Between Warehouse'),
@@ -47,15 +47,15 @@ class StockTransfer(models.Model):
                    ('done', 'Done'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft')
-    is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False)
+    is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False, copy=False)
     stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Line')
     total_package = fields.Float(string='Total Package (Number)')
     total_weight = fields.Float(string='Total Weight (Kg)')
-    reference_document = fields.Char()
+    reference_document = fields.Char(copy=False)
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
     note = fields.Text("Ghi chú")
-    date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now())
-    date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now())
+    date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now(), copy=False)
+    date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now(), copy=False)
 
     @api.onchange('work_from')
     def _onchange_work_from(self):
@@ -440,8 +440,8 @@ class StockTransferLine(models.Model):
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
     stock_transfer_id = fields.Many2one('stock.transfer', string="Stock Transfer")
-    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
-    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    work_from = fields.Many2one('forlife.production', string="LSX From", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    work_to = fields.Many2one('forlife.production', string="LSX To", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')

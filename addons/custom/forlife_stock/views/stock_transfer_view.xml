@@ -68,7 +68,7 @@
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_dest_id" domain="[('usage', '=', 'internal')]" string="Whs To" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)], 'readonly': [('state', '!=', 'draft')]}" string="Tài liệu gốc"/>
-                            <field name="type" attrs="{'invisible':[('type', '=', False)]}"/>
+                            <field name="type" attrs="{'invisible':[('type', '=', False)], 'readonly':True}"/>
                             <field name ="date_transfer"  attrs="{'invisible':[('state', 'in', ('draft','wait_approve','approved','cancel'))]}"  readonly="1"  />
                             <field name ="date_in_approve"/>
                         </group>
