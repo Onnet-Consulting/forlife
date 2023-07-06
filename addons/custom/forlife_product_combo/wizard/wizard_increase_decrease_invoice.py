@@ -159,6 +159,11 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'display_type': 'product',
                         'tax_amount': tax_mount,
                         'product_uom_id': line.uom_id.id,
+                        'quantity_purchased': line.invoice_line_id.quantity_purchased,
+                        'exchange_quantity': line.invoice_line_id.exchange_quantity,
+                        'vendor_price': line.invoice_line_id.vendor_price,
+                        'discount_percent': line.invoice_line_id.discount_percent,
+                        'purchase_uom': line.invoice_line_id.purchase_uom.id,
                         'tax_ids': [(6, 0, line.tax_ids.ids)],
                     })
                 ]
@@ -230,6 +235,11 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'is_refund': line.is_refund,
                         'tax_amount': tax_mount,
                         'product_uom_id': line.uom_id.id,
+                        'quantity_purchased': line.invoice_line_id.quantity_purchased,
+                        'exchange_quantity': line.invoice_line_id.exchange_quantity,
+                        'vendor_price': line.invoice_line_id.vendor_price,
+                        'discount_percent': line.invoice_line_id.discount_percent,
+                        'purchase_uom': line.invoice_line_id.purchase_uom.id,
                         'tax_ids': [(6, 0, line.tax_ids.ids)],
                     })
                 ]

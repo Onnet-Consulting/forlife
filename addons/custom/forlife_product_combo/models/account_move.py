@@ -35,3 +35,9 @@ class AccountMove(models.Model):
             'context': {'default_origin_invoice_id': self.id},
             'target': 'new',
         }
+
+    def _get_unbalanced_moves(self, container):
+        if self.origin_invoice_id:
+            return []
+        else:
+            return super(AccountMove, self)._get_unbalanced_moves(container)
