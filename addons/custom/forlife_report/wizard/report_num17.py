@@ -6,8 +6,8 @@ from odoo.exceptions import ValidationError
 
 TITLES = [
     'STT', 'Mã chi nhánh', 'Chi nhánh', 'Ngày', 'Số CT', 'Mã KH', 'SĐT', 'Tên KH', 'Mô tả', 'Mã thẻ GG', 'Voucher', 'Số lượng mua',
-    'Số lượng trả', 'Cộng', 'Giảm giá', 'Tổng cộng', 'Giảm trên HĐ', 'Cộng lại', 'Tiền đặt cọc', 'Tiền trả lại', 'Tiền tích lũy',
-    'Tích lũy HĐ', 'Trừ tích lũy', 'Tiền thẻ GG', 'Phải thu', 'DT cửa hàng', 'Tiền mặt', 'Tiền thẻ', 'Tiền VNPay', 'Tiền SHIPCOD', 'Tiền voucher',
+    'Số lượng trả', 'Cộng', 'Giảm giá', 'Tổng cộng', 'Giảm trên HĐ', 'Cộng lại', 'Tiền đặt cọc', 'Tiền trả lại', 'Tiền tích lũy', 'Tích lũy HĐ',
+    'Trừ tích lũy', 'Tiền thẻ GG', 'Phải thu', 'DT cửa hàng', 'Tiền mặt', 'Tiền thẻ', 'Tiền VNPay', 'Tiền NextPay', 'Tiền SHIPCOD', 'Tiền voucher',
     'Người lập', 'Ngày lập', 'Người sửa', 'Ngày sửa', 'Số CT gốc', 'Ngày CT gốc', 'Nhân viên', 'Nhóm khách', 'Mã Vận đơn/Mã GD gốc', 'Kênh bán',
 ]
 
@@ -86,8 +86,8 @@ with po_datas as (select po.id  as po_id,
      chi_tiet_x as (select row_number() over (PARTITION BY pol.order_id order by pol.id)  as num,
                            pol.order_id                                                   as po_id,
                            pp.barcode                                                     as ma_vach,
-                           coalesce(pt.name::json -> '{self.env.user.lang}', pt.name::json -> 'en_US')   as ten_sp,
-                           coalesce(uom.name::json -> '{self.env.user.lang}', uom.name::json -> 'en_US') as don_vi,
+                           coalesce(pt.name::json ->> '{self.env.user.lang}', pt.name::json ->> 'en_US')   as ten_sp,
+                           coalesce(uom.name::json ->> '{self.env.user.lang}', uom.name::json ->> 'en_US') as don_vi,
                            greatest(pol.qty, 0)::float                                    as sl_mua,
                            abs(least(pol.qty, 0))                                         as sl_tra,
                            coalesce(pol.original_price, 0)::float                         as gia_ban,

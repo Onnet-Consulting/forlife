@@ -67,7 +67,7 @@ attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -88,10 +88,10 @@ select
     pp.barcode                                                                  as ma_vach,
     pol.full_product_name                                                       as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
-    ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                       as nhan_hieu,
-    ad.attrs::json -> '{attr_value.get('size', '')}'                            as kich_co,
-    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')   as don_vi,
+    ad.attrs::json ->> '{attr_value.get('nhan_hieu', '')}'                       as nhan_hieu,
+    ad.attrs::json ->> '{attr_value.get('size', '')}'                            as kich_co,
+    ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')   as don_vi,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
     pt.collection                                                               as bo_suu_tap,

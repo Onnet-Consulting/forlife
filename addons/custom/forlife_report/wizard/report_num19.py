@@ -40,11 +40,11 @@ select
     str.name                                                                           as so_phieu_yc,
     row_number() over (PARTITION BY str.id ORDER BY str.id, trl.id)                    as so_dong_tren_phieu_yc,
     pp.barcode                                                                         as ma_sp,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')            as ten_sp,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')          as ten_sp,
     coalesce(trl.plan_quantity, 0)                                                     as sl_yeu_cau,
     (select array[coalesce(sum(qty_out), 0), coalesce(sum(qty_in), 0)]
      from stock_transfer_line where is_parent_done = true and product_str_id = trl.id) as sl_nhap_xuat,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')          as don_vi_tinh,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')          as don_vi_tinh,
     s_loc.complete_name                                                                as tu_kho,
     d_loc.complete_name                                                                as den_kho,
     to_char(str.date_planned + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')          as ngay_du_kien
