@@ -61,5 +61,6 @@ workers = 64
 ;redis_host=10.254.253.10
 ;password=forlife@123
 
+
 [queue_job]
 channels = root:42, import:20, validate_stock_valuation_2:20
