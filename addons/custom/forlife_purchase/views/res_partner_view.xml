@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//span[@name='address_name']" position="before">
 					<field name="active"/>
-                    <field name="code"/>
+<!--                    <field name="code"/>-->
 					<field name="internal_code"/>
 					<field name="is_passersby"/>
                     <field name="is_inter_company_purchase" invisible="1"/>

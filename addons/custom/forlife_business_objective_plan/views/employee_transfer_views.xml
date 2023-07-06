@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="employee_transfer_view_tree" model="ir.ui.view">
+            <field name="name">employee_transfer_view_tree</field>
+            <field name="model">employee.transfer</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="employee_transfer_tree" create="0"
+                      decoration-warning="state == 'waiting_reduce'"
+                      decoration-danger="state == 'confirmed_reduce'"
+                      decoration-info="state == 'waiting_increase'"
+                      decoration-success="state == 'approved'"
+                      decoration-it="state == 'cancelled'">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="target_reduce"/>
+                    <field name="target_increase"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-warning="state == 'waiting_reduce'"
+                           decoration-danger="state == 'confirmed_reduce'"
+                           decoration-info="state == 'waiting_increase'"
+                           decoration-success="state == 'approved'"
+                           decoration-it="state == 'cancelled'"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="employee_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="view_id" ref="employee_transfer_view_tree"/>
+        </record>
+
+        <record id="employee_transfer_reduce_view_tree" model="ir.ui.view">
+            <field name="name">employee_transfer_reduce_view_tree</field>
+            <field name="model">employee.transfer</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <tree string="employee_transfer_tree" editable="top" create="0"
+                      decoration-warning="state == 'waiting_reduce'"
+                      decoration-danger="state == 'confirmed_reduce'">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="target_reduce"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-warning="state == 'waiting_reduce'"
+                           decoration-danger="state == 'confirmed_reduce'"/>
+                    <button name="btn_confirm_reduce" class="oe_highlight" type="object" string="Confirm reduce" title="Confirm reduce" confirm="Are you sure you want confirm reduce ?"
+                            aria-label="Confirm reduce" states="waiting_reduce" groups="forlife_business_objective_plan.confirm_transfer_group"/>
+                    <button name="btn_cancel" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
+                            aria-label="Cancel" states="confirmed_reduce" groups="forlife_business_objective_plan.cancel_confirm_transfer_group"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="employee_waiting_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Waiting Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('state', 'in', ('waiting_reduce','confirmed_reduce'))]</field>
+            <field name="view_id" ref="employee_transfer_reduce_view_tree"/>
+        </record>
+
+        <record id="employee_transfer_increase_view_tree" model="ir.ui.view">
+            <field name="name">employee_transfer_increase_view_tree</field>
+            <field name="model">employee.transfer</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree string="employee_transfer_tree" editable="top" create="0"
+                      decoration-danger="state == 'confirmed_reduce'"
+                      decoration-info="state == 'waiting_increase'">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="target_increase"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-danger="state == 'confirmed_reduce'"
+                           decoration-info="state == 'waiting_increase'"/>
+                    <button name="btn_receipt_transfer" class="oe_highlight" type="object" string="Confirm receipt" title="Confirm receipt" confirm="Are you sure you want confirm receipt ?"
+                            aria-label="Confirm receipt" states="confirmed_reduce" groups="forlife_business_objective_plan.receipt_transfer_group"/>
+                    <button name="btn_cancel" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
+                            aria-label="Cancel" states="confirmed_reduce" groups="forlife_business_objective_plan.cancel_confirm_transfer_group"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="employee_confirm_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Confirm Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('state', 'in', ('confirmed_reduce','waiting_increase'))]</field>
+            <field name="view_id" ref="employee_transfer_increase_view_tree"/>
+        </record>
+
+        <record id="employee_transfer_approve_view_tree" model="ir.ui.view">
+            <field name="name">employee_transfer_approve_view_tree</field>
+            <field name="model">employee.transfer</field>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                <tree string="employee_transfer_tree" create="0"
+                      decoration-info="state == 'waiting_increase'"
+                      decoration-success="state == 'approved'">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="brand_id" invisible="1"/>
+                    <field name="bo_plan_id" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                           attrs="{'readonly': [('state', 'in', ('waiting_increase','approved'))]}"/>
+                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="target_increase" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                    <field name="from_date" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                    <field name="to_date" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                    <field name="state" widget="badge" readonly="1"
+                           decoration-info="state == 'waiting_increase'"
+                           decoration-success="state == 'approved'"/>
+                    <button name="btn_approve_transfer" class="oe_highlight" type="object" string="Approve" title="Approve" confirm="Are you sure you want approve ?"
+                            aria-label="Approve" states="waiting_increase" groups="forlife_business_objective_plan.approve_transfer_group"/>
+                    <button name="btn_cancel_approve" class="btn-secondary" type="object" string="Cancel" title="Cancel" confirm="Do you really want to cancel?"
+                            aria-label="Cancel" states="approved" groups="forlife_business_objective_plan.cancel_approve_transfer_group"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="employee_approve_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Approve Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'show_code_name': 1}</field>
+            <field name="domain">[('state', 'in', ('waiting_increase', 'approved'))]</field>
+            <field name="view_id" ref="employee_transfer_approve_view_tree"/>
+        </record>
+
+        <record id="employee_transfer_view_form" model="ir.ui.view">
+            <field name="name">employee_transfer_view_form</field>
+            <field name="model">employee.transfer</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="employee_transfer_form">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                            <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="store_source_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" readonly="1"/>
+                            <field name="store_dest_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="target_reduce"/>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                        </group>
+                        <field name="bo_plan_id" invisible="1"/>
+                        <field name="bo_employee_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="brand_id" invisible="1"/>
+                    </sheet>
+                    <footer>
+                        <button string="Save" special="save" class="btn-primary"/>
+                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="create_employee_transfer_action" model="ir.actions.act_window">
+            <field name="name">Employee Transfer</field>
+            <field name="res_model">employee.transfer</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="employee_transfer_view_form"/>
+        </record>
+
+        <record id="employee_transfer_filter" model="ir.ui.view">
+            <field name="name">employee_transfer_filter</field>
+            <field name="model">employee.transfer</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="bo_plan_id"/>
+                    <field name="store_source_id"/>
+                    <field name="store_dest_id"/>
+                    <field name="employee_id"/>
+                    <field name="job_id"/>
+                    <field name="target_reduce"/>
+                    <field name="target_increase"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="state"/>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

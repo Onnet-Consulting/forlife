@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="coefficient_revenue_view_tree" model="ir.ui.view">
+            <field name="name">coefficient_revenue_view_tree</field>
+            <field name="model">coefficient.revenue</field>
+            <field name="arch" type="xml">
+                <tree string="coefficient_revenue_tree">
+                    <field name="name"/>
+                    <field name="brand_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="job_id"/>
+                    <field name="fixed_coefficient"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="coefficient_revenue_view_form" model="ir.ui.view">
+            <field name="name">coefficient_revenue_view_form</field>
+            <field name="model">coefficient.revenue</field>
+            <field name="arch" type="xml">
+                <form string="coefficient_revenue_form" duplicate="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <label for="from_date" string="Date"/>
+                                <div>from
+                                    <field name="from_date" class="oe_inline" required="1"/>
+                                    to
+                                    <field name="to_date" class="oe_inline" required="1"/>
+                                </div>
+                                <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                            <group>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="fixed_coefficient"/>
+                            </group>
+                        </group>
+                        <separator string="Revenue coefficient based on sales (direct)"/>
+                        <field name="pc_by_employee_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="percentage"/>
+                                <field name="pc_by_store_ids" widget="many2many_tags"/>
+                                <button name="clone_pc_by_employee" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="percentage"/>
+                                </group>
+                                <field name="pc_by_store_ids">
+                                    <tree editable="top">
+                                        <field name="name"/>
+                                        <field name="percentage"/>
+                                        <field name="ratio"/>
+                                        <button name="clone_pc_by_store" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="percentage"/>
+                                            <field name="ratio"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </form>
+                        </field>
+                        <separator string="Revenue coefficient based on sales (indirect)"/>
+                        <field name="pc_by_store_ids">
+                            <tree editable="top">
+                                <field name="name"/>
+                                <field name="percentage"/>
+                                <field name="ratio" string="LDT ratio"/>
+                                <button name="clone_pc_by_store" class="oe_right" type="object" string="Duplicate" icon="fa-clone"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="percentage"/>
+                                    <field name="ratio"/>
+                                </group>
+                            </form>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="coefficient_revenue_action" model="ir.actions.act_window">
+            <field name="name">Coefficient Revenue</field>
+            <field name="res_model">coefficient.revenue</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="coefficient_revenue_menu" parent="point_of_sale.menu_point_config_product" action="coefficient_revenue_action" sequence="100"/>
+
+    </data>
+</odoo>

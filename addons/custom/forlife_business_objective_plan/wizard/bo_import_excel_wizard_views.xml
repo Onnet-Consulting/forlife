@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="bo_import_excel_wizard_view_form" model="ir.ui.view">
+            <field name="name">bo_import_excel_wizard_view_form</field>
+            <field name="model">bo.import.excel.wizard</field>
+            <field name="arch" type="xml">
+                <form string="bo_import_excel_wizard_form">
+                    <sheet>
+                        <group>
+                            <field name="import_file" filename="import_file_name"/>
+                            <field name="import_file_name" invisible="1"/>
+                            <field name="bo_plan_id" invisible="1" force_save="1"/>
+                        </group>
+                        <group string="Import error" attrs="{'invisible': [('error_file', '=', False)]}">
+                            <field name="error_file" filename="error_file_name" readonly="1" force_save="1"/>
+                            <field name="error_file_name" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Cancel"/>
+                        <button name="download_template_file" type="object" string="Download Template" class="oe_highlight"/>
+                        <button name="action_import" type="object" string="Import" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="bo_import_excel_wizard_action" model="ir.actions.act_window">
+            <field name="name">Import BO</field>
+            <field name="res_model">bo.import.excel.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

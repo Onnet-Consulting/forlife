@@ -91,7 +91,7 @@ order_line_data as (
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
         left join uom_name_by_id uom on uom.id = pt.uom_id
-    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and pt.voucher <> true
+    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     order by employee_id
