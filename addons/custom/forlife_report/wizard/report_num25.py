@@ -56,133 +56,97 @@ class ReportNum25(models.TransientModel):
         employee_conditions = 'pol.employee_id notnull' if not self.employee_id else f'pol.employee_id = {str(self.employee_id.id)}'
 
         sql = f"""
-with uom_name_by_id as (
-    select
-        id,
-        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
-    from uom_uom
-),
-order_line_data as (
-    select 
-        concat(pol.employee_id || '-' || po.id) 												    as key_invoice,
-        pol.employee_id																			    as employee_id,
-        emp.name 																				    as employee_name,
-        emp.code  																		 		    as employee_code,
-        po.pos_reference  																		    as pos_reference,
-        rp.name  																				    as customer_name,
-        rp.ref  																				    as customer_code,
-        rp.phone  																				    as customer_phone,
-        pol.product_id  																		    as product_id,
-        pp.default_code 																		    as product_code,
-        pol.full_product_name 																 	    as product_name,
-        uom.name                                                								    as uom_name,
-        to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
-        to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
-        greatest(pol.qty, 0)                                                                        as sale_qty,
-        - least(pol.qty, 0)                                                                         as refund_qty,
-        coalesce(pol.original_price, 0)    												 		    as lst_price,
-        coalesce((select sum(
-            case when type = 'point' then recipe * 1000
-                when type = 'card' then recipe
-                when type = 'ctkm' then discounted_amount
-                else 0
-            end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)		        as money_reduced,
-        po.note 																 		 		    as note
-    from pos_order_line pol
-        join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
-        join product_product pp on pp.id = pol.product_id
-        left join product_template pt on pt.id = pp.product_tmpl_id
-        left join hr_employee emp on emp.id = pol.employee_id
-        left join res_partner rp on rp.id = po.partner_id
-        left join uom_name_by_id uom on uom.id = pt.uom_id
-    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
-        and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
-        and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-    order by employee_id
-),
-data_group as (
-    select key_invoice,
-        employee_id,
-        product_id,
-        product_code,
-        product_name,
-        by_day as date,
-        sum(sale_qty) as sale_qty,
-        sum(refund_qty) as refund_qty,
-        uom_name,
-        lst_price,
-        coalesce(sum(money_reduced), 0) as money_reduced,
-        sum(abs((sale_qty * lst_price) - (refund_qty * lst_price) - money_reduced)) as price_subtotal
-    from order_line_data
-    group by key_invoice,
-        employee_id,
-        product_id,
-        product_code,
-        product_name,
-        by_day,
-        uom_name,
-        lst_price
-),
-detail_data_invoice_list as (
-    select employee_id, json_object_agg(key_invoice, order_detail) as detail_invoice from (
-        select employee_id, key_invoice , array_agg(to_json(dg.*)) as order_detail
-        from data_group as dg group by employee_id, key_invoice
-    ) as order_detail_data_by_employee group by employee_id
-),
-prepare_value_data_invoice_list as (
-    select employee_id,
-        key_invoice,
-        by_day as date,
-        pos_reference,
-        employee_name,		
-        customer_name,
-        customer_code,
-        customer_phone,
-        sum(sale_qty) as sale_qty,
-        sum(refund_qty) as refund_qty,
-        sum(sale_qty * lst_price) as tt,
-        sum(money_reduced) as money_reduced,
-        sum(0) as gg_bill,
-        sum(refund_qty * lst_price) as refund,
-        note
-    from order_line_data
-    group by employee_id,
-        key_invoice,
-        by_day,
-        pos_reference,
-        employee_name,		
-        customer_name,
-        customer_code,
-        customer_phone,
-        note
-    order by employee_id
-),
-value_data_invoice_list as (
-    select employee_id, array_agg(to_json(inv_info.*)) as value_invoice
-    from prepare_value_data_invoice_list as inv_info group by employee_id
-),
-total_by_time as (
-    select employee_id, json_object_agg({self.view_type}, total) as qty_by_time from (
-        select employee_id,
-            {self.view_type},
-            sum((sale_qty * lst_price) - (refund_qty * lst_price) - money_reduced) as total
-        from order_line_data group by employee_id, {self.view_type}
-    ) as tb_by_time group by employee_id
-),
-employee_list as (
-    select DISTINCT employee_id, employee_name, employee_code from order_line_data
-)
-select employee.employee_id,
-    employee.employee_name,
-    employee.employee_code,
-    tbt.qty_by_time,
-    vdil.value_invoice,
-    ddil.detail_invoice
-from employee_list employee 
-    left join total_by_time tbt on employee.employee_id = tbt.employee_id
-    left join detail_data_invoice_list ddil on employee.employee_id = ddil.employee_id
-    left join value_data_invoice_list vdil on employee.employee_id = vdil.employee_id        
+with orders as (select po.id                                  as id,
+                       pc.store_id                            as store_id,
+                       (po.date_order + interval '{tz_offset} h')::date as date_order
+                from pos_order po
+                         left join pos_session ps on po.session_id = ps.id
+                         left join pos_config pc on ps.config_id = pc.id
+                where po.brand_id = {self.brand_id.id}
+                  and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'),
+     order_lines as (select pol.id,
+                            pol.order_id,
+                            po.store_id,
+                            pol.employee_id,
+                            (pol.qty * pol.original_price)::float as total,
+                            to_char(po.date_order, 'DD/MM/YYYY')  as by_day,
+                            to_char(po.date_order, 'MM/YYYY')     as by_month
+                     from pos_order_line pol
+                              join orders po on po.id = pol.order_id
+                              left join product_product pp on pp.id = pol.product_id
+                              left join product_template pt on pt.id = pp.product_tmpl_id
+                     where pt.detailed_type <> 'service'
+                       and (pt.voucher = false or pt.voucher is null)),
+     employee_target as (select store_id,
+                                employee_id,
+                                job_id,
+                                concurrent_position_id,
+                                revenue_target
+                         from business_objective_employee
+                         where bo_plan_id = {self.bo_plan_id.id}),
+     store_target as (select store_id,
+                             revenue_target
+                      from business_objective_store
+                      where bo_plan_id = {self.bo_plan_id.id}),
+     discount_by_pol_id as (select disc.pos_order_line_id as pol_id,
+                                   sum((case
+                                            when disc.type = 'point' then disc.recipe * 1000
+                                            when disc.type = 'ctkm' then disc.discounted_amount
+                                            else disc.recipe
+                                       end))::float       as discount
+                            from pos_order_line_discount_details disc
+                            where disc.pos_order_line_id in (select id from order_lines)
+                            group by disc.pos_order_line_id),
+     data_group_details as (select store_id,
+                                  employee_id,
+                                  json_object_agg({self.view_type}, total) as detail
+                           from (select store_id,
+                                        employee_id,
+                                        {self.view_type},
+                                        sum(coalesce(pol.total, 0) - coalesce(disc.discount, 0)) total
+                                 from order_lines pol
+                                          left join discount_by_pol_id disc on pol.id = disc.pol_id
+                                 group by store_id, employee_id, {self.view_type}) as xx
+                           group by store_id, employee_id),
+     data_groups as (select po.store_id                                              as store_id,
+                            pol.employee_id                                          as employee_id,
+                            eta.job_id                                               as job_id,
+                            eta.concurrent_position_id                               as concurrent_position_id,
+                            coalesce(sta.revenue_target, 0)                          as muc_tieu_cua_hang,
+                            coalesce(eta.revenue_target, 0)                          as muc_tieu_ca_nhan,
+                            array_agg(distinct pol.order_id)                         as count_order,
+                            sum(coalesce(pol.total, 0) - coalesce(disc.discount, 0)) as total
+                     from order_lines pol
+                              join orders po on po.id = pol.order_id
+                              left join store_target sta on sta.store_id = po.store_id
+                              left join employee_target eta on eta.store_id = po.store_id and eta.employee_id = pol.employee_id
+                              left join discount_by_pol_id disc on disc.pol_id = pol.id
+                     group by po.store_id,
+                              pol.employee_id,
+                              eta.job_id,
+                              eta.concurrent_position_id,
+                              sta.revenue_target,
+                              eta.revenue_target)
+select rsp.name                                            as khu_vuc,
+       s.code                                              as ma_cua_hang,
+       s.name                                              as ten_cua_hang,
+       he.code                                             as ma_nhan_vien,
+       he.name                                             as ten_nhan_vien,
+       coalesce(job1.name::json ->> '{user_lang_code}', job1.name::json ->> 'en_US') as vi_tri,
+       coalesce(job2.name::json ->> '{user_lang_code}', job2.name::json ->> 'en_US') as vi_tri_kiem_nhiem,
+       array_length(dg.count_order, 1)                     as so_bill,
+       (dg.total / array_length(dg.count_order, 1))::float as tb_bill,
+       dg.total::float                                     as tong_cong,
+       0                                                   as thu_nhap_du_tinh,
+       dgd.detail                                         as detail
+from data_groups dg
+         left join data_group_details dgd on dg.store_id = dgd.store_id and dg.employee_id = dgd.employee_id
+         left join store s on s.id = dg.store_id
+         left join stock_warehouse wh on wh.id = s.warehouse_id
+         left join res_sale_province rsp on rsp.id = wh.sale_province_id
+         left join hr_job job1 on job1.id = dg.job_id
+         left join hr_job job2 on job2.id = dg.concurrent_position_id
+         left join hr_employee he on he.id = dg.employee_id;
 """
         return sql
 
@@ -200,18 +164,10 @@ from employee_list employee
         res = []
         column_add = self.get_title_with_view_type(self.from_date, self.to_date, self.view_type)
         TITLES.extend(column_add)
-        value_invoice_by_employee_id = {}
-        detail_invoice_by_order_key = {}
         for value in data:
-            qty_by_time = value.pop('qty_by_time')
-            value_invoice_by_employee_id.update({value['employee_id']: value.pop('value_invoice')})
-            detail_invoice_by_order_key.update(value.pop('detail_invoice'))
-            total_amount = 0
+            qty_by_time = value.pop('detail')
             for c in column_add:
-                amount = qty_by_time.get(c, 0) or 0
-                value[c] = amount
-                total_amount += amount
-            value['total_amount'] = total_amount
+                value[c] = qty_by_time.get(c, 0) or 0
             res.append(value)
         return {
             'titles': TITLES,

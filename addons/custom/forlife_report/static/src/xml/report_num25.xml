@@ -23,7 +23,7 @@
                         <td><t t-esc="line.vi_tri_kiem_nhiem"/></td>
                         <td class="right"><t t-esc="format_decimal(line.so_bill,0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.tb_bill,0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.tong_bill,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong_cong,0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.muc_tieu_ca_nhan,0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.muc_tieu_cua_hang,0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.thu_nhap_du_tinh,0)"/></td>
