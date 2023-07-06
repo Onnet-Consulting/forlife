@@ -34,7 +34,7 @@
                 </header>
                 <header>
                     <button string="Đóng" name="action_done" type="object"
-                            attrs="{'invisible':[ ('status', '=', 'done')]}"/>
+                            attrs="{'invisible':[ '&amp;', ('state', '!=', 'approved'),('status', '=', 'done')]}"/>
                     <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>

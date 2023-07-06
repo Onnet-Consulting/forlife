@@ -161,7 +161,7 @@ class StockMoveLine(models.Model):
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
-                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')

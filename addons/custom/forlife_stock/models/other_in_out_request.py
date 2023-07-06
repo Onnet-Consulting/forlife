@@ -175,7 +175,7 @@ class ForlifeOtherInOutRequestLine(models.Model):
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
     reason_to_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
     occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
-    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
 
