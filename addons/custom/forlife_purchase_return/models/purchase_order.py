@@ -440,11 +440,11 @@ class PurchaseOrder(models.Model):
     #             'domain': [('id', 'in', moves.ids)],
     #         }
 
-    def compute_count_invoice_inter_fix(self):
-        po_return = self.filtered(lambda po: po.is_return)
-        super(PurchaseOrder, self - po_return).compute_count_invoice_inter_fix()
-        for rec in po_return:
-            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_refund')])
+    # def compute_count_invoice_inter_fix(self):
+    #     po_return = self.filtered(lambda po: po.is_return)
+    #     super(PurchaseOrder, self - po_return).compute_count_invoice_inter_fix()
+    #     for rec in po_return:
+    #         rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_refund')])
 
     def action_view_invoice_new(self):
         if not self.is_return:
