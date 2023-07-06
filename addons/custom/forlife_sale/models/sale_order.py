@@ -174,7 +174,8 @@ class SaleOrder(models.Model):
         if not self.partner_id.use_partner_credit_limit:
             return True
         debtBalance_bravo = self.get_DebtBalance()
-        sale_so_ids = self.env['sale.order'].search([('partner_id', '=', self.partner_id.id), ('state', '=', 'sale')])
+        sale_so_ids = self.env['sale.order'].search(
+            [('partner_id', '=', self.partner_id.id), ('state', '=', 'sale'), ('id', '!=', self.id)])
         debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
         if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
