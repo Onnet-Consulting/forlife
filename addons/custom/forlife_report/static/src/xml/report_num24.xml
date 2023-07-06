@@ -16,12 +16,12 @@
                         <td><t t-esc="line.stt"/></td>
                         <td><t t-esc="line.ma_cua_hang"/></td>
                         <td><t t-esc="line.ten_cua_hang"/></td>
-                        <td><t t-esc="format_decimal(line.tich, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tieu, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tra, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.hoan, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.bu, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.reset, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tich, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tieu, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tra, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.hoan, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.bu, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.reset, 0)"/></td>
                     </tr>
                 </t>
             </tbody>

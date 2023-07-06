@@ -21,8 +21,8 @@
                         <td><t t-esc="line.product_size"/></td>
                         <td><t t-esc="line.product_color"/></td>
                         <td><t t-esc="line.gender"/></td>
-                        <td><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.stock_qty, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.stock_qty, 0)"/></td>
                         <td><t t-esc="line.employee_name"/></td>
                     </tr>
                 </t>

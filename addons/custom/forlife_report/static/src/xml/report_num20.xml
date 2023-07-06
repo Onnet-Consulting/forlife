@@ -30,13 +30,13 @@
                         <td><t t-esc="line.dong_hang"/></td>
                         <td><t t-esc="line.ket_cau"/></td>
                         <td><t t-esc="line.bo_suu_tap"/></td>
-                        <td><t t-esc="format_decimal(line.sl_ban, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.gia, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.gia * line.sl_ban - line.giam_gia, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.gia * line.sl_tra, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_ban, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia * line.sl_ban - line.giam_gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia * line.sl_tra, 0)"/></td>
                         <td><t t-esc="line.mo_ta"/></td>
                         <td><t t-esc="line.hang"/></td>
                         <td><t t-esc="line.ctkm"/></td>

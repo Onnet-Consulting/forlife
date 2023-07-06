@@ -129,8 +129,11 @@ table.available-report-list {
 
 .report_table > thead {
     vertical-align: middle;
-    background-color: #0d305ad1;
+    background-color: #714B67;
     color: white;
+    white-space: nowrap;
+    position: sticky;
+    top:0;
 }
 
 .report_table {
