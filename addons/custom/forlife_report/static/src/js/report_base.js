@@ -131,6 +131,9 @@ odoo.define('forlife_report.report_base', function (require) {
 
     const AvailableReportAction = AbstractAction.extend({
         reportTemplate: 'AvailableReport',
+        events: {
+            'click .open_view': 'do_action_report',
+        },
 
         willStart: async function () {
             const reportPromise = this._rpc({
@@ -159,6 +162,9 @@ odoo.define('forlife_report.report_base', function (require) {
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
             }));
+        },
+        do_action_report: function (e){
+            this.do_action(e.currentTarget.id);
         },
     })
 

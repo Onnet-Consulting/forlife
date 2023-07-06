@@ -31,7 +31,7 @@
         <field name="name">About to rank up</field>
         <field name="res_model">report.num11</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
 
     <menuitem id="report_num11_menu"

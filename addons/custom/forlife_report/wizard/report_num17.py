@@ -93,9 +93,8 @@ with po_datas as (select po.id  as po_id,
                            coalesce(pol.original_price, 0)::float                         as gia_ban,
                            (case
                                 when disc.type = 'point' then disc.recipe * 1000
-                                when disc.type = 'card' then disc.recipe
                                 when disc.type = 'ctkm' then disc.discounted_amount
-                                else 0
+                                else disc.recipe
                                end)::float                                                as tien_giam_gia,
                            (pul.discount_amount * pol.qty)::float                         as tien_the_gg
                     from pos_order_line pol

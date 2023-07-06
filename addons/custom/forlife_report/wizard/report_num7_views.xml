@@ -36,7 +36,7 @@
         <field name="name">Report in-store revenue by product line</field>
         <field name="res_model">report.num7</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
 
     <menuitem id="report_num7_menu"

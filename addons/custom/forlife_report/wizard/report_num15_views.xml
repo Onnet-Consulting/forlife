@@ -33,7 +33,7 @@
         <field name="name">Search Voucher Used</field>
         <field name="res_model">report.num15</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
 
     <menuitem id="report_num15_menu"

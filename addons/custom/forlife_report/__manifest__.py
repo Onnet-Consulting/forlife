@@ -25,6 +25,7 @@
         'forlife_point_of_sale',
         'forlife_customer_card_rank',
         'forlife_pos_product_change_refund',
+        'forlife_business_objective_plan',
     ],
 
     'data': [

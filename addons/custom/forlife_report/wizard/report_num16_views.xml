@@ -34,7 +34,7 @@
         <field name="name">Report stock move</field>
         <field name="res_model">report.num16</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
 
     <menuitem id="report_num16_menu"

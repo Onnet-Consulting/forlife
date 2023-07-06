@@ -17,22 +17,32 @@ class ReportNum25(models.TransientModel):
     _description = 'Estimated income by revenue report'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    store_id = fields.Many2one('store', string='Store', required=True)
+    bo_plan_id = fields.Many2one('business.objective.plan', string='BO Plan', required=True)
+    store_id = fields.Many2one('store', string='Store')
     employee_id = fields.Many2one('hr.employee', string='Employee')
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
     sale_province_id = fields.Many2one('res.sale.province', 'Sale Province')
     view_type = fields.Selection([('by_day', 'By day'), ('by_month', 'By month')], string='View type', required=True, default='by_day')
 
-    @api.constrains('from_date', 'to_date')
+    @api.constrains('from_date', 'to_date', 'bo_plan_id')
     def check_dates(self):
         for record in self:
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
+            bo_plan_id = record.bo_plan_id
+            if record.from_date and record.to_date and bo_plan_id and (record.from_date < bo_plan_id.from_date or record.to_date > bo_plan_id.to_date):
+                raise ValidationError(_("Date must be between '%s' and '%s'") % (bo_plan_id.from_date.strftime('%d/%m/%Y'), bo_plan_id.to_date.strftime('%d/%m/%Y')))
 
     @api.onchange('brand_id')
     def onchange_brand(self):
         self.store_id = False
+        self.bo_plan_id = False
+
+    @api.onchange('bo_plan_id')
+    def onchange_bo_plan(self):
+        self.from_date = self.bo_plan_id.from_date
+        self.to_date = self.bo_plan_id.to_date
 
     @api.onchange('store_id')
     def onchange_store(self):
@@ -46,7 +56,7 @@ class ReportNum25(models.TransientModel):
         employee_conditions = 'pol.employee_id notnull' if not self.employee_id else f'pol.employee_id = {str(self.employee_id.id)}'
 
         sql = f"""
-with uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
+with uom_name_by_id as (
     select
         id,
         coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name

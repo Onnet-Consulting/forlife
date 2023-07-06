@@ -32,7 +32,7 @@
         <field name="name">Report on the status of PO</field>
         <field name="res_model">report.num13</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
 
     <menuitem id="report_num13_menu"
