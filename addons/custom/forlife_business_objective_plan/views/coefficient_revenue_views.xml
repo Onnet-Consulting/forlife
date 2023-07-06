@@ -9,8 +9,6 @@
                 <tree string="coefficient_revenue_tree">
                     <field name="name"/>
                     <field name="brand_id"/>
-                    <field name="from_date"/>
-                    <field name="to_date"/>
                     <field name="job_id"/>
                     <field name="fixed_coefficient"/>
                 </tree>
@@ -26,16 +24,10 @@
                         <group>
                             <group>
                                 <field name="name"/>
-                                <label for="from_date" string="Date"/>
-                                <div>from
-                                    <field name="from_date" class="oe_inline" required="1"/>
-                                    to
-                                    <field name="to_date" class="oe_inline" required="1"/>
-                                </div>
-                                <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
                             </group>
                             <group>
-                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
                                 <field name="fixed_coefficient"/>
                             </group>
                         </group>

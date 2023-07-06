@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-03 09:16+0000\n"
-"PO-Revision-Date: 2023-07-03 09:16+0000\n"
+"POT-Creation-Date: 2023-07-06 08:29+0000\n"
+"PO-Revision-Date: 2023-07-06 08:29+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -248,7 +248,6 @@ msgstr "Loại tiền"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
-#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "Date"
 msgstr "Ngày"
@@ -347,8 +346,6 @@ msgstr "Hệ số vị trí nhóm gián tiếp"
 #. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/business_objective_plan.py:0
-#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
-#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
 #: code:addons/forlife_business_objective_plan/models/employee_transfer.py:0
 #, python-format
 msgid "From Date must be less than or equal To Date"
@@ -357,7 +354,6 @@ msgstr "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc"
 #. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__from_date
-#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__from_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__from_date
 msgid "From date"
 msgstr "Từ ngày"
@@ -416,6 +412,11 @@ msgstr "Khóa thương hiệu"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__job_id
 msgid "Job Position"
 msgstr "Vị trí công việc"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.constraint,message:forlife_business_objective_plan.constraint_coefficient_revenue_unique_job_position
+msgid "Job Position must be unique per brand !"
+msgstr "Vị trí công việc phải là duy nhất trên 1 thương hiệu !"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
@@ -621,16 +622,8 @@ msgid "Time of BOL '%s' is overlapping."
 msgstr "Khoảng thời gian của phiếu mục tiêu kinh doanh '%s' bị trùng lặp"
 
 #. module: forlife_business_objective_plan
-#. odoo-python
-#: code:addons/forlife_business_objective_plan/models/coefficient_revenue.py:0
-#, python-format
-msgid "Time of coefficient revenue '[%s] %s' is overlapping."
-msgstr "Khoảng thời gian của phiếu hệ số doanh thu '[%s] %s' bị trùng lặp"
-
-#. module: forlife_business_objective_plan
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__to_date
-#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__to_date
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_employee_transfer__to_date
 msgid "To date"
 msgstr "Đến ngày"
@@ -717,14 +710,12 @@ msgstr ""
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
-#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "from"
 msgstr "từ"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form
-#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.employee_transfer_view_form
 msgid "to"
 msgstr "đến"
