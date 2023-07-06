@@ -355,9 +355,10 @@ class StockPicking(models.Model):
                 location_values = {}
                 if rec.location_id != line.location_id:
                     location_values['location_id'] = line.location_id.id
-                if rec.location_dest_id != line.location_dest_id.id:
+                if rec.location_dest_id != line.location_dest_id:
                     location_values['location_dest_id'] = line.location_dest_id.id
-                rec.update(location_values)
+                if location_values:
+                    rec.update(location_values)
         return line
 
     @api.model

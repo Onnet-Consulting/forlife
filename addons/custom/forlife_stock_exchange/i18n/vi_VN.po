@@ -38,6 +38,13 @@ msgid "Cannot find BOM for product \"%s\"!"
 msgstr "Không tìm thấy BOM cho sản phẩm \"%s\"!"
 
 #. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#, python-format
+msgid "There are too many BOM for product \"%s\"!"
+msgstr "Có quá nhiều BOM cho sản phẩm \"%s\"!"
+
+#. module: forlife_stock_exchange
 #: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking__exchange_code
 #: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking_type__exchange_code
 msgid "Exchange Code"
