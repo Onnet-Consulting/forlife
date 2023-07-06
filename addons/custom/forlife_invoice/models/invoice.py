@@ -31,11 +31,11 @@ class AccountMove(models.Model):
         default='normal',
         copy=True,
         string="Loại hóa đơn",
-        selection=[('expense', 'Hóa đơn chi phí'),
+        selection=[('expense', 'Hóa đơn chi phí mua hàng'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
-                   ('normal', 'Hóa đơn bình thường'),
-                   ('service', 'Hóa đơn dịch vụ và tài sản'),
+                   ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
+
     is_check_select_type_inv = fields.Boolean(default=False)
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
@@ -339,16 +339,29 @@ class AccountMove(models.Model):
         for rec in self:
             for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
                 for item in nine.move_line_ids_without_package:
-                    if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
+                    if line.ware_id == item.id and (line.quantity < 0 or item.qty_done < 0):
                         raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
-                    if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+                    if line.ware_id == item.id and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
                         if line.quantity > item.qty_done:
                             raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+
+
+    # @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
+    # def constrains_quantity_line_stock(self):
+    #     for rec in self:
+    #         if rec.receiving_warehouse_id.ids =
+    #         # for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
+    #         #     for item in nine.move_line_ids_without_package:
+    #         #         if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
+    #         #             raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
+    #         #         if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+    #         #             if line.quantity > item.qty_done:
+    #         #                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if rec.is_check_cost_view or rec.is_check_cost_out_source:
+            if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
@@ -620,6 +633,7 @@ class AccountMoveLine(models.Model):
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
     po_id = fields.Char('')
+    ware_id = fields.Many2one('stock.move.line')
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
@@ -834,7 +848,7 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         res = super()._compute_account_id()
         for line in self:
-            if line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
+            if line.move_id.purchase_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
                 line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                 line.name = line.product_id.name
         return res
