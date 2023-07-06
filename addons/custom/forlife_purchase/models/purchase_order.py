@@ -62,8 +62,7 @@ class PurchaseOrder(models.Model):
         required=True,
         selection=[('expense', 'Hóa đơn chi phí'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
-                   ('normal', 'Hóa đơn bình thường'),
-                   ('service', 'Hóa đơn dịch vụ và tài sản'),
+                   ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
@@ -124,6 +123,11 @@ class PurchaseOrder(models.Model):
     # Lấy của base về phục vụ import
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        res = super(PurchaseOrder, self).name_search(name, args, operator, limit)
+        return res
 
 
     def action_view_stock(self):
@@ -383,10 +387,10 @@ class PurchaseOrder(models.Model):
         for rec in self:
             domain_moves_normal = [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]
             rec.count_invoice_inter_normal_fix = self.env['account.move'].search_count(domain_moves_normal)
-            moves = self.env['account.move'].search(domain_moves_normal)
-            if moves:
-                for item in moves.receiving_warehouse_id:
-                    item.ware_check = False
+            # moves = self.env['account.move'].search(domain_moves_normal)
+            # if moves:
+            #     for item in moves.receiving_warehouse_id:
+            #         item.ware_check = False
 
 
 
@@ -900,8 +904,9 @@ class PurchaseOrder(models.Model):
             'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
         }
 
-    def create_invoice_normal_no_return(self, order, line, wave_item, x_return):
+    def create_invoice_normal_yes_return(self, order, line, wave_item, x_return):
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
@@ -936,6 +941,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_normal(self, order, line, wave_item):
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
@@ -971,6 +977,7 @@ class PurchaseOrder(models.Model):
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
                     (wave_item.qty_done - x_return.qty_done) / line.purchase_quantity)) * nine.vnd_amount
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': nine.product_id.id,
@@ -994,6 +1001,7 @@ class PurchaseOrder(models.Model):
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
                     wave_item.qty_done / line.purchase_quantity)) * nine.vnd_amount
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': nine.product_id.id,
@@ -1015,6 +1023,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_labor_no_return(self, nine, material_line, wave_item, x_return):
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': nine.id,
             'product_id': material_line.product_id.id,
@@ -1037,6 +1046,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_labor(self, nine, material_line, wave_item):
         data_line = {
+            'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': nine.id,
             'product_id': material_line.product_id.id,
@@ -1109,6 +1119,66 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
+    def create_invoice_normal_control(self, order, line, matching_item_ids, matching_nine, total_nine_quantity):
+        data_lines = []
+        for matching_item_id in matching_item_ids:
+            matching_item = self.env['stock.move.line'].browse(matching_item_id)  # Truy xuất đối tượng matching_item từ ID
+            data_line = {
+                'ware_id': matching_item.id,
+                'ware_name': matching_item.picking_id.name,
+                'po_id': line.id,
+                'product_id': matching_item.product_id.id,
+                'promotions': line.free_good,
+                'exchange_quantity': matching_item.quantity_change,
+                'quantity': matching_item.qty_done - total_nine_quantity,
+                'vendor_price': line.vendor_price,
+                'warehouse': line.location_id.id,
+                'discount': line.discount_percent,
+                'request_code': line.request_purchases,
+                'quantity_purchased': 0,
+                'discount_percent': line.discount,
+                'tax_ids': line.taxes_id.ids,
+                'tax_amount': line.price_tax,
+                'product_uom_id': matching_item.product_uom_id.id,
+                'price_unit': line.price_unit,
+                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                'occasion_code_id': matching_item.occasion_code_id.id,
+                'work_order': matching_item.production_id.id,
+                'account_analytic_id': matching_item.account_analytic_id.id,
+            }
+            data_lines.append(data_line)
+        return data_lines
+
+    def create_invoice_normal_control_len(self, order, line,
+                                          matching_item,
+                                          matching_nine,
+                                          total_nine_quantity):
+        quantity = matching_item.qty_done - total_nine_quantity
+        data_line = {
+            'ware_id': matching_item.id,
+            'ware_name': matching_item.picking_id.name,
+            'po_id': line.id,
+            'product_id': matching_item.product_id.id,
+            'promotions': line.free_good,
+            'exchange_quantity': matching_item.quantity_change,
+            'quantity': quantity,
+            'vendor_price': line.vendor_price,
+            'warehouse': line.location_id.id,
+            'discount': line.discount_percent,
+            'request_code': line.request_purchases,
+            'quantity_purchased': 0,
+            'discount_percent': line.discount,
+            'tax_ids': line.taxes_id.ids,
+            'tax_amount': line.price_tax,
+            'product_uom_id': matching_item.product_uom_id.id,
+            'price_unit': line.price_unit,
+            'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+            'occasion_code_id': matching_item.occasion_code_id.id,
+            'work_order': matching_item.production_id.id,
+            'account_analytic_id': matching_item.account_analytic_id.id,
+        }
+        return data_line
+
     def action_create_invoice(self):
         """Create the invoice associated to the PO.
         """
@@ -1124,36 +1194,240 @@ class PurchaseOrder(models.Model):
                 'domain': [('id', 'in', move_ids)],
             }
         else:
-            if self.select_type_inv == 'service' and self.purchase_type in ('service', 'asset'):
-                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-                # 1) Prepare invoice vals and clean-up the section lines
-                invoice_vals_list = []
-                sequence = 10
-                for order in self:
-                    order.write({
-                        'invoice_status_fake': 'to invoice',
-                    })
-                    if order.custom_state != 'approved':
-                        raise UserError(
-                            _('Tạo hóa đơn không hợp lệ!'))
-                    order = order.with_company(order.company_id)
-                    pending_section = None
-                    # Invoice values.
-                    invoice_vals = order._prepare_invoice()
-                    invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
-                                         'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
-                    # Invoice line values (keep only necessary sections).
-                    invoice_relationship = self.env['account.move'].search([('reference', '=', order.name),
-                                                                          ('partner_id', '=', order.partner_id.id),
-                                                                          ('purchase_type', '=', order.purchase_type)
-                                                                          ])
-                    if invoice_relationship:
-                        if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(order.order_line.mapped('price_subtotal')):
-                            raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            # 1) Prepare invoice vals and clean-up the section lines
+            invoice_vals_list = []
+            sequence = 10
+            for order in self:
+                if order.custom_state != 'approved':
+                    raise UserError(_('Tạo hóa đơn không hợp lệ!'))
+                order = order.with_company(order.company_id)
+                pending_section = None
+                # Invoice values.
+                invoice_vals = order._prepare_invoice()
+                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
+                # Invoice line values (keep only necessary sections).
+
+                if order.select_type_inv == 'labor':
+                    domain_labor = [('origin', '=', order.name), ('state', '=', 'done'),
+                                    ('labor_check', '=', True), ('picking_type_id.code', '=', 'incoming')]
+                    picking_labor_in = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', False)])
+                    picking_labor_in_return = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', True)])
+                    for line in order.order_line:
+                        if order.order_line_production_order:
+                            for nine in order.order_line_production_order:
+                                material = self.env['purchase.order.line.material.line'].search(
+                                    [('purchase_order_line_id', '=', nine.id)])
+                                if not order.is_return:
+                                    wave = picking_labor_in.move_line_ids_without_package.filtered(
+                                        lambda w: str(w.po_id) == str(nine.id)
+                                                  and w.product_id.id == nine.product_id.id
+                                                  and w.picking_type_id.code == 'incoming'
+                                                  and w.picking_id.x_is_check_return == False)
+                                else:
+                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(nine.id)
+                                                                                                    and w.product_id.id == nine.product_id.id
+                                                                                                    and w.picking_id.x_is_check_return == False)
+                                for material_line in material:
+                                    if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
+                                        for wave_item in wave:
+                                            purchase_return = picking_labor_in_return.move_line_ids_without_package.filtered(
+                                                lambda r: str(r.po_id) == str(wave_item.po_id)
+                                                          and r.product_id.id == wave_item.product_id.id
+                                                          and r.picking_id.relation_return == wave_item.picking_id.name
+                                                          and r.picking_id.x_is_check_return == True)
+                                            if purchase_return:
+                                                for x_return in purchase_return:
+                                                    if wave_item.picking_id.name == x_return.picking_id.relation_return:
+                                                        data_line = self.create_invoice_labor_no_return(nine, material_line, wave_item, x_return)
+                                            else:
+                                                data_line = self.create_invoice_labor(nine, material_line, wave_item)
+                                            if line.display_type == 'line_section':
+                                                pending_section = line
+                                                continue
+                                            if pending_section:
+                                                line_vals = pending_section._prepare_account_move_line()
+                                                line_vals.update(data_line)
+                                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                                sequence += 1
+                                                pending_section = None
+                                            line_vals = line._prepare_account_move_line()
+                                            line_vals.update(data_line)
+                                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                            sequence += 1
+                                        invoice_vals_list.append(invoice_vals)
+                        else:
+                            raise UserError(_('Đơn mua không có chi phí nhân công và npl!'))
+                elif order.select_type_inv == 'expense':
+                    domain_expense = [('origin', '=', order.name),
+                                      ('state', '=', 'done'),
+                                      ('expense_check', '=', True),
+                                      ('picking_type_id.code', '=', 'incoming')
+                                      ]
+                    picking_expense_in = self.env['stock.picking'].search(domain_expense + [('x_is_check_return', '=', False)])
+                    picking_expense_in_return = self.env['stock.picking'].search(domain_expense + [('x_is_check_return', '=', True)])
+                    if order.cost_line:
+                        for nine in order.cost_line:
+                            cp = 0
+                            for line in order.order_line:
+                                if not order.is_return:
+                                    wave = picking_expense_in.move_line_ids_without_package.filtered(
+                                        lambda w: str(w.po_id) == str(line.id)
+                                                and w.product_id.id == line.product_id.id
+                                                and w.picking_id.state == 'done'
+                                                and w.picking_type_id.code == 'incoming'
+                                                and w.picking_id.x_is_check_return == False)
+                                else:
+                                    wave = picking_expense_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                                    and w.product_id.id == line.product_id.id
+                                                                                                    and w.picking_id.x_is_check_return == False)
+
+                                for wave_item in wave:
+                                    purchase_return = picking_expense_in_return.move_line_ids_without_package.filtered(
+                                        lambda r: str(r.po_id) == str(wave_item.po_id)
+                                                  and r.product_id.id == wave_item.product_id.id
+                                                  and r.picking_id.relation_return == wave_item.picking_id.name
+                                                  and r.picking_id.x_is_check_return == True)
+                                    if purchase_return:
+                                        for x_return in purchase_return:
+                                            if wave_item.picking_id.name == x_return.picking_id.relation_return:
+                                                data_line = self.create_invoice_expense_no_return(order, nine, line, cp, wave_item, x_return)
+                                    else:
+                                        data_line = self.create_invoice_expense(order, nine, line, cp, wave_item)
+                                    if line.display_type == 'line_section':
+                                        pending_section = line
+                                        continue
+                                    if pending_section:
+                                        line_vals = pending_section._prepare_account_move_line()
+                                        line_vals.update(data_line)
+                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                        sequence += 1
+                                        pending_section = None
+                                    # wave.picking_id.expense_check = True
+                                    line_vals = line._prepare_account_move_line()
+                                    line_vals.update(data_line)
+                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                    sequence += 1
+                                invoice_vals_list.append(invoice_vals)
+                    else:
+                        raise UserError(_('Đơn mua không có chi phí!'))
+                else:
+                    if self.purchase_type not in ('service', 'asset'):
+                        domain_normal = [('purchase_id', '=', order.id),
+                                         ('state', '=', 'done'),
+                                         ('picking_type_id.code', '=', 'incoming')
+                                         ]
+                        domain_normal_out = [('purchase_id', '=', order.id),
+                                         ('state', '=', 'done'),
+                                         ('picking_type_id.code', '=', 'outcoming')
+                                         ]
+                        # x_is_check_return tẹo xóa
+                        picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
+                        picking_in_return = self.env['stock.picking'].search(domain_normal_out + [('ware_check', '=', False)])
+                        picking_in_true = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', True)])
+                        for line in order.order_line:
+                            if not order.is_return:
+                                wave = picking_in.move_line_ids_without_package.filtered(
+                                lambda w: str(w.po_id) == str(line.id)
+                                and w.product_id.id == line.product_id.id
+                                and w.picking_type_id.code == 'incoming'
+                                and w.picking_id.x_is_check_return == False)
+                            else:
+                                wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                                and w.product_id.id == line.product_id.id
+                                                                                                and w.picking_id.x_is_check_return == False)
+
+                            if order.select_type_inv == 'normal':
+                                if picking_in:
+                                    for wave_item in wave:
+                                        purchase_return = picking_in_return.move_line_ids_without_package.filtered(
+                                            lambda r: str(r.po_id) == str(wave_item.po_id)
+                                                      and r.product_id.id == wave_item.product_id.id
+                                                      and r.picking_id.relation_return == wave_item.picking_id.id
+                                                      and r.picking_id.x_is_check_return == True)
+                                        if purchase_return:
+                                            for x_return in purchase_return:
+                                                if wave_item.picking_id.name == x_return.picking_id.relation_return:
+                                                    data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
+                                        else:
+                                            data_line = self.create_invoice_normal(order, line, wave_item)
+                                        if line.display_type == 'line_section':
+                                            pending_section = line
+                                            continue
+                                        if pending_section:
+                                            line_vals = pending_section._prepare_account_move_line()
+                                            line_vals.update(data_line)
+                                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                            sequence += 1
+                                            pending_section = None
+                                        wave.picking_id.ware_check = True
+                                        line_vals = line._prepare_account_move_line()
+                                        line_vals.update(data_line)
+                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                        sequence += 1
+                                    invoice_vals_list.append(invoice_vals)
+                                elif picking_in_true:
+                                    # all_equal = True  # Biến kiểm tra tất cả các cặp item và nine có bằng nhau hay không
+                                    matching_nine = None
+                                    for item in picking_in_true.move_line_ids_without_package:
+                                        if int(item.po_id) == line.id:
+                                            total_nine_quantity = 0
+                                            matching_item = item
+                                            invoice_relationship = self.env['account.move.line'].search(
+                                                [('ware_id', '=', item.id)])
+                                            for nine in invoice_relationship:
+                                                total_nine_quantity += nine.quantity
+                                                matching_nine = nine
+                                            if matching_item.qty_done - total_nine_quantity:
+                                                data_line = self.create_invoice_normal_control_len(order, line,
+                                                                                               matching_item,
+                                                                                               matching_nine,
+                                                                                               total_nine_quantity)
+                                                if line.display_type == 'line_section':
+                                                    pending_section = line
+                                                    continue
+                                                if pending_section:
+                                                    line_vals = pending_section._prepare_account_move_line()
+                                                    line_vals.update(data_line)
+                                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                                    sequence += 1
+                                                    pending_section = None
+                                                wave.picking_id.ware_check = True
+                                                line_vals = line._prepare_account_move_line()
+                                                line_vals.update(data_line)
+                                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                                sequence += 1
+                    else:
+                        invoice_relationship = self.env['account.move'].search([('reference', '=', order.name),
+                                                                                ('partner_id', '=', order.partner_id.id),
+                                                                                ('purchase_type', '=', order.purchase_type)
+                                                                                ])
+                        if invoice_relationship:
+                            if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(
+                                    order.order_line.mapped('price_subtotal')):
+                                raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
+                            else:
+                                for line in order.order_line:
+                                    wave = invoice_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(
+                                        line.id) and w.product_id.id == line.product_id.id)
+                                    data_line = self.create_invoice_service_and_asset(order, line, wave)
+                                    if line.display_type == 'line_section':
+                                        pending_section = line
+                                        continue
+                                    if pending_section:
+                                        line_vals = pending_section._prepare_account_move_line()
+                                        line_vals.update(data_line)
+                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                        sequence += 1
+                                        pending_section = None
+                                    line_vals = line._prepare_account_move_line()
+                                    line_vals.update(data_line)
+                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                    sequence += 1
                         else:
                             for line in order.order_line:
-                                wave = invoice_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
-                                data_line = self.create_invoice_service_and_asset(order, line, wave)
+                                data_line = self.create_invoice_service_and_asset_not_get_mode(order, line)
                                 if line.display_type == 'line_section':
                                     pending_section = line
                                     continue
@@ -1167,265 +1441,39 @@ class PurchaseOrder(models.Model):
                                 line_vals.update(data_line)
                                 invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                 sequence += 1
-                    else:
-                        for line in order.order_line:
-                            data_line = self.create_invoice_service_and_asset_not_get_mode(order, line)
-                            if line.display_type == 'line_section':
-                                pending_section = line
-                                continue
-                            if pending_section:
-                                line_vals = pending_section._prepare_account_move_line()
-                                line_vals.update(data_line)
-                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                sequence += 1
-                                pending_section = None
-                            line_vals = line._prepare_account_move_line()
-                            line_vals.update(data_line)
-                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                            sequence += 1
-                        # invoice_vals_list.append(invoice_vals)
+                            # invoice_vals_list.append(invoice_vals)
                     invoice_vals_list.append(invoice_vals)
-                # 2) group by (company_id, partner_id, currency_id) for batch creation
-                new_invoice_vals_list = []
-                for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
-                        x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
-                    origins = set()
-                    payment_refs = set()
-                    refs = set()
-                    ref_invoice_vals = None
-                    for invoice_vals in invoices:
-                        if not ref_invoice_vals:
-                            ref_invoice_vals = invoice_vals
-                        else:
-                            ref_invoice_vals['invoice_line_ids'] = invoice_vals['invoice_line_ids']
-                        origins.add(invoice_vals['invoice_origin'])
-                        payment_refs.add(invoice_vals['payment_reference'])
-                        refs.add(invoice_vals['ref'])
-                    ref_invoice_vals.update({
-                        'move_type': 'in_invoice',
-                        'type_inv': self.type_po_cost,
-                        'purchase_type': self.purchase_type if len(self) == 1 else 'product',
-                        'reference': ', '.join(self.mapped('name')),
-                        'ref': ', '.join(refs)[:2000],
-                        'invoice_origin': ', '.join(origins),
-                        # 'is_check': True,
-                        'select_type_inv': self.select_type_inv,
-                        'is_check_select_type_inv': True,
-                        'purchase_order_product_id': [(6, 0, [self.id])],
-                        'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
-                    })
-                    new_invoice_vals_list.append(ref_invoice_vals)
-                invoice_vals_list = new_invoice_vals_list
-            else:
-                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-                # 1) Prepare invoice vals and clean-up the section lines
-                invoice_vals_list = []
-                sequence = 10
-                for order in self:
-                    if order.custom_state != 'approved':
-                        raise UserError(_('Tạo hóa đơn không hợp lệ!'))
-                    order = order.with_company(order.company_id)
-                    pending_section = None
-                    # Invoice values.
-                    invoice_vals = order._prepare_invoice()
-                    invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
-                                         'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
-                    # Invoice line values (keep only necessary sections).
-                    if order.select_type_inv == 'labor':
-                        domain_labor = [('origin', '=', order.name), ('state', '=', 'done'),
-                                        ('labor_check', '=', True), ('picking_type_id.code', '=', 'incoming')]
-                        picking_labor_in = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', False)])
-                        picking_labor_in_return = self.env['stock.picking'].search(domain_labor + [('x_is_check_return', '=', True)])
-                        for line in order.order_line:
-                            if order.order_line_production_order:
-                                for nine in order.order_line_production_order:
-                                    material = self.env['purchase.order.line.material.line'].search(
-                                        [('purchase_order_line_id', '=', nine.id)])
-                                    if not order.is_return:
-                                        wave = picking_labor_in.move_line_ids_without_package.filtered(
-                                            lambda w: str(w.po_id) == str(nine.id)
-                                                      and w.product_id.id == nine.product_id.id
-                                                      and w.picking_type_id.code == 'incoming'
-                                                      and w.picking_id.x_is_check_return == False)
-                                    else:
-                                        wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(nine.id)
-                                                                                                        and w.product_id.id == nine.product_id.id
-                                                                                                        and w.picking_id.x_is_check_return == False)
-                                    for material_line in material:
-                                        if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
-                                            for wave_item in wave:
-                                                purchase_return = picking_labor_in_return.move_line_ids_without_package.filtered(
-                                                    lambda r: str(r.po_id) == str(wave_item.po_id)
-                                                              and r.product_id.id == wave_item.product_id.id
-                                                              and r.picking_id.relation_return == wave_item.picking_id.name
-                                                              and r.picking_id.x_is_check_return == True)
-                                                if purchase_return:
-                                                    for x_return in purchase_return:
-                                                        if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                                            data_line = self.create_invoice_labor_no_return(nine, material_line, wave_item, x_return)
-                                                else:
-                                                    data_line = self.create_invoice_labor(nine, material_line, wave_item)
-                                                if line.display_type == 'line_section':
-                                                    pending_section = line
-                                                    continue
-                                                if pending_section:
-                                                    line_vals = pending_section._prepare_account_move_line()
-                                                    line_vals.update(data_line)
-                                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                                    sequence += 1
-                                                    pending_section = None
-                                                line_vals = line._prepare_account_move_line()
-                                                line_vals.update(data_line)
-                                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                                sequence += 1
-                                            invoice_vals_list.append(invoice_vals)
-                            else:
-                                raise UserError(_('Đơn mua không có chi phí nhân công và npl!'))
-                    elif order.select_type_inv == 'expense':
-                        domain_expense = [('origin', '=', order.name),
-                                          ('state', '=', 'done'),
-                                          ('expense_check', '=', True),
-                                          ('picking_type_id.code', '=', 'incoming')
-                                          ]
-                        picking_expense_in = self.env['stock.picking'].search(domain_expense + [('x_is_check_return', '=', False)])
-                        picking_expense_in_return = self.env['stock.picking'].search(domain_expense + [('x_is_check_return', '=', True)])
-                        if order.cost_line:
-                            for nine in order.cost_line:
-                                cp = 0
-                                for line in order.order_line:
-                                    if not order.is_return:
-                                        wave = picking_expense_in.move_line_ids_without_package.filtered(
-                                            lambda w: str(w.po_id) == str(line.id)
-                                                    and w.product_id.id == line.product_id.id
-                                                    and w.picking_id.state == 'done'
-                                                    and w.picking_type_id.code == 'incoming'
-                                                    and w.picking_id.x_is_check_return == False)
-                                    else:
-                                        wave = picking_expense_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                                        and w.product_id.id == line.product_id.id
-                                                                                                        and w.picking_id.x_is_check_return == False)
-                                    
-                                    for wave_item in wave:
-                                        purchase_return = picking_expense_in_return.move_line_ids_without_package.filtered(
-                                            lambda r: str(r.po_id) == str(wave_item.po_id)
-                                                      and r.product_id.id == wave_item.product_id.id
-                                                      and r.picking_id.relation_return == wave_item.picking_id.name
-                                                      and r.picking_id.x_is_check_return == True)
-                                        if purchase_return:
-                                            for x_return in purchase_return:
-                                                if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                                    data_line = self.create_invoice_expense_no_return(order, nine, line, cp, wave_item, x_return)
-                                        else:
-                                            data_line = self.create_invoice_expense(order, nine, line, cp, wave_item)
-                                        if line.display_type == 'line_section':
-                                            pending_section = line
-                                            continue
-                                        if pending_section:
-                                            line_vals = pending_section._prepare_account_move_line()
-                                            line_vals.update(data_line)
-                                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                            sequence += 1
-                                            pending_section = None
-                                        # wave.picking_id.expense_check = True
-                                        line_vals = line._prepare_account_move_line()
-                                        line_vals.update(data_line)
-                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                        sequence += 1
-                                    invoice_vals_list.append(invoice_vals)
-                        else:
-                            raise UserError(_('Đơn mua không có chi phí!'))
+            # 2) group by (company_id, partner_id, currency_id) for batch creation
+            new_invoice_vals_list = []
+            for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
+                    x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
+                origins = set()
+                payment_refs = set()
+                refs = set()
+                ref_invoice_vals = None
+                for invoice_vals in invoices:
+                    if not ref_invoice_vals:
+                        ref_invoice_vals = invoice_vals
                     else:
-                        domain_normal = [('origin', '=', order.name),
-                                         ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'incoming')
-                                         ]
-                        picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False), ('x_is_check_return', '=', False) ])
-                        picking_in_return = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False), ('x_is_check_return', '=', True)])
-                        picking_in_true = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', True), ('x_is_check_return', '=', False)])
-                        invoice_relationship = self.env['account.move'].search([('reference', '=', order.name),
-                                                                              ('partner_id', '=', order.partner_id.id),
-                                                                              ('purchase_type', '=', order.purchase_type),
-                                                                              ('select_type_inv', '=', order.select_type_inv),
-                                                                              ('receiving_warehouse_id', 'in', picking_in_true.ids)
-                                                                              ])
-                        for line in order.order_line:
-                            if not order.is_return:
-                                wave = picking_in.move_line_ids_without_package.filtered(
-                                lambda w: str(w.po_id) == str(line.id)
-                                and w.product_id.id == line.product_id.id
-                                and w.picking_type_id.code == 'incoming'
-                                and w.picking_id.x_is_check_return == False)
-                            else:
-                                wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                                and w.product_id.id == line.product_id.id
-                                                                                                and w.picking_id.x_is_check_return == False)
-                    
-                            if order.select_type_inv == 'normal':
-                                if invoice_relationship and (sum(invoice_relationship.invoice_line_ids.mapped('quantity')) == sum(picking_in_true.move_line_ids_without_package.mapped('qty_done'))):
-                                    raise UserError(_('Hóa đơn đã được khống chế số lượng theo phiếu nhập kho!'))
-                                else:
-                                    if picking_in:
-                                        for wave_item in wave:
-                                            purchase_return = picking_in_return.move_line_ids_without_package.filtered(
-                                                lambda r: str(r.po_id) == str(wave_item.po_id)
-                                                          and r.product_id.id == wave_item.product_id.id
-                                                          and r.picking_id.relation_return == wave_item.picking_id.name
-                                                          and r.picking_id.x_is_check_return == True)
-                                            if purchase_return:
-                                                for x_return in purchase_return:
-                                                    if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                                        data_line = self.create_invoice_normal_no_return(order, line, wave_item, x_return)
-                                            else:
-                                                data_line = self.create_invoice_normal(order, line, wave_item)
-                                            if line.display_type == 'line_section':
-                                                pending_section = line
-                                                continue
-                                            if pending_section:
-                                                line_vals = pending_section._prepare_account_move_line()
-                                                line_vals.update(data_line)
-                                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                                sequence += 1
-                                                pending_section = None
-                                            wave.picking_id.ware_check = True
-                                            line_vals = line._prepare_account_move_line()
-                                            line_vals.update(data_line)
-                                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                            sequence += 1
-                                        invoice_vals_list.append(invoice_vals)
-                                    # else:
-                                    #     raise UserError(
-                                    #         _('Đơn mua đã có hóa đơn liên quan tương ứng với phiếu nhập kho!'))
-                # 2) group by (company_id, partner_id, currency_id) for batch creation
-                new_invoice_vals_list = []
-                for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
-                        x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
-                    origins = set()
-                    payment_refs = set()
-                    refs = set()
-                    ref_invoice_vals = None
-                    for invoice_vals in invoices:
-                        if not ref_invoice_vals:
-                            ref_invoice_vals = invoice_vals
-                        else:
-                            ref_invoice_vals['invoice_line_ids'] = invoice_vals['invoice_line_ids']
-                        origins.add(invoice_vals['invoice_origin'])
-                        payment_refs.add(invoice_vals['payment_reference'])
-                        refs.add(invoice_vals['ref'])
-                    ref_invoice_vals.update({
-                        'purchase_type': self.purchase_type if len(self) == 1 else 'product',
-                        'reference': ', '.join(self.mapped('name')),
-                        'ref': ', '.join(refs)[:2000],
-                        'invoice_origin': ', '.join(origins),
-                        # 'is_check': True,
-                        'type_inv': self.type_po_cost,
-                        'select_type_inv': self.select_type_inv,
-                        'is_check_select_type_inv': True,
-                        'move_type': 'in_invoice',
-                        'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
-                        'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
-                    })
-                    new_invoice_vals_list.append(ref_invoice_vals)
-                invoice_vals_list = new_invoice_vals_list
+                        ref_invoice_vals['invoice_line_ids'] = invoice_vals['invoice_line_ids']
+                    origins.add(invoice_vals['invoice_origin'])
+                    payment_refs.add(invoice_vals['payment_reference'])
+                    refs.add(invoice_vals['ref'])
+                ref_invoice_vals.update({
+                    'purchase_type': self.purchase_type if len(self) == 1 else 'product',
+                    'reference': ', '.join(self.mapped('name')),
+                    'ref': ', '.join(refs)[:2000],
+                    'invoice_origin': ', '.join(origins),
+                    # 'is_check': True,
+                    'type_inv': self.type_po_cost,
+                    'select_type_inv': self.select_type_inv,
+                    'is_check_select_type_inv': True,
+                    'move_type': 'in_invoice',
+                    'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
+                    'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+                })
+                new_invoice_vals_list.append(ref_invoice_vals)
+            invoice_vals_list = new_invoice_vals_list
 
             # 3) Create invoices.
             moves = self.env['account.move']
@@ -1444,11 +1492,13 @@ class PurchaseOrder(models.Model):
                 picking_normal_in = self.env['stock.picking'].search(domain + [('ware_check', '=', True)])
                 if picking_expense_in:
                     master.receiving_warehouse_id = [(6, 0, picking_expense_in.ids)]
-                elif picking_labor_in:
+                if picking_labor_in:
                     master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
-                elif picking_normal_in:
+                if picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
-                else:
+                    for item in master.receiving_warehouse_id:
+                        item.invoice_id = master.id
+                if not picking_expense_in and not picking_labor_in and not picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, [])]
             for line in moves.invoice_line_ids:
                 if line.product_id:
@@ -1744,7 +1794,7 @@ class PurchaseOrderLine(models.Model):
             amount_untaxed = totals['amount_untaxed']
             amount_tax = totals['amount_tax']
             line.update({
-                'price_subtotal': amount_untaxed,
+                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
                 'price_tax': amount_tax,
                 'price_total': amount_untaxed + amount_tax,
             })
@@ -1754,7 +1804,7 @@ class PurchaseOrderLine(models.Model):
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM', compute='compute_product_id')
+    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
     exchange_quantity = fields.Float('Exchange Quantity')
     # line_sub_total = fields.Monetary(compute='_get_line_subtotal', string='Line Subtotal', readonly=True, store=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
@@ -2081,6 +2131,13 @@ class PurchaseOrderLine(models.Model):
         return res
 
 
+    # @api.constrains('purchase_uom')
+    # def _constrains_purchase_uom(self):
+    #     for rec in self:
+    #         if not rec.purchase_uom:
+    #             raise ValidationError(_('Đơn vị mua của sản phẩm %s chưa được chọn!') % rec.product_id.name)
+
+
     # exchange rate
     @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'product_uom', 'vendor_price', 'order_id.purchase_type')
     def _compute_price_unit_and_date_planned_and_name(self):
@@ -2234,7 +2291,7 @@ class PurchaseOrderLine(models.Model):
     def _prepare_account_move_line(self):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
         if vals and vals.get('display_type') == 'product':
-            quantity = self.received - self.qty_returned - self.billed
+            quantity = self.qty_received - self.qty_returned - self.billed
             vals.update({
                 'exchange_quantity': self.exchange_quantity,
                 'quantity': quantity,
@@ -2328,7 +2385,7 @@ class StockPicking(models.Model):
                 '&', ('id', 'not in', [product[0] for product in product_ids]), ('id', 'in', material_product_ids)
             ])
             if product_not_quant:
-                raise ValidationError('Các NPL sau không đủ tồn kho: \n%s' % '\n'.join(product.name for product in product_not_quant))
+                raise ValidationError('Những nguyên phụ liệu sau không đủ tồn kho: \n%s' % '\n'.join(product.name for product in product_not_quant))
 
 
     def button_validate(self):
@@ -2339,7 +2396,7 @@ class StockPicking(models.Model):
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
             if po:
                 ### check npl tồn:
-                self.check_quant_goods_import(po)
+                # self.check_quant_goods_import(po)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',

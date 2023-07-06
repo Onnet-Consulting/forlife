@@ -31,7 +31,7 @@
             	<xpath expr="//header" position="inside">
                     <field name="is_return" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="after">
+                <xpath expr="//field[@name='order_line']//tree/field[@name='billed']" position="after">
                     <field name="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
                 </xpath>
                 <button name="action_close" position="before">
