@@ -43,16 +43,10 @@ class PosSession(models.Model):
         program_ids = set(self.config_id._get_promotion_program_ids().ids)
         for item in items:
             product_id = item.get('product_id') and item.get('product_id')[0] or None
-<<<<<<< HEAD
-            if product_id not in product_set and item.get('lst_price') > item.get('fixed_price') \
-                    and product_id in product_ids\
-                    and item.get('program_id')[0] in program_ids:
-=======
             with_code = item.get('with_code', False)
             if with_code:
                 res.append(item)
             elif product_id not in product_set and item.get('lst_price', 0) > item.get('fixed_price', 0) and product_id in product_ids:
->>>>>>> alpha
                 res.append(item)
                 product_set.add(product_id)
         items[:] = res
