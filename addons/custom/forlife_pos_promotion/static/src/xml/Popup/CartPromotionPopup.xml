@@ -25,7 +25,7 @@
                                 <div t-if="program.selectedQty > 0">
                                     <strong t-esc="program.selectedQty"/> sản phẩm đã áp dụng khuyến mãi
                                 </div>
-                                <RewardSelectionCartPromotionPopup program="program"/>
+                                <RewardSelectionCartPromotionPopup program="program" programOptions="props.programs"/>
 <!--                                <div t-if="program.to_discount_lines.length > 0"  style="display: inline-block;" class="btn-primary">-->
 <!--                                    <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program)">Chọn SP giảm giá</i>-->
 <!--                                </div>-->
