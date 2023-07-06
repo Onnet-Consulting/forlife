@@ -19,6 +19,7 @@ class BusinessObjectiveEmployee(models.Model):
     concurrent_position_id = fields.Many2one('hr.job', 'Concurrent Position', ondelete='restrict')
     revenue_target = fields.Monetary('Revenue target', default=10000000)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
+    can_transfer = fields.Boolean('Can transfer', default=True)
 
     def btn_employee_transfer(self):
         self.ensure_one()
