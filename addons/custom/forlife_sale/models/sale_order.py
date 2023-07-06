@@ -352,7 +352,7 @@ class SaleOrder(models.Model):
             """
         cursor.execute(sql)
         result = cursor.fetchone()
-        debtBalance = float(result[0] if result[0] else 0)
+        debtBalance = float(result[0]) if result and result[0] else 0
         cursor.close()
         return debtBalance
 
