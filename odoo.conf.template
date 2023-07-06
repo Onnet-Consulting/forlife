@@ -40,7 +40,7 @@ transient_age_limit = 1.0
 osv_memory_count_limit = False
 proxy_mode = True
 reportgz = False
-server_wide_modules = base,web,queue_job
+server_wide_modules = base,web
 smtp_password = False
 smtp_port = 25
 smtp_server = localhost
@@ -55,5 +55,5 @@ translate_modules = ['all']
 unaccent = False
 without_demo = False
 workers = 8
-[queue_job]
-channels = root:2
+;[queue_job]
+;channels = root:2
