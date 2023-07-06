@@ -1764,7 +1764,7 @@ class PurchaseOrderLine(models.Model):
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
