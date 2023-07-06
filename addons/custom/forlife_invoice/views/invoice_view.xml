@@ -116,13 +116,15 @@
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
+                            <field name="ware_id" invisible="1"/>
+                            <field name="ware_name" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
                             <field name="readonly_discount_percent" invisible="1"/>
                             <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_promotions" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
-                                   context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
+                                   context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby, 'move_type': parent.move_type}"
                                    domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
@@ -142,8 +144,10 @@
                             <field name="product_uom_category_id" invisible="1"/>
 <!--                            invisible="context.get('default_move_type', False) == 'out_invoice'"-->
                             <field name="exchange_quantity"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('is_check_exchange_quantity', '=', False), ('parent.is_check_select_type_inv', '=', True)]}"/>
-                            <field name="quantity" attrs="{'readonly': ['|', ('parent.purchase_type', '==', 'product'), ('parent.state', '=', 'posted')]}"/>
+                                   readonly="1"/>
+                            <field name="quantity"
+                                   readonly="1"
+                                   force_save="1"/>
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
@@ -179,6 +183,7 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                            <field name="occasion_code_id"/>
                             <field name="account_analytic_id"/>
                             <field name="total_vnd_exchange" invisible="1"/>
                             <field name="import_tax" invisible="1"/>
@@ -220,11 +225,11 @@
                                 <field name="total_vnd_exchange" readonly="1"/>
                                 <field name="quantity" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_tax"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount"/>
                                 <field name="vat_tax" string="% Thuế GTGT"/>
-                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount"/>
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>

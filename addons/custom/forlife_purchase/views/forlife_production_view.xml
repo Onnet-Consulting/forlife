@@ -34,7 +34,7 @@
                 </header>
                 <header>
                     <button string="Đóng" name="action_done" type="object"
-                            attrs="{'invisible':[ ('status', '=', 'done')]}"/>
+                            attrs="{'invisible':[ '&amp;', ('state', '!=', 'approved'),('status', '=', 'done')]}"/>
                     <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -60,7 +60,7 @@
                     <notebook>
                         <page string="Finished Product" name="finished_product">
                             <field name="forlife_production_finished_product_ids" mode="tree"
-                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                   attrs="{'readonly': [('state', '=', 'approved')]}">
                                 <tree editable="bottom">
                                     <field name="forlife_production_id" invisible="1"/>
                                     <field name="product_id" domain="[('id', 'not in', parent.selected_product_ids)]"/>

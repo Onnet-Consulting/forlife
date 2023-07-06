@@ -103,6 +103,7 @@ class ForlifeOtherInOutRequest(models.Model):
                              'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
                              'company_id': self.env.company.id,
                              'scheduled_date': record.date_planned,
+                             'is_from_request': True,
                              'origin': record.name,
                              'other_import_export_request_id': record.id,
                              'move_ids_without_package': [data_other_line]
@@ -174,7 +175,7 @@ class ForlifeOtherInOutRequestLine(models.Model):
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
     reason_to_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
     occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
-    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
 

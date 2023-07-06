@@ -376,10 +376,10 @@
                         <field name="qty_received_method" invisible="1"/>
                         <field name="qty_received" string="Received"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"
-                               invisible="1"/>
+                               invisible="0"/>
                         <field name="qty_invoiced" string="Billed"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"
-                               invisible="1"/>
+                               invisible="0"/>
                         <field name="product_packaging_qty"
                                attrs="{'invisible': ['|', ('product_id', '=', False), ('product_packaging_id', '=', False)]}"
                                groups="product.group_stock_packaging" invisible="1"/>

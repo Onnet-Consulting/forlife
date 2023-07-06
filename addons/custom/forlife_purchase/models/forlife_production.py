@@ -189,6 +189,13 @@ class ForlifeProduction(models.Model):
             if not item.forlife_production_finished_product_ids:
                 raise ValidationError("Bạn chưa nhập sản phẩm cho lệnh sản xuất!")
 
+    @api.constrains('code')
+    def constrains_code(self):
+        for record in self:
+            old_record = self.env['forlife.production'].search([('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True), ('state', '=', 'approved')], limit=1)
+            if old_record.status == 'done':
+                raise ValidationError(_("Lệnh sản xuất đã tồn tại. Bạn nên tạo một lệnh sản xuất mới!"))
+
     @api.model
     def get_import_templates(self):
         return [{
@@ -246,7 +253,7 @@ class ForlifeProductionFinishedProduct(models.Model):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
                           'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
-                                        + sum(rec.rated_level * rec.product_id.standard_price for rec in record.forlife_bom_service_cost_ids)})
+                                        + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids)})
 
     # @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
     # def _onchange_forlife_bom_material_ids(self):
@@ -264,11 +271,17 @@ class ForlifeProductionFinishedProduct(models.Model):
             elif rec.produce_qty < rec.stock_qty:
                 raise ValidationError('Số lượng sản xuất phải lớn hơn số lượng nhập kho!!')
 
+    @api.constrains('forlife_bom_material_ids')
+    def constrains_forlife_bom_material_ids(self):
+        for item in self:
+            if not item.forlife_bom_material_ids:
+                raise ValidationError("Bạn chưa nhập nguyên phụ liệu!")
+
     @api.model
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu bom'),
-            'template': '/forlife_purchase/static/src/xlsx/Template Bom.xlsx?download=true'
+            'template': '/forlife_purchase/static/src/xlsx/template_bom.xlsx?download=true'
         }]
 
 

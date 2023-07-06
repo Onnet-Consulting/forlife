@@ -44,6 +44,18 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
+    @api.depends('warehouse_id')
+    def _compute_location_id(self):
+        for r in self:
+            r.x_location_id = r.warehouse_id.lot_stock_id
+
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+
+    @api.onchange('x_location_id')
+    def _onchange_location(self):
+        for line in self.order_line:
+            line.x_location_id = self.x_location_id
+
     @api.onchange('x_punish', 'partner_id')
     def _compute_domain_pricelist(self):
         for r in self:
@@ -162,7 +174,8 @@ class SaleOrder(models.Model):
         if not self.partner_id.use_partner_credit_limit:
             return True
         debtBalance_bravo = self.get_DebtBalance()
-        sale_so_ids = self.env['sale.order'].search([('partner_id', '=', self.partner_id.id), ('state', '=', 'sale')])
+        sale_so_ids = self.env['sale.order'].search(
+            [('partner_id', '=', self.partner_id.id), ('state', '=', 'sale'), ('id', '!=', self.id)])
         debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
         if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
@@ -400,11 +413,11 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
+        # location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        self.x_location_id = location
+        self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
@@ -461,6 +474,8 @@ class SaleOrderLine(models.Model):
         if self.x_cart_discount_fixed_price:
             self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
                     self.price_unit * self.product_uom_qty) else 0
+        else:
+            self.discount = 0
 
     # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
     # def _compute_amount(self):

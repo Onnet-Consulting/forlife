@@ -13,8 +13,7 @@ class SelectTypeInvoice(models.TransientModel):
         required=True,
         selection=[('expense', 'Hóa đơn chi phí'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
-                   ('normal', 'Hóa đơn bình thường'),
-                   ('service', 'Hóa đơn dịch vụ và tài sản'),
+                   ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
 
     def select_type_invoice(self):

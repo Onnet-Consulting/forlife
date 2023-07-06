@@ -33,8 +33,7 @@ class AccountMove(models.Model):
         string="Loại hóa đơn",
         selection=[('expense', 'Hóa đơn chi phí'),
                    ('labor', 'Hóa đơn chi phí nhân công'),
-                   ('normal', 'Hóa đơn bình thường'),
-                   ('service', 'Hóa đơn dịch vụ và tài sản'),
+                   ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
     is_check_select_type_inv = fields.Boolean(default=False)
     number_bills = fields.Char(string='Number bills', copy=False)
@@ -339,11 +338,24 @@ class AccountMove(models.Model):
         for rec in self:
             for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
                 for item in nine.move_line_ids_without_package:
-                    if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
+                    if line.ware_id == item.id and (line.quantity < 0 or item.qty_done < 0):
                         raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
-                    if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+                    if line.ware_id == item.id and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
                         if line.quantity > item.qty_done:
                             raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+
+
+    # @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
+    # def constrains_quantity_line_stock(self):
+    #     for rec in self:
+    #         if rec.receiving_warehouse_id.ids =
+    #         # for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
+    #         #     for item in nine.move_line_ids_without_package:
+    #         #         if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
+    #         #             raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
+    #         #         if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+    #         #             if line.quantity > item.qty_done:
+    #         #                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
@@ -620,6 +632,7 @@ class AccountMoveLine(models.Model):
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
     po_id = fields.Char('')
+    ware_id = fields.Many2one('stock.move.line')
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
@@ -669,15 +682,17 @@ class AccountMoveLine(models.Model):
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_amount_tax',
+                              compute='_compute_amount_tax', inverse='inverse_amount_tax',
                               store=1)
     special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
                                                   compute='_compute_special_consumption_tax_amount',
+                                                  inverse='inverse_special_consumption_tax_amount',
                                                   store=1)
     vat_tax = fields.Float(string='% Thuế GTGT')
     vat_tax_amount = fields.Float(string='Thuế GTGT',
                                   compute='_compute_vat_tax_amount',
+                                  inverse='inverse_vat_tax_amount',
                                   store=1)
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
                                     compute='compute_total_tax_amount',
@@ -717,6 +732,15 @@ class AccountMoveLine(models.Model):
             if item.vat_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
 
+    def inverse_vat_tax_amount(self):
+        pass
+
+    def inverse_special_consumption_tax_amount(self):
+        pass
+
+    def inverse_amount_tax(self):
+        pass
+
     @api.depends('total_vnd_exchange', 'import_tax')
     def _compute_amount_tax(self):
         for rec in self:
@@ -740,7 +764,7 @@ class AccountMoveLine(models.Model):
     @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
+            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal / rec.move_id.exchange_rate)
 
     @api.depends('move_id.cost_line.is_check_pre_tax_costs',
                  'move_id.invoice_line_ids')

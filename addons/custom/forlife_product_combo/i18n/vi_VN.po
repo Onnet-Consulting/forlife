@@ -42,7 +42,7 @@ msgstr ""
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__color_attribute_id
 msgid "Color Deviation Allowed"
-msgstr ""
+msgstr "Cho phép lệch màu"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__combo_id
@@ -62,7 +62,7 @@ msgstr ""
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__code
 msgid "Combo code"
-msgstr ""
+msgstr "Mã bộ"
 
 #. module: forlife_product_combo
 #: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
@@ -104,7 +104,7 @@ msgstr ""
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__description_combo
 msgid "Description combo"
-msgstr ""
+msgstr "Mô tả"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__line_ids
@@ -137,7 +137,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__finished
 #, python-format
 msgid "Finished"
-msgstr ""
+msgstr "Kết thúc"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__from_date
@@ -165,7 +165,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_combo_view_search
 #, python-format
 msgid "In Progress"
-msgstr ""
+msgstr "Đang thực hiện"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields.selection,name:forlife_product_combo.selection__account_move__invoice_type__increase
@@ -225,8 +225,8 @@ msgstr ""
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__max_quantity
-msgid "Maximum Quantity"
-msgstr ""
+msgid "Quantity"
+msgstr "Số lượng"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__invoice_line_id
@@ -245,7 +245,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__new
 #, python-format
 msgid "New"
-msgstr ""
+msgstr "Mới"
 
 #. module: forlife_product_combo
 #: model_terms:ir.actions.act_window,help:forlife_product_combo.product_combo_action
@@ -312,7 +312,7 @@ msgstr ""
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__size_attribute_id
 msgid "Size Deviation Allowed"
-msgstr ""
+msgstr "Cho phép lệch size"
 
 #. module: forlife_product_combo
 #: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__state

@@ -25,7 +25,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -278,7 +278,7 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
@@ -316,6 +316,7 @@ class PurchaseRequestLine(models.Model):
         for rec in self:
             if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
                 rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
+                ### sửa thành vào hàm approved ở po
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
