@@ -316,6 +316,7 @@ class PurchaseRequestLine(models.Model):
         for rec in self:
             if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
                 rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
+                ### sửa thành vào hàm approved ở po
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
