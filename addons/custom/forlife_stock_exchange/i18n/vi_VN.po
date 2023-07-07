@@ -38,6 +38,13 @@ msgid "Cannot find BOM for product \"%s\"!"
 msgstr "Không tìm thấy BOM cho sản phẩm \"%s\"!"
 
 #. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#, python-format
+msgid "There are too many BOM for product \"%s\"!"
+msgstr "Có quá nhiều BOM cho sản phẩm \"%s\"!"
+
+#. module: forlife_stock_exchange
 #: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking__exchange_code
 #: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking_type__exchange_code
 msgid "Exchange Code"
@@ -88,8 +95,8 @@ msgstr "Phiếu xuất NPL"
 #. odoo-python
 #: code:addons/forlife_stock_exchange/models/stock_picking.py:0
 #, python-format
-msgid "The stock \"%s\" dose not enough goods to export materials!"
-msgstr "Kho \"%s\" không đủ tồn để xuất nguyên phụ liệu!"
+msgid "The stock \"%s\" dose not enough goods to export materials:\n\t- %s"
+msgstr "Kho \"%s\" không đủ tồn để xuất các nguyên phụ liệu sau:\n\t- %s"
 
 #. module: forlife_stock_exchange
 #. odoo-python
@@ -110,4 +117,10 @@ msgstr "Vui lòng cấu hình phương thức xuất kho nguyên phụ liệu ch
 #: model:ir.model.constraint,message:forlife_stock_exchange.constraint_stock_picking_type_exchange_code_uniq
 msgid "The exchange code must be unique per company!"
 msgstr "Loại nhập/xuất thành phẩm phải là duy nhất trên mỗi công ty!"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking__location_export_id
+msgid "Location Export"
+msgstr "Kho xuất NPL"
+
 
