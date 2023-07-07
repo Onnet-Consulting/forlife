@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-03 09:51+0000\n"
-"PO-Revision-Date: 2023-07-03 09:51+0000\n"
+"POT-Creation-Date: 2023-07-07 10:03+0000\n"
+"PO-Revision-Date: 2023-07-07 10:03+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -158,8 +158,12 @@ msgstr ""
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
-msgid "<span>Import Discount Products</span>"
-msgstr "<span>Nhập sản phẩm khuyến mãi</span>"
+msgid ""
+"<span>Import Discount Products</span>\n"
+"                                    ("
+msgstr ""
+"<span>Nhập sản phẩm khuyến mãi</span>\n"
+"                                    ("
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_combo_line_form_view
@@ -173,8 +177,12 @@ msgstr "<span>Nhập sản phẩm</span>"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
-msgid "<span>Import Reward Products</span>"
-msgstr "<span>Nhập phần thưởng</span>"
+msgid ""
+"<span>Import Reward Products</span>\n"
+"                                    ("
+msgstr ""
+"<span>Nhập sản phẩm thưởng</span>\n"
+"                                    ("
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__message_needaction
@@ -752,6 +760,11 @@ msgid "Discount Product"
 msgstr "Sản phẩm khuyến mãi"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__discount_product_count
+msgid "Discount Product Count"
+msgstr "Số sản phẩm khuyến mãi"
+
+#. module: forlife_pos_promotion
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/promotion_program.py:0
 #, python-format
@@ -975,7 +988,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid "Import Discount Products"
-msgstr "Nhập sản phẩm khuyến mãi"
+msgstr "<span>Nhập sản phẩm khuyến mãi</span>"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_combo_line_tree_view
@@ -986,7 +999,7 @@ msgstr "Nhập sản phẩm"
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid "Import Reward Products"
-msgstr "Nhập sản phẩm"
+msgstr "<span>Nhập sản phẩm thưởng</span>"
 
 #. module: forlife_pos_promotion
 #. odoo-python
@@ -1827,6 +1840,11 @@ msgid "Reward Product"
 msgstr "Sản phẩm thưởng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__reward_product_count
+msgid "Reward Product Count"
+msgstr "Số sản phẩm thưởng"
+
+#. module: forlife_pos_promotion
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/promotion_program.py:0
 #, python-format
@@ -1879,6 +1897,11 @@ msgstr ""
 #, python-format
 msgid "SP / Combo"
 msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__lst_price
+msgid "Sale Price"
+msgstr "Giá bán"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -2000,6 +2023,13 @@ msgid "That coupon code has already been scanned and activated."
 msgstr "Mã khuyến mãi đã được nhập và kích hoạt trước đó!"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_pricelist_item__lst_price
+msgid ""
+"The sale price is managed from the product template. Click on the 'Configure"
+" Variants' button to set the extra attribute prices."
+msgstr ""
+
+#. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js:0
 #, python-format
@@ -2088,6 +2118,7 @@ msgid "Usage Line"
 msgstr ""
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__with_code
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__with_code
 msgid "Use a code"
 msgstr "Cần mã KM"
