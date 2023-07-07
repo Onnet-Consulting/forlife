@@ -2406,13 +2406,13 @@ class StockPicking(models.Model):
             'stock_valuation_layer_ids': [(0, 0, {
                 'value': expense.vnd_amount / po_total_qty * move.quantity_done,
                 'unit_cost': expense.vnd_amount / po_total_qty,
-                'quantity': move.quantity_done,
+                'quantity': 0,
                 'remaining_qty': 0,
                 'description': f"{self.name} - {expense.product_id.name}",
                 'product_id': move.product_id.id,
                 'company_id': self.env.company.id,
                 'stock_move_id': move.id
-            }) for move in self.move_ids_without_package],
+            }) for move in self.move_ids_without_package if move.product_id.type in ('product', 'consu')],
             'invoice_line_ids': [(0, 0, {
                 'sequence': 1,
                 'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
