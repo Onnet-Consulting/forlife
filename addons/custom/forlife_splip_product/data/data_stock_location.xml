@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <record id="import_product_division" model="stock.location">
             <field name="name">Nhập Sản Phẩm - Phân Rã</field>
             <field name="code">1381</field>
