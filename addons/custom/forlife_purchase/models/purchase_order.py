@@ -1429,8 +1429,6 @@ class PurchaseOrder(models.Model):
                     master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
                 if picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
-                    for item in master.receiving_warehouse_id:
-                        item.invoice_id = master.id
                 if not picking_expense_in and not picking_labor_in and not picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, [])]
             for line in moves.invoice_line_ids:
