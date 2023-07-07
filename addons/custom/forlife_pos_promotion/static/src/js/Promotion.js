@@ -305,6 +305,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
     }
 
     set_quantity(quantity, keep_price) {
+        let pre_quantity = this.quantity;
         let result = super.set_quantity(...arguments);
         let reset = false;
         if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0 && !this.pos.no_reset_program) {
@@ -313,7 +314,13 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.order._resetPromotionPrograms(false);
             reset = true;
         };
-        if (!this.pos.no_reset_program && !reset && this.order._isAppliedCartPromotion()) {
+        /*
+         * Reset CT Đơn hàng khi:
+            * Trong đơn đã áp dụng CT Đơn hàng
+            * Chưa reset ở block code phía trên
+            * Giảm số lượng SP trên đơn
+         */
+        if (!this.pos.no_reset_program && !reset && this.order._isAppliedCartPromotion() && pre_quantity > this.quantity) {
             this.order._resetCartPromotionPrograms();
         };
         // Trường hợp tạo dòng mới sau khi áp dụng CTKM không cần phải cập nhật danh sách CTKM
