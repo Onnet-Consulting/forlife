@@ -18,7 +18,8 @@
     'depends': [
         'base',
         'product',
-        'account'
+        'account',
+        'stock'
     ],
 
     'data': [

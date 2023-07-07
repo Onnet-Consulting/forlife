@@ -11,5 +11,17 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="product_inherit_logistic">
+            <field name="name">product.inherit.logistic</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="stock.product_category_form_view_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='logistics']" position="inside">
+                    <field name="structure_code"/>
+                    <field name="old_name"/>
+                    <field name="career_management"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

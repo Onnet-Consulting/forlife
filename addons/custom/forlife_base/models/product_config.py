@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    description_color = fields.Char('Mô tả màu')
+    description_color = fields.Char('Mô tả thiết kế')
     material_composition = fields.Char('Thành phần chất liệu')
     cloth_code = fields.Char('Mã vải')
     collection = fields.Char('Bộ sưu tập')
