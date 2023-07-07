@@ -16,3 +16,9 @@ class InheritStockMove(models.Model):
         else:
             self.amount_total = self.price_unit * self.product_uom_qty
 
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        results = super(InheritStockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
+        if self.picking_id.exchange_code == 'outgoing':
+            results['qty_done'] = results['reserved_uom_qty']
+        return results
+
