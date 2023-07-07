@@ -26,7 +26,7 @@ class PurchaseOrder(models.Model):
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
-            rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
+            rec.order_line_production_order = order_line_production_order.ids
             if not order_line_production_order or not rec.order_line:
                 rec.is_check_line_material_line = True
             else:
