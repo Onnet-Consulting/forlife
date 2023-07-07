@@ -18,6 +18,7 @@
                     <field name="mau_ncc"/>
                     <field name="ma_sp_ncc"/>
                     <field name="tenhangcu"/>
+                    <field name="makithuat"/>
                 </field>
             </field>
         </record>

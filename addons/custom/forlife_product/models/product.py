@@ -17,6 +17,7 @@ class Product(models.Model):
     mau_ncc = fields.Char('Màu NCC')
     ma_sp_ncc = fields.Char('Mã sản phẩm nhà cung cấp')
     tenhangcu = fields.Char('Tên hàng cũ')
+    makithuat = fields.Char('Mã kĩ thuật')
 
     @api.onchange('detailed_type')
     def onchange_detailed_type(self):
