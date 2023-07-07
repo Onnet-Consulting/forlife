@@ -153,4 +153,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum26Template',
         'reportPager': True,
     },
+    'report.num27': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách phiếu nhập/xuất khác',
+        'reportTemplate': 'ReportNum27Template',
+        'reportPager': True,
+    },
 }
