@@ -7,6 +7,9 @@ class InheritStockPicking(models.Model):
 
     exchange_code = fields.Selection(related='picking_type_id.exchange_code')
     picking_outgoing_id = fields.Many2one('stock.picking', copy=False, index=True)
+    location_export_id = fields.Many2one(
+        comodel_name='stock.location', string='Location Export', index=True, domain=[('usage', '=', 'internal')]
+    )
 
     def view_outgoing_picking(self):
         return {
@@ -39,7 +42,7 @@ class InheritStockPicking(models.Model):
                 'bom_model': material._name,
                 'bom_id': material.id,
                 'reason_type_id': reason_type_id,
-            } for material in bom.forlife_bom_material_ids] + [{
+            } for material in bom.forlife_bom_material_ids if material.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': ingredients.product_id.name,
                 'product_id': ingredients.product_id.id,
@@ -51,7 +54,7 @@ class InheritStockPicking(models.Model):
                 'bom_model': ingredients._name,
                 'bom_id': ingredients.id,
                 'reason_type_id': reason_type_id,
-            } for ingredients in bom.forlife_bom_ingredients_ids] + [{
+            } for ingredients in bom.forlife_bom_ingredients_ids if ingredients.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': expense.product_id.name,
                 'product_id': expense.product_id.id,
@@ -63,7 +66,7 @@ class InheritStockPicking(models.Model):
                 'bom_model': expense._name,
                 'bom_id': expense.id,
                 'reason_type_id': reason_type_id,
-            } for expense in bom.forlife_bom_service_cost_ids]
+            } for expense in bom.forlife_bom_service_cost_ids if expense.product_id.type == 'product']
             if not move_outgoing_value:
                 raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
             move_outgoing_values += move_outgoing_value
@@ -73,22 +76,21 @@ class InheritStockPicking(models.Model):
         """
         Generate and validate outgoing picking for incoming picking
         """
-        company = self.env.company
-        picking_type = self.env['stock.picking.type'].search(
-            [('code', '=', 'outgoing'), ('exchange_code', '=', 'outgoing'), ('company_id', '=', company.id)],
-            limit=1
-        )
-        if not picking_type:
-            raise ValidationError(_('Please configure the materials export operation type for company %s!', company.name))
-        picking_outgoing_id = self.create({'location_id': self.location_dest_id.id, 'origin': self.name})
+        picking_outgoing_id = self.create({'location_id': self.location_export_id.id, 'origin': self.name})
         picking_outgoing_id._generate_outgoing_move(self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
-        if picking_outgoing_id.state != 'assigned':
-            raise ValidationError(_('The stock "%s" dose not enough goods to export materials!', picking_outgoing_id.location_id.name))
-        validate_results = picking_outgoing_id.button_validate()
-        if isinstance(validate_results, dict):
-            self.env[validate_results['res_model']].with_context(validate_results['context']).create({}).process()
+        materials_not_enough = '\n\t- '.join([
+            sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
+            for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'
+        ])
+        if materials_not_enough:
+            raise ValidationError(_(
+                'The stock "%s" dose not enough goods to export materials:\n\t- %s',
+                picking_outgoing_id.location_id.complete_name,
+                materials_not_enough
+            ))
+        picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
     def button_validate(self):

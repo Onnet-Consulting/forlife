@@ -170,3 +170,33 @@ msgstr "Ngày bắt đầu đăng ký nhà nước"
 #: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__subtotal_paid
 msgid "Subtotal Paid"
 msgstr "Thành tiền thanh toán"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__promotion_type
+msgid "Promotion Type"
+msgstr "Loại khuyến mại"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__point
+msgid "Point"
+msgstr "Điểm"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__make_price
+msgid "Make Price"
+msgstr "Làm giá"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__card
+msgid "Card"
+msgstr "Thẻ"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__product_defective
+msgid "Product Defective"
+msgstr "Hàng lỗi"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__handle
+msgid "Handle"
+msgstr "Thủ công"
