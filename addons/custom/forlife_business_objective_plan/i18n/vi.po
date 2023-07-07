@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-06 08:29+0000\n"
-"PO-Revision-Date: 2023-07-06 08:29+0000\n"
+"POT-Creation-Date: 2023-07-07 07:48+0000\n"
+"PO-Revision-Date: 2023-07-07 07:48+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -133,6 +133,11 @@ msgstr "Mục tiêu kinh doanh (người dùng)"
 #: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_plan__bo_store_ids
 msgid "Business objective store"
 msgstr "Mục tiêu cửa hàng"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_business_objective_employee__can_transfer
+msgid "Can transfer"
+msgstr ""
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.bo_import_excel_wizard_view_form
@@ -339,9 +344,14 @@ msgid "Error file"
 msgstr "File lỗi"
 
 #. module: forlife_business_objective_plan
-#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__fixed_coefficient
-msgid "Fixed Coefficient"
-msgstr "Hệ số vị trí nhóm gián tiếp"
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__fixed_coefficient_direct
+msgid "Fixed Coefficient direct"
+msgstr "Hệ số vị trí trực tiếp"
+
+#. module: forlife_business_objective_plan
+#: model:ir.model.fields,field_description:forlife_business_objective_plan.field_coefficient_revenue__fixed_coefficient_indirect
+msgid "Fixed Coefficient indirect"
+msgstr "Hệ số vị trí gián tiếp"
 
 #. module: forlife_business_objective_plan
 #. odoo-python
@@ -615,6 +625,11 @@ msgid "Target reduce"
 msgstr "Giảm MTCN"
 
 #. module: forlife_business_objective_plan
+#: model:ir.model.constraint,message:forlife_business_objective_plan.constraint_business_objective_employee_unique_store
+msgid "The employee and store data pairs are duplicated"
+msgstr "Cặp dữ liệu nhân viên và cửa hàng bị trùng lặp"
+
+#. module: forlife_business_objective_plan
 #. odoo-python
 #: code:addons/forlife_business_objective_plan/models/business_objective_plan.py:0
 #, python-format
@@ -689,6 +704,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_tree
 msgid "coefficient_revenue_tree"
 msgstr ""
+
+#. module: forlife_business_objective_plan
+#: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.coefficient_revenue_view_form
+msgid "e.g. Employee coefficient"
+msgstr "Ví dụ: Hệ số nhân viên"
 
 #. module: forlife_business_objective_plan
 #: model_terms:ir.ui.view,arch_db:forlife_business_objective_plan.business_objective_plan_view_form

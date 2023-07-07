@@ -10,7 +10,8 @@
                     <field name="name"/>
                     <field name="brand_id"/>
                     <field name="job_id"/>
-                    <field name="fixed_coefficient"/>
+                    <field name="fixed_coefficient_direct"/>
+                    <field name="fixed_coefficient_indirect"/>
                 </tree>
             </field>
         </record>
@@ -21,17 +22,23 @@
             <field name="arch" type="xml">
                 <form string="coefficient_revenue_form" duplicate="1">
                     <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="e.g. Employee coefficient"/>
+                            </h1>
+                        </div>
                         <group>
                             <group>
-                                <field name="name"/>
                                 <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
                             </group>
                             <group>
                                 <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
-                                <field name="fixed_coefficient"/>
                             </group>
                         </group>
                         <separator string="Revenue coefficient based on sales (direct)"/>
+                        <group>
+                            <field name="fixed_coefficient_direct"/>
+                        </group>
                         <field name="pc_by_employee_ids">
                             <tree>
                                 <field name="name"/>
@@ -62,6 +69,9 @@
                             </form>
                         </field>
                         <separator string="Revenue coefficient based on sales (indirect)"/>
+                        <group>
+                            <field name="fixed_coefficient_indirect"/>
+                        </group>
                         <field name="pc_by_store_ids">
                             <tree editable="top">
                                 <field name="name"/>
