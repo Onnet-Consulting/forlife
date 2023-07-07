@@ -247,7 +247,11 @@ class Voucher(models.Model):
                             except Exception as e:
                                 _logger.info(e)
                             for v in vouchers:
-                                v.has_accounted = True
+                                v.write({
+                                    'has_accounted':True,
+                                    'price_residual':0,
+                                    'state':'off value'
+                                })
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
@@ -285,8 +289,11 @@ class Voucher(models.Model):
                             except Exception as e:
                                 _logger.info(e)
                             for v in vouchers:
-                                v.has_accounted = True
-                                v.price_residual = 0
+                                v.write({
+                                    'has_accounted': True,
+                                    'state': 'off value',
+                                    'price_residual': 0
+                                })
         else:
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
