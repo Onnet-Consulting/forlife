@@ -27,7 +27,7 @@
         <field name="name">Report stock with sale price by warehouse</field>
         <field name="res_model">report.num2</field>
         <field name="view_mode">form</field>
-        <field name="target">main</field>
+        <field name="target">inline</field>
     </record>
 
     <menuitem id="report_num2_menu"

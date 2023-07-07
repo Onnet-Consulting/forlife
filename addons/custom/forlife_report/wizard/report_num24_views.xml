@@ -33,7 +33,7 @@
         <field name="name">Point customer report</field>
         <field name="res_model">report.num24</field>
         <field name="view_mode">form</field>
-        <field name="target">main</field>
+        <field name="target">inline</field>
     </record>
 
     <menuitem id="report_num24_menu"

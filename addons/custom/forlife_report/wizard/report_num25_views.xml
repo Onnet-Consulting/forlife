@@ -39,7 +39,7 @@
         <field name="name">Estimated income by revenue report</field>
         <field name="res_model">report.num25</field>
         <field name="view_mode">form</field>
-        <field name="target">main</field>
+        <field name="target">inline</field>
         <field name="context">{'show_date': 1}</field>
     </record>
 

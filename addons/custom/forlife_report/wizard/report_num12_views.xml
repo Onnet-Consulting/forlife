@@ -28,7 +28,7 @@
         <field name="name">Report customers not buying</field>
         <field name="res_model">report.num12</field>
         <field name="view_mode">form</field>
-        <field name="target">main</field>
+        <field name="target">inline</field>
     </record>
 
     <menuitem id="report_num12_menu"

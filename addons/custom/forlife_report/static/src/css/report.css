@@ -173,3 +173,7 @@ table.available-report-list {
     font-weight: bold;
     background: rgb(198, 231, 209) !important;
 }
+
+.open_view {
+    cursor: pointer;
+}

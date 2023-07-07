@@ -34,7 +34,7 @@
         <field name="name">Report sale and stock</field>
         <field name="res_model">report.num6</field>
         <field name="view_mode">form</field>
-        <field name="target">main</field>
+        <field name="target">inline</field>
     </record>
 
     <menuitem id="report_num6_menu"
