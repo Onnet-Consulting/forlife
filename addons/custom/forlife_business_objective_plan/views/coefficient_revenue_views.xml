@@ -19,7 +19,7 @@
             <field name="name">coefficient_revenue_view_form</field>
             <field name="model">coefficient.revenue</field>
             <field name="arch" type="xml">
-                <form string="coefficient_revenue_form" duplicate="0">
+                <form string="coefficient_revenue_form" duplicate="1">
                     <sheet>
                         <group>
                             <group>
