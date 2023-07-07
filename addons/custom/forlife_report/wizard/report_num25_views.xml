@@ -15,7 +15,6 @@
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="bo_plan_id" domain="[('brand_id', '=', brand_id)]" context="{'show_date': 1}" options="{'no_create': True, 'no_open': True}"/>
                             <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="store_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True, 'no_open': True}"/>
                         </group>
                         <group>
                             <label for="from_date" string="Date"/>
@@ -27,6 +26,9 @@
                             <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="view_type" widget="radio" options="{'horizontal': True}"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
                     </group>
                 </sheet>
             </form>

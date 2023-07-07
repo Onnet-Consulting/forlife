@@ -13,7 +13,7 @@
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.stt"/></td>
                         <td><t t-esc="line.khu_vuc"/></td>
                         <td><t t-esc="line.ma_cua_hang"/></td>
                         <td><t t-esc="line.ten_cua_hang"/></td>
