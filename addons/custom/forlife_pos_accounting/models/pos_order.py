@@ -248,8 +248,19 @@ class InheritPosOrderLine(models.Model):
     is_state_registration = fields.Boolean(string='Is State Registration')
     product_src_id = fields.Many2one(comodel_name='pos.order.line', string='Source Product')
     product_discount_ids = fields.One2many(comodel_name='pos.order.line', inverse_name='product_src_id', string='Discount Product')
-    promotion_model = fields.Char(string='Promotion Model')
-    promotion_id = fields.Many2oneReference(string='Promotion ID', model_field='promotion_model')
+    promotion_type = fields.Selection(
+        selection=[
+            ('ctkm', 'CTKM'),
+            ('point', 'Point'),
+            ('make_price', 'Make Price'),
+            ('card', 'Card'),
+            ('product_defective', 'Product Defective'),
+            ('handle', 'Handle')
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+    promotion_model = fields.Char(string='Promotion Model', index=True)
+    promotion_id = fields.Many2oneReference(string='Promotion ID', model_field='promotion_model', index=True)
     is_promotion = fields.Boolean(string='Is promotion')
     subtotal_paid = fields.Monetary(compute='_compute_subtotal_paid')
 
@@ -268,7 +279,7 @@ class InheritPosOrderLine(models.Model):
                 is_state_registration = point_promotion.check_validity_state_registration()
         self.is_state_registration = is_state_registration
 
-    def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False):
+    def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
         return {
@@ -302,6 +313,7 @@ class InheritPosOrderLine(models.Model):
             'product_defective_id': 0,
             'is_state_registration': is_state_registration,
             'name': product_id.name,
+            'promotion_type': promotion_type,
             'is_promotion': True
         }
 
@@ -320,6 +332,7 @@ class InheritPosOrderLine(models.Model):
                 product_id=promotion.program_id.product_discount_id,
                 price=-promotion.discount_total,
                 promotion=promotion.program_id,
+                promotion_type='ctkm'
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
@@ -327,6 +340,7 @@ class InheritPosOrderLine(models.Model):
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id,
                 is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration(),
+                promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point')
         ]
 

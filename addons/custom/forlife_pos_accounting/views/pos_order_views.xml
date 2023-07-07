@@ -10,6 +10,7 @@
                 <field name="product_src_id"/>
                 <field name="is_state_registration" readonly="1" force_save="1"/>
                 <field name="is_promotion" readonly="1" force_save="1"/>
+                <field name="promotion_type" readonly="1" force_save="1"/>
             </xpath>
 
             <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='qty']" position="attributes">
