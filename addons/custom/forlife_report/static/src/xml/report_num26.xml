@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum26Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum26MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum26MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.ten"/></td>
+                        <td><t t-esc="line.ngay_yeu_cau"/></td>
+                        <td><t t-esc="line.han_xu_ly"/></td>
+                        <td><t t-esc="line.ghi_chu"/></td>
+                        <td><t t-esc="line.tu_kho"/></td>
+                        <td><t t-esc="line.den_kho"/></td>
+                        <td><t t-esc="line.so_phieu_dc"/></td>
+                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.ten_sp"/></td>
+                        <td><t t-esc="line.mau"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td><t t-esc="line.sl_ke_hoach"/></td>
+                        <td><t t-esc="line.dvt"/></td>
+                        <td><t t-esc="line.sl_xuat"/></td>
+                        <td><t t-esc="line.sl_nhap"/></td>
+                        <td><t t-esc="line.lsx_tu"/></td>
+                        <td><t t-esc="line.lsx_den"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>
