@@ -66,7 +66,9 @@ class Voucher(models.Model):
 
     def write(self, values):
         if 'lang' not in self._context:
-            self._context['lang'] = self.env.user.lang
+            dict(self._context).update({
+                'lang': self.env.user.lang
+            })
         now = datetime.now()
         for rec in self:
             if rec.status_latest and 'end_date' in values and values['end_date']:
@@ -255,7 +257,8 @@ class Voucher(models.Model):
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
-                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day == now.day))
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=1)).day == now.day))
+                        print(vouchers)
                         if vouchers:
                             try:
                                 move_vals = {
