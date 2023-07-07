@@ -213,10 +213,10 @@
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_office_user')), (4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer')),(4, ref('forlife_permission_management.group_purchase_department_manager')),(4, ref('forlife_permission_management.group_purchase_product_code')),(4, ref('forlife_permission_management.group_purchase_group_admin'))]"/>
         </record>
 
-        <record model="ir.ui.menu" id="purchase_request.purchase_material_menu">
-            <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer'))]"/>
-        </record>
+<!--        <record model="ir.ui.menu" id="purchase_request.purchase_material_menu">-->
+<!--            <field name="groups_id"-->
+<!--                   eval="[(4, ref('forlife_permission_management.group_stock')), (4, ref('forlife_permission_management.group_mer'))]"/>-->
+<!--        </record>-->
 
         <record model="ir.ui.menu" id="purchase_request.production_order">
             <field name="groups_id"

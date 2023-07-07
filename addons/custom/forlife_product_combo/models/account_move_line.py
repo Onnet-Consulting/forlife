@@ -6,6 +6,14 @@ from contextlib import contextmanager
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
+    @api.onchange('amount_currency', 'currency_id')
+    def _inverse_amount_currency(self):
+        if self.move_id.origin_invoice_id:
+            for line in self:
+                line.amount_currency = line.balance
+        else:
+            return super()._inverse_amount_currency()
+
     def _convert_to_tax_line_dict(self):
         """ Convert the current record to a dictionary in order to use the generic taxes computation method
         defined on account.tax.
@@ -28,3 +36,38 @@ class AccountMoveLine(models.Model):
             )
         else:
             return super()._convert_to_tax_line_dict()
+
+    @api.depends('balance', 'move_id.is_storno')
+    def _compute_debit_credit(self):
+        if self.move_id:
+            if self.move_id[0].invoice_type == 'decrease' and self.move_id[0].origin_invoice_id and not self.env.context.get('noonchange'):
+                balance_payment_term = 0
+                self.env.context = self.with_context(noonchange=True).env.context
+                for line in self.sorted(lambda x: x.display_type, reverse=True):
+                    if line.display_type == 'product':
+                        balance_payment_term += abs(line.balance)
+                        line.update({
+                            'debit': 0,
+                            'credit': abs(line.balance),
+                            'balance': -abs(line.balance)
+                        })
+                    elif line.display_type == 'tax':
+                        balance_payment_term += sum(line.move_id.line_ids.filtered(lambda x: x.product_id).mapped('tax_amount'))
+                        line.update({
+                            'debit': 0,
+                            'credit': sum(line.move_id.line_ids.filtered(lambda x: x.product_id).mapped('tax_amount')),
+                            'balance': -sum(line.move_id.line_ids.filtered(lambda x: x.product_id).mapped('tax_amount'))
+                        })
+                    else:
+                        line.update({
+                            'debit': int(balance_payment_term),
+                            'credit': 0,
+                            'balance': balance_payment_term
+                        })
+                if self.ids:
+                    self._cr.commit()
+            else:
+                if self.move_id[0].invoice_type != 'decrease' and not self.env.context.get('noonchange'):
+                    return super(AccountMoveLine, self)._compute_debit_credit()
+        else:
+            return super(AccountMoveLine, self)._compute_debit_credit()

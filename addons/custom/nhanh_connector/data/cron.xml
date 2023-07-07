@@ -20,16 +20,14 @@
         <field name="numbercall">-1</field>
         <field eval="False" name="doall"/>
     </record>
-<!--    <record id="ir_cron_sync_nhanhvn_product" model="ir.cron">-->
-<!--        <field name="name">Sync Product Nhanhvn</field>-->
-<!--        <field name="model_id" ref="model_sale_order"/>-->
-<!--        <field name="state">code</field>-->
-<!--        <field name="code">model.start_sync_product_from_nhanh()</field>-->
-<!--        <field name="interval_number">15</field>-->
-<!--        <field name="interval_type">minutes</field>-->
-<!--        <field name="numbercall">-1</field>-->
-<!--        <field eval="False" name="doall"/>-->
-<!--    </record>-->
+    <record id="ir_cron_sync_update_price_product_nhanhvn" model="ir.cron">
+        <field name="name">Sync Update price poduct Nhanhvn</field>
+        <field name="model_id" ref="model_promotion_campaign"/>
+        <field name="state">code</field>
+        <field name="code">model.start_sync_update_price_product_to_nhanh()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
 <!--    <record id="ir_cron_sync_nhanhvn_product_category" model="ir.cron">-->
 <!--        <field name="name">Sync Product Category Nhanhvn</field>-->
 <!--        <field name="model_id" ref="model_sale_order"/>-->

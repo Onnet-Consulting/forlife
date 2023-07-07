@@ -7,10 +7,10 @@ from dateutil.relativedelta import relativedelta
 
 EMPLOYEE_DETAIL_TITLE = [
     'STT', 'Ngày', 'Số HĐ', 'Mã khách hàng', 'SĐT', 'Tên khách hàng', 'Nhân viên',
-    'SL', 'TT', 'GG trên hàng', 'GG trên bill', 'Thực thu', 'Trả lại KH', 'Mô tả'
+    'SL mua', 'SL trả', 'TT', 'GG trên hàng', 'GG trên bill', 'Thực thu', 'Trả lại KH', 'Mô tả'
 ]
 ORDER_DETAIL_TITLE = [
-    'STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'Số lượng', 'Giá bán', '% Giảm giá', 'Tiền giảm giá', 'Thành tiền'
+    'STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'SL mua', 'SL trả', 'Giá bán', '% Giảm giá', 'Tiền giảm giá', 'Thành tiền'
 ]
 
 
@@ -73,7 +73,8 @@ order_line_data as (
         uom.name                                                								    as uom_name,
         to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
         to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
-        pol.qty 																		 	        as qty,
+        greatest(pol.qty, 0)                                                                        as sale_qty,
+        - least(pol.qty, 0)                                                                         as refund_qty,
         coalesce(pol.original_price, 0)    												 		    as lst_price,
         coalesce((select sum(
             case when type = 'point' then recipe * 1000
@@ -81,9 +82,7 @@ order_line_data as (
                 when type = 'ctkm' then discounted_amount
                 else 0
             end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)
-        + (pol.discount * pol.original_price * pol.qty / 100)								        as money_reduced,
-        coalesce(pol.qty * pol.original_price, 0)       							 	 		    as price_subtotal,
+        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)		        as money_reduced,
         po.note 																 		 		    as note
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
@@ -92,32 +91,33 @@ order_line_data as (
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
         left join uom_name_by_id uom on uom.id = pt.uom_id
-    where {employee_conditions} and pol.qty <> 0
+    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     order by employee_id
 ),
 data_group as (
-select key_invoice,
-    employee_id,
-    product_id,
-    product_code,
-    product_name,
-    by_day as date,
-    sum(qty) as qty,
-    uom_name,
-    lst_price,
-    coalesce(sum(money_reduced), 0) as money_reduced,
-    sum(price_subtotal) as price_subtotal
-from order_line_data
-group by key_invoice,
-    employee_id,
-    product_id,
-    product_code,
-    product_name,
-    by_day,
-    uom_name,
-    lst_price
+    select key_invoice,
+        employee_id,
+        product_id,
+        product_code,
+        product_name,
+        by_day as date,
+        sum(sale_qty) as sale_qty,
+        sum(refund_qty) as refund_qty,
+        uom_name,
+        lst_price,
+        coalesce(sum(money_reduced), 0) as money_reduced,
+        sum(abs((sale_qty * lst_price) - (refund_qty * lst_price) - money_reduced)) as price_subtotal
+    from order_line_data
+    group by key_invoice,
+        employee_id,
+        product_id,
+        product_code,
+        product_name,
+        by_day,
+        uom_name,
+        lst_price
 ),
 detail_data_invoice_list as (
     select employee_id, json_object_agg(key_invoice, order_detail) as detail_invoice from (
@@ -134,11 +134,12 @@ prepare_value_data_invoice_list as (
         customer_name,
         customer_code,
         customer_phone,
-        sum(qty) as sl,
-        sum(case when qty >= 0 then qty * lst_price else 0 end) as tt,
+        sum(sale_qty) as sale_qty,
+        sum(refund_qty) as refund_qty,
+        sum(sale_qty * lst_price) as tt,
         sum(money_reduced) as money_reduced,
         sum(0) as gg_bill,
-        sum(case when qty < 0 then price_subtotal else 0 end) as refund,
+        sum(refund_qty * lst_price) as refund,
         note
     from order_line_data
     group by employee_id,
@@ -160,7 +161,7 @@ total_by_time as (
     select employee_id, json_object_agg({self.view_type}, total) as qty_by_time from (
         select employee_id,
             {self.view_type},
-            sum(case when qty < 0 then qty * lst_price + money_reduced else qty * lst_price - money_reduced  end) as total
+            sum((sale_qty * lst_price) - (refund_qty * lst_price) - money_reduced) as total
         from order_line_data group by employee_id, {self.view_type}
     ) as tb_by_time group by employee_id
 ),

@@ -13,5 +13,16 @@
             <field name="code">model.reset_partner_point()</field>
         </record>
 
+        <record model="ir.cron" id="action_point_compensate_cron">
+            <field name="name">Point Compensate</field>
+            <field name="model_id" ref="model_point_compensate_request"/>
+            <field name="state">code</field>
+            <field name="code">model.action_point_compensate()</field>
+            <field name="active" eval="True"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+        </record>
+
     </data>
 </odoo>

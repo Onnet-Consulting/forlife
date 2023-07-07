@@ -4,6 +4,8 @@
         <field name="name">Purchase Request</field>
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('company_id','in',allowed_company_ids)]</field>
+
     </record>
 
     <record id="action_create_purchase_order" model="ir.actions.server">
@@ -39,7 +41,7 @@
                     </header>
                      <field name="name" string="Reference" decoration-bf="1"/>
                     <field name="employee_id"/>
-                    <field name="department_id"/>
+                    <field name="department_id" force_save="1"/>
                     <field name="request_date" align="center"/>
                     <field name="date_planned" align="center"/>
                     <field name="state" widget="badge" decoration-success="state == 'close'" decoration-info="state == 'approved'"/>
@@ -84,8 +86,7 @@
                             <field name="is_check_button_orders_smart_button" invisible="1"/>
                             <field name="employee_id" string="User request"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}" required="1"/>
-                            <field name="department_id"
-                                   attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}" required="1"/>
+                            <field name="department_id" readonly="1"/>
                             <field name="occasion_code_id"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}"/>
                             <field name="production_id"
@@ -104,6 +105,7 @@
                             <field name="receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="attention" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="use_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-29 02:30+0000\n"
-"PO-Revision-Date: 2023-05-29 02:30+0000\n"
+"POT-Creation-Date: 2023-06-20 09:12+0000\n"
+"PO-Revision-Date: 2023-06-20 09:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,17 +26,16 @@ msgid ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tbody><tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        Dear anh chị cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:\n"
-"                        <br/>\n"
-"                        <t t-foreach=\"object.config_id.get_pos_opened()\" t-as=\"pos_config\" t-key=\"key\">\n"
-"                            <t t-out=\"pos_config[0]\"/> mở ngày <t t-out=\"pos_config[1]\"/>\n"
+"                        Dear anh chị cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t>,<br><br>Cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:\n"
+"                        <br>\n"
+"                        <t t-foreach=\"object.config_id.get_pos_opened()\" t-as=\"pos_config\" t-key=\"key\">&nbsp;<t t-out=\"pos_config[0]\">mở ngày <t t-out=\"pos_config[1]\">\n"
 "                        </t>\n"
-"                        <br/><br/>\n"
-"                        Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br/>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.\n"
-"<br/>\n"
+"                        <br><br>\n"
+"                        Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.\n"
+"<br>\n"
 "Nếu đã hoàn thành POS bán hàng vui lòng đăng nhập hệ thống và tiến hành đóng POS để đảm bảo tiến độ cập nhật dữ liệu trên hệ thống.\n"
-"<br/>\n"
-"<br/>Trân trọng cảm ơn!</div>\n"
+"<br>\n"
+"<br>Trân trọng cảm ơn!</t></t></div>\n"
 "                </td>\n"
 "            </tr>\n"
 "            </tbody></table>\n"
@@ -180,6 +179,11 @@ msgid "Employees"
 msgstr "Nhân viên cửa hàng"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_product_product__full_attrs_desc
+msgid "Full Attrs Desc"
+msgstr "Thuộc tính trên POS"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__id
@@ -308,6 +312,16 @@ msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
 
 #. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_product_attribute
+msgid "Product Attribute"
+msgstr "Thuộc tính sản phẩm"
+
+#. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_ir_cron
 msgid "Scheduled Actions"
 msgstr "Hoạt động định kỳ"
@@ -322,6 +336,11 @@ msgstr "Tìm kiếm"
 #: model:ir.model.fields,help:forlife_point_of_sale.field_store__code
 msgid "Short name used to identify your warehouse"
 msgstr "Mã cửa hàng liên kết từ mã kho"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_product_attribute__show_orderline_on_pos
+msgid "Show on POS"
+msgstr "Hiển thị trên đơn POS"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__start_date
@@ -387,6 +406,20 @@ msgid "Tên công ty"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Tổng chi"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Tổng thu"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__warehouse_id
 msgid "Warehouse"
 msgstr "Kho"
@@ -412,6 +445,13 @@ msgstr "Chi tiết cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_tree
 msgid "store_tree"
 msgstr "Danh sách cửa hàng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ReceiptScreen.xml:0
+#, python-format
+msgid "Đặt khách hàng này cho đơn hàng mới"
+msgstr ""
 
 #. module: forlife_point_of_sale
 #. odoo-javascript

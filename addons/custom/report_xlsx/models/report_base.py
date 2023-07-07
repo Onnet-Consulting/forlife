@@ -50,6 +50,13 @@ class ReportBase(models.AbstractModel):
             'valign': 'vcenter',
             'bg_color': '#dbeef4'
         }
+        subtotal_format = {
+            'bold': 1,
+            'border': 1,
+            'align': 'left',
+            'valign': 'vcenter',
+            'bg_color': '#c2f7ad'
+        }
         normal_format = {
             'border': 1,
             'align': 'left',
@@ -89,6 +96,9 @@ class ReportBase(models.AbstractModel):
         float_number_format.set_num_format('#,##0.00')
         int_number_format = workbook.add_format(int_number_format)
         int_number_format.set_num_format('#,##0')
+        int_subtotal_format = workbook.add_format(subtotal_format)
+        int_subtotal_format.set_num_format('#,##0')
+        subtotal_format = workbook.add_format(subtotal_format)
 
         float_number_title_format = workbook.add_format(float_number_title_format)
         float_number_title_format.set_num_format('#,##0.00')
@@ -106,4 +116,6 @@ class ReportBase(models.AbstractModel):
             'int_number_format': int_number_format,
             'float_number_title_format': float_number_title_format,
             'int_number_title_format': int_number_title_format,
+            'subtotal_format': subtotal_format,
+            'int_subtotal_format': int_subtotal_format,
         }

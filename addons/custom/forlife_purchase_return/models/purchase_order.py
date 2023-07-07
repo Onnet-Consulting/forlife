@@ -16,8 +16,12 @@ class PurchaseOrder(models.Model):
     return_purchase_ids = fields.One2many('purchase.order', 'origin_purchase_id', string="Return Purchases", copy=False)
     origin_purchase_id = fields.Many2one('purchase.order', string="Origin Purchase", copy=False)
     count_return_purchase = fields.Integer(compute="_compute_count_return_purchase", store=True, copy=False)
+    return_picking_count = fields.Integer("Return Shipment count", compute='_compute_return_picking_count')
 
-    warehouse_material = fields.Many2one('stock.location', string="Lý do nhập/xuất khác")
+    @api.depends('picking_ids')
+    def _compute_return_picking_count(self):
+        for order in self:
+            order.return_picking_count = len(order.picking_ids)
 
     @api.onchange('partner_id')
     def _onchange_partner_id_return(self):
@@ -52,12 +56,6 @@ class PurchaseOrder(models.Model):
     def _compute_count_return_purchase(self):
         for order in self:
             order.count_return_purchase = len(order.return_purchase_ids.filtered(lambda por: por.custom_state != 'cancel'))
-
-    def action_approved(self):
-        for po in self:
-            if po.is_return and not po.warehouse_material and po.order_line_production_order:
-                raise UserError("Chi tiết đơn hàng trả có sản phẩm đính kèm cần xác định kho nhập NPL. Vui lòng liên hệ thủ kho để xác nhận vị trí nhập kho NPL.")
-        super(PurchaseOrder, self).action_approved()
 
     def _prepare_picking(self):
         vals = super(PurchaseOrder, self)._prepare_picking()
@@ -442,11 +440,11 @@ class PurchaseOrder(models.Model):
     #             'domain': [('id', 'in', moves.ids)],
     #         }
 
-    def compute_count_invoice_inter_fix(self):
-        po_return = self.filtered(lambda po: po.is_return)
-        super(PurchaseOrder, self - po_return).compute_count_invoice_inter_fix()
-        for rec in po_return:
-            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_refund')])
+    # def compute_count_invoice_inter_fix(self):
+    #     po_return = self.filtered(lambda po: po.is_return)
+    #     super(PurchaseOrder, self - po_return).compute_count_invoice_inter_fix()
+    #     for rec in po_return:
+    #         rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_refund')])
 
     def action_view_invoice_new(self):
         if not self.is_return:
@@ -469,24 +467,27 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     origin_po_line_id = fields.Many2one('purchase.order.line')
-    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     return_line_ids = fields.One2many('purchase.order.line', 'origin_po_line_id', string="Return Lines")
 
+
     # FIX received: not add return picking
-    def compute_received(self):
-        for item in self:
-            if item.order_id:
-                st_picking = self.env['stock.picking'].search(
-                    [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
-                if st_picking:
-                    acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-                        'quantity_done')
-                    item.received = sum(acc_move_line)
-                else:
-                    item.received = False
-            else:
-                item.received = False
+    # def compute_received(self):
+    #     for item in self:
+    #         if item.order_id:
+    #             st_picking = self.env['stock.picking'].search(
+    #                 [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
+    #             if st_picking:
+    #                 acc_move_line = self.env['stock.move'].search(
+    #                     [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
+    #                     'quantity_done')
+    #                 if item.qty_returned:
+    #                     item.received = sum(acc_move_line) - item.qty_returned
+    #                 else:
+    #                     item.received = sum(acc_move_line)
+    #             else:
+    #                 item.received = False
+    #         else:
+    #             item.received = False
 
     # TODO: to using tracking msg
     # def _track_qty_returned(self, new_qty):
@@ -532,7 +533,7 @@ class PurchaseOrderLine(models.Model):
                                     total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
 
                 # Include qty of PO return
-                return_line = line.return_line_ids.filtered(lambda rl: rl.order_id.inventory_status == 'done')
+                return_line = line.return_line_ids.filtered(lambda rl: rl.qty_received)
                 total += sum(return_line.mapped('qty_received'))
                 line.qty_returned = total
 
@@ -579,6 +580,15 @@ class PurchaseOrderLine(models.Model):
             vals.update({'qty_returned': self.qty_returned})
         return vals
 
+    def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
+        vals = super(PurchaseOrderLine, self)._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
+        if self.order_id.is_return:
+            vals.update({
+                'occasion_code_id': self.occasion_code_id.id,
+                'work_production': self.production_id.id,
+                'account_analytic_id': self.account_analytic_id.id,
+            })
+        return vals
 
 class AccountMove(models.Model):
     _inherit = 'account.move'

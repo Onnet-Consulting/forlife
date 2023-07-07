@@ -6,6 +6,7 @@ from base64 import (b64encode, b64decode)
 import json
 import requests
 import time
+import logging
 
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
@@ -13,10 +14,12 @@ from Crypto.Signature import pkcs1_15
 
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA1
+from odoo.exceptions import ValidationError, UserError
 
 VN_COMPANY_CODES = [
     '1200'
 ]
+_logger = logging.getLogger(__name__)
 
 
 class ResCompany(models.Model):
@@ -44,8 +47,8 @@ class ResCompany(models.Model):
     def _parse_vietin_data(self, available_currencies):
         data = self._vietin_bank_send_request_exchange_rate()
         if data['status']['code'] != '0':
-            return
-        response_exchange_rates = data['ForeignExchangeRateInfo']
+            raise ValidationError(data)
+        response_exchange_rates = data.get('ForeignExchangeRateInfo', [])
         available_currency_names = available_currencies.mapped('name')
         date_rate = fields.Date.context_today(self)
         rates_dict = {}
@@ -71,7 +74,9 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
+        if response.status_code != 200:
+            raise ValidationError(response.text)
         data = response.json()
         return data
 
@@ -107,7 +112,7 @@ class ResCompany(models.Model):
             'x-ibm-client-secret': client_secret,
             'x-ibm-client-id': client_id
         }
-        response = requests.post(url, json=json.dumps(request_data), headers=headers)
+        response = requests.post(url, json=request_data, headers=headers)
         data = response.json()
         return data
 
@@ -115,17 +120,17 @@ class ResCompany(models.Model):
         request_data = {
             "requestId": "343q433410001",
             "merchantId": "",
-            "providerId": "khaianh",
+            "providerId": "HONDA",
             "model": "1",
             "account": "118649946666 ",
             "fromDate": "12/06/2023",
             "accountType": "D",
             "collectionType": "d",
             "agencyType": "a",
-            "transTime": "20210915050101",
+            "transTime": "20230618050101",
             "channel": "ERP",
             "version": "1",
-            "clientIP": "10.10.2.201",
+            "clientIP": "",
             "language": "vi",
             "signature": ""
         }
@@ -137,6 +142,52 @@ class ResCompany(models.Model):
         request_data.update({"signature": signed_signature})
         return request_data
 
+    def _vietin_bank_prepare_register_request_data(self):
+
+        data = {
+            "requestId": "VNPT1577878788",
+            "providerId": "HONDA",
+            "merchantId": "",
+            "model": "1",
+            "account": "118649946666",
+            "accountType": "D",
+            "agencyType": "",
+            "collectionType": "",
+            "notifyType": "A",
+            "outputFolder": "ERP/CASPER/OUT",
+            "cronExpress": "00/1****",
+            "transTime": "20230618050101",
+            "channel": "ERP",
+            "version": "1",
+            "clientIP": "",
+            "language": "vi",
+            "signature": ""
+        }
+        signature_keys = ['requestId', 'providerId', 'merchantId', 'agencyType', "account",
+                          "notifyType", "cronExpress", "transTime", "channel", "version", "clientIP", "language"]
+
+        unsigned_signature = ''.join([data[k] for k in signature_keys])
+        signed_signature = self._vietin_bank_sign_message(unsigned_signature)
+        data.update({"signature": signed_signature})
+
+        return data
+
+    def _vietin_bank_send_register_request(self):
+        company_sudo = self.env.company.sudo()
+        url = company_sudo.vietin_bank_exchange_rate_url
+        url = "https://api-uat.vietinbank.vn/vtb-api-uat/development/erp/v1/statement/register"
+        client_id = company_sudo.vietin_bank_client_id
+        client_secret = company_sudo.vietin_bank_client_secret
+        request_data = self._vietin_bank_prepare_register_request_data()
+        headers = {
+            'Content-Type': 'application/json',
+            'x-ibm-client-secret': client_secret,
+            'x-ibm-client-id': client_id
+        }
+        response = requests.post(url, json=request_data, headers=headers)
+        data = response.json()
+        return data
+
     def _vietin_bank_sign_message(self, message):
         company_sudo = self.env.company.sudo()
         server_private_key = b64decode(company_sudo.vietin_bank_server_private_key)
@@ -145,3 +196,38 @@ class ResCompany(models.Model):
         hash_obj = SHA256.new(message.encode('utf-8'))
         sig = signer.sign(hash_obj)
         return b64encode(sig).decode('utf-8')
+
+    # sửa lại hàm base enterprice để hiển thị lỗi trả về rõ dàng hơn.
+    def update_currency_rates(self):
+        ''' This method is used to update all currencies given by the provider.
+        It calls the parse_function of the selected exchange rates provider automatically.
+
+        For this, all those functions must be called _parse_xxx_data, where xxx
+        is the technical name of the provider in the selection field. Each of them
+        must also be such as:
+            - It takes as its only parameter the recordset of the currencies
+              we want to get the rates of
+            - It returns a dictionary containing currency codes as keys, and
+              the corresponding exchange rates as its values. These rates must all
+              be based on the same currency, whatever it is. This dictionary must
+              also include a rate for the base currencies of the companies we are
+              updating rates from, otherwise this will result in an error
+              asking the user to choose another provider.
+
+        :return: True if the rates of all the records in self were updated
+                 successfully, False if at least one wasn't.
+        '''
+        active_currencies = self.env['res.currency'].search([])
+        rslt = True
+        error = ''
+        for (currency_provider, companies) in self._group_by_provider().items():
+            parse_function = getattr(companies, '_parse_' + currency_provider + '_data')
+            try:
+                parse_results = parse_function(active_currencies)
+                companies._generate_currency_rates(parse_results)
+            except Exception as e:
+                rslt = False
+                error = e
+                _logger.exception(
+                    'Unable to connect to the online exchange rate platform %s. The web service may be temporary down' % (currency_provider))
+        return rslt, error

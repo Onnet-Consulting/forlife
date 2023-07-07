@@ -55,4 +55,9 @@
         'views/ir_ui_menu_view.xml',
     ],
     "post_init_hook": "post_init_hook",
+    'assets': {
+        'web.assets_backend': [
+            'forlife_base/static/src/css/**/*',
+        ]
+    },
 }

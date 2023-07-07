@@ -39,6 +39,23 @@ class PromotionConditionProduct(models.Model):
         self.env.cr.execute("""
             ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        program = self.promotion_program_id
+        res = super(PromotionConditionProduct, self).unlink()
+        if program:
+            program._compute_json_valid_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        programs = self.env['promotion.program'].search([('id', 'in', self.promotion_program_id.ids)])
+        programs._compute_json_valid_product_ids()
+
 
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
@@ -131,6 +148,8 @@ class PromotionProgram(models.Model):
         compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
+    only_condition_product = fields.Boolean('Only Condition Product?')
+    is_original_price = fields.Boolean('Is Price Original?', help='Price of condition product must be original!')
     order_amount_min = fields.Float()
     incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
     incl_reward_in_order_type = fields.Selection([
@@ -185,6 +204,8 @@ class PromotionProgram(models.Model):
 
     apply_online = fields.Boolean(string='Apply online', default=False)
     for_new_customer = fields.Boolean(string='For new customer', default=False)
+
+    notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app')
 
     @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):

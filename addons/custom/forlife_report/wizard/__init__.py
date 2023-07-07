@@ -22,3 +22,7 @@ from . import report_num19
 from . import report_num20
 from . import report_num21
 from . import report_num22
+from . import report_num23
+from . import report_num24
+from . import report_num_26
+from . import report_num_27

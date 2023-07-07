@@ -252,6 +252,7 @@ class PosOrder(models.Model):
             'purpose_id': program_voucher_id.purpose_id.id,
             'product_apply_ids': [(6, False, program_voucher_id.product_apply_ids.ids)],
             'is_full_price_applies': program_voucher_id.is_full_price_applies,
-            'using_limit': program_voucher_id.using_limit
+            'using_limit': program_voucher_id.using_limit,
+            'notification_id': program_voucher_id.product_id.get_notification_id(price),
         }
         return vals

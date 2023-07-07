@@ -55,6 +55,10 @@
         'wizard/report_num20_views.xml',
         'wizard/report_num21_views.xml',
         'wizard/report_num22_views.xml',
+        'wizard/report_num23_views.xml',
+        'wizard/report_num24_views.xml',
+        'wizard/report_num_26.xml',
+        'wizard/report_num_27.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',

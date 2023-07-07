@@ -11,6 +11,21 @@ class SupplierInfo(models.Model):
     date_start = fields.Date('Start Date', help="Start date for this vendor price", required=True)
     date_end = fields.Date('End Date', help="End date for this vendor price", required=True)
 
+    @api.constrains('partner_id', 'date_start', 'date_end', 'amount_conversion', 'price', 'product_uom')
+    def constrains_supplier(self):
+        for rec in self:
+            if rec.partner_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(
+                    [('partner_id', '=', rec.partner_id.id), ('date_start', '=', rec.date_start),
+                     ('date_end', '=', rec.date_end), ('amount_conversion', '=', rec.amount_conversion),
+                     ('price', '=', rec.price), ('product_uom', '=', rec.product_uom.id)]) > 1:
+                raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!'))
+
+    @api.constrains('amount_conversion')
+    def constrains_amount_conversion(self):
+        for rec in self:
+            if rec.amount_conversion <= 0:
+                raise ValidationError(_('Số lượng quy đổi không được nhỏ hơn hoặc bằng 0 !!'))
+
     @api.constrains('product_tmpl_id', 'date_start', 'date_end', 'partner_id')
     def constrains_check_duplicate_date_by_product_tmpl_id(self):
         for record in self:

@@ -12,7 +12,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="report_by"/>
+                            <field name="report_by" widget="radio" options="{'horizontal': True}"/>
                             <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
                             <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}" attrs="{'invisible': [('report_by', '=', 'area')]}"/>
                             <field name="all_areas" attrs="{'invisible': [('report_by', '=', 'branch')]}"/>

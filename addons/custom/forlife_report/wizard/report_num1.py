@@ -121,17 +121,21 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     order by cate.id 
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ),
 product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng product.product ID
     select 
@@ -141,8 +145,8 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
         pt.categ_id,
         pt.uom_name,
         pt.cate_name,
-        ad_size.value as size,
-        ad_color.value as color
+        ad.attrs::json -> '{attr_value.get('size', '')}' as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}' as color
     from product_product pp
         left join (select
                     id, categ_id, cate_name,
@@ -160,8 +164,7 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
                         ) as subname_table
                 ) as pt
         on pt.id = pp.product_tmpl_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-        left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+        left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
     order by pp.product_tmpl_id asc
 ),

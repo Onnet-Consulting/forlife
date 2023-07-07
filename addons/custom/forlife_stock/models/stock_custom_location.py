@@ -94,13 +94,17 @@ class StockMove(models.Model):
 
         # the standard_price of the product may be in another decimal precision, or not compatible with the coinage of
         # the company currency... so we need to use round() before creating the accounting entries.
+
+        #todo remove because cost is original not foreign currency
+        '''
         if self.purchase_line_id and self.purchase_line_id.order_id.type_po_cost == 'tax' \
                 and self.purchase_line_id.order_id.currency_id != self.env.company.currency_id:
             cost = cost * self.purchase_line_id.order_id.exchange_rate
+        '''
         debit_value = self.company_id.currency_id.round(cost)
         credit_value = debit_value
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
-        if self.picking_id.location_id.id_deposit:
+        if self.picking_id.location_id.id_deposit and self.picking_id.sale_id:
             if not self.picking_id.location_id.account_stock_give:
                 raise ValidationError(_(f'Vui lòng cấu hình tài khoản kho kí gửi của địa điểm {self.picking_id.location_id.name_get()[0][1]}!'))
             credit_account_id = self.picking_id.location_id.account_stock_give.id

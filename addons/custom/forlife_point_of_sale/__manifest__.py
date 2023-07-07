@@ -30,6 +30,7 @@
         'views/pos_config_views.xml',
         'views/res_partner_views.xml',
         'views/pos_order_views.xml',
+        'views/product_attribute_view.xml',
         'data/mail_template.xml',
         'data/cron.xml',
         'views/ir_cron_views.xml',

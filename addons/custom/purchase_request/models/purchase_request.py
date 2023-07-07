@@ -22,7 +22,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -51,6 +51,7 @@ class PurchaseRequest(models.Model):
     receiver_id = fields.Many2one('hr.employee', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
+    use_department_id = fields.Many2one('hr.department', string='Use Department')
 
     @api.model
     def load(self, fields, data):
@@ -65,6 +66,11 @@ class PurchaseRequest(models.Model):
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
         return res
+
+    @api.onchange('employee_id')
+    def onchange_department_id(self):
+        if self.employee_id.department_id:
+            self.department_id = self.employee_id.department_id
 
     def submit_action(self):
         for record in self:
@@ -180,11 +186,6 @@ class PurchaseRequest(models.Model):
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
                 }))
-                po_ex_line_data.append((0, 0, {
-                    'purchase_order_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.product_id.name,
-                }))
             if po_line_data:
                 name_pr = []
                 for key in keys:
@@ -200,7 +201,6 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
-                    'exchange_rate_line': po_ex_line_data,
                     'occasion_code_ids': occasion_code_id,
                     'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
@@ -253,7 +253,7 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
@@ -286,17 +286,17 @@ class PurchaseRequestLine(models.Model):
             else:
                 line.product_qty = line.purchase_quantity
 
-    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty')
+    @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty', 'purchase_order_line_ids.order_id.custom_state')
     def _compute_order_quantity(self):
         for rec in self:
-            # ### yêu cầu cũ là lọc theo trạng thái purchase
-            done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-            rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
+            if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
+                rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
+                ### sửa thành vào hàm approved ở po
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
         for rec in self:
-            rec.is_no_more_quantity = rec.purchase_quantity == rec.order_quantity
+            rec.is_no_more_quantity = rec.purchase_quantity <= rec.order_quantity
 
     @api.constrains('purchase_quantity', 'exchange_quantity')
     def constrains_purchase_quantity(self):
