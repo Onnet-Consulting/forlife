@@ -159,4 +159,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum27Template',
         'reportPager': True,
     },
+    'report.num28': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách phiếu nhập kho mua hàng',
+        'reportTemplate': 'ReportNum28Template',
+        'reportPager': True,
+    },
 }
