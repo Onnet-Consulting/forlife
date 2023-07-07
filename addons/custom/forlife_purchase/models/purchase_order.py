@@ -1431,8 +1431,8 @@ class PurchaseOrder(models.Model):
                     master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
                 if picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
-                    for item in master.receiving_warehouse_id:
-                        item.invoice_id = master.id
+                    # for item in master.receiving_warehouse_id:
+                    #     item.invoice_id = master.id
                 if not picking_expense_in and not picking_labor_in and not picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, [])]
             for line in moves.invoice_line_ids:
@@ -1788,9 +1788,9 @@ class PurchaseOrderLine(models.Model):
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
                                     compute='compute_tax_amount',
                                     store=1)
-    total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
-    before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
-    after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
+    total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=0)
+    before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=0)
+    after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=0)
 
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
