@@ -8,11 +8,11 @@ TITLES = [
     'Số yêu cầu', 'Ngày yêu cầu', 'Hạn xử lý', 'Ghi chú',
     'Từ kho', 'Đến kho', 'Số phiếu điều chuyển', 'STT dòng', 'Barcode (*)', 'Tên SP',
     'Màu', 'Size', 'SL kế hoạch', 'Đơn vị tính (*)', 'Số lượng xuất (*)',
-    'Số lượng nhập (*)', 'Từ LSX', 'Đến LSX'
+    'Số lượng nhập (*)', 'Từ LSX', 'Đến LSX', 'Loại phiếu'
 ]
 
 
-class ReportNum24(models.TransientModel):
+class ReportNum26(models.TransientModel):
     _name = 'report.num26'
     _inherit = 'report.base'
     _description = 'Báo cáo danh sách phiếu điều chuyển'
@@ -44,7 +44,8 @@ class ReportNum24(models.TransientModel):
                 stl.qty_out AS sl_xuat,
                 stl.qty_in AS sl_nhap,
                 fp1.name AS lsx_tu,
-                fp2.name AS lsx_den
+                fp2.name AS lsx_den,
+                st.type as loai_phieu
             FROM
                 stock_transfer_request str
             LEFT JOIN stock_transfer st ON st.stock_request_id = str.id
@@ -127,19 +128,20 @@ class ReportNum24(models.TransientModel):
                         formats.get('normal_format'))
             sheet.write(row, 2, value.get('han_xu_ly').strftime('%d/%m/%Y') if value.get('han_xu_ly') else '',
                         formats.get('normal_format'))
-            sheet.write(row, 3, value.get('ghi_chu'), formats.get('int_number_format'))
-            sheet.write(row, 4, value.get('tu_kho'), formats.get('int_number_format'))
-            sheet.write(row, 5, value.get('den_kho'), formats.get('int_number_format'))
-            sheet.write(row, 6, value.get('so_phieu_dc'), formats.get('int_number_format'))
+            sheet.write(row, 3, value.get('ghi_chu'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('tu_kho'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('den_kho'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('so_phieu_dc'), formats.get('normal_format'))
             sheet.write(row, 7, value.get('num'), formats.get('int_number_format'))
-            sheet.write(row, 8, value.get('barcode'), formats.get('int_number_format'))
-            sheet.write(row, 9, value.get('ten_sp'), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('mau'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('size'), formats.get('int_number_format'))
+            sheet.write(row, 8, value.get('barcode'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('mau'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('size'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('sl_ke_hoach'), formats.get('int_number_format'))
             sheet.write(row, 13, value.get('dvt'), formats.get('int_number_format'))
             sheet.write(row, 14, value.get('sl_xuat'), formats.get('int_number_format'))
             sheet.write(row, 15, value.get('sl_nhap'), formats.get('int_number_format'))
-            sheet.write(row, 16, value.get('lsx_tu'), formats.get('int_number_format'))
-            sheet.write(row, 17, value.get('lsx_den'), formats.get('int_number_format'))
+            sheet.write(row, 16, value.get('lsx_tu'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('lsx_den'), formats.get('normal_format'))
+            sheet.write(row, 18, dict(self.env['stock.transfer']._fields['type'].selection).get(value.get('loai_phieu')), formats.get('normal_format'))
             row += 1
