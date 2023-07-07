@@ -216,7 +216,7 @@ class SpilitProductLineSub(models.Model):
         string='Trạng thái')
     split_product_id = fields.Many2one('split.product')
     product_id = fields.Many2one('product.product', 'Sản phẩm chính', readonly=True, required=True)
-    product_split_id = fields.Many2one('product.product', string='Sản phẩm phân tách', required=True)
+    product_split_id = fields.Many2one('product.product', string='Sản phẩm phân tách')
     warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', readonly=True, required=True)
     quantity = fields.Integer('Số lượng', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', readonly=True)
