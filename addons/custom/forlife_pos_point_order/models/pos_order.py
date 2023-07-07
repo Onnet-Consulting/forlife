@@ -249,8 +249,13 @@ class PosOrder(models.Model):
                     # rec.point_order = 999
                     total_price_refund_product = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl < 0).mapped('price_subtotal_incl'))  # X1
                     total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
-                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0).mapped('price_subtotal_incl'))  # Y
+                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0 and x.product_id.id in valid_product_ids).mapped('price_subtotal_incl'))  # Y
                     money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
+                    print(valid_money_payment_method)
+                    print(total_price_refund_product)
+                    print(total_price_product_auto)
+                    print(total_product_change)
+                    print(money_value)
                     rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
