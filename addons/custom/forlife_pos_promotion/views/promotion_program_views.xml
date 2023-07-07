@@ -247,12 +247,12 @@
                                     attrs="{'invisible': [('reward_type', 'not in',
                                                         ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
                             <label for="reward_quantity" string="Maximum Discounted Quantity"
-                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent', 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount')),
+                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent', 'code_fixed_price', 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount')),
                                                             '|', ('with_code', '=', False), ('promotion_type', '!=', 'pricelist')]}"/>
                             <div>
                                 <field name="reward_quantity" class="oe_inline"
                                         attrs="{'invisible': [('reward_type', 'not in',
-                                                ('code_amount', 'code_percent','code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
+                                                ('code_amount', 'code_percent','code_buy_x_get_y','code_fixed_price','cart_get_x_free', 'code_buy_x_get_cheapest',
                                                 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount')),
                                                 '|', ('with_code', '=', False), ('promotion_type', '!=', 'pricelist')
                                                 ]}"/>
