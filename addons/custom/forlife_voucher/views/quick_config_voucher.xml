@@ -40,8 +40,10 @@
                         </div>
                         <notebook>
                             <page string="Voucher">
-                                <field name="voucher_ids" attrs="{'readonly': [('method', '=', False)]}">
-                                    <tree delete="false" create="true" edit="false">
+                                <field name="voucher_ids"
+                                       domain="[('using_limit', '=', 1), ('state', '=',  method == 'active' and 'off value' or 'sold')]"
+                                       attrs="{'readonly': [('method', '=', False)]}">
+                                    <tree create="false">
                                         <field name="name"/>
                                         <field name="type"/>
                                         <field name="purpose_id"/>

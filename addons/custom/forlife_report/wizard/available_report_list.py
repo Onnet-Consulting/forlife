@@ -147,4 +147,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum24Template',
         'reportPager': True,
     },
+    'report.num26': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách phiếu điều chuyển',
+        'reportTemplate': 'ReportNum26Template',
+        'reportPager': True,
+    },
 }

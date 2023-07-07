@@ -62,13 +62,6 @@ class QuickConfigVoucher(models.TransientModel):
     def _onchange_method(self):
         self.show_message = False
         self.voucher_ids = [(5, 0, 0)]
-        domain = [('using_limit', '=', 1)]
-        if self.method == 'active':
-            domain += [('state', '=', 'off value')]
-        else:
-            domain += [('state', '=', 'sold')]
-
-        return {'domain': {'voucher_ids': domain}}
 
     def import_xlsx(self):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file_import))
