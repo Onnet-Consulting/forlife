@@ -1431,8 +1431,6 @@ class PurchaseOrder(models.Model):
                     master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
                 if picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
-                    # for item in master.receiving_warehouse_id:
-                    #     item.invoice_id = master.id
                 if not picking_expense_in and not picking_labor_in and not picking_normal_in:
                     master.receiving_warehouse_id = [(6, 0, [])]
             for line in moves.invoice_line_ids:
@@ -2324,7 +2322,9 @@ class StockPicking(models.Model):
                 polml.product_id.id
                 for polml in self.env['purchase.order.line.material.line'].sudo().search([
                     ('purchase_order_line_id', 'in', po.order_line_production_order.ids),
-                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False)
+                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False),
+                    ('product_id.product_tmpl_id.detailed_type', '=', 'product'),
+                    ('product_id.detailed_type', '=', 'product')
                 ])
             ]
             if not material_product_ids:
