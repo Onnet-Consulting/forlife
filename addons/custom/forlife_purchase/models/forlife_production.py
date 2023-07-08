@@ -226,6 +226,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')
     forlife_bom_ingredients_ids = fields.One2many('forlife.bom.ingredients', 'forlife_bom_id', string='Ingredients')
+    is_check = fields.Boolean(default=False)
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -254,12 +255,29 @@ class ForlifeProductionFinishedProduct(models.Model):
             record.write({'write_date': fields.Datetime.now(),
                           'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
                                         + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids)})
+        return {
+            'name': ('BOM'),
+            'view_mode': 'form',
+            'view_id': self.env.ref('forlife_purchase.forlife_production_finished_form').id,
+            'res_model': 'forlife.production.finished.product',
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'res_id': self.id,
+        }
 
     # @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
     # def _onchange_forlife_bom_material_ids(self):
     #     self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids)
     #                       + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids)
     #                       + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids))
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('is_check'):
+            vals.update({
+                'is_check': True
+            })
+        return super(ForlifeProductionFinishedProduct, self).create(vals)
 
     @api.constrains('produce_qty', 'stock_qty')
     def constrains_stock_qty_produce_qty(self):

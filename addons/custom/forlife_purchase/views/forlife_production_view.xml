@@ -63,6 +63,7 @@
                                    attrs="{'readonly': [('state', '=', 'approved')]}">
                                 <tree editable="bottom">
                                     <field name="forlife_production_id" invisible="1"/>
+                                    <field name="is_check" invisible="1"/>
                                     <field name="product_id" domain="[('id', 'not in', parent.selected_product_ids)]"/>
                                     <field name="description"/>
                                     <field name="produce_qty"/>
@@ -70,7 +71,7 @@
                                     <field name="unit_price" force_save="1"/>
                                     <field name="stock_qty" readonly="1" force_save="1"/>
                                     <field name="remaining_qty"/>
-                                    <button name="action_open_bom" string="BOM" type="object"/>
+                                    <button name="action_open_bom" attrs="{'invisible': [('is_check', '=', False)]}" string="BOM" type="object"/>
                                 </tree>
                             </field>
                         </page>
