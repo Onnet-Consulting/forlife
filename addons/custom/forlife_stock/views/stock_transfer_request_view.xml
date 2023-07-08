@@ -68,7 +68,7 @@
                     <notebook>
                         <page string="Product">
                             <field name="request_lines" widget="section_and_note_one2many" mode="tree"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}">
-                                <tree editable="bottom" class="width-hh" decoration-muted="quantity_remaining == 0">
+                                <tree editable="bottom" class="width-hh" decoration-muted="quantity_remaining == 0" delete="1">
                                     <field name="product_id" domain="[('product_type', '=', 'product')]" options="{'no_create': True, 'no_edit': True}"/>
                                     <field name="plan_quantity"/>
                                     <field name="uom_id" readonly="False"/>

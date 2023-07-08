@@ -111,4 +111,4 @@ class HrAssetTransferLine(models.Model):
             if rec.asset_location_from_id.id != rec.asset_code.location.id:
                 raise ValidationError(_('Wrong value for asset location. Please check again!'))
             if not rec.check_required:
-                raise ValidationError(_('Chưa nhập 1 trong 3 trường!'))
+                raise ValidationError(_('Nhập 1 trong các trường thông tin bắt buộc: Nhân viên, Địa điểm, Trung tâm chi phí!'))

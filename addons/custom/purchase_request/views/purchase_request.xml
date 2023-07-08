@@ -86,7 +86,7 @@
                             <field name="is_check_button_orders_smart_button" invisible="1"/>
                             <field name="employee_id" string="User request"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}" required="1"/>
-                            <field name="department_id" readonly="1"/>
+                            <field name="department_id" readonly="1" force_save="1"/>
                             <field name="occasion_code_id"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}"/>
                             <field name="production_id"
