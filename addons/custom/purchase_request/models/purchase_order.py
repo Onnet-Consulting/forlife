@@ -15,8 +15,9 @@ class PurchaseOrder(models.Model):
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
-    # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
-    order_line_production_order = fields.Many2many('purchase.order.line',
+    # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')\
+    # domain_material = fields.Char('', compute='_compute_order_line_production_order',  store=1)
+    order_line_production_order = fields.One2many(related='order_line',
                                                   compute='_compute_order_line_production_order',
                                                   inverse='_inverse_order_line_production_order')
 
@@ -26,7 +27,7 @@ class PurchaseOrder(models.Model):
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
-            rec.order_line_production_order = order_line_production_order.ids
+            rec.order_line_production_order = order_line_production_order
             if not order_line_production_order or not rec.order_line:
                 rec.is_check_line_material_line = True
             else:
@@ -120,7 +121,7 @@ class PurchaseOrderLine(models.Model):
                 raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
             production_data = []
             for production_line in production_order.order_line_ids:
-                product_plan_qty = self.product_qty / production_order.product_qty * production_line.product_qty
+                # product_plan_qty = self.product_qty / production_order.product_qty * production_line.product_qty
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
                     'uom': production_line.uom_id.id,
@@ -135,15 +136,16 @@ class PurchaseOrderLine(models.Model):
                 'purchase_order_line_material_line_ids': production_data
             })
         else:
-            product = self.product_id
-            production_order = self.env['production.order'].search(
-                [('product_id', '=', product.id), ('type', '=', 'normal')], limit=1)
-            if not production_order:
-                raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
-            for production_line in production_order.order_line_ids:
-                for item in self.purchase_order_line_material_line_ids:
-                    item.write({'product_qty': item.purchase_order_line_id.product_qty * production_line.product_qty
-                                })
+            pass
+            # product = self.product_id
+            # production_order = self.env['production.order'].search(
+            #     [('product_id', '=', product.id), ('type', '=', 'normal')], limit=1)
+            # if not production_order:
+            #     raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
+            # for production_line in production_order.order_line_ids:
+            #     for item in self.purchase_order_line_material_line_ids:
+            #         item.write({'product_qty': item.purchase_order_line_id.product_qty * production_line.product_qty
+            #                     })
         view_id = self.env.ref('purchase_request.purchase_order_line_material_form_view').id
         return {
             'type': 'ir.actions.act_window',
@@ -175,17 +177,28 @@ class PurchaseOrderLineMaterialLine(models.Model):
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
     price_unit = fields.Float(string='Giá')
+    compute_flag = fields.Boolean(default=True)
 
-
-    @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
-    def _compute_product_plan_qty(self):
+    @api.depends('purchase_order_line_id.product_qty', 'purchase_order_line_id',
+                 'compute_flag')
+    def _compute_product_qty(self):
         for rec in self:
-            if rec.production_line_product_qty > 0:
-                rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
+            if rec.compute_flag:
+                if rec.production_line_product_qty > 0:
+                    rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
+                else:
+                    rec.product_qty = 0
             else:
-                rec.product_qty = 0
+                pass
+
+    @api.onchange('product_qty')
+    def onchange_product_qty_pppp(self):
+        if self.product_qty != self.purchase_order_line_id.product_qty * self.production_line_product_qty:
+            self.compute_flag = False
+        else:
+            self.compute_flag = True
 
 
-    def _inverse_product_plan_qty(self):
-        pass
+    # def _inverse_product_qty(self):
+    #     pass
 

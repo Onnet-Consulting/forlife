@@ -2370,8 +2370,8 @@ class StockPicking(models.Model):
         for record in self:
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
             if po:
-                ### check npl tồn:
-                # self.check_quant_goods_import(po)
+                ## check npl tồn:
+                self.check_quant_goods_import(po)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',
