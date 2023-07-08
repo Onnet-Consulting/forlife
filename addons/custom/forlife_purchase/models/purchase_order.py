@@ -148,6 +148,21 @@ class PurchaseOrder(models.Model):
         for rec in self.order_line:
             rec.location_id = self.location_id
 
+    @api.onchange('account_analytic_ids')
+    def _onchange_line_account_analytic_id(self):
+        for rec in self.order_line:
+            rec.account_analytic_id = self.account_analytic_ids[-1]._origin if self.account_analytic_ids else None
+
+    @api.onchange('occasion_code_ids')
+    def _onchange_line_occasion_code_ids(self):
+        for rec in self.order_line:
+            rec.occasion_code_id = self.occasion_code_ids[-1]._origin if self.occasion_code_ids else None
+
+    @api.onchange('production_id')
+    def _onchange_line_production_id(self):
+        for rec in self.order_line:
+            rec.production_id = self.production_id[-1]._origin if self.production_id else None
+
     @api.onchange('receive_date')
     def _onchange_line_receive_date(self):
         for rec in self.order_line:
@@ -196,6 +211,24 @@ class PurchaseOrder(models.Model):
         for item in self:
             if not item.currency_id:
                 raise ValidationError('Trường tiền tệ không tồn tại')
+
+    @api.constrains('account_analytic_ids')
+    def constrains_account_analytic_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.account_analytic_ids and len(item.account_analytic_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 trung tâm chi phí')
+
+    @api.constrains('occasion_code_ids')
+    def constrains_occasion_code_ids(self):
+        for item in self:
+            if not item.is_purchase_request and item.occasion_code_ids and len(item.occasion_code_ids) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 mã vụ việc')
+
+    @api.constrains('production_id')
+    def constrains_production_id(self):
+        for item in self:
+            if not item.is_purchase_request and item.production_id and len(item.production_id) > 1:
+                raise ValidationError('Bạn chỉ được chọn một 1 lệnh sản xuất')
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
@@ -891,7 +924,7 @@ class PurchaseOrder(models.Model):
             'price_unit': line.price_unit,
             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': line.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -925,7 +958,7 @@ class PurchaseOrder(models.Model):
             'price_unit': line.price_unit,
             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': line.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -949,7 +982,7 @@ class PurchaseOrder(models.Model):
             'quantity': 1,
             'price_unit': cp,
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': line.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -973,7 +1006,7 @@ class PurchaseOrder(models.Model):
             'quantity': 1,
             'price_unit': cp,
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': line.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -996,7 +1029,7 @@ class PurchaseOrder(models.Model):
             'price_unit': material_line.price_unit * (
                         (wave_item.qty_done - x_return.qty_done) / nine.purchase_quantity),
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': nine.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -1018,7 +1051,7 @@ class PurchaseOrder(models.Model):
             # 'sequence': sequence,
             'price_unit': material_line.price_unit * (wave_item.qty_done / nine.purchase_quantity),
             'occasion_code_id': wave_item.occasion_code_id.id,
-            'work_order': wave_item.production_id.id,
+            'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': nine.import_tax,
             # 'tax_amount': line.tax_amount,
@@ -1736,7 +1769,7 @@ class PurchaseOrderLine(models.Model):
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')])
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
@@ -1952,23 +1985,23 @@ class PurchaseOrderLine(models.Model):
             else:
                 pass
 
-    @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
-                  'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
-    def onchange_receive_date(self):
-        if self.order_id:
-            self.receive_date = self.order_id.receive_date
-            self.location_id = self.order_id.location_id
-            self.production_id = self.order_id.production_id
-            if self.order_id.account_analytic_ids:
-                self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
-            self.event_id = self.order_id.event_id
-            if self.order_id.occasion_code_ids:
-                self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
-
-    @api.onchange('product_id', 'order_id', 'order_id.location_id')
-    def onchange_location_id(self):
-        if self.order_id and self.order_id.location_id:
-            self.location_id = self.order_id.location_id
+    # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
+    #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
+    # def onchange_receive_date(self):
+    #     if self.order_id:
+    #         self.receive_date = self.order_id.receive_date
+    #         self.location_id = self.order_id.location_id
+    #         self.production_id = self.order_id.production_id
+    #         if self.order_id.account_analytic_ids:
+    #             self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
+    #         self.event_id = self.order_id.event_id
+    #         if self.order_id.occasion_code_ids:
+    #             self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
+    #
+    # @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    # def onchange_location_id(self):
+    #     if self.order_id and self.order_id.location_id:
+    #         self.location_id = self.order_id.location_id
 
     # discount
     @api.onchange("free_good")

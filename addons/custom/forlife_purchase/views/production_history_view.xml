@@ -143,13 +143,6 @@
             </field>
         </record>
 
-    <record id="seq_history" model="ir.sequence">
-        <field name="name">Version</field>
-        <field name="code">history.sequence</field>
-        <field name="prefix">Version</field>
-        <field name="padding">4</field>
-        <field name="company_id" eval="False"></field>
-    </record>
 
     <record id="production_history_action" model="ir.actions.act_window">
         <field name="name">Forlife Production</field>

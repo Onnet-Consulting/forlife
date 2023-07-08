@@ -11,6 +11,8 @@ class ForlifeProduction(models.Model):
 
     code = fields.Char("Production Order Code", required=True)
     name = fields.Char("Production Order Name", required=True)
+    version = fields.Integer("Version", default=0)
+    active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user, required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     created_date = fields.Date(string="Create Date", default=lambda self: fields.datetime.now(), required=True)
@@ -39,6 +41,7 @@ class ForlifeProduction(models.Model):
         ('in_approved', 'Đã nhập kho'),
         ('done', 'Hoàn thành'),
     ], compute='compute_check_status')
+    check_status = fields.Boolean(default=False)
 
     def action_draft(self):
         for record in self:
@@ -50,22 +53,112 @@ class ForlifeProduction(models.Model):
 
     def action_approved(self):
         for record in self:
-            record.write({'state': 'approved'})
+            old_record = self.env['forlife.production'].search([('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True), ('state', '=', 'approved')], limit=1)
+            if not old_record:
+                record.write({'state': 'approved',
+                              'version': 1})
+            else:
+                record.active = False
+                value = {
+                    'code': old_record.code,
+                    'name': old_record.name,
+                    'version': old_record.version,
+                    'user_id': old_record.user_id.id,
+                    'company_id': old_record.company_id.id,
+                    'created_date': old_record.created_date,
+                    'implementation_id': old_record.implementation_id.id,
+                    'management_id': old_record.management_id.id,
+                    'production_department': old_record.production_department,
+                    'state': old_record.state,
+                    'status': old_record.status,
+                    'to_date': old_record.to_date,
+                    'brand_id': old_record.brand_id.id,
+                    'relationship_forlife_production_id': old_record.id,
+                    'forlife_production_finished_product_ids': []
+                }
+                for rec in old_record.forlife_production_finished_product_ids:
+                    value['forlife_production_finished_product_ids'].append((
+                        0, 0, {'forlife_production_id': rec.forlife_production_id.id,
+                               'product_id': rec.product_id.id,
+                               'forlife_production_name': rec.forlife_production_name,
+                               'description': rec.description,
+                               'produce_qty': rec.produce_qty,
+                               'uom_id': rec.uom_id.id,
+                               'unit_price': rec.unit_price,
+                               'stock_qty': rec.stock_qty,
+                               'remaining_qty': rec.remaining_qty,
+                               'implementation_id': rec.implementation_id.id,
+                               'management_id': rec.management_id.id,
+                               'production_department': rec.production_department,
+                               'forlife_bom_material_ids': [(
+                                   0, 0, {'forlife_production_id': line.forlife_production_id.id,
+                                          'product_id': line.product_id.id,
+                                          'description': line.description,
+                                          'quantity': line.quantity,
+                                          'uom_id': line.uom_id.id,
+                                          'production_uom_id': line.production_uom_id.id,
+                                          'conversion_coefficient': line.conversion_coefficient,
+                                          'rated_level': line.rated_level,
+                                          'loss': line.loss,
+                                          'total': line.total,
+                                          }) for line in rec.forlife_bom_material_ids],
+                               'forlife_bom_service_cost_ids': [(
+                                   0, 0, {'forlife_production_id': line.forlife_bom_id.id,
+                                          'product_id': line.product_id.id,
+                                          'rated_level': line.rated_level
+                                          }) for line in rec.forlife_bom_service_cost_ids]
+                               }))
+                history = self.env['production.history'].create(value)
+                new_value = {
+                    'code': record.code,
+                    'name': record.name,
+                    'version': old_record.version + 1,
+                    'user_id': record.user_id.id,
+                    'company_id': record.company_id.id,
+                    'created_date': record.created_date,
+                    'implementation_id': record.implementation_id.id,
+                    'management_id': record.management_id.id,
+                    'production_department': record.production_department,
+                    'produced_from_date': record.produced_from_date,
+                    'state': old_record.state,
+                    'status': old_record.status,
+                    'to_date': record.to_date,
+                    'brand_id': record.brand_id.id,
+                    'forlife_production_finished_product_ids': [(6, 0, record.forlife_production_finished_product_ids.ids)]
+                }
+                new_record = old_record.write(new_value)
+                return {
+                    'name': _('Lệnh sản xuất'),
+                    'view_mode': 'form',
+                    'view_id': self.env.ref('forlife_purchase.forlife_production_form').id,
+                    'res_model': 'forlife.production',
+                    'type': 'ir.actions.act_window',
+                    'target': 'current',
+                    'res_id': old_record.id,
+                }
+
+    def action_done(self):
+        for record in self:
+            record.write({'check_status': True,
+                          'status': 'done'})
 
     @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty', 'forlife_production_finished_product_ids.stock_qty')
     def compute_check_status(self):
         for rec in self:
-            if rec.forlife_production_finished_product_ids and any(x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
-                if all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('remaining_qty')):
-                    rec.status = 'done'
-                elif all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('stock_qty')):
-                    rec.status = 'assigned'
+            if not rec.check_status:
+                if rec.forlife_production_finished_product_ids and any(x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
+                    if all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('remaining_qty')):
+                        rec.status = 'done'
+                    elif all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('stock_qty')):
+                        rec.status = 'assigned'
+
+                    else:
+                        rec.status = 'in_approved'
 
                 else:
-                    rec.status = 'in_approved'
-
+                    rec.status = 'assigned'
             else:
-                rec.status = 'assigned'
+                rec.status = 'done'
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
@@ -90,11 +183,18 @@ class ForlifeProduction(models.Model):
             else:
                 self.selected_product_ids = False
 
+    @api.constrains('forlife_production_finished_product_ids')
+    def constrains_forlife_production_finished_product_ids(self):
+        for item in self:
+            if not item.forlife_production_finished_product_ids:
+                raise ValidationError("Bạn chưa nhập sản phẩm cho lệnh sản xuất!")
+
     @api.constrains('code')
     def constrains_code(self):
-        for rec in self:
-            if rec.code and rec.search_count([('code', '=', rec.code)]) > 1:
-                raise ValidationError(_('Production code already exists!'))
+        for record in self:
+            old_record = self.env['forlife.production'].search([('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True), ('state', '=', 'approved')], limit=1)
+            if old_record.status == 'done':
+                raise ValidationError(_("Lệnh sản xuất đã tồn tại. Bạn nên tạo một lệnh sản xuất mới!"))
 
     @api.model
     def get_import_templates(self):
@@ -152,15 +252,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     def update_price(self):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
-                          'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids) / record.produce_qty
-                          + sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_ingredients_ids) / record.produce_qty
-                          + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids) / record.produce_qty})
+                          'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
+                                        + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids)})
 
-    @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
-    def _onchange_forlife_bom_material_ids(self):
-        self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids) / self.produce_qty
-                          + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids) / self.produce_qty
-                          + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids) / self.produce_qty) if self.produce_qty else 0
+    # @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
+    # def _onchange_forlife_bom_material_ids(self):
+    #     self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids)
+    #                       + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids)
+    #                       + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids))
 
     @api.constrains('produce_qty', 'stock_qty')
     def constrains_stock_qty_produce_qty(self):
@@ -172,122 +271,17 @@ class ForlifeProductionFinishedProduct(models.Model):
             elif rec.produce_qty < rec.stock_qty:
                 raise ValidationError('Số lượng sản xuất phải lớn hơn số lượng nhập kho!!')
 
-    @api.model
-    def create(self, vals):
-        old_record = self.env['forlife.production'].search([('id', '=', vals['forlife_production_id'])])
-        value = {
-            'code': old_record.code,
-            'name': old_record.name,
-            'user_id': old_record.user_id.id,
-            'company_id': old_record.company_id.id,
-            'created_date': old_record.created_date,
-            'implementation_id': old_record.implementation_id.id,
-            'management_id': old_record.management_id.id,
-            'production_department': old_record.production_department,
-            'to_date': old_record.to_date,
-            'brand_id': old_record.brand_id.id,
-            'state': old_record.state,
-            'status': old_record.status,
-            'relationship_forlife_production_id': old_record.id,
-            'forlife_production_finished_product_ids': []
-        }
-        for record in old_record.forlife_production_finished_product_ids:
-            value['forlife_production_finished_product_ids'].append((
-                0, 0, {'forlife_production_id': record.forlife_production_id.id,
-                       'product_id': record.product_id.id,
-                       'forlife_production_name': record.forlife_production_name,
-                       'description': record.description,
-                       'produce_qty': record.produce_qty,
-                       'uom_id': record.uom_id.id,
-                       'unit_price': record.unit_price,
-                       'stock_qty': record.stock_qty,
-                       'remaining_qty': record.remaining_qty,
-                       'implementation_id': record.implementation_id.id,
-                       'management_id': record.management_id.id,
-                       'production_department': record.production_department,
-                       'forlife_bom_material_ids': [(
-                           0, 0, {'forlife_production_id': line.forlife_production_id.id,
-                                  'product_id': line.product_id.id,
-                                  'description': line.description,
-                                  'quantity': line.quantity,
-                                  'uom_id': line.uom_id.id,
-                                  'production_uom_id': line.production_uom_id.id,
-                                  'conversion_coefficient': line.conversion_coefficient,
-                                  'rated_level': line.rated_level,
-                                  'loss': line.loss,
-                                  'total': line.total,
-                                  }) for line in record.forlife_bom_material_ids],
-                       'forlife_bom_service_cost_ids': [(
-                           0, 0, {'forlife_production_id': line.forlife_bom_id.id,
-                                  'product_id': line.product_id.id,
-                                  'rated_level': line.rated_level
-                                  }) for line in record.forlife_bom_service_cost_ids]
-                       }))
-        history = self.env['production.history'].create(value)
-        current_order = self.env['forlife.production.finished.product'].search([('forlife_production_id', '=', vals['forlife_production_id']), ('product_id', '=', vals['product_id'])])
-        current_order.unlink()
-        line = super(ForlifeProductionFinishedProduct, self).create(vals)
-        return line
-
-    def write(self, vals):
+    @api.constrains('forlife_bom_material_ids')
+    def constrains_forlife_bom_material_ids(self):
         for item in self:
-            value = {
-                'code': self.forlife_production_id.code,
-                'name': self.forlife_production_id.name,
-                'user_id': self.forlife_production_id.user_id.id,
-                'company_id': self.forlife_production_id.company_id.id,
-                'created_date': self.forlife_production_id.created_date,
-                'implementation_id': self.forlife_production_id.implementation_id.id,
-                'management_id': self.forlife_production_id.management_id.id,
-                'production_department': self.forlife_production_id.production_department,
-                'to_date': self.forlife_production_id.to_date,
-                'brand_id': self.forlife_production_id.brand_id.id,
-                'state': self.forlife_production_id.state,
-                'status': self.forlife_production_id.status,
-                'relationship_forlife_production_id': self.forlife_production_id.id,
-                'forlife_production_finished_product_ids': []
-            }
-            for record in item.forlife_production_id.forlife_production_finished_product_ids:
-                value['forlife_production_finished_product_ids'].append((
-                    0, 0, {'forlife_production_id': record.forlife_production_id.id,
-                           'product_id': record.product_id.id,
-                           'forlife_production_name': record.forlife_production_name,
-                           'description': record.description,
-                           'produce_qty': record.produce_qty,
-                           'uom_id': record.uom_id.id,
-                           'unit_price': record.unit_price,
-                           'stock_qty': record.stock_qty,
-                           'remaining_qty': record.remaining_qty,
-                           'implementation_id': record.implementation_id.id,
-                           'management_id': record.management_id.id,
-                           'production_department': record.production_department,
-                           'forlife_bom_material_ids': [(
-                               0, 0, {'forlife_production_id': line.forlife_production_id.id,
-                                      'product_id': line.product_id.id,
-                                      'description': line.description,
-                                      'quantity': line.quantity,
-                                      'uom_id': line.uom_id.id,
-                                      'production_uom_id': line.production_uom_id.id,
-                                      'conversion_coefficient': line.conversion_coefficient,
-                                      'rated_level': line.rated_level,
-                                      'loss': line.loss,
-                                      'total': line.total,
-                                      }) for line in record.forlife_bom_material_ids],
-                           'forlife_bom_service_cost_ids': [(
-                               0, 0, {'forlife_production_id': line.forlife_bom_id.id,
-                                      'product_id': line.product_id.id,
-                                      'rated_level': line.rated_level
-                                      }) for line in record.forlife_bom_service_cost_ids]
-                           }))
-            history = self.env['production.history'].create(value)
-            res = super(ForlifeProductionFinishedProduct, self).write(vals)
-        return res
+            if not item.forlife_bom_material_ids:
+                raise ValidationError("Bạn chưa nhập nguyên phụ liệu!")
 
     @api.model
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu bom'),
-            'template': '/forlife_purchase/static/src/xlsx/Template Bom.xlsx?download=true'
+            'template': '/forlife_purchase/static/src/xlsx/template_bom.xlsx?download=true'
         }]
 
 
@@ -304,7 +298,12 @@ class ForlifeProductionMaterial(models.Model):
     conversion_coefficient = fields.Float(string='Conversion Coefficient')
     rated_level = fields.Float(string='Rated level')
     loss = fields.Float(string='Loss %')
-    total = fields.Float(string='Total')
+    total = fields.Float(string='Total', compute='compute_total')
+
+    @api.depends('conversion_coefficient', 'rated_level', 'loss')
+    def compute_total(self):
+        for item in self:
+            item.total = item.conversion_coefficient * item.rated_level * item.loss
 
 
 class ForlifeProductionServiceCost(models.Model):
