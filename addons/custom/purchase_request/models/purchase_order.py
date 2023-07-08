@@ -174,8 +174,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
                                store=1,
                                readonly=False)
 
-    product_qty_fake = fields.Float(related='purchase_order_line_id.product_qty')
-
     # product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
@@ -183,10 +181,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
     price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False)
     compute_flag = fields.Boolean(default=True)
-
-    @api.onchange('product_qty_fake')
-    def _onchange_compute_flag(self):
-        self.compute_flag = True
 
     @api.depends('purchase_order_line_id.product_qty', 'purchase_order_line_id',
                  'compute_flag')
@@ -206,10 +200,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
             self.compute_flag = False
         else:
             self.compute_flag = True
-
-    # def write(self, vals):
-    #
-    #     return super(PurchaseOrderLineMaterialLine, self).write(vals)
 
 
     # def _inverse_product_qty(self):
