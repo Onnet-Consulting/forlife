@@ -124,7 +124,8 @@
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
                                         <field name="product_qty" string="Số lượng"/>
 <!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
-                                        <field name="price_unit" string="Giá"/>
+                                        <field name="product_type" invisible="1"/>
+                                        <field name="price_unit" string="Giá" attrs="{'readonly': [('product_type', '=', 'product')]}"/>
                                     </tree>
                                 </field>
                             </page>
