@@ -129,7 +129,7 @@ class PurchaseOrderLine(models.Model):
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'production_line_price_unit': production_line.price,
-                    'price_unit': production_line.price,
+                    'price_unit': production_line.price if production_line.product_id.product_tmpl_id.x_type_cost_product else 0,
                     'is_from_po': True,
                 }))
             self.write({
@@ -179,6 +179,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     # product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
+    type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
     price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False)
     compute_flag = fields.Boolean(default=True)
@@ -210,11 +211,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
     #
     #     return super(PurchaseOrderLineMaterialLine, self).write(vals)
 
-    @api.depends('production_line_price_unit', 'product_qty')
-    def _compute_price_unit(self):
-        for rec in self:
-            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
-                rec.price_unit = rec.product_qty * rec.production_line_price_unit
 
     # def _inverse_product_qty(self):
     #     pass

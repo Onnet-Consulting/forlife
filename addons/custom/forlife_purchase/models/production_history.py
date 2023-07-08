@@ -39,12 +39,6 @@ class ProductionHistory(models.Model):
 
     forlife_production_finished_product_ids = fields.One2many('production.history.line', 'forlife_production_id', string='Finished Products')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('version', 'New') == 'New':
-            vals['version'] = self.env['ir.sequence'].next_by_code('history.sequence') or 'Version'
-        return super(ProductionHistory, self).create(vals)
-
 
 class ProductionHistoryLine(models.Model):
     _name = 'production.history.line'
