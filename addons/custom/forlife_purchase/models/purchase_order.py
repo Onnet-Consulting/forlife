@@ -2396,7 +2396,9 @@ class StockPicking(models.Model):
                 polml.product_id.id
                 for polml in self.env['purchase.order.line.material.line'].sudo().search([
                     ('purchase_order_line_id', 'in', po.order_line_production_order.ids),
-                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False)
+                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False),
+                    ('product_id.product_tmpl_id.detailed_type', '=', 'product'),
+                    ('product_id.detailed_type', '=', 'product')
                 ])
             ]
             if not material_product_ids:
