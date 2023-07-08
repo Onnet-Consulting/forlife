@@ -1192,8 +1192,8 @@ class PurchaseOrder(models.Model):
                                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                             sequence += 1
                                         invoice_vals_list.append(invoice_vals)
-                        else:
-                            raise UserError(_('Đơn mua không có chi phí nhân công và npl!'))
+                    else:
+                        raise UserError(_('Đơn mua không có chi phí nhân công và npl!'))
                 elif order.select_type_inv == 'expense':
                     domain_expense = [('origin', '=', order.name),
                                       ('state', '=', 'done'),
