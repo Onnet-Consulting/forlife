@@ -131,7 +131,7 @@ class MainController(http.Controller):
                         'nhanh_id': order['carrierId'],
                         'name': order['carrierName'],
                         'code': order['carrierCode'],
-                        'service_name': order['carrierServiceName']
+                        'service_name': order['serviceName']
                     })
 
                 # nguồn đơn hàng
