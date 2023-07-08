@@ -127,8 +127,8 @@ class PurchaseOrderLine(models.Model):
                     # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
-                    # 'production_line_price_unit': production_line.price,
-                    # 'price_unit': production_line.price,
+                    'production_line_price_unit': production_line.price,
+                    'price_unit': production_line.price if production_line.product_id.product_tmpl_id.x_type_cost_product else 0,
                     'is_from_po': True,
                 }))
             self.write({
@@ -173,10 +173,9 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
-    def _default_production_line_price_unit(self):
-        return self.product_id.standard_price
-    production_line_price_unit = fields.Float(digits='Product Unit of Measure', default=_default_production_line_price_unit)
-    price_unit = fields.Float(compute='_compute_price_unit', store=1, readonly= False, inverse='_inverse_price_unit')
+    type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
+    production_line_price_unit = fields.Float(digits='Product Unit of Measure')
+    price_unit = fields.Float(string='Giá')
 
     @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
     def _compute_product_plan_qty(self):
@@ -185,18 +184,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
                 rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
             else:
                 rec.product_qty = 0
-
-    def _inverse_price_unit(self):
-        for rec in self:
-            rec.production_line_price_unit = rec.product_id.standard_price
-            if rec.product_qty:
-                rec.production_line_price_unit = rec.price_unit / rec.product_qty
-
-    @api.depends('production_line_price_unit', 'product_qty')
-    def _compute_price_unit(self):
-        for rec in self:
-            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
-                rec.price_unit = rec.product_qty * rec.production_line_price_unit
 
     def _inverse_product_plan_qty(self):
         pass
