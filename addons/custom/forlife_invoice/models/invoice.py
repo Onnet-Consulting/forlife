@@ -706,6 +706,16 @@ class AccountMoveLine(models.Model):
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
                                  compute='_compute_total_product',
                                  store=1)
+
+    def _get_stock_valuation_layers_price_unit(self, layers):
+        price_unit_by_layer = {}
+        for layer in layers:
+            if layer.quantity != 0:
+                price_unit_by_layer[layer] = layer.value / layer.quantity
+            else:
+                price_unit_by_layer[layer] = layer.unit_cost
+        return price_unit_by_layer
+
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:

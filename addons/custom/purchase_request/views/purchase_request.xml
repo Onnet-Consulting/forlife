@@ -123,7 +123,7 @@
                                     <field name="asset_description" attrs="{'readonly': [('product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="purchase_quantity" optional="show"/>
                                     <field name="exchange_quantity" optional="show"/>
-                                    <field name="purchase_uom" optional="show" readonly="0"/>
+                                    <field name="purchase_uom" string="Đơn vị tính" optional="show" readonly="0"/>
                                     <field name="product_qty" invisible="1" force_save="1"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
                                     <field name="production_id" optional="show"/>
