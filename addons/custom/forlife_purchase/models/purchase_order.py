@@ -84,6 +84,22 @@ class PurchaseOrder(models.Model):
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+
+    @api.constrains('x_tax')
+    def constrains_x_tax(self):
+        for rec in self:
+            if rec.x_tax > 100 or rec.x_tax < 0:
+                raise UserError(_('Bạn khổng thể nhập % thuế VAT của chiết khấu nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+
     count_invoice_inter_company_ncc = fields.Integer(compute='compute_count_invoice_inter_company_ncc')
     count_invoice_inter_normal_fix = fields.Integer(compute='compute_count_invoice_inter_normal_fix')
     count_invoice_inter_expense_fix = fields.Integer(compute='compute_count_invoice_inter_expense_fix')
@@ -1435,6 +1451,10 @@ class PurchaseOrder(models.Model):
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
                     'move_type': 'in_invoice',
+                    'trade_discount': self.trade_discount,
+                    'total_trade_discount': self.total_trade_discount,
+                    'x_tax': self.x_tax,
+                    'x_amount_tax': self.x_amount_tax,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
@@ -2759,11 +2779,11 @@ class StockPicking(models.Model):
                             'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                         }))
                         # check tồn kho với npl
-                        number_product = self.env['stock.quant'].search(
-                            [('location_id', '=', record.location_dest_id.id),
-                             ('product_id', '=', material_line.product_id.id)])
-                        if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                            raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
+                        # number_product = self.env['stock.quant'].search(
+                        #     [('location_id', '=', record.location_dest_id.id),
+                        #      ('product_id', '=', material_line.product_id.id)])
+                        # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                        #     raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:

@@ -51,6 +51,22 @@ class AccountMove(models.Model):
     exchange_rate_line_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     cost_total = fields.Float(string='Tổng chi phí')
 
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
+                                readonly=False)
+
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+
+    @api.constrains('x_tax')
+    def constrains_x_tax(self):
+        for rec in self:
+            if rec.x_tax > 100 or rec.x_tax < 0:
+                raise UserError(_('Bạn khổng thể nhập % thuế VAT của chiết khấu nhỏ hơn 0 hoặc lớn hơn 100!'))
+
     @api.onchange('cost_line.vnd_amount')
     def onchange_cost_line_vnd_amount(self):
         self.cost_total = sum(self.cost_line.mapped('vnd_amount'))
@@ -581,39 +597,40 @@ class AccountMove(models.Model):
                 invoice_vat.action_post()
 
     def create_trade_discount(self):
-        account_ck = []
+        self.ensure_one()
+        if not self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id:
+            raise ValidationError("Bạn chưa cấu hình tài khoản chi phí ở tab kế toán trong danh sản phẩm có tên là Thuế VAT Chiết khấu tổng đơn!!")
         if not self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí ở tab kế toán trong danh sản phẩm có tên là Chiết khấu tổng đơn!!")
         if not self.partner_id.property_account_payable_id:
             raise ValidationError(_("Bạn chưa cấu hình tài khoản phải trả ở tab kế toán trong nhà cung cấp %s") % self.partner_id.name)
-        account_331 = (0, 0, {
-            'account_id': self.partner_id.property_account_payable_id.id,
-            'name': self.partner_id.property_account_payable_id.name,
-            'debit': self.total_trade_discount * self.exchange_rate,
-            'credit': 0,
-        })
-        account_771 = (0, 0, {
-            'account_id': self.env.ref('forlife_purchase.product_discount_tax').with_company(
-                self.company_id).property_account_expense_id.id,
-            'name': self.env.ref('forlife_purchase.product_discount_tax').with_company(
-                self.company_id).property_account_expense_id.name,
-            'debit': 0,
-            'credit': self.total_trade_discount * self.exchange_rate,
-        })
-        lines_ck = [account_331, account_771]
-        account_ck.extend(lines_ck)
-
-        invoice_ck = self.env['account.move'].create({
+        invoice_ck = self.create({
             'e_in_check': self.id,
             'partner_id': self.partner_id.id,
             'ref': f"{self.name} Chiết khấu tổng đơn",
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
             'invoice_date': self.invoice_date,
             'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
-            'invoice_line_ids': account_ck,
             'move_type': 'entry',
+            'invoice_line_ids': [(0, 0, {
+                'account_id': self.partner_id.property_account_payable_id.id,
+                'name': self.partner_id.property_account_payable_id.name,
+                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
+                'credit': 0,
+            })] + [(0, 0, {
+                'account_id': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.id,
+                'name': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.name,
+                'debit': 0,
+                'credit': self.total_trade_discount * self.exchange_rate,
+            })] + [(0, 0, {
+                'account_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.id,
+                'name': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.name,
+                'debit': 0,
+                'credit': self.x_amount_tax * self.exchange_rate,
+            })],
         })
-        invoice_ck.action_post()
+        invoice_ck._post()
+        return invoice_ck
 
     def action_post(self):
         for rec in self:

@@ -175,7 +175,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
                                readonly=False)
 
     # product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
-    product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
+    # product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
