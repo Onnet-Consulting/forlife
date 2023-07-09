@@ -6,10 +6,10 @@ class StockValuationLayer(models.Model):
 
     def _validate_accounting_entries(self):
         context = self.env.context
-        if not context.get('run_job', False):
-            if self.stock_move_id.picking_type_id.warehouse_id:
+        if self.stock_move_id.picking_type_id.warehouse_id:
+            job_name = 'wh_'+self.stock_move_id.picking_type_id.warehouse_id.code+'_job_channel'
+            if not (context.get('job_channel', False) and context.get('job_channel') in (job_name, 'validate_stock_valuation_2')) :
                 model_job_channel = self.env['queue.job.channel'].sudo()
-                job_name = 'wh_'+self.stock_move_id.picking_type_id.warehouse_id.code+'_job_channel'
                 job_channel = model_job_channel.search([('name', '=', job_name)], limit=1)
                 channel_root = self.env.ref('queue_job.channel_root')
                 if not job_channel:
@@ -18,7 +18,6 @@ class StockValuationLayer(models.Model):
                         'parent_id': channel_root.id
                     })
                 return super(StockValuationLayer, self).with_context(run_job=True).with_delay(channel=job_name)._validate_accounting_entries()
-            return super(StockValuationLayer, self).with_context(run_job=True).with_delay(channel='validate_stock_valuation_2')._validate_accounting_entries()
         return super(StockValuationLayer, self)._validate_accounting_entries()
     #     am_vals = []
     #     for svl in self:
