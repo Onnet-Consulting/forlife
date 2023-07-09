@@ -577,6 +577,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                         check_button: check_button,
                         tax_ids: orderline.get_taxes().map(tax => tax.id),
                         discount: orderline.discount,
+                        pos_order_line_discount_details: orderline.pos_order_line_discount_details
                     },
                     destinationOrderUid: false,
                 };
@@ -623,6 +624,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 refunded_orderline_id: orderline.id,
                 tax_ids: orderline.tax_ids,
                 discount: orderline.discount,
+                pos_order_line_discount_details: orderline.pos_order_line_discount_details
             }
         }
         _setOrder(order) {
