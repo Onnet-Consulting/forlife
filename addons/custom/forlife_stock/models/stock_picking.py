@@ -333,7 +333,7 @@ class StockPicking(models.Model):
         return line
 
     def button_validate(self):
-        res = super().button_validate()
+        res = super(StockPicking, self).button_validate()
         for record in self:
             for rec in record.move_ids_without_package:
                 if record.other_import:
