@@ -170,9 +170,12 @@ class PurchaseOrderLineMaterialLine(models.Model):
     uom = fields.Many2one('uom.uom', string='UOM')
     production_order_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_order tại thời điểm được tạo
     production_line_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_line tại thời điểm được tạo
-    product_qty = fields.Float('Quantity', digits='Product Unit of Measure')
-    product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
-    product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
+    product_qty = fields.Float('Quantity', digits='Product Unit of Measure', compute='_compute_product_qty',
+                               store=1,
+                               readonly=False)
+
+    # product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
+    # product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure')
