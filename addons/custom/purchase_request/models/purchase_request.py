@@ -182,9 +182,11 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
+                    'product_uom': line.purchase_uom.id,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
+                    'date_planned': self.date_planned if len(self) == 1 else False,
                 }))
             if po_line_data:
                 name_pr = []
