@@ -139,6 +139,10 @@ class PurchaseOrder(models.Model):
 
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
 
+    @api.onchange('partner_id')
+    def onchange_vendor_code(self):
+        self.currency_id = self.partner_id.property_purchase_currency_id.id
+
     def compute_count_stock(self):
         for item in self:
             item.count_stock = self.env['stock.picking'].search_count([('origin', '=', item.name), ('other_export', '=', True)])
@@ -547,7 +551,7 @@ class PurchaseOrder(models.Model):
                 invoice_line_ids = []
                 uom = self.env.ref('uom.product_uom_unit').id
                 for line in record.order_line:
-                    if line.price_subtotal <= 0:
+                    if line.price_subtotal <= 0 and not line.free_good:
                         raise UserError(
                             'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
                     product_ncc = self.env['stock.quant'].sudo().search(
@@ -766,9 +770,7 @@ class PurchaseOrder(models.Model):
         self.write({'custom_state': 'close'})
         stock_relationship = self.env['stock.picking'].search([('origin', '=', self.name),
                                                                ('state', '!=', 'done'),
-                                                               # ('labor_check', '=', True),
                                                                ('picking_type_id.code', '=', 'incoming'),
-                                                               # ('x_is_check_return', '=', True)
                                                                ])
         if stock_relationship:
             for item in stock_relationship:
@@ -1286,7 +1288,7 @@ class PurchaseOrder(models.Model):
                                          ]
                         domain_normal_out = [('purchase_id', '=', order.id),
                                          ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'outcoming')
+                                         ('picking_type_id.code', '=', 'outgoing')
                                          ]
                         # x_is_check_return tẹo xóa
                         picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
@@ -2087,7 +2089,7 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             if line.order_id.purchase_type == 'product':
                 if line.vendor_price:
-                    line.price_unit = line.vendor_price
+                    line.price_unit = line.vendor_price / line.exchange_quantity
                 if not line.product_id or line.invoice_lines:
                     continue
                 params = {'order_id': line.order_id}
@@ -2714,7 +2716,6 @@ class StockPicking(models.Model):
 
     # Xử lý nhập kho sinh bút toán ở tab npl po theo số lượng nhập kho + sinh bút toán cho chi phí nhân công nội địa
     def create_invoice_npl(self, po, record):
-        list_money = []
         list_npls = []
         list_line_xk = []
         cost_labor_internal_costs = []
