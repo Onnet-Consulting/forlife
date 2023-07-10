@@ -50,10 +50,19 @@ class AccountMove(models.Model):
     invoice_synthetic_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     exchange_rate_line_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     cost_total = fields.Float(string='Tổng chi phí')
-
     x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
                                 readonly=False)
+    x_entry_types = fields.Selection(copy=True, 
+                                     string="Chi tiết loại bút toán custom",
+                                     default='entry_normal',
+                                     selection=[('entry_import_tax', 'Bút toán thuế nhập khẩu'),
+                                                ('entry_special_consumption_tax', 'Bút toán thuế tiêu thụ đặc biệt'),
+                                                ('entry_cost', 'Bút toán chi phí'),
+                                                ('entry_cost_labor', 'Bút toán chi phí nhân công thuê ngoài/nội bộ'),
+                                                ('entry_normal', 'Bút toán chi tiết hàng hóa'),
+                                                ('entry_material', 'Bút toán nguyên phụ liệu'),
+                                                ])
 
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):
