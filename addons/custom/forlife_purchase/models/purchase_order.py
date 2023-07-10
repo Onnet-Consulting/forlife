@@ -2388,8 +2388,8 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return True
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
-            if po:
+            po = record.purchase_id
+            if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
                 ## check npl tồn:
                 self.check_quant_goods_import(po)
                 po.write({
@@ -2413,7 +2413,7 @@ class StockPicking(models.Model):
                     cp = self.create_invoice_po_cost(po, record)
                     '''
                 # Tạo nhập khác xuất khác khi nhập kho
-                if po.order_line_production_order and not po.is_inter_company:
+                if po.order_line_production_order:
                     npl = self.create_invoice_npl(po, record)
                 for rec in record.move_ids_without_package:
                     if rec.work_production:
@@ -2740,8 +2740,12 @@ class StockPicking(models.Model):
         list_line_xk = []
         cost_labor_internal_costs = []
         if record.state == 'done':
+            if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
+                raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
+            else:
+                account_export_production_order = self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
-                material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
+                material = item.purchase_order_line_material_line_ids
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
                     account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
                 else:
@@ -2765,8 +2769,6 @@ class StockPicking(models.Model):
                             cost_labor_internal_costs.append(credit_cp)
                             debit_cost += pbo
                     else:
-                        if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
-                            raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
                         list_line_xk.append((0, 0, {
                             'product_id': material_line.product_id.id,
                             'product_uom': material_line.uom.id,
@@ -2779,19 +2781,13 @@ class StockPicking(models.Model):
                             'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
                             'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                         }))
-                        # check tồn kho với npl
-                        # number_product = self.env['stock.quant'].search(
-                        #     [('location_id', '=', record.location_dest_id.id),
-                        #      ('product_id', '=', material_line.product_id.id)])
-                        # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                        #     raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {
                                     'sequence': 9,
-                                    'account_id': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
-                                    'name': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.name,
+                                    'account_id': account_export_production_order.id,
+                                    'name': account_export_production_order.name,
                                     'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                                     'credit': 0,
                                 })

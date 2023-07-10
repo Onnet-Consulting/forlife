@@ -641,7 +641,7 @@ class AccountMove(models.Model):
                 if rec.exchange_rate_line_ids:
                     rec.create_invoice_tnk_db()
                     rec.create_tax_vat()
-            if rec.total_trade_discount:
+            if rec.total_trade_discount or rec.x_amount_tax:
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
