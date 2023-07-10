@@ -206,10 +206,10 @@ class InheritPosOrder(models.Model):
         return self._handle_invoice_vals(result)
 
     def get_reward_line(self, pol_value):
-        pul_ids = [] if 'promotion_usage_ids' not in pol_value or not pol_value['promotion_usage_ids'] else pol_value['promotion_usage_ids'][-1]
+        pul_ids = [p[-1]['program_id'] for p in pol_value['promotion_usage_ids'] if 'promotion_usage_ids' in pol_value]
         is_reward_line, with_purchase_condition = False, False
         if pul_ids:
-            for p in self.env['promotion.usage.line'].sudo().browse(pul_ids):
+            for p in self.env['promotion.program'].sudo().browse(pul_ids):
                 if is_reward_line and with_purchase_condition:
                     break
                 if not is_reward_line:
