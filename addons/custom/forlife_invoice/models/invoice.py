@@ -55,6 +55,17 @@ class AccountMove(models.Model):
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
                                 readonly=False)
 
+    x_entry_types = fields.Selection(copy=True, 
+                                     string="Chi tiết loại bút toán custom",
+                                     default='entry_normal',
+                                     selection=[('entry_import_tax', 'Bút toán thuế nhập khẩu'),
+                                                ('entry_special_consumption_tax ', 'Bút toán thuế tiêu thụ đặc biệt'),
+                                                ('entry_cost', 'Bút toán chi phí'),
+                                                ('entry_cost_labor', 'Bút toán chi phí nhân công thuê ngoài/nội bộ'),
+                                                ('entry_normal', 'Bút toán chi tiết hàng hóa'),
+                                                ('entry_material', 'Bút toán nguyên phụ liệu'),
+                                                ])
+
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):
         for rec in self:
