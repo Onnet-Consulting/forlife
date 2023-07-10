@@ -154,7 +154,7 @@ class MainController(http.Controller):
                     'note': order['privateDescription'],
                     'note_customer': order['description'],
                     'x_sale_chanel': 'online',
-                    'carrier_name': order['carrierName'],
+                    # 'carrier_name': order['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
@@ -164,6 +164,23 @@ class MainController(http.Controller):
                     'nhanh_customer_phone': order['customerMobile'],
                     'source_id': utm_source_id.id if utm_source_id else None,
                 }
+                # Check the order is paid online or not
+                private_description = order["privateDescription"]
+                if private_description.find("#VC") != -1:
+                    x_voucher = order["moneyTransfer"]
+                    x = private_description.split("#VC")
+                    y = x[1].strip()
+                    z = y.split()
+                    x_code_voucher = z[0]
+                else:
+                    x_voucher = 0
+                    x_code_voucher = ""
+
+                value.update({
+                    "x_voucher": x_voucher,
+                    "x_code_voucher": x_code_voucher
+                })
+                
                 # đổi trả hàng
                 if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
                     origin_order_id = request.env['sale.order'].sudo().search(
