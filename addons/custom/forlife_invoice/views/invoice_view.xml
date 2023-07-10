@@ -137,7 +137,7 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="purchase_uom"
+                            <field name="purchase_uom" string="Đơn vị mua"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="quantity_purchased"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
