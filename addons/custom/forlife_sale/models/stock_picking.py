@@ -60,7 +60,7 @@ class StockPicking(models.Model):
         return invoice_id.id
 
     def button_validate(self):
-        res = super().button_validate()
+        res = super(StockPicking, self).button_validate()
         if self.picking_type_id.x_is_return:
             for move in self.move_ids:
                 account_move = self.env['account.move'].search([('stock_move_id', '=', move.id)])
