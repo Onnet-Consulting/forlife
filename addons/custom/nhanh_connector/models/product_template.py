@@ -109,24 +109,30 @@ class ProductTemplate(models.Model):
         if len(last_fields) == len(require_fields):
             return res
         data = []
+        is_create = False
         for item in self:
-            if not item.nhanh_id or not item.categ_id.category_type_id.x_sync_nhanh:
-                continue
-            data.append({
-                "id": item._origin.id,
-                "idNhanh": item.nhanh_id,
-                "name": item.get_nhanh_name(),
-                "code": item.barcode if item.barcode else '',
-                "barcode": item.barcode if item.barcode else '',
-                "importPrice": item.list_price,
-                "price": item.list_price,
-                "shippingWeight": item.weight * 1000,
-                "status": 'New'
-            })
+            if not item.nhanh_id:
+                if item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
+                    is_create = True
 
-        if not data:
-            return res
-        self.synchronized_price_nhanh(data)
+            elif item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
+                data.append({
+                    "id": item._origin.id,
+                    "idNhanh": item.nhanh_id,
+                    "name": item.get_nhanh_name(),
+                    "code": item.barcode if item.barcode else '',
+                    "barcode": item.barcode if item.barcode else '',
+                    "importPrice": item.list_price,
+                    "price": item.list_price,
+                    "shippingWeight": item.weight * 1000,
+                    "status": 'New'
+                })
+
+        if len(data):
+            self.synchronized_price_nhanh(data)
+        if is_create:
+            self.synchronized_create_product(self)
+        
         return res
 
     def unlink(self):
