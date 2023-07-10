@@ -20,7 +20,7 @@ class ReportNum26(models.TransientModel):
     request_id = fields.Many2many('stock.transfer.request', string='Số yêu cầu', domain=[('state', 'in', ('approved', 'out_approve'))])
     location_id = fields.Many2one('stock.location', string='Từ kho')
     location_dest_id = fields.Many2one('stock.location', string='Đến kho')
-    status = fields.Selection([('approved', 'Đã phê duyệt'), ('out_approve', 'Xác nhận xuất')], string='Trạng thái')
+    status = fields.Selection([('approved', 'Chưa xuất'), ('out_approve', 'Xác nhận xuất')], string='Trạng thái')
 
     def _get_query(self):
         self.ensure_one()
@@ -28,8 +28,14 @@ class ReportNum26(models.TransientModel):
         query = f"""
             SELECT
                 str.name AS ten,
-                str.request_date AS ngay_yeu_cau,
-                str.date_planned AS han_xu_ly,
+                TO_CHAR(
+                    str.request_date,
+                    'dd/mm/yyyy'
+                ) AS ngay_yeu_cau,
+                TO_CHAR(
+                    str.date_planned,
+                    'dd/mm/yyyy'
+                ) AS han_xu_ly,
                 st.note AS ghi_chu,
                 sl1.name AS tu_kho,
                 sl2.name AS den_kho,
@@ -124,10 +130,8 @@ class ReportNum26(models.TransientModel):
         row = 5
         for value in data.get('data'):
             sheet.write(row, 0, value.get('ten'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('ngay_yeu_cau').strftime('%d/%m/%Y') if value.get('ngay_yeu_cau') else '',
-                        formats.get('normal_format'))
-            sheet.write(row, 2, value.get('han_xu_ly').strftime('%d/%m/%Y') if value.get('han_xu_ly') else '',
-                        formats.get('normal_format'))
+            sheet.write(row, 1, value.get('ngay_yeu_cau'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('han_xu_ly'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('ghi_chu'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('tu_kho'), formats.get('normal_format'))
             sheet.write(row, 5, value.get('den_kho'), formats.get('normal_format'))

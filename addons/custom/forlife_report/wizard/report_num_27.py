@@ -28,8 +28,14 @@ class ReportNum27(models.TransientModel):
         query = f"""
             select
                 t1.name as ten
-                , t1.create_date as ngay_yc
-                , t4.date as ngay_kh
+                , TO_CHAR(
+                    t1.create_date,
+                    'dd/mm/yyyy'
+                ) as ngay_yc
+                , TO_CHAR(
+                    t4.date,
+                    'dd/mm/yyyy'
+                ) as ngay_kh
                 , '' as ghi_chu
                 , t3.name as kho
                 , t2.name as so_phieu
@@ -133,10 +139,8 @@ class ReportNum27(models.TransientModel):
         row = 5
         for value in data.get('data'):
             sheet.write(row, 0, value.get('ten'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('ngay_yc').strftime('%d/%m/%Y') if value.get('ngay_yc') else '',
-                        formats.get('normal_format'))
-            sheet.write(row, 2, value.get('ngay_kh').strftime('%d/%m/%Y') if value.get('ngay_kh') else '',
-                        formats.get('normal_format'))
+            sheet.write(row, 1, value.get('ngay_yc'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('ngay_kh'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('ghi_chu'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('kho'), formats.get('normal_format'))
             sheet.write(row, 5, value.get('so_phieu'), formats.get('normal_format'))
