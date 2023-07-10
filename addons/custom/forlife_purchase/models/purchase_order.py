@@ -84,6 +84,22 @@ class PurchaseOrder(models.Model):
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+
+    @api.constrains('x_tax')
+    def constrains_x_tax(self):
+        for rec in self:
+            if rec.x_tax > 100 or rec.x_tax < 0:
+                raise UserError(_('Bạn khổng thể nhập % thuế VAT của chiết khấu nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+
     count_invoice_inter_company_ncc = fields.Integer(compute='compute_count_invoice_inter_company_ncc')
     count_invoice_inter_normal_fix = fields.Integer(compute='compute_count_invoice_inter_normal_fix')
     count_invoice_inter_expense_fix = fields.Integer(compute='compute_count_invoice_inter_expense_fix')
@@ -138,6 +154,10 @@ class PurchaseOrder(models.Model):
             }
 
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
+
+    @api.onchange('partner_id')
+    def onchange_vendor_code(self):
+        self.currency_id = self.partner_id.property_purchase_currency_id.id
 
     def compute_count_stock(self):
         for item in self:
@@ -549,7 +569,7 @@ class PurchaseOrder(models.Model):
                 invoice_line_ids = []
                 uom = self.env.ref('uom.product_uom_unit').id
                 for line in record.order_line:
-                    if line.price_subtotal <= 0:
+                    if line.price_subtotal <= 0 and not line.free_good:
                         raise UserError(
                             'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
                     product_ncc = self.env['stock.quant'].sudo().search(
@@ -768,9 +788,7 @@ class PurchaseOrder(models.Model):
         self.write({'custom_state': 'close'})
         stock_relationship = self.env['stock.picking'].search([('origin', '=', self.name),
                                                                ('state', '!=', 'done'),
-                                                               # ('labor_check', '=', True),
                                                                ('picking_type_id.code', '=', 'incoming'),
-                                                               # ('x_is_check_return', '=', True)
                                                                ])
         if stock_relationship:
             for item in stock_relationship:
@@ -1288,7 +1306,7 @@ class PurchaseOrder(models.Model):
                                          ]
                         domain_normal_out = [('purchase_id', '=', order.id),
                                          ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'outcoming')
+                                         ('picking_type_id.code', '=', 'outgoing')
                                          ]
                         # x_is_check_return tẹo xóa
                         picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
@@ -1437,6 +1455,10 @@ class PurchaseOrder(models.Model):
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
                     'move_type': 'in_invoice',
+                    'trade_discount': self.trade_discount,
+                    'total_trade_discount': self.total_trade_discount,
+                    'x_tax': self.x_tax,
+                    'x_amount_tax': self.x_amount_tax,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
@@ -2089,7 +2111,7 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             if line.order_id.purchase_type == 'product':
                 if line.vendor_price:
-                    line.price_unit = line.vendor_price
+                    line.price_unit = line.vendor_price / line.exchange_quantity
                 if not line.product_id or line.invoice_lines:
                     continue
                 params = {'order_id': line.order_id}
@@ -2730,7 +2752,6 @@ class StockPicking(models.Model):
 
     # Xử lý nhập kho sinh bút toán ở tab npl po theo số lượng nhập kho + sinh bút toán cho chi phí nhân công nội địa
     def create_invoice_npl(self, po, record):
-        list_money = []
         list_npls = []
         list_line_xk = []
         cost_labor_internal_costs = []

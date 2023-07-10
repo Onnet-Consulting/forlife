@@ -62,6 +62,8 @@
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" style="width:100%"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
@@ -177,6 +179,7 @@
                             <field name="total_vnd_amount"
                                    sum="discounted subtotal"
                                    force_save="1"
+                                   widget="float"
                                    readonly="1"/>
 <!--                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"-->
                             <field name="work_order" domain="[('state', '=', 'approved')]"
