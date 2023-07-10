@@ -139,9 +139,6 @@ class PurchaseOrder(models.Model):
 
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
 
-    # @api.depends('partner_id')
-    # def compute_
-
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
         self.currency_id = self.partner_id.property_purchase_currency_id.id
