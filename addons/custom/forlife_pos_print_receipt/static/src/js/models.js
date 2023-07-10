@@ -89,6 +89,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                         'total_amount': total_amount,
                         'id': line.id,
                         'product_name_wrapped': line.generate_wrapped_product_name(),
+                        'full_product_name': line.get_product().display_name,
                         'total_original_amount': total_original_amount
                     }
                 } else {

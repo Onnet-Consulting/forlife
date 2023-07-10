@@ -36,7 +36,7 @@ with attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -60,12 +60,12 @@ stock_product as (
 )
 select  pp.id                                                                   as product_id,
         pp.barcode                                                              as product_barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
         sw.id                                                                   as warehouse_id,
         sw.name                                                                 as warehouse_name,
         stp.quantity                                                            as quantity,
-        ad.attrs::json -> '{attr_value.get('size', '')}'                        as product_size,
-        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                     as product_color,
+        ad.attrs::json ->> '{attr_value.get('size', '')}'                        as product_size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                     as product_color,
         pt.list_price                                                           as list_price,
         ''                                                                      as discount_price
 from stock_product stp

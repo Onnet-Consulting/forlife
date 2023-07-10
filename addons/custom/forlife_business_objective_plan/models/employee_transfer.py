@@ -72,6 +72,7 @@ class EmployeeTransfer(models.Model):
                 'currency_id': self.currency_id.id,
                 'sale_province_id': self.store_dest_id.warehouse_id.sale_province_id.id,
                 'revenue_target': self.target_increase,
+                'can_transfer': False,
             })
         self.write({
             'state': 'approved',

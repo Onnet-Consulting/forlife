@@ -17,10 +17,10 @@
                         <td><t t-esc="line.so_dong_tren_phieu_yc"/></td>
                         <td><t t-esc="line.ma_sp"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
-                        <td><t t-esc="format_decimal(line.sl_yeu_cau, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_nhap_xuat[0], 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_nhap_xuat[1], 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_yeu_cau - line.sl_nhap_xuat[0], 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_yeu_cau, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_nhap_xuat[0], 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_nhap_xuat[1], 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_yeu_cau - line.sl_nhap_xuat[0], 0)"/></td>
                         <td><t t-esc="line.don_vi_tinh"/></td>
                         <td><t t-esc="line.tu_kho"/></td>
                         <td><t t-esc="line.den_kho"/></td>

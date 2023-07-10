@@ -90,7 +90,7 @@ attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -105,28 +105,28 @@ prepare_data_tb as (
 )
 select 
     row_number() over (order by st.id)                                          as num,
-    (select status::json -> st.state from prepare_data_tb)                      as trang_thai,
+    (select status::json ->> st.state from prepare_data_tb)                      as trang_thai,
     ''                                                                          as ngay_hd,
     st.name                                                                     as so_hd,
     s_loc.code                                                                  as ma_kho_xuat,
     s_loc.name                                                                  as kho_xuat,
     d_loc.code                                                                  as ma_kho_nhan,
     d_loc.name                                                                  as kho_nhan,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')   as don_vi_tinh,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')   as don_vi_tinh,
     pp.barcode                                                                  as ma_vach,
     pp.default_code                                                             as ma_hang,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')     as ten_hang,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')     as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
     case when pc.name ilike '%%hàng hóa%%' then 'Nhập mua'
         when pc.name ilike '%%thành phẩm%%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
-    ad.attrs::json -> '{attr_value.get('size', '')}'                            as kich_co,
+    ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
+    ad.attrs::json ->> '{attr_value.get('size', '')}'                            as kich_co,
     ''                                                                          as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    ad.attrs::json -> '{attr_value.get('subclass1', '')}'                       as kieu_dang,
+    ad.attrs::json ->> '{attr_value.get('subclass1', '')}'                       as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -136,8 +136,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                       as doi_tuong,
-    ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                    as nam_sx
+    ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                       as doi_tuong,
+    ad.attrs::json ->> '{attr_value.get('nam_san_xuat', '')}'                    as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id

@@ -49,13 +49,10 @@ class ReportNum5(models.TransientModel):
 
         sql = f"""
 with uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
-    select 
+    select
         id,
-        substr(name, 2, length(name)-2) as name
-    from (select
-            id,
-            coalesce(name::json -> '{user_lang_code}', name::json -> 'en_US')::text as name
-        from uom_uom) as tb
+        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
+    from uom_uom
 ),
 order_line_data as (
     select 

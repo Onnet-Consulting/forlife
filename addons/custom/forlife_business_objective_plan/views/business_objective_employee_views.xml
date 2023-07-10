@@ -9,6 +9,7 @@
                 <tree string="business_objective_employee_tree" editable="top" create="0">
                     <field name="currency_id" invisible="1"/>
                     <field name="brand_id" invisible="1"/>
+                    <field name="can_transfer" invisible="1"/>
                     <field name="bo_plan_id" options="{'no_open': True}" readonly="1"/>
                     <field name="from_date" readonly="1"/>
                     <field name="to_date" readonly="1"/>
@@ -18,7 +19,8 @@
                     <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="concurrent_position_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="revenue_target"/>
-                    <button name="btn_employee_transfer" class="oe_highlight" type="object" string=" Transfer" title="Transfer" aria-label="Transfer"/>
+                    <button name="btn_employee_transfer" class="oe_highlight" type="object" string=" Transfer"
+                            title="Transfer" aria-label="Transfer" attrs="{'invisible': [('can_transfer', '=', False)]}"/>
                 </tree>
             </field>
         </record>

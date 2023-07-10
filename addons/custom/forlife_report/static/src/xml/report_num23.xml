@@ -17,7 +17,7 @@
                             <td/>
                             <td><t t-esc="line.cua_hang"/></td>
                             <td/>
-                            <td><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
                         </tr>
                     </t>
                     <t t-else="">
@@ -25,7 +25,7 @@
                             <td><t t-esc="line.stt"/></td>
                             <td><t t-esc="line.cua_hang"/></td>
                             <td><t t-esc="line.hang"/></td>
-                            <td><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
                         </tr>
                     </t>
                 </t>
