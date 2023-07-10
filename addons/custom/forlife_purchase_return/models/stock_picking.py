@@ -79,34 +79,34 @@ class StockPicking(models.Model):
 
     def create_return_valuation_npl(self):
         lines_npl = []
-        invoice_line_npls = []
-
         picking_type_id, npl_location_id = self._get_picking_info_return(self.purchase_id)
 
         for move in self.move_ids:
-            production_order = self.env['production.order'].search(
-                [('product_id', '=', move.product_id.id), ('type', '=', 'normal')], limit=1)
-            if not production_order:
-                continue
-            if move.product_id.categ_id and move.product_id.categ_id.property_stock_valuation_account_id:
-                account_1561 = move.product_id.categ_id.property_stock_valuation_account_id.id
-            else:
-                raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+            # if move.product_id.categ_id and not move.product_id.categ_id.property_stock_valuation_account_id:
+            #     account_1561 = move.product_id.categ_id.property_stock_valuation_account_id.id
+            # else:
+            #     raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
 
-            production_data = []
-            for production_line in production_order.order_line_ids:
-                product_plan_qty = move.quantity_done / production_order.product_qty * production_line.product_qty
+            # production_order = self.env['production.order'].search(
+            #     [('product_id', '=', move.product_id.id), ('type', '=', 'normal')], limit=1)
+            # if not production_order:
+            #     continue
+            # production_data = []
+            # for production_line in production_order.order_line_ids:
 
-                if not production_line.product_id.product_tmpl_id.x_type_cost_product:
+            for material_line_id in move.purchase_line_id.purchase_order_line_material_line_ids:
+                product_plan_qty = move.quantity_done * (material_line_id.product_qty/move.purchase_line_id.product_qty)
+
+                if not material_line_id.type_cost_product:
                     lines_npl.append((0, 0, {
-                        'product_id': production_line.product_id.id,
-                        'product_uom': production_line.uom_id.id,
-                        'price_unit': production_line.price,
+                        'product_id': material_line_id.product_id.id,
+                        'product_uom': material_line_id.uom.id,
+                        'price_unit': material_line_id.production_line_price_unit,
                         'location_id': npl_location_id.id,
                         'location_dest_id': self.location_id.id,
                         'product_uom_qty': product_plan_qty,
                         'quantity_done': product_plan_qty,
-                        'amount_total': production_line.price * product_plan_qty,
+                        'amount_total': material_line_id.production_line_price_unit * product_plan_qty,
                         'reason_type_id': self.env.ref('forlife_stock.reason_type_7').id,
                         'reason_id': npl_location_id.id,
                         'include_move_id': move.id

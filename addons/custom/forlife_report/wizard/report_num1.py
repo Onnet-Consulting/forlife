@@ -50,9 +50,8 @@ select
     pol.original_price                                                as original_price,
     sum(pol.qty)::float                                               as qty,
     sum(case when disc.type = 'point' then disc.recipe * 1000
-            when disc.type = 'card' then disc.recipe
             when disc.type = 'ctkm' then disc.discounted_amount
-            else 0
+            else disc.recipe
         end 
       + (pol.original_price * pol.qty) * pol.discount / 100.0)::float as discount,
     sum(pol.qty * pol.original_price)::float                          as total_amount,

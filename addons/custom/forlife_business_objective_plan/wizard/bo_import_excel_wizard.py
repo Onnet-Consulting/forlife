@@ -79,13 +79,16 @@ select (select json_object_agg(code, id) from res_sale_province)                
        (select json_object_agg(code, id) from store where brand_id = {brand_id.id})                as store,
        (select json_object_agg(code, id) from hr_employee where code notnull)                      as employee,
        (select json_object_agg(coalesce(name::json ->> 'vi_VN', name::json ->> 'en_US'), id)
-        from hr_job where name notnull and company_id = any(array{self._context.get('allowed_company_ids') or [-1]})) as job
+        from hr_job where name notnull and company_id = any(array{self._context.get('allowed_company_ids') or [-1]})) as job,
+       (select json_object_agg(employee_id, stores) from (select employee_id, array_agg(store_id) as stores
+        from business_objective_employee where bo_plan_id = {self.bo_plan_id.id} group by employee_id) as x) as employee_exist
 """)
         data = self._cr.dictfetchone()
         sale_provinces = data.get('sale_province') or {}
         stores = data.get('store') or {}
         employees = data.get('employee') or {}
         jobs = data.get('job') or {}
+        employee_exist = data.get('employee_exist') or {}
         vals = []
         error = []
         for index, val in enumerate(values):
@@ -100,6 +103,8 @@ select (select json_object_agg(code, id) from res_sale_province)                
                 error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
             if not employee_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy nhân viên có mã là '{val[2]}'")
+            if store_id in employee_exist.get(str(employee_id)):
+                error.append(f"Dòng {index + 1}, mã nhân viên '{val[2]}' thuộc mã cửa hàng '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
             if not job_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
             if val[4]:

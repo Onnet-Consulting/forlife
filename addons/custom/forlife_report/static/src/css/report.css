@@ -101,7 +101,7 @@
 
 table.available-report-list {
     font-size: 1em;
-    padding: 10px;
+    padding: 2px;
 }
 
 .oe_tab {
@@ -172,4 +172,8 @@ table.available-report-list {
     font-size: 15px;
     font-weight: bold;
     background: rgb(198, 231, 209) !important;
+}
+
+.open_view {
+    cursor: pointer;
 }

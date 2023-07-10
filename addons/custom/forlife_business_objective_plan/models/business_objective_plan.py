@@ -8,6 +8,7 @@ class BusinessObjectivePlan(models.Model):
     _name = 'business.objective.plan'
     _description = 'Business objective plan'
     _order = 'id desc'
+    _rec_names_search = ['name', 'from_date', 'to_date']
 
     name = fields.Char('Name', required=True)
     from_date = fields.Date(string='From date', required=True)
@@ -18,6 +19,15 @@ class BusinessObjectivePlan(models.Model):
     bo_store_temp_ids = fields.One2many('business.objective.store', 'bo_plan_temp_id', 'BOS temp')
     bo_employee_temp_ids = fields.One2many('business.objective.employee', 'bo_plan_temp_id', 'BOE temp')
     is_lock_brand = fields.Boolean(compute='_compute_lock_brand', store=True)
+
+    def name_get(self):
+        if self._context.get('show_date'):
+            result = []
+            for r in self:
+                name = f"{r.name or ''} [{r.from_date.strftime('%d/%m/%Y')} - {r.to_date.strftime('%d/%m/%Y')}]"
+                result.append((r.id, name))
+            return result
+        return super().name_get()
 
     @api.depends('bo_store_ids', 'bo_employee_ids')
     def _compute_lock_brand(self):

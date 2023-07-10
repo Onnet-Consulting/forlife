@@ -99,31 +99,33 @@
     </t>
 
     <t t-name="AvailableReport">
-        <table class="table-sm table-hover table-striped table o_list_table available-report-list report_table">
-            <thead>
-                <tr>
-                    <th class="index-report">STT</th>
-                    <th>Module</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <t t-set="num" t-value="1"/>
-                <t t-foreach="widget.report_info" t-as="report">
+        <div id="main-content">
+            <table class="table-sm table-hover table-striped table o_list_table available-report-list report_table">
+                <thead>
                     <tr>
-                        <td class="index-report">
-                            <t t-esc="num"/>
-                        </td>
-                        <td>
-                            <t t-esc="report.module"/>
-                        </td>
-                        <td>
-                            <t t-esc="report.name"/>
-                        </td>
+                        <th class="index-report">STT</th>
+                        <th>Module</th>
+                        <th>Name</th>
                     </tr>
-                    <t t-set="num" t-value="num + 1"/>
-                </t>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="widget.report_info" t-as="report">
+                        <tr t-att-id="report.do_action" class="open_view">
+                            <td class="index-report">
+                                <t t-esc="num"/>
+                            </td>
+                            <td>
+                                <t t-esc="report.module"/>
+                            </td>
+                            <td>
+                                <t t-esc="report.name"/>
+                            </td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </div>
     </t>
 </odoo>
