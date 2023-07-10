@@ -53,6 +53,7 @@
         'views/menu_item.xml',
 
         'views/ir_ui_menu_view.xml',
+        'views/res_groups_view.xml',
     ],
     "post_init_hook": "post_init_hook",
     'assets': {
