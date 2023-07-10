@@ -165,7 +165,7 @@ class InheritPosOrder(models.Model):
         if journal.company_consignment_id:
             invoice_line.update({
                 'partner_id': journal.company_consignment_id.id,
-                'account_id': journal.default_account_id.id
+                # 'account_id': journal.default_account_id.id
             })
         return invoice_line
 
@@ -205,6 +205,19 @@ class InheritPosOrder(models.Model):
         result['pos_order_id'] = self.id
         return self._handle_invoice_vals(result)
 
+    def get_reward_line(self, pol_value):
+        pul_ids = [p[-1]['program_id'] for p in pol_value['promotion_usage_ids'] if 'promotion_usage_ids' in pol_value]
+        is_reward_line, with_purchase_condition = False, False
+        if pul_ids:
+            for p in self.env['promotion.program'].sudo().browse(pul_ids):
+                if is_reward_line and with_purchase_condition:
+                    break
+                if not is_reward_line:
+                    is_reward_line = p.disc_percent == 100 or p.reward_type in ('code_buy_x_get_y', 'code_buy_x_get_cheapest', 'cart_get_x_free')
+                if is_reward_line and not with_purchase_condition:
+                    with_purchase_condition = p.product_count > 0 or p.order_amount_min > 0
+        return is_reward_line, with_purchase_condition
+
     @api.model
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
@@ -212,6 +225,7 @@ class InheritPosOrder(models.Model):
         order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
+            line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
             if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
                 line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
 
@@ -263,6 +277,7 @@ class InheritPosOrderLine(models.Model):
     promotion_id = fields.Many2oneReference(string='Promotion ID', model_field='promotion_model', index=True)
     is_promotion = fields.Boolean(string='Is promotion')
     subtotal_paid = fields.Monetary(compute='_compute_subtotal_paid')
+    with_purchase_condition = fields.Boolean(string='With Purchase Condition', default=False, index=True)
 
     def _compute_subtotal_paid(self):
         for pol in self:
@@ -359,6 +374,7 @@ class InheritPosOrderLine(models.Model):
     def generate_promotion_values(self, original_qty=0):
         return {
             'is_reward_line': self.is_reward_line,
+            'with_purchase_condition': self.with_purchase_condition,
             'promotion_usage_ids': [(0, 0, {
                 'program_id': p.program_id.id,
                 'currency_id': p.currency_id.id,
