@@ -1762,17 +1762,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         if (program.incl_reward_in_order_type == 'no_incl') {
                             amountPerLine =
                                 (!reward_products.has(line.product.id) && (program.only_condition_product ? program.valid_product_ids.has(line.product.id) : true))
-                                ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                                ? line.promotion_usage_ids.filter(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                            .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
                                 : 0.0;
                         } else if (program.incl_reward_in_order_type == 'unit_price') {
                             amountPerLine =
                                 (!program.only_condition_product ? reward_products.has(line.product.id) : false)
-                                ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                                ? line.promotion_usage_ids.filter(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                            .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
                                 : 0.0;
                         } else {
                             amountPerLine =
                                 (!program.only_condition_product || (program.only_condition_product && program.valid_product_ids.has(line.product.id)))
-                                ? line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                                ? line.promotion_usage_ids.filter(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                            .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
                                 : 0.0;
                         };
                         return acc + amountPerLine;
@@ -1972,8 +1975,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let disc_amount = originalPrice - CodeProgram.disc_fixed_price;
             disc_amount = disc_amount > 0 ? disc_amount : 0;
 
-            if (disc_amount > 0) {
-                let newPrice = CodeProgram.disc_fixed_price;
+            if (LineList.is_not_discount) {
+                disc_amount = 0;
+            }
+
+            if (disc_amount > 0 || LineList.is_not_discount) {
+                let newPrice = LineList.is_not_discount ? originalPrice : CodeProgram.disc_fixed_price;
                 let discAmountInLine = disc_amount;
                 LineList.price = newPrice;
                 LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null,originalPrice, newPrice, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
