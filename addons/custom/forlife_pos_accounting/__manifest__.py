@@ -21,6 +21,7 @@
     ],
 
     'data': [
+        'views/res_config_settings_views.xml',
         'views/journal_views.xml',
         'views/product_views.xml',
         'views/member_card_views.xml',
