@@ -281,6 +281,8 @@
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
+                    <field name="x_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
+                    <field name="x_amount_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
                     <field name="is_done_picking" invisible="1"/>
 <!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
@@ -318,7 +320,10 @@
                         <field name="purchase_uom"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" force_save="1"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"
+                               decoration-danger="is_red_color == True"
+                               string="Tỷ lệ quy đổi"
+                               force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal" force_save="1"/>
                         <field name="vendor_price"
@@ -349,7 +354,7 @@
                                force_save="1"
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"
                                readonly="1"
-                        />
+                               widget="float"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount_percent', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
