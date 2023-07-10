@@ -177,6 +177,7 @@
                             <field name="total_vnd_amount"
                                    sum="discounted subtotal"
                                    force_save="1"
+                                   widget="float"
                                    readonly="1"/>
 <!--                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"-->
                             <field name="work_order" domain="[('state', '=', 'approved')]"
