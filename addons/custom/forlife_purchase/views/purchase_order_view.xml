@@ -354,8 +354,7 @@
                                force_save="1"
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"
                                readonly="1"
-                               widget="float"
-                        />
+                               widget="float"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount_percent', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
