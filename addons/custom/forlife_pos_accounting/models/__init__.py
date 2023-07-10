@@ -1,3 +1,5 @@
+from . import res_company
+from . import res_config_settings
 from . import journal
 from . import product
 from . import point_promotion
