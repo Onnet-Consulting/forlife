@@ -45,7 +45,7 @@ class AccountMovePurchaseAsset(models.Model):
         journal_value = {
             "CompanyCode": self.company_id.code or None,
             "Stt": self.name or None,
-            "DocCode": "NK" if is_partner_group_1 else "NM",
+            "DocCode": "XT" if is_reversed else ("NK" if is_partner_group_1 else "NM"),
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
@@ -404,7 +404,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
         journal_value = {
             "CompanyCode": self.company_id.code or None,
             "Stt": self.name or None,
-            "DocCode": "CP",
+            "DocCode": "XT" if is_reversed else "CP",
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
@@ -469,9 +469,10 @@ class StockPickingPurchaseReturn(models.Model):
     def bravo_get_return_picking_purchase_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder",
-            "ItemCode", "ItemName", "CreditAccount", "DebitAccount", "OriginalPriceUnit", "PriceUnit",
-            "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "DocNo_PO", "WarehouseCode", "JobCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder", "ItemCode",
+            "ItemName", "UnitPurCode", "CreditAccount", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
+            "OriginalPriceUnit", "PriceUnit", "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost",
+            "OriginalAmount", "Amount", "IsPromotions", "DocNo_PO", "WarehouseCode", "JobCode",
             "RowId", "DocNo_WO", "RowId_Purchase", "DeptCode",
         ]
 
@@ -493,10 +494,9 @@ class StockPickingPurchaseReturn(models.Model):
         product = stock_move.product_id
         debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
         credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
-        debit_account = debit_line[0].account_id.code if debit_line else None
-        credit_account = credit_line[0].account_id.code if credit_line else None
-        discount = purchase_order_line.discount / purchase_order_line.purchase_quantity \
-            if purchase_order_line.purchase_quantity else 0
+        debit_account = debit_line[0].account_id.code if debit_line else product.categ_id.property_stock_account_input_categ_id.code
+        credit_account = credit_line[0].account_id.code if credit_line else product.categ_id.property_stock_valuation_account_id.code
+        discount = purchase_order_line.discount / purchase_order_line.purchase_quantity if purchase_order_line.purchase_quantity else 0
         vendor_price = purchase_order_line.vendor_price
 
         value = {
@@ -515,14 +515,21 @@ class StockPickingPurchaseReturn(models.Model):
             "BuiltinOrder": idx or None,
             "ItemCode": product.barcode or None,
             "ItemName": product.name or None,
+            "UnitPurCode": purchase_order_line.purchase_uom.code or None,
             "CreditAccount": credit_account or None,
             "DebitAccount": debit_account or None,
+            "Quantity9": stock_move.quantity_purchase_done or 0,
+            "ConvertRate9": stock_move.quantity_change or 0,
+            "Quantity": stock_move.quantity_done or 0,
             "OriginalPriceUnit": vendor_price,
             "PriceUnit": vendor_price * exchange_rate,
             "OriginalDiscount": discount,
             "Discount": discount * exchange_rate,
             "OriginalUnitCost": vendor_price - discount,
             "UnitCost": (vendor_price - discount) * exchange_rate,
+            "OriginalAmount": credit_line.credit or 0,
+            "Amount": (credit_line.credit or 0) * exchange_rate,
+            "IsPromotions": stock_move.free_good or False,
             "DocNo_PO": picking.origin or None,
             "WarehouseCode": picking.location_id.warehouse_id.code or None,
             "JobCode": stock_move.occasion_code_id.code or None,
