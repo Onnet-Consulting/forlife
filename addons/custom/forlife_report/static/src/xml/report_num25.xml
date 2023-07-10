@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum25Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum25MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum25MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.stt"/></td>
+                        <td><t t-esc="line.khu_vuc"/></td>
+                        <td><t t-esc="line.ma_cua_hang"/></td>
+                        <td><t t-esc="line.ten_cua_hang"/></td>
+                        <td><t t-esc="line.ma_nhan_vien"/></td>
+                        <td><t t-esc="line.ten_nhan_vien"/></td>
+                        <td><t t-esc="line.vi_tri"/></td>
+                        <td><t t-esc="line.vi_tri_kiem_nhiem"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.so_bill,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tb_bill,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong_cong,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.muc_tieu_ca_nhan,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.muc_tieu_cua_hang,0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.thu_nhap_du_tinh,0)"/></td>
+                        <t t-foreach="widget.column_add" t-as="column">
+                            <td class="right"><t t-esc="format_decimal(line[column], 0)"/></td>
+                        </t>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

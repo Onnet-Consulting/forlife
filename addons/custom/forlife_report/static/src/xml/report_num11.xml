@@ -22,8 +22,8 @@
                         <td><t t-esc="line.ngay_mua_dk"/></td>
                         <td><t t-esc="line.ngay_mua_gn"/></td>
                         <td><t t-esc="line.ngay_ck"/></td>
-                        <td><t t-esc="format_decimal(line.dt_ps, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.min_turnover - line.dt_ps, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.dt_ps, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.min_turnover - line.dt_ps, 0)"/></td>
                         <td><t t-esc="line.current_rank"/></td>
                         <td><t t-esc="line.new_rank"/></td>
                     </tr>

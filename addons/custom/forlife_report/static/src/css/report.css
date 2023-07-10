@@ -67,8 +67,7 @@
 }
 
 #report-template #main-content {
-    border: 1px solid #C9CCD2;
-    padding: 5px;
+    border: 1px solid #eff4ff;
     overflow: auto;
 }
 
@@ -102,7 +101,7 @@
 
 table.available-report-list {
     font-size: 1em;
-    padding: 10px;
+    padding: 2px;
 }
 
 .oe_tab {
@@ -129,8 +128,11 @@ table.available-report-list {
 
 .report_table > thead {
     vertical-align: middle;
-    background-color: #0d305ad1;
+    background-color: #714B67;
     color: white;
+    white-space: nowrap;
+    position: sticky;
+    top:0;
 }
 
 .report_table {
@@ -170,4 +172,8 @@ table.available-report-list {
     font-size: 15px;
     font-weight: bold;
     background: rgb(198, 231, 209) !important;
+}
+
+.open_view {
+    cursor: pointer;
 }

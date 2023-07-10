@@ -87,7 +87,7 @@ product_info as (
     select 
         pp.id                                                                   as product_id,
         pp.barcode                                                              as barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
         split_part(pc.complete_name, ' / ', 2)                          		as product_group,
         split_part(pc.complete_name, ' / ', 3)                          		as product_line
     from product_product pp
@@ -102,7 +102,7 @@ attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -122,9 +122,9 @@ select row_number() over ()                                                     
         pi.product_name                                                           as product_name,
         pi.product_group                                                          as product_group,
         pi.product_line                                                           as product_line,
-        ad.attrs::json -> '{attr_value.get('size', '')}'                          as product_size,
-        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as product_color,
-        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender        
+        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as product_size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as product_color,
+        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender        
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id

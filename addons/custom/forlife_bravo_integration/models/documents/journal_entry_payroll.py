@@ -62,7 +62,7 @@ class JournalEntryPayroll(models.Model):
                 "RowId": line.id or None,
                 "AssetCode": asset_id.code if (asset_id and asset_id.type in ("CCDC", "TSCD")) else None,
                 "DocNo_WO": line.work_order.code or one_line.work_order.code or None,
-                "ExpenseCatgCode": line.analytic_account_id.code or one_line.analytic_account_id.code or None,
+                "ExpenseCatgCode": line.expense_item_id.code or one_line.expense_item_id.code or None,
                 "ProductCode": asset_id.code if (asset_id and asset_id.type == 'XDCB') else None,
                 "DeptCode": line.analytic_account_id.code or one_line.analytic_account_id.code or None,
             }

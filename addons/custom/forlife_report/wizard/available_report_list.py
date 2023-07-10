@@ -147,6 +147,12 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum24Template',
         'reportPager': True,
     },
+    'report.num25': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo dự tính thu nhập nhân viên bán hàng theo doanh thu',
+        'reportTemplate': 'ReportNum25Template',
+        'reportPager': True,
+    },
     'report.num26': {
         'module': 'Kho',
         'name': 'Báo cáo danh sách phiếu điều chuyển',
@@ -157,6 +163,12 @@ AVAILABLE_REPORT = {
         'module': 'Kho',
         'name': 'Báo cáo danh sách phiếu nhập/xuất khác',
         'reportTemplate': 'ReportNum27Template',
+        'reportPager': True,
+    },
+    'report.num28': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách phiếu nhập kho mua hàng',
+        'reportTemplate': 'ReportNum28Template',
         'reportPager': True,
     },
 }

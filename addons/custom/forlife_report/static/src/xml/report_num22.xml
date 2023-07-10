@@ -19,8 +19,8 @@
                             <td><t t-esc="line.ngay"/></td>
                             <td><t t-esc="line.phien_bh"/></td>
                             <td><t t-esc="line.pos"/></td>
-                            <td><t t-esc="format_decimal(line.tong_tien_thu, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tong_tien_chi, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien_thu, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien_chi, 0)"/></td>
                         </tr>
                     </t>
                 </tbody>
@@ -48,8 +48,8 @@
                             <td><t t-esc="line.khoan_muc"/></td>
                             <td><t t-esc="line.tk_no"/></td>
                             <td><t t-esc="line.tk_co"/></td>
-                            <td><t t-esc="format_decimal(line.tien_thu, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_chi, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_thu, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_chi, 0)"/></td>
                             <td><t t-esc="line.ten_nv"/></td>
                             <td><t t-esc="line.ma_nv"/></td>
                         </tr>
