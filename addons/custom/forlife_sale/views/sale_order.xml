@@ -82,7 +82,7 @@
                 <xpath expr="//field[@name='payment_term_id']" position="before">
                     <field name="x_punish" force_save="1" attrs="{'readonly': [('state', '=', 'sale')]}"/>
 <!--                    <field name="x_shipping_punish" force_save="1" readonly="1" attrs="{'invisible': [('x_shipping_punish', '=', False)]}"/>-->
-                    <field name="x_manufacture_order_code_id"/>
+                    <field name="x_manufacture_order_code_id" domain="[('state', '=', 'done')]"/>
                     <field name="x_is_return" force_save="1" readonly="1" attrs="{'invisible': [('x_is_return', '=', False)]}"/>
                     <field name="x_is_exchange" force_save="1" readonly="1" attrs="{'invisible': [('x_is_exchange', '=', False)]}"/>
                     <field name="x_origin"/>
