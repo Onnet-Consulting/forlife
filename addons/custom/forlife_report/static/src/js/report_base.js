@@ -4,16 +4,12 @@ odoo.define('forlife_report.report_base', function (require) {
     const core = require('web.core');
     const AbstractAction = require('web.AbstractAction');
     const {round_decimals: round_di} = require('web.utils');
-    const field_utils = require('web.field_utils');
     const QWeb = core.qweb;
     const _t = core._t;
 
     function format_decimal(amount, precision = 0) {
         if (typeof amount === 'number') {
             amount = round_di(amount, precision).toFixed(precision);
-            amount = field_utils.format.float(round_di(amount, precision), {
-                digits: [69, precision],
-            });
         }
 
         return amount;
@@ -81,6 +77,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.report_filename = data.reportTitle + '.xls';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
+            this.column_add = data.column_add;
             this.record_per_page = data.recordPerPage || this.data.length;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);
@@ -134,6 +131,9 @@ odoo.define('forlife_report.report_base', function (require) {
 
     const AvailableReportAction = AbstractAction.extend({
         reportTemplate: 'AvailableReport',
+        events: {
+            'click .open_view': 'do_action_report',
+        },
 
         willStart: async function () {
             const reportPromise = this._rpc({
@@ -162,6 +162,9 @@ odoo.define('forlife_report.report_base', function (require) {
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
             }));
+        },
+        do_action_report: function (e){
+            this.do_action(e.currentTarget.id);
         },
     })
 

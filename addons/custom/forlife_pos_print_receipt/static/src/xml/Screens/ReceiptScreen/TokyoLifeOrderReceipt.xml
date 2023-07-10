@@ -148,7 +148,8 @@
         <t t-if="line.quantity != 0">
             <tr>
                 <td colspan="5">
-                    <t t-esc="line.product_name_wrapped[0]"/>
+                    <t t-esc="line.full_product_name"/>
+                    <!--<t t-esc="line.product_name_wrapped[0]"/>-->
                 </td>
             </tr>
             <tr class="product-price-qty-detail">

@@ -2362,7 +2362,7 @@ class StockPicking(models.Model):
 
 
     def button_validate(self):
-        res = super().button_validate()
+        res = super(StockPicking, self).button_validate()
         if self._context.get('endloop'):
             return True
         for record in self:

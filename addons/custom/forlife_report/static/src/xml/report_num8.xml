@@ -25,7 +25,7 @@
                         <td><t t-esc="line.purpose"/></td>
                         <td><t t-esc="line.order_name"/></td>
                         <td><t t-esc="line.date"/></td>
-                        <td><t t-esc="format_decimal(line.value, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.value, 0)"/></td>
                     </tr>
                 </t>
             </tbody>

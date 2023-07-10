@@ -39,7 +39,7 @@ with attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -54,10 +54,10 @@ product_cate_info as
         pp.id     		                                                          as product_id,
         cate.complete_name                                                        as complete_name,
         pp.barcode                                                                as product_barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')   as product_name,
         pt.collection                                                             as collection,
-        ad.attrs::json -> '{attr_value.get('size', '')}'                          as size,
-        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as color
+        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as color
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id

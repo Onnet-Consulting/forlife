@@ -21,12 +21,12 @@
                         <td><t t-esc="line.so_phieu_yc"/></td>
                         <td><t t-esc="line.so_dong_tren_phieu_yc"/></td>
                         <td><t t-esc="line.mo_ta_ts"/></td>
-                        <td><t t-esc="format_decimal(line.sl_dat_mua, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_da_dat, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_con_lai, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_dat_mua, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_da_dat, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_con_lai, 0)"/></td>
                         <td><t t-esc="line.don_vi_mua"/></td>
-                        <td><t t-esc="format_decimal(line.ty_le_quy_doi, 2)"/></td>
-                        <td><t t-esc="format_decimal(line.sl_ton_kho_quy_doi, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.ty_le_quy_doi, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_ton_kho_quy_doi, 2)"/></td>
                         <td><t t-esc="line.don_vi_tinh"/></td>
                         <td><t t-esc="line.tt_chi_phi"/></td>
                         <td><t t-esc="line.lenh_sx"/></td>
