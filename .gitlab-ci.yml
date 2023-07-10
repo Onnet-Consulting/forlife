@@ -6,6 +6,7 @@ stages:
   - beta
   - production
   - pilot-02
+  - dtbh
 
 default:
   before_script:
@@ -51,6 +52,19 @@ build-production:
   tags:
     - build-production
   when: manual
+
+build-dtbh:
+  stage: dtbh
+  only:
+    refs:
+      - dtbh
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-dtbh
 
 build-pilot-02:
   stage: pilot-02
