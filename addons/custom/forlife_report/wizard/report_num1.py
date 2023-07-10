@@ -50,9 +50,8 @@ select
     pol.original_price                                                as original_price,
     sum(pol.qty)::float                                               as qty,
     sum(case when disc.type = 'point' then disc.recipe * 1000
-            when disc.type = 'card' then disc.recipe
             when disc.type = 'ctkm' then disc.discounted_amount
-            else 0
+            else disc.recipe
         end 
       + (pol.original_price * pol.qty) * pol.discount / 100.0)::float as discount,
     sum(pol.qty * pol.original_price)::float                          as total_amount,
@@ -127,7 +126,7 @@ attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -145,23 +144,18 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
         pt.categ_id,
         pt.uom_name,
         pt.cate_name,
-        ad.attrs::json -> '{attr_value.get('size', '')}' as size,
-        ad.attrs::json -> '{attr_value.get('mau_sac', '')}' as color
+        ad.attrs::json ->> '{attr_value.get('size', '')}' as size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}' as color
     from product_product pp
-        left join (select
-                    id, categ_id, cate_name,
-                    substr(product_name, 2, length(product_name)-2) as product_name,
-                    substr(uom_name, 2, length(uom_name)-2) as uom_name
-                   from (select 
-                            pt1.id,
-                            pt1.categ_id,
-                            pc.complete_name as cate_name,
-                            coalesce(pt1.name::json -> '{user_lang_code}', pt1.name::json -> 'en_US')::text as product_name,
-                            coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text as uom_name
-                         from product_template pt1
-                            left join uom_uom uom on uom.id = pt1.uom_id
-                            left join product_category pc on pc.id = pt1.categ_id
-                        ) as subname_table
+        left join (select 
+                        pt1.id,
+                        pt1.categ_id,
+                        pc.complete_name as cate_name,
+                        coalesce(pt1.name::json ->> '{user_lang_code}', pt1.name::json ->> 'en_US') as product_name,
+                        coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as uom_name
+                     from product_template pt1
+                        left join uom_uom uom on uom.id = pt1.uom_id
+                        left join product_category pc on pc.id = pt1.categ_id
                 ) as pt
         on pt.id = pp.product_tmpl_id
         left join attribute_data ad on ad.product_id = pp.id
@@ -169,13 +163,10 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
     order by pp.product_tmpl_id asc
 ),
 uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
-    select 
+    select
         id,
-        substr(name, 2, length(name)-2) as name
-    from (select
-            id,
-            coalesce(name::json -> '{user_lang_code}', name::json -> 'en_US')::text as name
-        from uom_uom) as tb
+        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
+    from uom_uom
 ),
 result_table as (
     {' UNION ALL '.join(query)}

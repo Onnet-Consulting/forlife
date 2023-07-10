@@ -27,25 +27,25 @@
                             <td><t t-esc="line.voucher"/></td>
                             <td><t t-esc="line.sl_mua"/></td>
                             <td><t t-esc="line.sl_tra"/></td>
-                            <td><t t-esc="format_decimal(line.cong, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tong_cong - line.giam_tren_hd, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_dat_coc, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_tra_lai, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_tich_luy, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tich_luy_hd, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_the, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_nextpay, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong - line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_dat_coc, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_tra_lai, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_tich_luy, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tich_luy_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_the, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_nextpay, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
                             <td><t t-esc="line.nguoi_lap"/></td>
                             <td><t t-esc="line.ngay_lap"/></td>
                             <td><t t-esc="line.nguoi_sua"/></td>
@@ -80,13 +80,13 @@
                             <td><t t-esc="line.ma_vach"/></td>
                             <td><t t-esc="line.ten_sp"/></td>
                             <td><t t-esc="line.don_vi"/></td>
-                            <td><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
-                            <t t-if="thanh_tien != 0"><td><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
+                            <td class="right"><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
+                            <t t-if="thanh_tien != 0"><td class="right"><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
                             <t t-else=""><td>0</td></t>
-                            <td><t t-esc="format_decimal(line.tien_giam_gia, 0)"/></td>
-                            <td><t t-esc="format_decimal(thanh_tien - line.tien_giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(thanh_tien - line.tien_giam_gia, 0)"/></td>
                         </tr>
                     </t>
                 </tbody>

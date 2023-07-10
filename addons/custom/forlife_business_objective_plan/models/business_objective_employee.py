@@ -6,6 +6,7 @@ from odoo import api, fields, models, _
 class BusinessObjectiveEmployee(models.Model):
     _name = 'business.objective.employee'
     _description = 'Business objective employee'
+    _order = 'employee_id,store_id'
 
     bo_plan_id = fields.Many2one('business.objective.plan', 'Business objective plan', ondelete='restrict', required=True)
     brand_id = fields.Many2one("res.brand", string="Brand", related='bo_plan_id.brand_id', store=True)
@@ -19,6 +20,11 @@ class BusinessObjectiveEmployee(models.Model):
     concurrent_position_id = fields.Many2one('hr.job', 'Concurrent Position', ondelete='restrict')
     revenue_target = fields.Monetary('Revenue target', default=10000000)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
+    can_transfer = fields.Boolean('Can transfer', default=True)
+
+    _sql_constraints = [
+        ('unique_store', 'UNIQUE(employee_id, store_id, bo_plan_id)', 'The employee and store data pairs are duplicated')
+    ]
 
     def btn_employee_transfer(self):
         self.ensure_one()
