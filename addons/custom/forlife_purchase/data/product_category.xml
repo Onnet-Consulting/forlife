@@ -41,29 +41,28 @@
         </record>
         <record id="product_import_tax_default" model="product.product">
             <field name="name">Thuế nhập khẩu</field>
-<!--            <field name="code_product"></field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_import_tax"/>
         </record>
         <record id="product_vat_tax" model="product.product">
             <field name="name">Thuế VAT (Nhập khẩu)</field>
-            <!--            <field name="code_product">tax3332000001</field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_vat_tax"/>
         </record>
         <record id="product_excise_tax_default" model="product.product">
             <field name="name">Thuế tiêu thụ đặc biệt</field>
-            <!--            <field name="code_product">tax3332000001</field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_excise_tax"/>
         </record>
         <record id="product_discount_tax" model="product.product">
             <field name="name">Chiết khấu tổng đơn</field>
-            <!--            <field name="code_product">tax3332000001</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_discount_tax"/>
+        </record>
+        <record id="product_vat_discount_tax_default" model="product.product">
+            <field name="name">Thuế VAT tổng chiết khấu đơn mua</field>
             <field name="categ_id" ref="forlife_purchase.category_product_discount_tax"/>
         </record>
         <record id="product_internal_costs" model="product.template">
             <field name="name">Chi phí nội bộ</field>
              <field name="detailed_type">service</field>
             <field name="product_type">service</field>
-            <!--            <field name="code_product">tax3332000001</field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_internal_costs"/>
             <field name="x_type_cost_product">internal_costs</field>
         </record>
