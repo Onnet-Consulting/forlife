@@ -54,6 +54,9 @@ class MainController(http.Controller):
         odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
         if event_type == 'orderUpdate':
             if not odoo_order:
+                if data['status'] != "Confirmed":
+                    return self.result_request(404, 1, _('Order confirmation is required'))
+                    
                 order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
