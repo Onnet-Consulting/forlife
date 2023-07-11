@@ -110,7 +110,7 @@ class StockTranfer(models.Model):
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)])
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
-            if (not location_mapping and not self.location_id.id_deposit) or (not location_dest_mapping and not self.location_dest_id.id_deposit):
+            if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
             if location_mapping and location_dest_mapping:
                 line = []
