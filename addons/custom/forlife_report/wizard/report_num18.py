@@ -53,23 +53,23 @@ select
     rp.name                                                                                 as nha_cung_cap,
     ''                                                                                      as ghi_chu,
     pp.barcode                                                                              as san_pham,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as mo_ta,
-    (select product_type::json -> pt.product_type from prepare_data_tb)                    as loai_hh,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as mo_ta,
+    (select product_type::json ->> pt.product_type from prepare_data_tb)                    as loai_hh,
     pr.name                                                                                 as so_phieu_yc,
     row_number() over (PARTITION BY pr.id ORDER BY pr.id, prl.id)                           as so_dong_tren_phieu_yc,
     prl.asset_description                                                                   as mo_ta_ts,
     prl.purchase_quantity                                                                   as sl_dat_mua,
     prl.order_quantity                                                                      as sl_da_dat,
     prl.purchase_quantity - prl.order_quantity                                              as sl_con_lai,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')               as don_vi_mua,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')               as don_vi_mua,
     prl.exchange_quantity                                                                   as ty_le_quy_doi,
     prl.product_qty                                                                         as sl_ton_kho_quy_doi,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')               as don_vi_tinh,
-    coalesce(aaa.name::json -> '{user_lang_code}', aaa.name::json -> 'en_US')               as tt_chi_phi,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')               as don_vi_tinh,
+    coalesce(aaa.name::json ->> '{user_lang_code}', aaa.name::json ->> 'en_US')               as tt_chi_phi,
     fp.name                                                                                 as lenh_sx,
     oc.name                                                                                 as ma_vu_viec,
     to_char(prl.date_planned + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')               as ngay_du_kien,
-    (select state::json -> prl.is_close::text from prepare_data_tb)                         as trang_thai
+    (select state::json ->> prl.is_close::text from prepare_data_tb)                         as trang_thai
 from purchase_request_line prl
     left join res_partner rp on rp.id = prl.vendor_code
     join product_product pp on pp.id = prl.product_id

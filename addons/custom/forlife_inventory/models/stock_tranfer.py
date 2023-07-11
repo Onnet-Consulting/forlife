@@ -111,7 +111,7 @@ class StockTranfer(models.Model):
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
             if not location_mapping or not location_dest_mapping:
-                raise UserError(_(f'Có thể cần cấu hình Location Mapping của 1 trong 2 địa điểm này khi tạo phiếu!'))
+                raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
             if location_mapping and location_dest_mapping:
                 line = []
                 for l in self.stock_transfer_line:

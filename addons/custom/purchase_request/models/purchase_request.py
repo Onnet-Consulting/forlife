@@ -22,7 +22,7 @@ class PurchaseRequest(models.Model):
     rejection_reason = fields.Char(string="Rejection_reason")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
-    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     type_po = fields.Selection(
         copy=False,
         string="Loại đơn hàng",
@@ -145,7 +145,7 @@ class PurchaseRequest(models.Model):
         order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False).ids
         order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
                                     fields=['product_id', 'vendor_code', 'product_type'],
-                                    groupby=['vendor_code', 'product_type'], lazy=False)
+                                    groupby=['vendor_code', 'product_type', 'currency_id'], lazy=False)
         purchase_order = self.env['purchase.order']
         occasion_code_id = []
         account_analytic_id = []
@@ -167,7 +167,6 @@ class PurchaseRequest(models.Model):
             vendor_id = vendor_code[0] if vendor_code else False
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
             po_line_data = []
-            po_ex_line_data = []
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
@@ -206,6 +205,7 @@ class PurchaseRequest(models.Model):
                     'source_document': source_document,
                     'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
+                    'currency_id': purchase_request_lines.currency_id.id,
                 }
                 purchase_order |= purchase_order.create(po_data)
         return {
@@ -253,13 +253,19 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')])
+    currency_id = fields.Many2one('res.currency', 'Currency')
+
+    @api.onchange('vendor_code')
+    def onchange_vendor_code(self):
+        self.currency_id = self.vendor_code.property_purchase_currency_id.id
+
+    production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', related='product_id.uom_id', required=True)
-    exchange_quantity = fields.Float('Exchange Quantity', required=True)
+    exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     purchase_order_id = fields.Many2one('purchase.order')

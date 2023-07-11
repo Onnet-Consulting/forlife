@@ -39,7 +39,7 @@ select row_number() over (order by po.date_order desc)                      as n
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
     rp.name                                                                 as suppliers_name,
     pp.barcode                                                              as product_code,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
     pol.product_qty,
     pol.price_unit,
     pol.discount_percent,

@@ -81,9 +81,9 @@
                                     <create name="add" string="Add" readonly="1"/>
                                 </control>
                                 <field name="product_id" readonly="1" force_save="1"/>
-                                <field name="name" readonly="1" force_save="1"/>
+                                <field name="name" readonly="1" force_save="1" string="Mô tả"/>
                                 <field name="purchase_quantity" readonly="0"/>
-                                <field name="product_uom" readonly="1" force_save="1"/>
+                                <field name="product_uom" readonly="1" force_save="1" string="Đơn vị tính"/>
                                 <field name="exchange_quantity" readonly="0"/>
                                 <field name="product_qty" readonly="1" force_save="1"/>
                                 <button name="action_npl" string="NPL" type="object" style="text-align: center;"
@@ -115,16 +115,18 @@
                         </group>
                         <notebook>
                             <page string="Nguyên phụ liệu">
-                                <field name="purchase_order_line_material_line_ids" mode="tree">
+                                <field name="purchase_order_line_material_line_ids" mode="tree" force_save="1">
                                     <tree editable="bottom">
                                         <field name="is_from_po" invisible="1"/>
+                                        <field name="type_cost_product" invisible="1"/>
+                                        <field name="compute_flag" invisible="1" force_save="1"/>
                                         <field name="product_id" context="{'show_product_code': True}"
                                                attrs="{'readonly': [('is_from_po', '=', True)]}" string="Sản phẩm"/>
                                         <field name="name" string="Mô tả"/>
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
-                                        <field name="product_qty" string="Số lượng"/>
+                                        <field name="product_qty" string="Số lượng" force_save="1"/>
 <!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
-                                        <field name="price_unit" string="Giá"/>
+                                        <field name="price_unit" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
                                     </tree>
                                 </field>
                             </page>

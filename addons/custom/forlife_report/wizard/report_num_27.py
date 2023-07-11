@@ -120,7 +120,7 @@ class ReportNum27(models.TransientModel):
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo danh sách phiếu điều chuyển')
+        sheet = workbook.add_worksheet('Báo cáo danh sách phiếu nhập/xuất khác')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo danh sách phiếu nhập/xuất khác', formats.get('header_format'))
         sheet.write(2, 0, 'Số yêu cầu: %s' % self.request_id.mapped('name') or '', formats.get('italic_format'))

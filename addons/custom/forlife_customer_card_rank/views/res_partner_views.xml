@@ -10,13 +10,13 @@
 
                 <xpath expr=".//notebook" position="inside">
                     <page string="Card Rank Format" name="card_rank_format">
-                        <button name="btn_view_detail_card_rank" type="object" string="Detail Card Rank" context="{'brand_xml_id': 'forlife_point_of_sale.brand_format'}" groups="forlife_customer_card_rank.update_card_rank"/>
-                        <button name="btn_change_card_rank" type="object" string="Update Card Rank" class="oe_highlight" context="{'brand_xml_id': 'forlife_point_of_sale.brand_format'}" groups="forlife_customer_card_rank.update_card_rank"/>
+                        <button name="btn_view_detail_card_rank" type="object" class="oe_highlight margin_btn" string="Detail Card Rank" context="{'brand_xml_id': 'forlife_point_of_sale.brand_format'}" groups="forlife_customer_card_rank.update_card_rank"/>
+                        <button name="btn_change_card_rank" type="object" string="Update Card Rank" class="oe_highlight margin_btn" context="{'brand_xml_id': 'forlife_point_of_sale.brand_format'}" groups="forlife_customer_card_rank.update_card_rank"/>
                         <field name="card_rank_format"/>
                     </page>
                     <page string="Card Rank TokyoLife" name="card_rank_tokyolife">
-                        <button name="btn_view_detail_card_rank" type="object" string="Detail Card Rank" context="{'brand_xml_id': 'forlife_point_of_sale.brand_tokyolife'}" groups="forlife_customer_card_rank.update_card_rank"/>
-                        <button name="btn_change_card_rank" type="object" string="Update Card Rank" class="oe_highlight" context="{'brand_xml_id': 'forlife_point_of_sale.brand_tokyolife'}" groups="forlife_customer_card_rank.update_card_rank"/>
+                        <button name="btn_view_detail_card_rank" type="object" class="oe_highlight margin_btn" string="Detail Card Rank" context="{'brand_xml_id': 'forlife_point_of_sale.brand_tokyolife'}" groups="forlife_customer_card_rank.update_card_rank"/>
+                        <button name="btn_change_card_rank" type="object" string="Update Card Rank" class="oe_highlight margin_btn" context="{'brand_xml_id': 'forlife_point_of_sale.brand_tokyolife'}" groups="forlife_customer_card_rank.update_card_rank"/>
                         <field name="card_rank_tokyolife"/>
                     </page>
                 </xpath>

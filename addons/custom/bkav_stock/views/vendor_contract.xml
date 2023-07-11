@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="vendor_contract_form_view" model="ir.ui.view">
+            <field name="name">vendor_contract form</field>
+            <field name="model">vendor.contract</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_effective" class="oe_highlight" states="draft" string="Effective"
+                                type="object"/>
+                        <button name="action_expiry" states="effective" string="Expiry" type="object"/>
+                        <button name="action_cancel" states="effective,expiry" string="Cancel" type="object"/>
+                        <button name="action_to_draft" states="cancel" string="Back to draft" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,effective,expiry,cancel"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="code" readonly="1" force_save="1"/>
+                                <field name="vendor_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                       options="{'no_edit':True,'no_create':True,'no_create_edit':True}"
+                                       widget="res_partner_many2one"
+                                       context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
+                                       placeholder="Name, TIN, Email, or Reference"/>
+                                <label for="effective_date" string="Validity"/>
+                                <div class="o_row">
+                                    <field name="effective_date" required="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    to
+                                    <field name="expiry_date" required="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="create_uid"/>
+                                <field name="company_id" readonly="1" force_save="1" options="{'no_open':True}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="vendor_contract_tree_view" model="ir.ui.view">
+            <field name="name">vendor_contract tree</field>
+            <field name="model">vendor.contract</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state=='draft'" decoration-muted="state=='cancel'"
+                      decoration-danger="state=='expiry'">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="vendor_id"/>
+                    <field name="effective_date"/>
+                    <field name="expiry_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="vendor_contract_search_view" model="ir.ui.view">
+            <field name="name">vendor_contract search</field>
+            <field name="model">vendor.contract</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="vendor_id"/>
+                    <separator/>
+                    <filter string="Processing" name="contract_processing"
+                            domain="[('state', 'not in', ('expiry','cancel'))]"
+                            help="Filter Processing"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="vendor_contract_action_view" model="ir.actions.act_window">
+            <field name="name">Vendor Contract</field>
+            <field name="res_model">vendor.contract</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="vendor_contract_search_view"/>
+            <field name="context">{'search_default_contract_processing': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new record.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_vendor_contract" action="vendor_contract_action_view"
+                  parent="purchase.menu_purchase_config" sequence="8" name="Vendor Contract"/>
+    </data>
+</odoo>

@@ -34,9 +34,9 @@
                         <td><t t-esc="line.dien_giai"/></td>
                         <td><t t-esc="line.bo_suu_tap"/></td>
                         <td><t t-esc="line.kieu_dang"/></td>
-                        <td><t t-esc="format_decimal(line.so_luong, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.gia, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.gia * line.so_luong, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.so_luong, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia * line.so_luong, 0)"/></td>
                         <td><t t-esc="line.tk_kho"/></td>
                         <td><t t-esc="line.tk_gia_von"/></td>
                         <td><t t-esc="line.ngay_tao"/></td>
