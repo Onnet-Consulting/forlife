@@ -159,7 +159,8 @@ class Voucher(models.Model):
                             'derpartment_name': vourcher.derpartment_id.name,
                             'derpartment_id': vourcher.derpartment_id.id,
                             'state_app': vourcher.state_app,
-                            'apply_many_times': vourcher.apply_many_times
+                            'apply_many_times': vourcher.apply_many_times,
+                            'order_use_ids': len(vourcher.order_use_ids.ids)
                         }
                     })
                 if not vourcher:

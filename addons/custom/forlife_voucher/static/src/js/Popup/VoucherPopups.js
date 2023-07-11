@@ -304,7 +304,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                 error.push("Voucher chỉ được sử dụng độc lập!")
                             }
                         }
-                        if(!data[i].value.apply_many_times){
+                        if(!data[i].value.apply_many_times && data[i].value.order_use_ids >0){
                             error.push("Voucher chỉ được sử dụng một lần!")
                         }
                         if(this.env.pos.selectedOrder.creation_date < new Date(data[i].value.start_date)){
