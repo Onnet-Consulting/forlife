@@ -57,7 +57,7 @@ class StockTransferRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/import_ycdc_inventorys.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/template_ycdc.xlsx?download=true'
         }]
 
     def action_wait_confirm(self):
