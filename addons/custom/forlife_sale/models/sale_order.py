@@ -231,7 +231,15 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
-        rule = self.get_rule()
+        kwargs = self._context
+        if kwargs.get("wh_in"):
+            rule = self.env['stock.rule'].search([
+                ('warehouse_id', '=', self.warehouse_id.id), 
+                ('picking_type_id', '=', self.warehouse_id.in_type_id.id)
+            ], limit=1)
+        else:
+            rule = self.get_rule()
+
         master = {
             'origin': self.name,
             'company_id': self.company_id.id,
@@ -464,8 +472,9 @@ class SaleOrderLine(models.Model):
     #     Compute the amounts of the SO line.
     #     """
     #     res = super()._compute_amount()
-    #     # for line in self:
-    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
+    #     for line in self:
+    #         if float(line.x_cart_discount_fixed_price) > 0:
+    #             line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
     #     return res
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
