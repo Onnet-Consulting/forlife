@@ -54,12 +54,14 @@ class MainController(http.Controller):
         odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
         if event_type == 'orderUpdate':
             if not odoo_order:
-                if data['status'].lower() != "confirmed":
-                    return self.result_request(404, 1, _('Order confirmation is required'))
-                    
                 order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
                 if not order:
                     return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
+
+                order_returned = order.get('returnFromOrderId', 0) or data['status'] in ['Returned']
+
+                if data['status'].lower() != "confirmed" and not order_returned:
+                    return self.result_request(404, 1, _('Order confirmation is required'))
 
                 if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
                         'returnFromOrderId', 0)):
@@ -185,7 +187,7 @@ class MainController(http.Controller):
                 })
                 
                 # đổi trả hàng
-                if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
+                if order_returned:
                     origin_order_id = request.env['sale.order'].sudo().search(
                         [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                     value.update({
@@ -199,7 +201,7 @@ class MainController(http.Controller):
                         not webhook_value_id.order_id.picking_ids:
                     try:
                         webhook_value_id.order_id.check_sale_promotion()
-                        webhook_value_id.order_id.action_create_picking()
+                        webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
                         return self.result_request(200, 0, _('Create sale order success'))
                 elif data['status'] in ['Canceled', 'Aborted']:
