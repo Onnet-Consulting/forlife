@@ -12,7 +12,7 @@ class PurchaseOrderCostLine(models.Model):
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá', default=1)
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
-    vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
+    vnd_amount = fields.Float(string='Thành tiền VND', compute='compute_vnd_amount', store=1, readonly=False)
     is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế')
 
     @api.onchange('currency_id')
