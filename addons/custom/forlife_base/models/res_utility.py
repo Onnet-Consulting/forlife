@@ -179,9 +179,9 @@ with products as (select id
 select coalesce(pp2.barcode, '')                                      as barcode,
        coalesce(pt2.name::json -> '{self.env.user.lang}', pt2.name::json -> 'en_US') as ten_san_pham,
        coalesce(sf.qty, 0)                                            as so_luong,
-       REPLACE(REPLACE(REPLACE(coalesce(attrs::json -> '{attr_value.get('mau_sac', '')}', ''), '"', ''), '[', ''), ']', '') as mau_sac,
-       REPLACE(REPLACE(REPLACE(coalesce(attrs::json -> '{attr_value.get('size', '')}', ''), '"', ''), '[', ''), ']', '') as size,
-       REPLACE(REPLACE(REPLACE(coalesce(attrs::json -> '{attr_value.get('doi_tuong', '')}', ''), '"', ''), '[', ''), ']', '') as gioi_tinh,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('mau_sac', '')}', ''), '"', ''), '[', ''), ']', '') as mau_sac,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('size', '')}', ''), '"', ''), '[', ''), ']', '') as size,
+       REPLACE(REPLACE(REPLACE(coalesce(attrs::json ->> '{attr_value.get('doi_tuong', '')}', ''), '"', ''), '[', ''), ']', '') as gioi_tinh,
        coalesce(fixed_prices.fixed_price, pt2.list_price)             as gia_ban,
        '' as ma_tham_chieu
 from products
