@@ -5,6 +5,9 @@ import re
 import base64
 import xlsxwriter
 from io import BytesIO
+import pytz
+from pytz import UTC
+
 
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
@@ -56,8 +59,8 @@ class PurchaseRequest(models.Model):
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
-            if 'employee_id' not in fields or 'department_id' not in fields or 'request_date' not in fields:
-                raise ValidationError(_("The import file must contain the required column"))
+            if 'request_date' not in fields:
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
         return super().load(fields, data)
 
     @api.model
@@ -65,6 +68,11 @@ class PurchaseRequest(models.Model):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
     @api.onchange('employee_id')
@@ -102,7 +110,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu mua hàng'),
-            'template': '/purchase_request/static/src/xlsx/import_template_pr.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/template_import_pr.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
@@ -115,12 +123,19 @@ class PurchaseRequest(models.Model):
             'domain': [('purchase_request_ids', '=', self.id)],
         }
 
+    def convert_to_local(self, datetime=datetime.today(), tz=False):
+        if not tz:
+            tz = self._context.get('tz') or self.env.user.tz or 'UTC'
+        local_time = pytz.utc.localize(datetime).astimezone(pytz.timezone(tz))
+        return local_time.replace(tzinfo=None)
+
     @api.constrains('request_date', 'date_planned')
     def constrains_request_date(self):
         for item in self:
             if item.request_date and item.date_planned:
+                time_plan = self.convert_to_local(item.date_planned)
                 time_request = datetime(item.request_date.year, item.request_date.month, item.request_date.day)
-                if time_request > item.date_planned:
+                if time_request > time_plan:
                     raise ValidationError(_("Expected Arrival must be greater than request date"))
 
     @api.model
@@ -205,7 +220,7 @@ class PurchaseRequest(models.Model):
                     'source_document': source_document,
                     'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
-                    'currency_id': purchase_request_lines.currency_id.id,
+                    'currency_id': purchase_request_lines.currency_id.id if purchase_request_lines.currency_id else self.env.company.currency_id.id,
                 }
                 purchase_order |= purchase_order.create(po_data)
         return {
@@ -251,9 +266,13 @@ class PurchaseRequestLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
-    description = fields.Char(string="Description", related='product_id.name')
+    description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.description = self.product_id.name
 
     @api.onchange('vendor_code')
     def onchange_vendor_code(self):
@@ -264,7 +283,7 @@ class PurchaseRequestLine(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
-    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', related='product_id.uom_id', required=True)
+    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
@@ -347,3 +366,7 @@ class ApprovalLogs(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+class OccasionCode(models.Model):
+    _inherit = 'occasion.code'
+    _rec_names_search = ['code', 'name']

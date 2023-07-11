@@ -102,16 +102,18 @@ class StockTranfer(models.Model):
                 company_match = self.env['res.company'].sudo().search([('code', '=', '1400')])
                 location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_id.id)])
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)])
+                if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
                 location = location_mapping.with_company(company_match).location_map_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_map_id.id
             else:
                 company_match = self.env['res.company'].sudo().search([('code', '=', '1300')])
                 location_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_id.id)])
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)])
+                if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
-            if not location_mapping or not location_dest_mapping:
-                raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
             if location_mapping and location_dest_mapping:
                 line = []
                 for l in self.stock_transfer_line:

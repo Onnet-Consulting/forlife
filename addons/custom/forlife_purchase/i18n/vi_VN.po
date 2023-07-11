@@ -34,6 +34,12 @@ msgstr "Áp dụng tỷ lệ quy đổi"
 msgid "Asset"
 msgstr "Tài sản"
 
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__sequence
+msgid "Sequence"
+msgstr "STT dòng"
+
+
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__asset_code
 msgid "Asset Code"
@@ -583,6 +589,7 @@ msgstr "Số lượng quy đổi"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__vendor_price
+#: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Vendor Price"
 msgstr "Giá nhà cung cấp"
 
