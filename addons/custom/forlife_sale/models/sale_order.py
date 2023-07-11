@@ -162,7 +162,8 @@ class SaleOrder(models.Model):
         if not self.partner_id.use_partner_credit_limit:
             return True
         debtBalance_bravo = self.get_DebtBalance()
-        sale_so_ids = self.env['sale.order'].search([('partner_id', '=', self.partner_id.id), ('state', '=', 'sale')])
+        sale_so_ids = self.env['sale.order'].search(
+            [('partner_id', '=', self.partner_id.id), ('state', '=', 'sale'), ('id', '!=', self.id)])
         debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
         if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
@@ -231,7 +232,15 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
-        rule = self.get_rule()
+        kwargs = self._context
+        if kwargs.get("wh_in"):
+            rule = self.env['stock.rule'].search([
+                ('warehouse_id', '=', self.warehouse_id.id), 
+                ('picking_type_id', '=', self.warehouse_id.in_type_id.id)
+            ], limit=1)
+        else:
+            rule = self.get_rule()
+
         master = {
             'origin': self.name,
             'company_id': self.company_id.id,
@@ -410,21 +419,25 @@ class SaleOrderLine(models.Model):
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 
+    def get_product_code(self):
+        account = self.x_product_code_id.asset_account.id
+        product_categ_id = self.env['product.category'].search(
+            [('property_stock_valuation_account_id', '=', account)])
+        product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+        if not product_id:
+            return False
+        if len(product_id) == 1:
+            self.product_id = product_id
+            return True
+        else:
+            raise UserError(_('Không có sản phẩm nào phù hợp với mã tài sản!'))
+
     @api.onchange('x_product_code_id')
     def x_product_code_id_get_domain(self):
         if self.x_product_code_id:
-            account = self.x_product_code_id.asset_account.id
-            product_categ_id = self.env['product.category'].search(
-                [('property_stock_valuation_account_id', '=', account)])
-            if product_categ_id:
-                product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
-                domain = [('id', 'in', product_id.ids)]
-                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain,
-                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                         ('company_id', '=', self.order_id.company_id.id)]
-                                   }}
-            else:
+            if not self.get_product_code():
+                self.product_id = None
+                self.name = None
                 return {'domain': {'product_id': [('id', '=', 0)],
                                    'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                          ('company_id', '=', self.order_id.company_id.id)]
@@ -464,8 +477,9 @@ class SaleOrderLine(models.Model):
     #     Compute the amounts of the SO line.
     #     """
     #     res = super()._compute_amount()
-    #     # for line in self:
-    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
+    #     for line in self:
+    #         if float(line.x_cart_discount_fixed_price) > 0:
+    #             line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
     #     return res
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
