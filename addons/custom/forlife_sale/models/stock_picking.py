@@ -69,7 +69,12 @@ class StockPicking(models.Model):
                 if not account_id:
                     raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
-        if self.state == "done":
-            sale_order = self.env['sale.order'].search([('name', '=', self.origin)]).sudo()
-            sale_order._create_invoices().action_post()
+        try:
+            if self.state == "done" and self.picking_type_code == "outgoing" and self.origin:
+                sale_order = self.env['sale.order'].search([('name', '=', self.origin)])
+                if sale_order:
+                    sale_order._create_invoices().action_post()
+        except Exception as e:
+            pass
+        
         return res
