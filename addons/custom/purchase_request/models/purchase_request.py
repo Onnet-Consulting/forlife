@@ -351,3 +351,7 @@ class ApprovalLogs(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+class OccasionCode(models.Model):
+    _inherit = 'occasion.code'
+    _rec_names_search = ['code', 'name']
