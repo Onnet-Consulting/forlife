@@ -13,6 +13,7 @@ class InheritStockMove(models.Model):
             if self.env['pos.order.line'].sudo().search([
                 ('order_id', '=', context['pos_order_id']),
                 ('product_id', '=', self.product_id.id),
+                ('with_purchase_condition', '!=', True),
                 ('is_reward_line', '=', True)
             ]):
                 gift_account = self.product_id.get_product_gift_account()

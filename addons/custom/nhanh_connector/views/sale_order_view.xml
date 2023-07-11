@@ -50,6 +50,8 @@
                                    attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
                             <field name="nhanh_customer_shipping_fee"
                                    attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                            <field name="x_voucher" readonly="1"/>
+                            <field name="x_code_voucher" readonly="1"/>
                         </group>
                     </group>
                 </page>

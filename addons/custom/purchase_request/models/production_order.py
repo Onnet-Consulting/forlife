@@ -9,6 +9,20 @@ class ProductionOrder(models.Model):
     _rec_name = 'product_id'
 
 
+    def write(self, vals):
+        if 'product_id' in vals:
+            if vals.get('product_id') != self.product_id.id:
+                product_npl_id = self.env['product.product'].browse(vals.get('product_id'))
+                product_npl_id.x_check_npl = True
+                self.product_id.x_check_npl = False
+        return super(ProductionOrder, self).write(vals)
+
+    def unlink(self):
+        for rec in self:
+            if rec.product_id:
+                rec.product_id.x_check_npl = False
+        return super(ProductionOrder, self).unlink()
+
     code = fields.Char('Reference')
     sequence = fields.Integer('Sequence')
     type = fields.Selection([

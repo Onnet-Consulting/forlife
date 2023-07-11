@@ -114,8 +114,8 @@ class StockPicking(models.Model):
 
     def button_forlife_validate(self):
         self.ensure_one()
-        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
-            self._update_forlife_production()
+        # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+        #     self._update_forlife_production()
         view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
         view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
         # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
@@ -149,7 +149,7 @@ class StockPicking(models.Model):
         #         'target': 'new',
         #         'context': dict(self.env.context, default_picking_id=self.id),
         #     }
-        return super(StockPicking, self).button_validate()
+        return self.button_validate()
 
     def action_confirm(self):
         for picking in self:

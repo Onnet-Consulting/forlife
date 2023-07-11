@@ -80,6 +80,27 @@ export class CartPromotionButton extends PosComponent {
         order._resetCartPromotionPrograms();
         let orderLines = order.get_orderlines_to_check();
         let programs = order.verifyCardProgramOnOrder(orderLines);
+        for (let programOption of programs) {
+            let program = this.env.pos.get_program_by_id(String(programOption.id));
+            let to_select_reward_lines;
+            if (program.reward_type == 'cart_get_voucher') {
+                to_select_reward_lines = [];
+            } if (program.reward_type == 'cart_get_x_free') {
+                to_select_reward_lines = programOption['to_reward_lines'];
+            } else {
+                to_select_reward_lines = programOption['to_discount_lines'];
+            };
+            if (programOption.reward_line_vals == undefined || programOption.reward_line_vals.length == 0) {
+                programOption.reward_line_vals = to_select_reward_lines.map(line => {return {
+                        line: line,
+                        quantity: 0,
+                        isSelected: false,
+                        max_qty: line.quantity
+                    }}
+                ) || [];
+            }
+        };
+
         const { confirmed, payload } = await this.showPopup('CartPromotionPopup', {
             title: this.env._t('Please select some program'),
             programs: programs,
