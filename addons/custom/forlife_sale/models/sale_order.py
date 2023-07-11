@@ -431,17 +431,17 @@ class SaleOrderLine(models.Model):
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id
-        product_ids = []
-        if self.order_id.x_manufacture_order_code_id:
+        if self.order_id.x_sale_type:
+            if not self.order_id.x_manufacture_order_code_id:
+                domain = [('detailed_type', '=', self.order_id.x_sale_type)]
+                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
             product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped(
                 'product_id').ids
-        if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type),
                       ('id', 'in', product_ids)]
-        else:
-            domain = [('id', 'in', product_ids)]
-        return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                          ('company_id', '=', self.order_id.company_id)] + domain}}
+            return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.order_id.company_id)] + domain}}
 
     def get_product_code(self):
         account = self.x_product_code_id.asset_account.id
