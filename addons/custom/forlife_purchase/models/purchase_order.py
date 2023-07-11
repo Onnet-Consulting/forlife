@@ -7,16 +7,6 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_dat
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
 from lxml import etree
-
-
-class StockVal(models.Model):
-    _inherit = 'stock.valuation.layer'
-
-    @api.model_create_single
-    def create(self, vals_list):
-        res = super().create(vals_list)
-        return res
-
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
