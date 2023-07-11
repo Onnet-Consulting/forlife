@@ -109,7 +109,7 @@ class AccountMove(models.Model):
                 if not re.match('^CD', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
-                if not stock_picking or stock_picking.x_is_check_return or stock_picking.is_return_po:
+                if not stock_picking or stock_picking.x_is_check_return:
                     continue
                 initial_records |= move
             return initial_records
@@ -122,7 +122,7 @@ class AccountMove(models.Model):
                 if not re.match('^CD', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
-                if not stock_picking or (not stock_picking.x_is_check_return and not stock_picking.is_return_po):
+                if not stock_picking or not stock_picking.x_is_check_return:
                     continue
                 initial_records |= move
             return initial_records
@@ -266,8 +266,8 @@ class AccountMove(models.Model):
                 "Stt": record.id,
                 "RowId": record.id,
                 "ColumnName": "Description",
-                "OldValue": record.invoice_description,
-                "NewValue": kwargs.get('invoice_description'),
+                "OldValue": re.sub('<.*?>', '', record.invoice_description or ''),
+                "NewValue": re.sub('<.*?>', '', kwargs.get('invoice_description') or ''),
             }
             values.append(value)
         return columns, values

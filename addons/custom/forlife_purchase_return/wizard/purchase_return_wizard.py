@@ -125,7 +125,7 @@ class PurchaseReturnWizard(models.TransientModel):
         else:
             readonly_discount = False
             discount = 0
-        price_unit = return_line.product_id.standard_price / return_line.exchange_quantity
+        price_unit = return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity and return_line.vendor_price else return_line.purchase_line_id.price_unit
         location_id = self.location_id.id if self.location_id else (return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id)
         purchase_quantity = return_line.quantity / return_line.exchange_quantity if return_line.exchange_quantity else return_line.quantity
         vals = {
@@ -135,7 +135,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'purchase_quantity': purchase_quantity,
             'exchange_quantity': return_line.exchange_quantity,
             'product_qty': return_line.quantity,
-            'vendor_price': return_line.product_id.standard_price,
+            'vendor_price': return_line.vendor_price,
             'price_unit': price_unit,
             'origin_po_line_id': return_line.purchase_line_id.id,
             'purchase_uom': return_line.purchase_line_id.purchase_uom.id,
