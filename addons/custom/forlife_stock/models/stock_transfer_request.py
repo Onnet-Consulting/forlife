@@ -27,7 +27,7 @@ class StockTransferRequest(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel'),
                    ('done', 'Done')], default='draft', copy=False)
-    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Request Line', copy=True)
+    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Yêu cầu', copy=True)
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
@@ -39,7 +39,7 @@ class StockTransferRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['request_employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
+        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
         res['request_date'] = datetime.now()
         return res
 
@@ -57,7 +57,7 @@ class StockTransferRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/import_ycdc_inventorys.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/template_ycdc.xlsx?download=true'
         }]
 
     def action_wait_confirm(self):
@@ -84,6 +84,8 @@ class StockTransferRequest(models.Model):
                     data_stock_transfer_line = (
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
+                               'work_from': item.production_from,
+                               'work_to': item.production_to,
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
                     dic_data = {'state': 'draft',
@@ -252,6 +254,8 @@ class TransferRequestLine(models.Model):
                                               compute='compute_quantity_reality_receive', )
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_transfer_line_ids = fields.One2many('stock.transfer.line', 'product_str_id')
+    production_from = fields.Many2one('forlife.production', string="Từ LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    production_to = fields.Many2one('forlife.production', string="Đến LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
 
     @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out')
     def compute_quantity_reality_transfer(self):
@@ -289,3 +293,8 @@ class TransferRequestLine(models.Model):
         for rec in self:
             if rec.plan_quantity <= 0:
                 raise ValidationError(_("Plan quantity should not be less than or equal to 0 !!"))
+
+
+class Location(models.Model):
+    _inherit = "stock.location"
+    _rec_names_search = ['code', 'complete_name', 'barcode']
