@@ -74,6 +74,9 @@
                     <field name="x_account_analytic_id" optional="hide"/>
                     <field name="x_occasion_code_id" optional="hide"/>
                 </xpath>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='discount']" position="attributes">
+                    <attribute name="context">{'notloop_discount':True}</attribute>
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
                     <field name="x_product_code_id"
                            attrs="{'column_invisible': [('parent.x_sale_type','=','product')], 'required': [('parent.x_sale_type','=','asset')]}"
