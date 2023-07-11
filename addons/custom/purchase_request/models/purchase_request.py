@@ -207,7 +207,7 @@ class PurchaseRequest(models.Model):
                     'source_document': source_document,
                     'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
-                    'currency_id': purchase_request_lines.currency_id.id,
+                    'currency_id': purchase_request_lines.currency_id.id if purchase_request_lines.currency_id else self.env.company.currency_id.id,
                 }
                 purchase_order |= purchase_order.create(po_data)
         return {
