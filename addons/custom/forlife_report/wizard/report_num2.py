@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
 COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
