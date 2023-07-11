@@ -53,7 +53,7 @@ class StockPicking(models.Model):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == PICKING_PURCHASE_VALUE:
             return self.filtered(
-                lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return and not p.is_return_po)
+                lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:

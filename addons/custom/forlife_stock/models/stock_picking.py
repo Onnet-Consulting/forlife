@@ -149,7 +149,7 @@ class StockPicking(models.Model):
         #         'target': 'new',
         #         'context': dict(self.env.context, default_picking_id=self.id),
         #     }
-        self.button_validate()
+        return self.button_validate()
 
     def action_confirm(self):
         for picking in self:

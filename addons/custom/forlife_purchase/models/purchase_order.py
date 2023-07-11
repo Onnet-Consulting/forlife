@@ -2381,6 +2381,13 @@ class AccountMove(models.Model):
                 })
         return super(AccountMove, self).unlink()
 
+    def button_draft(self):
+        for rec in self:
+            if rec.receiving_warehouse_id:
+                rec.receiving_warehouse_id.write({
+                    'ware_check': False
+                })
+        return super(AccountMove, self).button_draft()
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'

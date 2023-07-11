@@ -109,7 +109,7 @@ class AccountMove(models.Model):
                 if not re.match('^CD', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
-                if not stock_picking or stock_picking.x_is_check_return or stock_picking.is_return_po:
+                if not stock_picking or stock_picking.x_is_check_return:
                     continue
                 initial_records |= move
             return initial_records
@@ -122,7 +122,7 @@ class AccountMove(models.Model):
                 if not re.match('^CD', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
-                if not stock_picking or (not stock_picking.x_is_check_return and not stock_picking.is_return_po):
+                if not stock_picking or not stock_picking.x_is_check_return:
                     continue
                 initial_records |= move
             return initial_records

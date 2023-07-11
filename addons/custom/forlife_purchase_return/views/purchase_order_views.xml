@@ -82,6 +82,15 @@
                         icon="fa-truck" attrs="{'invisible':['|', ('incoming_picking_count','=', 0), ('is_return', '=', True)]}" groups="stock.group_stock_user">
                         <field name="incoming_picking_count" widget="statinfo" string="Receipt Products"/>
                     </button>
+                    <button name="action_view_invoice_refund" string="Invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('count_invoice_refund', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_invoice_refund"/>
+                            </span>
+                            <span class="o_stat_text">Hóa đơn trả hàng</span>
+                        </div>
+                    </button>
                     <button type="object"
                         name="action_view_picking"
                         class="oe_stat_button"
