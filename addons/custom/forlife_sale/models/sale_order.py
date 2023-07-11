@@ -465,7 +465,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
-        self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
+        if 'notloop_discount' in self._context and self._context.get('notloop_discount'):
+            self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
@@ -484,21 +485,16 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_cart_discount_fixed_price')
     def onchange_x_cart_discount_fixed_price(self):
-        if self.x_cart_discount_fixed_price:
-            self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
-                    self.price_unit * self.product_uom_qty) else 0
-        else:
+        if self.x_cart_discount_fixed_price and 'notloop' in self._context and self._context.get('notloop'):
             self.discount = 0
 
-    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    # def _compute_amount(self):
-    #     """
-    #     Compute the amounts of the SO line.
-    #     """
-    #     res = super()._compute_amount()
-    #     # for line in self:
-    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
-    #     return res
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        rslt = super()._compute_amount()
+        return rslt
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
@@ -542,3 +538,24 @@ class SaleOrderLine(models.Model):
             'work_order': self.x_manufacture_order_code_id.id
         })
         return res
+
+    def _convert_to_tax_base_line_dict(self):
+        """ Convert the current record to a dictionary in order to use the generic taxes computation method
+        defined on account.tax.
+
+        :return: A python dictionary.
+        """
+        x_cart_discount_fixed_price = 0
+        if self.x_cart_discount_fixed_price == self.price_unit * self.discount * self.product_uom_qty / 100:
+            x_cart_discount_fixed_price = 0
+        if self.discount == 0:
+            x_cart_discount_fixed_price = self.x_cart_discount_fixed_price
+        res = super(SaleOrderLine, self.with_context(x_cart_discount_fixed_price=x_cart_discount_fixed_price))._convert_to_tax_base_line_dict()
+        return res
+
+    def _prepare_invoice_line(self, **optional_values):
+        rslt = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
+        rslt.update({
+            'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price
+        })
+        return rslt
