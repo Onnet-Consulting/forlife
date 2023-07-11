@@ -125,6 +125,11 @@ class AccountMove(models.Model):
                     })
                 rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
 
+    def view_move_entry(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
+        context = {'search_default_move_id': self.id, 'search_default_posted': 1}
+        return dict(action, context=context)
+
     @api.onchange('partner_id', 'partner_id.group_id')
     def onchange_partner_id(self):
         if self.partner_id.group_id:
@@ -436,7 +441,7 @@ class AccountMove(models.Model):
                 or not self.env.ref('forlife_purchase.product_excise_tax_default').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt hoặc tài khoản chi phí kế toán của sản phẩm có tên là 'Thuế tiêu thụ đặc biệt'")
         for item in self.exchange_rate_line_ids:
-            if item.tax_amount > 0:
+            if item.amount_tax > 0:
                 account_credit_tnk = (0, 0, {
                     'sequence': 99991,
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
@@ -444,14 +449,14 @@ class AccountMove(models.Model):
                     'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
                         self.company_id).property_account_expense_id.name,
                     'debit': 0,
-                    'credit': item.tax_amount,
+                    'credit': item.amount_tax,
                 })
                 account_debit_tnk = (0, 0, {
                     'sequence': 9,
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': item.product_id.name,
-                    'debit': item.tax_amount,
+                    'debit': item.amount_tax,
                     'credit': 0,
                 })
                 lines_tnk = [account_debit_tnk, account_credit_tnk]
@@ -568,17 +573,18 @@ class AccountMove(models.Model):
                         'credit': db[2]['credit'],
                     }
                 # Chuyển đổi từ điển thành danh sách bản ghi
-            merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
-            if merged_records_list_vat:
-                invoice_vat = self.create({
-                    'e_in_check': self.id,
-                    'is_check_invoice_tnk': True,
-                    'invoice_date': self.invoice_date,
-                    'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
-                    'line_ids': merged_records_list_vat,
-                    'move_type': 'entry',
-                })
-                invoice_vat.action_post()
+        merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
+        if merged_records_list_vat:
+            invoice_vat = self.create({
+                'e_in_check': self.id,
+                'is_check_invoice_tnk': True,
+                'invoice_date': self.invoice_date,
+                'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
+                'line_ids': merged_records_list_vat,
+                'move_type': 'entry',
+            })
+            invoice_vat.action_post()
+
 
     def create_trade_discount(self):
         account_ck = []
@@ -706,6 +712,12 @@ class AccountMoveLine(models.Model):
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
                                  compute='_compute_total_product',
                                  store=1)
+    company_currency = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+
+    @api.onchange('price_unit')
+    def onchange_price_unit_set_discount(self):
+        if self.price_unit and self.discount > 0:
+            self.discount_percent = (self.price_unit * self.quantity) * (self.discount / 100)
 
     def _get_stock_valuation_layers_price_unit(self, layers):
         price_unit_by_layer = {}
@@ -764,7 +776,7 @@ class AccountMoveLine(models.Model):
     @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal / rec.move_id.exchange_rate)
+            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
 
     @api.depends('move_id.cost_line.is_check_pre_tax_costs',
                  'move_id.invoice_line_ids')
@@ -853,6 +865,19 @@ class AccountMoveLine(models.Model):
     # field check vendor_price khi ncc vãng lại:
     is_passersby = fields.Boolean(related='move_id.is_passersby')
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
+
+
+    # sửa lại base để quy đổi tiền tệ
+    # @api.depends('balance', 'move_id.is_storno')
+    # def _compute_debit_credit(self):
+    #     for line in self:
+    #         if not line.is_storno:
+    #             line.debit = line.balance * line.move_id.exchange_rate if line.balance > 0.0 else 0.0
+    #             line.credit = -line.balance * line.move_id.exchange_rate if line.balance < 0.0 else 0.0
+    #         else:
+    #             line.debit = line.balance * line.move_id.exchange_rate if line.balance < 0.0 else 0.0
+    #             line.credit = -line.balance * line.move_id.exchange_rate if line.balance > 0.0 else 0.0
+
 
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):

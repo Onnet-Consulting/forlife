@@ -9,6 +9,14 @@ import json
 from lxml import etree
 
 
+class StockVal(models.Model):
+    _inherit = 'stock.valuation.layer'
+
+    @api.model_create_single
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        return res
+
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
@@ -1822,6 +1830,7 @@ class PurchaseOrderLine(models.Model):
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=0)
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=0)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=0)
+    company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
 
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
@@ -1858,8 +1867,10 @@ class PurchaseOrderLine(models.Model):
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            if rec.price_subtotal and rec.order_id.exchange_rate:
-                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
+            rec.total_vnd_amount = rec.total_vnd_exchange = rec.price_subtotal
+            if rec.currency_id != rec.company_currency:
+                # rate = rec.currency_id._get_rates(company=self.env.company, date=datetime.today())
+                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
@@ -2382,7 +2393,7 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return True
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
+            po = self.move_ids.mapped('purchase_line_id.order_id')
             if po:
                 ### check npl tồn:
                 # self.check_quant_goods_import(po)
@@ -2394,8 +2405,14 @@ class StockPicking(models.Model):
                     'pk_no_input_warehouse': False,
                 }
                 if po.type_po_cost == 'tax':
-                    if po.exchange_rate_line_ids:
-                        vat = self.create_invoice_po_tax(po, record)
+                    # tạo bút toán định giá tồn kho với thuế nhập khẩu và thuế đặc biệt
+                    if po and po.exchange_rate_line_ids:
+                        move_import_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'import') # thuế nhập khẩu
+                        move_special_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'special') # thuế tiêu thụ đặc biệt
+                        move_values = move_import_tax_values + move_special_tax_values
+                        moves = self.env['account.move'].create(move_values)
+                        if moves:
+                            moves._post()
                     if po.cost_line:
                         self.create_expense_entries(po)
                         '''
@@ -2432,6 +2449,73 @@ class StockPicking(models.Model):
                     'exchange_rate': po.exchange_rate
                 })
         return res
+
+    def prepare_move_svl_value_with_tax_po(self, po, tax_type):
+        if not po.exchange_rate_line_ids or len(po.exchange_rate_line_ids) <= 0:
+            return []
+        qty_po_done = sum(self.mapped('move_ids.quantity_purchase_done'))
+        qty_po_origin = sum(po.mapped('order_line.product_qty'))
+        move_values = []
+
+        for line in po.exchange_rate_line_ids:
+            amount = line.tax_amount if tax_type != 'special' else line.special_consumption_tax_amount
+            move_value = {
+                'ref': f"{self.name} - {line.product_id.name}",
+                'purchase_type': po.purchase_type,
+                'move_type': 'entry',
+                'reference': po.name,
+                'exchange_rate': po.exchange_rate,
+                'date': datetime.now(),
+                'invoice_payment_term_id': po.payment_term_id.id,
+                'invoice_date_due': po.date_planned,
+                'restrict_mode_hash_table': False,
+            }
+            svl_values = []
+            move_lines = [(0, 0, {
+                'sequence': 1,
+                'account_id': line.product_id.categ_id.property_stock_account_input_categ_id.id,
+                'product_id': line.product_id.id,
+                'name': line.product_id.name,
+                'text_check_cp_normal': line.product_id.name,
+                'credit': (amount / qty_po_origin) * qty_po_done,
+                'debit': 0
+            })]
+            for move in self.move_ids:
+                if move.product_id.type in ('product', 'consu'):
+                    svl_values.append((0, 0, {
+                        'value': (amount / qty_po_origin) * move.quantity_done,
+                        'unit_cost': amount / qty_po_origin,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {line.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
+
+                move_lines += [(0, 0, {
+                    'sequence': 2,
+                    'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                    'product_id':  move.product_id.id,
+                    'name':  move.product_id.name,
+                    'text_check_cp_normal': line.product_id.name,
+                    'credit': 0.0,
+                    'debit': (amount / qty_po_origin) * move.quantity_purchase_done,
+                })]
+
+            move_value.update({
+                'stock_valuation_layer_ids': svl_values,
+                'line_ids': move_lines
+            })
+
+            move_values.append(move_value)
+
+        return move_values
+
+    def view_move_tax_entry(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
+        domain = [('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids)]
+        return dict(action, domain=domain)
 
     def create_expense_entries(self, po):
         self.ensure_one()
