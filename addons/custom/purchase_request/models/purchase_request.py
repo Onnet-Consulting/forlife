@@ -65,6 +65,11 @@ class PurchaseRequest(models.Model):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
     @api.onchange('employee_id')
@@ -253,9 +258,13 @@ class PurchaseRequestLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
-    description = fields.Char(string="Description", related='product_id.name')
+    description = fields.Char(string="Description")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.description = self.product_id.name
 
     @api.onchange('vendor_code')
     def onchange_vendor_code(self):
@@ -266,7 +275,7 @@ class PurchaseRequestLine(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
-    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', related='product_id.uom_id', required=True)
+    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
