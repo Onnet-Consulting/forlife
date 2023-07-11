@@ -56,7 +56,7 @@ RUN npm install -g rtlcss
 # Install Odoo
 ENV ODOO_VERSION 16.0
 ARG ODOO_RELEASE=20230302
-ARG ODOO_SHA=3ffc37e18490c281cae46fc5cb52edbf7e41738a
+ARG ODOO_SHA=b8eaa4b1e7dc94fae2892b1d607399ac47123544
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
@@ -70,7 +70,8 @@ COPY ./odoo.conf /etc/odoo/
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
+    && chown -R odoo /mnt/extra-addons \
+    && chown -R odoo /var/lib/odoo/
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 # Expose Odoo services
