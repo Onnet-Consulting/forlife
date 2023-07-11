@@ -266,8 +266,8 @@ class AccountMove(models.Model):
                 "Stt": record.id,
                 "RowId": record.id,
                 "ColumnName": "Description",
-                "OldValue": record.invoice_description,
-                "NewValue": kwargs.get('invoice_description'),
+                "OldValue": re.sub('<.*?>', '', record.invoice_description or ''),
+                "NewValue": re.sub('<.*?>', '', kwargs.get('invoice_description') or ''),
             }
             values.append(value)
         return columns, values

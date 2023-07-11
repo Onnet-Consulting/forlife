@@ -75,15 +75,31 @@ class PurchaseOrder(models.Model):
     occasion_code_ids = fields.Many2many('occasion.code', string="Case Code", copy=False)
     account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref', copy=False,
                                             string="Cost Center")
-    is_purchase_request = fields.Boolean(default=False)
-    is_check_readonly_partner_id = fields.Boolean()
-    is_check_readonly_purchase_type = fields.Boolean()
+    is_purchase_request = fields.Boolean(default=False, copy=False)
+    is_check_readonly_partner_id = fields.Boolean(copy=False)
+    is_check_readonly_purchase_type = fields.Boolean(copy=False)
     source_document = fields.Char(string="Source Document")
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+
+    @api.constrains('x_tax')
+    def constrains_x_tax(self):
+        for rec in self:
+            if rec.x_tax > 100 or rec.x_tax < 0:
+                raise UserError(_('Bạn khổng thể nhập % thuế VAT của chiết khấu nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+
     count_invoice_inter_company_ncc = fields.Integer(compute='compute_count_invoice_inter_company_ncc')
     count_invoice_inter_normal_fix = fields.Integer(compute='compute_count_invoice_inter_normal_fix')
     count_invoice_inter_expense_fix = fields.Integer(compute='compute_count_invoice_inter_expense_fix')
@@ -138,6 +154,10 @@ class PurchaseOrder(models.Model):
             }
 
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
+
+    @api.onchange('partner_id')
+    def onchange_vendor_code(self):
+        self.currency_id = self.partner_id.property_purchase_currency_id.id
 
     def compute_count_stock(self):
         for item in self:
@@ -381,13 +401,6 @@ class PurchaseOrder(models.Model):
         for rec in self:
             domain_moves_normal = [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]
             rec.count_invoice_inter_normal_fix = self.env['account.move'].search_count(domain_moves_normal)
-            # moves = self.env['account.move'].search(domain_moves_normal)
-            # if moves:
-            #     for item in moves.receiving_warehouse_id:
-            #         item.ware_check = False
-
-
-
 
     def compute_count_invoice_inter_expense_fix(self):
         for rec in self:
@@ -549,7 +562,7 @@ class PurchaseOrder(models.Model):
                 invoice_line_ids = []
                 uom = self.env.ref('uom.product_uom_unit').id
                 for line in record.order_line:
-                    if line.price_subtotal <= 0:
+                    if line.price_subtotal <= 0 and not line.free_good:
                         raise UserError(
                             'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
                     product_ncc = self.env['stock.quant'].sudo().search(
@@ -768,9 +781,7 @@ class PurchaseOrder(models.Model):
         self.write({'custom_state': 'close'})
         stock_relationship = self.env['stock.picking'].search([('origin', '=', self.name),
                                                                ('state', '!=', 'done'),
-                                                               # ('labor_check', '=', True),
                                                                ('picking_type_id.code', '=', 'incoming'),
-                                                               # ('x_is_check_return', '=', True)
                                                                ])
         if stock_relationship:
             for item in stock_relationship:
@@ -912,6 +923,7 @@ class PurchaseOrder(models.Model):
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': wave_item.quantity_change - x_return.quantity_change,
+            'purchase_uom': line.purchase_uom.id,
             'quantity': wave_item.qty_done - x_return.qty_done,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
@@ -947,6 +959,7 @@ class PurchaseOrder(models.Model):
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': wave_item.quantity_change,
+            'purchase_uom': line.purchase_uom.id,
             'quantity': wave_item.qty_done,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
@@ -1071,6 +1084,7 @@ class PurchaseOrder(models.Model):
             # 'sequence': sequence,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
+            'purchase_uom': line.purchase_uom.id,
             'quantity': line.product_qty,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
@@ -1098,6 +1112,7 @@ class PurchaseOrder(models.Model):
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
+            'purchase_uom': line.purchase_uom.id,
             'quantity': line.product_qty,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
@@ -1128,6 +1143,7 @@ class PurchaseOrder(models.Model):
             'product_id': matching_item.product_id.id,
             'promotions': line.free_good,
             'exchange_quantity': matching_item.quantity_change,
+            'purchase_uom': line.purchase_uom.id,
             'quantity': quantity,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
@@ -1288,7 +1304,7 @@ class PurchaseOrder(models.Model):
                                          ]
                         domain_normal_out = [('purchase_id', '=', order.id),
                                          ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'outcoming')
+                                         ('picking_type_id.code', '=', 'outgoing')
                                          ]
                         # x_is_check_return tẹo xóa
                         picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
@@ -1329,7 +1345,6 @@ class PurchaseOrder(models.Model):
                                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                             sequence += 1
                                             pending_section = None
-                                        wave.picking_id.ware_check = True
                                         line_vals = line._prepare_account_move_line()
                                         line_vals.update(data_line)
                                         invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
@@ -1361,7 +1376,6 @@ class PurchaseOrder(models.Model):
                                                     invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                                     sequence += 1
                                                     pending_section = None
-                                                wave.picking_id.ware_check = True
                                                 line_vals = line._prepare_account_move_line()
                                                 line_vals.update(data_line)
                                                 invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
@@ -1437,6 +1451,10 @@ class PurchaseOrder(models.Model):
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
                     'move_type': 'in_invoice',
+                    'trade_discount': self.trade_discount,
+                    'total_trade_discount': self.total_trade_discount,
+                    'x_tax': self.x_tax,
+                    'x_amount_tax': self.x_amount_tax,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
@@ -1552,7 +1570,6 @@ class PurchaseOrder(models.Model):
                     for wave_item in picking_in.move_line_ids_without_package:
                         if str(wave_item.po_id) == str(line.id) and wave_item.product_id.id == line.product_id.id:
                             data_line = self.create_invoice_normal(order, line, wave_item)
-                            # wave.picking_id.ware_check = True
                         # else:
                         #     raise UserError(_('Đơn mua có mã phiếu là %s đã có hóa đơn liên quan tương ứng với phiếu nhập kho!') % order.name)
                             sequence += 1
@@ -2089,7 +2106,7 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             if line.order_id.purchase_type == 'product':
                 if line.vendor_price:
-                    line.price_unit = line.vendor_price
+                    line.price_unit = line.vendor_price / line.exchange_quantity
                 if not line.product_id or line.invoice_lines:
                     continue
                 params = {'order_id': line.order_id}
@@ -2341,8 +2358,28 @@ class AccountMove(models.Model):
                     item.write({
                         'invoice_status_fake': 'invoiced',
                     })
+            if rec.receiving_warehouse_id:
+                rec.receiving_warehouse_id.write({
+                    'ware_check': True
+                })
         res = super(AccountMove, self).action_post()
         return res
+
+    def button_cancel(self):
+        for rec in self:
+            if rec.receiving_warehouse_id:
+                rec.receiving_warehouse_id.write({
+                    'ware_check': False
+                })
+        return super(AccountMove, self).button_cancel()
+
+    def unlink(self):
+        for rec in self:
+            if rec.receiving_warehouse_id:
+                rec.receiving_warehouse_id.write({
+                    'ware_check': False
+                })
+        return super(AccountMove, self).unlink()
 
 
 class StockPicking(models.Model):
@@ -2382,10 +2419,10 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return True
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],  limit=1)
-            if po:
-                ### check npl tồn:
-                # self.check_quant_goods_import(po)
+            po = record.purchase_id
+            if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
+                ## check npl tồn:
+                self.check_quant_goods_import(po)
                 po.write({
                     'inventory_status': 'done',
                     'invoice_status_fake': 'to invoice',
@@ -2407,7 +2444,7 @@ class StockPicking(models.Model):
                     cp = self.create_invoice_po_cost(po, record)
                     '''
                 # Tạo nhập khác xuất khác khi nhập kho
-                if po.order_line_production_order and not po.is_inter_company:
+                if po.order_line_production_order:
                     npl = self.create_invoice_npl(po, record)
                 for rec in record.move_ids_without_package:
                     if rec.work_production:
@@ -2444,6 +2481,7 @@ class StockPicking(models.Model):
             'ref': f"{self.name} - {expense.product_id.name}",
             'purchase_type': po.purchase_type,
             'move_type': 'entry',
+            'x_entry_types': 'entry_cost',
             'reference': po.name,
             'exchange_rate': po.exchange_rate,
             'date': datetime.utcnow(),
@@ -2608,6 +2646,7 @@ class StockPicking(models.Model):
                         'ref': f"{record.name} - {rec.product_id.name}",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
+                        'x_entry_types': 'entry_cost',
                         'reference': po.name,
                         'exchange_rate': po.exchange_rate,
                         'date': datetime.now(),
@@ -2616,7 +2655,7 @@ class StockPicking(models.Model):
                         'invoice_line_ids': merged_records_list_cp,
                         'restrict_mode_hash_table': False
                     })
-                    entry_cp.action_post()
+                    entry_cp._post()
 
     # Xử lý nhập kho sinh bút toán ở tab thuế nhập khẩu po theo số lượng nhập kho
     def create_invoice_po_tax(self, po, record):
@@ -2703,6 +2742,7 @@ class StockPicking(models.Model):
                     'ref': f"{record.name} - {self.env.ref('forlife_purchase.product_import_tax_default').name}",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
+                    'x_entry_types': 'entry_import_tax',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,
                     'date': datetime.now(),
@@ -2711,13 +2751,14 @@ class StockPicking(models.Model):
                     'invoice_line_ids': merged_records_list_tnk,
                     'restrict_mode_hash_table': False
                 })
-                entry_nk.action_post()
+                entry_nk._post()
 
             if merged_records_list_db:
                 entry_db = self.env['account.move'].create({
                     'ref': f"{record.name} - {self.env.ref('forlife_purchase.product_excise_tax_default').name}",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
+                    'x_entry_types': 'entry_special_consumption_tax',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,
                     'date': datetime.now(),
@@ -2726,17 +2767,20 @@ class StockPicking(models.Model):
                     'invoice_line_ids': merged_records_list_db,
                     'restrict_mode_hash_table': False
                 })
-                entry_db.action_post()
+                entry_db._post()
 
     # Xử lý nhập kho sinh bút toán ở tab npl po theo số lượng nhập kho + sinh bút toán cho chi phí nhân công nội địa
     def create_invoice_npl(self, po, record):
-        list_money = []
         list_npls = []
         list_line_xk = []
         cost_labor_internal_costs = []
         if record.state == 'done':
+            if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
+                raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
+            else:
+                account_export_production_order = self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
-                material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
+                material = item.purchase_order_line_material_line_ids
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
                     account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
                 else:
@@ -2760,8 +2804,6 @@ class StockPicking(models.Model):
                             cost_labor_internal_costs.append(credit_cp)
                             debit_cost += pbo
                     else:
-                        if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
-                            raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
                         list_line_xk.append((0, 0, {
                             'product_id': material_line.product_id.id,
                             'product_uom': material_line.uom.id,
@@ -2774,19 +2816,13 @@ class StockPicking(models.Model):
                             'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
                             'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                         }))
-                        # check tồn kho với npl
-                        number_product = self.env['stock.quant'].search(
-                            [('location_id', '=', record.location_dest_id.id),
-                             ('product_id', '=', material_line.product_id.id)])
-                        if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                            raise ValidationError(_('Số lượng sản phẩm %s trong kho không đủ') % material_line.product_id.name)
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
                                 debit_npl = (0, 0, {
                                     'sequence': 9,
-                                    'account_id': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
-                                    'name': self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.name,
+                                    'account_id': account_export_production_order.id,
+                                    'name': account_export_production_order.name,
                                     'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                                     'credit': 0,
                                 })
@@ -2827,6 +2863,7 @@ class StockPicking(models.Model):
                         'ref': f"{record.name} - Chi phí nhân công thuê ngoài/nội bộ - {target_items}",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
+                        'x_entry_types': 'entry_cost_labor',
                         'reference': po.name,
                         'exchange_rate': po.exchange_rate,
                         'date': datetime.now(),
@@ -2835,7 +2872,7 @@ class StockPicking(models.Model):
                         'invoice_line_ids': invoice_line_ids,
                         'restrict_mode_hash_table': False
                     })
-                    entry_cp.action_post()
+                    entry_cp._post()
 
             if list_npls:
                 merged_records_npl = {}
@@ -2858,6 +2895,7 @@ class StockPicking(models.Model):
                         'ref': f"{record.name} - Nguyên phụ liệu",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
+                        'x_entry_types': 'entry_material',
                         'reference': po.name,
                         'exchange_rate': po.exchange_rate,
                         'date': datetime.now(),
@@ -2866,7 +2904,7 @@ class StockPicking(models.Model):
                         'invoice_line_ids': merged_records_list_npl,
                         'restrict_mode_hash_table': False
                     })
-                    entry_npls.action_post()
+                    entry_npls._post()
                     if record.state == 'done':
                         master_xk = self.create_xk_picking(po, record, list_line_xk, entry_npls)
 

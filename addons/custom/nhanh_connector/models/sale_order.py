@@ -49,6 +49,8 @@ class SaleOrderNhanh(models.Model):
         ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
     delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
+    x_voucher  = fields.Float(string='Giá trị voucher (Nhanh)')
+    x_code_voucher = fields.Char(string="Mã voucher/code (Nhanh)")
 
     # def write(self, vals):
     #     res = super().write(vals)
