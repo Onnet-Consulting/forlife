@@ -71,4 +71,9 @@ class StockPicking(models.Model):
                 if not account_id:
                     raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
+        if self.sale_id.source_record and self.sale_id.invoice_status == 'to invoice':
+            invoices = self.sale_id.with_context(raise_if_nothing_to_invoice=False)._create_invoices(final=True)
+            if invoices:
+                for inv in invoices:
+                    inv.action_post()
         return res
