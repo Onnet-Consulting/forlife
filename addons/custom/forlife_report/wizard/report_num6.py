@@ -122,9 +122,9 @@ select row_number() over ()                                                     
         pi.product_name                                                           as product_name,
         pi.product_group                                                          as product_group,
         pi.product_line                                                           as product_line,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as product_size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as product_color,
-        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender        
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as product_size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as product_color,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender        
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id

@@ -144,8 +144,8 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
         pt.categ_id,
         pt.uom_name,
         pt.cate_name,
-        ad.attrs::json ->> '{attr_value.get('size', '')}' as size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}' as color
+        ad.attrs::json -> '{attr_value.get('size', '')}' as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}' as color
     from product_product pp
         left join (select 
                         pt1.id,

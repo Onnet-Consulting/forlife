@@ -138,11 +138,11 @@ select
     case when pc.name ilike '%%hàng hóa%%' then 'Nhập mua'
         when pc.name ilike '%%thành phẩm%%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                        as mau_sac,
-    ad.attrs::json ->> '{attr_value.get('size', '')}'                           as kich_co,
+    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                        as mau_sac,
+    ad.attrs::json -> '{attr_value.get('size', '')}'                           as kich_co,
     st.note                                                                     as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    ad.attrs::json ->> '{attr_value.get('subclass1', '')}'                      as kieu_dang,
+    ad.attrs::json -> '{attr_value.get('subclass1', '')}'                      as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -152,8 +152,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                      as doi_tuong,
-    ad.attrs::json ->> '{attr_value.get('nam_san_xuat', '')}'                   as nam_sx
+    ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                      as doi_tuong,
+    ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                   as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id

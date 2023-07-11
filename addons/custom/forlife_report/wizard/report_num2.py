@@ -93,8 +93,8 @@ select  pp.id                                                                   
         sw.id                                                                   as warehouse_id,
         sw.name                                                                 as warehouse_name,
         stp.quantity                                                            as quantity,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                       as product_size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                    as product_color,
+        ad.attrs::json -> '{attr_value.get('size', '')}'                       as product_size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                    as product_color,
         pt.list_price                                                           as list_price,
         coalesce(fp.fixed_price, pt.list_price)                                 as discount_price
 from stock_product stp

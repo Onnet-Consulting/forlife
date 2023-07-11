@@ -114,11 +114,11 @@ product_cate_info as (
         pp.barcode                                                                as product_barcode,
         coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')   as product_name,
         coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as uom_name,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as color,
-        ad.attrs::json ->> '{attr_value.get('mua_vu', '')}'                        as season,
-        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender,
-        ad.attrs::json ->> '{attr_value.get('nhan_hieu', '')}'                     as label
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as color,
+        ad.attrs::json -> '{attr_value.get('mua_vu', '')}'                        as season,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender,
+        ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                     as label
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join uom_uom uom on pt.uom_id = uom.id
