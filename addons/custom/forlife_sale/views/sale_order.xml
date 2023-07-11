@@ -67,7 +67,7 @@
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
                     <field name="x_free_good" optional="hide"/>
-                    <field name="x_cart_discount_fixed_price" optional="hide"/>
+                    <field name="x_cart_discount_fixed_price" context="{'notloop':True}" optional="hide"/>
                     <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '=', 'product')]}"/>
                     <field name="x_scheduled_date" optional="hide"/>
                     <field name="x_manufacture_order_code_id" optional="hide"/>

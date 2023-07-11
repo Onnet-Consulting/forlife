@@ -452,7 +452,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
-        self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
+        if 'notloop_discount' in self._context and self._context.get('notloop_discount'):
+            self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
@@ -471,21 +472,31 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_cart_discount_fixed_price')
     def onchange_x_cart_discount_fixed_price(self):
-        if self.x_cart_discount_fixed_price:
-            self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
-                    self.price_unit * self.product_uom_qty) else 0
-        else:
+        if self.x_cart_discount_fixed_price and 'notloop' in self._context and self._context.get('notloop'):
             self.discount = 0
 
-    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    # def _compute_amount(self):
-    #     """
-    #     Compute the amounts of the SO line.
-    #     """
-    #     res = super()._compute_amount()
-    #     # for line in self:
-    #     #     line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
-    #     return res
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        for line in self:
+            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+            totals = list(tax_results['totals'].values())[0]
+            amount_untaxed = totals['amount_untaxed']
+            amount_tax = totals['amount_tax']
+            if line.x_cart_discount_fixed_price == line.price_unit * line.discount * line.product_uom_qty / 100:
+                line.update({
+                    'price_subtotal': amount_untaxed,
+                    'price_tax': amount_tax,
+                    'price_total': amount_untaxed + amount_tax,
+                })
+            if line.discount == 0:
+                line.update({
+                    'price_subtotal': amount_untaxed - line.x_cart_discount_fixed_price,
+                    'price_tax': amount_tax,
+                    'price_total': amount_untaxed + amount_tax - line.x_cart_discount_fixed_price,
+                })
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
