@@ -254,7 +254,7 @@
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="currency_id"
-                           attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="invoice_status" invisible="1"/>
