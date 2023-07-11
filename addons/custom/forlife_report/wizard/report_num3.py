@@ -219,17 +219,17 @@ order by num
         collection_domain = [('collection', '=', self.collection)] if self.collection else []
         Product = self.env['product.product']
         if self.product_ids:
-            product_ids = self.product_ids.ids
+            product_ids = self.product_ids
         elif self.texture_ids:
-            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)] + collection_domain).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)] + collection_domain)
         elif self.product_line_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)] + collection_domain).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)] + collection_domain)
         elif self.product_group_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)] + collection_domain).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)] + collection_domain)
         elif self.product_brand_id:
-            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)] + collection_domain).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)] + collection_domain)
         else:
-            product_ids = (Product.search(collection_domain).ids or [-1]) if collection_domain else [-1]
+            product_ids = Product.search(collection_domain) if collection_domain else Product
         wh_domain = [('company_id', 'in', allowed_company)]
         if self.report_by == 'area':
             wh_domain += [('loc_province_id', '!=', False)] if self.all_areas else ([('loc_province_id', 'in', self.area_ids.ids)] if self.area_ids else [('loc_province_id', '=', False)])
@@ -237,6 +237,10 @@ order by num
             wh_domain = [] if self.warehouse_ids else wh_domain
         warehouse_ids = self.env['stock.warehouse'].search(wh_domain) if wh_domain else self.warehouse_ids
         wh_ids = warehouse_ids.ids or [-1]
+        if self.defective_inventory:
+            attr_value = self.env['res.utility'].get_attribute_code_config()
+            product_ids = product_ids.filtered(lambda f: any([attr_value.get('chat_luong') == x for x in f.mapped('attribute_line_ids.attribute_id.attrs_code')]))
+        product_ids = product_ids.ids or [-1]
         query = self._get_query(product_ids, wh_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data = self.format_data(data)
