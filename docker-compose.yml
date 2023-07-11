@@ -10,7 +10,7 @@ services:
     command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"
     environment:
       - HOST=${DB_HOST}
-      - POST=${DB_POST}
+      - POST=${DB_PORT}
       - USER=${DB_USER}
       - PASSWORD=${DB_PASSWORD}
     restart: always
