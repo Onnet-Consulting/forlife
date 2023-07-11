@@ -446,9 +446,9 @@ class SaleOrderLine(models.Model):
             return {'domain': {'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                      ('company_id', '=', self.order_id.company_id.id)]}}
 
-    @api.onchange('price_unit', 'discount', 'product_uom_qty')
-    def compute_cart_discount_fixed_price(self):
-        self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
+    # @api.onchange('price_unit', 'discount', 'product_uom_qty')
+    # def compute_cart_discount_fixed_price(self):
+    #     self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
@@ -471,16 +471,9 @@ class SaleOrderLine(models.Model):
             self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
                     self.price_unit * self.product_uom_qty) else 0
 
-    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    # def _compute_amount(self):
-    #     """
-    #     Compute the amounts of the SO line.
-    #     """
-    #     res = super()._compute_amount()
-    #     for line in self:
-    #         if float(line.x_cart_discount_fixed_price) > 0:
-    #             line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
-    #     return res
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
+    def _compute_amount(self):
+        return super()._compute_amount()
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
