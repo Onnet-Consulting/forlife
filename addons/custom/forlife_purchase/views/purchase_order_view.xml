@@ -151,17 +151,19 @@
                     <page string="Product Exchange Rate" attrs="{'invisible': [('type_po_cost', '!=', 'tax')]}">
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many" force_save="1">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
+                                <field name="company_currency" invisible="1"/>
                                 <field name="product_id" readonly="1"/>
                                 <field name="description" readonly="1"/>
-                                <field name="total_vnd_exchange" readonly="1"/>
+                                <field name="company_currency" invisible="1"/>
+                                <field name="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1"/>
+                                <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1"/>
-                                <field name="total_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                <field name="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                             </tree>
                         </field>
                     </page>
@@ -191,18 +193,21 @@
                     <page string="Tổng hợp" name="synthetic">
                         <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1" force_save="1">
                             <tree editable="bottom" class="width-hh">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="description"/>
                                 <field name="product_uom"/>
-                                <field name="price_unit" string="Đơn giá"/>
+                                <field name="price_unit" string="Đơn giá" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="product_qty" sum="discounted subtotal"/>
-                                <field name="total_vnd_amount"/>
+                                <field name="company_currency" invisible="1"/>
                                 <field name="discount"/>
-                                <field name="before_tax"/>
-                                <field name="tax_amount" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="after_tax"/>
-                                <field name="total_product"/>
+                                <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="after_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                             </tree>
                         </field>
                     </page>
@@ -349,7 +354,9 @@
                                sum="discounted subtotal"
                                force_save="1"
                                readonly="0"/>
+                        <field name="company_currency" invisible="1"/>
                         <field name="total_vnd_amount"
+                               widget="monetary" options="{'currency_field': 'company_currency'}"
                                sum="discounted subtotal"
                                force_save="1"
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"

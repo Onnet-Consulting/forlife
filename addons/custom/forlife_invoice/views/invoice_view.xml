@@ -6,6 +6,15 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="view_move_entry" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':[('state', 'not in', ('posted'))]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Bút toán phát sinh</span>
+                        </div>
+                    </button>
+                </xpath>
+
                 <xpath expr="//field[@name='partner_bank_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -118,6 +127,8 @@
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_currency" invisible="1"/>
                             <field name="ware_id" invisible="1"/>
                             <field name="ware_name" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
@@ -153,7 +164,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
+                            <field name="price_unit"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount"
                                    force_save="1"
@@ -170,6 +181,7 @@
                                    domain="[('active', '=', True)]"
                                    attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_amount"
+                                   force_save="1"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"/>
                             <field name="price_subtotal"
                                    string="Thành tiền"
@@ -177,6 +189,7 @@
                                    sum="discounted subtotal"
                                    readonly="0"/>
                             <field name="total_vnd_amount"
+                                   widget="monetary" options="{'currency_field': 'company_currency'}"
                                    sum="discounted subtotal"
                                    force_save="1"
                                    widget="float"
@@ -222,17 +235,19 @@
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
-                                <field name="product_id" readonly="1"/>
-                                <field name="description" readonly="1"/>
-                                <field name="total_vnd_exchange" readonly="1"/>
-                                <field name="quantity" readonly="1" string="Số lượng"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="company_currency" invisible="1"/>
+                                <field name="product_id" force_save="1" readonly="1"/>
+                                <field name="description" force_save="1" readonly="1"/>
+                                <field name="total_vnd_exchange" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="quantity" readonly="1" force_save="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_tax" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="vat_tax" string="% Thuế GTGT"/>
-                                <field name="vat_tax_amount" readonly="1"/>
-                                <field name="total_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                             </tree>
                         </field>
                     </page>
