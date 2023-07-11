@@ -10,7 +10,7 @@
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
                 <ul>
                     <t t-foreach="props.programs" t-as="program" t-key="program.id">
-                        <li class="program-item" style="margin: 0 0 20px 0; height: 70px;">
+                        <li class="program-item" style="margin: 0 0 20px 0;">
                             <input
                                     type="checkbox" name="programs"
                                     t-att-id="program.id"
@@ -18,19 +18,20 @@
                                     disabled="selectable"
                                     t-att-checked="'checked' ? program.isSelected : ''"
                             />
-                            <label t-att-for="program.program.id">
+                            <label t-att-for="program.program.id" style="font-weight: bold;">
                                 [<t t-esc="program.program.id"/>]&nbsp;&nbsp;<t t-esc="program.program.display_name"/>
                             </label>
                             <div style="margin: 0 0 0 15px">
                                 <div t-if="program.selectedQty > 0">
                                     <strong t-esc="program.selectedQty"/> sản phẩm đã áp dụng khuyến mãi
                                 </div>
-                                <div t-if="program.to_discount_lines.length > 0"  style="display: inline-block;" class="btn-primary">
-                                    <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program)">Chọn SP giảm giá</i>
-                                </div>
-                                <div t-if="program.program.reward_type == 'cart_get_x_free' and program.to_reward_lines.length"  style="display: inline-block;" class="btn-primary">
-                                    <i title="Chọn SP tặng" t-on-click="() => this.select_reward(program)">Chọn SP tặng</i>
-                                </div>
+                                <RewardSelectionCartPromotionPopup program="program" programOptions="props.programs"/>
+<!--                                <div t-if="program.to_discount_lines.length > 0"  style="display: inline-block;" class="btn-primary">-->
+<!--                                    <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program)">Chọn SP giảm giá</i>-->
+<!--                                </div>-->
+<!--                                <div t-if="program.program.reward_type == 'cart_get_x_free' and program.to_reward_lines.length"  style="display: inline-block;" class="btn-primary">-->
+<!--                                    <i title="Chọn SP tặng" t-on-click="() => this.select_reward(program)">Chọn SP tặng</i>-->
+<!--                                </div>-->
                                 <div t-if="program.program.reward_type == 'cart_get_x_free' and program.to_reward_lines.length == 0"
                                      style="display: inline-block;">
                                     <span style="font-style: italic; color: brown">Thêm SP tặng vào đơn hàng để nhận ưu đãi</span>
