@@ -475,28 +475,13 @@ class SaleOrderLine(models.Model):
         if self.x_cart_discount_fixed_price and 'notloop' in self._context and self._context.get('notloop'):
             self.discount = 0
 
-    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
-    # def _compute_amount(self):
-    #     """
-    #     Compute the amounts of the SO line.
-    #     """
-    #     for line in self:
-    #         tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-    #         totals = list(tax_results['totals'].values())[0]
-    #         amount_untaxed = totals['amount_untaxed']
-    #         amount_tax = totals['amount_tax']
-    #         if line.x_cart_discount_fixed_price == line.price_unit * line.discount * line.product_uom_qty / 100:
-    #             line.update({
-    #                 'price_subtotal': amount_untaxed,
-    #                 'price_tax': amount_tax,
-    #                 'price_total': amount_untaxed + amount_tax,
-    #             })
-    #         if line.discount == 0:
-    #             line.update({
-    #                 'price_subtotal': amount_untaxed - line.x_cart_discount_fixed_price,
-    #                 'price_tax': amount_tax,
-    #                 'price_total': amount_untaxed + amount_tax - line.x_cart_discount_fixed_price,
-    #             })
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        rslt = super()._compute_amount()
+        return rslt
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_price_unit(self):
@@ -554,3 +539,10 @@ class SaleOrderLine(models.Model):
             x_cart_discount_fixed_price = self.x_cart_discount_fixed_price
         res = super(SaleOrderLine, self.with_context(x_cart_discount_fixed_price=x_cart_discount_fixed_price))._convert_to_tax_base_line_dict()
         return res
+
+    def _prepare_invoice_line(self, **optional_values):
+        rslt = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
+        rslt.update({
+            'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price
+        })
+        return rslt
