@@ -17,7 +17,7 @@ class StockMove(models.Model):
                 'work_production': self.purchase_line_id.production_id.id,
                 'account_analytic_id': self.purchase_line_id.account_analytic_id.id,
             })
-            if self.picking_id.is_return_po:
+            if self.picking_id.x_is_check_return:
                 vals.update({
                     'quantity_change': self.purchase_line_id.exchange_quantity,
                     'qty_done': self.product_qty
