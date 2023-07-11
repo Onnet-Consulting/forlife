@@ -165,7 +165,7 @@ class InheritPosOrder(models.Model):
         if journal.company_consignment_id:
             invoice_line.update({
                 'partner_id': journal.company_consignment_id.id,
-                'account_id': journal.default_account_id.id
+                # 'account_id': journal.default_account_id.id
             })
         return invoice_line
 
@@ -185,7 +185,6 @@ class InheritPosOrder(models.Model):
                     continue
                 ail[-1]['quantity'] = -ail[-1]['quantity']
                 out_refund_line_values.append(ail)
-                (out_invoice_line_values if ail[-1]['quantity'] > 0 else out_refund_line_values).append(ail)
             values['invoice_line_ids'] = out_invoice_line_values
             if out_refund_line_values:
                 out_refund_values = values.copy()
@@ -206,6 +205,19 @@ class InheritPosOrder(models.Model):
         result['pos_order_id'] = self.id
         return self._handle_invoice_vals(result)
 
+    def get_reward_line(self, pol_value):
+        pul_ids = [] if 'promotion_usage_ids' not in pol_value or not pol_value['promotion_usage_ids'] else pol_value['promotion_usage_ids'][-1]
+        is_reward_line, with_purchase_condition = False, False
+        if pul_ids:
+            for p in self.env['promotion.usage.line'].sudo().browse(pul_ids):
+                if is_reward_line and with_purchase_condition:
+                    break
+                if not is_reward_line:
+                    is_reward_line = p.disc_percent == 100 or p.reward_type in ('code_buy_x_get_y', 'code_buy_x_get_cheapest', 'cart_get_x_free')
+                if is_reward_line and not with_purchase_condition:
+                    with_purchase_condition = p.product_count > 0 or p.order_amount_min > 0
+        return is_reward_line, with_purchase_condition
+
     @api.model
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
@@ -213,6 +225,7 @@ class InheritPosOrder(models.Model):
         order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
+            line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
             if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
                 line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
 
@@ -249,10 +262,22 @@ class InheritPosOrderLine(models.Model):
     is_state_registration = fields.Boolean(string='Is State Registration')
     product_src_id = fields.Many2one(comodel_name='pos.order.line', string='Source Product')
     product_discount_ids = fields.One2many(comodel_name='pos.order.line', inverse_name='product_src_id', string='Discount Product')
-    promotion_model = fields.Char(string='Promotion Model')
-    promotion_id = fields.Many2oneReference(string='Promotion ID', model_field='promotion_model')
+    promotion_type = fields.Selection(
+        selection=[
+            ('ctkm', 'CTKM'),
+            ('point', 'Point'),
+            ('make_price', 'Make Price'),
+            ('card', 'Card'),
+            ('product_defective', 'Product Defective'),
+            ('handle', 'Handle')
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+    promotion_model = fields.Char(string='Promotion Model', index=True)
+    promotion_id = fields.Many2oneReference(string='Promotion ID', model_field='promotion_model', index=True)
     is_promotion = fields.Boolean(string='Is promotion')
     subtotal_paid = fields.Monetary(compute='_compute_subtotal_paid')
+    with_purchase_condition = fields.Boolean(string='With Purchase Condition', default=False, index=True)
 
     def _compute_subtotal_paid(self):
         for pol in self:
@@ -269,7 +294,7 @@ class InheritPosOrderLine(models.Model):
                 is_state_registration = point_promotion.check_validity_state_registration()
         self.is_state_registration = is_state_registration
 
-    def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False):
+    def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
         return {
@@ -303,6 +328,7 @@ class InheritPosOrderLine(models.Model):
             'product_defective_id': 0,
             'is_state_registration': is_state_registration,
             'name': product_id.name,
+            'promotion_type': promotion_type,
             'is_promotion': True
         }
 
@@ -321,6 +347,7 @@ class InheritPosOrderLine(models.Model):
                 product_id=promotion.program_id.product_discount_id,
                 price=-promotion.discount_total,
                 promotion=promotion.program_id,
+                promotion_type='ctkm'
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
@@ -328,6 +355,7 @@ class InheritPosOrderLine(models.Model):
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id,
                 is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration(),
+                promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point')
         ]
 
@@ -346,6 +374,7 @@ class InheritPosOrderLine(models.Model):
     def generate_promotion_values(self, original_qty=0):
         return {
             'is_reward_line': self.is_reward_line,
+            'with_purchase_condition': self.with_purchase_condition,
             'promotion_usage_ids': [(0, 0, {
                 'program_id': p.program_id.id,
                 'currency_id': p.currency_id.id,

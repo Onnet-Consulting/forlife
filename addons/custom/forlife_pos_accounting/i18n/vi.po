@@ -170,3 +170,89 @@ msgstr "Ngày bắt đầu đăng ký nhà nước"
 #: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__subtotal_paid
 msgid "Subtotal Paid"
 msgstr "Thành tiền thanh toán"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__promotion_type
+msgid "Promotion Type"
+msgstr "Loại khuyến mại"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__point
+msgid "Point"
+msgstr "Điểm"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__make_price
+msgid "Make Price"
+msgstr "Làm giá"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__card
+msgid "Card"
+msgstr "Thẻ"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__product_defective
+msgid "Product Defective"
+msgstr "Hàng lỗi"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields.selection,name:forlife_pos_accounting.selection__pos_order_line__promotion_type__handle
+msgid "Handle"
+msgstr "Thủ công"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_company__product_default_pos_defective_goods_id
+msgid "Default Product Defective Goods (PoS)"
+msgstr "Cấu hình sản phẩm hàng lỗi mặc định"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "Default Product Defective Goods (PoS)."
+msgstr "Cấu hình sản phẩm hàng lỗi mặc định"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "Default Product Defective Goods / Handel Discount (PoS)"
+msgstr "Cấu hình sản phẩm hàng lỗi / chiết khấu tay mặc định"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "Default Product Handel Discount (PoS)"
+msgstr "Cấu hình sản phẩm chiết khấu tay mặc định"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_company__product_default_pos_handle_discount_id
+msgid "Default Product Handle Discount (PoS)"
+msgstr "Cấu hình sản phẩm chiết khấu tay mặc định"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_config_settings__product_default_pos_defective_goods_id
+msgid "Defective Goods"
+msgstr "Khuyến mại hàng lỗi"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Default Product</span>"
+msgstr "<span class=\"o_form_label\">Cấu hình sản phẩm CK mặc định</span>"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_config_settings__product_default_pos_handle_discount_id
+msgid "Handel Discount"
+msgstr "Khuyến mại CK tay"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_company__is_promotional_accounting_without_state_registration
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_config_settings__is_promotional_accounting_without_state_registration
+msgid "Is Promotional Accounting Without State Registration"
+msgstr "Hạch toán KM không đăng ký nhà nước"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_pos_order_line__with_purchase_condition
+msgid "With Purchase Condition"
+msgstr "Với điều kiện mua hàng"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "Allow to configure promotional accounting without state registration"
+msgstr "Cho phép cấu hình hạch toán khuyến mại không đăng ký nhà nước"

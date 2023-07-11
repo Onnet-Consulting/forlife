@@ -87,7 +87,7 @@ product_info as (
     select 
         pp.id                                                                   as product_id,
         pp.barcode                                                              as barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
         split_part(pc.complete_name, ' / ', 2)                          		as product_group,
         split_part(pc.complete_name, ' / ', 3)                          		as product_line
     from product_product pp
@@ -96,17 +96,21 @@ product_info as (
     where pp.id in (select product_id from products)
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id in (select product_id from products)
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 )
 select row_number() over ()                                                       as num,
         pr.product_id                                                             as product_id,
@@ -118,17 +122,15 @@ select row_number() over ()                                                     
         pi.product_name                                                           as product_name,
         pi.product_group                                                          as product_group,
         pi.product_line                                                           as product_line,
-        ad_size.value                                                             as product_size,
-        ad_color.value                                                            as product_color,
-        ad_gender.value                                                           as gender
+        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as product_size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as product_color,
+        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender        
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
     left join product_info pi on pi.product_id = pr.product_id
-    left join attribute_data ad_size on ad_size.product_id = pr.product_id and ad_size.attrs_code = '{attr_value.get('size', '')}'
-    left join attribute_data ad_color on ad_color.product_id = pr.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data ad_gender on ad_gender.product_id = pr.product_id and ad_gender.attrs_code = '{attr_value.get('doi_tuong', '')}'
+    left join attribute_data ad on ad.product_id = pr.product_id
 order by num
 """
         return query

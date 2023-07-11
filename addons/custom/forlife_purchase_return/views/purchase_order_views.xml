@@ -31,8 +31,18 @@
             	<xpath expr="//header" position="inside">
                     <field name="is_return" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="after">
+                <xpath expr="//field[@name='order_line']//tree/field[@name='billed']" position="after">
                     <field name="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="replace">
+                    <field name="received"
+                           string="Đã nhận"
+                           attrs="{'column_invisible': ['|', ('received', '=', False), '|', ('parent.purchase_type', '!=', 'product'), ('parent.is_return', '=', True)]}"
+                           sum="discounted subtotal" force_save="1"/>
+                    <field name="received"
+                           string="SL hoàn thành"
+                           attrs="{'column_invisible': ['|', ('received', '=', False), '|', ('parent.purchase_type', '!=', 'product'), ('parent.is_return', '!=', True)]}"
+                           sum="discounted subtotal" force_save="1"/>
                 </xpath>
                 <button name="action_close" position="before">
                     <button string="Tạo đơn trả hàng" name="%(forlife_purchase_return.action_wizard_purchase_order_return)d" type="action" attrs="{'invisible': ['|',('custom_state', '!=', 'approved'), ('is_return', '=', True)]}"/>
@@ -53,6 +63,9 @@
                     <attribute name="attrs">{'invisible': ['|',('is_return', '=', True),('default_location_dest_id_usage', '!=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer'), ('is_return', '=', False)]}</attribute>
                     =""
                 </field>
+                <field name="vendor_price" position="attributes">
+                    <attribute name="attrs">{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('free_good', '=', True), '&amp;', ('parent.is_passersby', '=', False), ('parent.is_return', '=', False)]}</attribute>
+                </field>
 
             </field>
         </record>
@@ -68,6 +81,15 @@
                         class="oe_stat_button"
                         icon="fa-truck" attrs="{'invisible':['|', ('incoming_picking_count','=', 0), ('is_return', '=', True)]}" groups="stock.group_stock_user">
                         <field name="incoming_picking_count" widget="statinfo" string="Receipt Products"/>
+                    </button>
+                    <button name="action_view_invoice_refund" string="Invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('count_invoice_refund', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_invoice_refund"/>
+                            </span>
+                            <span class="o_stat_text">Hóa đơn trả hàng</span>
+                        </div>
                     </button>
                     <button type="object"
                         name="action_view_picking"

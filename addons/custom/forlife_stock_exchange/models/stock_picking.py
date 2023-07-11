@@ -6,7 +6,10 @@ class InheritStockPicking(models.Model):
     _inherit = 'stock.picking'
 
     exchange_code = fields.Selection(related='picking_type_id.exchange_code')
-    picking_outgoing_id = fields.Many2one('stock.picking', index=True)
+    picking_outgoing_id = fields.Many2one('stock.picking', copy=False, index=True)
+    location_export_id = fields.Many2one(
+        comodel_name='stock.location', string='Location Export', index=True, domain=[('usage', '=', 'internal')]
+    )
 
     def view_outgoing_picking(self):
         return {
@@ -24,6 +27,7 @@ class InheritStockPicking(models.Model):
         Generate outgoing move for incoming picking
         """
         move_outgoing_values = []
+        reason_type_id = self.env.ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
             move_outgoing_value = [{
@@ -37,7 +41,8 @@ class InheritStockPicking(models.Model):
                 'amount_total': move.product_uom_qty * material.product_id.standard_price,
                 'bom_model': material._name,
                 'bom_id': material.id,
-            } for material in bom.forlife_bom_material_ids] + [{
+                'reason_type_id': reason_type_id,
+            } for material in bom.forlife_bom_material_ids if material.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': ingredients.product_id.name,
                 'product_id': ingredients.product_id.id,
@@ -48,7 +53,8 @@ class InheritStockPicking(models.Model):
                 'amount_total': move.product_uom_qty * ingredients.product_id.standard_price,
                 'bom_model': ingredients._name,
                 'bom_id': ingredients.id,
-            } for ingredients in bom.forlife_bom_ingredients_ids] + [{
+                'reason_type_id': reason_type_id,
+            } for ingredients in bom.forlife_bom_ingredients_ids if ingredients.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': expense.product_id.name,
                 'product_id': expense.product_id.id,
@@ -59,7 +65,8 @@ class InheritStockPicking(models.Model):
                 'amount_total': move.product_uom_qty * expense.product_id.standard_price,
                 'bom_model': expense._name,
                 'bom_id': expense.id,
-            } for expense in bom.forlife_bom_service_cost_ids]
+                'reason_type_id': reason_type_id,
+            } for expense in bom.forlife_bom_service_cost_ids if expense.product_id.type == 'product']
             if not move_outgoing_value:
                 raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
             move_outgoing_values += move_outgoing_value
@@ -69,62 +76,45 @@ class InheritStockPicking(models.Model):
         """
         Generate and validate outgoing picking for incoming picking
         """
-        company = self.env.company
-        picking_type = self.env['stock.picking.type'].search(
-            [('code', '=', 'outgoing'), ('exchange_code', '=', 'outgoing'), ('company_id', '=', company.id)],
-            limit=1
-        )
-        if not picking_type:
-            raise ValidationError(_('Please configure the materials export operation type for company %s!', company.name))
-        picking_outgoing_id = self.create({'location_id': self.location_dest_id.id})
+        picking_outgoing_id = self.create({'location_id': self.location_export_id.id, 'origin': self.name})
         picking_outgoing_id._generate_outgoing_move(self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
-        if picking_outgoing_id.state != 'assigned':
-            raise ValidationError(_('The stock "%s" dose not enough goods to export materials!', picking_outgoing_id.location_id.name))
+        materials_not_enough = '\n\t- '.join([
+            sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
+            for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'
+        ])
+        if materials_not_enough:
+            raise ValidationError(_(
+                'The stock "%s" dose not enough goods to export materials:\n\t- %s',
+                picking_outgoing_id.location_id.complete_name,
+                materials_not_enough
+            ))
+        picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
     def button_validate(self):
-        picking_out = self.picking_outgoing_id
-        if self.picking_type_id.exchange_code == 'incoming' and picking_out and picking_out.state != 'done':
-            validate_results = picking_out.button_validate()
+        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
             self._update_forlife_production()
-            if isinstance(validate_results, dict):
-                self.env[validate_results['res_model']].with_context(validate_results['context']).create({}).process()
-        return super(InheritStockPicking, self).button_validate()
-
-    def action_confirm(self):
-        if self.picking_type_id.exchange_code == 'incoming':
-            bom_ids = {
-                bom.product_id.id: bom
-                for bom in self.env['forlife.production.finished.product'].sudo().search(
-                    [('product_id', 'in', self.move_ids.mapped('product_id.id'))]
-                )
-            }
             for move_in in self.move_ids:
-                if move_in.product_id.id not in bom_ids:
-                    raise ValidationError(_('Cannot find BOM for product "%s"!', move_in.product_id.name))
-                price_unit = move_in.price_unit or bom_ids[move_in.product_id.id].unit_price
+                bom = move_in.work_production.forlife_production_finished_product_ids.filtered(lambda b: b.product_id.id == move_in.product_id.id)
+                if len(bom) != 1:
+                    raise ValidationError(
+                        not bom and _('Cannot find BOM for product "%s"!', move_in.product_id.name)
+                        or _('There are too many BOM for product "%s"!', move_in.product_id.name)
+                    )
+                bom.update_price()
+                price_unit = bom.unit_price or move_in.price_unit
                 move_in.write({
-                    'bom_model': bom_ids[move_in.product_id.id]._name,
-                    'bom_id': bom_ids[move_in.product_id.id].id,
+                    'bom_model': bom._name,
+                    'bom_id': bom.id,
                     'price_unit': price_unit,
                     'amount_total': price_unit * move_in.product_uom_qty
                 })
             picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
             self = self.with_context(exchange_code='incoming')
             self.write({'picking_outgoing_id': picking_outgoing_id.id})
-        return super(InheritStockPicking, self).action_confirm()
-
-    def _update_forlife_production(self):
-        for line in self.move_ids_without_package:
-            if line.work_production:
-                forlife_production = line.work_production.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == line.product_id.id)
-                if not forlife_production:
-                    continue
-                forlife_production.write({
-                    'forlife_production_stock_move_ids': [(4, line.id)],
-                })
+        return super(InheritStockPicking, self).button_validate()
 
     def _update_forlife_production(self):
         for line in self.move_ids_without_package:
@@ -167,7 +157,7 @@ class InheritStockPicking(models.Model):
             ref = self.env.ref
             results.update({
                 'picking_type_id': picking_type.id,
-                'location_id': ref('stock.stock_location_suppliers').id,
+                'location_id': ref('forlife_stock_exchange.forlife_location_incoming_exchange').id,
                 'location_dest_id': None,
                 'reason_type_id': ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange').id,
                 'other_import': True
@@ -183,7 +173,7 @@ class InheritStockPicking(models.Model):
             ref = self.env.ref
             results.update({
                 'picking_type_id': picking_type.id,
-                'location_dest_id': ref('stock.stock_location_customers').id,
+                'location_dest_id': ref('forlife_stock_exchange.forlife_location_outgoing_exchange').id,
                 'reason_type_id': ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id,
                 'other_export': True
             })

@@ -94,13 +94,17 @@ class StockMove(models.Model):
 
         # the standard_price of the product may be in another decimal precision, or not compatible with the coinage of
         # the company currency... so we need to use round() before creating the accounting entries.
+
+        #todo remove because cost is original not foreign currency
+        '''
         if self.purchase_line_id and self.purchase_line_id.order_id.type_po_cost == 'tax' \
                 and self.purchase_line_id.order_id.currency_id != self.env.company.currency_id:
             cost = cost * self.purchase_line_id.order_id.exchange_rate
+        '''
         debit_value = self.company_id.currency_id.round(cost)
         credit_value = debit_value
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
-        if self.picking_id.location_id.id_deposit:
+        if self.picking_id.location_id.id_deposit and self.picking_id.sale_id:
             if not self.picking_id.location_id.account_stock_give:
                 raise ValidationError(_(f'Vui lòng cấu hình tài khoản kho kí gửi của địa điểm {self.picking_id.location_id.name_get()[0][1]}!'))
             credit_account_id = self.picking_id.location_id.account_stock_give.id
@@ -123,7 +127,8 @@ class StockMove(models.Model):
                 debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
                 credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else (self.amount_total / self.previous_qty) * self.quantity_done
+                if not self.picking_id.location_id.is_price_unit else (
+                                                                                  self.amount_total / self.previous_qty) * self.quantity_done
             # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]

@@ -49,13 +49,12 @@
                  </xpath>
 
 
-                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+<!--                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">-->
 <!--                    <field name="ghn_price_unit_discount" optional="show"/>-->
 <!--                    <field name="prm_price_discount" optional="show"/>-->
-                    <field name="prm_price_total_discount" optional="show"/>
+<!--                    <field name="prm_price_total_discount" optional="show"/>-->
 <!--                    <field name="product_gift" optional="show"/>-->
-
-                </xpath>
+<!--                </xpath>-->
 
                 <xpath expr="//field[@name='state']" position="attributes">
                     <attribute name="statusbar_visible">draft,check_promotion,done_sale,sent,sale</attribute>

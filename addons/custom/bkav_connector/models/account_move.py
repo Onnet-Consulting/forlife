@@ -115,7 +115,7 @@ class AccountMoveBKAV(models.Model):
     _inherit = 'account.move'
 
     exists_bkav = fields.Boolean(default=False, copy=False)
-    is_post_bkav = fields.Boolean(default=False, string="Có tạo hóa đơn BKAV ngay?", copy=False)
+    is_post_bkav = fields.Boolean(default=False, string="Đã tạo HĐ trên BKAV", copy=False)
     company_type = fields.Selection(related="partner_id.company_type")
     sequence = fields.Integer(string='Sequence',
                               default=lambda self: self.env['ir.sequence'].next_by_code('account.move.sequence'))
@@ -171,25 +171,41 @@ class AccountMoveBKAV(models.Model):
         for invoice in self:
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date, datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
+            sign = 1 if invoice.move_type in ('out_invoice', 'in_invoice') else -1
             for line in invoice.invoice_line_ids:
+                item_name = (line.product_id.name or line.name) if (
+                            line.product_id.name or line.name) else ''
                 item = {
-                    "ItemName": (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else '',
+                    "ItemName": item_name if not line.promotions else item_name + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
-                    "Price": line.price_unit,
-                    "Amount": line.price_subtotal,
-                    "TaxRateID": 3,
-                    "TaxRate": 10,
-                    "TaxAmount": line.tax_amount or 0.0,
+                    "Price": (line.price_unit - line.price_unit * line.discount / 100) * sign,
+                    "Amount": line.price_total * sign,
+                    # "TaxRateID": 3,
+                    # "TaxRate": 10,
+                    "TaxAmount": (line.tax_amount or 0.0) * sign,
                     "ItemTypeID": 0,
                     "IsDiscount": 1 if line.promotions else 0
                 }
+                if line.tax_ids:
+                    if line.tax_ids[0].amount == 0:
+                        tax_rate_id = 0
+                    elif line.tax_ids[0].amount == 5:
+                        tax_rate_id = 1
+                    elif line.tax_ids[0].amount == 10:
+                        tax_rate_id = 3
+                    else:
+                        tax_rate_id = 6
+                    item.update({
+                        "TaxRateID": tax_rate_id,
+                        "TaxRate": line.tax_ids[0].amount
+                    })
                 if invoice.issue_invoice_type == 'edit':
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
                     item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
+
                 list_invoice_detail.append(item)
             bkav_data.append({
                 "Invoice": {
@@ -281,7 +297,7 @@ class AccountMoveBKAV(models.Model):
                     'invoice_no': result_data.get('InvoiceNo'),
                     'invoice_form': result_data.get('InvoiceForm'),
                     'invoice_serial': result_data.get('InvoiceSerial'),
-                    'invoice_e_date': datetime.strptime(result_data.get('SignedDate'), '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
+                    'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
                         hours=7) if result_data.get('SignedDate') else None
                 })
                 self.getting_invoice_status()
@@ -340,7 +356,7 @@ class AccountMoveBKAV(models.Model):
                 'invoice_no': result_data.get('InvoiceNo'),
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
-                'invoice_e_date': datetime.strptime(result_data.get('SignedDate'), '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
+                'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
                     hours=7) if result_data.get('SignedDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })

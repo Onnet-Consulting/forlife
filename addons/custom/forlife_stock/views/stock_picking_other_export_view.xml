@@ -74,15 +74,15 @@
                     <attribute name="attrs">{'invisible': ['|', '|',('other_export', '=', True), ('other_import', '=', True),'&amp;',('other_export', '=', False), ('other_import', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="after">
-                    <field name="location_id" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"/>
-                    <field name="location_id" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"/>
+                    <field name="location_id" id="source_reason" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"/>
+                    <field name="location_id" id="source_location" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', True)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="after">
-                    <field name="location_dest_id" string="Địa điểm đích" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}" force_save="1"/>
-                    <field name="location_dest_id" string="Lý do xuất khác" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}" force_save="1"/>
+                    <field name="location_dest_id" id="dest_location" string="Địa điểm đích" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}" force_save="1"/>
+                    <field name="location_dest_id" id="dest_reason" string="Lý do xuất khác" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}" force_save="1"/>
                 </xpath>
                 <xpath expr="//page[@name='operations']//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="class" add="width-hh" separator=" "/>
@@ -91,6 +91,7 @@
                 <xpath expr="//page[@name='operations']//field[@name='product_uom']" position="after">
                     <field name="is_production_order" invisible="1"/>
                     <field name="is_amount_total" invisible="1"/>
+                    <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
                     <field name="name" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="date" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="amount_total" force_save="1" string="Tổng tiền" attrs="{'column_invisible': [('parent.other_import', '!=', True)], 'readonly': [('is_amount_total', '!=', True)]}"/>
@@ -100,7 +101,6 @@
                     <field name="quantity_change" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
                     <field name="quantity_purchase_done" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
                     <field name="occasion_code_id" string="Mã vụ việc"/>
-                    <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
                     <field name="account_analytic_id" string="Trung tâm chi phí"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="attributes">

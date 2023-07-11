@@ -62,21 +62,6 @@ class SplitProduct(models.Model):
         self.env['split.product.line.sub'].create(vals_list)
         self.state = 'in_progress'
 
-    def _create_product(self, rec):
-        vals = {
-            'name': rec.product_split,
-            'detailed_type': rec.product_id.detailed_type,
-            'product_type': rec.product_id.product_type,
-            'invoice_policy': rec.product_id.invoice_policy,
-            'uom_id': rec.product_id.uom_id.id,
-            'uom_po_id': rec.product_id.uom_po_id.id,
-            'taxes_id': [(6, 0, rec.product_id.taxes_id.ids)],
-            'categ_id': rec.product_id.categ_id.id,
-            'standard_price': rec.product_id.standard_price
-        }
-
-        product = self.env['product.product'].create(vals)
-        return product
 
 
     def action_approve(self):
@@ -87,16 +72,14 @@ class SplitProduct(models.Model):
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
+                    r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
             rec.product_quantity_out = product_qty_split
-            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id.lot_stock_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
+            available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
             if rec.product_quantity_out > available_quantity:
                 list_line_invalid.append(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}")
         if len(list_line_invalid) > 0:
             raise ValidationError(_('\n'.join(list_line_invalid)))
-        for r in self.split_product_line_sub_ids:
-            product = self._create_product(r)
-            r.product_new_id = product.id
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
         pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
@@ -145,14 +128,14 @@ class SplitProduct(models.Model):
             for rec in self.split_product_line_sub_ids:
                 if rec.product_id.id == record.product_id.id and rec.parent_id.id == record.id:
                     data.append((0, 0, {
-                        'product_id': rec.product_new_id.id,
-                        'name': rec.product_split,
+                        'product_id': rec.product_split_id.id,
+                        'name': rec.product_split_id.name_get()[0][1],
                         'date': datetime.now(),
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
                         'location_id':location_id.id,
-                        'location_dest_id': rec.warehouse_in_id.lot_stock_id.id
+                        'location_dest_id': rec.warehouse_in_id.id
                     }))
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_import': True,
@@ -161,7 +144,7 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
                 'location_id': location_id.id,
-                'location_dest_id': record.warehouse_in_id.lot_stock_id.id
+                'location_dest_id': record.warehouse_in_id.id
             })
         for pick in pickings:
             pick.button_validate()
@@ -180,7 +163,7 @@ class SplitProduct(models.Model):
                 'product_uom': record.product_id.uom_id.id,
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
-                'location_id': record.warehouse_out_id.lot_stock_id.id,
+                'location_id': record.warehouse_out_id.id,
                 'location_dest_id': location_id.id,
             })]
             pickings |= self.env['stock.picking'].with_company(company).create({
@@ -189,7 +172,7 @@ class SplitProduct(models.Model):
                 'picking_type_id': pk_type.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
-                'location_id': record.warehouse_out_id.lot_stock_id.id,
+                'location_id': record.warehouse_out_id.id,
                 'location_dest_id': location_id.id,
             })
         for pick in pickings:
@@ -208,11 +191,11 @@ class SpilitProductLine(models.Model):
         string='Trạng thái')
     product_id = fields.Many2one('product.product', 'Sản phẩm chính', required=True)
     product_uom = fields.Many2one('uom.uom', 'Đơn vị tính', related='product_id.uom_id')
-    warehouse_out_id = fields.Many2one('stock.warehouse', 'Kho xuất', required=True)
+    warehouse_out_id = fields.Many2one('stock.location', 'Kho xuất', required=True)
     product_quantity_out = fields.Integer('Số lượng xuất', readonly=True)
     product_quantity_split = fields.Integer('Số lượng phân tách', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', required=True, related='product_id.uom_id')
-    warehouse_in_id = fields.Many2one('stock.warehouse', 'Kho nhập', required=True)
+    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', required=True)
     unit_price = fields.Float('Đơn giá', readonly=True, related='product_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
 
@@ -227,25 +210,17 @@ class SpilitProductLineSub(models.Model):
     _name = 'split.product.line.sub'
     _description = 'Dòng sản phẩm phân rã'
 
-    @api.model
-    def create(self, vals_list):
-        res = super(SpilitProductLineSub, self).create(vals_list)
-        if res.product_split == 'New':
-            sequence = self.env['ir.sequence'].next_by_code('split.product.line.sub')
-            res.product_split = f"{res.product_id.name_get()[0][1]} {sequence}"
-        return res
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
         related='split_product_id.state',
         string='Trạng thái')
     split_product_id = fields.Many2one('split.product')
     product_id = fields.Many2one('product.product', 'Sản phẩm chính', readonly=True, required=True)
-    product_new_id = fields.Many2one('product.product', readonly=True)
-    product_split = fields.Char('Sản phẩm phân tách', default="New", readonly=True, required=True)
-    warehouse_in_id = fields.Many2one('stock.warehouse', 'Kho nhập', readonly=True, required=True)
+    product_split_id = fields.Many2one('product.product', string='Sản phẩm phân tách')
+    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', readonly=True, required=True)
     quantity = fields.Integer('Số lượng', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', readonly=True)
-    unit_price = fields.Float('Đơn giá', readonly=True, related='product_new_id.standard_price')
+    unit_price = fields.Float('Đơn giá', readonly=True, related='product_split_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
     parent_id = fields.Many2one('split.product.line')
 

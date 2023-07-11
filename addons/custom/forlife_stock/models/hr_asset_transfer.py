@@ -7,6 +7,8 @@ class HrAssetTransfer(models.Model):
     _description = 'Hr Asset Transfer'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
 
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
     department_id = fields.Many2one('hr.department', string="Department", related='employee_id.department_id')
@@ -73,6 +75,8 @@ class HrAssetTransferLine(models.Model):
     _name = 'hr.asset.transfer.line'
     _description = 'Hr Asset Transfer Line'
 
+    company_id = fields.Many2one('res.company', related='hr_asset_transfer_id.company_id')
+
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
     employee_from_id = fields.Many2one('hr.employee', string="Employee From")
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
@@ -107,4 +111,4 @@ class HrAssetTransferLine(models.Model):
             if rec.asset_location_from_id.id != rec.asset_code.location.id:
                 raise ValidationError(_('Wrong value for asset location. Please check again!'))
             if not rec.check_required:
-                raise ValidationError(_('Chưa nhập 1 trong 3 trường!'))
+                raise ValidationError(_('Nhập 1 trong các trường thông tin bắt buộc: Nhân viên, Địa điểm, Trung tâm chi phí!'))

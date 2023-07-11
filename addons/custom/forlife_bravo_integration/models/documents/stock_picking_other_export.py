@@ -17,9 +17,9 @@ class StockPickingOtherExport(models.Model):
     def bravo_get_picking_other_export_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
             "ItemCode", "ItemName", "UnitPurCode", "CreditAccount", "Quantity9", "ConvertRate9", "Quantity",
-            "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
+            "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
             "DocNo_WO", "ProductCode", "DeptCode",
         ]
 
@@ -55,6 +55,7 @@ class StockPickingOtherExport(models.Model):
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
+            "Description": picking.note or picking.location_dest_id.name or None,
             "EmployeeCode": employee.code or None,
             "IsTransfer": 0,
             "BuiltinOrder": line_count or None,
@@ -66,7 +67,7 @@ class StockPickingOtherExport(models.Model):
             "ConvertRate9": 1,
             "Quantity": stock_move.quantity_done,
             "OriginalUnitCost": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
-            "UnitCostCode": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
+            "UnitCost": debit / stock_move.quantity_done if stock_move.quantity_done else 0,
             "OriginalAmount": debit,
             "Amount": debit,
             "WarehouseCode": picking.location_id.code or None,

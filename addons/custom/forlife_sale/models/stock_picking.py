@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class StockPicking(models.Model):
@@ -59,11 +60,21 @@ class StockPicking(models.Model):
         return invoice_id.id
 
     def button_validate(self):
-        res = super().button_validate()
+        res = super(StockPicking, self).button_validate()
         if self.picking_type_id.x_is_return:
             for move in self.move_ids:
                 account_move = self.env['account.move'].search([('stock_move_id', '=', move.id)])
                 account_move_line = account_move.line_ids.filtered(lambda line: line.debit > 0)
                 account_id = move.product_id.product_tmpl_id.categ_id.x_property_account_return_id
+                if not account_id:
+                    raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
+        try:
+            if self.state == "done" and self.picking_type_code == "outgoing" and self.origin:
+                sale_order = self.env['sale.order'].search([('name', '=', self.origin)])
+                if sale_order:
+                    sale_order._create_invoices().action_post()
+        except Exception as e:
+            pass
+        
         return res

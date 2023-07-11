@@ -9,6 +9,8 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="email"/>
+                        <field name="department_id"/>
                     </group>
                 </sheet>
             </form>
@@ -21,6 +23,8 @@
         <field name="arch" type="xml">
             <tree string="Reason Refund">
                 <field name="name"/>
+                <field name="email"/>
+                <field name="department_id"/>
             </tree>
         </field>
     </record>

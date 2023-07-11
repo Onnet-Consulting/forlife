@@ -2,11 +2,11 @@
     <data>
         <menuitem id="root_purchase_requests_menu" parent="purchase.menu_purchase_root" action="purchase_request_action" name="Purchase Requests" sequence="0"/>
         <menuitem id="purchase_category_menu" parent="purchase.menu_purchase_config" name="Category" sequence="50"/>
-        <menuitem id="forlife_event_menu" parent="purchase_category_menu" name="Program of events" action="forlife_purchase.forlife_event_action" sequence="2"/>
-        <menuitem id="forlife_production_menu" parent="purchase_category_menu" name="Production order" action="forlife_purchase.forlife_production_action" sequence="3"/>
+<!--        <menuitem id="forlife_event_menu" parent="purchase_category_menu" name="Program of events" action="forlife_purchase.forlife_event_action" sequence="2"/>-->
+        <menuitem id="forlife_production_menu" parent="stock.menu_stock_warehouse_mgmt" name="Production order" action="forlife_purchase.forlife_production_action" sequence="3"/>
         <menuitem id="partner_menu" parent="purchase_category_menu" name="Supplier" action="forlife_purchase.forlife_partner_action" sequence="3"/>
 <!--        <menuitem id="bill_of_materials" parent="purchase.menu_purchase_products" name="Bills of Materials" action="mrp.mrp_bom_form_action" sequence="21"/>-->
         <menuitem id="production_order" parent="purchase.menu_purchase_products" action="purchase_request.production_order_action" name="Attach Ingredients/Product Separation" sequence="2"/>
-        <menuitem id="forlife_bom_menu" parent="purchase_category_menu" action="forlife_purchase.forlife_production_finished_action" sequence="10"/>
+        <menuitem id="forlife_bom_menu" parent="stock.menu_stock_warehouse_mgmt" action="forlife_purchase.forlife_production_finished_action" sequence="4"/>
     </data>
 </odoo>

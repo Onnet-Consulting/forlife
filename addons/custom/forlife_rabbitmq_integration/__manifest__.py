@@ -22,6 +22,7 @@
         'forlife_point_of_sale',
         'forlife_pos_app_member',
         'forlife_voucher',
+        'nhanh_connector',
     ],
     'auto_install': True,
 

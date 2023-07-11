@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="bo_plan_user" model="res.groups">
+            <field name="name">Business objective plan user</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="bo_plan_manager" model="res.groups">
+            <field name="name">Business objective plan manager</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+            <field name="implied_ids" eval="[(4, ref('forlife_business_objective_plan.bo_plan_user'))]"/>
+        </record>
+
+        <record id="confirm_transfer_group" model="res.groups">
+            <field name="name">Confirm transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="cancel_confirm_transfer_group" model="res.groups">
+            <field name="name">Cancel confirm transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="receipt_transfer_group" model="res.groups">
+            <field name="name">Receipt transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="approve_transfer_group" model="res.groups">
+            <field name="name">Approve transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="cancel_approve_transfer_group" model="res.groups">
+            <field name="name">Cancel approve transfer</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+    </data>
+</odoo>

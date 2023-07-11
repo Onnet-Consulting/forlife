@@ -18,7 +18,7 @@
                             <td><t t-esc="num"/></td>
                             <td><t t-esc="line.store_name"/></td>
                             <td><t t-esc="line.rank_name"/></td>
-                            <td><t t-esc="format_decimal(line.total_customer, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.total_customer, 0)"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>
                     </t>
@@ -47,9 +47,9 @@
                             <td><t t-esc="line.customer_info[2]"/></td>
                             <td><t t-esc="line.customer_info[3]"/></td>
                             <td><t t-esc="line.last_order_date"/></td>
-                            <td><t t-esc="format_decimal(line.dt_dh_gn, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.dt_dh_gn, 0)"/></td>
                             <td><t t-esc="line.rank_name"/></td>
-                            <td><t t-esc="format_decimal(line.tong_dt_ms, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_dt_ms, 0)"/></td>
                             <td><t t-esc="line.tg_khong_ms"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>

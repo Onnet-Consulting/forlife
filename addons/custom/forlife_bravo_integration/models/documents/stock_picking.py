@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import re
 
 CONTEXT_PICKING_ACTION = 'bravo_picking_data'
 PICKING_PURCHASE_VALUE = 'picking_purchase'
@@ -52,14 +53,14 @@ class StockPicking(models.Model):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == PICKING_PURCHASE_VALUE:
             return self.filtered(
-                lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return and not p.is_return_po)
+                lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
             return self.filtered(lambda m: m.other_export)
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
             return self.filtered(
-                lambda p: p.move_ids.mapped('purchase_line_id') and (p.x_is_check_return or p.is_return_po))
+                lambda p: p.move_ids.mapped('purchase_line_id') and (p.x_is_check_return or any(p.mapped('move_ids.purchase_line_id.order_id.is_return'))))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -140,8 +141,8 @@ class StockPicking(models.Model):
                 "Stt": record.id,
                 "RowId": record.id,
                 "ColumnName": "Description",
-                "OldValue": record.note or None,
-                "NewValue": kwargs.get('note') or None,
+                "OldValue": re.sub('<.*?>', '', record.note or '') or None,
+                "NewValue": re.sub('<.*?>', '', kwargs.get('note') or '') or None,
             }
             values.append(value)
         return columns, values

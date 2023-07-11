@@ -49,13 +49,10 @@ class ReportNum5(models.TransientModel):
 
         sql = f"""
 with uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
-    select 
+    select
         id,
-        substr(name, 2, length(name)-2) as name
-    from (select
-            id,
-            coalesce(name::json -> '{user_lang_code}', name::json -> 'en_US')::text as name
-        from uom_uom) as tb
+        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
+    from uom_uom
 ),
 order_line_data as (
     select 
@@ -91,7 +88,7 @@ order_line_data as (
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
         left join uom_name_by_id uom on uom.id = pt.uom_id
-    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and pt.voucher <> true
+    where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     order by employee_id

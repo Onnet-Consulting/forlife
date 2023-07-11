@@ -15,9 +15,9 @@
                     <tr>
                         <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.product_line"/></td>
-                        <td><t t-esc="format_decimal(line.qty, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.revenue, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.percent_revenue, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.qty, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.revenue, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.percent_revenue, 2)"/></td>
                     </tr>
                 </t>
             </tbody>

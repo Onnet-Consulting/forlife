@@ -19,6 +19,12 @@
                             <span class="o_stat_text">Phiếu NPL</span>
                         </div>
                     </button>
+
+                    <button name="view_move_tax_entry" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':[('state', 'not in', ('done'))]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Chi tiết bút toán</span>
+                        </div>
+                    </button>
                 </xpath>
                  <xpath expr="//header//button[@name='action_assign']" position="attributes">
                      <attribute name="attrs">{'invisible':True}</attribute>

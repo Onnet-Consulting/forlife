@@ -51,6 +51,13 @@
         'views/forlife_app_api_link_views.xml',
         'views/attribute_code_config_views.xml',
         'views/menu_item.xml',
+
+        'views/ir_ui_menu_view.xml',
     ],
     "post_init_hook": "post_init_hook",
+    'assets': {
+        'web.assets_backend': [
+            'forlife_base/static/src/css/**/*',
+        ]
+    },
 }

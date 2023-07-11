@@ -20,7 +20,7 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
             await rpc.query({
                 model: 'apis.vietinbank',
                 method: 'get_list_transaction_info',
-                args: [[line.pos.config.id, line.payment_method.id, line.order.session_id]],
+                args: [[line.pos.config.id, line.payment_method.id, line.order.pos_session_id]],
             }).then(async function (res) {
                 if (res[0]) {
                     self.addDialog(SelectCreateDialog, {
@@ -29,14 +29,17 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                         multiSelect: true,
                         resModel: 'vietinbank.transaction.model',
                         context: {},
-                        domain: [['pos_order_id', '=', line.pos.config.id], ['payment_method_id', '=', line.payment_method.id]],
+                        domain: [
+                            ['pos_order_id', '=', line.pos.config.id],
+                            ['payment_method_id', '=', line.payment_method.id],
+                            ['session_id', '=', dataLine.order.pos_session_id]
+                        ],
                         onSelected: async (resIds) => {
                             await rpc.query({
                                 model: 'apis.vietinbank',
                                 method: 'total_amount',
                                 args: [resIds],
                             }).then(async function (res) {
-                                console.log(222222222222)
                                 dataLine.set_amount(res)
                                 dataLine.set_payment_status('done')
                             })

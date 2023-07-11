@@ -89,6 +89,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                         'total_amount': total_amount,
                         'id': line.id,
                         'product_name_wrapped': line.generate_wrapped_product_name(),
+                        'full_product_name': line.get_product().display_name,
                         'total_original_amount': total_original_amount
                     }
                 } else {
@@ -118,7 +119,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let {promotion_usage_ids, point, original_price} = line;
                 let line_quantity = line.get_quantity();
                 order_total_discount += line.get_line_receipt_total_discount()
-                order_total += original_price * line_quantity;
+                order_total += line.get_line_receipt_total_amount();
                 if (point && point !== 0) {
                     applied_point_lines.push(line);
                     total_applied_points += Math.abs(point);
@@ -176,6 +177,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             let voucher_data = this.receipt_order_get_applied_voucher_values();
 
             normal_lines = this.receipt_merge_line_same_product_and_price(normal_lines);
+            normal_lines = _.sortBy(normal_lines, line => line.quantity)
             applied_point_lines = this.receipt_merge_line_same_product_and_price(applied_point_lines);
 
             return [normal_lines, promotion_lines, applied_point_lines, applied_code_value,
@@ -238,6 +240,12 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 percent_discount = ((discount / quantity) / unit_price) * 100;
             }
             return parseInt(percent_discount);
+        }
+
+        get_line_receipt_total_amount() {
+            let line_quantity = this.get_quantity();
+            if (line_quantity < 0) return this.get_display_price_after_discount();
+            return this.original_price * line_quantity;
         }
 
         export_for_printing() {
