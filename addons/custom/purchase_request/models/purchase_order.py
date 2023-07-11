@@ -15,21 +15,18 @@ class PurchaseOrder(models.Model):
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
-    order_line_production_order = fields.One2many(related='order_line',
-                                                  compute='_compute_order_line_production_order',
-                                                  inverse='_inverse_order_line_production_order')
+    order_line_production_order = fields.One2many(comodel_name='purchase.order.line',
+                                                  compute='_compute_order_line_production_order')
 
-    @api.depends('order_line.product_id', 'order_line')
+    @api.depends('order_line')
     def _compute_order_line_production_order(self):
-        self = self.sudo()  # tối ưu tốc độ ghi dữ liệu
-        product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
-        for rec in self:
-            order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
-            rec.order_line_production_order = order_line_production_order
-            if not order_line_production_order or not rec.order_line:
-                rec.is_check_line_material_line = True
+        for order in self:
+            order_line_production_order = order.order_line.filtered(lambda line: line.x_check_npl)
+            order.order_line_production_order = order_line_production_order
+            if not order_line_production_order or not order.order_line:
+                order.is_check_line_material_line = True
             else:
-                rec.is_check_line_material_line = False
+                order.is_check_line_material_line = False
 
     def _inverse_order_line_production_order(self):
         pass
@@ -102,6 +99,7 @@ class PurchaseOrderLine(models.Model):
                                                             'purchase_order_line_id')
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
+    x_check_npl = fields.Boolean(related='product_id.x_check_npl')
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
