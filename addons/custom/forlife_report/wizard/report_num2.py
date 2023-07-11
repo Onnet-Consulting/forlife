@@ -12,12 +12,12 @@ class ReportNum2(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock with sale price by warehouse'
 
-    product_ids = fields.Many2many('product.product', 'report_num2_product_rel', string='Products',
-                                   domain='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
+    product_ids = fields.Many2many('product.product', 'report_num2_product_rel', string='Products')
     product_brand_id = fields.Many2one('product.category', 'Product Brand')
     product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Product Group')
     product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Product Line')
     texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Texture')
+    collection = fields.Char('Collection')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num2_warehouse_rel', string='Warehouse')
 
     @api.onchange('product_brand_id')
@@ -62,7 +62,19 @@ with attribute_data as (
         where pp.id = any (array{product_ids}) and pa.attrs_code notnull
         group by pp.id, pa.attrs_code) as att
     group by product_id
-), 
+),
+fixed_price as (
+    select row_number() over (PARTITION BY ppi.product_id order by campaign.from_date desc, ppi.id desc) as num,
+           ppi.product_id,
+           ppi.fixed_price
+    from promotion_pricelist_item ppi
+             join promotion_program program on ppi.program_id = program.id
+             join promotion_campaign campaign on campaign.id = program.campaign_id
+    where product_id = any (array {product_ids})
+      and campaign.state = 'in_progress'
+      and now() between campaign.from_date and campaign.to_date
+       and ppi.active = true
+),
 stock_product as (
     select
         sqt.product_id    as product_id,
@@ -81,15 +93,16 @@ select  pp.id                                                                   
         sw.id                                                                   as warehouse_id,
         sw.name                                                                 as warehouse_name,
         stp.quantity                                                            as quantity,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                        as product_size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                     as product_color,
+        ad.attrs::json ->> '{attr_value.get('size', '')}'                       as product_size,
+        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                    as product_color,
         pt.list_price                                                           as list_price,
-        ''                                                                      as discount_price
+        coalesce(fp.fixed_price, pt.list_price)                                 as discount_price
 from stock_product stp
     left join product_product pp on pp.id = stp.product_id
     left join product_template pt on pp.product_tmpl_id = pt.id
     left join stock_warehouse sw on sw.id = stp.warehouse_id
     left join attribute_data ad on ad.product_id = pp.id
+    left join fixed_price fp on fp.product_id = pp.id and fp.num = 1
 """
 
         return query
@@ -97,19 +110,20 @@ from stock_product stp
     def get_data(self, allowed_company):
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
+        collection_domain = [('collection', '=', self.collection)] if self.collection else []
         Product = self.env['product.product']
         if self.product_ids:
             product_ids = self.product_ids.ids
         elif self.texture_ids:
-            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)] + collection_domain).ids or [-1]
         elif self.product_line_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)] + collection_domain).ids or [-1]
         elif self.product_group_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)] + collection_domain).ids or [-1]
         elif self.product_brand_id:
-            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)] + collection_domain).ids or [-1]
         else:
-            product_ids = [-1]
+            product_ids = (Product.search(collection_domain).ids or [-1]) if collection_domain else [-1]
         warehouse_ids = self.warehouse_ids if self.warehouse_ids else self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)

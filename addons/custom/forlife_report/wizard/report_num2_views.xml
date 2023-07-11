@@ -17,6 +17,7 @@
                         <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
                         <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
                         <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="collection"/>
                     </group>
                 </sheet>
             </form>

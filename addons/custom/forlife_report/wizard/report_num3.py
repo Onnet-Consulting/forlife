@@ -16,6 +16,13 @@ class ReportNum3(models.TransientModel):
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
+    product_ids = fields.Many2many('product.product', 'report_num2_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Texture')
+    collection = fields.Char('Collection')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num2_warehouse_rel', string='Warehouse')
     product_domain = fields.Char('Product', default='[]')
     warehouse_domain = fields.Char('Warehouse', default='[]')
     defective_inventory = fields.Boolean(string='Skip defective inventory')
