@@ -256,7 +256,7 @@ class PurchaseRequestLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
-    description = fields.Char(string="Description")
+    description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
 
