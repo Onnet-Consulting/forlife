@@ -31,7 +31,7 @@ class AccountMoveLine(models.Model):
             if check:
                 x_cart_discount_fixed_price = 0
             if line.discount == 0:
-                x_cart_discount_fixed_price = self.x_cart_discount_fixed_price
+                x_cart_discount_fixed_price = line.x_cart_discount_fixed_price
             line.price_subtotal = line.price_subtotal - x_cart_discount_fixed_price
             line.price_total = line.price_subtotal - x_cart_discount_fixed_price
         return rslt
