@@ -9,8 +9,8 @@ class IrModelAccess(models.Model):
 
     menu_ids = fields.Many2many('ir.ui.menu', string='Menu', compute='_get_menu_ids', store=True, compute_sudo=True)
 
-    @api.depends('model_access')
-    def _get_access_count(self):
+    @api.depends('model_id')
+    def _get_menu_ids(self):
         for access in self:
             arr_menu = []
             if access.model_id:
