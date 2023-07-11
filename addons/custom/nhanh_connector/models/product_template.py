@@ -102,7 +102,9 @@ class ProductTemplate(models.Model):
             'attribute_line_ids',
             'barcode',
             'list_price',
-            'weight'
+            'weight',
+            'brand_id',
+            'categ_id'
         ]
 
         last_fields = set(require_fields) - set(fields_up)
