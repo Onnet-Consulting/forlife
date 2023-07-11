@@ -244,13 +244,6 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
-        # check tồn kho với các phiếu từ mã lệnh sản xuất
-        if self.x_manufacture_order_code_id:
-            for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
-                quant = self.env['stock.quant'].search(
-                    [('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
-                if not quant or quant.quantity < line.product_uom_qty:
-                    raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
@@ -273,7 +266,12 @@ class SaleOrder(models.Model):
         list_location = []
         stock_move_ids = {}
         line_x_scheduled_date = []
-        for line in self.order_line:
+        for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
+            if line.x_manufacture_order_code_id:
+                quant = self.env['stock.quant'].search(
+                    [('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
+                if not quant or quant.quantity < line.product_uom_qty:
+                    raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
             date = datetime.combine(line.x_scheduled_date,
                                     datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
