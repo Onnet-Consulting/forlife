@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = [
     'STT', 'Trạng thái', 'Ngày HĐ', 'Số HĐ', 'Mã kho xuất', 'Kho xuất', 'Mã kho nhận', 'Kho nhận', 'Đơn vị tính', 'Mã vạch',
@@ -26,10 +25,27 @@ class ReportNum21(models.TransientModel):
     is_delivery = fields.Boolean(_('Delivery'), default=False)
     is_receive = fields.Boolean(_('Receive'), default=False)
     is_done = fields.Boolean(_('Done'), default=False)
+    product_ids = fields.Many2many('product.product', 'report_num21_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num21_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num21_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num21_texture_rel', string='Texture')
 
     @api.onchange('location_province_ids')
     def onchange_location_province(self):
         self.warehouse_ids = self.warehouse_ids.filtered(lambda f: f.loc_province_id.id in (self.location_province_ids.ids or [False]))
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -112,7 +128,7 @@ select
     s_loc.name                                                                  as kho_xuat,
     d_loc.code                                                                  as ma_kho_nhan,
     d_loc.name                                                                  as kho_nhan,
-    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')   as don_vi_tinh,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as don_vi_tinh,
     pp.barcode                                                                  as ma_vach,
     pp.default_code                                                             as ma_hang,
     coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')     as ten_hang,
@@ -122,11 +138,11 @@ select
     case when pc.name ilike '%%hàng hóa%%' then 'Nhập mua'
         when pc.name ilike '%%thành phẩm%%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
-    ad.attrs::json ->> '{attr_value.get('size', '')}'                            as kich_co,
-    ''                                                                          as dien_giai,
+    ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                        as mau_sac,
+    ad.attrs::json ->> '{attr_value.get('size', '')}'                           as kich_co,
+    st.note                                                                     as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    ad.attrs::json ->> '{attr_value.get('subclass1', '')}'                       as kieu_dang,
+    ad.attrs::json ->> '{attr_value.get('subclass1', '')}'                      as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -136,8 +152,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                       as doi_tuong,
-    ad.attrs::json ->> '{attr_value.get('nam_san_xuat', '')}'                    as nam_sx
+    ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                      as doi_tuong,
+    ad.attrs::json ->> '{attr_value.get('nam_san_xuat', '')}'                   as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id
@@ -160,7 +176,19 @@ order by num
         self.ensure_one()
         allowed_company = allowed_company or [-1]
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        else:
+            product_ids = [-1]
         if not self.location_province_ids:
             warehouse_ids = self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('loc_province_id', '=', False)]).ids or [-1]
         else:

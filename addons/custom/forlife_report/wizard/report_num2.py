@@ -12,8 +12,25 @@ class ReportNum2(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock with sale price by warehouse'
 
-    product_domain = fields.Char('Product', default='[]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num2_product_rel', string='Products',
+                                   domain='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Texture')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num2_warehouse_rel', string='Warehouse')
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         allowed_company = allowed_company or [-1]
@@ -80,8 +97,20 @@ from stock_product stp
     def get_data(self, allowed_company):
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)])
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        else:
+            product_ids = [-1]
+        warehouse_ids = self.warehouse_ids if self.warehouse_ids else self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data_by_product_id = {}

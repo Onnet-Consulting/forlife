@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = [
     'STT', 'Kho', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Đơn vị', 'Giá', 'Số lượng',
@@ -20,8 +19,9 @@ class ReportNum1(models.TransientModel):
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    product_domain = fields.Char('Product', default='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num1_product_rel', string='Products',
+                                   domain='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num1_warehouse_rel', string='Warehouse')
     # fixme: ('wholesale', 'Bán buôn'), ('ecom', 'Bán Online'), ('company', 'Bán liên công ty')],
     picking_type = fields.Selection([('all', 'Tất cả'), ('retail', 'Bán lẻ')],
                                     'Picking type', required=True, default='all')
@@ -199,8 +199,9 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
+        product_ids = self.product_ids.ids if self.product_ids else (self.env['product.product'].search(
+            ["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]).ids or [-1])
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
