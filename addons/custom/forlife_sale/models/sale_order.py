@@ -44,6 +44,18 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
+    @api.depends('warehouse_id')
+    def _compute_location_id(self):
+        for r in self:
+            r.x_location_id = r.warehouse_id.lot_stock_id
+
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+
+    @api.onchange('x_location_id')
+    def _onchange_location(self):
+        for line in self.order_line:
+            line.x_location_id = self.x_location_id
+
     @api.onchange('x_punish', 'partner_id')
     def _compute_domain_pricelist(self):
         for r in self:
@@ -261,7 +273,7 @@ class SaleOrder(models.Model):
             group_id = line._get_procurement_group()
             if not group_id:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
-                line.order_id.procurement_group_id = group_id
+                # line.order_id.procurement_group_id = group_id
             detail_data = {
                 'name': line.name,
                 'company_id': line.company_id.id,
@@ -413,7 +425,7 @@ class SaleOrderLine(models.Model):
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        self.x_location_id = location
+        self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),

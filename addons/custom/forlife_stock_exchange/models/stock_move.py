@@ -22,7 +22,7 @@ class InheritStockMove(models.Model):
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
         results = super(InheritStockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
-        if self.picking_id.exchange_code == 'outgoing':
+        if self.picking_id.exchange_code == 'outgoing' or self._context.get('auto_done'):
             results['qty_done'] = results['reserved_uom_qty']
         return results
 
