@@ -20,12 +20,13 @@ class AccountTax(models.Model):
         early_pay_discount_percentage=None
     ):
         try:
-            if float(base_line["record"].x_cart_discount_fixed_price) > 0:
-                base_line['discount'] = (base_line["record"].x_cart_discount_fixed_price/base_line['price_unit']) * 100
+            x_cart_discount_fixed_price = base_line["record"].x_cart_discount_fixed_price
+            if float(x_cart_discount_fixed_price) > 0:
+                price_unit_total = base_line['price_unit'] * base_line["record"].product_uom_qty
+                base_line['discount'] = 100 * (x_cart_discount_fixed_price / price_unit_total)
         except Exception as e:
             pass
         
-
         to_update_vals, tax_values_list = super()._compute_taxes_for_single_line(
             base_line,
             handle_price_include=handle_price_include,
