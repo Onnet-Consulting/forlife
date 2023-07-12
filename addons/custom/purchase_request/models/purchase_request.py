@@ -196,6 +196,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
+                    'date_planned': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
