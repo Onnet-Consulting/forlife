@@ -303,7 +303,7 @@ class TransferRequestLine(models.Model):
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))
-            if vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
                 raise ValidationError(_("Đơn vị khác đơn vị của sản phẩm"))
         return super(TransferRequestLine, self).create(vals)
 
@@ -311,3 +311,8 @@ class TransferRequestLine(models.Model):
 class Location(models.Model):
     _inherit = "stock.location"
     _rec_names_search = ['code', 'complete_name', 'barcode']
+
+
+class AssetsAssets(models.Model):
+    _inherit = 'assets.assets'
+    _rec_names_search = ['code', 'name']
