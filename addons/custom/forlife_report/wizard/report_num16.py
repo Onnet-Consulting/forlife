@@ -123,7 +123,7 @@ select row_number() over ()                                                     
        to_char(sm.date + interval '{tz_offset} h', 'DD/MM/YYYY')                    as ngay,
        case when sp.transfer_id notnull then sp.origin else sp.name end             as so_ct,
        coalesce(wh1.name, sl1.name)                                                 as kho_xuat,
-       coalesce(st.name, sp.origin, sm.reference)                                   as so_ct2,
+       coalesce(str.name, sp.origin, sm.reference)                                  as so_ct2,
        coalesce(wh2.name, sl2.name)                                                 as kho_nhap,
        rp.barcode                                                                   as ma_khach,
        rp.name                                                                      as ten_khach,
@@ -133,7 +133,7 @@ select row_number() over ()                                                     
        split_part(cate.complete_name, ' / ', 4)                                     as ket_cau,
        pp.barcode                                                                   as ma_vach,
        pt.sku_code                                                                  as ma_hang,
-       coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')      as ten_hang,
+       coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')    as ten_hang,
        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                          as mau_sac,
        ad.attrs::json -> '{attr_value.get('size', '')}'                             as kich_co,
        ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                     as nam_sx,
@@ -144,7 +144,7 @@ select row_number() over ()                                                     
        ad.attrs::json -> '{attr_value.get('subclass3', '')}'                        as subclass3,
        ad.attrs::json -> '{attr_value.get('subclass4', '')}'                        as subclass4,
        ad.attrs::json -> '{attr_value.get('subclass5', '')}'                        as subclass5,
-       coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')    as dv_tinh,
+       coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')  as dv_tinh,
        sms.qty_in                                                                   as nhap,
        sms.qty_out                                                                  as xuat,
        pt.list_price                                                                as don_gia,
@@ -155,6 +155,7 @@ from stock_move sm
     join stock_moves sms on sms.move_id = sm.id
     left join stock_picking sp on sm.picking_id = sp.id
     left join stock_transfer st on sp.transfer_id = st.id
+    left join stock_transfer_request str on st.stock_request_id = str.id
     left join res_partner rp on sp.partner_id = rp.id
     left join stock_location sl1 on sm.location_id = sl1.id
     left join stock_warehouse wh1 on wh1.id = sl1.warehouse_id

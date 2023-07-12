@@ -112,7 +112,7 @@ with po_datas as (select po.id  as po_id,
      so_luong_x as (select po_id                        as po_id,
                            sum(sl_mua)::float           as sl_mua,
                            sum(sl_tra)                  as sl_tra,
-                           sum(sl_mua * gia_ban)::float as cong,
+                           sum((sl_mua  - sl_tra) * gia_ban - tien_giam_gia)::float as cong,
                            sum(tien_giam_gia)::float    as tien_giam_gia,
                            sum(sl_tra * gia_ban)::float as tien_tra_lai,
                            sum(tien_the_gg)::float      as tien_the_gg
