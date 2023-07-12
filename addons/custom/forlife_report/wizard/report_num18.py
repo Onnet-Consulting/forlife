@@ -76,7 +76,7 @@ select
     prl.purchase_quantity                                                                   as sl_dat_mua,
     prl.order_quantity                                                                      as sl_da_dat,
     coalesce(plq.qty, 0)                                                                    as sl_da_nhan,
-    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')             as don_vi_mua,
+    coalesce(p_uom.name::json ->> '{user_lang_code}', p_uom.name::json ->> 'en_US')         as don_vi_mua,
     prl.exchange_quantity                                                                   as ty_le_quy_doi,
     prl.product_qty                                                                         as sl_ton_kho_quy_doi,
     coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')             as don_vi_tinh,
@@ -91,6 +91,7 @@ from purchase_request_line prl
     join purchase_requests pr on pr.id = prl.request_id
     left join product_template pt on pt.id = pp.product_tmpl_id
     left join uom_uom uom on uom.id = pt.uom_id
+    left join uom_uom p_uom on p_uom.id = prl.purchase_uom
     left join account_analytic_account aaa on aaa.id = prl.account_analytic_id
     left join forlife_production fp on fp.id = prl.production_id
     left join occasion_code oc on oc.id = pr.occasion_code_id
