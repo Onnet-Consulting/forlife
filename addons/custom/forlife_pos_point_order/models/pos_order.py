@@ -214,9 +214,9 @@ class PosOrder(models.Model):
                 brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
                 brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
                 if branch_id == brand_format:
-                    is_purchased = self.partner_id.is_purchased_of_format or False
+                    is_purchased = rec.partner_id.is_purchased_of_format or False
                 elif branch_id == brand_tokyolife:
-                    is_purchased = self.partner_id.is_purchased_of_forlife or False
+                    is_purchased = rec.partner_id.is_purchased_of_forlife or False
                 else:
                     is_purchased = False
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
