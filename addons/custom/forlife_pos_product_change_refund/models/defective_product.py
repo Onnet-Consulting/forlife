@@ -19,12 +19,14 @@ class ProductDefective(models.Model):
     total_reduce = fields.Monetary('Tổng giảm', compute='_compute_total_reduce', store=True)
     defective_type_id = fields.Many2one('defective.type', 'Loại lỗi')
     detail_defective = fields.Char('Chi tiết lỗi')
-    state = fields.Selection([('new', 'New'), ('waiting approve', 'Waiting Approve'), ('approved','Approved'),('refuse','Refuse')], string='Trạng thái', default='new')
+    state = fields.Selection([('new', 'New'), ('waiting approve', 'Waiting Approve'), ('approved','Approved'),('refuse','Refuse'),('cancel','Cancel')], string='Trạng thái', default='new')
     is_already_in_use = fields.Boolean(default=False)
     program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá")
     from_date = fields.Datetime(readonly=True, string='Hiệu lực', related='program_pricelist_item_id.program_id.campaign_id.from_date')
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
     reason_refuse_product = fields.Char('Lí do từ chối')
+    active = fields.Boolean(default=True)
+    quantity_require = fields.Integer('Số lượng yêu cầu')
 
     @api.onchange('product_id')
     def change_product(self):
@@ -82,6 +84,8 @@ class ProductDefective(models.Model):
         res = super(ProductDefective, self).create(vals_list)
         if res.money_reduce == 0 and res.percent_reduce ==0:
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
+        if res.quantity_require == 0:
+            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
 
     def action_send_request_approve(self):
@@ -98,6 +102,12 @@ class ProductDefective(models.Model):
 
     def action_refuse(self):
         self.state = 'refuse'
+
+    def action_cancel(self):
+        self.write({
+            'state': 'cancel',
+            'active': False,
+        })
 
     def _send_mail_approve(self, id):
         mailTemplateModel = self.env['mail.template']
