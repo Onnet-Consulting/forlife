@@ -12,6 +12,7 @@ from ...bkav_connector.models.bkav_connector import connect_bkav
 
 class TransferNotExistsBkav(models.Model):
     _name = 'transfer.not.exists.bkav'
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'General Transfer Not Exists Bkav'
     _rec_name = 'id'
     _order = 'id desc'
@@ -80,7 +81,7 @@ class TransferNotExistsBkav(models.Model):
                 LIMIT 1)) as compu
             ORDER BY code desc LIMIT 1
         """
-        self._cr.execute(query, (param_code))
+        self._cr.execute(query, (param_code,))
         result = self._cr.fetchall()
         for list_code in result:
             if list_code[0] == '000001':
@@ -98,12 +99,12 @@ class TransferNotExistsBkav(models.Model):
             INSERT INTO transfer_not_exists_bkav(location_id, location_dest_id, 
                             location_name, location_dest_name, date_transfer, state)
             SELECT s.location_id, s.location_dest_id, 
-                knc.name||'|'||kn.name, kdc.name||'/'||kd.name, 
+                knc.name||'/'||kn.name, kdc.name||'/'||kd.name, 
                 (SELECT CURRENT_DATE), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
-            JOIN stock_location kd ON s.location_id = kd.id
+            JOIN stock_location kd ON s.location_dest_id = kd.id
             JOIN stock_location kdc ON kd.location_id = kdc.id
             WHERE s.exists_bkav = 'f' 
             AND (s.date_transfer + interval '7 hours')::date < %s
@@ -151,7 +152,7 @@ class TransferNotExistsBkav(models.Model):
                 JOIN stock_transfer c ON a.transfer_id = c.id
                 WHERE b.state = 'new'
                 AND c.vendor_contract_id is not null) p 
-            WHERE t.id = b.id;
+            WHERE t.id = p.id;
 
             UPDATE transfer_not_exists_bkav t SET delivery_contract_id = p.delivery_contract_id
             FROM 
@@ -161,7 +162,7 @@ class TransferNotExistsBkav(models.Model):
                 JOIN stock_transfer c ON a.transfer_id = c.id
                 WHERE b.state = 'new'
                 AND c.delivery_contract_id is not null) p 
-            WHERE t.id = b.id;
+            WHERE t.id = p.id;
 
             UPDATE transfer_not_exists_bkav t SET transporter_id = p.transporter_id
             FROM 
@@ -171,7 +172,7 @@ class TransferNotExistsBkav(models.Model):
                 JOIN stock_transfer c ON a.transfer_id = c.id
                 WHERE b.state = 'new'
                 AND c.transporter_id is not null) p 
-            WHERE t.id = b.id;
+            WHERE t.id = p.id;
         """
         self._cr.execute(query, (date_now,date_now,date_now))
         transfer_ids = self.env['transfer.not.exists.bkav'].search([('state','=','new')],order='id asc')
@@ -179,6 +180,7 @@ class TransferNotExistsBkav(models.Model):
             transfer_id.genarate_code()
             transfer_id.create_invoice_bkav()
             transfer_id.publish_invoice_bkav()
+            transfer_id.state = 'post'
 
 
     def get_invoice_identify(self):
@@ -227,6 +229,7 @@ class TransferNotExistsBkav(models.Model):
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
+            invoice.company_id = invoice.location_id.company_id.id
             InvoiceTypeID = 5
             ShiftCommandNo = invoice.code
             if invoice.location_dest_id.id_deposit:
