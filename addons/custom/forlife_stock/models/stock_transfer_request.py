@@ -304,7 +304,7 @@ class TransferRequestLine(models.Model):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))
             if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
-                raise ValidationError(_("Đơn vị khác đơn vị của sản phẩm"))
+                raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
         return super(TransferRequestLine, self).create(vals)
 
 
