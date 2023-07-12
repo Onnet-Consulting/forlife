@@ -2487,17 +2487,22 @@ class StockPicking(models.Model):
     def prepare_move_svl_value_with_tax_po(self, po, tax_type):
         if not po.exchange_rate_line_ids or len(po.exchange_rate_line_ids) <= 0:
             return []
-        qty_po_done = sum(self.mapped('move_ids.quantity_purchase_done'))
-        qty_po_origin = sum(po.mapped('order_line.product_qty'))
         move_values = []
-
         for line in po.exchange_rate_line_ids:
             amount = line.tax_amount if tax_type != 'special' else line.special_consumption_tax_amount
+            qty_po_origin = line.product_qty
+            move = self.env['stock.move'].search([('purchase_line_id', '=', line.id)])
+            qty_po_done = sum(move.mapped('quantity_purchase_done'))
+            if tax_type != 'special':
+                product_tax = self.env.ref('forlife_purchase.product_import_tax_default')
+            else:
+                product_tax = self.env.ref('forlife_purchase.product_excise_tax_default')
             move_value = {
                 'ref': f"{self.name} - {line.product_id.name}",
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
+                'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
                 'exchange_rate': po.exchange_rate,
                 'date': datetime.now(),
                 'invoice_payment_term_id': po.payment_term_id.id,
@@ -2507,34 +2512,32 @@ class StockPicking(models.Model):
             svl_values = []
             move_lines = [(0, 0, {
                 'sequence': 1,
-                'account_id': line.product_id.categ_id.property_stock_account_input_categ_id.id,
+                'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
                 'product_id': line.product_id.id,
                 'name': line.product_id.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': (amount / qty_po_origin) * qty_po_done,
                 'debit': 0
             })]
-            for move in self.move_ids:
-                if move.product_id.type in ('product', 'consu'):
-                    svl_values.append((0, 0, {
-                        'value': (amount / qty_po_origin) * move.quantity_done,
-                        'unit_cost': amount / qty_po_origin,
-                        'quantity': 0,
-                        'remaining_qty': 0,
-                        'description': f"{self.name} - {line.product_id.name}",
-                        'product_id': move.product_id.id,
-                        'company_id': self.env.company.id,
-                        'stock_move_id': move.id
-                    }))
-
+            if move.product_id.type in ('product', 'consu'):
+                svl_values.append((0, 0, {
+                    'value': (amount / qty_po_origin) * qty_po_done,
+                    'unit_cost': amount / qty_po_origin,
+                    'quantity': 0,
+                    'remaining_qty': 0,
+                    'description': f"{self.name} - {line.product_id.name}",
+                    'product_id': move.product_id.id,
+                    'company_id': self.env.company.id,
+                    'stock_move_id': move.id
+                }))
                 move_lines += [(0, 0, {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
-                    'product_id':  move.product_id.id,
-                    'name':  move.product_id.name,
+                    'product_id': move.product_id.id,
+                    'name': move.product_id.name,
                     'text_check_cp_normal': line.product_id.name,
                     'credit': 0.0,
-                    'debit': (amount / qty_po_origin) * move.quantity_purchase_done,
+                    'debit': (amount / qty_po_origin) * qty_po_done,
                 })]
 
             move_value.update({

@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from contextlib import contextmanager
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, time
 import re
@@ -459,6 +460,7 @@ class AccountMove(models.Model):
     def create_invoice_tnk_db(self):
         account_db = []
         account_tnk = []
+        is_in = self.move_type in ('in_invoice', 'in_receipt')
         if not self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(self.company_id).property_stock_account_input_categ_id \
                 or not self.env.ref('forlife_purchase.product_import_tax_default').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế nhập khẩu hoặc tài khoản chi phí kế toán của sản phẩm có tên là 'Thuế nhập khẩu'")
@@ -473,16 +475,16 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
                         self.company_id).property_account_expense_id.name,
-                    'debit': 0,
-                    'credit': item.amount_tax,
+                    'debit': 0 if is_in else item.amount_tax,
+                    'credit': item.amount_tax if is_in else 0.0,
                 })
                 account_debit_tnk = (0, 0, {
                     'sequence': 9,
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': item.product_id.name,
-                    'debit': item.amount_tax,
-                    'credit': 0,
+                    'debit': item.amount_tax if is_in else 0.0,
+                    'credit': 0 if is_in else item.amount_tax,
                 })
                 lines_tnk = [account_debit_tnk, account_credit_tnk]
                 account_tnk.extend(lines_tnk)
@@ -493,15 +495,15 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
                         self.company_id).property_account_expense_id.name,
-                    'debit': 0,
-                    'credit': item.special_consumption_tax_amount,
+                    'debit': 0 if is_in else item.special_consumption_tax_amount,
+                    'credit': item.special_consumption_tax_amount if is_in else 0,
                 })
                 account_debit_db = (0, 0, {
                     'sequence': 9,
                     'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
                     'name': item.product_id.name,
-                    'debit': item.special_consumption_tax_amount,
-                    'credit': 0,
+                    'debit': item.special_consumption_tax_amount if is_in else 0,
+                    'credit': 0 if is_in else item.special_consumption_tax_amount,
                 })
                 lines_db = [account_debit_db, account_credit_db]
                 account_db.extend(lines_db)
@@ -559,6 +561,7 @@ class AccountMove(models.Model):
 
     def create_tax_vat(self):
         account_vat = []
+        is_in = self.move_type in ('in_invoice', 'in_receipt')
         if not self.env.ref('forlife_purchase.product_vat_tax').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí kế toán thuế VAT (Nhập khẩu), trong sản phẩm có tên là Thuế VAT (Nhập khẩu) ở tab kế toán")
         if not self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
@@ -570,16 +573,16 @@ class AccountMove(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
                         self.company_id).property_account_expense_id.id,
                     'name': 'thuế giá trị gia tăng nhập khẩu (VAT)',
-                    'debit': 0,
-                    'credit': line.vat_tax_amount,
+                    'debit': 0 if is_in else line.vat_tax_amount,
+                    'credit': line.vat_tax_amount if is_in else 0.0,
                 })
                 account_debit_vat = (0, 0, {
                     'sequence': 99991,
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': line.name,
-                    'debit': line.vat_tax_amount,
-                    'credit': 0,
+                    'debit': line.vat_tax_amount if is_in else 0.0,
+                    'credit': 0 if is_in else line.vat_tax_amount,
                 })
                 lines_vat = [account_credit_vat, account_debit_vat]
                 account_vat.extend(lines_vat)
@@ -613,6 +616,7 @@ class AccountMove(models.Model):
 
     def create_trade_discount(self):
         self.ensure_one()
+        is_in = self.move_type in ('in_invoice', 'in_receipt')
         if not self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí ở tab kế toán trong danh sản phẩm có tên là Thuế VAT Chiết khấu tổng đơn!!")
         if not self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id:
@@ -631,20 +635,20 @@ class AccountMove(models.Model):
                 'account_id': self.partner_id.property_account_payable_id.id,
                 # 'product_id': self.partner_id.property_account_payable_id.id,
                 'name': self.partner_id.property_account_payable_id.name,
-                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
-                'credit': 0,
+                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate if is_in else 0.0,
+                'credit': 0 if is_in else (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
+                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
                 'product_id': self.env.ref('forlife_purchase.product_discount_tax').name,
-                'credit': self.total_trade_discount * self.exchange_rate,
+                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
+                'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
                 'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').name,
-                'credit': self.x_amount_tax * self.exchange_rate,
+                'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
             })],
         })
         invoice_ck._post()
@@ -896,18 +900,6 @@ class AccountMoveLine(models.Model):
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
 
 
-    # sửa lại base để quy đổi tiền tệ
-    # @api.depends('balance', 'move_id.is_storno')
-    # def _compute_debit_credit(self):
-    #     for line in self:
-    #         if not line.is_storno:
-    #             line.debit = line.balance * line.move_id.exchange_rate if line.balance > 0.0 else 0.0
-    #             line.credit = -line.balance * line.move_id.exchange_rate if line.balance < 0.0 else 0.0
-    #         else:
-    #             line.debit = line.balance * line.move_id.exchange_rate if line.balance < 0.0 else 0.0
-    #             line.credit = -line.balance * line.move_id.exchange_rate if line.balance > 0.0 else 0.0
-
-
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         res = super()._compute_account_id()
@@ -942,6 +934,62 @@ class AccountMoveLine(models.Model):
                     list_vals.remove(line)
         res = super().create(list_vals)
         return res
+
+
+    # sửa lại base odoo để ăn theo tỉ giá tự nhập
+    @contextmanager
+    def _sync_invoice(self, container):
+        if container['records'].env.context.get('skip_invoice_line_sync'):
+            yield
+            return  # avoid infinite recursion
+
+        def existing():
+            return {
+                line: {
+                    'amount_currency': line.currency_id.round(line.amount_currency),
+                    'balance': line.company_id.currency_id.round(line.balance),
+                    'currency_rate': line.currency_rate,
+                    'price_subtotal': line.currency_id.round(line.price_subtotal),
+                    'move_type': line.move_id.move_type,
+                } for line in container['records'].with_context(
+                    skip_invoice_line_sync=True,
+                ).filtered(lambda l: l.move_id.is_invoice(True))
+            }
+
+        def changed(fname):
+            return line not in before or before[line][fname] != after[line][fname]
+
+        before = existing()
+        yield
+        after = existing()
+        for line in after:
+            if (
+                    line.display_type == 'product'
+                    and (not changed('amount_currency') or line not in before)
+            ):
+                amount_currency = line.move_id.direction_sign * line.currency_id.round(line.price_subtotal)
+                if line.amount_currency != amount_currency or line not in before:
+                    line.amount_currency = amount_currency
+                if line.currency_id == line.company_id.currency_id:
+                    line.balance = amount_currency
+
+        after = existing()
+        for line in after:
+            if (
+                    (changed('amount_currency') or changed('currency_rate') or changed('move_type'))
+                    and (not changed('balance') or (line not in before and not line.balance))
+            ):
+                balance = line.company_id.currency_id.round(line.amount_currency / line.currency_rate)
+                line.balance = balance
+                # sửa ở đây
+                if line.move_id.currency_id != line.company_id.currency_id and line.move_id.exchange_rate > 0:
+                    line.balance = balance * line.move_id.exchange_rate
+
+        # Since this method is called during the sync, inside of `create`/`write`, these fields
+        # already have been computed and marked as so. But this method should re-trigger it since
+        # it changes the dependencies.
+        self.env.add_to_compute(self._fields['debit'], container['records'])
+        self.env.add_to_compute(self._fields['credit'], container['records'])
 
     @api.depends('tax_ids', 'price_subtotal')
     def _compute_tax_amount(self):

@@ -148,6 +148,9 @@ class PurchaseReturnWizard(models.TransientModel):
             'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
             'receive_date': return_line.purchase_line_id.receive_date,
             'location_id': location_id,
+            'import_tax': return_line.purchase_line_id.import_tax,
+            'special_consumption_tax': return_line.purchase_line_id.special_consumption_tax,
+            'vat_tax': return_line.purchase_line_id.vat_tax,
         }
         return vals
 
