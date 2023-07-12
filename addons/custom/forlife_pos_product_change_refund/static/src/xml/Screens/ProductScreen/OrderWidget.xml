@@ -22,8 +22,8 @@
                                 <li style="width: 10%">%GG</li>
                                 <li style="width: 16%">GIẢM GIÁ</li>
                                 <li style="width: 16%">THÀNH TIỀN</li>
-                                <li style="width: 8%">SL ĐƯỢC TRẢ</li>
-                                <li style="width: 10%"></li>
+                                <li style="width: 18%">SL ĐƯỢC TRẢ</li>
+                                <li style="width: 0%"></li>
                             </ul>
                             <ul class="orderlines">
                                 <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">
