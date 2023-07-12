@@ -6,13 +6,13 @@
             <t t-if="props.line.check_button">
                 <t t-if="!props.line.approvalStatus">
                     <div class="control-button" t-on-click="sendApprove"
-                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px;">
+                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px; min-width: 55px !important; font-size: 12px">
                         Send Approve
                     </div>
                 </t>
                 <t t-else="">
                     <div class="control-button" t-on-click="actUpdate"
-                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px;">
+                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px; min-width: 55px !important; font-size: 12px">
                         Update
                     </div>
                 </t>
@@ -76,7 +76,7 @@
         </xpath>
 
         <xpath expr="//li[hasclass('refund-discount')]" position="replace">
-            <li class="refund-discount" style="width: 10%;">
+            <li class="refund-discount" style="width: 16%;">
                 <t t-if="!props.line.is_new_line">
                     <t t-if="props.line.quantity_canbe_refund !== 0">
                         <t t-if="!props.line.beStatus">
