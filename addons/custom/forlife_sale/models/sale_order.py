@@ -261,7 +261,7 @@ class SaleOrder(models.Model):
             group_id = line._get_procurement_group()
             if not group_id:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
-                line.order_id.procurement_group_id = group_id
+                # line.order_id.procurement_group_id = group_id
             detail_data = {
                 'name': line.name,
                 'company_id': line.company_id.id,
