@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_date, formatLang, get_lang, groupby
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_date, formatLang, get_lang, groupby, float_round
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
 from lxml import etree
@@ -153,7 +153,31 @@ class PurchaseOrder(models.Model):
                 'context': context
             }
 
+    date_planned = fields.Datetime(
+        string='Expected Arrival', index=True, copy=False, compute='_compute_date_planned', store=True, readonly=False,
+        help="Delivery date promised by vendor. This date is used to determine expected arrival of products.")
+
+    date_planned_import = fields.Datetime('Hạn xử lý')
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
+
+    @api.depends('order_line.date_planned', 'date_planned_import')
+    def _compute_date_planned(self):
+        """ date_planned = the earliest date_planned across all order lines. """
+        for order in self:
+            dates_list = order.order_line.filtered(lambda x: not x.display_type and x.date_planned).mapped(
+                'date_planned')
+            if not order.date_planned_import:
+                if dates_list:
+                    order.date_planned = min(dates_list)
+                else:
+                    order.date_planned = False
+            else:
+                order.date_planned = order.date_planned_import
+
+    @api.onchange('date_planned')
+    def onchange_date_planned(self):
+        if self.date_planned:
+            self.order_line.filtered(lambda line: not line.display_type).date_planned = self.date_planned
 
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
@@ -477,6 +501,134 @@ class PurchaseOrder(models.Model):
         so.with_context(from_inter_company=True, company_po=self.source_location_id.company_id.id).action_confirm()
         return so
 
+    def approve_company_picking(self, sale):
+        picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('exchange_code', '=', False), ('company_id', '=', sale.company_id.id)], limit=1)
+        picking = self.env['stock.picking'].with_context(auto_done=True).create({
+            'origin': sale.name,
+            'company_id': sale.company_id.id,
+            'move_type': sale.picking_policy,
+            'partner_id': sale.partner_id.id,
+            'picking_type_id': picking_type_id.id,
+            'location_id': self.source_location_id.id,
+            'location_dest_id': self.env.ref('stock.stock_location_customers').id,
+            'sale_id': sale.id,
+            'move_ids_without_package': [(0, 0, {
+                'name': sol.name,
+                'product_id': sol.product_id.id,
+                'product_uom': sol.product_uom.id,
+                'product_uom_qty': sol.product_uom_qty,
+                'procure_method': 'make_to_stock',
+                'origin': sol.order_id.name,
+                'date_deadline': datetime.utcnow(),
+                'description_picking': sol.name,
+                'sale_line_id': sol.id,
+                'occasion_code_id': sol.x_occasion_code_id,
+                'work_production': sol.x_manufacture_order_code_id,
+                'account_analytic_id': sol.x_account_analytic_id,
+                'company_id': sale.company_id.id,
+                'location_id': self.source_location_id.id,
+                'location_dest_id': self.env.ref('stock.stock_location_customers').id
+            }) for sol in sale.order_line if sol.product_id.detailed_type == 'product']
+        })
+
+        picking.action_confirm()
+        picking.action_assign()
+        materials_not_enough = '\n\t- '.join([
+            sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
+            for sm in picking.move_ids_without_package if sm.state != 'assigned'
+        ])
+        if materials_not_enough:
+            raise ValidationError(_('Kho "%s" không đủ tồn kho:\n\t- %s', picking.location_id.complete_name, materials_not_enough))
+        picking.button_validate()
+        return picking
+
+    def approve_company_sale(self, company_sale):
+        sale = self.env['sale.order'].create({
+            'company_id': company_sale.id,
+            'origin': self.name,
+            'partner_id': self.env.company.partner_id.id,
+            'payment_term_id': self.payment_term_id.id,
+            'state': 'sent',
+            'date_order': self.date_order,
+            'order_line': [(0, 0, {
+                'product_id': pol.product_id.id,
+                'name': pol.name,
+                'product_uom_qty': pol.product_uom_qty,
+                'price_unit': pol.price_unit or float_round(pol.price_subtotal / pol.product_uom_qty, 0),
+                'product_uom': pol.product_uom.id,
+                'customer_lead': 0,
+                'sequence': 10,
+                'is_downpayment': False,
+                'is_expense': True,
+                'qty_delivered_method': 'analytic',
+                'discount': pol.discount_percent,
+                'company_id': company_sale.id
+            }) for pol in self.order_line]
+        })
+        picking = self.approve_company_picking(sale)
+        sale.state = 'sale'
+
+        advance_payment = self.env['sale.advance.payment.inv'].sudo().create({'sale_order_ids': [(6, 0, sale.ids)]})
+
+        # advance_payment = self.env['sale.advance.payment.inv'].create({
+        #     'sale_order_ids': [(6, 0, sale.ids)],
+        #     'advance_payment_method': 'delivered',
+        #     'deduct_down_payments': True
+        # })
+        invoice = advance_payment._create_invoices(advance_payment.sale_order_ids)
+        invoice._post()
+        return sale, invoice, picking
+
+    def action_approved_inter_company(self):
+        company_sale = self.env['res.company'].sudo().search([('partner_id', '=', self.partner_id.id)], limit=1)
+        sale, invoice, picking = self.with_company(company_sale).approve_company_sale(company_sale)
+        picking_type_in = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('exchange_code', '=', False)], limit=1)
+        vendor_picking = self.env['stock.picking'].create({
+            'picking_type_id': picking_type_in.id,
+            'partner_id': company_sale.partner_id.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.location_id.id,
+            'scheduled_date': datetime.utcnow(),
+            'date_done': self.receive_date,
+            'origin': self.name,
+            'move_ids_without_package': [(0, 0, {
+                'name': pol.name,
+                'product_id': pol.product_id.id,
+                'location_id': self.env.ref('stock.stock_location_suppliers').id,
+                'location_dest_id': self.location_id.id,
+                'product_uom_qty': pol.product_uom_qty,
+                'price_unit': float_round(pol.price_subtotal / pol.product_uom_qty, 0),
+                'product_uom': pol.product_uom.id,
+                'quantity_done': pol.product_uom_qty,
+                'purchase_line_id': pol.id
+            }) for pol in self.order_line if pol.product_id.detailed_type == 'product'],
+        })
+        vendor_picking.action_confirm()
+        vendor_picking.action_assign()
+        vendor_picking.button_validate()
+
+        invoice_vals = self._prepare_invoice()
+        invoice_vals.update({
+            'purchase_type': self.purchase_type,
+            'invoice_date': datetime.utcnow(),
+            'exchange_rate': self.exchange_rate,
+            'currency_id': self.currency_id.id,
+            'move_type': 'in_invoice',
+            'invoice_origin': self.name,
+            'partner_id': self.partner_id.id,
+            'invoice_line_ids': [(0, 0, pol._prepare_account_move_line()) for pol in self.order_line]
+        })
+        vendor_bill = self.env['account.move'].create(invoice_vals)
+        vendor_bill._post()
+
+        self.write({
+            'custom_state': 'approved',
+            'inventory_status': 'incomplete',
+            'invoice_status_fake': 'no',
+            'picking_ids': [(6, 0, vendor_picking.ids)],
+            'invoice_ids': [(6, 0, vendor_bill.ids)]
+        })
+
     def action_approved(self):
         self.check_purchase_tool_and_equipment()
         for record in self:
@@ -527,6 +679,7 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
+                return self.action_approved_inter_company()
                 self = self.sudo().with_context(inter_company=True)
                 data = {'partner_id': record.partner_id.id,
                         'purchase_type': record.purchase_type,
@@ -792,7 +945,7 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_liencongtys.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_lien_cong_ty.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
@@ -1957,7 +2110,7 @@ class PurchaseOrderLine(models.Model):
     @api.constrains('purchase_uom')
     def _constrains_purchase_uom(self):
         for rec in self:
-            if not rec.purchase_uom:
+            if not rec.purchase_uom and not rec.order_id.is_inter_company:
                 raise ValidationError(_('Đơn vị mua của sản phẩm %s chưa được chọn!') % rec.product_id.name)
 
     _sql_constraints = [

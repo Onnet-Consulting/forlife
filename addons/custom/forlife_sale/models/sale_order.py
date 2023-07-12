@@ -44,6 +44,18 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
+    @api.depends('warehouse_id')
+    def _compute_location_id(self):
+        for r in self:
+            r.x_location_id = r.warehouse_id.lot_stock_id
+
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+
+    @api.onchange('x_location_id')
+    def _onchange_location(self):
+        for line in self.order_line:
+            line.x_location_id = self.x_location_id
+
     @api.onchange('x_punish', 'partner_id')
     def _compute_domain_pricelist(self):
         for r in self:
@@ -261,7 +273,7 @@ class SaleOrder(models.Model):
             group_id = line._get_procurement_group()
             if not group_id:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
-                line.order_id.procurement_group_id = group_id
+                # line.order_id.procurement_group_id = group_id
             detail_data = {
                 'name': line.name,
                 'company_id': line.company_id.id,
@@ -409,11 +421,11 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
+        # location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        self.x_location_id = location
+        self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
@@ -446,9 +458,10 @@ class SaleOrderLine(models.Model):
             return {'domain': {'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                      ('company_id', '=', self.order_id.company_id.id)]}}
 
-    # @api.onchange('price_unit', 'discount', 'product_uom_qty')
-    # def compute_cart_discount_fixed_price(self):
-    #     self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
+    @api.onchange('price_unit', 'discount', 'product_uom_qty')
+    def compute_cart_discount_fixed_price(self):
+        if 'notloop_discount' in self._context and self._context.get('notloop_discount'):
+            self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
@@ -467,9 +480,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_cart_discount_fixed_price')
     def onchange_x_cart_discount_fixed_price(self):
-        if self.x_cart_discount_fixed_price:
-            self.discount = self.x_cart_discount_fixed_price * 100 / (self.price_unit * self.product_uom_qty) if (
-                    self.price_unit * self.product_uom_qty) else 0
+        if self.x_cart_discount_fixed_price and 'notloop' in self._context and self._context.get('notloop'):
+            self.discount = 0
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'x_cart_discount_fixed_price')
     def _compute_amount(self):
@@ -509,3 +521,24 @@ class SaleOrderLine(models.Model):
             self.price_unit = [r.get('fixed_price') for r in result][0]
             
             '''
+
+    def _convert_to_tax_base_line_dict(self):
+        """ Convert the current record to a dictionary in order to use the generic taxes computation method
+        defined on account.tax.
+
+        :return: A python dictionary.
+        """
+        x_cart_discount_fixed_price = 0
+        if self.x_cart_discount_fixed_price == self.price_unit * self.discount * self.product_uom_qty / 100:
+            x_cart_discount_fixed_price = 0
+        if self.discount == 0:
+            x_cart_discount_fixed_price = self.x_cart_discount_fixed_price
+        res = super(SaleOrderLine, self.with_context(x_cart_discount_fixed_price=x_cart_discount_fixed_price))._convert_to_tax_base_line_dict()
+        return res
+
+    def _prepare_invoice_line(self, **optional_values):
+        rslt = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
+        rslt.update({
+            'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price
+        })
+        return rslt

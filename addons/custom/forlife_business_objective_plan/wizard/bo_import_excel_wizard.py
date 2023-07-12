@@ -103,8 +103,9 @@ select (select json_object_agg(code, id) from res_sale_province)                
                 error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
             if not employee_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy nhân viên có mã là '{val[2]}'")
-            if employee_id and store_id in employee_exist.get(str(employee_id)):
-                error.append(f"Dòng {index + 1}, mã nhân viên '{val[2]}' thuộc mã cửa hàng '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
+            if employee_id and store_id:
+                if store_id in (employee_exist.get(str(employee_id)) or []):
+                    error.append(f"Dòng {index + 1}, mã nhân viên '{val[2]}' thuộc mã cửa hàng '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
             if not job_id:
                 error.append(f"Dòng {index + 1}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
             if val[4]:

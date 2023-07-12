@@ -3,10 +3,10 @@
     <t t-inherit="forlife_pos_layout.OrderlineChangeRefund" t-inherit-mode="extension" owl="1">
         <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
                 <t t-if="props.line.point">
-                    <li class="info orderline-point" style="width: 60%;">
+                    <li class="info orderline-point" style="width: 50%;">
                         <em>Giảm giá theo CT tiêu điểm</em>
                     </li>
-                    <li class="info orderline-point" style="width: 30%;">
+                    <li class="info orderline-point" style="width: 40%;">
                             <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
                         <span><em><t t-esc="env.pos.format_currency(props.line.point)"/></em> </span>
                     </li>

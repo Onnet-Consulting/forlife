@@ -3,7 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = [
     'STT', 'Ngày', 'Số CT', 'Kho', 'Số CT2', 'Kho2', 'Mã khách', 'Tên khách', 'Đối tượng', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu',
@@ -19,8 +18,12 @@ class ReportNum16(models.TransientModel):
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    product_domain = fields.Char('Product', default='[]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num16_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num16_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num16_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num16_texture_rel', string='Texture')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num16_warehouse_rel', string='Warehouse')
     move_type = fields.Selection([('all', _('All')), ('in', _('In')), ('out', _('Out'))], 'Move Type', default='all', required=True)
 
     @api.constrains('from_date', 'to_date')
@@ -28,6 +31,18 @@ class ReportNum16(models.TransientModel):
         for record in self:
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
@@ -108,28 +123,28 @@ select row_number() over ()                                                     
        to_char(sm.date + interval '{tz_offset} h', 'DD/MM/YYYY')                    as ngay,
        case when sp.transfer_id notnull then sp.origin else sp.name end             as so_ct,
        coalesce(wh1.name, sl1.name)                                                 as kho_xuat,
-       coalesce(st.name, sp.origin, sm.reference)                                   as so_ct2,
+       coalesce(str.name, sp.origin, sm.reference)                                  as so_ct2,
        coalesce(wh2.name, sl2.name)                                                 as kho_nhap,
        rp.barcode                                                                   as ma_khach,
        rp.name                                                                      as ten_khach,
-       ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                        as doi_tuong,
+       ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                        as doi_tuong,
        split_part(cate.complete_name, ' / ', 2)                                     as nhom_hang,
        split_part(cate.complete_name, ' / ', 3)                                     as dong_hang,
        split_part(cate.complete_name, ' / ', 4)                                     as ket_cau,
        pp.barcode                                                                   as ma_vach,
        pt.sku_code                                                                  as ma_hang,
-       coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')      as ten_hang,
-       ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                          as mau_sac,
-       ad.attrs::json ->> '{attr_value.get('size', '')}'                             as kich_co,
-       ad.attrs::json ->> '{attr_value.get('nam_san_xuat', '')}'                     as nam_sx,
+       coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')    as ten_hang,
+       ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                          as mau_sac,
+       ad.attrs::json -> '{attr_value.get('size', '')}'                             as kich_co,
+       ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                     as nam_sx,
        pt.collection                                                                as bo_suu_tap,
-       ad.attrs::json ->> '{attr_value.get('xuat_xu', '')}'                          as xuat_xu,
-       ad.attrs::json ->> '{attr_value.get('subclass1', '')}'                        as subclass1,
-       ad.attrs::json ->> '{attr_value.get('subclass2', '')}'                        as subclass2,
-       ad.attrs::json ->> '{attr_value.get('subclass3', '')}'                        as subclass3,
-       ad.attrs::json ->> '{attr_value.get('subclass4', '')}'                        as subclass4,
-       ad.attrs::json ->> '{attr_value.get('subclass5', '')}'                        as subclass5,
-       coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')    as dv_tinh,
+       ad.attrs::json -> '{attr_value.get('xuat_xu', '')}'                          as xuat_xu,
+       ad.attrs::json -> '{attr_value.get('subclass1', '')}'                        as subclass1,
+       ad.attrs::json -> '{attr_value.get('subclass2', '')}'                        as subclass2,
+       ad.attrs::json -> '{attr_value.get('subclass3', '')}'                        as subclass3,
+       ad.attrs::json -> '{attr_value.get('subclass4', '')}'                        as subclass4,
+       ad.attrs::json -> '{attr_value.get('subclass5', '')}'                        as subclass5,
+       coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')  as dv_tinh,
        sms.qty_in                                                                   as nhap,
        sms.qty_out                                                                  as xuat,
        pt.list_price                                                                as don_gia,
@@ -140,6 +155,7 @@ from stock_move sm
     join stock_moves sms on sms.move_id = sm.id
     left join stock_picking sp on sm.picking_id = sp.id
     left join stock_transfer st on sp.transfer_id = st.id
+    left join stock_transfer_request str on st.stock_request_id = str.id
     left join res_partner rp on sp.partner_id = rp.id
     left join stock_location sl1 on sm.location_id = sl1.id
     left join stock_warehouse wh1 on wh1.id = sl1.warehouse_id
@@ -159,8 +175,20 @@ order by stt
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        else:
+            product_ids = [-1]
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

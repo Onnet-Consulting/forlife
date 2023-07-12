@@ -29,8 +29,10 @@ class PosVoucherLine(models.Model):
     program_voucher_id = fields.Many2one('program.voucher')
     product_voucher_name = fields.Char('Product Voucher Name')
     derpartment_name = fields.Char('Derpartment Name')
+    derpartment_id = fields.Many2one('hr.department')
     state_app = fields.Boolean()
     apply_many_times = fields.Boolean()
+    order_use_ids = fields.Integer()
 
     def _export_for_ui(self, voucher):
         return {
