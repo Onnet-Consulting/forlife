@@ -57,7 +57,7 @@ def _get_price_unit(self):
     return price_unit
 
 
-StockMove._get_price_unit = _get_price_unit
+# StockMove._get_price_unit = _get_price_unit
 
 
 class StockPicking(models.Model):
