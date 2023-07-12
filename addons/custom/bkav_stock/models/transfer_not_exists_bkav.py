@@ -99,12 +99,12 @@ class TransferNotExistsBkav(models.Model):
             INSERT INTO transfer_not_exists_bkav(location_id, location_dest_id, 
                             location_name, location_dest_name, date_transfer, state)
             SELECT s.location_id, s.location_dest_id, 
-                knc.name||'|'||kn.name, kdc.name||'/'||kd.name, 
+                knc.name||'/'||kn.name, kdc.name||'/'||kd.name, 
                 (SELECT CURRENT_DATE), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
-            JOIN stock_location kd ON s.location_id = kd.id
+            JOIN stock_location kd ON s.location_dest_id = kd.id
             JOIN stock_location kdc ON kd.location_id = kdc.id
             WHERE s.exists_bkav = 'f' 
             AND (s.date_transfer + interval '7 hours')::date < %s
@@ -180,6 +180,7 @@ class TransferNotExistsBkav(models.Model):
             transfer_id.genarate_code()
             transfer_id.create_invoice_bkav()
             transfer_id.publish_invoice_bkav()
+            transfer_id.state = 'post'
 
 
     def get_invoice_identify(self):
@@ -228,6 +229,7 @@ class TransferNotExistsBkav(models.Model):
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
+            invoice.company_id = invoice.location_id.company_id.id
             InvoiceTypeID = 5
             ShiftCommandNo = invoice.code
             if invoice.location_dest_id.id_deposit:
