@@ -23,19 +23,6 @@
                             <field name="transporter_id" readonly="1"/>
                         </group>
                     </group>
-                    <group>
-                        <group>
-                            <field name="exists_bkav" readonly="1"/>
-                            <field name="invoice_no" readonly="1"/>
-                            <field name="invoice_form" readonly="1"/>
-                            <field name="invoice_serial" readonly="1"/>
-                        </group>
-                        <group>
-                            <field name="invoice_state_e" readonly="1"/>
-                            <field name="invoice_guid" readonly="1"/>
-                            <field name="invoice_e_date" readonly="1"/>
-                        </group>
-                    </group>
                     <notebook>
                         <page name="detail" string="DS sản phẩm">
                             <field name="line_ids" readonly="1">
