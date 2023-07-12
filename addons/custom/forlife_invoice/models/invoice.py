@@ -540,7 +540,7 @@ class AccountMove(models.Model):
                 'line_ids': merged_records_list_db,
                 'move_type': 'entry',
             })
-            invoice_db.action_post()
+            invoice_db._post()
         if merged_records_list_tnk:
             invoice_tnk = self.create({
                 'e_in_check': self.id,
@@ -550,60 +550,47 @@ class AccountMove(models.Model):
                 'line_ids': merged_records_list_tnk,
                 'move_type': 'entry',
             })
-            invoice_tnk.action_post()
+            invoice_tnk._post()
 
     def create_tax_vat(self):
-        account_vat = []
         if not self.env.ref('forlife_purchase.product_vat_tax').with_company(self.company_id).property_account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí kế toán thuế VAT (Nhập khẩu), trong sản phẩm có tên là Thuế VAT (Nhập khẩu) ở tab kế toán")
         if not self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục sản phẩm có tên là Thuế VAT (Nhập khẩu)")
-        for line in self.exchange_rate_line_ids:
-            if line.vat_tax_amount > 0:
-                account_credit_vat = (0, 0, {
+        invoice_vat = self.create({
+            'e_in_check': self.id,
+            'ref': f"{self.name} VAT",
+            'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
+            'invoice_date': self.invoice_date,
+            'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
+            'move_type': 'entry',
+            'invoice_line_ids': [(0, 0, {
                     'sequence': 9,
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
                         self.company_id).property_account_expense_id.id,
                     'name': 'thuế giá trị gia tăng nhập khẩu (VAT)',
                     'debit': 0,
-                    'credit': line.vat_tax_amount,
-                })
-                account_debit_vat = (0, 0, {
+                    'credit': sum(self.exchange_rate_line_ids.mapped('vat_tax_amount')),
+            })] + [(0, 0, {
                     'sequence': 99991,
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': line.name,
                     'debit': line.vat_tax_amount,
                     'credit': 0,
-                })
-                lines_vat = [account_credit_vat, account_debit_vat]
-                account_vat.extend(lines_vat)
-            merged_records_vat = {}
-            for db in account_vat:
-                key = (db[2]['account_id'], db[2]['name'], db[2]['sequence'])
-                if key in merged_records_vat:
-                    merged_records_vat[key]['debit'] += db[2]['debit']
-                    merged_records_vat[key]['credit'] += db[2]['credit']
+            }) for line in self.exchange_rate_line_ids if line.vat_tax_amount],
+        })
+        for value in invoice_vat:
+            debit = 0.0
+            for line in value['invoice_line_ids'][1:]:
+                if debit:
+                    line[-1]['debit'] += debit
+                    debit = 0.0
                 else:
-                    merged_records_vat[key] = {
-                        'sequence': db[2]['sequence'],
-                        'account_id': db[2]['account_id'],
-                        'name': db[2]['name'],
-                        'debit': db[2]['debit'],
-                        'credit': db[2]['credit'],
-                    }
-                # Chuyển đổi từ điển thành danh sách bản ghi
-            merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
-            if merged_records_list_vat:
-                invoice_vat = self.create({
-                    'e_in_check': self.id,
-                    'is_check_invoice_tnk': True,
-                    'invoice_date': self.invoice_date,
-                    'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
-                    'line_ids': merged_records_list_vat,
-                    'move_type': 'entry',
-                })
-                invoice_vat.action_post()
+                    debit = line[-1]['debit'] - round(line[-1]['debit'])
+                    line[-1]['debit'] = round(line[-1]['debit'])
+        invoice_vat._post()
+        return invoice_vat
 
     def create_trade_discount(self):
         self.ensure_one()
@@ -858,21 +845,6 @@ class AccountMoveLine(models.Model):
             else:
                 pass
 
-    # asset invoice!!
-    asset_code = fields.Char('Mã tài sản cố định')
-    asset_name = fields.Char('Mô tả tài sản cố định')
-    code_tax = fields.Char(string='Mã số thuế')
-    invoice_reference = fields.Char(string='Invoice Reference')
-    invoice_description = fields.Char(string="Invoice Description")
-    purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
-
-    # field check exchange_quantity khi ncc vãng lại:
-    is_check_exchange_quantity = fields.Boolean(default=False)
-
-    # field check vendor_price khi ncc vãng lại:
-    is_passersby = fields.Boolean(related='move_id.is_passersby')
-    is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
-
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         res = super()._compute_account_id()
@@ -894,6 +866,15 @@ class AccountMoveLine(models.Model):
     def onchange_quantity(self):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
+
+    # def _get_stock_valuation_layers_price_unit(self, layers):
+    #     price_unit_by_layer = {}
+    #     for layer in layers:
+    #         if layer.quantity != 0:
+    #             price_unit_by_layer[layer] = layer.value / layer.quantity
+    #         else:
+    #             price_unit_by_layer[layer] = layer.unit_cost
+    #     return price_unit_by_layer
 
     @api.model_create_multi
     def create(self, list_vals):

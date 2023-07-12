@@ -807,28 +807,26 @@ class PurchaseOrder(models.Model):
                                                                ])
         if stock_relationship:
             for item in stock_relationship:
-                item.write({
-                    'state': 'cancel'
-                })
+                item.action_cancel()
 
     @api.model
     def get_import_templates(self):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_lien_cong_ty.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_purchase_order_lien_cong_ty.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_noi_dia.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_purchase_order_noi_dia.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_nhap_khau.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_purchase_order_nhap_khau.xlsx?download=true'
             }]
         else:
             return True
@@ -1781,6 +1779,36 @@ class PurchaseOrder(models.Model):
         })
         return values
 
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            for mouse in data:
+                if not mouse[fields.index('partner_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Nhà cung cấp"))
+                if not mouse[fields.index('purchase_type')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Loại mua hàng"))
+                if not mouse[fields.index('currency_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ"))
+                if not mouse[fields.index('date_order')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày đặt hàng"))
+                if not mouse[fields.index('receive_date')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận"))
+                if not mouse[fields.index('order_line/product_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng"))
+                if not mouse[fields.index('order_line/purchase_quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng"))
+                if not mouse[fields.index('order_line/purchase_uom')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng"))
+                if not mouse[fields.index('order_line/exchange_quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng"))
+                if not mouse[fields.index('order_line/location_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng %s"))
+                if not mouse[fields.index('order_line/receive_date')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng"))
+                if mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng"))
+        return super(PurchaseOrder, self).load(fields, data)
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
@@ -1821,7 +1849,7 @@ class PurchaseOrderLine(models.Model):
     request_purchases = fields.Char(string='Purchases', readonly=1)
     is_passersby = fields.Boolean(related='order_id.is_passersby', store=1)
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
-    receive_date = fields.Datetime(string='Date receive')
+    receive_date = fields.Datetime(string='Receive Date')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
     qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
@@ -1836,7 +1864,6 @@ class PurchaseOrderLine(models.Model):
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
     name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
-    currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
     total_vnd_amount = fields.Monetary('Tổng tiền VND',
                                     compute='_compute_total_vnd_amount',
@@ -1844,6 +1871,8 @@ class PurchaseOrderLine(models.Model):
     total_vnd_exchange = fields.Monetary('Thành tiền VND',
                                     compute='_compute_total_vnd_amount',
                                     store=1)
+    total_vnd_exchange_import = fields.Float('Thành tiền VND của sản phẩm')
+
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     tax_amount = fields.Float(string='Thuế nhập khẩu',
                               compute='_compute_tax_amount',
@@ -1863,10 +1892,16 @@ class PurchaseOrderLine(models.Model):
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
                                     compute='_compute_total_tax_amount',
                                     store=1)
-    total_tax_amount_import = fields.Float('Tổng tiền thuế của sản phẩm')
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
+
+
+    @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax')
+    def _constrain_total_vnd_exchange_import(self):
+        for rec in self:
+            if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
+                raise ValidationError('Thành tiền vnd trước thuế đang không bằng thành tiền vnd của sản phẩm cộng với chi phí trước thuế !')
 
     @api.onchange('vat_tax')
     def _onchange_vat_tax(self):
@@ -1914,18 +1949,21 @@ class PurchaseOrderLine(models.Model):
             else:
                 rec.vat_tax_amount = rec.vat_tax_amount_import
 
-    @api.depends('vat_tax_amount', 'total_tax_amount_import')
+    @api.depends('vat_tax_amount')
     def _compute_total_tax_amount(self):
         for rec in self:
             if not rec.total_tax_amount:
                 rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
-            else:
-                rec.total_tax_amount = rec.total_tax_amount_import
 
-    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
+
+    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            if rec.price_subtotal and rec.order_id.exchange_rate:
+            if not rec.total_vnd_exchange_import:
+                if rec.price_subtotal and rec.order_id.exchange_rate:
+                    rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
+            else:
+                rec.total_vnd_exchange = rec.total_vnd_exchange_import
                 rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
 
     @api.onchange('product_id', 'is_change_vendor')

@@ -154,6 +154,7 @@
                                 <field name="product_id" readonly="1"/>
                                 <field name="description" readonly="1"/>
                                 <field name="total_vnd_exchange" readonly="1"/>
+                                <field name="total_vnd_exchange_import" invisible="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="0" force_save="1"/>
@@ -165,7 +166,6 @@
                                 <field name="vat_tax_amount" readonly="0" force_save="1"/>
                                 <field name="vat_tax_amount_import" invisible="1"/>
                                 <field name="total_tax_amount" readonly="1"/>
-                                <field name="total_tax_amount_import" invisible="1"/>
                             </tree>
                         </field>
                     </page>
@@ -377,7 +377,7 @@
                         <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                        <field name="receive_date" required="1" string="Ngày nhận"/>
                         <field name="tolerance" string="Tolerance"/>
                         <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}"
                                sum="discounted subtotal" force_save="1"/>
