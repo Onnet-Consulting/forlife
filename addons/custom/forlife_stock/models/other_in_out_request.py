@@ -14,12 +14,12 @@ class ForlifeOtherInOutRequest(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Nhân viên", default=lambda self: self.env.user.employee_id.id)
     department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     company_id = fields.Many2one('res.partner', string="Công ty")
-    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do', required=True)
+    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     type_other = fields.Selection([('other_import', 'Nhập khác'),
                                    ('other_export', 'Xuất khác'),
                                    ], default='other_import', string='Loại phiếu', required=True)
-    location_id = fields.Many2one('stock.location', string='Location From', required=True, domain=_domain_location_id)
-    location_dest_id = fields.Many2one('stock.location', string='Location To', required=True)
+    location_id = fields.Many2one('stock.location', string='Location From', domain=_domain_location_id)
+    location_dest_id = fields.Many2one('stock.location', string='Location To')
     date_planned = fields.Datetime(string='Ngày kế hoạch')
     status = fields.Selection([('draft', 'Dự thảo'),
                                ('wait_approve', 'Chờ duyệt'),
@@ -27,7 +27,7 @@ class ForlifeOtherInOutRequest(models.Model):
                                ('done', 'Hoàn thành'),
                                ('cancel', 'Hủy'),
                                ('reject', 'Từ chối')], default='draft', copy=False)
-    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Stock Picking', copy=True)
+    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Line', copy=True)
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
@@ -167,13 +167,13 @@ class ForlifeOtherInOutRequestLine(models.Model):
     description = fields.Char(string='Mô tả', related="product_id.name")
     asset_id = fields.Many2one('assets.assets', string='Tài sản')
     date_expected = fields.Datetime(string='Ngày dự kiến')
-    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do', required=True)
+    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     quantity = fields.Float(string='Số lượng', required=True)
-    uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
+    uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị', store=1)
     whs_from_id = fields.Many2one('stock.location', string='Từ kho')
-    reason_from_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
+    reason_from_id = fields.Many2one('stock.location', string='Lý do xuất', domain=_domain_location_id)
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
-    reason_to_id = fields.Many2one('stock.location', string='Lý do', domain=_domain_location_id)
+    reason_to_id = fields.Many2one('stock.location', string='Lý do nhập', domain=_domain_location_id)
     occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
