@@ -18,11 +18,11 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
+                            <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="picking_type" widget="radio" options="{'horizontal': True}"/>
-                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
+                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
                 </sheet>
