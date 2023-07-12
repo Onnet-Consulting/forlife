@@ -16,15 +16,14 @@ class StockPickingType(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    is_return_po = fields.Boolean(default=False)
-
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         if self._context.get('endloop'):
             return res
         for picking in self:
-            if (picking.purchase_id and picking.purchase_id.is_return) or\
-                    (picking.move_ids and picking.move_ids[0]._is_purchase_return()):
+            if picking.state == 'done' and \
+                    ((picking.purchase_id and picking.purchase_id.is_return) or \
+                     (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
                 picking.create_return_valuation_npl()
         return res
 

@@ -2,7 +2,6 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
           'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Nhãn hiệu', 'Tổng tồn', 'Hàng treo']
@@ -16,12 +15,29 @@ class ReportNum3(models.TransientModel):
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
-    product_domain = fields.Char('Product', default='[]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num3_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num3_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num3_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num3_texture_rel', string='Texture')
+    collection = fields.Char('Collection')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num3_warehouse_rel', string='Warehouse')
     defective_inventory = fields.Boolean(string='Skip defective inventory')
     order_inventory = fields.Boolean(string='Skip order inventory')
     all_areas = fields.Boolean(string='All areas', default=True)
     area_ids = fields.Many2many('res.location.province', string='Areas')
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
@@ -98,11 +114,11 @@ product_cate_info as (
         pp.barcode                                                                as product_barcode,
         coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')   as product_name,
         coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as uom_name,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as color,
-        ad.attrs::json ->> '{attr_value.get('mua_vu', '')}'                        as season,
-        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender,
-        ad.attrs::json ->> '{attr_value.get('nhan_hieu', '')}'                     as label
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as color,
+        ad.attrs::json -> '{attr_value.get('mua_vu', '')}'                        as season,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender,
+        ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                     as label
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join uom_uom uom on pt.uom_id = uom.id
@@ -200,14 +216,31 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
+        collection_domain = [('collection', '=', self.collection)] if self.collection else []
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)] + collection_domain)
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)] + collection_domain)
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)] + collection_domain)
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)] + collection_domain)
+        else:
+            product_ids = Product.search(collection_domain) if collection_domain else Product
         wh_domain = [('company_id', 'in', allowed_company)]
         if self.report_by == 'area':
             wh_domain += [('loc_province_id', '!=', False)] if self.all_areas else ([('loc_province_id', 'in', self.area_ids.ids)] if self.area_ids else [('loc_province_id', '=', False)])
         else:
-            wh_domain += safe_eval(self.warehouse_domain)
-        warehouse_ids = self.env['stock.warehouse'].search(wh_domain)
+            wh_domain = [] if self.warehouse_ids else wh_domain
+        warehouse_ids = self.env['stock.warehouse'].search(wh_domain) if wh_domain else self.warehouse_ids
         wh_ids = warehouse_ids.ids or [-1]
+        if self.defective_inventory:
+            attr_value = self.env['res.utility'].get_attribute_code_config()
+            product_ids = product_ids.filtered(lambda f: any([attr_value.get('chat_luong') == x for x in f.mapped('attribute_line_ids.attribute_id.attrs_code')]))
+        product_ids = product_ids.ids or [-1]
         query = self._get_query(product_ids, wh_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         data = self.format_data(data)

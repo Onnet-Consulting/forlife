@@ -22,8 +22,10 @@
                                 to
                                 <field name="end_time" widget="float_time" class="oe_inline" required="1"/>
                             </div>
-                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]"/>
                     </group>
                 </sheet>
             </form>

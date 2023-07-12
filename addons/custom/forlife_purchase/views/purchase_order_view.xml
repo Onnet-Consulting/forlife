@@ -149,19 +149,23 @@
                 <xpath expr="//notebook" position="inside">
                     <field name="type_po_cost" invisible="1"/>
                     <page string="Product Exchange Rate" attrs="{'invisible': [('type_po_cost', '!=', 'tax')]}">
-                        <field name="exchange_rate_line_ids" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many" force_save="1">
+                        <field name="exchange_rate_line_ids" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many" force_save="1" string="Thuế nhập khẩu">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
                                 <field name="description" readonly="1"/>
                                 <field name="total_vnd_exchange" readonly="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1"/>
+                                <field name="tax_amount" readonly="0" force_save="1"/>
+                                <field name="tax_amount_import" invisible="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount" readonly="0" force_save="1"/>
+                                <field name="special_consumption_tax_amount_import" invisible="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount" readonly="0" force_save="1"/>
+                                <field name="vat_tax_amount_import" invisible="1"/>
                                 <field name="total_tax_amount" readonly="1"/>
+                                <field name="total_tax_amount_import" invisible="1"/>
                             </tree>
                         </field>
                     </page>
@@ -254,7 +258,7 @@
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="currency_id"
-                           attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="invoice_status" invisible="1"/>
@@ -324,11 +328,17 @@
                                decoration-danger="is_red_color == True"
                                string="Tỷ lệ quy đổi"
                                force_save="1"/>
-                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
-                               sum="discounted subtotal" force_save="1"/>
+                        <field name="product_qty"
+                               attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
+                               sum="discounted subtotal"
+                               force_save="1"
+                               string="Số lượng"/>
                         <field name="vendor_price"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('parent.is_passersby', '=', False), ('free_good', '=', True)]}"
                                force_save="1"/>
+                        <field name="vendor_price_import"
+                               string='Giá của nhà cung cấp'
+                               invisible="1"/>
                         <field name="price_unit"
                                string="Đơn giá"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
