@@ -307,7 +307,7 @@
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
-                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
+                               context="{'supplier_id': parent.partner_id, 'company_id': parent.company_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"
                                domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
@@ -516,6 +516,5 @@
         <menuitem id="purchase.menu_purchase_form_action" parent="purchase.menu_procurement_management" active="False"/>
         <!-- Inactive menu Request for quatation-->
         <menuitem id="purchase.menu_purchase_rfq" active="False"/>
-
     </data>
 </odoo>
