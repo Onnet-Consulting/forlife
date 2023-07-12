@@ -1152,6 +1152,11 @@ msgid "Date Done"
 msgstr "Ngày Hoạch toán"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__date_done
+msgid "Date Done"
+msgstr "Ngày hoàn thành"
+
+#. module: forlife_stock
 #: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_action
 #: model:ir.model,name:forlife_stock.model_transfer_stock_inventory
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__transfer_stock_inventory_id

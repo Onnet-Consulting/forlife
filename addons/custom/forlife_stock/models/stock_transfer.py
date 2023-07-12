@@ -451,7 +451,10 @@ class StockTransfer(models.Model):
                 for rec in data:
                     stock = self.env['stock.transfer'].search([('name', '=', rec[id])])
                     rec[id] = stock.export_data(['id']).get('datas')[0][0]
-                    rec[line_id] = stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
+                    if int(rec[line_id]) > len(stock.stock_transfer_line):
+                        raise ValidationError(_("Phiếu %s không có dòng %s" % (stock.name, rec[line_id])))
+                    else:
+                        rec[line_id] = stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
         return super().load(fields, data)
 
 
