@@ -76,7 +76,7 @@
         </xpath>
 
         <xpath expr="//li[hasclass('refund-discount')]" position="replace">
-            <li class="refund-discount" style="width: 10%;">
+            <li class="refund-discount" style="width: 13%;">
                 <t t-if="!props.line.is_new_line">
                     <t t-if="props.line.quantity_canbe_refund !== 0">
                         <t t-if="!props.line.beStatus">
