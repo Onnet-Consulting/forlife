@@ -191,7 +191,6 @@
                                    widget="monetary" options="{'currency_field': 'company_currency'}"
                                    sum="discounted subtotal"
                                    force_save="1"
-                                   widget="float"
                                    readonly="1"/>
 <!--                                   attrs="{'readonly': ['|',('parent.state', '=', 'posted'), ('is_check_promotions', '=', True)]}"-->
                             <field name="work_order" domain="[('state', '=', 'approved')]"
