@@ -88,7 +88,7 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 })
                 if (data_update.status === 'approve') {
                     this.props.line.handle_change_refund_price = data_update.price;
-//                    this.props.line.beStatus = true;
+                    this.props.line.beStatus = true;
                     const order = this.env.pos.get_order();
                     if (order) {
                         order.approved = true;
