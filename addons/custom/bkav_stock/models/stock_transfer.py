@@ -2,14 +2,9 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
-import gzip
-import base64
 import json
-import requests
-from Crypto.Cipher import AES
 _logger = logging.getLogger(__name__)
 from ...bkav_connector.models.bkav_connector import connect_bkav
 
