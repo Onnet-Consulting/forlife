@@ -79,6 +79,11 @@ msgid "Card"
 msgstr "Thẻ"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__product_defective
+msgid "Change/Refund"
+msgstr "Đổi/trả"
+
+#. module: forlife_pos_point_order
 #. odoo-javascript
 #: code:addons/forlife_pos_point_order/static/src/js/Button/PointsConsumptionButton.js:0
 #, python-format
