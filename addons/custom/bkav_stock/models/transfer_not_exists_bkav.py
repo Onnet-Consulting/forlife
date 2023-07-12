@@ -89,12 +89,11 @@ class TransferNotExistsBkav(models.Model):
         date_now = datetime.utcnow().date()
         # tổng hợp điều chuyển chưa xuat hd
         query = """
-            INSERT INTO transfer_not_exists_bkav(code,location_id, location_dest_id, 
+            INSERT INTO transfer_not_exists_bkav(location_id, location_dest_id, 
                             location_name, location_dest_name, date_transfer, state)
-            SELECT 'PTH'||kn.code||RIGHT(DATE_PART('Year', NOW())::VARCHAR,2),
-                s.location_id, s.location_dest_id, 
+            SELECT s.location_id, s.location_dest_id, 
                 knc.name||'|'||kn.name, kdc.name||'/'||kd.name, 
-                (s.date_transfer + interval '7 hours')::date, 'new'
+                (SELECT CURRENT_DATE), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
@@ -103,7 +102,7 @@ class TransferNotExistsBkav(models.Model):
             WHERE s.exists_bkav = 'f' 
             AND (s.date_transfer + interval '7 hours')::date < %s
             AND s.state in ('out_approve','in_approve','done')
-            GROUP BY s.location_id, s.location_dest_id; 
+            GROUP BY s.location_id, s.location_dest_id,knc.name,kn.name,kdc.name,kd.name; 
 
             INSERT INTO transfer_not_exists_bkav_line(parent_id, product_id, uom_id, quantity)
             (SELECT a.id, b.product_id, b.uom_id, b.quantity
