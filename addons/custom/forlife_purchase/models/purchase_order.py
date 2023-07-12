@@ -153,7 +153,31 @@ class PurchaseOrder(models.Model):
                 'context': context
             }
 
+    date_planned = fields.Datetime(
+        string='Expected Arrival', index=True, copy=False, compute='_compute_date_planned', store=True, readonly=False,
+        help="Delivery date promised by vendor. This date is used to determine expected arrival of products.")
+
+    date_planned_import = fields.Datetime('Hạn xử lý')
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
+
+    @api.depends('order_line.date_planned', 'date_planned_import')
+    def _compute_date_planned(self):
+        """ date_planned = the earliest date_planned across all order lines. """
+        for order in self:
+            dates_list = order.order_line.filtered(lambda x: not x.display_type and x.date_planned).mapped(
+                'date_planned')
+            if not order.date_planned_import:
+                if dates_list:
+                    order.date_planned = min(dates_list)
+                else:
+                    order.date_planned = False
+            else:
+                order.date_planned = order.date_planned_import
+
+    @api.onchange('date_planned')
+    def onchange_date_planned(self):
+        if self.date_planned:
+            self.order_line.filtered(lambda line: not line.display_type).date_planned = self.date_planned
 
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
@@ -792,7 +816,7 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_liencongtys.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_lien_cong_ty.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
