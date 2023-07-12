@@ -213,6 +213,7 @@ class StockPicking(models.Model):
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
     other_import = fields.Boolean(default=False)
+    update = fields.Boolean(default=False)
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
@@ -252,6 +253,8 @@ class StockPicking(models.Model):
         states={'draft': [('readonly', False)]})
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
     is_from_request = fields.Boolean('', default=False)
+    sequence = fields.Integer('STT dòng', default=1)
+    stock_name = fields.Char('Mã phiếu')
 
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
@@ -378,16 +381,42 @@ class StockPicking(models.Model):
         return res
 
     @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            if 'update' in fields:
+                fields = ['date_done', 'id', 'move_line_ids_without_package/id', 'move_line_ids_without_package/product_id', 'move_line_ids_without_package/qty_done', 'update']
+                id = fields.index('id')
+                line_id = fields.index('move_line_ids_without_package/id')
+                for rec in data:
+                    picking = self.env['stock.picking'].search([('name', '=', rec[id])])
+                    rec[id] = picking.export_data(['id']).get('datas')[0][0]
+                    rec[line_id] = picking.move_line_ids_without_package[int(rec[line_id])-1].export_data(['id']).get('datas')[0][0]
+        return super().load(fields, data)
+
+    @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
                 'label': _('Tải xuống mẫu phiếu nhập khác'),
                 'template': '/forlife_stock/static/src/xlsx/nhap_khac.xlsx?download=true'
-            }]
-        else:
+            },
+                {
+                    'label': _('Tải xuống mẫu phiếu update'),
+                    'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
+                }]
+        elif self.env.context.get('default_other_export'):
             return [{
                 'label': _('Tải xuống mẫu phiếu xuất khác'),
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
+            },
+                {
+                    'label': _('Tải xuống mẫu phiếu update'),
+                    'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
+                }]
+        else:
+            return [{
+                'label': _('Tải xuống mẫu phiếu update'),
+                'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
             }]
 
 
@@ -514,6 +543,8 @@ class StockMoveLine(models.Model):
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
                                       domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    sequence = fields.Integer('STT dòng', default=1)
+
 
     # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     # def constrains_qty_done(self):

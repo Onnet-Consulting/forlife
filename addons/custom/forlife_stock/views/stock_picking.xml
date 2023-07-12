@@ -26,7 +26,7 @@
                    <attribute name="attrs">{'invisible':[('x_hide_return', '=', True)]}</attribute>
                 </xpath>
             <xpath expr="//field[@name='date_done']" position="replace">
-                <field name="date_done" string="Ngày hoàn thành"/>
+                <field name="date_done"/>
             </xpath>
             <xpath expr="//field[@name='backorder_id']" position="after">
                 <field name="leftovers_id" string="Phần thừa của" attrs="{'invisible': [('leftovers_id', '=', False)]}"/>
