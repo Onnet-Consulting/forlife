@@ -26,6 +26,7 @@ class ProductDefective(models.Model):
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
     reason_refuse_product = fields.Char('Lí do từ chối')
     active = fields.Boolean(default=True)
+    quantity_require = fields.Integer('Số lượng yêu cầu')
 
     @api.onchange('product_id')
     def change_product(self):
@@ -83,6 +84,8 @@ class ProductDefective(models.Model):
         res = super(ProductDefective, self).create(vals_list)
         if res.money_reduce == 0 and res.percent_reduce ==0:
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
+        if res.quantity_require == 0:
+            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
 
     def action_send_request_approve(self):
