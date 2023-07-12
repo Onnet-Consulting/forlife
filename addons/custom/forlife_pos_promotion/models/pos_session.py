@@ -40,7 +40,7 @@ class PosSession(models.Model):
         res = []
         product_set = set()
         product_ids = set(self._get_product_ids_by_store())
-        program_ids = set(self.config_id._get_promotion_program_ids())
+        program_ids = set(self.config_id._get_promotion_program_ids().ids)
         for item in items:
             product_id = item.get('product_id') and item.get('product_id')[0] or None
             with_code = item.get('with_code', False)
