@@ -40,7 +40,8 @@
                                 <field name="active" invisible="1"/>
                                 <field name="store_id" required="1"/>
                                 <field name="product_id" required="1" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
-                                <field name="quantity_defective_approved" required="1" attrs="{'readonly': [('state','!=','new')]}"/>
+                                <field name="quantity_require" attrs="{'readonly': [('state','!=','new')], 'required': [('state','=','new')]}"/>
+                                <field name="quantity_defective_approved" required="1" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
                                 <field name="quantity_inventory_store" required="1"/>
                                 <field name="quantity_can_be_sale" required="1" readonly="True"/>
                                 <field name="price"/>
@@ -68,6 +69,19 @@
                 </form>
             </field>
         </record>
+
+        <record id="product_defective_view_search" model="ir.ui.view">
+            <field name="name">product.defective.view.search</field>
+            <field name="model">product.defective</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                    <separator/>
+                    <filter name="active" string="Đã lưu" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
         <record id="product_defective_action" model="ir.actions.act_window">
             <field name="name">Xử lí hàng lỗi</field>
             <field name="type">ir.actions.act_window</field>
