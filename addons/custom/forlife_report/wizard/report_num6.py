@@ -5,7 +5,6 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from odoo.tools.safe_eval import safe_eval
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
 COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
@@ -20,7 +19,7 @@ class ReportNum6(models.TransientModel):
     date = fields.Date('Date', required=True)
     start_time = fields.Float('Start time', default=0)
     end_time = fields.Float('End time', default=23 + (59 / 60))
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num6_warehouse_rel', string='Warehouse')
 
     @api.constrains('start_time', 'end_time')
     def check_times(self):
@@ -122,9 +121,9 @@ select row_number() over ()                                                     
         pi.product_name                                                           as product_name,
         pi.product_group                                                          as product_group,
         pi.product_line                                                           as product_line,
-        ad.attrs::json ->> '{attr_value.get('size', '')}'                          as product_size,
-        ad.attrs::json ->> '{attr_value.get('mau_sac', '')}'                       as product_color,
-        ad.attrs::json ->> '{attr_value.get('doi_tuong', '')}'                     as gender        
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as product_size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as product_color,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender        
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
@@ -139,7 +138,8 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1]
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (
+                self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1])
         query = self._get_query(warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
