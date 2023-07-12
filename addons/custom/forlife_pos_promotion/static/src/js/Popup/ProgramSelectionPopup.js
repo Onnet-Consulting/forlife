@@ -39,13 +39,16 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         // Set Combo Details
         setComboDetails(newLinesToApply) {
             let result = {};
-            for (let line of Object.values(newLinesToApply).flat(2).filter(l => l.quantity)) {
+            let lines = Object.values(newLinesToApply).flat(2).filter(l => l.quantity);
+            for (let line of lines) {
                 for (let usage of line.promotion_usage_ids) {
                     let pro_str_id = usage.str_id;
-                    if (result.hasOwnProperty(usage.str_id)) {
-                        result[usage.str_id].push([line.quantity, usage, line.product.id, line.is_reward_line]);
-                    } else {
-                        result[usage.str_id] = [[line.quantity, usage, line.product.id, line.is_reward_line]];
+                    if (!this.combo_details.hasOwnProperty(usage.str_id)) {
+                        if (result.hasOwnProperty(usage.str_id)) {
+                            result[usage.str_id].push([line.quantity, usage, line.product.id, line.is_reward_line]);
+                        } else {
+                            result[usage.str_id] = [[line.quantity, usage, line.product.id, line.is_reward_line]];
+                        };
                     };
                 };
             };
@@ -102,7 +105,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let selectedPrograms = this.state.programs.filter(p => p.isSelected)
                                     .sort((x, y) => x.index - y.index)
-                                    .map(pro => program_by_id(pro.id));
+                                    .map(pro => pro.program);
 
             // Reset discounted_amount = 0.0 for programs not selected
             let not_selected_programs = this.state.programs.filter(p => !p.isSelected);
@@ -139,6 +142,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let notSelectPrograms = not_selected_programs.map(p => program_by_id(p.id));
             for (let notSelectProgram of notSelectPrograms) {
+                let str_id = this.env.pos.get_str_id(notSelectProgram);
                 // This step to copy without reference
                 let remaining_clone_order_lines = JSON.parse(JSON.stringify(remainingLinesClone));
 
@@ -163,9 +167,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                this.setComboDetails(newLinesToApplyNoSelected);
 
                 let discountedLinesNoSelect = Object.values(newLinesToApplyNoSelected).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []);
-                let noSelectedOption = not_selected_programs.find(op => op.id == notSelectProgram.str_id);
+                let noSelectedOption = not_selected_programs.find(op => str_id == op.id);
 
-                noSelectedOption.forecastedNumber = combo_count[notSelectProgram.str_id];
+                noSelectedOption.forecastedNumber = combo_count[str_id];
                 noSelectedOption.forecasted_discounted_amount = discountedLinesNoSelect.reduce((tmp, line) => {
                     let per_line = line.promotion_usage_ids.reduce((tmp_line, u) => {
                         if (u.str_id == noSelectedOption.id) {
