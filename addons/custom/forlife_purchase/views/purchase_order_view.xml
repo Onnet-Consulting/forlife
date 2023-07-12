@@ -275,7 +275,9 @@
                     <field name="receive_date" required="1" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='date_planned']" position="replace">
-                    <field name="date_planned" required="1" string="Hạn xử lý" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="date_planned" required="1" string="Hạn xử lý" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           force_save="1"/>
+                    <field name="date_planned_import" string='Hạn xử lý' invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -382,7 +384,7 @@
                         <field name="billed" attrs="{'invisible': [('billed', '=', False)]}"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
-                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"/>
+                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}" force_save="1"/>
                         <field name="analytic_distribution" widget="analytic_distribution"
                                invisible="1"
                                groups="analytic.group_analytic_accounting"
