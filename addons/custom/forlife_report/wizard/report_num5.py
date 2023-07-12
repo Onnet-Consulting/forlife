@@ -98,7 +98,7 @@ data_group as (
         uom_name,
         lst_price,
         coalesce(money_reduced, 0) as money_reduced,
-        (sale_qty * lst_price) + (refund_qty * lst_price) - money_reduced as price_subtotal
+        (sale_qty + refund_qty) * lst_price - money_reduced as price_subtotal
     from order_line_data
 ),
 detail_data_invoice_list as (
