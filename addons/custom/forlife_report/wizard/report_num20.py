@@ -100,9 +100,8 @@ select
     coalesce(pol.original_price, 0)                                             as gia,
     coalesce((select sum(
             case when type = 'point' then recipe * 1000
-                when type = 'card' then recipe
                 when type = 'ctkm' then discounted_amount
-                else 0
+                else recipe
             end
         ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0) as giam_gia,
     0                                                                           as giam_tren_hd,

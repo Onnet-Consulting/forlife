@@ -126,6 +126,15 @@ product_cate_info as (
         left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
 ),
+quantity_pending as (
+    select stl.product_id    as product_id,
+           sum(stl.qty_plan) as qty_pending
+    from stock_transfer_line stl
+             join stock_transfer st on stl.stock_transfer_id = st.id and st.state = 'out_approve'
+             join stock_location sl on st.location_id = sl.id
+             join stock_warehouse sw on sl.warehouse_id = sw.id and sw.id = any(array{warehouse_ids})
+    group by stl.product_id
+),
 stock as (
     {stock_query}
 ),
@@ -173,10 +182,11 @@ select row_number() over ()                                               as num
        pci.color                                                          as color,
        pci.size                                                           as size,
        pci.label                                                          as label,
-       ''                                                                 as total_pending
+       coalesce(pq.qty_pending, 0)                                        as total_pending
 from agg_source_stock aggs
      full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
      left join product_cate_info pci on pci.product_id = coalesce(aggs.product_id, aggd.product_id)
+     left join quantity_pending pq on pq.product_id = coalesce(aggs.product_id, aggd.product_id)
 order by num
             """
         return query
