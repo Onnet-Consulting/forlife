@@ -11,12 +11,13 @@
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
-                        <group>
-                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
-                        </group>
-                        <group>
-                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
-                        </group>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="product_brand_id" domain="[('category_type_id.code', '=', '1'), ('parent_id', '=', False)]" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="collection"/>
                     </group>
                 </sheet>
             </form>

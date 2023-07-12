@@ -103,7 +103,8 @@ class InheritStockPicking(models.Model):
                         not bom and _('Cannot find BOM for product "%s"!', move_in.product_id.name)
                         or _('There are too many BOM for product "%s"!', move_in.product_id.name)
                     )
-                price_unit = move_in.price_unit or bom.unit_price
+                bom.update_price()
+                price_unit = bom.unit_price or move_in.price_unit
                 move_in.write({
                     'bom_model': bom._name,
                     'bom_id': bom.id,

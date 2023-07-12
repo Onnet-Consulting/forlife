@@ -23,7 +23,7 @@
                         <td><t t-esc="line.mo_ta_ts"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_dat_mua, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_da_dat, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_con_lai, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_da_nhan, 0)"/></td>
                         <td><t t-esc="line.don_vi_mua"/></td>
                         <td class="right"><t t-esc="format_decimal(line.ty_le_quy_doi, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_ton_kho_quy_doi, 2)"/></td>

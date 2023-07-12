@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='stock_request_id']" position="before">
                     <field name="vendor_contract_id"/>
+                    <field name="delivery_contract_id"/>
                     <field name="transporter_id"/>
                 </xpath>
                 <xpath expr="//field[@name='location_id']" position="after">

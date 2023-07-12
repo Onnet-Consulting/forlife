@@ -91,6 +91,7 @@
                 <xpath expr="//page[@name='operations']//field[@name='product_uom']" position="after">
                     <field name="is_production_order" invisible="1"/>
                     <field name="is_amount_total" invisible="1"/>
+                    <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
                     <field name="name" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="date" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="amount_total" force_save="1" string="Tổng tiền" attrs="{'column_invisible': [('parent.other_import', '!=', True)], 'readonly': [('is_amount_total', '!=', True)]}"/>
@@ -100,7 +101,6 @@
                     <field name="quantity_change" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
                     <field name="quantity_purchase_done" attrs="{'column_invisible': [('parent.is_pk_purchase', '!=', True)]}"/>
                     <field name="occasion_code_id" string="Mã vụ việc"/>
-                    <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
                     <field name="account_analytic_id" string="Trung tâm chi phí"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="attributes">

@@ -167,13 +167,14 @@ with products as (select id
      stock_final as (select product_id, sum(qty) as qty
                      from stocks
                      group by product_id),
-     fixed_prices as (select row_number() over (PARTITION BY ppi.product_id order by campaign.from_date, ppi.id desc) as num, ppi.product_id, ppi.fixed_price
+     fixed_prices as (select row_number() over (PARTITION BY ppi.product_id order by campaign.from_date desc, ppi.id desc) as num, ppi.product_id, ppi.fixed_price
                       from promotion_pricelist_item ppi
                                join promotion_program program on ppi.program_id = program.id
                                join promotion_campaign campaign on campaign.id = program.campaign_id
                       where product_id in (select id from products)
                         and campaign.state = 'in_progress'
-                        and now() between campaign.from_date and campaign.to_date)
+                        and now() between campaign.from_date and campaign.to_date
+                        and ppi.active = true)
 
 select coalesce(pp2.barcode, '')                                      as barcode,
        coalesce(pt2.name::json -> '{self.env.user.lang}', pt2.name::json -> 'en_US') as ten_san_pham,
