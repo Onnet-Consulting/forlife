@@ -498,7 +498,8 @@ class StockPickingPurchaseReturn(models.Model):
         credit_account = credit_line[0].account_id.code if credit_line else product.categ_id.property_stock_valuation_account_id.code
         discount = purchase_order_line.discount / purchase_order_line.purchase_quantity if purchase_order_line.purchase_quantity else 0
         vendor_price = purchase_order_line.vendor_price
-
+        credit = credit_line.credit or 0
+        qty_purchase_done = stock_move.quantity_purchase_done or 0
         value = {
             "CompanyCode": picking.company_id.code or None,
             "Stt": picking.name or None,
@@ -518,17 +519,17 @@ class StockPickingPurchaseReturn(models.Model):
             "UnitPurCode": purchase_order_line.purchase_uom.code or None,
             "CreditAccount": credit_account or None,
             "DebitAccount": debit_account or None,
-            "Quantity9": stock_move.quantity_purchase_done or 0,
+            "Quantity9": qty_purchase_done,
             "ConvertRate9": stock_move.quantity_change or 0,
             "Quantity": stock_move.quantity_done or 0,
-            "OriginalPriceUnit": vendor_price,
-            "PriceUnit": vendor_price * exchange_rate,
+            "OriginalPriceUnit": credit / qty_purchase_done if qty_purchase_done != 0 else 0,
+            "PriceUnit": (credit / qty_purchase_done if qty_purchase_done != 0 else 0) * exchange_rate,
             "OriginalDiscount": discount,
             "Discount": discount * exchange_rate,
             "OriginalUnitCost": vendor_price - discount,
             "UnitCost": (vendor_price - discount) * exchange_rate,
-            "OriginalAmount": credit_line.credit or 0,
-            "Amount": (credit_line.credit or 0) * exchange_rate,
+            "OriginalAmount": credit,
+            "Amount": credit * exchange_rate,
             "IsPromotions": stock_move.free_good or False,
             "DocNo_PO": picking.origin or None,
             "WarehouseCode": picking.location_id.warehouse_id.code or None,
