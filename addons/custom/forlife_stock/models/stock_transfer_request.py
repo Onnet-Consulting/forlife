@@ -303,8 +303,12 @@ class TransferRequestLine(models.Model):
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))
-            if vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
                 raise ValidationError(_("Đơn vị khác đơn vị của sản phẩm"))
+            if not vals.get('plan_quantity'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng yêu cầu"))
+            if not vals.get('uom_id'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị"))
         return super(TransferRequestLine, self).create(vals)
 
 

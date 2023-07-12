@@ -345,6 +345,22 @@ class PurchaseRequestLine(models.Model):
             if rec.is_close and rec.is_no_more_quantity:
                 rec.is_all_line = True
 
+    @api.model
+    def create(self, vals):
+        if self.env.context.get('import_file'):
+            if not vals.get('purchase_quantity'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua"))
+            if not vals.get('exchange_quantity'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi"))
+            if not vals.get('purchase_uom'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua"))
+            if not vals.get('request_date'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Chi tiết đơn hàng / Ngày yêu cầu"))
+            if not vals.get('date_planned'):
+                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Chi tiết đơn hàng / Ngày nhận hàng dự kiến"))
+        return super(PurchaseRequestLine, self).create(vals)
+
+
 class ApprovalLogs(models.Model):
     _name = 'approval.logs'
     _description = 'Approval Logs'
