@@ -9,6 +9,7 @@ class ExpenseCategory(models.Model):
     _name = 'expense.category'
     _inherit = ['expense.category', 'bravo.model']
     _bravo_table = 'B20ExpenseCatg'
+    _bravo_field_sync = ['name', 'code']
 
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
@@ -19,6 +20,7 @@ class ExpenseItem(models.Model):
     _name = 'expense.item'
     _inherit = ['expense.item', 'bravo.model']
     _bravo_table = 'B20ExpenseCatg'
+    _bravo_field_sync = ['name', 'code', 'group_id']
 
     br_1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br_2 = BravoCharField(odoo_name="name", bravo_name="Name")

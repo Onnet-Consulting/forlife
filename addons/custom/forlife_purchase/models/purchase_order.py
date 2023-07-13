@@ -7,6 +7,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_dat
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
 from lxml import etree
+
+
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
@@ -952,7 +954,7 @@ class PurchaseOrder(models.Model):
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_noi_dia_ver_1.0.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_noi_dia_ver_1.0.xlsx.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
@@ -2082,7 +2084,6 @@ class PurchaseOrderLine(models.Model):
     total_tax_amount = fields.Float(string='Tổng tiền thuế',
                                     compute='_compute_total_tax_amount',
                                     store=1)
-    total_tax_amount_import = fields.Float('Tổng tiền thuế của sản phẩm')
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
@@ -2098,6 +2099,17 @@ class PurchaseOrderLine(models.Model):
             if rec.order_id.type_po_cost == 'tax' and rec.order_id.is_inter_company == False and rec.before_tax and rec.total_vnd_exchange_import and rec.total_vnd_amount:
                 if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
                     raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax))
+
+    @api.constrains('total_vnd_exchange_import',
+                    'total_vnd_amount', 'before_tax',
+                    'order_id.is_inter_company','order_id')
+    def _constrain_total_vnd_exchange_import(self):
+        line_number = 1
+        for rec in self:
+            line_number += 1
+            if rec.order_id.type_po_cost == 'tax' and rec.order_id.is_inter_company == False and rec.before_tax and rec.total_vnd_exchange_import and rec.total_vnd_amount:
+                if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
+                    raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax ))
 
     @api.onchange('vat_tax')
     def _onchange_vat_tax(self):
