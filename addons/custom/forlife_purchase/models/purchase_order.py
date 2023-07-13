@@ -2274,36 +2274,38 @@ class PurchaseOrderLine(models.Model):
                 item.billed = False
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'vendor_price_import')
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',)
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            rec.vendor_price = rec.vendor_price_import
-            if rec.order_id.purchase_type == 'product':
-                if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
-                    rec.is_red_color = False
-                    continue
-                data = self.env['product.supplierinfo'].search([
-                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                    ('partner_id', '=', rec.order_id.partner_id.id),
-                    ('currency_id', '=', rec.order_id.currency_id.id),
-                    ('amount_conversion', '=', rec.exchange_quantity),
-                    ('product_uom', '=', rec.purchase_uom.id),
-                    ('date_start', '<=', today),
-                    ('date_end', '>=', today)
-                ])
-                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-                if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                    closest_quantity = None  # Khởi tạo giá trị biến tạm
-                    for line in data:
-                        if rec.product_qty and rec.product_qty >= line.min_qty:
-                            ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                            if closest_quantity is None or line.min_qty > closest_quantity:
-                                closest_quantity = line.min_qty
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
+            if rec.vendor_price_import and rec.order_id.partner_id.is_passersby:
+                rec.vendor_price = rec.vendor_price_import
             else:
-                pass
+                if rec.order_id.purchase_type == 'product':
+                    if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+                        rec.is_red_color = False
+                        continue
+                    data = self.env['product.supplierinfo'].search([
+                        ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                        ('partner_id', '=', rec.order_id.partner_id.id),
+                        ('currency_id', '=', rec.order_id.currency_id.id),
+                        ('amount_conversion', '=', rec.exchange_quantity),
+                        ('product_uom', '=', rec.purchase_uom.id),
+                        ('date_start', '<=', today),
+                        ('date_end', '>=', today)
+                    ])
+                    rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+                    if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                        closest_quantity = None  # Khởi tạo giá trị biến tạm
+                        for line in data:
+                            if rec.product_qty and rec.product_qty >= line.min_qty:
+                                ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                                if closest_quantity is None or line.min_qty > closest_quantity:
+                                    closest_quantity = line.min_qty
+                                    rec.vendor_price = line.price
+                                    rec.exchange_quantity = line.amount_conversion
+                else:
+                    pass
 
     # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
     #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
