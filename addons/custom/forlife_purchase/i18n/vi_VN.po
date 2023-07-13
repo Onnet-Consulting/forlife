@@ -100,13 +100,6 @@ msgid "Cost Center"
 msgstr "Trung tâm chi phí"
 
 #. module: forlife_purchase
-#: model:ir.actions.act_window,name:forlife_purchase.cost_center_action
-#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__request_purchases
-#: model_terms:ir.ui.view,arch_db:forlife_purchase.cost_center_tree
-msgid "Purchases"
-msgstr "Phiếu yêu cầu"
-
-#. module: forlife_purchase
 #: model:ir.model,name:forlife_purchase.model_cost_center
 msgid "Cost center"
 msgstr "Trung tâm chi phí"
@@ -392,11 +385,6 @@ msgid "Purchase Order Line"
 msgstr "Chi tiết mua hàng"
 
 #. module: forlife_purchase
-#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__request_line_id
-msgid "Purchase Request"
-msgstr ""
-
-#. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__purchase_type
 msgid "Purchase Type"
 msgstr "Loại mua hàng"
@@ -423,6 +411,12 @@ msgstr "Hạn xử lý "
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Expected Arrival"
 msgstr "Hạn xử lý "
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__request_purchases
+#: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
+msgid "Request Code"
+msgstr "Mã phiếu yêu cầu"
 
 #. module: forlife_purchase
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__draft
@@ -479,6 +473,7 @@ msgstr "Chiết khấu"
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__discount
 msgid "Discount (%)"
 msgstr "Chiết khấu %"
+
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line_request_code
 msgid "Request code"
