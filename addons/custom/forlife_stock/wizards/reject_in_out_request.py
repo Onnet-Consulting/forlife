@@ -5,7 +5,7 @@ class RejectImportExportRequest(models.TransientModel):
     _name = "reject.in.out.request"
     _description = "Reject Import Export Request"
 
-    reject_reason = fields.Text()
+    reject_reason = fields.Text(required=True)
 
     def action_reject(self):
         req_id = self._context.get('active_id')
