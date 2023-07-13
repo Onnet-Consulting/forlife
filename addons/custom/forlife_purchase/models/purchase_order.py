@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
-    exchange_rate = fields.Float(string='Exchange Rate', default=1)
+    exchange_rate = fields.Float(string='Tỷ giá ', default=1)
     partner_id = fields.Many2one('res.partner', string='Nhà cung cấp', required=True, states=READONLY_STATES, change_default=True, tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
 
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
@@ -946,19 +946,19 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_lien_cong_ty_ver_1.0.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_lien_cong_ty_ver2.0.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_noi_dia_ver_1.0.xlsx.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_noi_dia_ver2.0.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_po_nhap_khau_ver_1.0.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_po_nhap_khau_ver2.0.xlsx?download=true'
             }]
         else:
             return True
@@ -1919,7 +1919,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def load(self, fields, data):
-        if "import_file" and 'default_type_po_cost' and 'default_is_inter_company' in self.env.context:
+        if "import_file" and 'default_is_inter_company' in self.env.context:
             line_number = 1
             for mouse in data:
                 line_number += 1
@@ -1930,10 +1930,17 @@ class PurchaseOrder(models.Model):
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Loại mua hàng ở dòng - {}".format(line_number)))
                 if fields.index('currency_id') and not mouse[fields.index('currency_id')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở dòng - {}".format(line_number)))
+                if fields.index('exchange_rate') and not mouse[fields.index('exchange_rate')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ giá ở dòng - {}".format(line_number)))
                 if fields.index('date_order') and not mouse[fields.index('date_order')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày đặt hàng ở dòng - {}".format(line_number)))
                 if fields.index('receive_date') and not mouse[fields.index('receive_date')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở dòng - {}".format(line_number)))
+                if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
+                    if fields.index('date_planned') and not mouse[fields.index('date_planned')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Hạn xử lý ở dòng - {}".format(line_number)))
+                else:
+                    pass
                 ### check type po and line po import
                 if self.env.context['default_is_inter_company']:
                     if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
@@ -1955,54 +1962,47 @@ class PurchaseOrder(models.Model):
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                 else:
-                    if self.env.context['default_type_po_cost'] == 'tax':
-                        if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and not mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
-                        else:
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
+                    if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/vendor_price') and not mouse[fields.index('order_line/vendor_price')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Giá của nhà cung cấp ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
+                    elif fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Dịch vụ':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/price_unit') and not mouse[fields.index('order_line/price_unit')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn giá ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                     else:
-                        if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
-                            if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
-                        else:
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/price_unit') and not mouse[fields.index('order_line/price_unit')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn giá ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
         return super(PurchaseOrder, self).load(fields, data)
 
 class PurchaseOrderLine(models.Model):
