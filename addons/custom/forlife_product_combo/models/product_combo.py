@@ -64,6 +64,7 @@ class ProductCombo(models.Model):
     def action_finished(self):
         self.ensure_one()
         self.to_date = datetime.now()
+        self.state = 'finished'
 
     @api.model
     def get_combo(self, vals):
