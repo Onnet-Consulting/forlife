@@ -423,8 +423,7 @@ class PurchaseOrder(models.Model):
 
     def compute_count_invoice_inter_normal_fix(self):
         for rec in self:
-            domain_moves_normal = [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'),
-                                   ('select_type_inv', '=', 'normal')]
+            domain_moves_normal = [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]
             rec.count_invoice_inter_normal_fix = self.env['account.move'].search_count(domain_moves_normal)
 
     def compute_count_invoice_inter_expense_fix(self):
@@ -682,7 +681,6 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
-                return self.action_approved_inter_company()
                 self = self.sudo().with_context(inter_company=True)
                 data = {'partner_id': record.partner_id.id,
                         'purchase_type': record.purchase_type,
@@ -1907,9 +1905,15 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         values = super(PurchaseOrder, self)._prepare_invoice()
+        cost_line_vals = []
+        for cl in self.cost_line:
+            data = cl.copy_data()[0]
+            del data['purchase_order_id']
+            cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,
-            'total_trade_discount': self.total_trade_discount
+            'total_trade_discount': self.total_trade_discount,
+            'cost_line': cost_line_vals
         })
         return values
 
@@ -2141,7 +2145,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 rec.tax_amount = rec.tax_amount_import
 
-    @api.depends('tax_amount', 'special_consumption_tax', 'special_consumption_tax_amount_import')
+    @api.depends('tax_amount', 'special_consumption_tax', 'special_consumption_tax_amount_import', 'import_tax')
     def _compute_special_consumption_tax_amount(self):
         for rec in self:
             if not rec.special_consumption_tax_amount_import:
@@ -2163,12 +2167,16 @@ class PurchaseOrderLine(models.Model):
             if not rec.total_tax_amount:
                 rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
-    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import')
+
+    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import', 'before_tax')
     def _compute_total_vnd_amount(self):
         for rec in self:
+
             if not rec.total_vnd_exchange_import:
-                if rec.price_subtotal and rec.order_id.exchange_rate:
-                    rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
+                rec.total_vnd_amount = rec.price_subtotal
+                if rec.currency_id != rec.company_currency:
+                    rec.total_vnd_amount = rec.price_subtotal * rec.order_id.exchange_rate
+                rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
             else:
                 rec.total_vnd_amount = round(rec.price_subtotal / rec.order_id.exchange_rate)
                 rec.total_vnd_exchange = rec.total_vnd_exchange_import
