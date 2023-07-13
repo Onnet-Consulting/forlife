@@ -36,24 +36,26 @@
                 <t t-if="props.line.pos_order_line_discount_details">
                     <t t-if="props.line.quantity != 0">
                         <t t-foreach="props.line.pos_order_line_discount_details" t-as="discount" t-key="discount.id">
-                        <li style="width: 15%;">
-                            <t t-if="discount.type == 'ctkm'">
-                                <em>CTKM</em>
-                            </t>
-                            <t t-if="discount.type == 'point'">
-                                <em>Điểm</em>
-                            </t>
-                            <t t-if="discount.type == 'make_price'">
-                                <em>Làm giá</em>
-                            </t>
-                            <t t-if="discount.type == 'product_defective'">
-                                <em>Hàng lỗi</em>
-                            </t>
-                        </li>
-                        <li style="width: 85%;">
-                            <t t-esc="env.pos.format_currency(((discount.money_reduced)/Math.abs(props.line.quantity_canbe_refund))*Math.abs(props.line.quantity))"/>
-                        </li>
-                    </t>
+                            <li style="width: 15%;">
+                                <t t-if="discount.type == 'ctkm'">
+                                    <em>CTKM:</em>
+                                </t>
+                                <t t-if="discount.type == 'point'">
+                                    <em>Điểm:</em>
+                                </t>
+                                <t t-if="discount.type == 'make_price'">
+                                    <em>Làm giá:</em>
+                                </t>
+                                <t t-if="discount.type == 'product_defective'">
+                                    <em>Hàng lỗi:</em>
+                                </t>
+                            </li>
+                            <li style="width: 85%;">
+                                <span style="margin-left: 326px;">
+                                    <t t-esc="env.pos.format_currency(((discount.money_reduced)/Math.abs(props.line.quantity_canbe_refund))*Math.abs(props.line.quantity))"/>
+                                </span>
+                            </li>
+                        </t>
                     </t>
                 </t>
                 <t t-if="!props.line.handle_change_refund_price">
@@ -61,10 +63,12 @@
                 </t>
                 <t t-else="">
                     <li style="width: 15%;">
-                        <em>Xử lí đổi trả</em>
+                        <em>Xử lí đổi trả:</em>
                     </li>
                     <li style="width: 85%;">
-                    <t t-esc="env.pos.format_currency(props.line.handle_change_refund_price)"/>
+                        <span style="margin-left: 326px;">
+                            <t t-esc="env.pos.format_currency(props.line.handle_change_refund_price)"/>
+                        </span>
                     </li>
                 </t>
             </t>
