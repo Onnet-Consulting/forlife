@@ -440,19 +440,32 @@ class StockTransfer(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
                     if not record[fields.index('stock_transfer_line/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
-                    if not record[fields.index('stock_transfer_line/product_id')]:
+                    if 'stock_transfer_line/product_id' in fields and not record[fields.index('stock_transfer_line/product_id')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    if 'stock_transfer_line/qty_out' in fields and not record[fields.index('stock_transfer_line/qty_out')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng xuất"))
+                    if 'stock_transfer_line/qty_in' in fields and not record[fields.index('stock_transfer_line/qty_in')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng nhập"))
                     if 'date_in_approve' in fields and not record[fields.index('date_in_approve')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày xác nhận nhập"))
                 fields[fields.index('name')] = 'id'
                 fields[fields.index('stock_transfer_line/sequence')] = 'stock_transfer_line/id'
                 id = fields.index('id')
                 line_id = fields.index('stock_transfer_line/id')
+                product = fields.index('stock_transfer_line/product_id')
                 for rec in data:
-                    stock = self.env['stock.transfer'].search([('name', '=', rec[id])])
+                    stock = self.env['stock.transfer'].search([('name', '=', rec[id])], limit=1)
+                    if not stock:
+                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (rec[id])))
+                    if stock.state != 'out_approve' and 'stock_transfer_line/qty_in' in fields:
+                        raise ValidationError(_("Phiếu %s chỉ có thể cập nhật số lượng nhập ở trạng thái xác nhận xuất" % (stock.name)))
+                    if stock.state != 'approved' and 'stock_transfer_line/qty_out' in fields:
+                        raise ValidationError(_("Phiếu %s chỉ có thể cập nhật số lượng xuất ở trạng thái đã phê duyệt" % (stock.name)))
                     rec[id] = stock.export_data(['id']).get('datas')[0][0]
                     if int(rec[line_id]) > len(stock.stock_transfer_line):
                         raise ValidationError(_("Phiếu %s không có dòng %s" % (stock.name, rec[line_id])))
+                    elif rec[product] != stock.stock_transfer_line[int(rec[line_id]) - 1].product_id.default_code:
+                        raise ValidationError(_("Mã sản phẩm của phiếu %s không khớp ở dòng %s" % (stock.name, rec[line_id])))
                     else:
                         rec[line_id] = stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
         return super().load(fields, data)
