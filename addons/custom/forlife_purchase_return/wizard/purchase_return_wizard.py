@@ -126,6 +126,21 @@ class PurchaseReturnWizard(models.TransientModel):
         price_unit = return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity and return_line.vendor_price else return_line.purchase_line_id.price_unit
         location_id = self.location_id.id if self.location_id else (return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id)
         purchase_quantity = return_line.quantity / return_line.exchange_quantity if return_line.exchange_quantity else return_line.quantity
+
+        production_data = []
+        for material_line_id in return_line.purchase_line_id.purchase_order_line_material_line_ids:
+            production_data.append((0, 0, {
+                'product_id': material_line_id.product_id.id,
+                'uom': material_line_id.uom.id,
+                'production_order_product_qty': material_line_id.production_order_product_qty,
+                'production_line_product_qty': return_line.purchase_line_id.product_qty,
+                'production_line_price_unit': material_line_id.production_line_price_unit,
+                'price_unit': material_line_id.price_unit if material_line_id.product_id.x_type_cost_product else 0,
+                'product_qty': (material_line_id.product_qty/return_line.purchase_line_id.product_qty) * return_line.quantity,
+                'is_from_po': True,
+                'compute_flag': False,
+            }))
+
         vals = {
             'product_id': return_line.product_id.id,
             'description': return_line.product_id.name,
@@ -146,6 +161,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
             'receive_date': return_line.purchase_line_id.receive_date,
             'location_id': location_id,
+            'purchase_order_line_material_line_ids': production_data,
         }
         return vals
 
