@@ -2097,7 +2097,7 @@ class PurchaseOrderLine(models.Model):
             line_number += 1
             if rec.order_id.type_po_cost == 'tax' and rec.order_id.is_inter_company == False and rec.before_tax and rec.total_vnd_exchange_import and rec.total_vnd_amount:
                 if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
-                    raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax ))
+                    raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax))
 
     @api.onchange('vat_tax')
     def _onchange_vat_tax(self):
@@ -2536,18 +2536,18 @@ class PurchaseOrderLine(models.Model):
     def _compute_before_tax(self):
         for rec in self:
             cost_line_true = rec.order_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line, nine in zip(rec.order_id.order_line, rec.order_id.purchase_synthetic_ids):
+            for line in rec.order_id.order_line:
                 total_cost_true = 0
                 if cost_line_true and line.total_vnd_amount > 0:
                     for item in cost_line_true:
                         before_tax = line.total_vnd_amount / sum(rec.order_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
                         total_cost_true += before_tax
-                        nine.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                        line.before_tax = total_cost_true
+                    line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                 else:
-                    nine.before_tax = 0
-                    if nine.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                    line.before_tax = 0
+                    if line.before_tax != 0:
+                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
@@ -2556,7 +2556,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.order_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line, nine in zip(rec.order_id.order_line, rec.order_id.purchase_synthetic_ids):
+            for line in rec.order_id.order_line:
                 total_cost = 0
                 sum_vnd_amount = sum(rec.order_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
                 sum_tnk = sum(rec.order_id.exchange_rate_line_ids.mapped('tax_amount'))
@@ -2564,9 +2564,9 @@ class PurchaseOrderLine(models.Model):
                 if cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
                         total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        nine.after_tax = total_cost
+                        line.after_tax = total_cost
                 else:
-                    nine.after_tax = 0
+                    line.after_tax = 0
 
     @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
     def _compute_total_product(self):
