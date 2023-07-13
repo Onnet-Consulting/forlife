@@ -2036,8 +2036,7 @@ class PurchaseOrderLine(models.Model):
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
-    request_purchases = fields.Char(string='Request Code', readonly=1)
-    request_line_id = fields.Many2one('purchase.request', string='ABC')
+    request_purchases = fields.Char(string='Phiếu yêu cầu', readonly=1)
     event_id = fields.Many2one('forlife.event', string='Program of events')
     vendor_price = fields.Float(string='Giá nhà cung cấp', compute='compute_vendor_price_ncc', store=1)
     vendor_price_import = fields.Float(string='Giá của nhà cung cấp')
@@ -3296,3 +3295,7 @@ class StockPicking(models.Model):
 class AccountTax(models.Model):
     _inherit = 'account.tax'
     _rec_names_search = ['code', 'name']
+
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _rec_names_search = ['name']
