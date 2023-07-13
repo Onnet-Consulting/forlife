@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo noupdate="1">
+    <record id="ir_cron_general_transfer_not_exists_bkav" model="ir.cron">
+        <field name="name">Schedule: General transfer not exists BKAV</field>
+        <field name="model_id" ref="model_transfer_not_exists_bkav"/>
+        <field name="state">code</field>
+        <field name="code">model.sudo().general_transfer_not_exists_bkav()</field>
+        <field name="active" eval="True"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now() + relativedelta(day=0)).strftime('%Y-%m-%d 03:00:00')"/>
+    </record>
+</odoo>

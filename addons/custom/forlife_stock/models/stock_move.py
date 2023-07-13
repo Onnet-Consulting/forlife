@@ -26,6 +26,13 @@ class StockMove(models.Model):
         #         line[2]['balance'] = float(line[2]['balance'] * po.exchange_rate)
         return res
 
+    def _get_price_unit(self):
+        res = super()._get_price_unit()
+        order = self.purchase_line_id.order_id
+        if (order.currency_id != self.env.company.currency_id and order.exchange_rate > 0) and not (self.origin_returned_move_id or self.purchase_line_id.order_id.is_return):
+            res = res * order.exchange_rate
+        return res
+
     def write(self, vals):
         for item in self:
             if item.picking_id.date_done:

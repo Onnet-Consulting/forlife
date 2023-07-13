@@ -3,10 +3,10 @@
     <t t-inherit="forlife_pos_layout.OrderlineChangeRefund" t-inherit-mode="extension" owl="1">
         <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
             <t t-if="props.line.card_rank_applied">
-                <li class="info orderline-card-rank" style="width: 60%;">
+                <li class="info orderline-card-rank" style="width: 50%;">
                     <em>Giảm giá theo CT <t t-esc="props.line.order.card_rank_program.card_rank_name"/></em>
                 </li>
-                <li class="info orderline-card-rank" style="width: 30%;">
+                <li class="info orderline-card-rank" style="width: 40%;">
                     <i class="fa fa-id-card-o" role="img" aria-label="Discount Card" title="Discount Card"/>
                     <span>&#160;<t t-esc="env.pos.format_currency(-props.line.get_card_rank_discount())"/></span>
                 </li>

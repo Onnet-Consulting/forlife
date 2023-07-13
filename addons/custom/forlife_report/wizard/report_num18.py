@@ -6,7 +6,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'Nhà cung cấp', 'Ghi chú', 'Sản phẩm', 'Mô tả', 'Loại hàng hóa', 'Số phiếu yêu cầu', 'Số dòng trên phiếu yêu cầu',
-    'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng còn lại', 'Đơn vị mua', 'Tỷ lệ quy đổi',
+    'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng đã nhận', 'Đơn vị mua', 'Tỷ lệ quy đổi',
     'Số lượng tồn kho quy đổi', 'Đơn vị tính', 'Trung tâm chi phí', 'Lệnh sản xuất', 'Mã vụ việc', 'Ngày dự kiến nhận hàng', 'Trạng thái'
 ]
 
@@ -48,40 +48,54 @@ with prepare_data_tb as (
     select 
         '{{"product":"Hàng hóa","service":"Dịch vụ","asset":"Tài sản"}}'::json as product_type,
         '{{"true":"Đóng","false":"Mở"}}'::json as state
+),
+purchase_requests as (
+    select id, name, occasion_code_id
+    from purchase_request pr
+    where pr.company_id = any( array{allowed_company})
+  and {format_date_query("pr.request_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+  {where_condition}
+),
+po_line_qty as (
+    select prl.id                             as req_line_id,
+           coalesce(sum(pol.qty_received), 0) as qty
+    from purchase_requests pr
+             join purchase_request_line prl on pr.id = prl.request_id
+             left join purchase_order_line pol on prl.id = pol.purchase_request_line_id
+    group by prl.id
 )
 select 
     rp.name                                                                                 as nha_cung_cap,
     ''                                                                                      as ghi_chu,
     pp.barcode                                                                              as san_pham,
-    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as mo_ta,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')               as mo_ta,
     (select product_type::json ->> pt.product_type from prepare_data_tb)                    as loai_hh,
     pr.name                                                                                 as so_phieu_yc,
     row_number() over (PARTITION BY pr.id ORDER BY pr.id, prl.id)                           as so_dong_tren_phieu_yc,
     prl.asset_description                                                                   as mo_ta_ts,
     prl.purchase_quantity                                                                   as sl_dat_mua,
     prl.order_quantity                                                                      as sl_da_dat,
-    prl.purchase_quantity - prl.order_quantity                                              as sl_con_lai,
-    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')               as don_vi_mua,
+    coalesce(plq.qty, 0)                                                                    as sl_da_nhan,
+    coalesce(p_uom.name::json ->> '{user_lang_code}', p_uom.name::json ->> 'en_US')         as don_vi_mua,
     prl.exchange_quantity                                                                   as ty_le_quy_doi,
     prl.product_qty                                                                         as sl_ton_kho_quy_doi,
-    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')               as don_vi_tinh,
-    coalesce(aaa.name::json ->> '{user_lang_code}', aaa.name::json ->> 'en_US')               as tt_chi_phi,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')             as don_vi_tinh,
+    coalesce(aaa.name::json ->> '{user_lang_code}', aaa.name::json ->> 'en_US')             as tt_chi_phi,
     fp.name                                                                                 as lenh_sx,
     oc.name                                                                                 as ma_vu_viec,
     to_char(prl.date_planned + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')               as ngay_du_kien,
-    (select state::json ->> prl.is_close::text from prepare_data_tb)                         as trang_thai
+    (select state::json ->> prl.is_close::text from prepare_data_tb)                        as trang_thai
 from purchase_request_line prl
     left join res_partner rp on rp.id = prl.vendor_code
     join product_product pp on pp.id = prl.product_id
-    join purchase_request pr on pr.id = prl.request_id
+    join purchase_requests pr on pr.id = prl.request_id
     left join product_template pt on pt.id = pp.product_tmpl_id
     left join uom_uom uom on uom.id = pt.uom_id
+    left join uom_uom p_uom on p_uom.id = prl.purchase_uom
     left join account_analytic_account aaa on aaa.id = prl.account_analytic_id
     left join forlife_production fp on fp.id = prl.production_id
     left join occasion_code oc on oc.id = pr.occasion_code_id
-where pr.company_id = any( array{allowed_company})
-  and {format_date_query("pr.request_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-  {where_condition}
+    left join po_line_qty plq on plq.req_line_id = prl.id
   order by pr.id, prl.id
 """
         return sql
@@ -128,7 +142,7 @@ where pr.company_id = any( array{allowed_company})
             sheet.write(row, 7, value.get('mo_ta_ts'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('sl_dat_mua'), formats.get('int_number_format'))
             sheet.write(row, 9, value.get('sl_da_dat'), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('sl_con_lai'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('sl_da_nhan'), formats.get('int_number_format'))
             sheet.write(row, 11, value.get('don_vi_mua'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('ty_le_quy_doi'), formats.get('float_number_format'))
             sheet.write(row, 13, value.get('sl_ton_kho_quy_doi'), formats.get('float_number_format'))

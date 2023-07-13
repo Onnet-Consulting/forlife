@@ -51,20 +51,26 @@ class MainController(http.Controller):
 
     def handle_order(self, event_type, data, webhook_value_id=None):
         order_id = data.get('orderId')
-        odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
+        order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
+        if not order:
+            return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
         if event_type == 'orderUpdate':
-            if not odoo_order:
-                if data['status'].lower() != "confirmed":
-                    return self.result_request(404, 1, _('Order confirmation is required'))
-                    
-                order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
-                if not order:
-                    return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
+            odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
+            is_create_wh_in = False
+            if odoo_order and order['statusCode'] in ['Returned']:
+                odoo_order = None
+                is_create_wh_in = True
 
-                if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
-                        'returnFromOrderId', 0)):
-                    webhook_value_id.unlink()
-                    return self.result_request(200, 0, _('update sale order success'))
+            if not odoo_order:
+                order_returned = order.get('returnFromOrderId', 0) or data['status'] in ['Returned']
+                if not is_create_wh_in:
+                    if data['status'].lower() != "confirmed" and not order_returned:
+                        return self.result_request(404, 1, _('Order confirmation is required'))
+
+                    if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
+                            'returnFromOrderId', 0)):
+                        webhook_value_id.unlink()
+                        return self.result_request(200, 0, _('update sale order success'))
                 name_customer = False
                 # Add customer if not existed
                 nhanh_partner = self.partner_model().sudo().search(
@@ -185,7 +191,7 @@ class MainController(http.Controller):
                 })
                 
                 # đổi trả hàng
-                if order.get('returnFromOrderId', 0) or data['status'] in ['Returned']:
+                if order_returned or is_create_wh_in:
                     origin_order_id = request.env['sale.order'].sudo().search(
                         [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
                     value.update({
@@ -195,11 +201,11 @@ class MainController(http.Controller):
                     })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
                 if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
-                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) and \
+                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) or is_create_wh_in and \
                         not webhook_value_id.order_id.picking_ids:
                     try:
                         webhook_value_id.order_id.check_sale_promotion()
-                        webhook_value_id.order_id.action_create_picking()
+                        webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
                         return self.result_request(200, 0, _('Create sale order success'))
                 elif data['status'] in ['Canceled', 'Aborted']:

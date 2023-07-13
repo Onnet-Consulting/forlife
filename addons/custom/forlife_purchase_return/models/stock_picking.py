@@ -2,6 +2,7 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from datetime import datetime
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -16,17 +17,158 @@ class StockPickingType(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    is_return_po = fields.Boolean(default=False)
-
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         if self._context.get('endloop'):
             return res
         for picking in self:
-            if (picking.purchase_id and picking.purchase_id.is_return) or\
-                    (picking.move_ids and picking.move_ids[0]._is_purchase_return()):
+            if picking.state == 'done' and \
+                    ((picking.purchase_id and picking.purchase_id.is_return) or \
+                     (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
                 picking.create_return_valuation_npl()
+            if picking.x_is_check_return and picking.state == 'done':
+                self.tax_return_by_return_goods()
         return res
+
+    def tax_return_by_return_goods(self):
+        picking = self.move_ids.origin_returned_move_id.picking_id or self
+        po = picking.purchase_id
+        if self.move_ids.origin_returned_move_id:
+            self.revert_tax_by_return_goods(po, 'inv')
+        else:
+            self.revert_tax_by_return_goods(po)
+
+    def revert_tax_by_return_goods(self, po, type=None):
+        move_values = []
+        for line in po.purchase_synthetic_ids:
+            if line.tax_amount > 0:
+                amount = line.tax_amount
+                product_tax = self.env.ref('forlife_purchase.product_import_tax_default')
+                move_values.append(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
+            if line.special_consumption_tax_amount > 0:
+                amount = line.special_consumption_tax_amount
+                product_tax = self.env.ref('forlife_purchase.product_excise_tax_default')
+                move_values.append(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
+        if type and type == 'inv':
+            cost_move_values = self.prepare_move_value_with_cost(po)
+            move_values += cost_move_values
+
+        moves = self.env['account.move'].create(move_values)
+        if moves:
+            moves._post()
+
+    def prepare_move_values(self, line, amount, product_tax):
+        qty_po_origin = line.product_qty
+        move = self.env['stock.move'].search([('purchase_line_id', '=', line.id), ('picking_id', '=', self.id)])
+        qty_po_done = sum(move.mapped('quantity_purchase_done'))
+        po = line.order_id
+        move_value = {
+            'ref': f"{self.name} - {line.product_id.name}",
+            'purchase_type': po.purchase_type,
+            'move_type': 'entry',
+            'reference': po.name,
+            'journal_id': self.env['account.journal'].search([
+                ('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
+            'exchange_rate': po.exchange_rate,
+            'date': datetime.now(),
+            'invoice_payment_term_id': po.payment_term_id.id,
+            'invoice_date_due': po.date_planned,
+            'restrict_mode_hash_table': False,
+        }
+        svl_values = []
+        move_lines = [(0, 0, {
+            'sequence': 1,
+            'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
+            'product_id': line.product_id.id,
+            'name': line.product_id.name,
+            'text_check_cp_normal': line.product_id.name,
+            'credit': 0,
+            'debit': (amount / qty_po_origin) * qty_po_done
+        })]
+        if move.product_id.type in ('product', 'consu'):
+            svl_values.append((0, 0, {
+                'value': (amount / qty_po_origin) * qty_po_done,
+                'unit_cost': amount / qty_po_origin,
+                'quantity': 0,
+                'remaining_qty': 0,
+                'description': f"{self.name} - {line.product_id.name}",
+                'product_id': move.product_id.id,
+                'company_id': self.env.company.id,
+                'stock_move_id': move.id
+            }))
+            move_lines += [(0, 0, {
+                'sequence': 2,
+                'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                'product_id': move.product_id.id,
+                'name': move.product_id.name,
+                'text_check_cp_normal': line.product_id.name,
+                'credit': (amount / qty_po_origin) * qty_po_done,
+                'debit': 0,
+            })]
+
+        move_value.update({
+            'stock_valuation_layer_ids': svl_values,
+            'line_ids': move_lines
+        })
+        return move_value
+
+    def prepare_move_value_with_cost(self, po):
+        qty_po_done = sum(self.mapped('move_ids.quantity_purchase_done'))
+        qty_po_origin = sum(po.mapped('order_line.product_qty'))
+        move_values = []
+
+        for line in po.cost_line:
+            amount = line.vnd_amount
+            move_value = {
+                'ref': f"{self.name} - {line.product_id.name}",
+                'purchase_type': po.purchase_type,
+                'move_type': 'entry',
+                'reference': po.name,
+                'exchange_rate': po.exchange_rate,
+                'date': datetime.now(),
+                'invoice_payment_term_id': po.payment_term_id.id,
+                'invoice_date_due': po.date_planned,
+                'restrict_mode_hash_table': False,
+            }
+            svl_values = []
+            move_lines = [(0, 0, {
+                'sequence': 1,
+                'account_id': line.product_id.categ_id.property_stock_account_input_categ_id.id,
+                'product_id': line.product_id.id,
+                'name': line.product_id.name,
+                'text_check_cp_normal': line.product_id.name,
+                'credit': 0.0,
+                'debit': (amount / qty_po_origin) * qty_po_done
+            })]
+            for move in self.move_ids:
+                if move.product_id.type in ('product', 'consu'):
+                    svl_values.append((0, 0, {
+                        'value': (amount / qty_po_origin) * move.quantity_done,
+                        'unit_cost': amount / qty_po_origin,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {line.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
+
+                move_lines += [(0, 0, {
+                    'sequence': 2,
+                    'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                    'product_id':  move.product_id.id,
+                    'name':  move.product_id.name,
+                    'text_check_cp_normal': line.product_id.name,
+                    'credit': (amount / qty_po_origin) * move.quantity_purchase_done,
+                    'debit': 0.0,
+                })]
+
+            move_value.update({
+                'stock_valuation_layer_ids': svl_values,
+                'line_ids': move_lines
+            })
+            move_values.append(move_value)
+        return move_values
 
     def _get_picking_info_return(self, po):
         incoming_type_id = self.env['stock.picking.type'].search([

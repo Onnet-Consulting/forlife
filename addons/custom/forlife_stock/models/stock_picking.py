@@ -149,7 +149,7 @@ class StockPicking(models.Model):
         #         'target': 'new',
         #         'context': dict(self.env.context, default_picking_id=self.id),
         #     }
-        self.button_validate()
+        return self.button_validate()
 
     def action_confirm(self):
         for picking in self:
@@ -252,6 +252,7 @@ class StockPicking(models.Model):
         states={'draft': [('readonly', False)]})
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
     is_from_request = fields.Boolean('', default=False)
+    stock_name = fields.Char(string='Mã phiếu')
 
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
@@ -383,12 +384,52 @@ class StockPicking(models.Model):
             return [{
                 'label': _('Tải xuống mẫu phiếu nhập khác'),
                 'template': '/forlife_stock/static/src/xlsx/nhap_khac.xlsx?download=true'
+            }, {
+                'label': _('Tải xuống mẫu phiếu import update'),
+                'template': '/forlife_stock/static/src/xlsx/template_update_nk.xlsx?download=true'
             }]
-        else:
+        elif self.env.context.get('default_other_export'):
             return [{
                 'label': _('Tải xuống mẫu phiếu xuất khác'),
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
+            }, {
+                'label': _('Tải xuống mẫu phiếu import update'),
+                'template': '/forlife_stock/static/src/xlsx/template_update_nk.xlsx?download=true'
             }]
+        else:
+            return [{
+                'label': _('Tải xuống mẫu phiếu import update'),
+                'template': '/forlife_stock/static/src/xlsx/template_update_nhap_kho.xlsx?download=true'
+            }]
+
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            if 'stock_name' in fields and 'move_line_ids_without_package/sequence' in fields:
+                for record in data:
+                    if 'stock_name' in fields and not record[fields.index('stock_name')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
+                    if 'move_line_ids_without_package/sequence' in fields and not record[fields.index('move_line_ids_without_package/sequence')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
+                    if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    if 'date_done' in fields and not record[fields.index('date_done')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
+                fields[fields.index('stock_name')] = 'id'
+                fields[fields.index('move_line_ids_without_package/sequence')] = 'move_line_ids_without_package/id'
+                id = fields.index('id')
+                line_id = fields.index('move_line_ids_without_package/id')
+                product = fields.index('move_line_ids_without_package/product_id')
+                for rec in data:
+                    picking = self.env['stock.picking'].search([('name', '=', rec[id])])
+                    rec[id] = picking.export_data(['id']).get('datas')[0][0]
+                    if int(rec[line_id]) > len(picking.move_line_ids_without_package):
+                        raise ValidationError(_("Phiếu %s không có dòng %s" % (picking.name, rec[line_id])))
+                    elif rec[product] != picking.move_line_ids_without_package[int(rec[line_id]) - 1].product_id.default_code:
+                        raise ValidationError(_("Mã sản phẩm của phiếu %s không khớp ở dòng %s" % (picking.name, rec[line_id])))
+                    else:
+                        rec[line_id] = picking.move_line_ids_without_package[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
+        return super().load(fields, data)
 
 
 class StockMove(models.Model):
@@ -513,6 +554,7 @@ class StockMoveLine(models.Model):
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
                                       domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    sequence = fields.Integer(string="STT dòng")
 
     # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     # def constrains_qty_done(self):
@@ -522,6 +564,7 @@ class StockMoveLine(models.Model):
     #                 if str(rec.po_id) == str(line.po_l_id):
     #                     if rec.qty_done > line.product_uom_qty:
     #                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+
 
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
