@@ -17,12 +17,5 @@ class ProductTemplate(models.Model):
                 if product_id:
                     raise ValidationError(_("Product with information 'Product Auto' unique."))
 
-    @api.constrains('is_voucher_auto')
-    def check_voucher_auto(self):
-        for item in self:
-            if item.is_voucher_auto:
-                product_id = self.search([('is_voucher_auto', '=', True), ('id', '!=', item.id)])
-                if product_id:
-                    raise ValidationError(_("Product with information 'Voucher Auto' unique."))
 
 
