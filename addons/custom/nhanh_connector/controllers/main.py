@@ -96,7 +96,7 @@ class MainController(http.Controller):
                     list_customers = constant.get_customers_from_nhanh(request, brand_id=brand_id.id, data={"mobile": order['customerMobile']})
                     customer = list_customers.get(str(order['customerId']))
                     partner_value = {
-                        'phone': '0583070313',
+                        'phone': order['customerMobile'],
                         'mobile': order['customerMobile'],
                         'name': order['customerName'],
                         'email': order['customerEmail'],
