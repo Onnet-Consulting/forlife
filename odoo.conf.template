@@ -4,9 +4,9 @@ admin_passwd = jYcBQvl8t)
 csv_internal_sep = ,
 data_dir = /var/lib/odoo
 import_data_dir = /mnt/data-import/data
-db_host = 58.186.205.71
+db_host = 10.254.253.3
 db_maxconn = 10
-db_name = False
+db_name = forlife_production
 db_password = zuiv34#@j1
 db_port = 5432
 db_sslmode = prefer
@@ -14,7 +14,7 @@ db_template = template1
 db_user = odoo
 ;pg_path = /usr/lib/postgresql/13/bin
 pidfile = None
-dbfilter = ^forlife*
+;dbfilter = ^forlife*
 demo = {}
 email_from = False
 http_enable = True
@@ -63,4 +63,4 @@ workers = 32
 
 
 [queue_job]
-channels = root:42, import:20, validate_stock_valuation_2:20, wh_4002_job_channel:1, wh_3038_job_channel:1, wh_4015_job_channel: 1, wh_3160_job_channel:1
+channels = root:1, import:20, validate_stock_valuation_2:20, wh_4002_job_channel:1, wh_3038_job_channel:1, wh_4015_job_channel: 1, wh_3160_job_channel:1

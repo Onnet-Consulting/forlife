@@ -58,8 +58,8 @@
                             <td class="right"><t t-esc="format_decimal(line.tt, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.refund, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill - line.refund, 0)"/></td>
                             <td><t t-esc="line.note"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>

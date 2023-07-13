@@ -41,6 +41,11 @@ class StockTransferRequest(models.Model):
         res['request_employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
         res['request_date'] = datetime.now()
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
     @api.onchange('request_employee_id')
@@ -57,7 +62,7 @@ class StockTransferRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/import_ycdc_inventorys.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/template_ycdc.xlsx?download=true'
         }]
 
     def action_wait_confirm(self):
@@ -241,7 +246,7 @@ class TransferRequestLine(models.Model):
     _description = 'Transfer Request Line'
 
     product_id = fields.Many2one('product.product', string="Product", required=True, copy=True)
-    uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True, related='product_id.uom_id')
+    uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True)
     location_id = fields.Many2one('stock.location', string="Whs From", required=True)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
     request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True,
@@ -281,7 +286,7 @@ class TransferRequestLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
-            self.uom_id = self.product_id.product_tmpl_id.uom_id.id
+            self.uom_id = self.product_id.uom_id.id
 
     @api.depends('plan_quantity', 'quantity_reality_receive')
     def compute_quantity_remaining(self):
@@ -294,7 +299,20 @@ class TransferRequestLine(models.Model):
             if rec.plan_quantity <= 0:
                 raise ValidationError(_("Plan quantity should not be less than or equal to 0 !!"))
 
+    @api.model
+    def create(self, vals):
+        if self.env.context.get('import_file'):
+            product = self.env['product.product'].browse(vals.get('product_id'))
+            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+                raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
+        return super(TransferRequestLine, self).create(vals)
+
 
 class Location(models.Model):
     _inherit = "stock.location"
     _rec_names_search = ['code', 'complete_name', 'barcode']
+
+
+class AssetsAssets(models.Model):
+    _inherit = 'assets.assets'
+    _rec_names_search = ['code', 'name']

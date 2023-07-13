@@ -2,14 +2,9 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
-import gzip
-import base64
 import json
-import requests
-from Crypto.Cipher import AES
 _logger = logging.getLogger(__name__)
 from ...bkav_connector.models.bkav_connector import connect_bkav
 
@@ -17,7 +12,8 @@ from ...bkav_connector.models.bkav_connector import connect_bkav
 class StockTransfer(models.Model):
     _inherit = 'stock.transfer'
 
-    vendor_contract_id = fields.Many2one('vendor.contract', string="Hợp đồng NCC")
+    vendor_contract_id = fields.Many2one('vendor.contract', string="Hợp đồng kinh tế số")
+    delivery_contract_id = fields.Many2one('vendor.contract', string="Hợp đồng số")
     location_name = fields.Char('Tên kho xuất')
     location_dest_name = fields.Char('Tên kho nhập')
     transporter_id = fields.Many2one('res.partner', string="Người/Đơn vị vận chuyển")
@@ -117,8 +113,10 @@ class StockTransfer(models.Model):
         bkav_data = []
         for invoice in self:
             InvoiceTypeID = 5
+            ShiftCommandNo = invoice.name
             if invoice.location_dest_id.id_deposit:
                 InvoiceTypeID = 6
+                ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer, datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             sequence = 0
@@ -138,13 +136,13 @@ class StockTransfer(models.Model):
             company_id = invoice.company_id
             partner_id = company_id.partner_id
             uidefind = {
-                        "ShiftCommandNo": invoice.name,
+                        "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
                         "ShiftUnitName": company_id.name if company_id.name else '',
                         "ShiftReason": invoice.note if invoice.note else '',
                         "ReferenceNote": 'Điều chuyển hàng hóa, nguyên vật liệu.',
                         "TransporterName": invoice.transporter_id.name if invoice.transporter_id else '',
-                        "ContractNo": invoice.vendor_contract_id.name if invoice.vendor_contract_id else '',
+                        "ContractNo": invoice.delivery_contract_id.name if invoice.delivery_contract_id else '',
                         "OutWareHouse": invoice.location_name if invoice.location_name else invoice.location_id.location_id.name+'/'+invoice.location_id.name,
                         "InWareHouse": invoice.location_dest_name if invoice.location_dest_name else invoice.location_dest_id.location_id.name+'/'+invoice.location_dest_id.name,
                         "Transportation": 'Ô tô/Xe máy',
@@ -176,7 +174,7 @@ class StockTransfer(models.Model):
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
                     "InvoiceNo": 0,
-                    "OriginalInvoiceIdentify": '',  # dùng cho hóa đơn điều chỉnh
+                    # "OriginalInvoiceIdentify": '',  # dùng cho hóa đơn điều chỉnh
                     "UIDefine": json.dumps(uidefind),
                 },
                 "PartnerInvoiceID": 0,
@@ -188,10 +186,6 @@ class StockTransfer(models.Model):
     
 
     def create_invoice_bkav(self):
-        # validate với trường hợp điều chỉnh thay thế
-        # if self.issue_invoice_type in ('edit', 'replace') and not self.origin_move_id.invoice_no:
-        #     raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
-
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {

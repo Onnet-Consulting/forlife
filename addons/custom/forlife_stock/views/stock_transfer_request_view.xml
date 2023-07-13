@@ -74,6 +74,8 @@
                                     <field name="uom_id" readonly="False"/>
                                     <field name="location_id" domain="[('usage', '=', 'internal')]"/>
                                     <field name="location_dest_id" domain="[('usage', '=', 'internal')]"/>
+                                    <field name="production_from"/>
+                                    <field name="production_to"/>
                                     <field name="quantity_reality_transfer" readonly="1"  force_save="1"/>
                                     <field name="quantity_reality_receive" readonly="1" force_save="1"/>
                                     <field name="quantity_remaining" force_save="1"/>

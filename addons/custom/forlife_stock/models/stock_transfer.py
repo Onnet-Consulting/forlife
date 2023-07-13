@@ -423,7 +423,40 @@ class StockTransfer(models.Model):
         return [{
             'label': _('Tải xuống mẫu phiếu điều chuyển'),
             'template': '/forlife_stock/static/src/xlsx/import_stock_transfer.xlsx?download=true'
+        }, {
+            'label': _('Tải xuống mẫu phiếu import số lượng xuất điều chuyển'),
+            'template': '/forlife_stock/static/src/xlsx/update_sl_xuat.xlsx?download=true'
+        }, {
+            'label': _('Tải xuống mẫu phiếu import số lượng nhập điều chuyển'),
+            'template': '/forlife_stock/static/src/xlsx/update_sl_nhap.xlsx?download=true'
         }]
+
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            if 'name' in fields and 'stock_transfer_line/sequence' in fields:
+                for record in data:
+                    if not record[fields.index('name')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
+                    if not record[fields.index('stock_transfer_line/sequence')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
+                    if not record[fields.index('stock_transfer_line/product_id')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    if 'date_in_approve' in fields and not record[fields.index('date_in_approve')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày xác nhận nhập"))
+                fields[fields.index('name')] = 'id'
+                fields[fields.index('stock_transfer_line/sequence')] = 'stock_transfer_line/id'
+                id = fields.index('id')
+                line_id = fields.index('stock_transfer_line/id')
+                for rec in data:
+                    stock = self.env['stock.transfer'].search([('name', '=', rec[id])])
+                    rec[id] = stock.export_data(['id']).get('datas')[0][0]
+                    if int(rec[line_id]) > len(stock.stock_transfer_line):
+                        raise ValidationError(_("Phiếu %s không có dòng %s" % (stock.name, rec[line_id])))
+                    else:
+                        rec[line_id] = stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
+        return super().load(fields, data)
+
 
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
@@ -446,6 +479,7 @@ class StockTransferLine(models.Model):
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
     check_id = fields.Integer(string="")
+    sequence = fields.Integer(string="STT dòng")
 
     @api.onchange('product_id')
     def onchange_product_id(self):

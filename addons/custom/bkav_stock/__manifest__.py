@@ -11,9 +11,11 @@
     ],
     "data": [
         'security/ir.model.access.csv',
-        'data/ir_cron.xml',
+        'data/ir_cron_contract.xml',
+        'data/ir_cron_transfer.xml',
         'views/vendor_contract.xml',
         'views/stock_transfer.xml',
         'views/res_config_settings.xml',
+        'views/transfer_not_exists_bkav.xml',
     ]
 }

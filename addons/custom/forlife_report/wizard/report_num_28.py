@@ -28,11 +28,17 @@ class ReportNum28(models.TransientModel):
         query = f"""
             select 
                 po.name as ten,
-                po.date_order as ngay_tao_po,
-                po.receive_date as ngay_du_kien,
+                TO_CHAR(
+                    po.date_order,
+                    'dd/mm/yyyy'
+                ) as ngay_tao_po,
+                TO_CHAR(
+                    po.receive_date,
+                    'dd/mm/yyyy'
+                ) as ngay_du_kien,
                 po.note as ghi_chu,
-                sl.name as kho,
-                sl.name as so_phieu_kho,
+                sl.complete_name as kho,
+                sp.name as so_phieu_kho,
                 row_number () over (partition by sm.id order by sm.create_date) num,
                 pp.barcode as barcode,
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') as ten_sp,
@@ -76,7 +82,7 @@ class ReportNum28(models.TransientModel):
                 group by product_id
             ) attr on attr.product_id = pp.id
             
-            where 1 = 1
+            where 1 = 1 and po.is_return is null
 
         """
 
@@ -116,10 +122,8 @@ class ReportNum28(models.TransientModel):
         row = 5
         for value in data.get('data'):
             sheet.write(row, 0, value.get('ten'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('ngay_tao_po').strftime('%d/%m/%Y') if value.get('ngay_tao_po') else '',
-                        formats.get('normal_format'))
-            sheet.write(row, 2, value.get('ngay_du_kien').strftime('%d/%m/%Y') if value.get('ngay_du_kien') else '',
-                        formats.get('normal_format'))
+            sheet.write(row, 1, value.get('ngay_tao_po'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('ngay_du_kien'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('ghi_chu'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('kho'), formats.get('normal_format'))
             sheet.write(row, 5, value.get('so_phieu_kho'), formats.get('normal_format'))
