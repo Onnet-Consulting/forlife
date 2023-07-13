@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from datetime import datetime
 import re
@@ -87,6 +88,9 @@ class PurchaseRequest(models.Model):
 
     def submit_action(self):
         for record in self:
+            for line in record.order_lines:
+                if not line.purchase_uom:
+                    raise UserError(_('Đơn vị mua của sản phẩm %s chưa được chọn') % line.product_id.name)
             record.write({'state': 'confirm'})
 
     def action_cancel(self):
