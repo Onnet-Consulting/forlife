@@ -2600,59 +2600,60 @@ class StockPicking(models.Model):
         for record in self:
             po = record.purchase_id
             if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
-                ## check npl tồn:
-                self.check_quant_goods_import(po)
-                po.write({
-                    'inventory_status': 'done',
-                    'invoice_status_fake': 'to invoice',
-                })
-                _context = {
-                    'pk_no_input_warehouse': False,
-                }
-                if po.type_po_cost == 'tax':
-                    # tạo bút toán định giá tồn kho với thuế nhập khẩu và thuế đặc biệt
-                    if po and po.exchange_rate_line_ids:
-                        move_import_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'import') # thuế nhập khẩu
-                        move_special_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'special') # thuế tiêu thụ đặc biệt
-                        move_values = move_import_tax_values + move_special_tax_values
-                        moves = self.env['account.move'].create(move_values)
-                        if moves:
-                            moves._post()
-                    if po.cost_line:
+                if record.state == 'done':
+                    ## check npl tồn:
+                    self.check_quant_goods_import(po)
+                    po.write({
+                        'inventory_status': 'done',
+                        'invoice_status_fake': 'to invoice',
+                    })
+                    _context = {
+                        'pk_no_input_warehouse': False,
+                    }
+                    if po.type_po_cost == 'tax':
+                        # tạo bút toán định giá tồn kho với thuế nhập khẩu và thuế đặc biệt
+                        if po and po.exchange_rate_line_ids:
+                            move_import_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'import') # thuế nhập khẩu
+                            move_special_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'special') # thuế tiêu thụ đặc biệt
+                            move_values = move_import_tax_values + move_special_tax_values
+                            moves = self.env['account.move'].create(move_values)
+                            if moves:
+                                moves._post()
+                        if po.cost_line:
+                            self.create_expense_entries(po)
+                            '''
+                            cp = self.create_invoice_po_cost(po, record)
+                            '''
+                    elif po.type_po_cost == 'cost':
                         self.create_expense_entries(po)
                         '''
                         cp = self.create_invoice_po_cost(po, record)
                         '''
-                elif po.type_po_cost == 'cost':
-                    self.create_expense_entries(po)
-                    '''
-                    cp = self.create_invoice_po_cost(po, record)
-                    '''
-                # Tạo nhập khác xuất khác khi nhập kho
-                if po.order_line_production_order:
-                    npl = self.create_invoice_npl(po, record)
-                for rec in record.move_ids_without_package:
-                    if rec.work_production:
-                        quantity = self.env['quantity.production.order'].search(
-                            [('product_id', '=', rec.product_id.id),
-                             ('location_id', '=', rec.picking_id.location_dest_id.id),
-                             ('production_id', '=', rec.work_production.id)])
-                        if quantity:
-                            quantity.write({
-                                'quantity': quantity.quantity + rec.quantity_done
-                            })
-                        else:
-                            self.env['quantity.production.order'].create({
-                                'product_id': rec.product_id.id,
-                                'location_id': rec.picking_id.location_dest_id.id,
-                                'production_id': rec.work_production.id,
-                                'quantity': rec.quantity_done
-                            })
-                account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
-                account_move.update({
-                    'currency_id': po.currency_id.id,
-                    'exchange_rate': po.exchange_rate
-                })
+                    # Tạo nhập khác xuất khác khi nhập kho
+                    if po.order_line_production_order:
+                        npl = self.create_invoice_npl(po, record)
+                    for rec in record.move_ids_without_package:
+                        if rec.work_production:
+                            quantity = self.env['quantity.production.order'].search(
+                                [('product_id', '=', rec.product_id.id),
+                                 ('location_id', '=', rec.picking_id.location_dest_id.id),
+                                 ('production_id', '=', rec.work_production.id)])
+                            if quantity:
+                                quantity.write({
+                                    'quantity': quantity.quantity + rec.quantity_done
+                                })
+                            else:
+                                self.env['quantity.production.order'].create({
+                                    'product_id': rec.product_id.id,
+                                    'location_id': rec.picking_id.location_dest_id.id,
+                                    'production_id': rec.work_production.id,
+                                    'quantity': rec.quantity_done
+                                })
+                    account_move = self.env['account.move'].search([('stock_move_id', 'in', self.move_ids.ids)])
+                    account_move.update({
+                        'currency_id': po.currency_id.id,
+                        'exchange_rate': po.exchange_rate
+                    })
         return res
 
     def prepare_move_svl_value_with_tax_po(self, po, tax_type):
@@ -2662,8 +2663,8 @@ class StockPicking(models.Model):
         for line in po.exchange_rate_line_ids:
             amount = line.tax_amount if tax_type != 'special' else line.special_consumption_tax_amount
             qty_po_origin = line.product_qty
-            move = self.env['stock.move'].search([('purchase_line_id', '=', line.id)])
-            qty_po_done = sum(move.mapped('quantity_purchase_done'))
+            move = self.env['stock.move'].search([('purchase_line_id', '=', line.id), ('picking_id', '=', self.id)])
+            qty_po_done = sum(move.mapped('quantity_done'))
             if tax_type != 'special':
                 product_tax = self.env.ref('forlife_purchase.product_import_tax_default')
             else:
