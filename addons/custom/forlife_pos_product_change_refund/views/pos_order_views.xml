@@ -23,6 +23,9 @@
                 <field name="brand_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
                 <field name="voucher_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
             </xpath>
+            <xpath expr="//field[@name='lines']/tree" position="inside">
+                <field name="pay_point_line" string="Điểm trả sản phẩm" optional="hide"/>
+            </xpath>
         </field>
     </record>
 </odoo>
