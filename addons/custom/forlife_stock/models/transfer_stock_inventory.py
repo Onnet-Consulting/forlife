@@ -322,7 +322,7 @@ class TransferStockInventoryLine(models.Model):
                 select pp.id from product_product pp 
                 left join product_template pt on pt.id = pp.product_tmpl_id 
                 left join res_brand rb on rb.id = pt.brand_id 
-                where rb.code in ('TKL','FM')
+                where rb.code in ('TKL','FMT')
                 """)
             result = [r[0] for r in self._cr.fetchall()]
             return {'domain': {'product_from_id': [('product_type', '=', 'product'), ('id', 'in', result)],
@@ -331,7 +331,7 @@ class TransferStockInventoryLine(models.Model):
     def check_brand(self, product_id):
         if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level != 2):
             raise ValidationError(_('Sản phẩm bạn chọn chưa được cấu hình Nhóm hàng'))
-        if product_id.brand_id.code == 'FM' and (not product_id.categ_id or product_id.categ_id.level != 4):
+        if product_id.brand_id.code == 'FMT' and (not product_id.categ_id or product_id.categ_id.level != 4):
             raise ValidationError(_('Sản phẩm bạn chọn chưa được cấu hình Kết cấu'))
 
     @api.onchange('product_from_id', 'product_to_id')
