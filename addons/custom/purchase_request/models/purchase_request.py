@@ -56,6 +56,11 @@ class PurchaseRequest(models.Model):
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
 
+    @api.onchange('date_planned')
+    def _onchange_line_date_planned(self):
+        for rec in self.order_lines:
+            rec.date_planned = self.date_planned
+
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
@@ -196,7 +201,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
-                    'product_uom': line.purchase_uom.id,
+                    'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
@@ -303,7 +308,6 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):

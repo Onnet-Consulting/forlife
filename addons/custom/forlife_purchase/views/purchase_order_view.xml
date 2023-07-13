@@ -33,7 +33,7 @@
                             <span class="o_stat_value">
                                 <field name="count_invoice_inter_normal_fix"/>
                             </span>
-                            <span class="o_stat_text">Bình thường</span>
+                            <span class="o_stat_text">Hàng hóa dịch vụ tài sản</span>
                         </div>
                     </button>
                     <button name="action_view_invoice_expense_new"
@@ -62,30 +62,17 @@
                             <span class="o_stat_text">Nhân công</span>
                         </div>
                     </button>
-                    <button name="action_view_invoice_service_new"
-                        string="Dịch vụ và Tài sản"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-pencil-square-o"
-                        attrs="{'invisible': [('count_invoice_inter_service_fix', '=', 0)]}">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value">
-                                <field name="count_invoice_inter_service_fix"/>
-                            </span>
-                            <span class="o_stat_text">Dịch vụ và Tài sản</span>
-                        </div>
-                    </button>
-<!--                    <button name="action_view_invoice_customer"-->
-<!--                        string="Invoice"-->
+<!--                    <button name="action_view_invoice_service_new"-->
+<!--                        string="Dịch vụ và Tài sản"-->
 <!--                        type="object"-->
 <!--                        class="oe_stat_button"-->
 <!--                        icon="fa-pencil-square-o"-->
-<!--                        attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_invoice_inter_company_customer', '=', 0)]}">-->
+<!--                        attrs="{'invisible': [('count_invoice_inter_service_fix', '=', 0)]}">-->
 <!--                        <div class="o_field_widget o_stat_info">-->
 <!--                            <span class="o_stat_value">-->
-<!--                                <field name="count_invoice_inter_company_customer"/>-->
+<!--                                <field name="count_invoice_inter_service_fix"/>-->
 <!--                            </span>-->
-<!--                            <span class="o_stat_text">Hóa đơn khách hàng</span>-->
+<!--                            <span class="o_stat_text">Dịch vụ và Tài sản</span>-->
 <!--                        </div>-->
 <!--                    </button>-->
                     <button
@@ -156,6 +143,7 @@
                                 <field name="description" readonly="1"/>
                                 <field name="company_currency" invisible="1"/>
                                 <field name="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
+                                <field name="total_vnd_exchange_import" invisible="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
