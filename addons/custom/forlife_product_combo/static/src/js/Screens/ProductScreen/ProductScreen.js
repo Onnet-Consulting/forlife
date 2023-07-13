@@ -114,7 +114,12 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                         }
                     }
 //                    for(let i =0; i<list_product_tmpl)
-                    console.log(33333333333)
+//                    var check_product_add_new = []
+//                    order_lines.forEach(function(item){
+//                        if(item.is_new_line){
+//                            check_product_add_new.push()
+//                        }
+//                    })
 //                    order_lines.forEach(function(line){
 //                        for(let k =0; k< list_product_tmpl.length; k++){
 //                            if(!line.refunded_orderline_id && !list_product_tmpl[k].refunded_orderline_id){
