@@ -32,7 +32,8 @@ class PurchaseOrder(models.Model):
     def action_approved(self):
         res = super().action_approved()
         queries = self.bravo_get_insert_sql()
-        self.env['purchase.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if queries:
+            self.env['purchase.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
     @api.model

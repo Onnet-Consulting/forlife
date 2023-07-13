@@ -32,7 +32,8 @@ class SaleOrder(models.Model):
     def action_create_picking(self):
         res = super().action_create_picking()
         queries = self.bravo_get_insert_sql()
-        self.env['sale.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if queries:
+            self.env['sale.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
     @api.model
