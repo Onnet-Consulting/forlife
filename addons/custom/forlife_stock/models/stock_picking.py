@@ -386,7 +386,7 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/nhap_khac.xlsx?download=true'
             }, {
                 'label': _('Tải xuống mẫu phiếu import update'),
-                'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/template_update_nk.xlsx?download=true'
             }]
         elif self.env.context.get('default_other_export'):
             return [{
@@ -394,12 +394,12 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }, {
                 'label': _('Tải xuống mẫu phiếu import update'),
-                'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/template_update_nk.xlsx?download=true'
             }]
         else:
             return [{
                 'label': _('Tải xuống mẫu phiếu import update'),
-                'template': '/forlife_stock/static/src/xlsx/template_update.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/template_update_nhap_kho.xlsx?download=true'
             }]
 
     @api.model
@@ -407,11 +407,11 @@ class StockPicking(models.Model):
         if "import_file" in self.env.context:
             if 'stock_name' in fields and 'move_line_ids_without_package/sequence' in fields:
                 for record in data:
-                    if not record[fields.index('stock_name')]:
+                    if 'stock_name' in fields and not record[fields.index('stock_name')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
-                    if not record[fields.index('move_line_ids_without_package/sequence')]:
+                    if 'move_line_ids_without_package/sequence' in fields and not record[fields.index('move_line_ids_without_package/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
-                    if not record[fields.index('move_line_ids_without_package/product_id')]:
+                    if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
                     if 'date_done' in fields and not record[fields.index('date_done')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))

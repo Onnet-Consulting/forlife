@@ -23,26 +23,25 @@
                           attrs="{'invisible':[('state', 'not in', ('out_approve','in_approve','done'))]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_no', '!=', False),('state','not in', ('out_approve','in_approve','done'))]}"
+                                attrs="{'invisible':['|',('invoice_guid', '!=', False),('state','not in', ('out_approve','in_approve','done'))]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':[('state','not in', ('out_approve','in_approve','done'))]}"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Get eInvoice" groups="account.group_account_invoice"/>
                         <button name="update_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_no', '=', False),('state','not in', ('out_approve','in_approve','done'))]}"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
                         <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':[('invoice_no', '!=', False)]}"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 string="Download eInvoice"
-                                attrs="{'invisible':[('invoice_no', '=', False)]}"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 groups="account.group_account_invoice"/>
                         <br/>
                         <br/>
                         <group>
                             <group>
-                                <!-- <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/> -->
                                 <field name="exists_bkav" readonly="1"/>
                                 <field name="invoice_no" readonly="1"/>
                                 <field name="invoice_form" readonly="1"/>
