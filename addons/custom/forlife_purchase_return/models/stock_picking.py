@@ -1,4 +1,3 @@
-import datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
@@ -203,7 +202,7 @@ class StockPicking(models.Model):
             'reason_type_id': self.env.ref('forlife_stock.reason_type_7').id,
             'location_id': location_id.id,
             'location_dest_id': record.location_id.id,
-            'scheduled_date': datetime.datetime.now(),
+            'scheduled_date': fields.datetime.now(),
             'origin': po.name + " nhập trả NPL" if po else record.name + " nhập trả NPL",
             'state': 'assigned',
             'picking_type_id': picking_type_id.id,

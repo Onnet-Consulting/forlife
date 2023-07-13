@@ -394,7 +394,7 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }, {
                 'label': _('Tải xuống mẫu phiếu import update'),
-                'template': '/forlife_stock/static/src/xlsx/template_update_nk.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/template_update_xk.xlsx?download=true'
             }]
         else:
             return [{
@@ -413,6 +413,10 @@ class StockPicking(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
                     if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    if 'move_line_ids_without_package/qty_done' in fields and not record[fields.index('move_line_ids_without_package/qty_done')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường hoàn thành"))
+                    if 'move_line_ids_without_package/quantity_purchase_done' in fields and not record[fields.index('move_line_ids_without_package/quantity_purchase_done')]:
+                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng mua hoàn thành"))
                     if 'date_done' in fields and not record[fields.index('date_done')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
                 fields[fields.index('stock_name')] = 'id'
@@ -421,7 +425,11 @@ class StockPicking(models.Model):
                 line_id = fields.index('move_line_ids_without_package/id')
                 product = fields.index('move_line_ids_without_package/product_id')
                 for rec in data:
-                    picking = self.env['stock.picking'].search([('name', '=', rec[id])])
+                    picking = self.env['stock.picking'].search([('name', '=', rec[id])], limit=1)
+                    if not picking:
+                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (rec[id])))
+                    if picking.state != 'assigned':
+                        raise ValidationError(_("Phiếu %s chỉ có thể update ở trạng thái sẵn sàng" % (rec[id])))
                     rec[id] = picking.export_data(['id']).get('datas')[0][0]
                     if int(rec[line_id]) > len(picking.move_line_ids_without_package):
                         raise ValidationError(_("Phiếu %s không có dòng %s" % (picking.name, rec[line_id])))
