@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from datetime import datetime
 import re
@@ -87,6 +88,11 @@ class PurchaseRequest(models.Model):
 
     def submit_action(self):
         for record in self:
+            for line in record.order_lines:
+                if not line.purchase_uom:
+                    raise UserError(_('Đơn vị mua của sản phẩm %s chưa được chọn') % line.product_id.name)
+                if not line.date_planned:
+                    raise UserError(_('Ngày nhận hàng dự kiến của sản phẩm %s chưa được chọn') % line.product_id.name)
             record.write({'state': 'confirm'})
 
     def action_cancel(self):
@@ -172,7 +178,7 @@ class PurchaseRequest(models.Model):
         production_id = []
         for rec in self:
             if rec.state != 'approved':
-                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name
+                raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
             if rec.occasion_code_id:
                 occasion_code_id.append(rec.occasion_code_id.id)
             if rec.account_analytic_id:
@@ -205,7 +211,7 @@ class PurchaseRequest(models.Model):
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
-                    'date_planned': self.date_planned if len(self) == 1 else False,
+                    'date_planned': line.date_planned,
                 }))
             if po_line_data:
                 name_pr = []
