@@ -232,6 +232,21 @@ msgid "Defective Goods"
 msgstr "Khuyến mại hàng lỗi"
 
 #. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_company__product_default_pos_return_goods_id
+msgid "Default Product Change/Return Goods (PoS)"
+msgstr "Cấu hình sản phẩm đổi trả mặc định"
+
+#. module: forlife_pos_accounting
+#: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
+msgid "Default Product Change/Return Goods (PoS)"
+msgstr "Cấu hình sản phẩm đổi trả mặc định"
+
+#. module: forlife_pos_accounting
+#: model:ir.model.fields,field_description:forlife_pos_accounting.field_res_config_settings__product_default_pos_return_goods_id
+msgid "Change/Return Goods"
+msgstr "Đổi trả hàng"
+
+#. module: forlife_pos_accounting
 #: model_terms:ir.ui.view,arch_db:forlife_pos_accounting.res_config_settings_view_form
 msgid "<span class=\"o_form_label\">Default Product</span>"
 msgstr "<span class=\"o_form_label\">Cấu hình sản phẩm CK mặc định</span>"
