@@ -2156,9 +2156,9 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             if not rec.total_vnd_exchange_import:
                 if rec.price_subtotal and rec.order_id.exchange_rate:
-                    rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal / rec.order_id.exchange_rate)
+                    rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
             else:
-                rec.total_vnd_amount = round(rec.price_subtotal / rec.order_id.exchange_rate)
+                rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
                 rec.total_vnd_exchange = rec.total_vnd_exchange_import
 
     @api.onchange('product_id', 'is_change_vendor')
