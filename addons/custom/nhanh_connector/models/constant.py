@@ -1,5 +1,6 @@
 import requests
 import logging
+import json
 
 NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 
@@ -116,3 +117,29 @@ def get_order_from_nhanh_id(self, order_id):
         order_information = res['data']['orders'].get(str(order_id))
         break
     return order_information if order_information else res.get("messages", ""), brand_id
+
+
+def get_customers_from_nhanh(self, brand_id=None, data={}):
+    url = f"{NHANH_BASE_URL}/customer/search"
+    kwargs = get_params(self, brand_id)
+    kwargs.update({
+        "data": json.dumps(data)
+    })
+    customers = {}
+    try:
+        res_server = requests.post(url, data=kwargs)
+        res = res_server.json()
+        if res['code'] == 0:
+            _logger.info(f'Get customers error {res["messages"]}')
+
+        customers = res["data"]["customers"]
+    except Exception as ex:
+        _logger.info(f'Get orders from NhanhVn error {ex}')
+    return customers
+
+
+mapping_gender_nhanh = {
+    "1": "male",
+    "2": "female",
+    "3": "other"
+}
