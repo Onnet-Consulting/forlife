@@ -1903,9 +1903,15 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         values = super(PurchaseOrder, self)._prepare_invoice()
+        cost_line_vals = []
+        for cl in self.cost_line:
+            data = cl.copy_data()[0]
+            del data['purchase_order_id']
+            cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,
-            'total_trade_discount': self.total_trade_discount
+            'total_trade_discount': self.total_trade_discount,
+            'cost_line': cost_line_vals
         })
         return values
 
@@ -2156,7 +2162,7 @@ class PurchaseOrderLine(models.Model):
 
             if not rec.total_vnd_exchange_import:
                 rec.total_vnd_amount = rec.price_subtotal
-                                if rec.currency_id != rec.company_currency:
+                if rec.currency_id != rec.company_currency:
                     rec.total_vnd_amount = rec.price_subtotal * rec.order_id.exchange_rate
                 rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
             else:
