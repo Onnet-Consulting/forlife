@@ -70,7 +70,7 @@ class StockPicking(models.Model):
                     raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
         try:
-            sale_from_nhanh = self.sale_id and self.sale_id.nhanh_id and self.sale_id.source_record
+            sale_from_nhanh = self.sale_id and self.sale_id.source_record
             if self.state == "done" and self.picking_type_code == "outgoing" and sale_from_nhanh:
                 picking_out = self.sale_id.picking_ids.filtered(
                     lambda r: r.picking_type_id == self.sale_id.warehouse_id.out_type_id
