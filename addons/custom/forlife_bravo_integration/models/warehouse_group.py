@@ -8,6 +8,7 @@ class WarehouseGroup(models.Model):
     _name = 'warehouse.group'
     _inherit = ['warehouse.group', 'bravo.model']
     _bravo_table = 'B20Warehouse'
+    _bravo_field_sync = ['code_level_1', 'name', 'parent_warehouse_group_id']
 
     br1 = BravoCharField(odoo_name='code_level_1', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')

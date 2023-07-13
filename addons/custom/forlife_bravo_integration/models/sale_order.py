@@ -9,6 +9,7 @@ class SaleOrder(models.Model):
     _name = 'sale.order'
     _inherit = ['sale.order', 'bravo.model']
     _bravo_table = 'B30BizDoc'
+    _bravo_field_sync = ['name', 'date_order', 'company_id', 'partner_id']
 
     br1 = BravoCharField(odoo_name='name', bravo_name='DocNo')
     br2 = BravoDatetimeField(odoo_name='date_order', bravo_name='DocDate')

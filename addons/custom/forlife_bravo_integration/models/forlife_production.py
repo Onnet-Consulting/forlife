@@ -9,6 +9,10 @@ class ForLifeProduction(models.Model):
     _name = 'forlife.production'
     _inherit = ['forlife.production', 'bravo.model']
     _bravo_table = 'B30StatsDoc'
+    _bravo_field_sync = [
+        'company_id', 'code', 'create_date', 'name', 'produced_from_date', 'to_date', 'implementation_id',
+        'production_department', 'brand_id', 'user_id', 'management_id', 'br_line_uom_id', 'br_line_total_qty'
+    ]
 
     @api.depends('forlife_production_finished_product_ids.produce_qty')
     def _compute_line_value(self):

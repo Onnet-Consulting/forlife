@@ -8,10 +8,25 @@ from odoo.addons.forlife_bravo_integration.models.product_category import CONTEX
 import re
 
 
+class ProductTemplate(models.Model):
+    _name = 'product.template'
+    _inherit = ['product.template', 'bravo.model.update.action']
+    _bravo_field_sync = ['name', 'sku_code', 'uom_id', 'categ_id', 'attribute_line_ids']
+
+    def write(self, values):
+        res = super().write(values)
+        if self.bravo_check_need_sync(list(values.keys())):
+            queries = self.product_variant_ids.bravo_get_update_sql(values)
+            if queries:
+                self.env['product.product'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        return res
+
+
 class ProductProduct(models.Model):
     _name = 'product.product'
     _inherit = ['product.product', 'bravo.model']
     _bravo_table = 'B20Item'
+    _bravo_field_sync = ['barcode']
 
     def bravo_get_companies(self):
         company_codes = ['1100', '1200', '1300', '1400']
