@@ -6,7 +6,7 @@
             <field name="name">rabbitmq_queue_view_tree</field>
             <field name="model">rabbitmq.queue</field>
             <field name="arch" type="xml">
-                <tree string="rabbitmq_queue_tree">
+                <tree string="rabbitmq_queue_tree" multi_edit="1">
                     <field name="queue_key"/>
                     <field name="queue_name"/>
                     <field name="description"/>

@@ -10,7 +10,8 @@ class HrAssetTransfer(models.Model):
     def action_approved(self):
         super().action_approved()
         queries = self.hr_asset_transfer_line_ids.bravo_get_insert_sql()
-        self.env['hr.asset.transfer.line'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if queries:
+            self.env['hr.asset.transfer.line'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
 
 
 class HrAssetTransferLine(models.Model):
