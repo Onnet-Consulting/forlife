@@ -304,8 +304,8 @@
                                domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
                         <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
-                        <field name="request_purchases" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
+                        <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="request_purchases"/>
                         <field name="asset_code"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="asset_name"

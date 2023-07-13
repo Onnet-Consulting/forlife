@@ -1971,7 +1971,7 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                        if fields.index('order_line/vendor_price') and not mouse[fields.index('order_line/vendor_price')]:
+                        if fields.index('order_line/vendor_price_import') and not mouse[fields.index('order_line/vendor_price_import')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Giá của nhà cung cấp ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
@@ -2036,13 +2036,12 @@ class PurchaseOrderLine(models.Model):
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
-    request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
+    request_purchases = fields.Char(string='Phiếu yêu cầu', readonly=1)
     event_id = fields.Many2one('forlife.event', string='Program of events')
     vendor_price = fields.Float(string='Giá nhà cung cấp', compute='compute_vendor_price_ncc', store=1)
     vendor_price_import = fields.Float(string='Giá của nhà cung cấp')
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
-    request_purchases = fields.Char(string='Purchases', readonly=1)
     is_passersby = fields.Boolean(related='order_id.is_passersby', store=1)
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
@@ -3293,3 +3292,10 @@ class StockPicking(models.Model):
         record.write({'picking_xk_id': xk_picking.id})
         return xk_picking
 
+class AccountTax(models.Model):
+    _inherit = 'account.tax'
+    _rec_names_search = ['code', 'name']
+
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _rec_names_search = ['name']
