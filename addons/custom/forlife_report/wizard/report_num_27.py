@@ -37,7 +37,7 @@ class ReportNum27(models.TransientModel):
                     'dd/mm/yyyy'
                 ) as ngay_kh
                 , '' as ghi_chu
-                , t3.name as kho
+                , t3.complete_name as kho
                 , t2.name as so_phieu
                 , ROW_NUMBER () OVER (PARTITION BY t4.id ORDER BY t4.create_date) num
                 , t5.barcode as barcode

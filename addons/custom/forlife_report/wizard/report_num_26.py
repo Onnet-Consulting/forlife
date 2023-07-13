@@ -37,8 +37,8 @@ class ReportNum26(models.TransientModel):
                     'dd/mm/yyyy'
                 ) AS han_xu_ly,
                 st.note AS ghi_chu,
-                sl1.name AS tu_kho,
-                sl2.name AS den_kho,
+                sl1.complete_name AS tu_kho,
+                sl2.complete_name AS den_kho,
                 st.name AS so_phieu_dc,
                 ROW_NUMBER() OVER (PARTITION BY st.name ORDER BY stl.create_date) num,
                 pp.barcode AS barcode,
