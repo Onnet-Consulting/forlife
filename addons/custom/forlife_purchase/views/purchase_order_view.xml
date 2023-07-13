@@ -202,12 +202,12 @@
                                 <field name="product_qty" sum="discounted subtotal"/>
                                 <field name="company_currency" invisible="1"/>
                                 <field name="discount"/>
-                                <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="after_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}" sum="total_vnd_amount"/>
+                                <field name="before_tax" sum="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="after_tax" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_product" sum="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                             </tree>
                         </field>
                     </page>

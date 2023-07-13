@@ -1751,9 +1751,15 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         values = super(PurchaseOrder, self)._prepare_invoice()
+        cost_line_vals = []
+        for cl in self.cost_line:
+            data = cl.copy_data()[0]
+            del data['purchase_order_id']
+            cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,
-            'total_trade_discount': self.total_trade_discount
+            'total_trade_discount': self.total_trade_discount,
+            'cost_line': cost_line_vals
         })
         return values
 
@@ -1855,10 +1861,10 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.tax_amount = rec.total_vnd_exchange * rec.import_tax / 100
 
-    @api.depends('tax_amount', 'special_consumption_tax')
+    @api.depends('tax_amount', 'special_consumption_tax', 'import_tax')
     def _compute_special_consumption_tax_amount(self):
         for rec in self:
-            rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.tax_amount) * rec.special_consumption_tax / 100
+            rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.tax_amount) * (rec.special_consumption_tax / 100)
 
     @api.depends('special_consumption_tax_amount', 'vat_tax')
     def _compute_vat_tax_amount(self):
@@ -1871,13 +1877,14 @@ class PurchaseOrderLine(models.Model):
             rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
 
-    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
+    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'before_tax')
     def _compute_total_vnd_amount(self):
         for rec in self:
             rec.total_vnd_amount = rec.total_vnd_exchange = rec.price_subtotal
             if rec.currency_id != rec.company_currency:
                 # rate = rec.currency_id._get_rates(company=self.env.company, date=datetime.today())
-                rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                rec.total_vnd_amount = rec.price_subtotal * rec.order_id.exchange_rate
+                rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):

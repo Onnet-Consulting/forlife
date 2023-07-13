@@ -105,7 +105,6 @@ class AccountMove(models.Model):
 
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id',
                                 string='Invoice Cost Line',
-                                compute='_compute_exchange_rate_line_and_cost_line',
                                 store=1)
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id',
                                       string='Vendor Back',
@@ -809,7 +808,8 @@ class AccountMoveLine(models.Model):
     @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
+            rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
+            rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
 
     @api.depends('move_id.cost_line.is_check_pre_tax_costs',
                  'move_id.invoice_line_ids')
