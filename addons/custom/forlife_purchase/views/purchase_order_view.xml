@@ -155,7 +155,6 @@
                                 <field name="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="vat_tax_amount_import" invisible="1"/>
                                 <field name="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
-                                <field name="total_tax_amount_import" invisible="1"/>
                             </tree>
                         </field>
                     </page>
