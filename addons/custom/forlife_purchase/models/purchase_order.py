@@ -2274,12 +2274,14 @@ class PurchaseOrderLine(models.Model):
                 item.billed = False
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'vendor_price_import')
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',)
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            rec.vendor_price = rec.vendor_price_import
-            if rec.order_id.purchase_type == 'product':
+            if rec.vendor_price_import:
+                if rec.order_id.partner_id.is_passersby:
+                    rec.vendor_price = rec.vendor_price_import
+            else:
                 if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
                     rec.is_red_color = False
                     continue
@@ -2302,26 +2304,6 @@ class PurchaseOrderLine(models.Model):
                                 closest_quantity = line.min_qty
                                 rec.vendor_price = line.price
                                 rec.exchange_quantity = line.amount_conversion
-            else:
-                pass
-
-    # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
-    #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
-    # def onchange_receive_date(self):
-    #     if self.order_id:
-    #         self.receive_date = self.order_id.receive_date
-    #         self.location_id = self.order_id.location_id
-    #         self.production_id = self.order_id.production_id
-    #         if self.order_id.account_analytic_ids:
-    #             self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
-    #         self.event_id = self.order_id.event_id
-    #         if self.order_id.occasion_code_ids:
-    #             self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
-    #
-    # @api.onchange('product_id', 'order_id', 'order_id.location_id')
-    # def onchange_location_id(self):
-    #     if self.order_id and self.order_id.location_id:
-    #         self.location_id = self.order_id.location_id
 
     # discount
     @api.onchange("free_good")
