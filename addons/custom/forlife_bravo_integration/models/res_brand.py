@@ -7,6 +7,7 @@ class ResBrand(models.Model):
     _name = 'res.brand'
     _inherit = ['res.brand', 'bravo.model']
     _bravo_table = 'B20Brand'
+    _bravo_field_sync = ['code', 'name']
 
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')

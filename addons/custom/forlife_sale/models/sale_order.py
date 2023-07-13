@@ -252,7 +252,6 @@ class SaleOrder(models.Model):
             ], limit=1)
         else:
             rule = self.get_rule()
-
         master = {
             'origin': self.name,
             'company_id': self.company_id.id,
@@ -267,7 +266,12 @@ class SaleOrder(models.Model):
         list_location = []
         stock_move_ids = {}
         line_x_scheduled_date = []
-        for line in self.order_line:
+        for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
+            if line.x_manufacture_order_code_id:
+                quant = self.env['stock.quant'].search(
+                    [('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
+                if not quant or quant.quantity < line.product_uom_qty:
+                    raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
             date = datetime.combine(line.x_scheduled_date,
                                     datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
@@ -421,13 +425,19 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        # location = self.order_id.warehouse_id.lot_stock_id if self.order_id.warehouse_id else None
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_sale_type:
-            domain = [('detailed_type', '=', self.order_id.x_sale_type)]
+            if not self.order_id.x_manufacture_order_code_id:
+                domain = [('detailed_type', '=', self.order_id.x_sale_type)]
+                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
+            product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped(
+                'product_id').ids
+            domain = [('detailed_type', '=', self.order_id.x_sale_type),
+                      ('id', 'in', product_ids)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 

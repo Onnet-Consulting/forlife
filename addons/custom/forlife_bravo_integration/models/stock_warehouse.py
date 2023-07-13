@@ -8,6 +8,7 @@ class StockWarehouse(models.Model):
     _name = 'stock.warehouse'
     _inherit = ['stock.warehouse', 'bravo.model']
     _bravo_table = 'B20Warehouse'
+    _bravo_field_sync = ['code', 'name', 'company_id', 'warehouse_gr_id']
 
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')

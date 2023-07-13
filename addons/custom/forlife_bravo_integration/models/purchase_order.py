@@ -9,6 +9,7 @@ class PurchaseOrder(models.Model):
     _name = 'purchase.order'
     _inherit = ['purchase.order', 'bravo.model']
     _bravo_table = 'B30BizDoc'
+    _bravo_field_sync = ['name', 'date_approve', 'company_id', 'partner_id']
 
     br1 = BravoCharField(odoo_name='name', bravo_name='DocNo')
     br2 = BravoDatetimeField(odoo_name='date_approve', bravo_name='DocDate')
@@ -31,7 +32,8 @@ class PurchaseOrder(models.Model):
     def action_approved(self):
         res = super().action_approved()
         queries = self.bravo_get_insert_sql()
-        self.env['purchase.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if queries:
+            self.env['purchase.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
     @api.model

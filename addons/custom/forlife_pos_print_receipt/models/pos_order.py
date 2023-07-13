@@ -17,7 +17,6 @@ class PosOrder(models.Model):
 
     @api.model
     def prepare_data_receipt_report(self):
-        locale.setlocale(locale.LC_ALL, self.partner_id.lang)
         data = []
         for item in self:
             total_qty = 0
@@ -37,7 +36,7 @@ class PosOrder(models.Model):
                         discount = f'{discount}%'
 
                 if item.brand_id.code == 'TKL':
-                    discount = locale.format_string('%d', line.original_price, grouping=True)
+                    discount = self.env.company.currency_id.format(line.original_price)
                     if line.original_price > 0:
                         discount = f'-{discount}'
                     else:
@@ -48,9 +47,9 @@ class PosOrder(models.Model):
                     'name': line.product_id.name,
                     'qty': line.qty,
                     'barcode': line.product_id.barcode,
-                    'price_unit': locale.format_string('%d', line.original_price, grouping=True),
+                    'price_unit': self.env.company.currency_id.format(line.original_price),
                     'discount': discount,
-                    'subtotal_paid': locale.format_string('%d', line.subtotal_paid, grouping=True),
+                    'subtotal_paid': self.env.company.currency_id.format(line.subtotal_paid),
                 })
                 for p in line.promotion_usage_ids:
                     if not p.code_id:
@@ -59,7 +58,7 @@ class PosOrder(models.Model):
                         gif_code.append({'code': p.code_id.name, 'amount': 0})
                     else:
                         gif_code.append({'code': p.code_id.name,
-                                         'amount': locale.format_string('%d', p.discount_total, grouping=True)})
+                                         'amount': self.env.company.currency_id.format(p.discount_total)})
 
                 for promotion_detail in line.discount_details_lines:
                     if promotion_detail.type != 'point':
@@ -73,7 +72,7 @@ class PosOrder(models.Model):
             for pm in item.payment_ids:
                 payment_method.append({
                     'name': pm.payment_method_id.name,
-                    'amount': f"({locale.format_string('%d', pm.amount, grouping=True)})",
+                    'amount': f"({self.env.company.currency_id.format(pm.amount)})",
                 })
             history_point = self.env['partner.history.point'].search([
                 ('partner_id', '=', item.partner_id.id),
@@ -93,11 +92,11 @@ class PosOrder(models.Model):
                 'employee': item.user_id.name,
                 'note': '',
                 'total_qty': total_qty,
-                'total_reduced': locale.format_string('%d', total_reduced, grouping=True),
-                'amount_total': locale.format_string('%d', amount_total, grouping=True),
+                'total_reduced': self.env.company.currency_id.format(total_reduced),
+                'amount_total': self.env.company.currency_id.format(amount_total),
                 'line_products': line_products,
                 'gif_code': gif_code,
-                'amount_paid': locale.format_string('%d', item.amount_paid, grouping=True),
+                'amount_paid': self.env.company.currency_id.format(item.amount_paid),
                 'payment_method': payment_method,
                 'accumulation': accumulation,
                 'total_point': item.total_point,

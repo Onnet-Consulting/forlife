@@ -152,7 +152,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
+                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}" force_save="1"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount"
                                    force_save="1"
