@@ -2274,19 +2274,16 @@ class PurchaseOrderLine(models.Model):
                 moves.write({"price_unit": line._get_discounted_price_unit()})
         return res
 
-
-    @api.onchange('vendor_price')
-    def onchange_vendor_price(self):
-        self.price_unit = self.price_subtotal / self.exchange_quantity
-
-
     # exchange rate
     @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'exchange_quantity', 'product_uom', 'vendor_price', 'order_id.purchase_type')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
             if line.order_id.purchase_type == 'product':
                 if line.vendor_price:
-                    line.price_unit = line.vendor_price
+                    if line.exchange_quantity != 0:
+                        line.price_unit = line.vendor_price / line.exchange_quantity
+                    else:
+                        line.price_unit = line.vendor_price
                 if not line.product_id or line.invoice_lines:
                     continue
                 params = {'order_id': line.order_id}
