@@ -336,16 +336,15 @@ class TransferStockInventoryLine(models.Model):
 
     @api.onchange('product_from_id', 'product_to_id')
     def check_validate(self):
-        if self.transfer_stock_inventory_id.x_classify:
-            return True
-        if self.product_from_id:
-            self.check_brand(self.product_from_id)
-        if self.product_to_id:
-            self.check_brand(self.product_to_id)
-        if self.product_from_id and self.product_to_id:
-            if self.product_from_id.brand_id.id != self.product_to_id.brand_id.id:
-                raise ValidationError(_('Sản phẩm [%s] và [%s] không cùng thương hiệu' % (
-                    self.product_from_id.name, self.product_to_id.name)))
+        if not self.transfer_stock_inventory_id.x_classify:
+            if self.product_from_id:
+                self.check_brand(self.product_from_id)
+            if self.product_to_id:
+                self.check_brand(self.product_to_id)
+            if self.product_from_id and self.product_to_id:
+                if self.product_from_id.brand_id.id != self.product_to_id.brand_id.id:
+                    raise ValidationError(_('Sản phẩm [%s] và [%s] không cùng thương hiệu' % (
+                        self.product_from_id.name, self.product_to_id.name)))
 
     @api.depends('qty_out', 'unit_price_from')
     def compute_total_out(self):
