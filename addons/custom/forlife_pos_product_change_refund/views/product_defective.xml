@@ -31,7 +31,7 @@
                         <button name="action_approve" type="object" class="oe_highlight" string="Duyệt" states="waiting approve"/>
                         <button name="action_refuse" type="object" string="Từ chối (alpha)" invisible="1" states="waiting approve"/>
                         <button name="action_cancel" type="object" string="Huỷ" states="waiting approve,approved"/>
-                        <button name="%(action_reason_refuse_product_defective)d" type="action" string="Từ chối (beta)" states="waiting approve"/>
+                        <button name="%(action_reason_refuse_product_defective)d" type="action" string="Từ chối" states="waiting approve"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -69,6 +69,19 @@
                 </form>
             </field>
         </record>
+
+        <record id="product_defective_view_search" model="ir.ui.view">
+            <field name="name">product.defective.view.search</field>
+            <field name="model">product.defective</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                    <separator/>
+                    <filter name="active" string="Đã lưu" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
         <record id="product_defective_action" model="ir.actions.act_window">
             <field name="name">Xử lí hàng lỗi</field>
             <field name="type">ir.actions.act_window</field>
