@@ -2015,11 +2015,18 @@ class PurchaseOrderLine(models.Model):
             totals = list(tax_results['totals'].values())[0]
             amount_untaxed = totals['amount_untaxed']
             amount_tax = totals['amount_tax']
-            line.update({
-                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
-                'price_tax': amount_tax,
-                'price_total': amount_untaxed + amount_tax,
-            })
+            if line.free_good:
+                line.update({
+                    'price_subtotal': 0,
+                    'price_tax': 0,
+                    'price_total': 0,
+                })
+            else:
+                line.update({
+                    'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
+                    'price_tax': amount_tax,
+                    'price_total': amount_untaxed + amount_tax,
+                })
 
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
@@ -2029,8 +2036,16 @@ class PurchaseOrderLine(models.Model):
     purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
     exchange_quantity = fields.Float('Exchange Quantity', default=1.0)
     # line_sub_total = fields.Monetary(compute='_get_line_subtotal', string='Line Subtotal', readonly=True, store=True)
-    discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
-    discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0)
+    discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
+    discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
+
+    @api.constrains('discount_percent')
+    def _constrains_discount_percent_and_discount(self):
+        for rec in self:
+            if rec.discount_percent < 0 or rec.discount_percent > 100:
+                raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
@@ -2040,8 +2055,8 @@ class PurchaseOrderLine(models.Model):
     event_id = fields.Many2one('forlife.event', string='Program of events')
     vendor_price = fields.Float(string='Giá nhà cung cấp', compute='compute_vendor_price_ncc', store=1)
     vendor_price_import = fields.Float(string='Giá của nhà cung cấp')
-    readonly_discount = fields.Boolean(default=False)
-    readonly_discount_percent = fields.Boolean(default=False)
+    readonly_discount = fields.Boolean(default=False, compute='_compute_free_good', store=1)
+    readonly_discount_percent = fields.Boolean(default=False, compute='_compute_free_good', store=1)
     is_passersby = fields.Boolean(related='order_id.is_passersby', store=1)
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
@@ -2103,17 +2118,6 @@ class PurchaseOrderLine(models.Model):
                 if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
                     raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax))
 
-    @api.constrains('total_vnd_exchange_import',
-                    'total_vnd_amount', 'before_tax',
-                    'order_id.is_inter_company','order_id')
-    def _constrain_total_vnd_exchange_import(self):
-        line_number = 1
-        for rec in self:
-            line_number += 1
-            if rec.order_id.type_po_cost == 'tax' and rec.order_id.is_inter_company == False and rec.before_tax and rec.total_vnd_exchange_import and rec.total_vnd_amount:
-                if rec.total_vnd_exchange_import != (rec.total_vnd_amount + rec.before_tax):
-                    raise ValidationError(_("Tiền sản phẩm trước thuế %s (*Gợi ý: Tiền ở tab thuế nhập khẩu) != Thành tiền VND của sản phẩm cộng với chi phí trước thuế (%s + %s) ở dòng - {}".format(line_number)) %(rec.total_vnd_exchange_import, rec.total_vnd_amount, rec.before_tax ))
-
     @api.onchange('vat_tax')
     def _onchange_vat_tax(self):
         self.vat_tax_amount = (self.total_vnd_exchange + self.tax_amount + self.special_consumption_tax_amount) * self.vat_tax / 100
@@ -2170,7 +2174,6 @@ class PurchaseOrderLine(models.Model):
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import', 'before_tax')
     def _compute_total_vnd_amount(self):
         for rec in self:
-
             if not rec.total_vnd_exchange_import:
                 if rec.price_subtotal and rec.order_id.exchange_rate:
                     rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
@@ -2274,46 +2277,52 @@ class PurchaseOrderLine(models.Model):
                 item.billed = False
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',)
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
-                if rec.vendor_price_import:
-                    rec.vendor_price = rec.vendor_price_import
-                    rec.is_red_color = False
-                    continue
-            data = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                ('partner_id', '=', rec.order_id.partner_id.id),
-                ('currency_id', '=', rec.order_id.currency_id.id),
-                ('amount_conversion', '=', rec.exchange_quantity),
-                ('product_uom', '=', rec.purchase_uom.id),
-                ('date_start', '<=', today),
-                ('date_end', '>=', today)
-            ])
-            rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-            if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                closest_quantity = None  # Khởi tạo giá trị biến tạm
-                for line in data:
-                    if rec.product_qty and rec.product_qty >= line.min_qty:
-                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                        if closest_quantity is None or line.min_qty > closest_quantity:
-                            closest_quantity = line.min_qty
-                            rec.vendor_price = line.price
-                            rec.exchange_quantity = line.amount_conversion
+            if rec.free_good:
+                rec.vendor_price = 0
+            else:
+                if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+                    if rec.vendor_price_import:
+                        rec.vendor_price = rec.vendor_price_import
+                        rec.is_red_color = False
+                        continue
+                data = self.env['product.supplierinfo'].search([
+                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                    ('partner_id', '=', rec.order_id.partner_id.id),
+                    ('currency_id', '=', rec.order_id.currency_id.id),
+                    ('amount_conversion', '=', rec.exchange_quantity),
+                    ('product_uom', '=', rec.purchase_uom.id),
+                    ('date_start', '<=', today),
+                    ('date_end', '>=', today)
+                ])
+                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+                if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                    closest_quantity = None  # Khởi tạo giá trị biến tạm
+                    for line in data:
+                        if rec.product_qty and rec.product_qty >= line.min_qty:
+                            ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                            if closest_quantity is None or line.min_qty > closest_quantity:
+                                closest_quantity = line.min_qty
+                                rec.vendor_price = line.price
+                                rec.exchange_quantity = line.amount_conversion
+
+
 
     # discount
-    @api.onchange("free_good")
-    def _onchange_free_good(self):
-        if self.free_good:
-            self.discount = self.discount_percent = False
-            self.vendor_price = False
-            self.price_unit = False
-            self.price_subtotal = False
-            self.readonly_discount_percent = self.readonly_discount = True
-        else:
-            self.readonly_discount_percent = self.readonly_discount = False
+    @api.depends("free_good")
+    def _compute_free_good(self):
+        for rec in self:
+            if rec.free_good:
+                rec.discount = rec.discount_percent = 0
+                rec.vendor_price = False
+                rec.price_unit = False
+                rec.price_subtotal = False
+                rec.readonly_discount_percent = rec.readonly_discount = True
+            else:
+                rec.readonly_discount_percent = rec.readonly_discount = False
 
     @api.onchange("discount_percent", 'vendor_price')
     def _onchange_discount_percent(self):
@@ -2376,73 +2385,76 @@ class PurchaseOrderLine(models.Model):
     # exchange rate
     @api.depends('purchase_quantity', 'purchase_uom', 'product_qty',
                  'exchange_quantity', 'product_uom', 'vendor_price',
-                 'order_id.purchase_type')
+                 'order_id.purchase_type', 'free_good')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
-            if line.vendor_price:
-                if line.exchange_quantity != 0:
-                    line.price_unit = line.vendor_price / line.exchange_quantity
-                else:
-                    line.price_unit = line.vendor_price
-            if not line.product_id or line.invoice_lines:
-                continue
-            params = {'order_id': line.order_id}
-            uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
-            seller = line.product_id._select_seller(
-                partner_id=line.partner_id,
-                quantity=line.product_qty,
-                date=line.order_id.date_order and line.order_id.date_order.date(),
-                uom_id=uom_id,
-                params=params)
-
-            if seller or not line.date_planned:
-                line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-
-            # If not seller, use the standard price. It needs a proper currency conversion.
-            if not seller:
-                if line.product_id.detailed_type == 'product':
+            if line.free_good:
+                line.price_unit = 0
+            else:
+                if line.vendor_price:
+                    if line.exchange_quantity != 0:
+                        line.price_unit = line.vendor_price / line.exchange_quantity
+                    else:
+                        line.price_unit = line.vendor_price
+                if not line.product_id or line.invoice_lines:
                     continue
-                unavailable_seller = line.product_id.seller_ids.filtered(
-                    lambda s: s.partner_id == line.order_id.partner_id)
-                if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
-                    # Avoid to modify the price unit if there is no price list for this partner and
-                    # the line has already one to avoid to override unit price set manually.
+                params = {'order_id': line.order_id}
+                uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
+                seller = line.product_id._select_seller(
+                    partner_id=line.partner_id,
+                    quantity=line.product_qty,
+                    date=line.order_id.date_order and line.order_id.date_order.date(),
+                    uom_id=uom_id,
+                    params=params)
+
+                if seller or not line.date_planned:
+                    line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+
+                # If not seller, use the standard price. It needs a proper currency conversion.
+                if not seller:
+                    if line.product_id.detailed_type == 'product':
+                        continue
+                    unavailable_seller = line.product_id.seller_ids.filtered(
+                        lambda s: s.partner_id == line.order_id.partner_id)
+                    if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
+                        # Avoid to modify the price unit if there is no price list for this partner and
+                        # the line has already one to avoid to override unit price set manually.
+                        continue
+                    po_line_uom = line.product_uom or line.product_id.uom_po_id
+                    price_unit = line.env['account.tax']._fix_tax_included_price_company(
+                        line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
+                        line.product_id.supplier_taxes_id,
+                        line.taxes_id,
+                        line.company_id,
+                    )
+                    price_unit = line.product_id.currency_id._convert(
+                        price_unit,
+                        line.currency_id,
+                        line.company_id,
+                        line.date_order,
+                        False
+                    )
+                    line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                                   self.env[
+                                                                                       'decimal.precision'].precision_get(
+                                                                                       'Product Price')))
                     continue
-                po_line_uom = line.product_uom or line.product_id.uom_po_id
-                price_unit = line.env['account.tax']._fix_tax_included_price_company(
-                    line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
-                    line.product_id.supplier_taxes_id,
-                    line.taxes_id,
-                    line.company_id,
-                )
-                price_unit = line.product_id.currency_id._convert(
-                    price_unit,
-                    line.currency_id,
-                    line.company_id,
-                    line.date_order,
-                    False
-                )
-                line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
-                                                                               self.env[
-                                                                                   'decimal.precision'].precision_get(
-                                                                                   'Product Price')))
-                continue
 
-            price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
-                                                                                 line.product_id.supplier_taxes_id,
-                                                                                 line.taxes_id,
-                                                                                 line.company_id) if seller else 0.0
-            price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
+                price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
+                                                                                     line.product_id.supplier_taxes_id,
+                                                                                     line.taxes_id,
+                                                                                     line.company_id) if seller else 0.0
+                price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-            # record product names to avoid resetting custom descriptions
-            default_names = []
-            vendors = line.product_id._prepare_sellers({})
-            for vendor in vendors:
-                product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
-            if not line.name or line.name in default_names:
-                product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+                # record product names to avoid resetting custom descriptions
+                default_names = []
+                vendors = line.product_id._prepare_sellers({})
+                for vendor in vendors:
+                    product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                    default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
+                if not line.name or line.name in default_names:
+                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                    line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
