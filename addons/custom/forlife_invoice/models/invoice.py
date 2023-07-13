@@ -911,7 +911,10 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('vendor_price')
     def onchange_vendor_price(self):
-        self.price_unit = self.vendor_price
+        if self.exchange_quantity != 0:
+            self.price_unit = self.vendor_price / self.exchange_quantity
+        else:
+            self.price_unit = self.vendor_price
 
     @api.onchange('quantity_purchased', 'exchange_quantity')
     def onchange_quantity_purchased(self):
