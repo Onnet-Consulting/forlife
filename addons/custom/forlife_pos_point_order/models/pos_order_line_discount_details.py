@@ -28,7 +28,7 @@ class PosOlDiscountDetails(models.Model):
             rec.money_reduced = rec.get_money_reduced()
 
     def get_money_reduced(self):
-        if self.pos_order_line_id.is_product_defective or self.pos_order_line_id.discount > 0:
+        if self.pos_order_line_id.is_product_defective or self.pos_order_line_id.discount > 0 or self.pos_order_line_id.handle_change_refund_price > 0:
             return self.recipe
         return self.recipe * 1000
 
