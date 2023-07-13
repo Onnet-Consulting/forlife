@@ -65,9 +65,7 @@ class PurchaseReturnWizard(models.TransientModel):
         line_fields = [f for f in self.env['stock.return.picking.line']._fields.keys()]
         purchase_return_lines_data_tmpl = self.env['purchase.return.wizard.line'].default_get(line_fields)
         for line in self.purchase_id.order_line:
-            if line.received <= 0:
-                continue
-            if (line.received - line.qty_returned) <= 0:
+            if line.qty_received <= 0 or (line.qty_received - line.qty_returned) <= 0:
                 continue
             purchase_return_lines_data = dict(purchase_return_lines_data_tmpl)
             purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line))
@@ -82,7 +80,7 @@ class PurchaseReturnWizard(models.TransientModel):
 
     @api.model
     def _prepare_stock_return_purchase_line_vals(self, purchase_line):
-        purchase_received = purchase_line.received
+        purchase_received = purchase_line.qty_received
         purchase_returned = purchase_line.qty_returned
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price
