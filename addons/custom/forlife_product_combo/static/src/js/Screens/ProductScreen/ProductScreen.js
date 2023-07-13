@@ -27,7 +27,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     'quantity': line.quantity,
                     'display_name':line.product.display_name,
                     'refunded_orderline_id': false,
-                    'sku': line.product.sku_code
+                    'sku_code': line.product.sku_code
                 })
             }else{
                 arr.push({
@@ -92,16 +92,20 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             }
                         })
                     }else {
+                        var division = [];
                         for(let index =0;index <list_product_tmpl.length; index++){
-                            for(let k =0; k< rslt.length; k++){
-                                if(list_product_tmpl[index].product_tmpl_id == rslt[k].product_tmpl_id && rslt[k].quantity != Math.abs(list_product_tmpl[index].quantity)){
+                            division.push(list_product_tmpl[index].quantity/rslt[index].quantity)
+                        }
+                        if(new Set(division).size !== 1){
+                            for(let index =0;index <list_product_tmpl.length; index++){
+                                if((list_product_tmpl[index].quantity % rslt[index].quantity) !== 0){
                                     list_quantity.push(list_product_tmpl[index].display_name)
                                 }
                             }
                         }
                     }
                 }
-            }else if(order.is_change_product && rslt){
+            }else if(order.is_change_product){
                 for(let i=0; i< list_key.length; i++){
                     let product_valid_combo_in_pos = []
                     for(let j =0;j <list_product_tmpl.length; j++){
@@ -110,16 +114,16 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                         }
                     }
 //                    for(let i =0; i<list_product_tmpl)
-//                    console.log(33333333333)
-                    order_lines.forEach(function(line){
-                        for(let k =0; k< list_product_tmpl.length; k++){
-                            if(!line.refunded_orderline_id && !list_product_tmpl[k].refunded_orderline_id){
-                                if(line.product.sku_code != list_product_tmpl[k].sku_code || (line.product.product_tmpl_id == list_product_tmpl[k].product_tmpl_id && line.product.id ==list_product_tmpl[k].product_id)){
-                                    list_product_change_invalid.push(line.product.display_name)
-                                }
-                            }
-                        }
-                    })
+                    console.log(33333333333)
+//                    order_lines.forEach(function(line){
+//                        for(let k =0; k< list_product_tmpl.length; k++){
+//                            if(!line.refunded_orderline_id && !list_product_tmpl[k].refunded_orderline_id){
+//                                if(line.product.sku_code != list_product_tmpl[k].sku_code || (line.product.product_tmpl_id == list_product_tmpl[k].product_tmpl_id && line.product.id ==list_product_tmpl[k].product_id)){
+//                                    list_product_change_invalid.push(line.product.display_name)
+//                                }
+//                            }
+//                        }
+//                    })
 
 
 

@@ -81,6 +81,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             if(options.pos_order_line_discount_details){
                 orderline.pos_order_line_discount_details = options.pos_order_line_discount_details;
             }
+            if(options.sku_code){
+                orderline.sku_code = options.sku_code;
+            }
             super.set_orderline_options(...arguments);
         }
 

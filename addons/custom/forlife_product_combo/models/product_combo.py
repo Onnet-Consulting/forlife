@@ -19,9 +19,9 @@ class ProductCombo(models.Model):
     to_date = fields.Datetime('To Date', required=True)
     combo_product_ids = fields.One2many('product.combo.line', 'combo_id', string='Combo Applied Products')
     size_attribute_id = fields.Many2one('product.attribute', string="Size Deviation Allowed",
-                                        domain="[('create_variant', '=', 'always'), ('id', '!=', color_attribute_id)]")
+                                        domain="[('id', '!=', color_attribute_id)]")
     color_attribute_id = fields.Many2one('product.attribute', string="Color Deviation Allowed",
-                                         domain="[('create_variant', '=', 'always'), ('id', '!=', size_attribute_id)]")
+                                         domain="[('id', '!=', size_attribute_id)]")
 
     _sql_constraints = [
         ('combo_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
@@ -40,7 +40,7 @@ class ProductCombo(models.Model):
         for rec in self:
             from_date = rec.from_date
             to_date = rec.to_date
-            sql = f"SELECT ptl.id, pc.id FROM product_combo pc " \
+            sql = f"SELECT ptl.sku_code, pc.id FROM product_combo pc " \
                   f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
                   f" JOIN product_template ptl on ptl.id = pcl.product_id" \
                   f" WHERE (pc.from_date < '{from_date}' and pc.to_date > '{from_date}' and pc.to_date < '{to_date}')" \
@@ -49,13 +49,12 @@ class ProductCombo(models.Model):
                   f" AND pc.state = 'in_progress'"
             self._cr.execute(sql)
             data = self._cr.fetchall()
-            product_template_ids = []
+            product_template_skus = []
             if data:
-                product_template_ids = [x[0] if x[1] != rec.id else False for x in data]
+                product_template_skus = [x[0] if x[1] != rec.id else False for x in data]
             for r in rec.combo_product_ids:
-                if r.product_id.id in product_template_ids:
-                    raise ValidationError(_(f'Khoảng thời gian và sản phẩm {r.product_id.name_get()[0][1]} đã được khai báo trong bản ghi khác !'))
-            return product_template_ids
+                if r.sku in product_template_skus:
+                    raise ValidationError(_(f'Khoảng thời gian và sản phẩm có mã sku {r.sku} đã được khai báo trong bản ghi khác !'))
 
     def action_approve(self):
         self.ensure_one()
