@@ -416,7 +416,7 @@ msgstr "Hạn xử lý "
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__request_purchases
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Request Code"
-msgstr "Mã phiếu yêu cầu"
+msgstr "Phiếu yêu cầu"
 
 #. module: forlife_purchase
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__draft
