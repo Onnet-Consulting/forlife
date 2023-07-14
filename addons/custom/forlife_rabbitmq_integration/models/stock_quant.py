@@ -9,6 +9,7 @@ class StockQuant(models.Model):
     _inherit = ['stock.quant', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update']
     _create_action = 'update'
     _update_action = 'update'
+    _priority = 1
 
     def domain_record_sync_info(self):
         return self.filtered(lambda f: f.location_id.warehouse_id.whs_type.code in ('3', '4', '5'))
