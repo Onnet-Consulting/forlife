@@ -155,6 +155,7 @@ class AccountMove(models.Model):
         context = {'search_default_move_id': self.id, 'search_default_posted': 1}
         return dict(action, context=context)
 
+
     @api.onchange('partner_id', 'partner_id.group_id')
     def onchange_partner_id(self):
         if self.partner_id.group_id:
@@ -809,10 +810,9 @@ class AccountMoveLine(models.Model):
     def _compute_total_vnd_amount(self):
         for rec in self:
             rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
-            rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
+            # rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.invoice_line_ids')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'total_vnd_amount')
     def _compute_before_tax(self):
         for rec in self:
             cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
@@ -986,7 +986,8 @@ class AccountMoveLine(models.Model):
                 line.balance = balance
                 # sửa ở đây
                 if line.move_id.currency_id != line.company_id.currency_id and line.move_id.exchange_rate > 0:
-                    line.balance = balance * line.move_id.exchange_rate
+                    rates = line.move_id.currency_id._get_rates(line.company_id, line.date)
+                    line.balance = balance * rates.get(line.move_id.currency_id.id) * line.move_id.exchange_rate
 
         # Since this method is called during the sync, inside of `create`/`write`, these fields
         # already have been computed and marked as so. But this method should re-trigger it since
@@ -1099,10 +1100,18 @@ class InvoiceCostLine(models.Model):
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá', default=1)
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
-    vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
+    vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', inverse="_inverse_cost", store=1, readonly=False)
     is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế', default=False)
-
+    cost_line_origin = fields.Many2one('purchase.order.cost.line', string='Chi phí gốc')
     invoice_cost_id = fields.Many2one('account.move', string='Invoice Cost Line')
+    company_currency = fields.Many2one('res.currency', string='Tiền tệ',
+                                       default=lambda self: self.env.company.currency_id.id)
+
+    @api.model
+    def _inverse_cost(self):
+        for rec in self:
+            if rec.cost_line_origin:
+                rec.cost_line_origin.write({'actual_cost': rec.vnd_amount})
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):

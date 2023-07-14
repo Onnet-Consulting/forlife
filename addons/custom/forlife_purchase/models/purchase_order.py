@@ -64,7 +64,7 @@ class PurchaseOrder(models.Model):
                    ('labor', 'Hóa đơn chi phí nhân công'),
                    ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
-    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
+    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí ước tính")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
@@ -1163,6 +1163,10 @@ class PurchaseOrder(models.Model):
     def create_invoice_expense(self, order, nine, line, cp, wave_item):
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
                     wave_item.qty_done / line.purchase_quantity)) * nine.vnd_amount
+        if line.currency_id != line.company_currency:
+            rates = line.currency_id._get_rates(line.company_id, wave_item.date)
+            cp = cp * rates.get(line.currency_id.id)
+
         data_line = {
             'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
@@ -1907,8 +1911,11 @@ class PurchaseOrder(models.Model):
         values = super(PurchaseOrder, self)._prepare_invoice()
         cost_line_vals = []
         for cl in self.cost_line:
-            data = cl.copy_data()[0]
+            move_done = sum(self.order_line.move_ids.filtered(lambda x:x.state == 'done').mapped('quantity_done'))
+            total_qty = sum(self.order_line.mapped('product_qty'))
+            data = cl.copy_data({'vnd_amount': move_done/total_qty * cl.vnd_amount, 'cost_line_origin': cl.id})[0]
             del data['purchase_order_id']
+            del data['actual_cost']
             cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,

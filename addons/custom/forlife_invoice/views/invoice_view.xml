@@ -253,12 +253,13 @@
                         <field name="cost_line" widget="section_and_note_one2many"
                                attrs="{'readonly': [('state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
+                                <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="name" readonly="1" string='Mô tả'/>
                                 <field name="currency_id"/>
-                                <field name="exchange_rate"/>
+                                <field name="exchange_rate" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="foreign_amount"/>
-                                <field name="vnd_amount"/>
+                                <field name="vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
                          </field>
