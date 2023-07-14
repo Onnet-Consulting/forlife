@@ -73,34 +73,3 @@ def connect_bkav(data, configs):
         _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
         raise ValidationError(f'Nhận khách từ lỗi của BKAV {ex}')
     return json.loads(result_decode)
-    #
-    # if response_bkav['Status'] == 0:
-    #     if type(response_bkav['Object']) == int:
-    #         return response_bkav['Object']
-    #     elif type(response_bkav['Object']) == str and len(response_bkav['Object']) == 0:
-    #         return response_bkav['Object']
-    #     else:
-    #         status_index = response_bkav['Object'].index('"Status":') + len('"Status":')
-    #         mes_index_s = response_bkav['Object'].index('"MessLog":"') + len('"MessLog":"')
-    #         mes_index_e = response_bkav['Object'].index('"}]')
-    #         response_status = response_bkav['Object'][status_index]
-    #         if response_status == '1':
-    #             response_mes = response_bkav['Object']
-    #             invoice_guid = ''
-    #             invoice_no = ''
-    #         else:
-    #             response_mes = response_bkav['Object'][mes_index_s:mes_index_e]
-    #             invoice_guid = (json.loads(response_bkav['Object']))[0]["InvoiceGUID"]
-    #             invoice_no = (json.loads(response_bkav['Object']))[0]["InvoiceNo"]
-    # else:
-    #     response_status = '1'
-    #     response_mes = response_bkav['Object']
-    #     invoice_guid = ''
-    #     invoice_no = ''
-    #
-    # return {
-    #     'status': response_status,
-    #     'message': response_mes,
-    #     'invoice_guid': invoice_guid,
-    #     'invoice_no': invoice_no,
-    # }

@@ -26,9 +26,10 @@ class StockTransfer(models.Model):
             self.location_dest_name = self.location_dest_id.location_id.name+'/'+self.location_dest_id.name
 
     #bkav
-    exists_bkav = fields.Boolean(default=False, copy=False)
-    is_post_bkav = fields.Boolean(default=False, string="Đã tạo HĐ trên BKAV", copy=False)
-    is_check_cancel = fields.Boolean(default=False, copy=False)
+    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav = fields.Boolean(default=False, string="Đã ký HĐ trên BKAV", copy=False)
+    is_check_cancel = fields.Boolean(default=False, copy=False, string="Đã hủy")
+    is_general = fields.Boolean(default=False, copy=False, string="Đã chạy tổng hợp cuối ngày")
 
     ###trạng thái và số hdđt từ bkav trả về
     invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status', store=1,copy=False)
@@ -81,8 +82,7 @@ class StockTransfer(models.Model):
             'cmd_addInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice'),
             'cmd_addInvoiceStock': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_stock'),
             'cmd_addInvoiceEdit': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit'),
-            'cmd_addInvoiceEditDiscount': self.env['ir.config_parameter'].sudo().get_param(
-                'bkav.add_einvoice_edit_discount'),
+            'cmd_addInvoiceEditDiscount': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit_discount'),
             'cmd_addInvoiceReplace': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_replace'),
             'cmd_updateInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.update_einvoice'),
             'cmd_deleteInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.delete_einvoice'),
@@ -96,6 +96,10 @@ class StockTransfer(models.Model):
     
 
     def getting_invoice_status(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_getStatusInvoice')),
@@ -117,7 +121,7 @@ class StockTransfer(models.Model):
             if invoice.location_dest_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer, datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
             sequence = 0
             for line in invoice.stock_transfer_line:
@@ -183,9 +187,10 @@ class StockTransfer(models.Model):
                 "ListInvoiceAttachFileWS": [],
             })
         return bkav_data
-    
 
     def create_invoice_bkav(self):
+        if self.is_general == True:
+            return
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
@@ -201,24 +206,29 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
-            result_data = json.loads(response.get('Object', []))[0]
+            result_data = json.loads(response.get('Object', {}))[0]
             try:
                 # ghi dữ liệu
                 self.write({
                     'exists_bkav': True,
-                    'is_post_bkav': True,
                     'invoice_guid': result_data.get('InvoiceGUID'),
                     'invoice_no': result_data.get('InvoiceNo'),
                     'invoice_form': result_data.get('InvoiceForm'),
                     'invoice_serial': result_data.get('InvoiceSerial'),
                     'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None
                 })
+                if result_data.get('MessLog'):
+                    self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
             except:
                 self.get_invoice_bkav()
 
 
     def get_invoice_bkav(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_getInvoice')),
@@ -233,7 +243,6 @@ class StockTransfer(models.Model):
             self.write({
                 'data_compare_status': str(result_data.get('InvoiceStatusID')),
                 'exists_bkav': True,
-                'is_post_bkav': True,
                 'invoice_guid': result_data.get('InvoiceGUID'),
                 'invoice_no': result_data.get('InvoiceNo'),
                 'invoice_form': result_data.get('InvoiceForm'),
@@ -244,6 +253,8 @@ class StockTransfer(models.Model):
 
 
     def update_invoice_bkav(self):
+        if self.is_general == True:
+            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_updateInvoice')),
@@ -252,12 +263,17 @@ class StockTransfer(models.Model):
         _logger.info(f'BKAV - data update invoice to BKAV: {data}')
         response = connect_bkav(data, configs)
         if response.get('Status') == 1:
-            raise ValidationError(response.get('Object'))
+            self.message_post(body=(response.get('Object')))
         else:
             self.getting_invoice_status()
+            self.get_invoice_bkav()
 
 
     def publish_invoice_bkav(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
         configs = self.get_bkav_config()
 
         data = {
@@ -274,10 +290,15 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
+            self.is_post_bkav = True
             self.get_invoice_bkav()
 
 
     def download_invoice_bkav(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
         if not self.eivoice_file:
             configs = self.get_bkav_config()
             data = {
@@ -286,7 +307,7 @@ class StockTransfer(models.Model):
             }
             _logger.info(f'BKAV - data download invoice to BKAV: {data}')
             response_action = connect_bkav(data, configs)
-            if response_action.get('Status') == '1':
+            if response_action.get('Status') == 1:
                 self.message_post(body=(response_action.get('Object')))
             else:
                 attachment_id = self.env['ir.attachment'].sudo().create({
@@ -307,3 +328,31 @@ class StockTransfer(models.Model):
                        % (self.eivoice_file.id, self.eivoice_file.name),
                 'target': 'self',
             }
+        
+    def cancel_invoice_bkav(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
+        configs = self.get_bkav_config()
+        data = {
+            "CmdType": int(configs.get('cmd_cancelInvoice')),
+            "CommandObject": self.invoice_guid,
+        }
+        connect_bkav(data, configs)
+        _logger.info(f'BKAV - data cancel invoice to BKAV: {data}')
+        try:
+            response = connect_bkav(data, configs)
+        except Exception as ex:
+            _logger.error(f'BKAV connect_bkav: {ex}')
+            return False
+        if response.get('Status') == 1:
+            self.message_post(body=(response.get('Object')))
+        else:
+            self.is_check_cancel = True
+            self.exists_bkav = False
+
+    def action_cancel(self):
+        res = super(StockTransfer, self).action_cancel()
+        self.cancel_invoice_bkav()
+        return res
