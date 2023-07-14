@@ -113,10 +113,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                     handle_change += this.orderlines[i].handle_change_refund_price
                 }
             }
-            if((total - defective + reduced) <0 ){
-                return total - defective + reduced + handle_change;
-            }
-            return total - defective + reduced;
+            return total - defective + reduced + handle_change;
         }
 
     }
