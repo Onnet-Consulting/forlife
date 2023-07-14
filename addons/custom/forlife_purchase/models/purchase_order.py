@@ -1917,11 +1917,11 @@ class PurchaseOrder(models.Model):
         })
         return values
 
-    @api.constrains('partner_id')
-    def _constrains_partner_id(self):
-        for rec in self:
-            if not rec.partner_id:
-                raise ValidationError('Thiếu giá trị bắt buộc cho trường Nhà cung cấp!')
+    # @api.constrains('partner_id')
+    # def _constrains_partner_id(self):
+    #     for rec in self:
+    #         if not rec.partner_id:
+    #             raise ValidationError('Thiếu giá trị bắt buộc cho trường Nhà cung cấp!')
 
     @api.constrains('purchase_type')
     def _constrains_purchase_type(self):
