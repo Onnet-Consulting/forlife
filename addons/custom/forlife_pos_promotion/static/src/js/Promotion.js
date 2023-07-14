@@ -760,7 +760,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _isAppliedCartPromotion() {
-        for (let line of this.get_orderlines_to_check()) {
+        for (let line of this.get_orderlines()) {
             if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
                 return true;
             };
