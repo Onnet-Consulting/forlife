@@ -545,7 +545,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             });
             promotionValidPartners = promotionValidPartners || [];
             for (let program_id of proPrograms){
-                    let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
+                let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
                 if (promotionValidPartners.includes(program_id)) {
                     if (validProgram) {
                         validProgram.valid_customer_ids.add(partner.id);
@@ -573,6 +573,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             kwargs: { context: session.user_context },
         }).then((result) => {
             self.historyProgramUsages = result || {all_usage_promotions: {}};
+            if (result.no_active_programs.length) {
+                this.pos.promotionPrograms.filter(p => result.no_active_programs.includes(p.id))
+                        .forEach(p => {p.active = false;});
+            };
         });
     }
 
@@ -605,6 +609,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (this.activatedInputCodes) {
                 if (!this.activatedInputCodes.map(code => code.program_id).includes(program.program_id)) {return false;};
             } else {return false;};
+        };
+        if (!program.active || !program.state == 'in_progress') {
+            return false;
         };
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
