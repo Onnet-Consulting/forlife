@@ -10,6 +10,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Core'
     _exchange = ''
     _routing_key = ''
+    _priority = 10
 
     def get_sync_info_value(self):
         return []
@@ -64,7 +65,7 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
         res = super().create(vals_list)
         record = res.domain_record_sync_info()
         if record:
-            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._create_action)
+            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
         return res
 
 
@@ -85,7 +86,7 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
         check = self.check_update_info(self.get_field_update(), values)
         record = self.domain_record_sync_info()
         if check and record:
-            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._update_action)
+            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
         return res
 
 
@@ -104,7 +105,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.domain_record_sync_info().ids
         res = super().unlink()
         if record_ids:
-            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ').action_delete_record(record_ids)
+            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 
 

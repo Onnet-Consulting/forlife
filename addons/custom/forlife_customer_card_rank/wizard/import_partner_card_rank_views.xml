@@ -14,10 +14,15 @@
                             <field name="import_file" filename="import_file_name"/>
                             <field name="import_file_name" invisible="1"/>
                         </group>
+                        <group string="Import error" attrs="{'invisible': [('error_file', '=', False)]}">
+                            <field name="error_file" filename="error_file_name" readonly="1" force_save="1"/>
+                            <field name="error_file_name" invisible="1"/>
+                        </group>
                     </sheet>
                     <footer>
                         <button special="cancel" string="Cancel"/>
-                        <button name="action_import" type="object" string="Import" class="oe_highlight" attrs="{'invisible': [('import_file', '=', False)]}"/>
+                        <button name="download_template_file" type="object" string="Download Template" class="oe_highlight"/>
+                        <button name="action_import" type="object" string="Import" class="oe_highlight" attrs="{'invisible': ['|', ('import_file', '=', False), ('brand_id', '=', False)]}"/>
                     </footer>
                 </form>
             </field>
