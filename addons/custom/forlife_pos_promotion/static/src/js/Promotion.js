@@ -516,7 +516,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     async set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
-        if (oldPartner !== this.get_partner()) {
+        if (oldPartner !== this.get_partner() && this.state) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
         };
