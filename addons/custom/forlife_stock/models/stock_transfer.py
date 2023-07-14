@@ -48,7 +48,7 @@ class StockTransfer(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft')
     is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False, copy=False)
-    stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Line')
+    stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Chi tiết')
     total_package = fields.Float(string='Total Package (Number)')
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char(copy=False)
