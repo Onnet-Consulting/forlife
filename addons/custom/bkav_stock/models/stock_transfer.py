@@ -220,6 +220,7 @@ class StockTransfer(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
+                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
@@ -329,6 +330,7 @@ class StockTransfer(models.Model):
                 'target': 'self',
             }
         
+
     def cancel_invoice_bkav(self):
         if self.is_general == True:
             return
@@ -337,22 +339,58 @@ class StockTransfer(models.Model):
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_cancelInvoice')),
-            "CommandObject": self.invoice_guid,
+            "CommandObject": [
+                {
+                    "Invoice": {
+                        "InvoiceGUID": self.invoice_guid,
+                        "Reason": "Hủy vì sai sót"
+                    },
+                    "PartnerInvoiceID": 0,
+                    "PartnerInvoiceStringID": self.name,
+                }
+            ]
         }
-        connect_bkav(data, configs)
         _logger.info(f'BKAV - data cancel invoice to BKAV: {data}')
-        try:
-            response = connect_bkav(data, configs)
-        except Exception as ex:
-            _logger.error(f'BKAV connect_bkav: {ex}')
-            return False
+        response = connect_bkav(data, configs)
         if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
+            raise ValidationError(response.get('Object'))
         else:
             self.is_check_cancel = True
             self.exists_bkav = False
+            self.getting_invoice_status()
+
+
+    def delete_invoice_bkav(self):
+        if self.is_general == True:
+            return
+        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+            return
+        configs = self.get_bkav_config()
+        data = {
+            "CmdType": int(configs.get('cmd_deleteInvoice')),
+            "CommandObject": [
+                {
+                    "Invoice": {
+                        "InvoiceGUID": self.invoice_guid,
+                        "Reason": "Xóa vì sai sót"
+                    },
+                    "PartnerInvoiceID": 0,
+                    "PartnerInvoiceStringID": self.name,
+                }
+            ]
+        }
+        _logger.info(f'BKAV - data delete invoice to BKAV: {data}')
+        response = connect_bkav(data, configs)
+        if response.get('Status') == 1:
+            raise ValidationError(response.get('Object'))
+
 
     def action_cancel(self):
         res = super(StockTransfer, self).action_cancel()
         self.cancel_invoice_bkav()
         return res
+    
+    def unlink(self):
+        for item in self:
+            item.delete_invoice_bkav()
+        return super(StockTransfer, self).unlink()
