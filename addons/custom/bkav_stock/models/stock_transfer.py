@@ -206,7 +206,7 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
-            result_data = json.loads(response.get('Object', []))[0]
+            result_data = json.loads(response.get('Object', {}))[0]
             try:
                 # ghi dữ liệu
                 self.write({
@@ -250,8 +250,6 @@ class StockTransfer(models.Model):
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
-            if result_data.get('MessLog'):
-                self.message_post(body=result_data.get('MessLog'))
 
 
     def update_invoice_bkav(self):
@@ -267,9 +265,6 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
-            result_data = json.loads(response.get('Object', {})).get('Invoice', {})
-            if result_data.get('MessLog'):
-                self.message_post(body=result_data.get('MessLog'))
             self.getting_invoice_status()
             self.get_invoice_bkav()
 
@@ -295,9 +290,6 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
-            result_data = json.loads(response.get('Object', {})).get('Invoice', {})
-            if result_data.get('MessLog'):
-                self.message_post(body=result_data.get('MessLog'))
             self.is_post_bkav = True
             self.get_invoice_bkav()
 
@@ -314,16 +306,13 @@ class StockTransfer(models.Model):
                 "CommandObject": self.invoice_guid,
             }
             _logger.info(f'BKAV - data download invoice to BKAV: {data}')
-            response = connect_bkav(data, configs)
-            if response.get('Status') == 1:
-                self.message_post(body=(response.get('Object')))
+            response_action = connect_bkav(data, configs)
+            if response_action.get('Status') == 1:
+                self.message_post(body=(response_action.get('Object')))
             else:
-                result_data = json.loads(response.get('Object', {})).get('Invoice', {})
-                if result_data.get('MessLog'):
-                    self.message_post(body=result_data.get('MessLog'))
                 attachment_id = self.env['ir.attachment'].sudo().create({
                     'name': f"{self.invoice_no}.pdf",
-                    'datas': result_data.get('PDF', ''),
+                    'datas': json.loads(response_action.get('Object')).get('PDF', ''),
                 })
                 self.eivoice_file = attachment_id
                 return {
@@ -360,9 +349,6 @@ class StockTransfer(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
-            result_data = json.loads(response.get('Object', {})).get('Invoice', {})
-            if result_data.get('MessLog'):
-                self.message_post(body=result_data.get('MessLog'))
             self.is_check_cancel = True
             self.exists_bkav = False
 
