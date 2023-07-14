@@ -47,7 +47,7 @@
                                 <field name="price"/>
                                 <field name="money_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
                                 <field name="percent_reduce" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
-                                <field name="program_pricelist_item_id" attrs="{'readonly':[('state','in',['waiting approve','refuse','approved'])]}"/>
+                                <field name="program_pricelist_item_id" readonly="1"/>
                                 <label for="from_date" string="Hiệu lực"/>
                                 <div class="o_row">
                                     <field name="from_date" widget="daterange" options="{'related_end_date': 'to_date'}"/>
@@ -55,7 +55,7 @@
                                     <field name="to_date" widget="daterange" options="{'related_start_date': 'from_date'}"/>
                                 </div>
                                 <field name="total_reduce" required="1"/>
-                                <field name="defective_type_id" required="1" readonly="1"/>
+                                <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="reason_refuse_product" states="refuse" readonly="True"/>
                             </group>
