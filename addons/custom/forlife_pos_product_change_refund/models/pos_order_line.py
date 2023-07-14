@@ -18,6 +18,7 @@ class PosOrderLine(models.Model):
     is_product_defective = fields.Boolean('Là sản phẩm lỗi', default=False)
     money_reduce_from_product_defective = fields.Float()
     product_defective_id = fields.Many2one('product.defective')
+    handle_change_refund_price = fields.Float()
     pay_point_line = fields.Integer('Pay Point Line')
 
     @api.depends('discount_details_lines.money_reduced')
