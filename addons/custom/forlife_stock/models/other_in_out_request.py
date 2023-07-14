@@ -27,7 +27,7 @@ class ForlifeOtherInOutRequest(models.Model):
                                ('done', 'Hoàn thành'),
                                ('cancel', 'Hủy'),
                                ('reject', 'Từ chối')], default='draft', copy=False)
-    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Line', copy=True)
+    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Chi tiết', copy=True)
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
