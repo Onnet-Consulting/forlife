@@ -36,7 +36,8 @@ class ImportPartnerCardRank(models.TransientModel):
             raise ValidationError(_("Please choose brand and upload file template before click Import button !"))
         workbook = xlrd.open_workbook(file_contents=base64.decodebytes(self.import_file))
         self._cr.execute(f"""
-            select (select json_object_agg(phone, id) from res_partner where phone notnull)                             as customers,
+            select (select json_object_agg(rp.phone, rp.id) from res_partner rp
+                    join res_partner_group rpg on rp.group_id = rpg.id and rpg.code = 'C' where rp.phone notnull)       as customers,
                    (select json_object_agg(customer_id, id) from partner_card_rank where brand_id = {self.brand_id.id}) as partner_cr_by_id      
         """)
         data = self._cr.dictfetchone()

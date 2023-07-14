@@ -149,8 +149,8 @@ select (
                            dg.muc_tieu_cua_hang                                as muc_tieu_cua_hang,
                            dgd.detail                                          as detail,
                            coalesce(dg.concurrent_position_id, dg.job_id)      as job_id,
-                           case when coalesce(dg.muc_tieu_ca_nhan, 0) > 0 then (dg.total/dg.muc_tieu_ca_nhan*100)::float else null end as pt_ht_cn,
-                           case when coalesce(dg.muc_tieu_cua_hang, 0) > 0 then (dgs.total/dg.muc_tieu_cua_hang*100)::float else null end as pt_ht_ch
+                           case when coalesce(dg.muc_tieu_ca_nhan, 0) > 0 then (dg.total/dg.muc_tieu_ca_nhan*100)::float else 0 end as pt_ht_cn,
+                           case when coalesce(dg.muc_tieu_cua_hang, 0) > 0 then (dgs.total/dg.muc_tieu_cua_hang*100)::float else 0 end as pt_ht_ch
                     from data_groups dg
                              left join data_group_details dgd on dg.store_id = dgd.store_id and dg.employee_id = dgd.employee_id
                              left join data_group_stores dgs on dgs.store_id = dg.store_id
@@ -201,24 +201,22 @@ select (
         return title
 
     def format_data(self, data):
-        _data = data and data[0] or []
+        _data = data and data[0] or {}
         res = []
         column_add = self.get_title_with_view_type(self.from_date, self.to_date, self.view_type)
-        ti_le_tt = _data.get('ti_le_tt')
-        ti_le_gt = _data.get('ti_le_gt')
-        he_so_co_dinh = _data.get('he_so_co_dinh')
-        for value in _data.get('data'):
+        ti_le_tt = _data.get('ti_le_tt') or {}
+        ti_le_gt = _data.get('ti_le_gt') or {}
+        he_so_co_dinh = _data.get('he_so_co_dinh') or {}
+        for value in (_data.get('data') or []):
             qty_by_time = value.pop('detail')
             for c in column_add:
                 value[c] = qty_by_time.get(c, 0) or 0
 
             # Tổng hợp thu nhập dự tính
             job_id = value.get('job_id')
-            pt_ht_cn = value.get('pt_ht_cn')
-            pt_ht_ch = value.get('pt_ht_ch')
+            pt_ht_cn = value.get('pt_ht_cn') or 0
+            pt_ht_ch = value.get('pt_ht_ch') or 0
             if job_id is not None:
-                thu_nhap_du_tinh = 0
-
                 # kiểm tra hệ số
                 _heso_codinh = he_so_co_dinh.get(str(job_id)) or [0, 0]
                 _hs_cd_tt = _heso_codinh[0]
