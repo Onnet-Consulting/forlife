@@ -19,6 +19,7 @@ class PosOrderLine(models.Model):
     money_reduce_from_product_defective = fields.Float()
     product_defective_id = fields.Many2one('product.defective')
     handle_change_refund_price = fields.Float()
+    pay_point_line = fields.Integer('Pay Point Line')
 
     @api.depends('discount_details_lines.money_reduced')
     def _compute_money_point_is_reduced_line(self):

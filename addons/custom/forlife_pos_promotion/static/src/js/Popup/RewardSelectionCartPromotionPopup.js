@@ -120,8 +120,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 let option = this.state.programOptions.find(op=>op.id==program.id);
                 let amountCheck = option.amountCheck;
                 let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
-
-                let discount_total = (to_apply_lines[program.str_id] || []).reduce((acc, line) => {
+                let discounted_lines = (Object.values(to_apply_lines).flat(2) || []);
+                let discount_total = discounted_lines.reduce((acc, line) => {
                     let amountPerLine;
                     if (program.incl_reward_in_order_type == 'no_incl') {
                         amountPerLine =
