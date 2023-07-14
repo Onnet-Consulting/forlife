@@ -30,7 +30,7 @@ class StockMove(models.Model):
         res = super()._get_price_unit()
         order = self.purchase_line_id.order_id
         if (order.currency_id != self.env.company.currency_id and order.exchange_rate > 0) and not (self.origin_returned_move_id or self.purchase_line_id.order_id.is_return):
-            res = res * order.exchange_rate
+            res = res * order.currency_id.rate * order.exchange_rate
         return res
 
     def write(self, vals):
