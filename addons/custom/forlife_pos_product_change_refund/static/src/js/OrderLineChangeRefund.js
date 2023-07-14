@@ -142,10 +142,28 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
             }
 
             getTotalDiscount() {
-                var total = super.getTotalDiscount(...arguments);
-                if(this.props.line.money_reduce_from_product_defective > 0){
+                // TODO: class được extend từ class forlife_pos_layout.OrderlineChangeRefund
+                // TODO: => kết quả super.getTotalDiscount(...args) == 0.0.
+                // TODO: Do đó, phải thực hiện như cách ở dưới
+//                var total = super.getTotalDiscount(...arguments);
+                var total = 0.0;
+                if(this.props.line.money_reduce_from_product_defective > 0) {
                     total += this.props.line.money_reduce_from_product_defective;
-                }
+                };
+                // Card rank
+                total += this.props.line.get_card_rank_discount();
+                // Promotion Program
+                const applied_promotions = this.props.line.get_applied_promotion_str();
+                for (const applied_promotion of applied_promotions) {
+                    if (applied_promotion) {
+                        total += applied_promotion.discount_amount;
+                    };
+                };
+                // Point Order
+                if (this.props.line.point) {
+                    total += Math.abs(this.props.line.point);
+                };
+                //
                 return total;
             }
 
