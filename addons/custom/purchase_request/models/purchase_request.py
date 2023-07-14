@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from datetime import datetime
 import re
@@ -56,6 +57,11 @@ class PurchaseRequest(models.Model):
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
 
+    @api.onchange('date_planned')
+    def _onchange_line_date_planned(self):
+        for rec in self.order_lines:
+            rec.date_planned = self.date_planned
+
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
@@ -82,6 +88,11 @@ class PurchaseRequest(models.Model):
 
     def submit_action(self):
         for record in self:
+            for line in record.order_lines:
+                if not line.purchase_uom:
+                    raise UserError(_('Đơn vị mua của sản phẩm %s chưa được chọn') % line.product_id.name)
+                if not line.date_planned:
+                    raise UserError(_('Ngày nhận hàng dự kiến của sản phẩm %s chưa được chọn') % line.product_id.name)
             record.write({'state': 'confirm'})
 
     def action_cancel(self):
@@ -167,7 +178,7 @@ class PurchaseRequest(models.Model):
         production_id = []
         for rec in self:
             if rec.state != 'approved':
-                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name
+                raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
             if rec.occasion_code_id:
                 occasion_code_id.append(rec.occasion_code_id.id)
             if rec.account_analytic_id:
@@ -196,11 +207,11 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
-                    'product_uom': line.purchase_uom.id,
+                    'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
-                    'date_planned': self.date_planned if len(self) == 1 else False,
+                    'date_planned': line.date_planned,
                 }))
             if po_line_data:
                 name_pr = []
@@ -282,8 +293,8 @@ class PurchaseRequestLine(models.Model):
 
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
-    date_planned = fields.Datetime(string='Expected Arrival')
-    request_date = fields.Date(string='Request date')
+    date_planned = fields.Datetime(string='Expected Arrival', required=True)
+    request_date = fields.Date(string='Request date', required=True)
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
@@ -303,7 +314,6 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):

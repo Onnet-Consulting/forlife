@@ -57,6 +57,28 @@ class ForlifeOtherInOutRequest(models.Model):
             self.location_id = False
             self.location_dest_id = False
 
+    @api.onchange('type_other_id')
+    def _onchange_line_type_other_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.type_other_id = self.type_other_id.id
+
+    @api.onchange('location_id')
+    def _onchange_line_location_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.reason_to_id = self.location_id.id if self.type_other == 'other_import' else False
+            rec.reason_from_id = self.location_id.id if self.type_other == 'other_export' else False
+
+    @api.onchange('location_dest_id')
+    def _onchange_line_location_dest_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.whs_to_id = self.location_dest_id.id if self.type_other == 'other_import' else False
+            rec.whs_from_id = self.location_dest_id.id if self.type_other == 'other_export' else False
+
+    @api.onchange('date_planned')
+    def _onchange_line_date_planned(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.date_expected = self.date_planned
+
     @api.depends('other_import_export_ids', 'other_import_export_ids.state')
     def compute_qty_match(self):
         for rec in self:
@@ -98,7 +120,7 @@ class ForlifeOtherInOutRequest(models.Model):
                            'product_uom_qty': item.quantity,
                            'product_uom': item.uom_id.id,
                            'name': item.description,
-                           'reason_type_id': record.type_other_id.id,
+                           'reason_type_id': item.type_other_id.id,
                            'reason_id': item.reason_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
                            'is_amount_total': item.reason_to_id.is_price_unit,
                            'is_production_order': item.reason_to_id.is_work_order,
@@ -111,7 +133,7 @@ class ForlifeOtherInOutRequest(models.Model):
                            'product_other_id': item.id,
                            'picking_id': record.id})
                 dict_data = {'state': 'draft',
-                             'reason_type_id': record.type_other_id.id,
+                             'reason_type_id': item.type_other_id.id,
                              'other_import': True if record.type_other == 'other_import' else False,
                              'other_export': True if record.type_other == 'other_export' else False,
                              'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
@@ -179,8 +201,12 @@ class ForlifeOtherInOutRequest(models.Model):
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
                 if 'other_in_out_request_line_ids/date_expected' in fields and not record[fields.index('other_in_out_request_line_ids/date_expected')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày dự kiến"))
+                if 'other_in_out_request_line_ids/quantity' in fields and not record[fields.index('other_in_out_request_line_ids/quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng"))
                 if 'other_in_out_request_line_ids/uom_id' in fields and not record[fields.index('other_in_out_request_line_ids/uom_id')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị"))
+                if 'other_in_out_request_line_ids/type_other_id' in fields and not record[fields.index('other_in_out_request_line_ids/type_other_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường loại lý do"))
                 if 'other_in_out_request_line_ids/whs_from_id' in fields and not record[fields.index('other_in_out_request_line_ids/whs_from_id')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường từ kho"))
                 if 'other_in_out_request_line_ids/whs_to_id' in fields and not record[fields.index('other_in_out_request_line_ids/whs_to_id')]:
@@ -189,9 +215,17 @@ class ForlifeOtherInOutRequest(models.Model):
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường lý do xuất"))
                 if 'other_in_out_request_line_ids/reason_to_id' in fields and not record[fields.index('other_in_out_request_line_ids/reason_to_id')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường lý do nhập"))
-                if 'other_in_out_request_line_ids/production_id' in fields and  not record[fields.index('other_in_out_request_line_ids/production_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường lệnh sản xuất"))
         return super().load(fields, data)
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu yêu cầu nhập khác'),
+            'template': '/forlife_stock/static/src/xlsx/template_ycnk.xlsx?download=true'
+        }, {
+            'label': _('Tải xuống mẫu yêu cầu xuất khác'),
+            'template': '/forlife_stock/static/src/xlsx/template_ycxk.xlsx?download=true'
+        }]
 
 
 class ForlifeOtherInOutRequestLine(models.Model):

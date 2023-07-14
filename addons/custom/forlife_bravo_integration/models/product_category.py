@@ -11,6 +11,10 @@ CONTEXT_CATEGORY_ACCOUNT_KEY = 'bravo_product_category_need_accounts'
 class ProductCategory(models.Model):
     _name = 'product.category'
     _inherit = ['product.category', 'bravo.model']
+    _bravo_field_sync = [
+        'is_accounting_category', 'code', 'name', 'property_stock_valuation_account_id',
+        'property_account_expense_categ_id', 'property_account_income_categ_id'
+    ]
 
     is_accounting_category = fields.Boolean(string='Là nhóm hạch toán', default=False)
 

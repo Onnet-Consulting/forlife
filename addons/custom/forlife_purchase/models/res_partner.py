@@ -4,6 +4,7 @@ from odoo import models, fields, api, tools
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+    _rec_names_search = ['internal_code', 'ref']
 
     @tools.ormcache()
     def _get_default_category_id(self):

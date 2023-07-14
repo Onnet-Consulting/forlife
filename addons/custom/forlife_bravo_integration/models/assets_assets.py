@@ -8,6 +8,7 @@ class AssetsAssets(models.Model):
     _name = 'assets.assets'
     _inherit = ['assets.assets', 'bravo.model']
     _bravo_table = 'B20Product'
+    _bravo_field_sync = ['name', 'code', 'unit']
 
     bravo_create_date = fields.Datetime(
         readonly=True,

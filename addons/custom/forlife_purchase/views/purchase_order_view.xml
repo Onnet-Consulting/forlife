@@ -33,7 +33,7 @@
                             <span class="o_stat_value">
                                 <field name="count_invoice_inter_normal_fix"/>
                             </span>
-                            <span class="o_stat_text">Bình thường</span>
+                            <span class="o_stat_text">Hàng hóa dịch vụ tài sản</span>
                         </div>
                     </button>
                     <button name="action_view_invoice_expense_new"
@@ -62,30 +62,17 @@
                             <span class="o_stat_text">Nhân công</span>
                         </div>
                     </button>
-                    <button name="action_view_invoice_service_new"
-                        string="Dịch vụ và Tài sản"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-pencil-square-o"
-                        attrs="{'invisible': [('count_invoice_inter_service_fix', '=', 0)]}">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value">
-                                <field name="count_invoice_inter_service_fix"/>
-                            </span>
-                            <span class="o_stat_text">Dịch vụ và Tài sản</span>
-                        </div>
-                    </button>
-<!--                    <button name="action_view_invoice_customer"-->
-<!--                        string="Invoice"-->
+<!--                    <button name="action_view_invoice_service_new"-->
+<!--                        string="Dịch vụ và Tài sản"-->
 <!--                        type="object"-->
 <!--                        class="oe_stat_button"-->
 <!--                        icon="fa-pencil-square-o"-->
-<!--                        attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_invoice_inter_company_customer', '=', 0)]}">-->
+<!--                        attrs="{'invisible': [('count_invoice_inter_service_fix', '=', 0)]}">-->
 <!--                        <div class="o_field_widget o_stat_info">-->
 <!--                            <span class="o_stat_value">-->
-<!--                                <field name="count_invoice_inter_company_customer"/>-->
+<!--                                <field name="count_invoice_inter_service_fix"/>-->
 <!--                            </span>-->
-<!--                            <span class="o_stat_text">Hóa đơn khách hàng</span>-->
+<!--                            <span class="o_stat_text">Dịch vụ và Tài sản</span>-->
 <!--                        </div>-->
 <!--                    </button>-->
                     <button
@@ -156,6 +143,7 @@
                                 <field name="description" readonly="1"/>
                                 <field name="company_currency" invisible="1"/>
                                 <field name="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
+                                <field name="total_vnd_exchange_import" invisible="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
@@ -167,7 +155,6 @@
                                 <field name="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="vat_tax_amount_import" invisible="1"/>
                                 <field name="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
-                                <field name="total_tax_amount_import" invisible="1"/>
                             </tree>
                         </field>
                     </page>
@@ -206,12 +193,12 @@
                                 <field name="product_qty" sum="discounted subtotal"/>
                                 <field name="company_currency" invisible="1"/>
                                 <field name="discount"/>
-                                <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
-                                <field name="after_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}" sum="total_vnd_amount"/>
+                                <field name="before_tax" sum="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'cost')]}"/>
+                                <field name="after_tax" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                                <field name="total_product" sum="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                             </tree>
                         </field>
                     </page>
@@ -317,8 +304,8 @@
                                domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
                         <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
-                        <field name="request_purchases" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
+                        <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="request_purchases" readonly="1"/>
                         <field name="asset_code"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="asset_name"

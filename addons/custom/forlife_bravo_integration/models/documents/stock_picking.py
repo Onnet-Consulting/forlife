@@ -20,7 +20,8 @@ class StockPicking(models.Model):
         res = super()._action_done()
         done_pickings = self.filtered(lambda p: p.state == 'done')
         insert_queries = done_pickings.bravo_get_insert_sql()
-        self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
+        if insert_queries:
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         return res
 
     @api.model
@@ -185,5 +186,6 @@ class StockPicking(models.Model):
         records = records.filtered(lambda r: r.state == 'cancel')
         if records:
             queries = records.bravo_get_insert_sql(**{CONTEXT_CANCEL_OTHER_PICKING: True})
-            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+            if queries:
+                self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res

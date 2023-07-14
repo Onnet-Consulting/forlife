@@ -105,7 +105,6 @@ class AccountMove(models.Model):
 
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id',
                                 string='Invoice Cost Line',
-                                compute='_compute_exchange_rate_line_and_cost_line',
                                 store=1)
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id',
                                       string='Vendor Back',
@@ -809,25 +808,26 @@ class AccountMoveLine(models.Model):
     @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal * rec.move_id.exchange_rate)
+            rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
+            rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
 
     @api.depends('move_id.cost_line.is_check_pre_tax_costs',
                  'move_id.invoice_line_ids')
     def _compute_before_tax(self):
         for rec in self:
             cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+            for line in rec.move_id.invoice_line_ids:
                 total_cost_true = 0
                 if cost_line_true and line.total_vnd_amount > 0:
                     for item in cost_line_true:
                         before_tax = line.total_vnd_amount / sum(rec.move_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                         total_cost_true += before_tax
-                        nine.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                        line.before_tax = total_cost_true
+                    line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                 else:
-                    nine.before_tax = 0
-                    if nine.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                    line.before_tax = 0
+                    if line.before_tax != 0:
+                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
@@ -836,7 +836,7 @@ class AccountMoveLine(models.Model):
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+            for line in rec.move_id.invoice_line_ids:
                 total_cost = 0
                 sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
                 sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
@@ -844,9 +844,9 @@ class AccountMoveLine(models.Model):
                 if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
                         total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        nine.after_tax = total_cost
+                        line.after_tax = total_cost
                 else:
-                    nine.after_tax = 0
+                    line.after_tax = 0
 
     @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
     def _compute_total_product(self):
@@ -911,7 +911,10 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('vendor_price')
     def onchange_vendor_price(self):
-        self.price_unit = self.vendor_price
+        if self.exchange_quantity != 0:
+            self.price_unit = self.vendor_price / self.exchange_quantity
+        else:
+            self.price_unit = self.vendor_price
 
     @api.onchange('quantity_purchased', 'exchange_quantity')
     def onchange_quantity_purchased(self):

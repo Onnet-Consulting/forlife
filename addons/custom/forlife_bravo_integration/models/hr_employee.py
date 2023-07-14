@@ -8,6 +8,7 @@ class HrEmployee(models.Model):
     _name = 'hr.employee'
     _inherit = ['hr.employee', 'bravo.model']
     _bravo_table = 'B20Employee'
+    _bravo_field_sync = ['code', 'name', 'department_id', 'birthday', 'work_email', 'mobile_phone', 'gender', 'identification_id']
 
     br1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')

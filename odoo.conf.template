@@ -63,4 +63,4 @@ workers = 32
 
 
 [queue_job]
-channels = root:42, import:20, validate_stock_valuation_2:20, wh_4002_job_channel:1, wh_3038_job_channel:1, wh_4015_job_channel: 1, wh_3160_job_channel:1
+channels = root:10, import:20, validate_stock_valuation_2:20, wh_4002_job_channel:1, wh_3038_job_channel:1, wh_4015_job_channel: 1, wh_3160_job_channel:1

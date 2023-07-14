@@ -80,7 +80,7 @@
                                 <control>
                                     <create name="add" string="Add" readonly="1"/>
                                 </control>
-                                <field name="x_check_npl" force_save="1"/>
+                                <field name="x_check_npl" invisible="1" force_save="1"/>
                                 <field name="product_id" readonly="1" />
                                 <field name="name" readonly="1" force_save="1" string="Mô tả"/>
                                 <field name="purchase_quantity" readonly="0"/>
