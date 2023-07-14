@@ -9,10 +9,31 @@ class InheritResConfigSettings(models.TransientModel):
         related='company_id.product_default_pos_defective_goods_id',
         readonly=False
     )
+    journal_default_pos_defective_goods_id = fields.Many2one(
+        string='Journal Defective Goods',
+        related='company_id.journal_default_pos_defective_goods_id',
+        readonly=False
+    )
 
     product_default_pos_handle_discount_id = fields.Many2one(
         string='Handel Discount',
         related='company_id.product_default_pos_handle_discount_id',
+        readonly=False
+    )
+    journal_default_pos_handle_discount_id = fields.Many2one(
+        string='Journal Handel Discount',
+        related='company_id.journal_default_pos_handle_discount_id',
+        readonly=False
+    )
+
+    product_default_pos_return_goods_id = fields.Many2one(
+        string='Change/Return Goods',
+        related='company_id.product_default_pos_return_goods_id',
+        readonly=False
+    )
+    journal_default_pos_return_goods_id = fields.Many2one(
+        string='Journal Change/Return Goods',
+        related='company_id.journal_default_pos_return_goods_id',
         readonly=False
     )
 
