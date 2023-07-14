@@ -82,6 +82,6 @@ class HandleChangeRefund(models.Model):
         if data.get('id'):
             handle_change_refund_id = self.browse(data.get('id'))
             for line in handle_change_refund_id.filtered(lambda x: x.state == 'approved').line_ids:
-                return_price = line.return_price
+                return_price = line.purchase_price - line.return_price
                 return {'price': return_price, 'status': 'approve'}
         return {'price': return_price, 'status': 'not_approve'}
