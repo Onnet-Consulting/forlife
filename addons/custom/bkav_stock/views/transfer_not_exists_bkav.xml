@@ -21,6 +21,7 @@
                             <field name="vendor_contract_id" readonly="1"/>
                             <field name="delivery_contract_id" readonly="1"/>
                             <field name="transporter_id" readonly="1"/>
+                            <field name="state" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
