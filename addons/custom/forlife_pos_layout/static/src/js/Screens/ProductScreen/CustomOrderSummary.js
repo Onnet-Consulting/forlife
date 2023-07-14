@@ -37,12 +37,7 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
 
         // tổng tiền thanh toán
         getTotalNotFormat() {
-            const orderlines = this.props.order.orderlines;
-            var total = 0;
-            for (const orderline of orderlines) {
-                total += orderline.handle_refund_price();
-            }
-            return this.props.order.get_total_with_tax() + total;
+            return this.props.order.get_total_with_tax();
         }
 
         getTotalDiscountCustomDefective() {
