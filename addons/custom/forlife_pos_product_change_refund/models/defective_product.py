@@ -72,18 +72,9 @@ class ProductDefective(models.Model):
         if self.money_reduce > 0 and self.percent_reduce > 0:
             raise UserError(_('Chỉ được phép nhập 1 trong 2 loại giảm!'))
 
-    def write(self, values):
-        res = super(ProductDefective, self).write(values)
-        for rec in self:
-            if rec.money_reduce == 0 and rec.percent_reduce ==0:
-                raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
-        return res
-
     @api.model
     def create(self, vals_list):
         res = super(ProductDefective, self).create(vals_list)
-        if res.money_reduce == 0 and res.percent_reduce ==0:
-            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
         if res.quantity_require == 0:
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
@@ -98,6 +89,8 @@ class ProductDefective(models.Model):
     def action_approve(self):
         self.ensure_one()
         self.quantity_can_be_sale = self.quantity_defective_approved
+        if self.money_reduce == 0 and self.percent_reduce == 0:
+            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
         self.state = 'approved'
 
     def action_refuse(self):
