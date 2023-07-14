@@ -67,12 +67,12 @@ with order_line_data as (
         greatest(pol.qty, 0)                                                                        as sale_qty,
         - least(pol.qty, 0)                                                                         as refund_qty,
         coalesce(pol.original_price, 0)    												 		    as lst_price,
-        case when pol.qty > 0 then coalesce((select sum(
+        coalesce((select sum(
             case when type = 'point' then recipe * 1000
                 when type = 'ctkm' then discounted_amount
                 else recipe
             end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0) else 0 end     as money_reduced,
+        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)                as money_reduced,
         po.note 																 		 		    as note
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
@@ -97,8 +97,8 @@ data_group as (
         refund_qty as refund_qty,
         uom_name,
         lst_price,
-        coalesce(money_reduced, 0) as money_reduced,
-        (sale_qty + refund_qty) * lst_price - money_reduced as price_subtotal
+        abs(money_reduced) as money_reduced,
+        (sale_qty + refund_qty) * lst_price - abs(money_reduced) as price_subtotal
     from order_line_data
 ),
 detail_data_invoice_list as (
@@ -119,9 +119,9 @@ prepare_value_data_invoice_list as (
         sum(sale_qty) as sale_qty,
         sum(refund_qty) as refund_qty,
         sum(sale_qty * lst_price) as tt,
-        sum(money_reduced) as money_reduced,
+        sum(greatest(money_reduced, 0)) as money_reduced,
         sum(0) as gg_bill,
-        sum(refund_qty * lst_price) as refund,
+        sum(refund_qty * lst_price + least(money_reduced, 0)) as refund,
         note
     from order_line_data
     group by employee_id,
