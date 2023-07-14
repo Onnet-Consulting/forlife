@@ -2309,17 +2309,17 @@ class PurchaseOrderLine(models.Model):
                                 rec.vendor_price = line.price
                                 rec.exchange_quantity = line.amount_conversion
 
-
-
     # discount
     @api.depends("free_good")
     def _compute_free_good(self):
         for rec in self:
             if rec.free_good:
-                rec.discount = rec.discount_percent = 0
-                rec.vendor_price = False
-                rec.price_unit = False
-                rec.price_subtotal = False
+                rec.write({'discount': 0,
+                           'discount_percent': 0,
+                           'vendor_price': 0,
+                           'price_unit': 0,
+                           'price_subtotal': 0
+                           })
                 rec.readonly_discount_percent = rec.readonly_discount = True
             else:
                 rec.readonly_discount_percent = rec.readonly_discount = False
