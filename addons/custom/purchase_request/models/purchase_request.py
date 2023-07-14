@@ -293,8 +293,8 @@ class PurchaseRequestLine(models.Model):
 
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
-    date_planned = fields.Datetime(string='Expected Arrival')
-    request_date = fields.Date(string='Request date')
+    date_planned = fields.Datetime(string='Expected Arrival', required=True)
+    request_date = fields.Date(string='Request date', required=True)
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
