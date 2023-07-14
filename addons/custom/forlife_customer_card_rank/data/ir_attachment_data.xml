@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="template_partner_card_rank_import" model="ir.attachment">
+            <field name="name">Mẫu nhập hạng khách.xlsx</field>
+            <field name="datas" type="base64" file="forlife_customer_card_rank/static/xlsx/template_partner_card_rank_import.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
