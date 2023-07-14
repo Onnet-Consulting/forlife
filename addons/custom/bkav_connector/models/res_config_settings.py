@@ -21,9 +21,3 @@ class ResConfigSettings(models.TransientModel):
     bkav_get_status_einvoice = fields.Char(string='Mã lấy trạng thái hóa đơn', config_parameter='bkav.get_status_einvoice')
     bkav_download_pdf = fields.Char(string='Mã Download pdf', config_parameter='bkav.download_pdf')
     bkav_download_xml = fields.Char(string='Mã Download xml', config_parameter='bkav.download_xml')
-
-    # bkav_get_invoice_by_id = fields.Char(string='Get invoice by id', config_parameter='bkav.get_invoice_by_id')
-    # bkav_search_einvoice = fields.Char(string='Search e invoice', config_parameter='bkav.search_einvoice')
-    # bkav_get_availiable_serial = fields.Char(string='Get availiable serial', config_parameter='bkav.get_availiable_serial')
-    # bkav_get_status_invoices = fields.Char(string='Get status invoices', config_parameter='bkav.get_status_invoices')
-    # bkav_invoice_business = fields.Char(string='Invoice business', config_parameter='bkav.invoice_business')

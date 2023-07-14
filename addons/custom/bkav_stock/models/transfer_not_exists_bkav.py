@@ -407,6 +407,7 @@ class TransferNotExistsBkav(models.Model):
         if response.get('Status') == 1:
             self.message_post(body=(response.get('Object')))
         else:
+            self.is_post_bkav = True
             self.get_invoice_bkav()
 
 
