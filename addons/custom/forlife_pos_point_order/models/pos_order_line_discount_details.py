@@ -41,3 +41,11 @@ class PosOlDiscountDetails(models.Model):
         if self.type == 'point':
             name = self.program_name.name
         return name
+
+    def _export_for_ui(self):
+        return {
+            'id': self.id,
+            'pos_order_line_id': self.pos_order_line_id.id,
+            'money_reduced': self.money_reduced,
+            'type': self.type,
+        }
