@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="bakv_store_form_view" model="ir.ui.view">
+            <field name="name">bkav.store.form.inherit</field>
+            <field name="model">store</field>
+            <field name="inherit_id" ref="forlife_point_of_sale.store_view_form"/>
+            <field name="arch" type="xml">
+                <field name="payment_method_ids" position="after">
+                    <field name="is_post_bkav"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1203,3 +1203,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_base.field_account_analytic_account__address
 msgid "Địa chỉ"
 msgstr ""
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__is_need_scan_barcode
+msgid "Is Need Scan Barcode"
+msgstr "Cần quét barcode"

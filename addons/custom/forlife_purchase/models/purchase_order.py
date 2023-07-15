@@ -140,6 +140,17 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+    partner_company_id = fields.Many2one(comodel_name='res.company', compute='_compute_partner_company_id', index=True, store=True)
+
+    @api.depends('partner_id')
+    def _compute_partner_company_id(self):
+        partner_company = {
+            company.partner_id.id: company
+            for company in self.env['res.company'].sudo().search([('partner_id', 'in', self.mapped('partner_id.id'))])
+        }
+        for rec in self:
+            rec.partner_company_id = partner_company.get(rec.partner_id.id)
+
     def action_view_stock(self):
         for item in self:
             context = {'create': True, 'delete': True, 'edit': True}
@@ -562,7 +573,6 @@ class PurchaseOrder(models.Model):
                 'sequence': 10,
                 'is_downpayment': False,
                 'is_expense': True,
-                'qty_delivered_method': 'analytic',
                 'discount': pol.discount_percent,
                 'company_id': company_sale.id
             }) for pol in self.order_line]
@@ -570,14 +580,9 @@ class PurchaseOrder(models.Model):
         picking = self.approve_company_picking(sale)
         sale.state = 'sale'
 
-        advance_payment = self.env['sale.advance.payment.inv'].sudo().create({'sale_order_ids': [(6, 0, sale.ids)]})
-
-        # advance_payment = self.env['sale.advance.payment.inv'].create({
-        #     'sale_order_ids': [(6, 0, sale.ids)],
-        #     'advance_payment_method': 'delivered',
-        #     'deduct_down_payments': True
-        # })
-        invoice = advance_payment._create_invoices(advance_payment.sale_order_ids)
+        invoice_values = sale._prepare_invoice()
+        invoice_values['invoice_line_ids'] = [(0, 0, sol._prepare_invoice_line(quantity=sol.product_uom_qty)) for sol in sale.order_line]
+        invoice = self.env['account.move'].create(invoice_values)
         invoice._post()
         return sale, invoice, picking
 
@@ -2731,6 +2736,8 @@ class StockPicking(models.Model):
             return True
         for record in self:
             po = record.purchase_id
+            if not po:
+                continue
             if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
                 if record.state == 'done':
                     ## check npl tồn:
