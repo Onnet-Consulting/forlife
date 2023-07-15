@@ -623,22 +623,22 @@ class AccountMove(models.Model):
             'move_type': 'entry',
             'invoice_line_ids': [(0, 0, {
                 'account_id': self.partner_id.property_account_payable_id.id,
-                # 'product_id': self.partner_id.property_account_payable_id.id,
+                # 'product_id': self.partner_id.property_account_payable_id.name,
                 'name': self.partner_id.property_account_payable_id.name,
                 'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
                 'credit': 0,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
-                'product_id': self.env.ref('forlife_purchase.product_discount_tax').name,
-                'credit': self.total_trade_discount * self.exchange_rate,
+                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
+                'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
+                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
-                'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').name,
-                'credit': self.x_amount_tax * self.exchange_rate,
+                'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
+                'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').id,
+                'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
             })],
         })
         invoice_ck._post()
@@ -650,7 +650,7 @@ class AccountMove(models.Model):
                 if rec.exchange_rate_line_ids:
                     rec.create_invoice_tnk_db()
                     rec.create_tax_vat()
-            if rec.total_trade_discount or rec.x_amount_tax:
+            if rec.total_trade_discount:
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
