@@ -64,7 +64,7 @@ class PurchaseOrder(models.Model):
                    ('labor', 'Hóa đơn chi phí nhân công'),
                    ('normal', 'Hóa đơn chi tiết hàng hóa'),
                    ])
-    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
+    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí ước tính")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
@@ -1163,6 +1163,10 @@ class PurchaseOrder(models.Model):
     def create_invoice_expense(self, order, nine, line, cp, wave_item):
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
                     wave_item.qty_done / line.purchase_quantity)) * nine.vnd_amount
+        if line.currency_id != line.company_currency:
+            rates = line.currency_id._get_rates(line.company_id, wave_item.date)
+            cp = cp * rates.get(line.currency_id.id)
+
         data_line = {
             'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
@@ -1907,8 +1911,11 @@ class PurchaseOrder(models.Model):
         values = super(PurchaseOrder, self)._prepare_invoice()
         cost_line_vals = []
         for cl in self.cost_line:
-            data = cl.copy_data()[0]
+            move_done = sum(self.order_line.move_ids.filtered(lambda x:x.state == 'done').mapped('quantity_done'))
+            total_qty = sum(self.order_line.mapped('product_qty'))
+            data = cl.copy_data({'vnd_amount': move_done/total_qty * cl.vnd_amount, 'cost_line_origin': cl.id})[0]
             del data['purchase_order_id']
+            del data['actual_cost']
             cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,
@@ -1917,30 +1924,50 @@ class PurchaseOrder(models.Model):
         })
         return values
 
+    # @api.constrains('partner_id')
+    # def _constrains_partner_id(self):
+    #     for rec in self:
+    #         if not rec.partner_id:
+    #             raise ValidationError('Thiếu giá trị bắt buộc cho trường Nhà cung cấp!')
+
+    @api.constrains('purchase_type')
+    def _constrains_purchase_type(self):
+        for rec in self:
+            if not rec.purchase_type:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Loại mua hàng!')
+
+    @api.constrains('currency_id')
+    def _constrains_currency_id(self):
+        line_number = 1
+        for rec in self:
+            line_number += 1
+            if not rec.currency_id:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Tiền tệ!')
+
+    @api.constrains('exchange_rate')
+    def _constrains_exchange_rate(self):
+        for rec in self:
+            if not rec.exchange_rate:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Tỷ giá!')
+
+    @api.constrains('date_order')
+    def _constrains_date_order(self):
+        for rec in self:
+            if not rec.date_order:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Ngày đặt hàng!')
+
+    @api.constrains('receive_date')
+    def _constrains_receive_date(self):
+        for rec in self:
+            if not rec.receive_date:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Ngày nhận!')
+
     @api.model
     def load(self, fields, data):
         if "import_file" and 'default_is_inter_company' in self.env.context:
             line_number = 1
             for mouse in data:
                 line_number += 1
-                ### check header master import:
-                if fields.index('partner_id') and not mouse[fields.index('partner_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Nhà cung cấp ở dòng - {}".format(line_number)))
-                if fields.index('purchase_type') and not mouse[fields.index('purchase_type')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Loại mua hàng ở dòng - {}".format(line_number)))
-                if fields.index('currency_id') and not mouse[fields.index('currency_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở dòng - {}".format(line_number)))
-                if fields.index('exchange_rate') and not mouse[fields.index('exchange_rate')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ giá ở dòng - {}".format(line_number)))
-                if fields.index('date_order') and not mouse[fields.index('date_order')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày đặt hàng ở dòng - {}".format(line_number)))
-                if fields.index('receive_date') and not mouse[fields.index('receive_date')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở dòng - {}".format(line_number)))
-                if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
-                    if fields.index('date_planned') and not mouse[fields.index('date_planned')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Hạn xử lý ở dòng - {}".format(line_number)))
-                else:
-                    pass
                 ### check type po and line po import
                 if self.env.context['default_is_inter_company']:
                     if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
@@ -1954,7 +1981,14 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                    else:
+                    elif fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Dịch vụ':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                    elif fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Tài sản':
                         if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
@@ -1990,7 +2024,7 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn giá ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                    else:
+                    elif fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Tài sản':
                         if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
@@ -2309,17 +2343,17 @@ class PurchaseOrderLine(models.Model):
                                 rec.vendor_price = line.price
                                 rec.exchange_quantity = line.amount_conversion
 
-
-
     # discount
     @api.depends("free_good")
     def _compute_free_good(self):
         for rec in self:
             if rec.free_good:
-                rec.discount = rec.discount_percent = 0
-                rec.vendor_price = False
-                rec.price_unit = False
-                rec.price_subtotal = False
+                rec.write({'discount': 0,
+                           'discount_percent': 0,
+                           'vendor_price': 0,
+                           'price_unit': 0,
+                           'price_subtotal': 0
+                           })
                 rec.readonly_discount_percent = rec.readonly_discount = True
             else:
                 rec.readonly_discount_percent = rec.readonly_discount = False

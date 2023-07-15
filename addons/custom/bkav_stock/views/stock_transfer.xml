@@ -18,9 +18,13 @@
                 <xpath expr="//field[@name='location_dest_id']" position="after">
                     <field name="location_dest_name"/>
                 </xpath>
+                <xpath expr="//field[@name='total_weight']" position="after">
+                    <field name="exists_bkav" readonly="1"/>
+                    <field name="is_general" readonly="1"/>
+                </xpath>
                 <xpath expr=".//notebook" position="inside">
                     <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible':[('state', 'not in', ('out_approve','in_approve','done'))]}">
+                          attrs="{'invisible':['|',('state', 'not in', ('out_approve','in_approve','done')),('is_general','=',True)]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid', '!=', False),('state','not in', ('out_approve','in_approve','done'))]}"
@@ -32,7 +36,7 @@
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
                         <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
                                 string="Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 string="Download eInvoice"
@@ -42,7 +46,7 @@
                         <br/>
                         <group>
                             <group>
-                                <field name="exists_bkav" readonly="1"/>
+                                <field name="is_post_bkav" readonly="1"/>
                                 <field name="invoice_no" readonly="1"/>
                                 <field name="invoice_form" readonly="1"/>
                                 <field name="invoice_serial" readonly="1"/>
