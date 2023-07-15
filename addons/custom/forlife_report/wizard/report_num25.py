@@ -224,14 +224,14 @@ select (
 
                 # Thu nhập theo hệ số trực tiếp
                 if _heso_codinh_tructiep != 0:
-                    thu_nhap_du_tinh = value.get('tong_cong', 0) * _heso_codinh_tructiep / 100
+                    thu_nhap_du_tinh_truc_tiep = value.get('tong_cong', 0) * _heso_codinh_tructiep / 100
                 else:
                     pt_ht_canhan_tructiep = tile_tructiep.get(str(job_id)) or {}
                     phantram_hoanthanh = 0
                     phantram_hoanthanh_str = ''
                     for k in pt_ht_canhan_tructiep.keys():
                         _phantram_hoanthanh = float(k)
-                        if _phantram_hoanthanh <= pt_ht_canhan and _phantram_hoanthanh > phantram_hoanthanh:
+                        if _phantram_hoanthanh <= pt_ht_canhan and _phantram_hoanthanh >= phantram_hoanthanh:
                             phantram_hoanthanh = _phantram_hoanthanh
                             phantram_hoanthanh_str = k
                     pt_ht_cuahang_tructiep = pt_ht_canhan_tructiep.get(phantram_hoanthanh_str) or {}
@@ -239,23 +239,26 @@ select (
                     heso_tructiep = 0
                     for k, v in pt_ht_cuahang_tructiep.items():
                         _phantram_hoanthanh = float(k)
-                        if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh > phantram_hoanthanh:
+                        if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh >= phantram_hoanthanh:
                             phantram_hoanthanh = _phantram_hoanthanh
                             heso_tructiep = v
-                    thu_nhap_du_tinh = value.get('tong_cong', 0) * heso_tructiep / 100
+                    thu_nhap_du_tinh_truc_tiep = value.get('tong_cong', 0) * heso_tructiep / 100
 
                 # Thu nhập theo hệ số gián tiếp
                 pt_ht_cuahang_giantiep = tile_giantiep.get(str(job_id)) or {}
-                phantram_hoanthanh = 0
-                heso_giantiep = 0
-                for k, v in pt_ht_cuahang_giantiep.items():
-                    _phantram_hoanthanh = float(k)
-                    if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh > phantram_hoanthanh:
-                        phantram_hoanthanh = _phantram_hoanthanh
-                        heso_giantiep = v
+                thu_nhap_du_tinh_gian_tiep = 0
+                if pt_ht_cuahang_giantiep and value.get('tong_hs_vt_gt'):
+                    phantram_hoanthanh = 0
+                    heso_giantiep = 0
+                    for k, v in pt_ht_cuahang_giantiep.items():
+                        _phantram_hoanthanh = float(k)
+                        if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh >= phantram_hoanthanh:
+                            phantram_hoanthanh = _phantram_hoanthanh
+                            heso_giantiep = v
+                    thu_nhap_du_tinh_gian_tiep = value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * heso_giantiep * _heso_codinh_giantiep
 
                 # Thu nhập dự tính
-                value['thu_nhap_du_tinh'] = thu_nhap_du_tinh + value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * heso_giantiep * _heso_codinh_giantiep
+                value['thu_nhap_du_tinh'] = thu_nhap_du_tinh_truc_tiep + thu_nhap_du_tinh_gian_tiep
 
             res.append(value)
         return {
