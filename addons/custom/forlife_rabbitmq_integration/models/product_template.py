@@ -45,5 +45,5 @@ class ProductTemplate(models.Model):
 
     def get_field_update(self):
         if not self.mapped('product_variant_ids'):
-            return False
+            return []
         return ['name', 'uom_id', 'categ_id', 'list_price', 'sale_ok']

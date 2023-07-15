@@ -8,6 +8,7 @@ PICKING_PURCHASE_VALUE = 'picking_purchase'
 PICKING_OTHER_IMPORT_VALUE = 'picking_other_import'
 PICKING_OTHER_EXPORT_VALUE = 'picking_other_export'
 PICKING_PURCHASE_RETURN_VALUE = 'picking_purchase_return'
+PICKING_TRANSFER_BKAV = 'picking_transfer_bkav'
 CONTEXT_PICKING_UPDATE = 'bravo_picking_update'
 CONTEXT_CANCEL_OTHER_PICKING = 'bravo_cancel_other_picking'
 
@@ -38,6 +39,8 @@ class StockPicking(models.Model):
             bravo_table = "B30AccDocItemIssue"
         elif picking_data == PICKING_PURCHASE_RETURN_VALUE:
             bravo_table = "B30AccDocPurchaseReturn"
+        elif picking_data == PICKING_TRANSFER_BKAV:
+            bravo_table = "B30AccDocInventory"
         elif picking_update:
             bravo_table = "B30UpdateData"
         elif cancel_other_picking:
@@ -57,6 +60,9 @@ class StockPicking(models.Model):
                 lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.other_import)
+        if picking_data == PICKING_TRANSFER_BKAV:
+            return self
+            # return self.filtered(lambda m: m.origin and m.transfer_id and m.transfer_id.exists_bkav and m.origin == m.transfer_id.name and not m.other_export and not m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
             return self.filtered(lambda m: m.other_export)
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
@@ -76,6 +82,8 @@ class StockPicking(models.Model):
             return self.bravo_get_picking_other_export_values()
         if journal_data == PICKING_PURCHASE_RETURN_VALUE:
             return self.bravo_get_return_picking_purchase_values()
+        if journal_data == PICKING_TRANSFER_BKAV:
+            return self.bravo_get_picking_transfer_bkav_values()
         if picking_update:
             return self.bravo_get_update_picking_values(**kwargs)
         if cancel_other_picking:
@@ -112,6 +120,13 @@ class StockPicking(models.Model):
         picking_purchase_return_queries = records.bravo_get_insert_sql(**current_context)
         if picking_purchase_return_queries:
             queries.extend(picking_purchase_return_queries)
+
+        # Picking Purchase return
+        current_context = {CONTEXT_PICKING_ACTION: PICKING_TRANSFER_BKAV}
+        records = self.bravo_filter_record_by_context(**current_context)
+        picking_transfer_bkav_queries = records.bravo_get_insert_sql(**current_context)
+        if picking_transfer_bkav_queries:
+            queries.extend(picking_transfer_bkav_queries)
 
         return queries
 
