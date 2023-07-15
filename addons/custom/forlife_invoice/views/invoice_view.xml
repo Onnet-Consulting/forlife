@@ -228,7 +228,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
-                    <page string="Thuế nhập khẩu"
+                    <page string="Thông tin thuế"
                           attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">

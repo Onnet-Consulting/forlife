@@ -1110,8 +1110,13 @@ class InvoiceCostLine(models.Model):
     @api.model
     def _inverse_cost(self):
         for rec in self:
-            if rec.cost_line_origin:
-                rec.cost_line_origin.write({'actual_cost': rec.vnd_amount})
+            if rec.invoice_cost_id.select_type_inv != 'normal':
+                return
+            if not rec.cost_line_origin:
+                return
+            if rec.cost_line_origin.vnd_amount != 0 and rec.cost_line_origin.vnd_amount <= rec.cost_line_origin.actual_cost:
+                return
+            rec.cost_line_origin.write({'actual_cost': rec.cost_line_origin.actual_cost + rec.vnd_amount})
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):

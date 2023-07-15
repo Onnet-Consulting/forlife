@@ -1161,8 +1161,10 @@ class PurchaseOrder(models.Model):
         return data_line\
 
     def create_invoice_expense(self, order, nine, line, cp, wave_item):
+        if nine.actual_cost <= 0:
+            return {}
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
-                    wave_item.qty_done / line.purchase_quantity)) * nine.vnd_amount
+                    wave_item.qty_done / line.purchase_quantity)) * nine.actual_cost
         if line.currency_id != line.company_currency:
             rates = line.currency_id._get_rates(line.company_id, wave_item.date)
             cp = cp * rates.get(line.currency_id.id)
@@ -1914,8 +1916,10 @@ class PurchaseOrder(models.Model):
             move_done = sum(self.order_line.move_ids.filtered(lambda x:x.state == 'done').mapped('quantity_done'))
             total_qty = sum(self.order_line.mapped('product_qty'))
             data = cl.copy_data({'vnd_amount': move_done/total_qty * cl.vnd_amount, 'cost_line_origin': cl.id})[0]
-            del data['purchase_order_id']
-            del data['actual_cost']
+            if 'purchase_order_id' in data:
+                del data['purchase_order_id']
+            if 'actual_cost' in data:
+                del data['actual_cost']
             cost_line_vals.append((0, 0, data))
         values.update({
             'trade_discount': self.trade_discount,
@@ -2859,56 +2863,68 @@ class StockPicking(models.Model):
         results = self.env['account.move']
         if self.state != 'done' or not po:
             return results
-        po_total_qty = sum(line.product_qty for line in po.order_line)
-        sp_total_qty = sum(line.quantity_done for line in self.move_ids_without_package)
-        entries_values = [{
-            'ref': f"{self.name} - {expense.product_id.name}",
-            'purchase_type': po.purchase_type,
-            'move_type': 'entry',
-            'x_entry_types': 'entry_cost',
-            'reference': po.name,
-            'exchange_rate': po.exchange_rate,
-            'date': datetime.utcnow(),
-            'invoice_payment_term_id': po.payment_term_id.id,
-            'invoice_date_due': po.date_planned,
-            'restrict_mode_hash_table': False,
-            'stock_valuation_layer_ids': [(0, 0, {
-                'value': expense.vnd_amount / po_total_qty * move.quantity_done,
-                'unit_cost': expense.vnd_amount / po_total_qty,
-                'quantity': 0,
-                'remaining_qty': 0,
-                'description': f"{self.name} - {expense.product_id.name}",
-                'product_id': move.product_id.id,
-                'company_id': self.env.company.id,
-                'stock_move_id': move.id
-            }) for move in self.move_ids_without_package if move.product_id.type in ('product', 'consu')],
-            'invoice_line_ids': [(0, 0, {
-                'sequence': 1,
-                'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
-                'product_id': expense.product_id.id,
-                'name': expense.product_id.name,
-                'text_check_cp_normal': expense.product_id.name,
-                'credit': expense.vnd_amount / po_total_qty * sp_total_qty,
-                'debit': 0
-            })] + [(0, 0, {
-                'sequence': 2,
-                'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
-                'product_id': move.product_id.id,
-                'name': move.product_id.name,
-                'text_check_cp_normal': move.product_id.name,
-                'credit': 0,
-                'debit': expense.vnd_amount / po_total_qty * move.quantity_done
-            }) for move in self.move_ids_without_package],
-        } for expense in po.cost_line if expense.vnd_amount]
-        for value in entries_values:
-            debit = 0.0
-            for line in value['invoice_line_ids'][1:]:
-                if debit:
-                    line[-1]['debit'] += debit
+        entries_values = []
+        for move in self.move_ids:
+            if move.product_id.type not in ('product', 'consu'):
+                continue
+            product_po = po.order_line.filtered(lambda x: x.product_id == move.product_id)
+            po_total_qty = sum(product_po.mapped('product_qty'))
+            amount_rate = sum(product_po.mapped('total_vnd_amount')) / sum(po.order_line.mapped('total_vnd_amount'))
+            for expense in po.cost_line:
+                expense_vnd_amount = expense.vnd_amount * amount_rate
+                sp_total_qty = move.quantity_done
+
+                if sp_total_qty == 0:
+                    continue
+                entries_values += [{
+                    'ref': f"{self.name} - {expense.product_id.name}",
+                    'purchase_type': po.purchase_type,
+                    'move_type': 'entry',
+                    'x_entry_types': 'entry_cost',
+                    'reference': po.name,
+                    'exchange_rate': po.exchange_rate,
+                    'date': datetime.utcnow(),
+                    'invoice_payment_term_id': po.payment_term_id.id,
+                    'invoice_date_due': po.date_planned,
+                    'restrict_mode_hash_table': False,
+                    'stock_valuation_layer_ids': [(0, 0, {
+                        'value': expense_vnd_amount / po_total_qty * move.quantity_done,
+                        'unit_cost': expense_vnd_amount / po_total_qty,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {expense.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    })],
+                    'invoice_line_ids': [(0, 0, {
+                        'sequence': 1,
+                        'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
+                        'product_id': expense.product_id.id,
+                        'name': expense.product_id.name,
+                        'text_check_cp_normal': expense.product_id.name,
+                        'credit': expense_vnd_amount / po_total_qty * sp_total_qty,
+                        'debit': 0
+                    }),
+                    (0, 0, {
+                         'sequence': 2,
+                         'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                         'product_id': move.product_id.id,
+                         'name': move.product_id.name,
+                         'text_check_cp_normal': move.product_id.name,
+                         'credit': 0,
+                         'debit': expense_vnd_amount / po_total_qty * move.quantity_done
+                    })],
+                }]
+                for value in entries_values:
                     debit = 0.0
-                else:
-                    debit = line[-1]['debit'] - round(line[-1]['debit'])
-                    line[-1]['debit'] = round(line[-1]['debit'])
+                    for line in value['invoice_line_ids'][1:]:
+                        if debit:
+                            line[-1]['debit'] += debit
+                            debit = 0.0
+                        else:
+                            debit = line[-1]['debit'] - round(line[-1]['debit'])
+                            line[-1]['debit'] = round(line[-1]['debit'])
         results = results.create(entries_values)
         results._post()
         return results
