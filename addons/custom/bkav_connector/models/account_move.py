@@ -56,6 +56,24 @@ class AccountMoveBKAV(models.Model):
     ], 'Loại phát hành', default='vat', required=True)
 
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc', domain=[('move_type', '=', 'out_invoice')])
+    po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
+
+    def write(self, vals):
+        res = super(AccountMoveBKAV, self).write(vals)
+        if vals.get('po_source_id') and self.state == 'posted':
+            if self.po_source_id.is_inter_company:
+                self.create_an_invoice_and_publish_invoice_bkav()
+        return res
+
+
+    def create_an_invoice_and_publish_invoice_bkav(self):
+        for invoice in self:
+            try:
+                invoice.create_invoice_bkav()
+            except Exception as e:
+                pass
+            
+
 
     def _check_invoice_bkav(self):
         #HD ban hang thong thuong
@@ -67,6 +85,7 @@ class AccountMoveBKAV(models.Model):
             return True
         return False
     
+
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status_get_values(self):
@@ -235,7 +254,7 @@ class AccountMoveBKAV(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        connect_bkav(data, configs)
+        # connect_bkav(data, configs)
         _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)

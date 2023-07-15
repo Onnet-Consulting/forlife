@@ -5,7 +5,15 @@
     "version": "1.3.1",
     "sequence": 1,
     "description": """BKAV Connector""",
-    "depends": ['base', 'account', 'product', 'forlife_purchase', 'point_of_sale', 'nhanh_connector'],
+    "depends": [
+        'base', 
+        'account', 
+        'product', 
+        'forlife_purchase', 
+        'point_of_sale', 
+        'nhanh_connector',
+        'forlife_voucher',
+    ],
     "data": [
         'security/ir.model.access.csv',
         'data/schedule.xml',
