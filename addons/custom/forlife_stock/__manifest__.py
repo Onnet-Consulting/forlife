@@ -26,7 +26,6 @@
         'wizards/reject_asset_transfer.xml',
         'wizards/reject_in_out_request.xml',
         'wizards/stock_backorder_confirmation_views.xml',
-        'wizards/stock_picking_scan.xml',
         'security/ir.model.access.csv',
         'data/base_automation.xml',
         'views/stock_transfer_request_view.xml',

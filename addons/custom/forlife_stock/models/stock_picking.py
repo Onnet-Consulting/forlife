@@ -112,31 +112,6 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
-    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=True)
-
-    @api.depends('move_ids_without_package', 'move_ids_without_package.product_id', 'move_ids_without_package.product_id.is_need_scan_barcode')
-    def _compute_need_scan_barcode(self):
-        for rec in self:
-            rec.is_need_scan_barcode = any(sm.is_need_scan_barcode for sm in rec.move_ids_without_package)
-
-    def open_scan_barcode(self):
-        self.ensure_one()
-        scan_id = self.env['stock.picking.scan'].create({
-            'picking_id': self.id,
-            'stock_picking_scan_line_ids': [(0, 0, {
-                'move_line_id': sml.id,
-                'product_qty_done': sml.qty_done
-            }) for sml in self.move_line_ids_without_package if sml.product_id.is_need_scan_barcode]
-        })
-        return {
-            'name': self.name,
-            'view_mode': 'form',
-            'res_model': 'stock.picking.scan',
-            'type': 'ir.actions.act_window',
-            'target': 'new',
-            'res_id': scan_id.id
-        }
-
     def button_forlife_validate(self):
         self.ensure_one()
         # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
