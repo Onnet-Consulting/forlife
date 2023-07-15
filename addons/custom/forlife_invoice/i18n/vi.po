@@ -770,7 +770,7 @@ msgstr ""
 
 #. module: forlife_invoice
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Thuế nhập khẩu"
+msgid "Thông tin thuế"
 msgstr ""
 
 #. module: forlife_invoice
