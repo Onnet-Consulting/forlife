@@ -61,8 +61,7 @@ class StockPicking(models.Model):
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
             return self.filtered(lambda m: m.other_import)
         if picking_data == PICKING_TRANSFER_BKAV:
-            return self
-            # return self.filtered(lambda m: m.origin and m.transfer_id and m.transfer_id.exists_bkav and m.origin == m.transfer_id.name and not m.other_export and not m.other_import)
+            return self.filtered(lambda m: m.origin and m.transfer_id and m.transfer_id.exists_bkav and m.origin == m.transfer_id.name and not m.other_export and not m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
             return self.filtered(lambda m: m.other_export)
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
