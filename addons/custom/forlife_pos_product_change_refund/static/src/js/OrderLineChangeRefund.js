@@ -87,14 +87,13 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                     args: [args],
                 })
                 if (data_update.status === 'approve') {
-                    this.props.line.set_unit_price(data_update.price);
+                    this.props.line.handle_change_refund_price = data_update.price;
                     this.props.line.beStatus = true;
                     const order = this.env.pos.get_order();
                     if (order) {
                         order.approved = true;
                     }
-                }
-                else {
+                }else {
                     this.props.line.beStatus = false;
                 }
 			}
@@ -151,13 +150,24 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 
             getPercentDiscountRefund() {
                 var percent_discount = 0;
+                var percent_handle_change_refund_price = 0;
                 var reduced = Math.abs(this.props.line.money_is_reduced);
                 var quantity = this.props.line.get_quantity();
                 var order_amount = this.props.line.get_unit_display_price() * quantity;
                 var quantity_can_refund = this.props.line.quantity_canbe_refund;
                 if (order_amount !== 0 && quantity_can_refund !== 0) {
-                    percent_discount = ((reduced * quantity / quantity_can_refund) / order_amount) * 100;
+                    if(quantity!=0){
+                       percent_discount = ((reduced * quantity / quantity_can_refund) / order_amount) * 100;
+                    }else{
+                       percent_discount=0;
+                    }
                 }
+                if(order_amount != 0){
+                    percent_handle_change_refund_price = Math.abs(this.props.line.handle_change_refund_price/order_amount)*100
+                }else{
+                    percent_handle_change_refund_price = 0
+                }
+                percent_discount = percent_discount + percent_handle_change_refund_price
                 return Math.round(percent_discount * 100) / 100;
             }
 
