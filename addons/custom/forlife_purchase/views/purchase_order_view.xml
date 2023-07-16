@@ -241,7 +241,7 @@
                     <field name="partner_domain" invisible="1" />
                     <field name="partner_id" string="Nhà cung cấp"
                            attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
-                           domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                           domain="[('is_purchase_inter_company', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="currency_id"
