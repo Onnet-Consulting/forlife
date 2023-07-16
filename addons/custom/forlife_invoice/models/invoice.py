@@ -744,7 +744,7 @@ class AccountMoveLine(models.Model):
                              store=0)
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
                                  compute='_compute_total_product',
-                                 store=1)
+                                 store=0)
     company_currency = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
 
     @api.onchange('price_unit')
