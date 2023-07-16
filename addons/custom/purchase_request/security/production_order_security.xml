@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <record model="ir.rule" id="production_order_multi_company_rule">
+        <field name="name">Production Order multi-company</field>
+        <field name="model_id" ref="model_production_order"/>
+        <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="production_order_line_multi_company_rule">
+        <field name="name">Production Order Line multi-company</field>
+        <field name="model_id" ref="model_production_order_line"/>
+        <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+    </record>
+</data>
+</odoo>
