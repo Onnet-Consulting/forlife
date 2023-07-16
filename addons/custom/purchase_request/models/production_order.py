@@ -72,9 +72,9 @@ class ProductionOrderLine(models.Model):
     uom_id = fields.Many2one(related="product_id.uom_id")
     attachments_count = fields.Integer('Attachments Count')
     price = fields.Float(string='Giá', compute='compute_price', readonly=False, store=1)
-    
+
     company_id = fields.Many2one('res.company',
-                                 string='Công ty',
+                                 string='Công ty', required=True,
                                  default=lambda self: self.env.company)
 
     @api.constrains('product_qty')
