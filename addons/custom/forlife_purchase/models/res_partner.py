@@ -19,10 +19,9 @@ class ResPartner(models.Model):
         change_default=True, default=_get_default_category_id, group_expand='_read_group_categ_id',
         required=True)
     is_passersby = fields.Boolean(default=False)
-    is_inter_company_purchase = fields.Boolean(default=False)
+    is_purchase_inter_company = fields.Boolean(compute='_compute_is_purchase_inter_company', index=True, store=True)
 
-    @api.onchange('internal_code')
-    def onchange_is_inter_company_purchase(self):
-        for item in self:
-            code = str(item.internal_code)
-            item.is_inter_company_purchase = True if code.startswith("3000") else False
+    @api.depends('group_id', 'group_id.code')
+    def _compute_is_purchase_inter_company(self):
+        for partner in self:
+            partner.is_purchase_inter_company = (partner.group_id.code == 3000)

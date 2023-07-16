@@ -17,8 +17,7 @@ class TransferStockInventory(models.Model):
     employee_id = fields.Many2one('hr.employee', string="User")
     location_id = fields.Many2one('stock.location', string='Location')
     note = fields.Text(string="Note")
-    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id',
-                                                        copy=True)
+    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id', copy=True)
     x_classify = fields.Boolean('Phân loại hàng lỗi',copy=False)
     state = fields.Selection(
         tracking=True,
@@ -61,6 +60,12 @@ class TransferStockInventory(models.Model):
                 'context': context
             }
 
+    @api.onchange('location_id', 'product_to_id')
+    def _fill_location_in_line(self):
+        self.transfer_stock_inventory_line_ids.write({
+            'location_id': self.location_id.id if self.location_id else False
+        })
+
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
@@ -86,86 +91,81 @@ class TransferStockInventory(models.Model):
     def action_wait_confirm(self):
         for rec in self:
             for line in rec.transfer_stock_inventory_line_ids:
-                number_product = self.env['stock.quant'].search(
-                    [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
+                number_product = self.env['stock.quant'].search([('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
                 if not number_product or sum(number_product.mapped('quantity')) < line.qty_out:
-                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                elif (line.total_out != line.total_in):
-                    raise ValidationError(
-                        'Bạn không thể cân tồn giá trị xuất khác giá trị nhập')
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ.')
+
+                if line.qty_out <= line.qty_in:
+                    if line.total_out != line.total_in:
+                        raise ValidationError('Giá trị của sản phẩm xuất "%s" và sản phẩm nhập "%s" khác giá trị. Vui lòng kiểm tra lại.' % (line.product_from_id.name, line.product_to_id.name))
+
             rec.write({'state': 'wait_confirm'})
 
     def action_approve(self):
-        picking_type_in = self.env['stock.picking.type'].search([
-            ('import_or_export', '=', 'other_import'),
-            ('company_id', '=', self.env.company.id)], limit=1)
+        picking_type_in = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_import'), ('company_id', '=', self.env.company.id)], limit=1)
         if not picking_type_in:
-            raise ValidationError(
-                'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác' % (self.env.user.company_id.name))
-        picking_type_out = self.env['stock.picking.type'].search([
-            ('import_or_export', '=', 'other_export'),
-            ('company_id', '=', self.env.company.id)], limit=1)
+            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.user.company_id.name))
+        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
         if not picking_type_out:
-            raise ValidationError(
-                'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác' % (self.env.user.company_id.name))
+            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.user.company_id.name))
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
         for rec in self:
             data_ex_other = {}
-            if not export_inventory_balance.x_property_valuation_in_account_id and not enter_inventory_balance.x_property_valuation_out_account_id:
-                raise ValidationError(
-                    'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
+            if not export_inventory_balance.x_property_valuation_in_account_id and \
+                    not enter_inventory_balance.x_property_valuation_out_account_id:
+                raise ValidationError('Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng).')
             for line in rec.transfer_stock_inventory_line_ids:
                 key_import = (str(line.location_id), 'import')
 
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
                     if not enter_inventory_balance:
-                        raise ValidationError(
-                            "Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N201" % (self.env.user.company_id.name))
-                    product_import = (
-                        0, 0,
-                        {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
-                         'product_uom': line.uom_to_id.id,
-                         'name': line.product_to_id.name, 'price_unit': line.product_to_id.standard_price,
-                         'location_id': enter_inventory_balance.id,
-                         'location_dest_id': line.location_id.id,
-                         "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
-                         'amount_total': line.product_to_id.standard_price * line.qty_in
-                         })
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N201." % (self.env.user.company_id.name))
+                    product_import = (0, 0, {
+                        'product_id': line.product_to_id.id,
+                        'product_uom_qty': line.qty_in,
+                        'product_uom': line.uom_to_id.id,
+                        'name': line.product_to_id.name,
+                        'price_unit': line.product_to_id.standard_price,
+                        'location_id': enter_inventory_balance.id,
+                        'location_dest_id': line.location_id.id,
+                        'quantity_done': line.qty_in,
+                        'work_production': line.mrp_production_to_id.id,
+                        'amount_total': line.product_to_id.standard_price * line.qty_in
+                    })
                 else:
-                    amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out,
-                                                                               line.location_id.company_id).get('value')
+                    amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out, line.location_id.company_id).get('value')
                     if not import_inventory_balance_classify:
-                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N402" % (self.env.user.company_id.name))
-                    product_import = (
-                        0, 0,
-                        {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
-                         'product_uom': line.uom_to_id.id,
-                         'name': line.product_to_id.name, 'price_unit': amount_total / line.qty_in,
-                         'location_id': import_inventory_balance_classify.id,
-                         'location_dest_id': line.location_id.id,
-                         "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
-                         'amount_total': amount_total
-                         })
-                if self.x_classify and (not export_inventory_balance_classify or not import_inventory_balance_classify):
-                    raise ValidationError(
-                        "Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X802 hoặc N402" % (
-                            self.env.user.company_id.name))
-                elif not self.x_classify and (not export_inventory_balance or not enter_inventory_balance):
-                    raise ValidationError(
-                        "Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã 1381000003 hoặc N201" % (
-                            self.env.user.company_id.name))
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N402." % (self.env.user.company_id.name))
+                    product_import = (0, 0, {
+                        'product_id': line.product_to_id.id,
+                        'product_uom_qty': line.qty_in,
+                        'product_uom': line.uom_to_id.id,
+                        'name': line.product_to_id.name,
+                        'price_unit': amount_total / line.qty_in,
+                        'location_id': import_inventory_balance_classify.id,
+                        'location_dest_id': line.location_id.id,
+                        'quantity_done': line.qty_in,
+                        'work_production': line.mrp_production_to_id.id,
+                        'amount_total': amount_total
+                    })
+                if self.x_classify and (not export_inventory_balance_classify and not import_inventory_balance_classify):
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X802 hoặc N402." % (self.env.user.company_id.name))
+                elif not self.x_classify and (not export_inventory_balance and not enter_inventory_balance):
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã 1381000003 hoặc N201." % (self.env.user.company_id.name))
 
-                product_export = (
-                    0, 0,
-                    {'product_id': line.product_from_id.id, 'product_uom_qty': line.qty_out,
-                     'product_uom': line.uom_from_id.id, 'name': line.product_from_id.name,
-                     'price_unit': line.unit_price_from,
-                     'location_id': line.location_id.id,
-                     'location_dest_id': export_inventory_balance.id if not self.x_classify else export_inventory_balance_classify.id,
-                     "quantity_done": line.qty_out, 'work_production': line.mrp_production_from_id.id,
-                     'amount_total': line.total_out
-                     })
+                product_export = (0, 0, {
+                    'product_id': line.product_from_id.id,
+                    'product_uom_qty': line.qty_out,
+                    'product_uom': line.uom_from_id.id,
+                    'name': line.product_from_id.name,
+                    'price_unit': line.unit_price_from,
+                    'location_id': line.location_id.id,
+                    'location_dest_id': export_inventory_balance.id if not self.x_classify else export_inventory_balance_classify.id,
+                    'quantity_done': line.qty_out,
+                    'work_production': line.mrp_production_from_id.id,
+                    'amount_total': line.total_out
+                })
                 data_import = {
                     "name": picking_type_in.sequence_id.next_by_id(),
                     "is_locked": True,
@@ -196,8 +196,7 @@ class TransferStockInventory(models.Model):
                     'picking_type_id': picking_type_out.id,
                     'move_ids_without_package': [product_export]
                 }
-                number_product = self.env['stock.quant'].search(
-                    [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
+                number_product = self.env['stock.quant'].search([('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
                 if not number_product or sum(number_product.mapped('quantity')) < line.qty_out:
                     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
                 else:
@@ -208,12 +207,10 @@ class TransferStockInventory(models.Model):
                         data_ex_other.update({
                             key_export: data_export,
                             key_import: data_import
-
                         })
             for item in data_ex_other:
                 # self.create_picking_and_move(item,  data_ex_other)
-                picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                    data_ex_other.get(item))
+                picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(data_ex_other.get(item))
                 picking_id.button_validate()
             rec.write({'state': 'approved', 'is_nk_xk': True})
 
@@ -230,12 +227,10 @@ class TransferStockInventory(models.Model):
 
     def create_picking_and_move(self, item, data_ex_other):
         if item[1] == 'export':
-            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                    data_ex_other.get(item))
+            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(data_ex_other.get(item))
             picking_id.button_validate()
         else:
-            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                data_ex_other.get(item))
+            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(data_ex_other.get(item))
             for line in picking_id.move_ids:
                 journal_id = line._get_accounting_data_for_valuation()[0]
                 credit = {
@@ -251,7 +246,7 @@ class TransferStockInventory(models.Model):
                 account_debit = line.product_id.categ_id.property_stock_valuation_account_id
                 if not account_debit:
                     raise ValidationError(
-                        'Sản phẩm: %s chưa được cấu tài khoản định giá tồn kho trong Danh mục sản phẩm' % (line.product_id.name))
+                        'Sản phẩm: %s chưa được cấu tài khoản định giá tồn kho trong Danh mục sản phẩm.' % (line.product_id.name))
                 debit = {
                     'product_id': line.product_id.id,
                     'name': picking_id.name + ': ' + line.product_id.name,
@@ -272,6 +267,7 @@ class TransferStockInventory(models.Model):
                 }
                 invoice_id = self.env['account.move'].create(vals)
                 invoice_id.action_post()
+
     def action_cancel(self):
         for rec in self:
             rec.write({'state': 'cancel'})
@@ -311,6 +307,67 @@ class TransferStockInventoryLine(models.Model):
     unit_price_to = fields.Float(string="Unit Price", compute='compute_unit_price_to')
     total_in = fields.Float(string='Total In', compute='compute_total_in')
     mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
+
+    @api.onchange('product_from_id', 'product_to_id')
+    def _get_domain_product(self):
+        # if self.transfer_stock_inventory_id.x_classify:
+        return {
+            'domain': {
+                'product_from_id': [('product_type', '=', 'product')],
+                'product_to_id': [('product_type', '=', 'product')]
+            }
+        }
+        # else:
+        #     self._cr.execute("""
+        #         select pp.id
+        #         from product_product pp
+        #             left join product_template pt on pt.id = pp.product_tmpl_id
+        #             left join res_brand rb on rb.id = pt.brand_id
+        #         where rb.code in ('TKL','FM')
+        #         """)
+        #     result = [r[0] for r in self._cr.fetchall()]
+        #     return {
+        #         'domain': {
+        #             'product_from_id': [('product_type', '=', 'product'), ('id', 'in', result)],
+        #             'product_to_id': [('product_type', '=', 'product'), ('id', 'in', result)]
+        #         }
+        #     }
+
+    def check_brand(self, product_id):
+        if not product_id.brand_id:
+            raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Thương hiệu.' % product_id.name))
+        if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level < 2):
+            raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Nhóm hàng.' % product_id.name))
+        if product_id.brand_id.code == 'FM' and (not product_id.categ_id or product_id.categ_id.level < 4):
+            raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Kết cấu.' % product_id.name))
+
+    @api.onchange('product_from_id', 'product_to_id')
+    def check_validate(self):
+        if not self.transfer_stock_inventory_id.x_classify:
+            if self.product_from_id:
+                self.check_brand(self.product_from_id)
+            if self.product_to_id:
+                self.check_brand(self.product_to_id)
+            if self.product_from_id and self.product_to_id:
+                if self.product_from_id.brand_id.id != self.product_to_id.brand_id.id:
+                    raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng thương hiệu.' % (self.product_from_id.name, self.product_to_id.name)))
+                level = 2 if self.product_from_id.brand_id.code == 'TKL' else 4
+                self._get_category_product_from_and_product_to(level)
+
+    def _get_category_product_from_and_product_to(self, level):
+        categ_from_id = self.product_from_id.categ_id.id if self.product_from_id.categ_id.level == level else False
+        if self.product_from_id.categ_id.level > level:
+            categ_from_id = int(self.product_from_id.categ_id.parent_path.split('/')[level-1])
+
+        categ_to_id = self.product_to_id.categ_id.id if self.product_to_id.categ_id.level == level else False
+        if self.product_to_id.categ_id.level > level:
+            categ_to_id = int(self.product_to_id.categ_id.parent_path.split('/')[level-1])
+
+        if categ_from_id != categ_to_id:
+            if level == 4:
+                raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Kết cấu.' % (self.product_from_id.name, self.product_to_id.name)))
+            else:
+                raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Nhóm hàng.' % (self.product_from_id.name, self.product_to_id.name)))
 
     @api.depends('qty_out', 'unit_price_from')
     def compute_total_out(self):

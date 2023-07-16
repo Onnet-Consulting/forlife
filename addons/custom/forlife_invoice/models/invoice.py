@@ -738,10 +738,10 @@ class AccountMoveLine(models.Model):
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
                               compute='_compute_before_tax',
-                              store=1)
+                              store=0)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)',
                              compute='_compute_after_tax',
-                             store=1)
+                             store=0)
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
                                  compute='_compute_total_product',
                                  store=1)
@@ -761,6 +761,7 @@ class AccountMoveLine(models.Model):
                 price_unit_by_layer[layer] = layer.unit_cost
         return price_unit_by_layer
 
+                                 store=0)
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:
