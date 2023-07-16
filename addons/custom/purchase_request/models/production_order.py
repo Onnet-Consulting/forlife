@@ -37,6 +37,10 @@ class ProductionOrder(models.Model):
         ('invoiced', 'Hoàn thành'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
 
+    company_id = fields.Many2one('res.company',
+                                 string='Công ty',
+                                 default=lambda self: self.env.company)
+
 
     @api.constrains('product_id')
     def _constraint_product_id(self):
@@ -68,6 +72,10 @@ class ProductionOrderLine(models.Model):
     uom_id = fields.Many2one(related="product_id.uom_id")
     attachments_count = fields.Integer('Attachments Count')
     price = fields.Float(string='Giá', compute='compute_price', readonly=False, store=1)
+
+    company_id = fields.Many2one('res.company',
+                                 string='Công ty', required=True,
+                                 default=lambda self: self.env.company)
 
     @api.constrains('product_qty')
     def constrains_product_qty(self):
