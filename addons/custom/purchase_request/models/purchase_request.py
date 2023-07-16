@@ -201,7 +201,7 @@ class PurchaseRequest(models.Model):
             keys = {}
             vendor_code = lines[0].vendor_code
             product_type = lines[0].purchase_product_type
-            vendor_id = vendor_code[0] if vendor_code else False
+            vendor_id = vendor_code.id if vendor_code else False
             po_line_data = []
             for line in lines:
                 if line.purchase_quantity == line.order_quantity:
