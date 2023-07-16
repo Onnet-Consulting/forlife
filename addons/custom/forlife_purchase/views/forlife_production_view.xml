@@ -4,7 +4,7 @@
         <field name="model">forlife.production</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Forlife Production">
+            <tree string="Forlife Production" default_order="version desc,created_date desc">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="implementation_id"/>
@@ -66,6 +66,8 @@
                                     <field name="is_check" invisible="1"/>
                                     <field name="product_id" domain="[('id', 'not in', parent.selected_product_ids)]"/>
                                     <field name="description"/>
+                                    <field name="color"/>
+                                    <field name="size"/>
                                     <field name="produce_qty"/>
                                     <field name="uom_id"/>
                                     <field name="unit_price" force_save="1"/>

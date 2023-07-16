@@ -24,4 +24,4 @@ class ResPartner(models.Model):
     @api.depends('group_id', 'group_id.code')
     def _compute_is_purchase_inter_company(self):
         for partner in self:
-            partner.is_purchase_inter_company = (partner.group_id.code == 3000)
+            partner.is_purchase_inter_company = (partner.group_id.code == '3000')

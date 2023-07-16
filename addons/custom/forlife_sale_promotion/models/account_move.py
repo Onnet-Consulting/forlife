@@ -151,8 +151,8 @@ class AccountMoveLine(models.Model):
                 if line.product_id:
                     sale_line_id = line.sale_line_ids
                     order_id = sale_line_id.order_id
-                    income_online_account_id = line.product_id.categ_id.income_online_account_id
-                    income_sale_account_id = line.product_id.categ_id.income_sale_account_id
+                    income_online_account_id = line.with_company(line.company_id).product_id.categ_id.income_online_account_id
+                    income_sale_account_id = line.with_company(line.company_id).product_id.categ_id.income_sale_account_id
                     if not sale_line_id.x_free_good:
                         if order_id.x_sale_chanel == "online" and income_online_account_id:
                             line.account_id = income_online_account_id or line.account_id
