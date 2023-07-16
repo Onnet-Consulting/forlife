@@ -761,7 +761,6 @@ class AccountMoveLine(models.Model):
                 price_unit_by_layer[layer] = layer.unit_cost
         return price_unit_by_layer
 
-                                 store=0)
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:
