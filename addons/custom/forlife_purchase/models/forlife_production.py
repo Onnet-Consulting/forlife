@@ -227,6 +227,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')
     forlife_bom_ingredients_ids = fields.One2many('forlife.bom.ingredients', 'forlife_bom_id', string='Ingredients')
     is_check = fields.Boolean(default=False)
+    color = fields.Many2one('product.attribute.value', string='Màu', compute='compute_attribute_value')
+    size = fields.Many2one('product.attribute.value', string='Size', compute='compute_attribute_value')
+
+    @api.depends('product_id')
+    def compute_attribute_value(self):
+        for rec in self:
+            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT004').value_ids.id
+            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT006').value_ids.id
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
