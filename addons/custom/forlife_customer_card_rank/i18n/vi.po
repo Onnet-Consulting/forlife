@@ -709,11 +709,6 @@ msgid "Order Status Tokyolife"
 msgstr ""
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__order_ids
-msgid "Orders"
-msgstr "Đơn hàng"
-
-#. module: forlife_customer_card_rank
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ProductScreen.js:0
 #, python-format

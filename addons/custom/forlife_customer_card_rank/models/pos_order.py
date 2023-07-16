@@ -35,13 +35,11 @@ class PosOrder(models.Model):
                     if new_rank.priority >= program.card_rank_id.priority:
                         self.update_status_card_rank(partner_card_rank)
                         self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
-                        self.save_order_to_program(program)
                         break
                     else:
                         if total_value_to_up >= program.min_turnover:
                             self.update_status_card_rank(partner_card_rank)
                             self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
-                            self.save_order_to_program(program)
                             break
         else:
             for program in member_cards:
@@ -51,7 +49,6 @@ class PosOrder(models.Model):
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     if value_to_upper_order >= program.min_turnover:
                         self.create_partner_card_rank(value_to_upper_order, program.id, program.card_rank_id.id)
-                        self.save_order_to_program(program)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
@@ -98,11 +95,6 @@ class PosOrder(models.Model):
             'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
             'program_cr_id': program_id,
             'status': True if old_rank_id != new_rank_id else False
-        })
-
-    def save_order_to_program(self, program):
-        program.sudo().write({
-            'order_ids': [(4, self.id)]
         })
 
     @api.model
