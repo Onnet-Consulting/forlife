@@ -9,6 +9,13 @@ class ProductionOrder(models.Model):
     _rec_name = 'product_id'
 
 
+    @api.model
+    def create(self, vals):
+        res = super(ProductionOrder, self).create(vals)
+        if res.product_id:
+            res.product_id.x_check_npl = True
+        return res
+
     def write(self, vals):
         if 'product_id' in vals:
             if vals.get('product_id') != self.product_id.id:
