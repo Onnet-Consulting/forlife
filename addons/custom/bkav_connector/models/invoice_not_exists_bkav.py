@@ -57,7 +57,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
 
-
+    code = fields.Char(string="Mã", default="New", copy=False)
     invoice_ids = fields.Many2many(comodel_name='account.move', copy=False, string='DS Hóa đơn')
     line_ids = fields.One2many(
         comodel_name='invoice.not.exists.bkav.line',
@@ -66,31 +66,30 @@ class GeneralInvoiceNotExistsBkav(models.Model):
     )
     state = fields.Selection([('new', 'Mới'),('post', 'Đã tích hợp')], copy=False)
 
-    # def genarate_code(self):
-    #     location_code = self.location_id.code
-    #     code = 'PTH' + (location_code if location_code else '') + datetime.now().strftime("%y")
-    #     param_code = code+'%'
-    #     query = """ 
-    #         SELECT code
-    #         FROM (
-    #             (SELECT '000001' as code)
-    #             UNION ALL
-    #             (SELECT RIGHT(name,6) as code
-    #             FROM stock_transfer
-    #             WHERE name like %s
-    #             ORDER BY name desc
-    #             LIMIT 1)) as compu
-    #         ORDER BY code desc LIMIT 1
-    #     """
-    #     self._cr.execute(query, (param_code,))
-    #     result = self._cr.fetchall()
-    #     for list_code in result:
-    #         if list_code[0] == '000001':
-    #             code+='000001'
-    #         else:
-    #             code_int = int(list_code[0])
-    #             code+='0'*len(6-len(code_int+1))+str(code_int+1)
-    #     self.code = code
+    def genarate_code(self):
+        code = '982' 
+        param_code = code+'%'
+        query = """ 
+            SELECT code
+            FROM (
+                (SELECT '0000000' as code)
+                UNION ALL
+                (SELECT RIGHT(code,7) as code
+                FROM invoice_not_exists_bkav
+                WHERE code like %s
+                ORDER BY code desc
+                LIMIT 1)) as compu
+            ORDER BY code desc LIMIT 1
+        """
+        self._cr.execute(query, (param_code,))
+        result = self._cr.fetchall()
+        for list_code in result:
+            if list_code[0] == '0000000':
+                code+='0000000'
+            else:
+                code_int = int(list_code[0])
+                code+='0'*len(7-len(code_int+1))+str(code_int+1)
+        return code
 
 
     def general_invoice_not_exists_bkav(self):
@@ -190,6 +189,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             list_negative_line_vals.append(negative_line_vals)
         for out_item in list_out_line_vals:
             invoice_bkav_id = self.env['invoice.not.exists.bkav'].sudo().create({
+                'code': self.genarate_code(),
                 'company_id': invoices[0].company_id.id,
                 'partner_id': invoices[0].partner_id.id,
                 'move_date': move_date,
@@ -199,6 +199,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             invoice_bkav_ids.append(invoice_bkav_id)
         for negative_item in list_negative_line_vals:
             invoice_bkav_id = self.env['invoice.not.exists.bkav'].sudo().create({
+                'code': self.genarate_code(),
                 'company_id': invoices[0].company_id.id,
                 'partner_id': invoices[0].partner_id.id,
                 'move_date': move_date,
