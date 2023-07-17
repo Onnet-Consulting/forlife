@@ -28,13 +28,13 @@ msgstr "Chi tiết sản phẩm"
 #. module: bkav_connector
 #: model:ir.model,name:bkav_connector.model_invoice_not_exists_bkav
 msgid "General Invoice Not Exists Bkav"
-msgstr "Tổng hợp hóa đơn chưa có HĐĐT"
+msgstr "Tổng hợp hóa đơn Nhanh.vn chưa có HĐĐT"
 
 #. module: bkav_connector
 #: model:ir.actions.act_window,name:bkav_connector.invoice_not_exists_bkav_action
 #: model:ir.ui.menu,name:bkav_connector.invoice_not_exists_bkav_menu
 msgid "General invoice not exists BKAV"
-msgstr "Tổng hợp hóa đơn chưa có HĐĐT"
+msgstr "Tổng hợp hóa đơn Nhanh.vn chưa có HĐĐT"
 
 #. module: bkav_connector
 #: model:ir.model.fields,field_description:bkav_connector.field_account_bank_statement_line__invoice_date
