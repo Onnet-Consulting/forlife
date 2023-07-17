@@ -2466,54 +2466,54 @@ class PurchaseOrderLine(models.Model):
                 uom_id=uom_id,
                 params=params)
 
-                if seller or not line.date_planned:
-                    line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            if seller or not line.date_planned:
+                line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
                 # If not seller, use the standard price. It needs a proper currency conversion.
-                if not seller:
-                    if line.product_id.detailed_type == 'product':
-                        continue
-                    unavailable_seller = line.product_id.seller_ids.filtered(
-                        lambda s: s.partner_id == line.order_id.partner_id)
-                    if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
-                        # Avoid to modify the price unit if there is no price list for this partner and
-                        # the line has already one to avoid to override unit price set manually.
-                        continue
-                    po_line_uom = line.product_uom or line.product_id.uom_po_id
-                    price_unit = line.env['account.tax']._fix_tax_included_price_company(
-                        line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
-                        line.product_id.supplier_taxes_id,
-                        line.taxes_id,
-                        line.company_id,
-                    )
-                    price_unit = line.product_id.currency_id._convert(
-                        price_unit,
-                        line.currency_id,
-                        line.company_id,
-                        line.date_order,
-                        False
-                    )
-                    line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
-                                                                                   self.env[
-                                                                                       'decimal.precision'].precision_get(
-                                                                                       'Product Price')))
+            if not seller:
+                if line.product_id.detailed_type == 'product':
                     continue
+                unavailable_seller = line.product_id.seller_ids.filtered(
+                    lambda s: s.partner_id == line.order_id.partner_id)
+                if not unavailable_seller and line.price_unit and line.product_uom == line._origin.product_uom:
+                    # Avoid to modify the price unit if there is no price list for this partner and
+                    # the line has already one to avoid to override unit price set manually.
+                    continue
+                po_line_uom = line.product_uom or line.product_id.uom_po_id
+                price_unit = line.env['account.tax']._fix_tax_included_price_company(
+                    line.product_id.uom_id._compute_price(line.product_id.standard_price, po_line_uom),
+                    line.product_id.supplier_taxes_id,
+                    line.taxes_id,
+                    line.company_id,
+                )
+                price_unit = line.product_id.currency_id._convert(
+                    price_unit,
+                    line.currency_id,
+                    line.company_id,
+                    line.date_order,
+                    False
+                )
+                line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                               self.env[
+                                                                                   'decimal.precision'].precision_get(
+                                                                                   'Product Price')))
+                continue
 
-                price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
-                                                                                     line.product_id.supplier_taxes_id,
-                                                                                     line.taxes_id,
-                                                                                     line.company_id) if seller else 0.0
-                price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
+            price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
+                                                                                 line.product_id.supplier_taxes_id,
+                                                                                 line.taxes_id,
+                                                                                 line.company_id) if seller else 0.0
+            price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-                # record product names to avoid resetting custom descriptions
-                default_names = []
-                vendors = line.product_id._prepare_sellers({})
-                for vendor in vendors:
-                    product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                    default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
-                if not line.name or line.name in default_names:
-                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
-                    line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+            # record product names to avoid resetting custom descriptions
+            default_names = []
+            vendors = line.product_id._prepare_sellers({})
+            for vendor in vendors:
+                product_ctx = {'seller_id': vendor.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                default_names.append(line._get_product_purchase_description(line.product_id.with_context(product_ctx)))
+            if not line.name or line.name in default_names:
+                product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
+                line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
