@@ -45,7 +45,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         message = json.dumps(message).encode('utf-8')
         channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
         if self._exchange:
-            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'})
+            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'}, exchange_type='x-delayed-message')
             channel.queue_bind(queue=rabbitmq_queue.queue_name, exchange=self._exchange, routing_key=self._routing_key)
             properties = pika.BasicProperties(headers={'x-delay': 5000}, delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE)
             channel.basic_publish(exchange=self._exchange, routing_key=self._routing_key, body=message, properties=properties)

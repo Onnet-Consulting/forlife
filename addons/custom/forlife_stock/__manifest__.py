@@ -15,7 +15,8 @@
         'stock',
         'stock_account',
         'stock_landed_costs',
-        'quality_control'
+        'quality_control',
+        'forlife_base'
     ],
     "data": [
         'data/data_stock_location_type.xml',
