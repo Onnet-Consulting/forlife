@@ -61,6 +61,7 @@ class ResUtility(models.AbstractModel):
                     values.append(cell.value)
             yield values
 
+    @api.model
     def execute_postgresql(self, query, param, build_dict):
         db_source = self.env['base.external.dbsource'].sudo().search([('connector', '=', 'postgresql')], limit=1)
         if db_source:
@@ -70,11 +71,13 @@ class ResUtility(models.AbstractModel):
             self._cr.execute(query, param)
             return self._cr.dictfetchall() if build_dict else self._cr.fetchall()
 
+    @api.model
     def build_dict(self, rows, cols):
         return [{d: row[i] for i, d in enumerate(cols)} for row in rows]
 
+    @api.model
     def get_attribute_code_config(self):
-        return ast.literal_eval(self.env.ref('forlife_base.attr_code_default').attr_code or '{}')
+        return ast.literal_eval(self.env['ir.config_parameter'].sudo().get_param('attr_code_config') or '{}')
 
     @api.model
     def get_warehouse_type_info(self):
