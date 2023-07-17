@@ -20,12 +20,15 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
                 method: 'load_promotion_valid_new_partner',
                 args: [[this.env.pos.config.id], [partnerId], proPrograms],
             });
-            if (promotionValidPartners.length > 0) {
-                for (let program_id of promotionValidPartners) {
-                    let validProgram = this.env.pos.promotionPrograms.find(p => p.id == program_id);
+            for (let program_id of proPrograms) {
+                let validProgram = this.env.pos.promotionPrograms.find(p => p.id == program_id);
+                if (promotionValidPartners.includes(program_id)) {
                     if (validProgram) {
-                        validProgram.valid_customer_ids.add(partnerId)
+                        validProgram.valid_customer_ids.add(partnerId);
                     };
+                } else {
+                    validProgram.valid_customer_ids.delete(partnerId);
+                    validProgram.valid_customer_ids.delete(partnerId);
                 };
             };
             this.confirm();
