@@ -494,21 +494,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     async set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
-        if (oldPartner !== this.get_partner()) {
+        if (oldPartner !== this.get_partner() && this.state) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
         };
-        await this.load_promotion_valid_new_partner();
-        // Đặt lại và gán pricelist_item vào các order_line
-        this.assign_pricelist_item_to_orderline()
-        this.activatedInputCodes = [];
-        this._resetPromotionPrograms();
-        this._resetCartPromotionPrograms();
-        this.autoApplyPriceListProgram();
+        if (!this.locked) {
+            await this.load_promotion_valid_new_partner();
+            // Đặt lại và gán pricelist_item vào các order_line
+            this.assign_pricelist_item_to_orderline();
+            this.activatedInputCodes = [];
+            this._resetPromotionPrograms();
+            this._resetCartPromotionPrograms();
+            this.autoApplyPriceListProgram();
+        };
     }
 
     // New method
     async load_promotion_valid_new_partner() {
+        if (this.locked) return false;
         const partner = this.get_partner();
         let proPrograms = Object.keys(this.pos.promotion_program_by_id);
         if (partner) {
@@ -533,6 +536,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     async get_history_program_usages() {
         var self = this;
+        if (this.locked) return false;
         const customer = this.get_partner();
         let programs = Object.keys(this.pos.promotion_program_by_id);
         await this.pos.env.services.rpc({
@@ -551,6 +555,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     async update_surprising_program() {
         var self = this;
+        if (this.locked) return false;
         const customer = this.get_partner();
         let surprisingLines = this.pos.surprisingRewardProducts.map(l => l.id);
         if (surprisingLines.length > 0) {

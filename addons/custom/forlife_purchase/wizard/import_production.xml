@@ -11,6 +11,7 @@
                             <field name="file" widget="binary" filename="file_name"/>
                             <field name="file_name" invisible="1"/>
                         </group>
+                        <button name="download_template" type="object" string=" Tải file mẫu" class="fa fa-download"/>
                         <footer>
                             <button name="apply" type="object" string="Nạp dữ liệu" class="oe_highlight"/>
                             <button string="Hủy" class="btn-secondary" special="cancel" />

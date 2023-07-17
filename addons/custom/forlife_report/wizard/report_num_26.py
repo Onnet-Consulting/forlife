@@ -17,7 +17,7 @@ class ReportNum26(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Báo cáo danh sách phiếu điều chuyển'
 
-    request_id = fields.Many2many('stock.transfer.request', string='Số yêu cầu', domain=[('state', 'in', ('approved', 'out_approve'))])
+    request_id = fields.Many2many('stock.transfer.request', string='Số yêu cầu', domain=[('state', 'not in', ('reject', 'cancel'))])
     location_id = fields.Many2one('stock.location', string='Từ kho')
     location_dest_id = fields.Many2one('stock.location', string='Đến kho')
     status = fields.Selection([('approved', 'Chưa xuất'), ('out_approve', 'Xác nhận xuất')], string='Trạng thái')
@@ -40,7 +40,7 @@ class ReportNum26(models.TransientModel):
                 sl1.complete_name AS tu_kho,
                 sl2.complete_name AS den_kho,
                 st.name AS so_phieu_dc,
-                ROW_NUMBER() OVER (PARTITION BY st.name ORDER BY stl.create_date) num,
+                ROW_NUMBER() OVER (PARTITION BY stl.id ORDER BY stl.id) num,
                 pp.barcode AS barcode,
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') AS ten_sp,
                 attr.attrs->>'{attr_value.get('mau_sac', '')}' AS mau,

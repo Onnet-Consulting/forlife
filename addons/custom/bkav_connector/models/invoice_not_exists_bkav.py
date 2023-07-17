@@ -35,10 +35,10 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         query = """
             SELECT DISTINCT am.id 
             FROM sale_order so
-            LEFT JOIN sale_orer_line sol on sol.order_id = so.id
-            LEFT JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
-            LEFT JOIN account_move_line aml on solir.invoice_line_id = aml.id
-            LEFT JOIN account_move am on am.id = aml.move_id
+            JOIN sale_orer_line sol on sol.order_id = so.id
+            JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
+            JOIN account_move_line aml on solir.invoice_line_id = aml.id
+            JOIN account_move am on am.id = aml.move_id
             WHERE so.source_record = TRUE 
             AND (am.invoice_date = %s)
             AND am.state = 'posted'
@@ -48,13 +48,6 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         nhanh_invoice_ids = self.env['account.move'].sudo().browse([idd[0] for idd in result])
         self.create_general_invoice(nhanh_invoice_ids, move_date)
 
-        # tổng hợp hóa đơn pos
-        invoices = self.env['account.move'].sudo().search([
-            ('exists_bkav', '=', False),
-            ('move_type', 'in', ['out_invoice', 'out_refund']),
-            ('state', '=', 'posted'),
-            # ('date', '=', move_date),
-        ])
 
     def create_general_invoice(self, invoices, move_date):
         out_invoices = invoices.filtered(lambda x: x.move_type == 'out_invoice')

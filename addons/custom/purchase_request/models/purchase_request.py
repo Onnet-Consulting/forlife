@@ -181,9 +181,9 @@ class PurchaseRequest(models.Model):
 
     def create_purchase_orders(self):
         self.is_check_button_orders_smart_button = True
-        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False).ids
+        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False)
         groups = {}
-        for line in self.order_lines:
+        for line in order_lines_ids:
             key = str(line.vendor_code.id) + '-' + str(line.product_id.id) + '-' + str(line.purchase_product_type)
             if groups.get(key, False):
                 groups[key].append(line)
