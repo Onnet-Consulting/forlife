@@ -177,6 +177,7 @@ class TransferNotExistsBkav(models.Model):
         self._cr.execute(query, (date_now,date_now,date_now))
         transfer_ids = self.env['transfer.not.exists.bkav'].search([('state','=','new')],order='id asc')
         for transfer_id in transfer_ids:
+            transfer_id = transfer_id.sudo().with_company(transfer_id.location_id.company_id)
             transfer_id.genarate_code()
             transfer_id.create_invoice_bkav()
             transfer_id.publish_invoice_bkav()
@@ -220,6 +221,10 @@ class TransferNotExistsBkav(models.Model):
     
 
     def getting_invoice_status(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         configs = self.get_bkav_config()
@@ -312,6 +317,10 @@ class TransferNotExistsBkav(models.Model):
     
 
     def create_invoice_bkav(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
@@ -347,6 +356,10 @@ class TransferNotExistsBkav(models.Model):
 
 
     def get_invoice_bkav(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         configs = self.get_bkav_config()
@@ -374,6 +387,10 @@ class TransferNotExistsBkav(models.Model):
 
 
     def update_invoice_bkav(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_updateInvoice')),
@@ -389,6 +406,10 @@ class TransferNotExistsBkav(models.Model):
 
 
     def publish_invoice_bkav(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         configs = self.get_bkav_config()
@@ -412,6 +433,10 @@ class TransferNotExistsBkav(models.Model):
 
 
     def download_invoice_bkav(self):
+        self = self.sudo()
+        if not self.company_id:
+            self.company_id = self.location_id.company_id
+        self = self.with_company(self.location_id.company_id)
         if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         if not self.eivoice_file:
