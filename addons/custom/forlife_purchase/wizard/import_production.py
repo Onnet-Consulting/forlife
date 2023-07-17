@@ -71,7 +71,27 @@ class ImportProductionFromExcel(models.TransientModel):
         for pe in production_exists:
             production_exists_dict.update({pe['code']: pe['version']})
 
-        num = 0
+        create_material_vals = []
+        for m in material:
+            if not product_dict.get(m[0], False):
+                raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
+            if not uom_dict.get(m[3], False):
+                raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[3]))
+            if not uom_dict.get(m[4], False):
+                raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
+            create_material_vals.append((0, 0, {
+                'product_id': product_dict.get(m[0], False),
+                'size': m[1],
+                'color': m[2],
+                'uom_id': uom_dict.get(m[3], False),
+                'production_uom_id': uom_dict.get(m[4], False),
+                'conversion_coefficient': m[5],
+                'rated_level': m[6],
+                'loss': m[7],
+                'qty': m[8],
+                'total': round(float(m[9]), 0),
+            }))
+
         create_list_order = []
         for order in orders:
             master = {}
@@ -100,11 +120,12 @@ class ImportProductionFromExcel(models.TransientModel):
 
                 list_material = []
                 for m in material:
+                    if not product_dict.get(m[0], False):
+                        raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
+                    if not uom_dict.get(m[4], False):
+                        raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
+
                     if m[1] == order[10] or m[2] == order[11] or (not m[1] and not m[2]):
-                        if not product_dict.get(m[0], False):
-                            raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
-                        if not uom_dict.get(m[4], False):
-                            raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
                             'production_uom_id': uom_dict.get(m[4], False),
@@ -122,5 +143,7 @@ class ImportProductionFromExcel(models.TransientModel):
                 create_list_order.append(master)
 
         production = self.env['forlife.production'].create(create_list_order)
+        for p in production:
+            p.write({'material_import_ids': create_material_vals})
         action = self.env.ref('forlife_purchase.forlife_production_action').read()[0]
         return action
