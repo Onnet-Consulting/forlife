@@ -94,6 +94,16 @@ class ProductDefective(models.Model):
         self.quantity_can_be_sale = self.quantity_defective_approved
         if self.money_reduce == 0 and self.percent_reduce == 0:
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
+        price = 0
+        if self.program_pricelist_item_id:
+            if self.total_reduce > self.program_pricelist_item_id.fixed_price:
+                price = self.program_pricelist_item_id.fixed_price
+        else:
+            if self.total_reduce > self.price:
+                price = self.price
+        if price:
+            raise UserError(_('Tổng giảm không được lớn hơn %s' % str(price)))
+
         self.state = 'approved'
 
     def action_refuse(self):
