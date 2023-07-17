@@ -4,7 +4,7 @@ odoo.define('forlife_point_of_sale.PaymentScreen', function(require) {
     const PaymentScreen = require('point_of_sale.PaymentScreen');
     const Registries = require('point_of_sale.Registries');
     const framework = require('web.framework');
-
+    const { isConnectionError } = require('point_of_sale.utils');
     const CustomPaymentScreen = PaymentScreen => class extends PaymentScreen {
 
         onInputInvoiceInfo(target) {
