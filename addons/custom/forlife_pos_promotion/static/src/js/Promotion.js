@@ -28,7 +28,7 @@ export class PromotionUsageLine {
         this.original_price = original_price;
         this.new_price = new_price;
         this.discount_amount = discount_amount;
-        this.str_id = programStrID;
+        this.str_id = programStrID ? String(programStrID) : programStrID;
         this.discount_based_on = discount_based_on || null;
         this.promotion_type = promotion_type || null;
     }
@@ -717,7 +717,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let cids = new Set();
             self.get_orderlines().forEach(line => {
                 line.promotion_usage_ids.forEach(usage => {
-                    if (set_programs.has(usage.program_id)) {
+                    if (set_programs.has(usage.promotion_type == 'pricelist' ? String(usage.program_id) : usage.str_id)) {
                         cids.add(line.cid);
                     };
                 });
@@ -1424,7 +1424,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _get_program_ids_in_usages(line) {
-        return line.promotion_usage_ids.reduce((acc, usage) => {acc.add(usage.program_id); return acc}, new Set())
+        return line.promotion_usage_ids.reduce((acc, usage) => {
+                acc.add(usage.promotion_type == 'pricelist' ? String(usage.program_id) : usage.str_id);
+                return acc;
+            }, new Set()
+        );
     }
 
     _get_code_ids_in_usages(line) {
@@ -2648,14 +2652,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let indexOfCode = this.activatedInputCodes.indexOf(code);
         let theSameProgramCodes = this.activatedInputCodes.filter(c => c.program_id == code.program_id);
         let program = this.pos.get_program_by_id(code.program_id);
+        let str_id = program.reward_type == 'code_amount' ? `${program.id}c${code.id}` : `${program.str_id}`;
         if (indexOfCode !== -1) {
             this.activatedInputCodes.splice(indexOfCode, 1);
             program.codes[this.access_token] = null;
         };
-        if (theSameProgramCodes.length > 1) {
+        if (theSameProgramCodes.length > 1 && program.reward_type !== 'code_amount') {
             program.codes[this.access_token] = this.activatedInputCodes.find(c => c.program_id == code.program_id);
-        } else if (theSameProgramCodes.length == 1) {
-            let to_reset_lines = this.get_orderlines().filter(l => {return self._get_program_ids_in_usages(l).has(program.program_id)});
+        } else if (theSameProgramCodes.length) {
+            let to_reset_lines = this.get_orderlines().filter(l => {return self._get_program_ids_in_usages(l).has(str_id)});
             if (to_reset_lines.length > 0) {
                 for (let orderLine of to_reset_lines) {
                     this._resetLinePromotionPrograms(orderLine);
