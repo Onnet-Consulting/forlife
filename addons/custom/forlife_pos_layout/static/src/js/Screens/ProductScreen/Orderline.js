@@ -28,7 +28,7 @@ odoo.define('forlife_pos_layout.CustomOrderline', function(require) {
         getPercentDiscount() {
             var percent_discount = 0;
             var discount = this.getTotalDiscount();
-            var unit_price = this.props.line.get_unit_display_price();
+            var unit_price = this.props.line.original_price;
             var quantity = this.props.line.get_quantity();
             if (unit_price !== 0 && quantity !== 0) {
                 percent_discount = ((discount / quantity) / unit_price) * 100;

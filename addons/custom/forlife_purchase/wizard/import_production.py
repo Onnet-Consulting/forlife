@@ -1,7 +1,9 @@
 import base64
 import xlrd
-from odoo import fields, api, models
+from odoo import fields, api, models, _
 from datetime import datetime
+from odoo.exceptions import ValidationError
+from odoo.modules.module import get_resource_path
 
 
 class ImportProductionFromExcel(models.TransientModel):
@@ -10,6 +12,20 @@ class ImportProductionFromExcel(models.TransientModel):
     name = fields.Char(default='Nhập từ excel')
     file = fields.Binary(string='File excel')
     file_name = fields.Char(string='Tên file')
+    file_template = fields.Binary(string='Template default', compute='get_default_template')
+
+    def get_default_template(self):
+        for rec in self:
+            path = get_resource_path('forlife_purchase', 'data/xml', 'template_lsx.xlsx')
+            rec.file_template = base64.b64encode(open(path, "rb").read())
+
+    def download_template(self):
+        export = {
+            'type': 'ir.actions.act_url',
+            'name': 'Export fee',
+            'url': '/web/content/%s/%s/file_template/template_lsx.xlsx?download=true' % (self._name, self.id),
+        }
+        return export
 
     def apply(self):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
@@ -86,9 +102,9 @@ class ImportProductionFromExcel(models.TransientModel):
                 for m in material:
                     if m[1] == order[10] or m[2] == order[11] or (not m[1] and not m[2]):
                         if not product_dict.get(m[0], False):
-                            continue
+                            raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
                         if not uom_dict.get(m[4], False):
-                            continue
+                            raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
                             'production_uom_id': uom_dict.get(m[4], False),
