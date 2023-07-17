@@ -17,11 +17,11 @@
         </record>
 
         <record id="reason_type_4" model="forlife.reason.type">
-            <field name="code">04</field>
+            <field name="code">X02</field>
             <field name="name">Xuất cân đối tồn kho</field>
         </record>
         <record id="reason_type_5" model="forlife.reason.type">
-            <field name="code">05</field>
+            <field name="code">N02</field>
             <field name="name">Nhập cân đối tồn kho</field>
         </record>
         <record id="reason_type_6" model="forlife.reason.type">
