@@ -632,6 +632,47 @@ class PurchaseOrder(models.Model):
             'invoice_ids': [(6, 0, vendor_bill.ids)]
         })
 
+    def validate_inter_purchase_order(self):
+        for line in self.order_line:
+            if line.price_subtotal <= 0 and not line.free_good:
+                raise UserError('Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
+            product_ncc = self.env['stock.quant'].sudo().search(
+                [('location_id', '=', self.source_location_id.id),
+                 ('product_id', '=', line.product_id.id)]).mapped('quantity')
+            if sum(product_ncc) < line.product_qty:
+                raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
+
+    def _create_sale_order_another_company(self):
+        sale_order_lines = []
+        for item in self.order_line:
+            sale_order_lines.append((0, 0, {
+                'product_id': item.product_id.id,
+                'name': item.product_id.name,
+                'product_uom_qty': item.product_qty,
+                'price_unit': item.price_unit,
+                'product_uom': item.product_id.uom_id.id,
+                'customer_lead': 0,
+                'sequence': 10,
+                'is_downpayment': False,
+                'is_expense': True,
+                'qty_delivered_method': 'analytic',
+                'discount': item.discount_percent,
+                'x_location_id': self.source_location_id.id,
+            }))
+
+        sale_order_vals = {
+            'company_id': self.source_location_id[0].company_id.id,
+            'origin': self.name,
+            'partner_id': self.partner_id.id,
+            'payment_term_id': self.payment_term_id.id,
+            'date_order': self.date_order,
+            'warehouse_id': self.source_location_id[0].warehouse_id.id,
+            'x_location_id': self.source_location_id.id,
+            'order_line': sale_order_lines
+        }
+        sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
+        return sale_id
+
     def action_approved(self):
         self.check_purchase_tool_and_equipment()
         for record in self:
@@ -682,100 +723,43 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
-                self = self.sudo().with_context(inter_company=True)
-                data = {'partner_id': record.partner_id.id,
-                        'purchase_type': record.purchase_type,
-                        'is_purchase_request': record.is_purchase_request,
-                        'production_id': record.production_id.id,
-                        'event_id': record.event_id,
-                        'currency_id': record.currency_id.id,
-                        'exchange_rate': record.exchange_rate,
-                        'manual_currency_exchange_rate': record.manual_currency_exchange_rate,
-                        'company_id': record.company_id.id,
-                        'has_contract': record.has_contract,
-                        'has_invoice': record.has_invoice,
-                        'location_id': record.location_id.id,
-                        'source_location_id': record.source_location_id.id,
-                        'date_order': record.date_order,
-                        'payment_term_id': record.payment_term_id.id,
-                        'date_planned': record.date_planned,
-                        'receive_date': record.receive_date,
-                        'inventory_status': record.inventory_status,
-                        'picking_type_id': record.picking_type_id.id,
-                        'source_document': record.source_document,
-                        'has_contract_commerce': record.has_contract_commerce,
-                        'note': record.note,
-                        'receipt_reminder_email': record.receipt_reminder_email,
-                        'reminder_date_before_receipt': record.reminder_date_before_receipt,
-                        'dest_address_id': record.dest_address_id.id,
-                        'purchase_order_id': record.id,
-                        'name': record.name,
-                        }
-                order_line = []
-                invoice_line_ids = []
-                uom = self.env.ref('uom.product_uom_unit').id
-                for line in record.order_line:
-                    if line.price_subtotal <= 0 and not line.free_good:
-                        raise UserError(
-                            'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
-                    product_ncc = self.env['stock.quant'].sudo().search(
-                        [('location_id', '=', record.source_location_id.id),
-                         ('product_id', '=', line.product_id.id)]).mapped('quantity')
-                    if sum(product_ncc) < line.product_qty:
-                        raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
-                    data_product = {
-                        'product_tmpl_id': line.product_id.product_tmpl_id.id,
-                        'product_id': line.product_id.id,
-                        'name': line.product_id.name,
-                        'purchase_quantity': line.purchase_quantity,
-                        'purchase_uom': line.purchase_uom.id,
-                        'exchange_quantity': line.exchange_quantity,
-                        'product_quantity': line.product_qty,
-                        'vendor_price': line.vendor_price,
-                        'price_unit': line.price_unit,
-                        'product_uom': line.product_id.uom_id.id if line.product_id.uom_id else uom,
-                        'location_id': line.location_id.id,
-                        'tax_ids': line.taxes_id.ids,
-                        'price_tax': line.price_tax,
-                        'discount_percent': line.discount_percent,
-                        'discount': line.discount,
-                        'event_id': line.event_id.id,
-                        'production_id': line.production_id.id,
-                        'billed': line.billed,
-                        'account_analytic_id': line.account_analytic_id.id,
-                        'receive_date': line.receive_date,
-                        'tolerance': line.tolerance,
-                        'price_subtotal': line.price_subtotal
-                    }
-                    order_line.append(data_product)
-                    invoice_line = {
-                        'product_id': line.product_id.id,
-                        'name': line.product_id.name,
-                        'description': line.product_id.default_code,
-                        'request_code': line.request_purchases,
-                        'type': line.product_type,
-                        'discount': line.discount_percent,
-                        'discount_percent': line.discount,
-                        'quantity_purchased': line.purchase_quantity,
-                        'product_uom_id': line.product_id.uom_id.id if line.product_id.uom_id else uom,
-                        'exchange_quantity': line.exchange_quantity,
-                        'quantity': line.product_qty,
-                        'vendor_price': line.vendor_price,
-                        'price_unit': line.price_unit,
-                        'warehouse': line.location_id.id,
-                        'tax_ids': line.taxes_id.ids,
-                        'tax_amount': line.price_tax,
-                        'price_subtotal': line.price_subtotal,
-                        'account_analytic_id': line.account_analytic_id.id,
-                        'work_order': line.production_id.id,
-                        'purchase_line_id': line.id,
-                    }
-                    invoice_line_ids.append((0, 0, invoice_line))
-                self.supplier_sales_order(data, order_line, invoice_line_ids)
-                # self.sudo().with_context(inter_company=True).action_approved_vendor(data, order_line, invoice_line_ids)
-                if self._context.get('inter_company'):
-                    self = self.sudo().with_context(inter_company=False)
-                record.write({'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
+                self.sudo().with_context(inter_company=True)
+                self.validate_inter_purchase_order()
+                self.button_confirm()
+                picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+                if picking_in:
+                    picking_in.action_set_quantities_to_reservation()
+                    picking_in.button_validate()
+                    if picking_in.state == 'done':
+                        self.write({
+                            'select_type_inv': 'normal',
+                            'custom_state': 'approved'
+                        })
+                        invoice = self.action_create_invoice()
+                        invoice.action_post()
+                else:
+                    raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
+
+                sale_id = self.sudo()._create_sale_order_another_company()
+                sale_id.action_create_picking()
+                picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+                if picking_out:
+                    picking_out.action_set_quantities_to_reservation()
+                    picking_out.button_validate()
+                    if picking_out.state == 'done':
+                        for move_id in picking_out.move_ids:
+                            move_id.sale_line_id.qty_delivered = move_id.quantity_done
+                        invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                            'sale_order_ids': [(6, 0, sale_id.ids)],
+                            'advance_payment_method': 'delivered',
+                            'deduct_down_payments': True,
+                        }).forlife_create_invoices()
+                        invoice_customer.action_post()
+                        sale_id.action_done()
+                    else:
+                        raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
+
+                return True
 
     def check_purchase_tool_and_equipment(self):
         # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
@@ -809,25 +793,23 @@ class PurchaseOrder(models.Model):
                         raise UserError("Giá sản phẩm công cụ dụng cụ %s khác giá nhập vào đợt trước. Yêu cầu người dùng tạo sản phẩm mới." % ",".join(product_ccdc_diff_price))
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
-        company_partner = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
+        company_partner = self.env.company.partner_id
         # fixme: Why find a random (3000) partner?
-        if not company_partner:
-            company_partner = self.env['res.partner'].search([('group_id.code', '=', '3000')], limit=1)
+        # if not company_partner:
+        #     company_partner = self.env['res.partner'].search([('group_id.code', '=', '3000')], limit=1)
 
-        company_id = self.env.company.id
-        picking_type_in = self.env['stock.picking.type'].search([
-            ('code', '=', 'incoming'),
-            ('warehouse_id.company_id', '=', company_id)], limit=1)
         if company_partner:
+            picking_type_in = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', self.env.company.id)], limit=1)
             data_all_picking = {}
             order_line_so = []
+            property_stock_customer = self.company_id.partner_id.property_stock_customer.id
             for item in order_line:
-                key_location = data.get('location_id')
+                key_location = 1
                 picking_line = (0, 0, {
                     'product_id': item.get('product_id'),
                     'name': item.get('name'),
-                    'location_dest_id': self.location_id.id,
-                    'location_id': self.company_id.partner_id.property_stock_customer.id,
+                    'location_dest_id': key_location,
+                    'location_id': property_stock_customer,
                     'product_uom_qty': item.get('product_quantity'),
                     'price_unit': item.get('price_unit'),
                     'product_uom': item.get('product_uom'),
@@ -837,8 +819,8 @@ class PurchaseOrder(models.Model):
                 picking_master = {
                     'picking_type_id': picking_type_in.id,
                     'partner_id': company_partner.id,
-                    'location_id': self.company_id.partner_id.property_stock_customer.id,
-                    'location_dest_id': self.location_id.id,
+                    'location_id': property_stock_customer,
+                    'location_dest_id': key_location,
                     'scheduled_date': datetime.now(),
                     'date_done': data.get('deceive_date'),
                     'move_ids_without_package': [picking_line],
