@@ -407,8 +407,8 @@ class StockPicking(models.Model):
         if "import_file" in self.env.context:
             if 'stock_name' in fields and 'move_line_ids_without_package/sequence' in fields:
                 for record in data:
-                    if 'stock_name' in fields and not record[fields.index('stock_name')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
+                    # if 'stock_name' in fields and not record[fields.index('stock_name')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
                     if 'move_line_ids_without_package/sequence' in fields and not record[fields.index('move_line_ids_without_package/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
                     if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
@@ -417,23 +417,27 @@ class StockPicking(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường hoàn thành"))
                     if 'move_line_ids_without_package/quantity_purchase_done' in fields and not record[fields.index('move_line_ids_without_package/quantity_purchase_done')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng mua hoàn thành"))
-                    if 'date_done' in fields and not record[fields.index('date_done')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
+                    # if 'date_done' in fields and not record[fields.index('date_done')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
                 fields[fields.index('stock_name')] = 'id'
                 fields[fields.index('move_line_ids_without_package/sequence')] = 'move_line_ids_without_package/id'
                 id = fields.index('id')
                 line_id = fields.index('move_line_ids_without_package/id')
                 product = fields.index('move_line_ids_without_package/product_id')
+                reference = None
                 for rec in data:
-                    picking = self.env['stock.picking'].search([('name', '=', rec[id])], limit=1)
+                    if rec[id]:
+                        reference = rec[id]
+                    picking = self.env['stock.picking'].search([('name', '=', reference)], limit=1)
                     if not picking:
-                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (rec[id])))
+                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (reference)))
                     if picking.state != 'assigned':
-                        raise ValidationError(_("Phiếu %s chỉ có thể update ở trạng thái sẵn sàng" % (rec[id])))
-                    rec[id] = picking.export_data(['id']).get('datas')[0][0]
+                        raise ValidationError(_("Phiếu %s chỉ có thể update ở trạng thái sẵn sàng" % (reference)))
+                    if rec[id]:
+                        rec[id] = picking.export_data(['id']).get('datas')[0][0]
                     if int(rec[line_id]) > len(picking.move_line_ids_without_package):
                         raise ValidationError(_("Phiếu %s không có dòng %s" % (picking.name, rec[line_id])))
-                    elif rec[product] != picking.move_line_ids_without_package[int(rec[line_id]) - 1].product_id.default_code:
+                    elif rec[product] != picking.move_line_ids_without_package[int(rec[line_id]) - 1].product_id.barcode:
                         raise ValidationError(_("Mã sản phẩm của phiếu %s không khớp ở dòng %s" % (picking.name, rec[line_id])))
                     else:
                         rec[line_id] = picking.move_line_ids_without_package[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
