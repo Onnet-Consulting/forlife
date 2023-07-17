@@ -31,7 +31,6 @@ class ProductTemplate(models.Model):
 class ProducProduct(models.Model):
     _inherit = "product.product"
 
-
     expiration_date = fields.Datetime(string='Expiration Date', copy=False)
     days_before_alert = fields.Integer(string="Warning before (day)", copy=False, default=0)
     alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False)
