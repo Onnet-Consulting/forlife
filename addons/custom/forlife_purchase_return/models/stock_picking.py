@@ -79,6 +79,9 @@ class StockPicking(models.Model):
         reason_type_7 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
                                                                 ('code', '=', '07')
                                                                 ], limit=1).id
+        if not reason_type_7:
+            raise ValidationError(
+                'Bạn chưa có loại lý do Nhập trả nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 07')
         if not self.purchase_id.is_return:
             for move in self.move_ids:
                 for material_line_id in move.purchase_line_id.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product):

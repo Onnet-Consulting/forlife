@@ -3101,8 +3101,10 @@ class StockPicking(models.Model):
             export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id),
                                                                          ('code', '=', '1381000005')
                                                                          ], limit=1)
+            if not reason_type_6:
+                raise ValidationError('Bạn chưa có loại lý do Xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 06')
             if not export_production_order.x_property_valuation_in_account_id:
-                raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
+                raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có code = 1381000005')
             else:
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):

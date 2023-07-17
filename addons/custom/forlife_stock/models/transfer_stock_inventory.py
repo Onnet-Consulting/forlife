@@ -111,6 +111,12 @@ class TransferStockInventory(models.Model):
         reason_type_5 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
                                                                 ('code', '=', '05')
                                                                 ], limit=1)
+        if not reason_type_4:
+            raise ValidationError(
+                'Bạn chưa có loại lý do Xuất cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 04')
+        if not reason_type_5:
+            raise ValidationError(
+                'Bạn chưa có loại lý do Nhập cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 05')
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.user.company_id.name))
         picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
