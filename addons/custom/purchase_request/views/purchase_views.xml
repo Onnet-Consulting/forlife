@@ -136,5 +136,19 @@
                 </form>
             </field>
         </record>
+
+        <record id="inherit_purchase_order_material_cost_form_view" model="ir.ui.view">
+            <field name="name">purchase.order.form.material.cost</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="forlife_purchase.inherit_purchase_order_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='purchase_synthetic_ids']//tree//field[@name='after_tax']" position="after">
+                    <field name="material_cost" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                    <field name="labor_cost" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                </xpath>
+
+            </field>
+        </record>
     </data>
 </odoo>
