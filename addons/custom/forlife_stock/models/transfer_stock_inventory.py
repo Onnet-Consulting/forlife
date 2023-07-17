@@ -102,7 +102,15 @@ class TransferStockInventory(models.Model):
             rec.write({'state': 'wait_confirm'})
 
     def action_approve(self):
-        picking_type_in = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_import'), ('company_id', '=', self.env.company.id)], limit=1)
+        picking_type_in = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_import'),
+                                                                 ('company_id', '=', self.env.company.id)
+                                                                 ], limit=1)
+        reason_type_4 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
+                                                                ('code', '=', '04')
+                                                                ], limit=1)
+        reason_type_5 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
+                                                                ('code', '=', '05')
+                                                                ], limit=1)
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.user.company_id.name))
         picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
@@ -172,7 +180,7 @@ class TransferStockInventory(models.Model):
                     "immediate_transfer": False,
                     'transfer_stock_inventory_id': rec.id,
                     'location_id': enter_inventory_balance.id if not self.x_classify else import_inventory_balance_classify.id,
-                    'reason_type_id': self.env.ref('forlife_stock.reason_type_5').id,
+                    'reason_type_id': reason_type_5.id,
                     'location_dest_id': line.location_id.id,
                     'scheduled_date': datetime.now(),
                     'origin': rec.code,
@@ -187,7 +195,7 @@ class TransferStockInventory(models.Model):
                     "immediate_transfer": False,
                     'transfer_stock_inventory_id': rec.id,
                     'location_id': line.location_id.id,
-                    'reason_type_id': self.env.ref('forlife_stock.reason_type_4').id,
+                    'reason_type_id': reason_type_4.id,
                     'location_dest_id': export_inventory_balance.id if not self.x_classify else export_inventory_balance_classify.id,
                     'scheduled_date': datetime.now(),
                     'origin': rec.code,
