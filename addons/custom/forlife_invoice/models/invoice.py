@@ -951,6 +951,8 @@ class AccountMoveLine(models.Model):
         else:
             self.is_check_promotions = False
 
+
+
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
 
