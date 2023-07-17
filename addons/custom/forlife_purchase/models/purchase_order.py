@@ -2324,37 +2324,50 @@ class PurchaseOrderLine(models.Model):
                 item.billed = False
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
+                 'free_good')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            if rec.free_good:
-                rec.vendor_price = 0
-            else:
-                if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
-                    if rec.vendor_price_import:
+            if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+                if rec.vendor_price_import:
+                    if not rec.free_good:
                         rec.vendor_price = rec.vendor_price_import
-                        rec.is_red_color = False
-                        continue
-                data = self.env['product.supplierinfo'].search([
-                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                    ('partner_id', '=', rec.order_id.partner_id.id),
-                    ('currency_id', '=', rec.order_id.currency_id.id),
-                    ('amount_conversion', '=', rec.exchange_quantity),
-                    ('product_uom', '=', rec.purchase_uom.id),
-                    ('date_start', '<=', today),
-                    ('date_end', '>=', today)
-                ])
-                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-                if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                    closest_quantity = None  # Khởi tạo giá trị biến tạm
-                    for line in data:
-                        if rec.product_qty and rec.product_qty >= line.min_qty:
-                            ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                            if closest_quantity is None or line.min_qty > closest_quantity:
-                                closest_quantity = line.min_qty
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
+                    else:
+                        rec.vendor_price = 0
+                    rec.is_red_color = False
+                    continue
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                ('partner_id', '=', rec.order_id.partner_id.id),
+                ('currency_id', '=', rec.order_id.currency_id.id),
+                ('amount_conversion', '=', rec.exchange_quantity),
+                ('product_uom', '=', rec.purchase_uom.id),
+                ('date_start', '<=', today),
+                ('date_end', '>=', today)
+            ])
+            rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+            if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                closest_quantity = None  # Khởi tạo giá trị biến tạm
+                for line in data:
+                    if rec.product_qty and rec.product_qty >= line.min_qty:
+                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                        if closest_quantity is None or line.min_qty > closest_quantity:
+                            closest_quantity = line.min_qty
+                            rec.vendor_price = line.price
+                            rec.exchange_quantity = line.amount_conversion
+
+    # discount
+    @api.depends("free_good")
+    def _compute_free_goodf(self):
+        for rec in self:
+            if rec.free_good:
+                rec.write({'discount': 0,
+                           'discount_percent': 0,
+                           })
+                rec.readonly_discount_percent = rec.readonly_discount = True
+            else:
+                rec.readonly_discount_percent = rec.readonly_discount = False
 
     # discount
     @api.depends("free_good")
@@ -2437,22 +2450,21 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             if line.free_good:
                 line.price_unit = 0
-            else:
-                if line.vendor_price:
-                    if line.exchange_quantity != 0:
-                        line.price_unit = line.vendor_price / line.exchange_quantity
-                    else:
-                        line.price_unit = line.vendor_price
-                if not line.product_id or line.invoice_lines:
-                    continue
-                params = {'order_id': line.order_id}
-                uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
-                seller = line.product_id._select_seller(
-                    partner_id=line.partner_id,
-                    quantity=line.product_qty,
-                    date=line.order_id.date_order and line.order_id.date_order.date(),
-                    uom_id=uom_id,
-                    params=params)
+            if line.vendor_price:
+                if line.exchange_quantity != 0:
+                    line.price_unit = line.vendor_price / line.exchange_quantity
+                else:
+                    line.price_unit = line.vendor_price
+            if not line.product_id or line.invoice_lines:
+                continue
+            params = {'order_id': line.order_id}
+            uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
+            seller = line.product_id._select_seller(
+                partner_id=line.partner_id,
+                quantity=line.product_qty,
+                date=line.order_id.date_order and line.order_id.date_order.date(),
+                uom_id=uom_id,
+                params=params)
 
                 if seller or not line.date_planned:
                     line.date_planned = line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)

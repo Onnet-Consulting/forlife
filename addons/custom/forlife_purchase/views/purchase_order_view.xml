@@ -191,9 +191,9 @@
                                 <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="description"/>
-                                <field name="product_uom"/>
+                                <field name="product_uom" string="Đơn vị tính"/>
                                 <field name="price_unit" string="Đơn giá" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="product_qty" sum="discounted subtotal"/>
+                                <field name="product_qty" sum="discounted subtotal" string="Số lượng"/>
                                 <field name="company_currency" invisible="1"/>
                                 <field name="discount"/>
                                 <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}" sum="total_vnd_amount"/>
