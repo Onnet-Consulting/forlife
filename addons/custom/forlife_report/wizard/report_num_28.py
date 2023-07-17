@@ -39,7 +39,7 @@ class ReportNum28(models.TransientModel):
                 po.note as ghi_chu,
                 sl.complete_name as kho,
                 sp.name as so_phieu_kho,
-                row_number () over (partition by sm.id order by sm.create_date) num,
+                row_number () over (partition by sm.id order by sm.id) num,
                 pp.barcode as barcode,
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') as ten_sp,
                 attr.attrs->>'{attr_value.get('mau_sac', '')}' as mau,
@@ -82,7 +82,7 @@ class ReportNum28(models.TransientModel):
                 group by product_id
             ) attr on attr.product_id = pp.id
             
-            where 1 = 1 and po.is_return is null
+            where 1 = 1 and (po.is_return is false or po.is_return is null)
 
         """
 
