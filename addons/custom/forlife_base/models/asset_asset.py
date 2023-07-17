@@ -33,12 +33,14 @@ class AssetsAssets(models.Model):
     ]
 
     def write(self, values):
-        self.check_type(values)
+        if not self._context.get('from_bravo'):
+            self.check_type(values)
         return super(AssetsAssets, self).write(values)
 
     @api.model
     def create(self, vals):
-        self.check_type(vals)
+        if not self._context.get('from_bravo'):
+            self.check_type(vals)
         return super(AssetsAssets, self).create(vals)
 
     def check_type(self,vals):
