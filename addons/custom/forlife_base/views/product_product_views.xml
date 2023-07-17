@@ -13,9 +13,6 @@
                     <field name="product_expiry_reminded" invisible="1"/>
                     <field name="responsible_id" domain="[('share', '=', False)]" widget="many2one_avatar_user" groups="stock.group_stock_user"/>
                 </group>
-                <xpath expr="//group[@name='group_general']" position="inside">
-                    <field name="is_need_scan_barcode"/>
-                </xpath>
             </field>
         </record>
 
