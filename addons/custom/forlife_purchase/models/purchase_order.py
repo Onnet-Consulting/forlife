@@ -643,7 +643,15 @@ class PurchaseOrder(models.Model):
 
     def _create_sale_order_another_company(self):
         sale_order_lines = []
+        all_tax_ids = self.env['account.tax'].sudo().search([
+            ('type_tax_use', '=', 'sale'),
+            ('company_id', '=', self.source_location_id[0].company_id.id)
+        ])
         for item in self.order_line:
+            tax_ids = []
+            if item.taxes_id:
+                tax_ids = all_tax_ids.filtered(lambda x: x.amount in item.taxes_id.mapped('amount')).ids
+
             sale_order_lines.append((0, 0, {
                 'product_id': item.product_id.id,
                 'name': item.product_id.name,
@@ -657,6 +665,7 @@ class PurchaseOrder(models.Model):
                 'qty_delivered_method': 'analytic',
                 'discount': item.discount_percent,
                 'x_location_id': self.source_location_id.id,
+                'tax_id': [(6, 0, tax_ids)],
             }))
 
         sale_order_vals = {
@@ -732,7 +741,8 @@ class PurchaseOrder(models.Model):
                     if picking_in.state == 'done':
                         self.write({
                             'select_type_inv': 'normal',
-                            'custom_state': 'approved'
+                            'custom_state': 'approved',
+                            'inventory_status': 'done',
                         })
                         invoice = self.action_create_invoice()
                         invoice.action_post()
