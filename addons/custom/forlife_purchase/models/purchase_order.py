@@ -2281,57 +2281,51 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    @api.depends('exchange_quantity', 'product_qty', 'product_id',
-                 'product_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id',
-                 'order_id.currency_id', 'vendor_price_import')
+    @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
+                 'free_good')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
-            rec.vendor_price = rec.vendor_price_import
-            if rec.order_id.purchase_type == 'product':
-                if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+            if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
+                if rec.vendor_price_import:
+                    if not rec.free_good:
+                        rec.vendor_price = rec.vendor_price_import
+                    else:
+                        rec.vendor_price = 0
                     rec.is_red_color = False
                     continue
-                data = self.env['product.supplierinfo'].search([
-                    ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                    ('partner_id', '=', rec.order_id.partner_id.id),
-                    ('currency_id', '=', rec.order_id.currency_id.id),
-                    ('amount_conversion', '=', rec.exchange_quantity),
-                    ('product_uom', '=', rec.purchase_uom.id),
-                    ('date_start', '<=', today),
-                    ('date_end', '>=', today)
-                ])
-                rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-                if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                    closest_quantity = None  # Khởi tạo giá trị biến tạm
-                    for line in data:
-                        if rec.product_qty and rec.product_qty >= line.min_qty:
-                            ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                            if closest_quantity is None or line.min_qty > closest_quantity:
-                                closest_quantity = line.min_qty
-                                rec.vendor_price = line.price
-                                rec.exchange_quantity = line.amount_conversion
-            else:
-                pass
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                ('partner_id', '=', rec.order_id.partner_id.id),
+                ('currency_id', '=', rec.order_id.currency_id.id),
+                ('amount_conversion', '=', rec.exchange_quantity),
+                ('product_uom', '=', rec.purchase_uom.id),
+                ('date_start', '<=', today),
+                ('date_end', '>=', today)
+            ])
+            rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
+            if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
+                closest_quantity = None  # Khởi tạo giá trị biến tạm
+                for line in data:
+                    if rec.product_qty and rec.product_qty >= line.min_qty:
+                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
+                        if closest_quantity is None or line.min_qty > closest_quantity:
+                            closest_quantity = line.min_qty
+                            rec.vendor_price = line.price
+                            rec.exchange_quantity = line.amount_conversion
 
-    # @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
-    #               'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
-    # def onchange_receive_date(self):
-    #     if self.order_id:
-    #         self.receive_date = self.order_id.receive_date
-    #         self.location_id = self.order_id.location_id
-    #         self.production_id = self.order_id.production_id
-    #         if self.order_id.account_analytic_ids:
-    #             self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
-    #         self.event_id = self.order_id.event_id
-    #         if self.order_id.occasion_code_ids:
-    #             self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
-    #
-    # @api.onchange('product_id', 'order_id', 'order_id.location_id')
-    # def onchange_location_id(self):
-    #     if self.order_id and self.order_id.location_id:
-    #         self.location_id = self.order_id.location_id
+    # discount
+    @api.depends("free_good")
+    def _compute_free_goodf(self):
+        for rec in self:
+            if rec.free_good:
+                rec.write({'discount': 0,
+                           'discount_percent': 0,
+                           })
+                rec.readonly_discount_percent = rec.readonly_discount = True
+            else:
+                rec.readonly_discount_percent = rec.readonly_discount = False
 
     # discount
     @api.onchange("free_good")
@@ -2409,6 +2403,8 @@ class PurchaseOrderLine(models.Model):
                  'order_id.purchase_type')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
+            if line.free_good:
+                line.price_unit = 0
             if line.vendor_price:
                 if line.exchange_quantity != 0:
                     line.price_unit = line.vendor_price / line.exchange_quantity
