@@ -235,8 +235,7 @@ class AccountMoveBKAV(models.Model):
                     'invoice_no': result_data.get('InvoiceNo'),
                     'invoice_form': result_data.get('InvoiceForm'),
                     'invoice_serial': result_data.get('InvoiceSerial'),
-                    'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                        hours=7) if result_data.get('SignedDate') else None
+                    'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None
                 })
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
@@ -306,8 +305,7 @@ class AccountMoveBKAV(models.Model):
                 'invoice_no': result_data.get('InvoiceNo'),
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
-                'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                    hours=7) if result_data.get('SignedDate') else None,
+                'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 

@@ -5,11 +5,7 @@
             <field name="name">bkav.invoice.form.inherit</field>
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='ref']" position="after">
-                    <field name="exists_bkav" readonly="1"/>
-                    <field name="is_general" readonly="1"/>
-                </xpath>
+            <field name="arch" type="xml">\
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type"/>
                 </xpath>
@@ -35,6 +31,8 @@
                         <br/>
                         <group>
                             <group>
+                                <field name="exists_bkav" readonly="1"/>
+                                <field name="is_general" readonly="1"/>
                                 <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
                                 <field name="origin_move_id"
                                        attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
