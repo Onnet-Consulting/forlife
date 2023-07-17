@@ -181,8 +181,16 @@ class TransferNotExistsBkav(models.Model):
             transfer_id.genarate_code()
             transfer_id.create_invoice_bkav()
             transfer_id.publish_invoice_bkav()
-            transfer_id.state = 'post'
-            transfer_id.is_general = True
+            transfer_id._update_stock_transfer()
+
+    def _update_stock_transfer(self):
+        for transfer_id in self:
+            if transfer_id.state == 'new':
+                transfer_id.state = 'post'
+            for transfer in transfer_id.transfer_ids:
+                if not transfer.is_general:
+                    transfer.is_general = True
+                    transfer.exists_bkav = True
 
 
     @api.depends('data_compare_status')
@@ -225,8 +233,6 @@ class TransferNotExistsBkav(models.Model):
         if not self.company_id:
             self.company_id = self.location_id.company_id
         self = self.with_company(self.location_id.company_id)
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_getStatusInvoice')),
@@ -360,8 +366,6 @@ class TransferNotExistsBkav(models.Model):
         if not self.company_id:
             self.company_id = self.location_id.company_id
         self = self.with_company(self.location_id.company_id)
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_getInvoice')),
@@ -384,6 +388,7 @@ class TransferNotExistsBkav(models.Model):
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
+            self._update_stock_transfer()
 
 
     def update_invoice_bkav(self):
@@ -401,8 +406,8 @@ class TransferNotExistsBkav(models.Model):
         if response.get('Status') == 1:
             raise ValidationError(response.get('Object'))
         else:
-            self.getting_invoice_status()
             self.get_invoice_bkav()
+            self.getting_invoice_status()
 
 
     def publish_invoice_bkav(self):
@@ -410,8 +415,6 @@ class TransferNotExistsBkav(models.Model):
         if not self.company_id:
             self.company_id = self.location_id.company_id
         self = self.with_company(self.location_id.company_id)
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         configs = self.get_bkav_config()
 
         data = {
@@ -430,6 +433,7 @@ class TransferNotExistsBkav(models.Model):
         else:
             self.is_post_bkav = True
             self.get_invoice_bkav()
+            self.getting_invoice_status()
 
 
     def download_invoice_bkav(self):
@@ -437,8 +441,6 @@ class TransferNotExistsBkav(models.Model):
         if not self.company_id:
             self.company_id = self.location_id.company_id
         self = self.with_company(self.location_id.company_id)
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         if not self.eivoice_file:
             configs = self.get_bkav_config()
             data = {

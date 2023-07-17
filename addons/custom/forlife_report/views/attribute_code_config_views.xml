@@ -4,6 +4,7 @@
 
         <menuitem id="attribute_code_config_menu"
                   parent="report_menu"
+                  groups="base.group_system"
                   action="forlife_base.attribute_code_config_action"
                   sequence="100"/>
 
