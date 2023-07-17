@@ -31,12 +31,12 @@ class ProductTemplate(models.Model):
 class ProducProduct(models.Model):
     _inherit = "product.product"
 
-
     expiration_date = fields.Datetime(string='Expiration Date', copy=False)
     days_before_alert = fields.Integer(string="Warning before (day)", copy=False, default=0)
     alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False)
     product_expiry_reminded = fields.Boolean(string="Expiry has been reminded", default=False)
     brand_id = fields.Many2one('res.brand', related='product_tmpl_id.brand_id', string='Brand', readonly=1)
+    is_need_scan_barcode = fields.Boolean(default=False, string='Is Need Scan Barcode')
 
     @api.depends('expiration_date', 'days_before_alert')
     def _compute_dates(self):

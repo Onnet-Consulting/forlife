@@ -219,5 +219,5 @@ class BravoSyncAssetWizard(models.TransientModel):
         odoo_data = self.generate_odoo_data(company_data)
         if not odoo_data:
             return False
-        self.env['assets.assets'].create(odoo_data)
+        self.env['assets.assets'].with_context(from_bravo=True).create(odoo_data)
         return True

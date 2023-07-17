@@ -22,7 +22,7 @@ class PurchaseOrder(models.Model):
         ('product', 'Hàng hóa'),
         ('service', 'Dịch vụ'),
         ('asset', 'Tài sản'),
-    ], string='Purchase Type', required=True, default='product', copy=False)
+    ], string='Purchase Type', default='product', copy=False)
 
     inventory_status = fields.Selection([
         ('not_received', 'Not Received'),
@@ -73,7 +73,7 @@ class PurchaseOrder(models.Model):
                                  change_default=True, tracking=True, domain=False,
                                  help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
     occasion_code_ids = fields.Many2many('occasion.code', string="Case Code", copy=False)
-    account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref', copy=False,
+    account_analytic_ids = fields.Many2many('account.analytic.account', copy=False,
                                             string="Cost Center")
     is_purchase_request = fields.Boolean(default=False, copy=False)
     is_check_readonly_partner_id = fields.Boolean(copy=False)
@@ -110,9 +110,6 @@ class PurchaseOrder(models.Model):
     count_delivery_import_inter_company = fields.Integer(compute='compute_count_delivery_import_inter_company')
     cost_total = fields.Float(string='Tổng chi phí', compute='compute_cost_total', store=1)
     is_done_picking = fields.Boolean(default=False, compute='compute_is_done_picking')
-    date_order = fields.Datetime('Order Deadline', required=True, states=READONLY_STATES, index=True, copy=False,
-                                 default=fields.Datetime.now,
-                                 help="Depicts the date within which the Quotation should be confirmed and converted into a purchase order.")
 
     invoice_status = fields.Selection([
         ('no', 'Nothing to Bill'),
@@ -124,6 +121,11 @@ class PurchaseOrder(models.Model):
         ('to invoice', 'Dở dang'),
         ('invoiced', 'Hoàn thành'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
+    date_order = fields.Datetime('Order Deadline', states=READONLY_STATES, index=True, copy=False,
+                                 default=fields.Datetime.now,
+                                 help="Depicts the date within which the Quotation should be confirmed and converted into a purchase order.")
+    currency_id = fields.Many2one('res.currency', 'Currency', states=READONLY_STATES,
+                                  default=lambda self: self.env.company.currency_id.id)
     rejection_reason = fields.Char(string="Lý do từ chối")
     cancel_reason = fields.Char(string="Lý do huỷ")
     origin = fields.Char('Source Document', copy=False,
@@ -139,6 +141,17 @@ class PurchaseOrder(models.Model):
     # Lấy của base về phục vụ import
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+
+    partner_company_id = fields.Many2one(comodel_name='res.company', compute='_compute_partner_company_id', index=True, store=True)
+
+    @api.depends('partner_id')
+    def _compute_partner_company_id(self):
+        partner_company = {
+            company.partner_id.id: company
+            for company in self.env['res.company'].sudo().search([('partner_id', 'in', self.mapped('partner_id.id'))])
+        }
+        for rec in self:
+            rec.partner_company_id = partner_company.get(rec.partner_id.id)
 
     def action_view_stock(self):
         for item in self:
@@ -249,12 +262,6 @@ class PurchaseOrder(models.Model):
 
         # Do something with res
         return res
-
-    @api.constrains('currency_id')
-    def constrains_currency_id(self):
-        for item in self:
-            if not item.currency_id:
-                raise ValidationError('Trường tiền tệ không tồn tại')
 
     @api.constrains('account_analytic_ids')
     def constrains_account_analytic_ids(self):
@@ -561,7 +568,6 @@ class PurchaseOrder(models.Model):
                 'sequence': 10,
                 'is_downpayment': False,
                 'is_expense': True,
-                'qty_delivered_method': 'analytic',
                 'discount': pol.discount_percent,
                 'company_id': company_sale.id
             }) for pol in self.order_line]
@@ -569,14 +575,9 @@ class PurchaseOrder(models.Model):
         picking = self.approve_company_picking(sale)
         sale.state = 'sale'
 
-        advance_payment = self.env['sale.advance.payment.inv'].sudo().create({'sale_order_ids': [(6, 0, sale.ids)]})
-
-        # advance_payment = self.env['sale.advance.payment.inv'].create({
-        #     'sale_order_ids': [(6, 0, sale.ids)],
-        #     'advance_payment_method': 'delivered',
-        #     'deduct_down_payments': True
-        # })
-        invoice = advance_payment._create_invoices(advance_payment.sale_order_ids)
+        invoice_values = sale._prepare_invoice()
+        invoice_values['invoice_line_ids'] = [(0, 0, sol._prepare_invoice_line(quantity=sol.product_uom_qty)) for sol in sale.order_line]
+        invoice = self.env['account.move'].create(invoice_values)
         invoice._post()
         return sale, invoice, picking
 
@@ -630,8 +631,49 @@ class PurchaseOrder(models.Model):
             'invoice_ids': [(6, 0, vendor_bill.ids)]
         })
 
+    def validate_inter_purchase_order(self):
+        for line in self.order_line:
+            if line.price_subtotal <= 0 and not line.free_good:
+                raise UserError('Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
+            product_ncc = self.env['stock.quant'].sudo().search(
+                [('location_id', '=', self.source_location_id.id),
+                 ('product_id', '=', line.product_id.id)]).mapped('quantity')
+            if sum(product_ncc) < line.product_qty:
+                raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
+
+    def _create_sale_order_another_company(self):
+        sale_order_lines = []
+        for item in self.order_line:
+            sale_order_lines.append((0, 0, {
+                'product_id': item.product_id.id,
+                'name': item.product_id.name,
+                'product_uom_qty': item.product_qty,
+                'price_unit': item.price_unit,
+                'product_uom': item.product_id.uom_id.id,
+                'customer_lead': 0,
+                'sequence': 10,
+                'is_downpayment': False,
+                'is_expense': True,
+                'qty_delivered_method': 'analytic',
+                'discount': item.discount_percent,
+                'x_location_id': self.source_location_id.id,
+            }))
+
+        sale_order_vals = {
+            'company_id': self.source_location_id[0].company_id.id,
+            'origin': self.name,
+            'partner_id': self.partner_id.id,
+            'payment_term_id': self.payment_term_id.id,
+            'date_order': self.date_order,
+            'warehouse_id': self.source_location_id[0].warehouse_id.id,
+            'x_location_id': self.source_location_id.id,
+            'order_line': sale_order_lines
+        }
+        sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
+        return sale_id
+
     def action_approved(self):
-        self.check_purchase_tool_and_equipment()
+        # self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
@@ -680,101 +722,41 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
-                return self.action_approved_inter_company()
-                self = self.sudo().with_context(inter_company=True)
-                data = {'partner_id': record.partner_id.id,
-                        'purchase_type': record.purchase_type,
-                        'is_purchase_request': record.is_purchase_request,
-                        'production_id': record.production_id.id,
-                        'event_id': record.event_id,
-                        'currency_id': record.currency_id.id,
-                        'exchange_rate': record.exchange_rate,
-                        'manual_currency_exchange_rate': record.manual_currency_exchange_rate,
-                        'company_id': record.company_id.id,
-                        'has_contract': record.has_contract,
-                        'has_invoice': record.has_invoice,
-                        'location_id': record.location_id.id,
-                        'source_location_id': record.source_location_id.id,
-                        'date_order': record.date_order,
-                        'payment_term_id': record.payment_term_id.id,
-                        'date_planned': record.date_planned,
-                        'receive_date': record.receive_date,
-                        'inventory_status': record.inventory_status,
-                        'picking_type_id': record.picking_type_id.id,
-                        'source_document': record.source_document,
-                        'has_contract_commerce': record.has_contract_commerce,
-                        'note': record.note,
-                        'receipt_reminder_email': record.receipt_reminder_email,
-                        'reminder_date_before_receipt': record.reminder_date_before_receipt,
-                        'dest_address_id': record.dest_address_id.id,
-                        'purchase_order_id': record.id,
-                        'name': record.name,
-                        }
-                order_line = []
-                invoice_line_ids = []
-                uom = self.env.ref('uom.product_uom_unit').id
-                for line in record.order_line:
-                    if line.price_subtotal <= 0 and not line.free_good:
-                        raise UserError(
-                            'Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
-                    product_ncc = self.env['stock.quant'].sudo().search(
-                        [('location_id', '=', record.source_location_id.id),
-                         ('product_id', '=', line.product_id.id)]).mapped('quantity')
-                    if sum(product_ncc) < line.product_qty:
-                        raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
-                    data_product = {
-                        'product_tmpl_id': line.product_id.product_tmpl_id.id,
-                        'product_id': line.product_id.id,
-                        'name': line.product_id.name,
-                        'purchase_quantity': line.purchase_quantity,
-                        'purchase_uom': line.purchase_uom.id,
-                        'exchange_quantity': line.exchange_quantity,
-                        'product_quantity': line.product_qty,
-                        'vendor_price': line.vendor_price,
-                        'price_unit': line.price_unit,
-                        'product_uom': line.product_id.uom_id.id if line.product_id.uom_id else uom,
-                        'location_id': line.location_id.id,
-                        'tax_ids': line.taxes_id.ids,
-                        'price_tax': line.price_tax,
-                        'discount_percent': line.discount_percent,
-                        'discount': line.discount,
-                        'event_id': line.event_id.id,
-                        'production_id': line.production_id.id,
-                        'billed': line.billed,
-                        'account_analytic_id': line.account_analytic_id.id,
-                        'receive_date': line.receive_date,
-                        'tolerance': line.tolerance,
-                        'price_subtotal': line.price_subtotal
-                    }
-                    order_line.append(data_product)
-                    invoice_line = {
-                        'product_id': line.product_id.id,
-                        'name': line.product_id.name,
-                        'description': line.product_id.default_code,
-                        'request_code': line.request_purchases,
-                        'type': line.product_type,
-                        'discount': line.discount_percent,
-                        'discount_percent': line.discount,
-                        'quantity_purchased': line.purchase_quantity,
-                        'product_uom_id': line.product_id.uom_id.id if line.product_id.uom_id else uom,
-                        'exchange_quantity': line.exchange_quantity,
-                        'quantity': line.product_qty,
-                        'vendor_price': line.vendor_price,
-                        'price_unit': line.price_unit,
-                        'warehouse': line.location_id.id,
-                        'tax_ids': line.taxes_id.ids,
-                        'tax_amount': line.price_tax,
-                        'price_subtotal': line.price_subtotal,
-                        'account_analytic_id': line.account_analytic_id.id,
-                        'work_order': line.production_id.id
-                    }
-                    invoice_line_ids.append((0, 0, invoice_line))
-                self.supplier_sales_order(data, order_line, invoice_line_ids)
-                self.sudo().with_context(inter_company=True).action_approved_vendor(data, order_line, invoice_line_ids)
-                if self._context.get('inter_company'):
-                    self = self.sudo().with_context(inter_company=False)
-                record.write(
-                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
+                self.sudo().with_context(inter_company=True)
+                self.validate_inter_purchase_order()
+                self.button_confirm()
+                picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+                if picking_in:
+                    picking_in.action_set_quantities_to_reservation()
+                    picking_in.button_validate()
+                    if picking_in.state == 'done':
+                        self.write({
+                            'select_type_inv': 'normal',
+                            'custom_state': 'approved'
+                        })
+                        invoice = self.action_create_invoice()
+                        invoice.action_post()
+                else:
+                    raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
+
+                sale_id = self.sudo()._create_sale_order_another_company()
+                sale_id.action_create_picking()
+                picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+                if picking_out:
+                    picking_out.action_set_quantities_to_reservation()
+                    picking_out.button_validate()
+                    if picking_out.state == 'done':
+                        for move_id in picking_out.move_ids:
+                            move_id.sale_line_id.qty_delivered = move_id.quantity_done
+                        invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                            'sale_order_ids': [(6, 0, sale_id.ids)],
+                            'advance_payment_method': 'delivered',
+                            'deduct_down_payments': True,
+                        }).forlife_create_invoices()
+                        invoice_customer.action_post()
+                        sale_id.action_done()
+
+                return True
 
     def check_purchase_tool_and_equipment(self):
         # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
@@ -822,24 +804,27 @@ class PurchaseOrder(models.Model):
             order_line_so = []
             for item in order_line:
                 key_location = data.get('location_id')
-                picking_line = (
-                    0, 0,
-                    {'product_id': item.get('product_id'), 'name': item.get('name'),
-                     'location_dest_id': item.get('location_id'),
-                     'location_id': self.env.ref('forlife_stock.export_production_order').id,
-                     'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
-                     'product_uom': item.get('product_uom'), 'reason_id': data.get('location_id'),
-                     'quantity_done': item.get('product_quantity')})
+                picking_line = (0, 0, {
+                    'product_id': item.get('product_id'),
+                    'name': item.get('name'),
+                    'location_dest_id': self.location_id.id,
+                    'location_id': self.company_id.partner_id.property_stock_customer.id,
+                    'product_uom_qty': item.get('product_quantity'),
+                    'price_unit': item.get('price_unit'),
+                    'product_uom': item.get('product_uom'),
+                    'reason_id': data.get('location_id'),
+                    'quantity_done': item.get('product_quantity')
+                })
                 picking_master = {
-                    'state': 'done',
                     'picking_type_id': picking_type_in.id,
                     'partner_id': company_partner.id,
-                    'location_id': self.env.ref('forlife_stock.export_production_order').id,
-                    'location_dest_id': data.get('location_id'),
+                    'location_id': self.company_id.partner_id.property_stock_customer.id,
+                    'location_dest_id': self.location_id.id,
                     'scheduled_date': datetime.now(),
                     'date_done': data.get('deceive_date'),
                     'move_ids_without_package': [picking_line],
                     'origin': data.get('name'),
+                    'purchase_id': self.id
                 }
                 if data_all_picking.get(key_location):
                     data_all_picking.get(key_location).get('move_ids_without_package').append(picking_line)
@@ -847,15 +832,18 @@ class PurchaseOrder(models.Model):
                     data_all_picking.update({
                         key_location: picking_master
                     })
-                order_line_so.append((
-                    0, 0,
-                    {'product_id': item.get('product_id'),
-                     'name': item.get('name'),
-                     'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
-                     'product_uom': item.get('product_uom'),
-                     'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'is_expense': True,
-                     'qty_delivered_method': 'analytic',
-                     'discount': item.get('discount_percent')}))
+                order_line_so.append((0, 0, {
+                    'product_id': item.get('product_id'),
+                    'name': item.get('name'),
+                    'product_uom_qty': item.get('product_quantity'),
+                    'price_unit': item.get('price_unit'),
+                    'product_uom': item.get('product_uom'),
+                    'customer_lead': 0, 'sequence': 10,
+                    'is_downpayment': False,
+                    'is_expense': True,
+                    'qty_delivered_method': 'analytic',
+                    'discount': item.get('discount_percent')
+                }))
 
             master_so = {
                 'company_id': self.source_location_id[0].company_id.id,
@@ -870,53 +858,58 @@ class PurchaseOrder(models.Model):
             data_so = self.env['sale.order'].sudo().create(master_so)
 
             # Sử lý phiếu xuất hàng
-            st_picking_out = data_so.with_context(
-                {'from_inter_company': True, 'company_po': self.source_location_id[0].company_id.id}).action_confirm()
-            data_stp_out = self.env['stock.picking'].search([('origin', '=', data_so.name)], limit=1)
-            data_stp_out.write({
-                'company_id': self.source_location_id[0].company_id.id
-            })
-            for spl, pol, sol in zip(data_stp_out.move_ids_without_package, order_line, data_so.order_line):
-                spl.write({'quantity_done': pol.get('product_quantity'), })
+            data_so.with_context({'from_inter_company': True, 'company_po': self.source_location_id[0].company_id.id}).action_confirm()
+            data_stp_out = self.env['stock.picking'].search([('sale_id', '=', data_so.id)], limit=1)
+            # data_stp_out.write({
+            #     'company_id': self.source_location_id[0].company_id.id
+            # })
+            # for item in data_so.picking_ids:
+            #     item.write({
+            #         'location_id': data.get('source_location_id'),
+            #         'location_dest_id': data.get('location_id')
+            #     })
+            data_stp_out.action_set_quantities_to_reservation()
+            data_stp_out.button_validate()
+            for spl, sol in zip(data_stp_out.move_ids_without_package, data_so.order_line):
+                # spl.write({'quantity_done': pol.get('product_quantity'), })
                 sol.write({'qty_delivered': spl.quantity_done})
-            for item in data_so.picking_ids:
-                item.write({
-                    'location_id': data.get('source_location_id'),
-                    'location_dest_id': data.get('location_id')
-                })
             # Sử lý hóa đơn
-            invoice_ncc = self.env['sale.advance.payment.inv'].create({
+            invoice_ncc = self.env['sale.advance.payment.inv'].sudo().create({
                 'sale_order_ids': [(6, 0, data_so.ids)],
                 'advance_payment_method': 'delivered',
                 'deduct_down_payments': True,
             }).forlife_create_invoices()
-            invoice_ncc.invoice_line_ids = None
-            invoice_ncc.invoice_line_ids = invoice_line_ids
-            invoice_customer = invoice_ncc.copy()
-            invoice_ncc.write({
-                'purchase_type': data.get('purchase_type'),
-                'move_type': 'out_invoice',
-                'reference': data_so.name,
-                'is_from_ncc': True
-            })
-            # Vào sổ hóa đơn bán hàng
             invoice_ncc.action_post()
+            # invoice_ncc.invoice_line_ids = None
+            # invoice_ncc.invoice_line_ids = invoice_line_ids
+            invoice_customer = invoice_ncc.copy({
+                'invoice_line_ids': []
+            })
+            # invoice_ncc.write({
+            #     'purchase_type': data.get('purchase_type'),
+            #     'move_type': 'out_invoice',
+            #     'reference': data_so.name,
+            #     'is_from_ncc': True
+            # })
+            # Vào sổ hóa đơn bán hàng
             invoice_customer.write({
                 'invoice_date': datetime.now(),
                 'move_type': 'in_invoice',
                 'reference': data.get('name'),
-                'is_from_ncc': False
+                'is_from_ncc': False,
+                'partner_id': data.get('partner_id'),
+                'invoice_line_ids': invoice_line_ids,
             })
-            sql = f"""update account_move set partner_id = {data.get('partner_id')} where id = {invoice_customer.id}"""
-            self._cr.execute(sql)
+            # sql = f"""update account_move set partner_id = {data.get('partner_id')} where id = {invoice_customer.id}"""
+            # self._cr.execute(sql)
             # Vào sổ hóa đơn mua hàng
             invoice_customer.action_post()
-            data_stp_out.with_context({'skip_immediate': True}).button_validate()
+            # data_stp_out.with_context({'skip_immediate': True}).button_validate()
             for st in data_all_picking:
-                st_picking_in = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                    data_all_picking[st]).button_validate()
+                st_picking_in = self.env['stock.picking'].with_context({'skip_immediate': True}).create(data_all_picking[st])
+                st_picking_in.action_set_quantities_to_reservation()
+                st_picking_in.button_validate()
             return True
-
         else:
             raise ValidationError('Nhà cung cấp của bạn chưa có đối tác')
 
@@ -1184,47 +1177,47 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def create_invoice_labor_no_return(self, nine, material_line, wave_item, x_return):
+    def create_invoice_labor_no_return(self, line_id, material_line, wave_item, x_return):
         data_line = {
             'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
-            'po_id': nine.id,
+            'po_id': line_id.id,
             'product_id': material_line.product_id.id,
             'description': material_line.product_id.name,
             'quantity': 1,
             # 'sequence': sequence,
             'price_unit': material_line.price_unit * (
-                        (wave_item.qty_done - x_return.qty_done) / nine.purchase_quantity),
+                        (wave_item.qty_done - x_return.qty_done) / line_id.purchase_quantity),
             'occasion_code_id': wave_item.occasion_code_id.id,
             'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
-            'import_tax': nine.import_tax,
+            'import_tax': line_id.import_tax,
             # 'tax_amount': line.tax_amount,
-            'special_consumption_tax': nine.special_consumption_tax,
+            'special_consumption_tax': line_id.special_consumption_tax,
             # 'special_consumption_tax_amount': line.special_consumption_tax_amount,
-            'vat_tax': nine.vat_tax,
+            'vat_tax': line_id.vat_tax,
             # 'vat_tax_amount': line.vat_tax_amount,
         }
         return data_line
 
-    def create_invoice_labor(self, nine, material_line, wave_item):
+    def create_invoice_labor(self, line_id, material_line, wave_item):
         data_line = {
             'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
-            'po_id': nine.id,
+            'po_id': line_id.id,
             'product_id': material_line.product_id.id,
             'description': material_line.product_id.name,
             'quantity': 1,
             # 'sequence': sequence,
-            'price_unit': material_line.price_unit * (wave_item.qty_done / nine.purchase_quantity),
+            'price_unit': material_line.price_unit * (wave_item.qty_done / line_id.purchase_quantity),
             'occasion_code_id': wave_item.occasion_code_id.id,
             'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
-            'import_tax': nine.import_tax,
+            'import_tax': line_id.import_tax,
             # 'tax_amount': line.tax_amount,
-            'special_consumption_tax': nine.special_consumption_tax,
+            'special_consumption_tax': line_id.special_consumption_tax,
             # 'special_consumption_tax_amount': line.special_consumption_tax_amount,
-            'vat_tax': nine.vat_tax,
+            'vat_tax': line_id.vat_tax,
             # 'vat_tax_amount': line.vat_tax_amount,
         }
         return data_line
@@ -1353,32 +1346,32 @@ class PurchaseOrder(models.Model):
                         material_lines = self.env['purchase.order.line.material.line'].search(
                             [('purchase_order_line_id', 'in', order.order_line_production_order.mapped('id'))])
                         for line in order.order_line:
-                            for nine in order.order_line_production_order:
-                                material = material_lines.filtered(lambda m: m.purchase_order_line_id.id == nine)
+                            for line_id in order.order_line_production_order:
+                                material = material_lines.filtered(lambda m: m.purchase_order_line_id.id == line_id.id)
                                 if not order.is_return:
                                     wave = picking_labor_in.move_line_ids_without_package.filtered(
-                                        lambda w: str(w.po_id) == str(nine.id)
-                                                  and w.product_id.id == nine.product_id.id
+                                        lambda w: w.purchase_order_line_id.id == line_id.id
+                                                  and w.product_id.id == line_id.product_id.id
                                                   and w.picking_type_id.code == 'incoming'
                                                   and w.picking_id.x_is_check_return == False)
                                 else:
-                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(nine.id)
-                                                                                                    and w.product_id.id == nine.product_id.id
+                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: w.purchase_order_line_id.id == line_id.id
+                                                                                                    and w.product_id.id == line_id.product_id.id
                                                                                                     and w.picking_id.x_is_check_return == False)
                                 for material_line in material:
                                     if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
                                         for wave_item in wave:
                                             purchase_return = picking_labor_in_return.move_line_ids_without_package.filtered(
-                                                lambda r: str(r.po_id) == str(wave_item.po_id)
+                                                lambda r: r.move_id.purchase_line_id.id == wave_item.move_id.purchase_line_id.id
                                                           and r.product_id.id == wave_item.product_id.id
                                                           and r.picking_id.relation_return == wave_item.picking_id.name
                                                           and r.picking_id.x_is_check_return == True)
                                             if purchase_return:
                                                 for x_return in purchase_return:
                                                     if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                                        data_line = self.create_invoice_labor_no_return(nine, material_line, wave_item, x_return)
+                                                        data_line = self.create_invoice_labor_no_return(line_id, material_line, wave_item, x_return)
                                             else:
-                                                data_line = self.create_invoice_labor(nine, material_line, wave_item)
+                                                data_line = self.create_invoice_labor(line_id, material_line, wave_item)
                                             if line.display_type == 'line_section':
                                                 pending_section = line
                                                 continue
@@ -1409,19 +1402,19 @@ class PurchaseOrder(models.Model):
                             for line in order.order_line:
                                 if not order.is_return:
                                     wave = picking_expense_in.move_line_ids_without_package.filtered(
-                                        lambda w: str(w.po_id) == str(line.id)
+                                        lambda w: w.move_id.purchase_line_id.id == line.id
                                                 and w.product_id.id == line.product_id.id
                                                 and w.picking_id.state == 'done'
                                                 and w.picking_type_id.code == 'incoming'
                                                 and w.picking_id.x_is_check_return == False)
                                 else:
-                                    wave = picking_expense_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                    wave = picking_expense_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line.id
                                                                                                     and w.product_id.id == line.product_id.id
                                                                                                     and w.picking_id.x_is_check_return == False)
 
                                 for wave_item in wave:
                                     purchase_return = picking_expense_in_return.move_line_ids_without_package.filtered(
-                                        lambda r: str(r.po_id) == str(wave_item.po_id)
+                                        lambda r: r.move_id.purchase_line_id.id == wave_item.move_id.purchase_line_id.id
                                                   and r.product_id.id == wave_item.product_id.id
                                                   and r.picking_id.relation_return == wave_item.picking_id.name
                                                   and r.picking_id.x_is_check_return == True)
@@ -1465,12 +1458,12 @@ class PurchaseOrder(models.Model):
                         for line in order.order_line:
                             if not order.is_return:
                                 wave = picking_in.move_line_ids_without_package.filtered(
-                                lambda w: str(w.po_id) == str(line.id)
+                                lambda w: w.move_id.purchase_line_id.id == line.id
                                 and w.product_id.id == line.product_id.id
                                 and w.picking_type_id.code == 'incoming'
                                 and w.picking_id.x_is_check_return == False)
                             else:
-                                wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                wave = picking_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line.id
                                                                                                 and w.product_id.id == line.product_id.id
                                                                                                 and w.picking_id.x_is_check_return == False)
 
@@ -1478,7 +1471,7 @@ class PurchaseOrder(models.Model):
                                 if picking_in:
                                     for wave_item in wave:
                                         purchase_return = picking_in_return.move_line_ids_without_package.filtered(
-                                            lambda r: str(r.po_id) == str(wave_item.po_id)
+                                            lambda r: r.move_id.purchase_line_id.id == wave_item.move_id.purchase_line_id.id
                                                       and r.product_id.id == wave_item.product_id.id
                                                       and r.picking_id.relation_return == wave_item.picking_id.id
                                                       and r.picking_id.x_is_check_return == True)
@@ -1509,7 +1502,7 @@ class PurchaseOrder(models.Model):
                                         [('ware_id', '=', picking_in_true.move_line_ids_without_package.mapped('id'))])
                                     for item in picking_in_true.move_line_ids_without_package:
                                         invoice_l = invoice_relationship.filtered(lambda x: x.ware_id == item.id)
-                                        if int(invoice_l.po_id) == line.id:
+                                        if invoice_l.move_id.purchase_line_id.id == line.id:
                                             total_nine_quantity = 0
                                             matching_item = invoice_l
                                             for nine in invoice_relationship:
@@ -1543,8 +1536,8 @@ class PurchaseOrder(models.Model):
                                 raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
                             else:
                                 for line in order.order_line:
-                                    wave = invoice_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(
-                                        line.id) and w.product_id.id == line.product_id.id)
+                                    wave = invoice_relationship.invoice_line_ids.filtered(lambda w: w.move_id.purchase_line_id.id ==
+                                        line.id and w.product_id.id == line.product_id.id)
                                     data_line = self.create_invoice_service_and_asset(order, line, wave)
                                     if line.display_type == 'line_section':
                                         pending_section = line
@@ -1682,7 +1675,7 @@ class PurchaseOrder(models.Model):
                                     order.order_line.mapped('price_subtotal')):
                                 raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng %s!') % order.name)
                             else:
-                                wave = invoice_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
+                                wave = invoice_relationship.invoice_line_ids.filtered(lambda w: w.move_id.purchase_line_id.id == line.id and w.product_id.id == line.product_id.id)
                                 data_line = self.create_invoice_service_and_asset(order, line, wave)
                         else:
                             data_line = self.create_invoice_service_and_asset_not_get_mode(order, line)
@@ -1720,7 +1713,7 @@ class PurchaseOrder(models.Model):
                                                                ])
                 for line in order.order_line:
                     for wave_item in picking_in.move_line_ids_without_package:
-                        if str(wave_item.po_id) == str(line.id) and wave_item.product_id.id == line.product_id.id:
+                        if wave_item.move_id.purchase_line_id.id == line.id and wave_item.product_id.id == line.product_id.id:
                             data_line = self.create_invoice_normal(order, line, wave_item)
                         # else:
                         #     raise UserError(_('Đơn mua có mã phiếu là %s đã có hóa đơn liên quan tương ứng với phiếu nhập kho!') % order.name)
@@ -1762,7 +1755,7 @@ class PurchaseOrder(models.Model):
                         if order.cost_line:
                             cp = 0
                             for wave_item in picking_expense_in.move_line_ids_without_package:
-                                if str(wave_item.po_id) == str(line.id) and wave_item.product_id.id == line.product_id.id and wave_item.picking_id.state == 'done' and wave_item.picking_type_id.code == 'incoming':
+                                if wave_item.move_id.purchase_line_id.id == line.id and wave_item.product_id.id == line.product_id.id and wave_item.picking_id.state == 'done' and wave_item.picking_type_id.code == 'incoming':
                                     data_line = self.create_invoice_expense(order, nine, line, cp, wave_item)
                         else:
                             raise UserError(_('Đơn mua có mã phiếu là %s chưa có chi phí!') % order.name)
@@ -1805,7 +1798,7 @@ class PurchaseOrder(models.Model):
                             for material_line in material:
                                 if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
                                     for wave_item in picking_labor_in.move_line_ids_without_package:
-                                        if str(wave_item.po_id) == str(nine.id) and wave_item.product_id.id == nine.product_id.id:
+                                        if wave_item.move_id.purchase_line_id.id == nine.id and wave_item.product_id.id == nine.product_id.id:
                                             data_line = self.create_invoice_labor(nine, material_line, wave_item)
                     else:
                         raise UserError(_('Đơn mua có mã phiếu là %s chưa có chi phí nhân công!') % ref_join)
@@ -1911,26 +1904,55 @@ class PurchaseOrder(models.Model):
         })
         return values
 
+    @api.constrains('partner_id')
+    def _constrains_partner_id(self):
+        if "import_file" in self.env.context:
+            for rec in self:
+                if not rec.partner_id:
+                    raise ValidationError('Thiếu giá trị bắt buộc cho trường Nhà cung cấp!')
+
+    @api.constrains('purchase_type')
+    def _constrains_purchase_type(self):
+        for rec in self:
+            if not rec.purchase_type:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Loại mua hàng!')
+
+    @api.constrains('currency_id')
+    def _constrains_currency_id(self):
+        for rec in self:
+            if not rec.currency_id:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Tiền tệ!')
+
+    @api.constrains('exchange_rate')
+    def _constrains_exchange_rate(self):
+        for rec in self:
+            if not rec.exchange_rate:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Tỷ giá!')
+
+    @api.constrains('date_order')
+    def _constrains_date_order(self):
+        for rec in self:
+            if not rec.date_order:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Ngày đặt hàng!')
+
+    @api.constrains('receive_date')
+    def _constrains_receive_date(self):
+        for rec in self:
+            if not rec.receive_date:
+                raise ValidationError('Thiếu giá trị bắt buộc cho trường Ngày nhận!')
+
     @api.model
     def load(self, fields, data):
-        if "import_file" and 'default_type_po_cost' and 'default_is_inter_company' in self.env.context:
+        if "import_file" and 'default_is_inter_company' in self.env.context:
             line_number = 1
+            default_type = None
             for mouse in data:
                 line_number += 1
-                ### check header master import:
-                if fields.index('partner_id') and not mouse[fields.index('partner_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Nhà cung cấp ở dòng - {}".format(line_number)))
-                if fields.index('purchase_type') and not mouse[fields.index('purchase_type')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Loại mua hàng ở dòng - {}".format(line_number)))
-                if fields.index('currency_id') and not mouse[fields.index('currency_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở dòng - {}".format(line_number)))
-                if fields.index('date_order') and not mouse[fields.index('date_order')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày đặt hàng ở dòng - {}".format(line_number)))
-                if fields.index('receive_date') and not mouse[fields.index('receive_date')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở dòng - {}".format(line_number)))
+                if line_number == 2:
+                    default_type = mouse[fields.index('purchase_type')]
                 ### check type po and line po import
                 if self.env.context['default_is_inter_company']:
-                    if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
+                    if default_type == 'Hàng hóa':
                         if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
@@ -1941,7 +1963,14 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                    else:
+                    elif default_type == 'Dịch vụ':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                    elif default_type == 'Tài sản':
                         if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
@@ -1949,54 +1978,47 @@ class PurchaseOrder(models.Model):
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                 else:
-                    if self.env.context['default_type_po_cost'] == 'tax':
-                        if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and not mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
-                        else:
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
-                    else:
-                        if fields.index('purchase_type') and mouse[fields.index('purchase_type')] == 'Hàng hóa':
-                            if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
-                        else:
-                            if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                            if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
-                                raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
+                    if default_type == 'Hàng hóa':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_quantity') and not mouse[fields.index('order_line/purchase_quantity')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng đặt mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/vendor_price_import') and not mouse[fields.index('order_line/vendor_price_import')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Giá của nhà cung cấp ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
+                    elif default_type == 'Dịch vụ':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/price_unit') and not mouse[fields.index('order_line/price_unit')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn giá ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                    elif default_type == 'Tài sản':
+                        if fields.index('order_line/product_id') and not mouse[fields.index('order_line/product_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Mã sản phẩm ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/product_qty') and not mouse[fields.index('order_line/product_qty')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Số lượng ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/purchase_uom') and not mouse[fields.index('order_line/purchase_uom')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/price_unit') and not mouse[fields.index('order_line/price_unit')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn giá ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Ngày nhận ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        if fields.index('cost_line/product_id') and mouse[fields.index('cost_line/product_id')] and not mouse[fields.index('cost_line/currency_id')]:
+                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
         return super(PurchaseOrder, self).load(fields, data)
 
 class PurchaseOrderLine(models.Model):
@@ -2085,6 +2107,11 @@ class PurchaseOrderLine(models.Model):
     total_product = fields.Float(string='Tổng giá trị tiền hàng', compute='_compute_total_product', store=1)
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
+
+    def _prepare_account_move_line(self, move=False):
+        self.ensure_one()
+        res = super(AccountMoveLine, self)._prepare_account_move_line(move)
+        res['asset_code'] = self.asset_code
 
     @api.constrains('total_vnd_exchange_import',
                     'total_vnd_amount', 'before_tax',
@@ -2195,7 +2222,7 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if item.order_id.purchase_type == 'asset':
                 if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.with_company(item.company_id).property_valuation == 'real_time' and item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id:
-                    if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id.code:
+                    if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(item.company_id).property_account_expense_categ_id.code:
                         raise ValidationError(
                             'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
                 else:
@@ -2529,6 +2556,11 @@ class PurchaseOrderLine(models.Model):
                 'exchange_quantity': self.exchange_quantity,
                 'quantity': quantity,
             })
+        if self.asset_code:
+            vals.update({
+                'asset_code': self.asset_code.name,
+                'asset_name': self.asset_name
+            })
         return vals
 
     @api.depends('order_id.cost_line.is_check_pre_tax_costs',
@@ -2684,6 +2716,8 @@ class StockPicking(models.Model):
             return True
         for record in self:
             po = record.purchase_id
+            if not po:
+                continue
             if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
                 ## check npl tồn:
                 self.check_quant_goods_import(po)
@@ -3036,19 +3070,27 @@ class StockPicking(models.Model):
     # Xử lý nhập kho sinh bút toán ở tab npl po theo số lượng nhập kho + sinh bút toán cho chi phí nhân công nội địa
     def create_invoice_npl(self, po, record):
         list_npls = []
+        list_allowcation_npls = []
         list_line_xk = []
         cost_labor_internal_costs = []
         if record.state == 'done':
-            if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
+            move = False
+            ### Tìm bản ghi Xuât Nguyên Phụ Liệu
+            export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id), ('code', '=', '1381000005')], limit=1)
+            if not export_production_order.x_property_valuation_in_account_id:
                 raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
             else:
-                account_export_production_order = self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id
+                account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
+                move = self.env['stock.move'].search(
+                    [('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
+
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
                     account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
                 else:
                     raise ValidationError(_("Bạn chưa cấu hình tài khoản định giá tồn kho trong danh mục sản phẩm của sản phẩm có tên %s") % item.product_id.name)
+
                 debit_cost = 0
                 for material_line in material:
                     if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
@@ -3099,6 +3141,25 @@ class StockPicking(models.Model):
                                 })
                                 lines_npl = [debit_npl, credit_npl]
                                 list_npls.extend(lines_npl)
+
+                                #xử lý phân bổ nguyên vật liệu
+                                debit_allowcation_npl = (0, 0, {
+                                    'sequence': 1,
+                                    'account_id': account_1561,
+                                    'name': item.product_id.name,
+                                    'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'credit': 0,
+                                })
+
+                                credit_allowcation_npl = (0, 0, {
+                                    'sequence': 2,
+                                    'account_id': account_export_production_order.id,
+                                    'name': account_export_production_order.name,
+                                    'debit': 0,
+                                    'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                })
+                                list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
+
                 if debit_cost > 0:
                     debit_cp = (0, 0, {
                         'sequence': 9,
@@ -3123,6 +3184,20 @@ class StockPicking(models.Model):
                     new_lines_cp_after_tax = [lines for text_check, lines in separated_lists.items()]
                     for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
                         invoice_line_ids.extend(sublist_lines_cp_after_tax)
+
+
+                    qty_po_done = sum(move.mapped('quantity_done'))
+                    svl_values = []
+                    svl_values.append((0, 0, {
+                        'value': debit_cost,
+                        'unit_cost': debit_cost / qty_po_done,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {item.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
                     entry_cp = self.env['account.move'].create({
                         'ref': f"{record.name} - Chi phí nhân công thuê ngoài/nội bộ - {target_items}",
                         'purchase_type': po.purchase_type,
@@ -3134,9 +3209,11 @@ class StockPicking(models.Model):
                         'invoice_payment_term_id': po.payment_term_id.id,
                         'invoice_date_due': po.date_planned,
                         'invoice_line_ids': invoice_line_ids,
-                        'restrict_mode_hash_table': False
+                        'restrict_mode_hash_table': False,
+                        'stock_valuation_layer_ids': svl_values
                     })
                     entry_cp._post()
+
 
             if list_npls:
                 merged_records_npl = {}
@@ -3171,6 +3248,55 @@ class StockPicking(models.Model):
                     entry_npls._post()
                     if record.state == 'done':
                         master_xk = self.create_xk_picking(po, record, list_line_xk, entry_npls)
+
+            if list_allowcation_npls:
+                merged_records_allowcation_npl = {}
+                total_npl_amount = 0
+                for allowcation_npl in list_allowcation_npls:
+                    key = (
+                    allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
+                    if key in merged_records_allowcation_npl:
+                        merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
+                        merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
+                    else:
+                        merged_records_allowcation_npl[key] = {
+                            'sequence': allowcation_npl[2]['sequence'],
+                            'account_id': allowcation_npl[2]['account_id'],
+                            'name': allowcation_npl[2]['name'],
+                            'debit': allowcation_npl[2]['debit'],
+                            'credit': allowcation_npl[2]['credit'],
+                        }
+                    total_npl_amount += allowcation_npl[2]['debit']
+                merged_records_list_allowcation_npl = [(0, 0, record) for record in
+                                                       merged_records_allowcation_npl.values()]
+                if merged_records_list_allowcation_npl:
+                    qty_po_done = sum(move.mapped('quantity_done'))
+                    svl_allowcation_values = []
+                    svl_allowcation_values.append((0, 0, {
+                        'value': total_npl_amount,
+                        'unit_cost': total_npl_amount / qty_po_done,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {item.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
+                    entry_allowcation_npls = self.env['account.move'].create({
+                        'ref': f"{record.name} - Phân bổ nguyên phụ liệu",
+                        'purchase_type': po.purchase_type,
+                        'move_type': 'entry',
+                        # 'x_entry_types': 'entry_material',
+                        'reference': po.name,
+                        'exchange_rate': po.exchange_rate,
+                        'date': datetime.now(),
+                        'invoice_payment_term_id': po.payment_term_id.id,
+                        'invoice_date_due': po.date_planned,
+                        'invoice_line_ids': merged_records_list_allowcation_npl,
+                        'restrict_mode_hash_table': False,
+                        'stock_valuation_layer_ids': svl_allowcation_values
+                    })
+                    entry_allowcation_npls._post()
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, account_move=None):

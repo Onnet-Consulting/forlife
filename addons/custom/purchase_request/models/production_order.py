@@ -9,6 +9,13 @@ class ProductionOrder(models.Model):
     _rec_name = 'product_id'
 
 
+    @api.model
+    def create(self, vals):
+        res = super(ProductionOrder, self).create(vals)
+        if res.product_id:
+            res.product_id.x_check_npl = True
+        return res
+
     def write(self, vals):
         if 'product_id' in vals:
             if vals.get('product_id') != self.product_id.id:
@@ -36,6 +43,10 @@ class ProductionOrder(models.Model):
         ('to invoice', 'Dở dang'),
         ('invoiced', 'Hoàn thành'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
+
+    company_id = fields.Many2one('res.company',
+                                 string='Công ty',
+                                 default=lambda self: self.env.company)
 
 
     @api.constrains('product_id')
@@ -68,6 +79,10 @@ class ProductionOrderLine(models.Model):
     uom_id = fields.Many2one(related="product_id.uom_id")
     attachments_count = fields.Integer('Attachments Count')
     price = fields.Float(string='Giá', compute='compute_price', readonly=False, store=1)
+
+    company_id = fields.Many2one('res.company',
+                                 string='Công ty', required=True,
+                                 default=lambda self: self.env.company)
 
     @api.constrains('product_qty')
     def constrains_product_qty(self):

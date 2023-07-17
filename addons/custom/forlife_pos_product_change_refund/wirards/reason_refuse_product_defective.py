@@ -8,4 +8,5 @@ class ReasonRefuse(models.TransientModel):
 
     def action_confirm(self):
         product_defective = self.env['product.defective'].browse(self._context.get('active_id'))
+        product_defective.reason_refuse_product = self.name
         product_defective.action_refuse()

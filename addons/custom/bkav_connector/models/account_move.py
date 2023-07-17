@@ -56,6 +56,24 @@ class AccountMoveBKAV(models.Model):
     ], 'Loại phát hành', default='vat', required=True)
 
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc', domain=[('move_type', '=', 'out_invoice')])
+    po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
+
+    def write(self, vals):
+        res = super(AccountMoveBKAV, self).write(vals)
+        if vals.get('po_source_id') and self.state == 'posted':
+            if self.po_source_id.is_inter_company:
+                self.create_an_invoice_and_publish_invoice_bkav()
+        return res
+
+
+    def create_an_invoice_and_publish_invoice_bkav(self):
+        for invoice in self:
+            try:
+                invoice.create_invoice_bkav()
+            except Exception as e:
+                pass
+            
+
 
     def _check_invoice_bkav(self):
         #HD ban hang thong thuong
@@ -67,6 +85,7 @@ class AccountMoveBKAV(models.Model):
             return True
         return False
     
+
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status_get_values(self):
@@ -216,8 +235,7 @@ class AccountMoveBKAV(models.Model):
                     'invoice_no': result_data.get('InvoiceNo'),
                     'invoice_form': result_data.get('InvoiceForm'),
                     'invoice_serial': result_data.get('InvoiceSerial'),
-                    'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                        hours=7) if result_data.get('SignedDate') else None
+                    'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None
                 })
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
@@ -236,7 +254,7 @@ class AccountMoveBKAV(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        connect_bkav(data, configs)
+        # connect_bkav(data, configs)
         _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
@@ -287,8 +305,7 @@ class AccountMoveBKAV(models.Model):
                 'invoice_no': result_data.get('InvoiceNo'),
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
-                'invoice_e_date': datetime.strptime(result_data.get('SignedDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(
-                    hours=7) if result_data.get('SignedDate') else None,
+                'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None,
                 'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
