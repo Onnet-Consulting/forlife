@@ -3076,9 +3076,16 @@ class StockPicking(models.Model):
         if record.state == 'done':
             move = False
             ### Tìm bản ghi Xuât Nguyên Phụ Liệu
-            export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id), ('code', '=', '1381000005')], limit=1)
+            reason_type_6 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
+                                                                    ('code', '=', '06')
+                                                                    ], limit=1)
+            export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id),
+                                                                         ('code', '=', '1381000005')
+                                                                         ], limit=1)
+            if not reason_type_6:
+                raise ValidationError('Bạn chưa có loại lý do Xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 06')
             if not export_production_order.x_property_valuation_in_account_id:
-                raise ValidationError('Bạn chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu')
+                raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có code = 1381000005')
             else:
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
@@ -3115,12 +3122,12 @@ class StockPicking(models.Model):
                             'product_uom': material_line.uom.id,
                             'price_unit': material_line.price_unit,
                             'location_id': record.location_dest_id.id,
-                            'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                            'location_dest_id': export_production_order.id,
                             'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
-                            'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                            'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                            'reason_type_id': reason_type_6.id,
+                            'reason_id': export_production_order.id,
                         }))
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
@@ -3247,7 +3254,7 @@ class StockPicking(models.Model):
                     })
                     entry_npls._post()
                     if record.state == 'done':
-                        master_xk = self.create_xk_picking(po, record, list_line_xk, entry_npls)
+                        master_xk = self.create_xk_picking(po, record, list_line_xk, reason_type_6, export_production_order, entry_npls)
 
             if list_allowcation_npls:
                 merged_records_allowcation_npl = {}
@@ -3299,7 +3306,7 @@ class StockPicking(models.Model):
                     entry_allowcation_npls._post()
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
-    def create_xk_picking(self, po, record, list_line_xk, account_move=None):
+    def create_xk_picking(self, po, record, list_line_xk, reason_type_6, export_production_order, account_move=None):
         company_id = self.env.company.id
         picking_type_out = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
@@ -3308,8 +3315,8 @@ class StockPicking(models.Model):
             "is_locked": True,
             "immediate_transfer": False,
             'location_id': record.location_dest_id.id,
-            'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-            'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+            'reason_type_id': reason_type_6.id,
+            'location_dest_id': export_production_order.id,
             'scheduled_date': datetime.now(),
             'origin': po.name,
             'other_export': True,
