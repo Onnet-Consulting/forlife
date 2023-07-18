@@ -46,6 +46,7 @@
 
                     <!-- row 3 -->
                     <t t-set="_totalPriceNotFormat" t-value="getTotalNotFormat()" />
+                    <t t-set="_getTotalDiscountCustomDefective" t-value="getTotalDiscountCustomDefective()" />
                     <tr style="border: 1px solid black; text-align:left">
                         <th style="border: 1px solid black;width:25%">Còn lại</th>
                         <th>
@@ -53,7 +54,13 @@
                         </th>
                         <th style="border: 1px solid black;width:25%">Tổng giảm giá</th>
                         <th class="total-money-discount">
-                            <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
+                            <t t-if="_getTotalDiscountCustomDefective > 0">
+                                <t t-esc="env.pos.format_currency(_getTotalDiscountCustomDefective)"/>
+                            </t>
+                            <t t-else="">
+                               <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
+                            </t>
+
                         </th>
                     </tr>
 

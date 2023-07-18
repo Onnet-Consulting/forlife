@@ -106,8 +106,8 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                                 model: 'product.product',
                                 method: 'get_product_auto',
                             })
-                            if (product_auto_id) {
-                                const product_auto = this.env.pos.db.get_product_by_id(product_auto_id);
+                            let product_auto = product_auto_id && this.env.pos.db.get_product_by_id(product_auto_id);
+                            if (product_auto) {
                                 const options = await this._getAddProductOptions(product_auto);
                                 options.price =  Math.abs(total_price);
                                 order.add_product(product_auto, options);
