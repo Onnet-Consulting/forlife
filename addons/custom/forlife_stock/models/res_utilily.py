@@ -19,14 +19,13 @@ class ApiStockTransfer(models.AbstractModel):
                 "message": 'Khoảng thời gian lấy dữ liệu không được lớn hơn 30 ngày.',
             }
 
-        stock_transfer = self.env['stock.transfer'].search([
+        domain = [
             ('create_date', '>=', date_from),
-            ('create_date', '<=', date_to)
-        ], limit=limit, offset=offset)
-        total = self.env['stock.transfer'].search_count([
-            ('create_date', '>=', date_from),
-            ('create_date', '<=', date_to)
-        ])
+            ('create_date', '<=', date_to),
+            ('state', '=', 'approved'),
+        ]
+        stock_transfer = self.env['stock.transfer'].search(domain, limit=limit, offset=offset)
+        total = self.env['stock.transfer'].search_count(domain)
 
         response = {
             "status": 200,
