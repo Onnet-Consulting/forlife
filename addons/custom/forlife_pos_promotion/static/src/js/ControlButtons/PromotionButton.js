@@ -104,7 +104,7 @@ export class PromotionButton extends PosComponent {
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let programsList = potentialPrograms.map(el => el.program);
         let bestCombine;
-        if (programsList.every(p => p.promotion_type == 'pricelist')) {
+        if (programsList.every(p => p.promotion_type == 'pricelist' && !p.with_code)) {
             bestCombine = programsList;
         } else {
             bestCombine = order.computeBestCombineOfProgram(programsList) || [];
@@ -120,7 +120,7 @@ export class PromotionButton extends PosComponent {
             id: this.env.pos.get_str_id(pro.program),
             label: pro.program.display_name,
             program: pro.program,
-            isSelected: bestCombine.length > 0 ? bestCombine.some(p => this.env.pos.get_str_id(p) == this.env.pos.get_str_id(pro)) : false,
+            isSelected: bestCombine.length > 0 ? bestCombine.some(p => p == this.env.pos.get_str_id(pro.program)) : false,
             index: bestCombine.length > 0 ? bestCombine.indexOf(this.env.pos.get_str_id(pro.program)) + 1 : -1,
             forecastedNumber: pro.number,
             order_apply: bestCombine.length > 0 ? bestCombine.indexOf(this.env.pos.get_str_id(pro.program)) + 1 : -1,
