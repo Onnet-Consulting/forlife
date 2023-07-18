@@ -224,7 +224,7 @@ class InheritPosOrder(models.Model):
         for line in order['data']['lines']:
             line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
             if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
-                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
+                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty'], line[-1].get('discount_details_lines', [])))
 
             price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
             taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
@@ -266,7 +266,8 @@ class InheritPosOrderLine(models.Model):
             ('make_price', 'Make Price'),
             ('card', 'Card'),
             ('product_defective', 'Product Defective'),
-            ('handle', 'Handle')
+            ('handle', 'Handle'),
+            ('change_refund', 'Change/Refund'),
         ],
         string='Promotion Type', index=True, readonly=True
     )
@@ -357,7 +358,7 @@ class InheritPosOrderLine(models.Model):
                     'product_default_pos_return_goods_id'
                 ],
                 price=-discount.money_reduced,
-                promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else None,
+                promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration() if discount.type == 'point' else False,
                 promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
@@ -375,7 +376,7 @@ class InheritPosOrderLine(models.Model):
             self.create(pols_promotion_values)
         return pols
 
-    def generate_promotion_values(self, original_qty=0):
+    def generate_promotion_values(self, original_qty=0, discount_details=None):
         return {
             'is_reward_line': self.is_reward_line,
             'with_purchase_condition': self.with_purchase_condition,
@@ -399,7 +400,7 @@ class InheritPosOrderLine(models.Model):
                 'listed_price': -p.listed_price,
                 'recipe': p.recipe / self.qty * original_qty,
                 'discounted_amount': p.discounted_amount / self.qty * original_qty
-            }) for p in self.discount_details_lines],
+            }) for p in self.discount_details_lines] + (discount_details or []),
         }
 
     def get_journal_by_product(self):
