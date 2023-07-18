@@ -2118,11 +2118,6 @@ class PurchaseOrderLine(models.Model):
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
 
-    def _prepare_account_move_line(self, move=False):
-        self.ensure_one()
-        res = super(AccountMoveLine, self)._prepare_account_move_line(move)
-        res['asset_code'] = self.asset_code
-
     @api.constrains('total_vnd_exchange_import',
                     'total_vnd_amount', 'before_tax',
                     'order_id.is_inter_company','order_id')
