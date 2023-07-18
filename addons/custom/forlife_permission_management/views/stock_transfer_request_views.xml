@@ -26,12 +26,12 @@
             <field name="model">stock.transfer</field>
             <field name="inherit_id" ref="forlife_stock.stock_transfer_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_stock_transfer_send</attribute>
-                </xpath>
-                <xpath expr="//button[@name='action_approve']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_stock_transfer_approve_reject</attribute>
-                </xpath>
+<!--                <xpath expr="//button[@name='action_wait_approve']" position="attributes">-->
+<!--                    <attribute name="groups">forlife_permission_management.group_stock_transfer_send</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//button[@name='action_approve']" position="attributes">-->
+<!--                    <attribute name="groups">forlife_permission_management.group_stock_transfer_approve_reject</attribute>-->
+<!--                </xpath>-->
                 <xpath expr="//button[@name='action_reject']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_stock_transfer_approve_reject</attribute>
                 </xpath>

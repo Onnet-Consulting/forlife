@@ -2057,18 +2057,11 @@ class PurchaseOrderLine(models.Model):
             totals = list(tax_results['totals'].values())[0]
             amount_untaxed = totals['amount_untaxed']
             amount_tax = totals['amount_tax']
-            if line.free_good:
-                line.update({
-                    'price_subtotal': 0,
-                    'price_tax': 0,
-                    'price_total': 0,
-                })
-            else:
-                line.update({
-                    'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
-                    'price_tax': amount_tax,
-                    'price_total': amount_untaxed + amount_tax,
-                })
+            line.update({
+                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
+                'price_tax': amount_tax,
+                'price_total': amount_untaxed + amount_tax,
+            })
 
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
@@ -2148,11 +2141,6 @@ class PurchaseOrderLine(models.Model):
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
-
-    def _prepare_account_move_line(self, move=False):
-        self.ensure_one()
-        res = super(AccountMoveLine, self)._prepare_account_move_line(move)
-        res['asset_code'] = self.asset_code
 
     @api.constrains('total_vnd_exchange_import',
                     'total_vnd_amount', 'before_tax',
@@ -2359,30 +2347,19 @@ class PurchaseOrderLine(models.Model):
 
     # discount
     @api.depends("free_good")
-    def _compute_free_goodf(self):
-        for rec in self:
-            if rec.free_good:
-                rec.write({'discount': 0,
-                           'discount_percent': 0,
-                           })
-                rec.readonly_discount_percent = rec.readonly_discount = True
-            else:
-                rec.readonly_discount_percent = rec.readonly_discount = False
-
-    # discount
-    @api.depends("free_good")
     def _compute_free_good(self):
         for rec in self:
             if rec.free_good:
                 rec.write({'discount': 0,
                            'discount_percent': 0,
-                           'vendor_price': 0,
-                           'price_unit': 0,
-                           'price_subtotal': 0
+                           'readonly_discount_percent': True,
+                           'readonly_discount': True,
                            })
-                rec.readonly_discount_percent = rec.readonly_discount = True
             else:
-                rec.readonly_discount_percent = rec.readonly_discount = False
+                rec.write({'readonly_discount_percent': False,
+                           'readonly_discount': False,
+                           })
+
 
     @api.onchange("discount_percent", 'vendor_price')
     def _onchange_discount_percent(self):
