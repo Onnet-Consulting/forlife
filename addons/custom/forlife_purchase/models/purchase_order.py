@@ -633,12 +633,11 @@ class PurchaseOrder(models.Model):
         })
 
     def validate_inter_purchase_order(self):
+        domain_location = ('location_id', '=', self.source_location_id.id) if not self.is_return else ('location_id', '=', self.location_id.id)
         for line in self.order_line:
             if line.price_subtotal <= 0 and not line.free_good:
                 raise UserError('Bạn không thể phê duyệt với đơn mua hàng có thành tiền bằng 0!')
-            product_ncc = self.env['stock.quant'].sudo().search(
-                [('location_id', '=', self.source_location_id.id),
-                 ('product_id', '=', line.product_id.id)]).mapped('quantity')
+            product_ncc = self.env['stock.quant'].sudo().search([domain_location, ('product_id', '=', line.product_id.id)]).mapped('quantity')
             if sum(product_ncc) < line.product_qty:
                 raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
 
@@ -672,7 +671,7 @@ class PurchaseOrder(models.Model):
         sale_order_vals = {
             'company_id': self.source_location_id[0].company_id.id,
             'origin': self.name,
-            'partner_id': self.partner_id.id,
+            'partner_id': self.company_id.partner_id.id,
             'payment_term_id': self.payment_term_id.id,
             'date_order': self.date_order,
             'warehouse_id': self.source_location_id[0].warehouse_id.id,
@@ -732,42 +731,77 @@ class PurchaseOrder(models.Model):
                             })
                 record.write({'custom_state': 'approved'})
             else:
-                self.sudo().with_context(inter_company=True)
-                self.validate_inter_purchase_order()
-                self.button_confirm()
-                picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
-                if picking_in:
-                    picking_in.action_set_quantities_to_reservation()
-                    picking_in.button_validate()
-                    if picking_in.state == 'done':
-                        self.write({
-                            'select_type_inv': 'normal',
-                            'custom_state': 'approved',
-                            'inventory_status': 'done',
-                        })
-                        invoice = self.action_create_invoice()
-                        invoice.action_post()
+                if not record.is_return:
+                    self.action_approve_inter_company()
                 else:
-                    raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
-
-                sale_id = self.sudo()._create_sale_order_another_company()
-                sale_id.action_create_picking()
-                picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
-                if picking_out:
-                    picking_out.action_set_quantities_to_reservation()
-                    picking_out.button_validate()
-                    if picking_out.state == 'done':
-                        for move_id in picking_out.move_ids:
-                            move_id.sale_line_id.qty_delivered = move_id.quantity_done
-                        invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
-                            'sale_order_ids': [(6, 0, sale_id.ids)],
-                            'advance_payment_method': 'delivered',
-                            'deduct_down_payments': True,
-                        }).forlife_create_invoices()
-                        invoice_customer.action_post()
-                        sale_id.action_done()
+                    self.action_approve_inter_company_return()
 
                 return True
+
+    def action_approve_inter_company(self):
+        self.sudo().with_context(inter_company=True)
+        self.validate_inter_purchase_order()
+        self.button_confirm()
+        picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+        if picking_in:
+            picking_in.move_line_ids_without_package.write({
+                'location_dest_id': self.location_id.id
+            })
+            picking_in.action_set_quantities_to_reservation()
+            picking_in.button_validate()
+            if picking_in.state == 'done':
+                self.write({
+                    'select_type_inv': 'normal',
+                    'custom_state': 'approved',
+                    'inventory_status': 'done',
+                })
+                invoice = self.action_create_invoice()
+                invoice.action_post()
+        else:
+            raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
+
+        sale_id = self.sudo()._create_sale_order_another_company()
+        sale_id.action_create_picking()
+        picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+        if picking_out:
+            picking_out.action_set_quantities_to_reservation()
+            picking_out.button_validate()
+            if picking_out.state == 'done':
+                for move_id in picking_out.move_ids:
+                    move_id.sale_line_id.qty_delivered = move_id.quantity_done
+                invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                    'sale_order_ids': [(6, 0, sale_id.ids)],
+                    'advance_payment_method': 'delivered',
+                    'deduct_down_payments': True,
+                }).forlife_create_invoices()
+                invoice_customer.action_post()
+
+    def action_approve_inter_company_return(self):
+        self.sudo().with_context(inter_company=True)
+        self.validate_inter_purchase_order()
+        self.button_confirm()
+        picking_out = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+        if picking_out:
+            picking_out.move_ids_without_package.write({
+                'location_id': self.location_id.id,
+                'location_dest_id': self.partner_id.property_stock_supplier.id
+            })
+            picking_out.move_line_ids_without_package.write({
+                'location_id': self.location_id.id,
+                'location_dest_id': self.partner_id.property_stock_supplier.id
+            })
+            picking_out.action_set_quantities_to_reservation()
+            picking_out.button_validate()
+            if picking_out.state == 'done':
+                self.write({
+                    'select_type_inv': 'normal',
+                    'custom_state': 'approved',
+                    'inventory_status': 'done',
+                })
+                invoice = self.action_create_invoice()
+                invoice.action_post()
+        else:
+            raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
 
     def check_purchase_tool_and_equipment(self):
         # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
