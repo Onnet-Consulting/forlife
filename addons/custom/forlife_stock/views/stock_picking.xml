@@ -25,10 +25,10 @@
                 </button>
             </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), '|', ('other_import', '=', True), '|', ('other_export', '=', True), ('is_pk_purchase', '=', True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="after">
-                <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False)]}" string="Xác nhận" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '!=', True)]}" string="Xác nhận" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
             </xpath>
             <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
                    <attribute name="attrs">{'invisible':[('x_hide_return', '=', True)]}</attribute>
