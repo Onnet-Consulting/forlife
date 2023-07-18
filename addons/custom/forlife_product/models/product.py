@@ -18,6 +18,10 @@ class Product(models.Model):
     ma_sp_ncc = fields.Char('Mã sản phẩm nhà cung cấp')
     tenhangcu = fields.Char('Tên hàng cũ')
     makithuat = fields.Char('Mã kĩ thuật')
+    code_design = fields.Char('Mã thiết kế')
+    group_row_1 = fields.Char('Nhóm hàng 1')
+    line_row_1 = fields.Char('Dòng hàng 1')
+    structure = fields.Char('kết cấu 1')
 
     @api.onchange('detailed_type')
     def onchange_detailed_type(self):
