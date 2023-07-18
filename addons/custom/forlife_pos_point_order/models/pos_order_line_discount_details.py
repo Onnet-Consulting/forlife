@@ -7,7 +7,15 @@ class PosOlDiscountDetails(models.Model):
     name = fields.Char('Program Name', compute='_compute_name')
     pos_order_line_id = fields.Many2one('pos.order.line')
 
-    type = fields.Selection([('ctkm', 'CTKM'), ('point', 'Point'), ('make_price', 'Make Price'), ('card', 'Card'),('product_defective','Product Defective'),('handle','Handle')], string='Type')
+    type = fields.Selection([
+        ('ctkm', 'CTKM'),
+        ('point', 'Point'),
+        ('make_price', 'Make Price'),
+        ('card', 'Card'),
+        ('product_defective', 'Product Defective'),
+        ('handle', 'Handle'),
+        ('change_refund', 'Change/Refund')
+    ], string='Type')
     program_name = fields.Many2one('points.promotion', related='pos_order_line_id.order_id.program_store_point_id')
     listed_price = fields.Monetary('Listed price')
     recipe = fields.Float('Recipe')
@@ -33,3 +41,11 @@ class PosOlDiscountDetails(models.Model):
         if self.type == 'point':
             name = self.program_name.name
         return name
+
+    def _export_for_ui(self):
+        return {
+            'id': self.id,
+            'pos_order_line_id': self.pos_order_line_id.id,
+            'money_reduced': self.money_reduced,
+            'type': self.type,
+        }

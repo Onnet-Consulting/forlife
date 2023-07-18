@@ -19,8 +19,9 @@ _logger = logging.getLogger(__name__)
 
 class MainController(http.Controller):
 
-    @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, **post):
+    @http.route('/nhanh/webhook/handler/<string:brand_code>', type='http', auth='public', methods=['POST'], csrf=False)
+    def nhanh_webhook_handler(self, brand_code, **post):
+        request.brand_code = brand_code or None
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
         if event_type in ['orderUpdate']:
@@ -51,7 +52,11 @@ class MainController(http.Controller):
 
     def handle_order(self, event_type, data, webhook_value_id=None):
         order_id = data.get('orderId')
+        brand = request.env['res.brand'].sudo().search([('code', '=', request.brand_code)], limit=1)
         order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
+        if brand and brand.id:
+            brand_id = brand
+        
         if not order:
             return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
         if event_type == 'orderUpdate':
@@ -88,6 +93,8 @@ class MainController(http.Controller):
                 if partner:
                     name_customer = order['customerName']
                 if not partner:
+                    list_customers = constant.get_customers_from_nhanh(request, brand_id=brand_id.id, data={"mobile": order['customerMobile']})
+                    customer = list_customers.get(str(order['customerId']))
                     partner_value = {
                         'phone': order['customerMobile'],
                         'mobile': order['customerMobile'],
@@ -100,6 +107,16 @@ class MainController(http.Controller):
                             [('brand_id', '=', brand_id.id), ('code', 'in', ('3', '6'))]).ids)],
                         'group_id': partner_group_id.id if partner_group_id else None
                     }
+                    if customer:
+                        gender = ""
+                        if customer["gender"]:
+                            gender = constant.mapping_gender_nhanh.get(customer["gender"])
+
+                        partner_value.update({
+                            'gender': gender,
+                            'birthday': customer["birthday"],
+                            'vat': customer["taxCode"],
+                        })
                     partner = self.partner_model().sudo().create(partner_value)
                 order_line = []
                 location_id = request.env['stock.location'].sudo().search([('nhanh_id', '=', int(order['depotId']))],
@@ -119,8 +136,8 @@ class MainController(http.Controller):
                                'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
                                'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
                                'x_location_id': location_id.id,
-                               'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
-                                   'discount') else 0,
+                               # 'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
+                               #     'discount') else 0,
                                'x_cart_discount_fixed_price': float(item.get('discount')) * float(
                                    item.get('quantity')) if item.get('discount') else 0}))
 

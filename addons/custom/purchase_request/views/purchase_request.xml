@@ -119,8 +119,8 @@
                                     <field name="product_id"/>
                                     <field name="state" invisible="1"/>
                                     <field name="description" optional="show"/>
-                                    <field name="product_type" optional="show"/>
-                                    <field name="asset_description" attrs="{'readonly': [('product_type', 'not in', ('service', 'asset'))]}"/>
+                                    <field name="purchase_product_type" optional="show"/>
+                                    <field name="asset_description" attrs="{'readonly': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="purchase_quantity" optional="show"/>
                                     <field name="exchange_quantity" optional="show" string="Tỷ lệ quy đổi"/>
                                     <field name="purchase_uom" optional="show" readonly="0"/>

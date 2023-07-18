@@ -7,6 +7,7 @@ class OccasionCode(models.Model):
     _name = 'occasion.code'
     _inherit = ['occasion.code', 'bravo.model']
     _bravo_table = 'B20Job'
+    _bravo_field_sync = ['code', 'name', 'company_id', 'group_id']
 
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
@@ -19,6 +20,7 @@ class OccasionGroup(models.Model):
     _name = 'occasion.group'
     _inherit = ['occasion.group', 'bravo.model']
     _bravo_table = 'B20Job'
+    _bravo_field_sync = ['name', 'description']
 
     br1 = BravoCharField(odoo_name='name', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='description', bravo_name='Name')

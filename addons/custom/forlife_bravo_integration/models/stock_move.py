@@ -13,7 +13,8 @@ class StockMove(models.Model):
         res = super()._action_done(cancel_backorder=cancel_backorder)
         moves = self.filtered(lambda m: m.state == 'done')
         insert_queries = moves.bravo_get_insert_sql()
-        self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
+        if insert_queries:
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         return res
 
     @api.model

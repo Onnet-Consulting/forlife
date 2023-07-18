@@ -14,6 +14,7 @@
         'security/purchase_security.xml',
         'security/ir.model.access.csv',
         'security/purchase_security.xml',
+        'security/production_order_security.xml',
         'wizards/reject_purchase_request.xml',
         'wizards/cancel_purchase_request.xml',
         'wizards/select_type_po.xml',

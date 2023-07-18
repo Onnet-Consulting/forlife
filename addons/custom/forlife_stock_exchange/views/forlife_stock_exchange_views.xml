@@ -19,21 +19,21 @@
                 <attribute name="attrs">{'invisible': [('other_export', '=', False), ('other_import', '=', False)], 'readonly': [('exchange_code', '!=', False)]}</attribute>
             </xpath>
 
-<!--            <xpath expr="//field[@id='source_reason']" position="attributes">-->
-<!--                <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@id='source_reason']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>
+            </xpath>
 
-<!--            <xpath expr="//field[@id='source_location']" position="attributes">-->
-<!--                <attribute name="attrs">{'invisible': ['|', ('exchange_code', '!=', 'outgoing'), ('other_import', '=', True)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@id='source_location']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('exchange_code', '!=', 'outgoing'), ('other_import', '=', True)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>
+            </xpath>
 
-<!--            <xpath expr="//field[@id='dest_reason']" position="attributes">-->
-<!--                <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@id='dest_reason']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>
+            </xpath>
 
-<!--            <xpath expr="//field[@id='dest_location']" position="after">-->
-<!--                <field name="location_export_id" id="export_location" attrs="{'readonly': [('state', 'in', ('confirmed', 'assigned', 'done', 'cancel'))], 'invisible': [('exchange_code', '!=', 'incoming')], 'required': [('exchange_code', '=', 'incoming')]}"/>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@id='dest_location']" position="after">
+                <field name="location_export_id" id="export_location" attrs="{'readonly': [('state', 'in', ('confirmed', 'assigned', 'done', 'cancel'))], 'invisible': [('exchange_code', '!=', 'incoming')], 'required': [('exchange_code', '=', 'incoming')]}"/>
+            </xpath>
 
             <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                 <attribute name="attrs">{'readonly': ['|', ('exchange_code', '=', 'outgoing'), ('state', 'in', ('confirmed', 'assigned', 'done', 'cancel'))]}</attribute>

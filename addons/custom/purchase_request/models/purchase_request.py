@@ -56,11 +56,29 @@ class PurchaseRequest(models.Model):
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
 
+    @api.onchange('date_planned')
+    def _onchange_line_date_planned(self):
+        for rec in self.order_lines:
+            rec.date_planned = self.date_planned
+
     @api.model
     def load(self, fields, data):
         if "import_file" in self.env.context:
             if 'request_date' not in fields:
                 raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
+            for record in data:
+                if 'order_lines/product_id' in fields and not record[fields.index('order_lines/product_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                if 'order_lines/purchase_quantity' in fields and not record[fields.index('order_lines/purchase_quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua"))
+                if 'order_lines/exchange_quantity' in fields and not record[fields.index('order_lines/exchange_quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi"))
+                if 'order_lines/purchase_uom' in fields and not record[fields.index('order_lines/purchase_uom')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua"))
+                if 'order_lines/request_date' in fields and not record[fields.index('order_lines/request_date')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu"))
+                if 'order_lines/date_planned' in fields and not record[fields.index('order_lines/date_planned')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày nhận hàng dự kiến"))
         return super().load(fields, data)
 
     @api.model
@@ -157,10 +175,14 @@ class PurchaseRequest(models.Model):
 
     def create_purchase_orders(self):
         self.is_check_button_orders_smart_button = True
-        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False).ids
-        order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
-                                    fields=['product_id', 'vendor_code', 'product_type'],
-                                    groupby=['vendor_code', 'product_type', 'currency_id'], lazy=False)
+        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False)
+        groups = {}
+        for line in order_lines_ids:
+            key = str(line.vendor_code.id) + '-' + str(line.purchase_product_type)
+            if groups.get(key, False):
+                groups[key].append(line)
+            else:
+                groups[key] = [line]
         purchase_order = self.env['purchase.order']
         occasion_code_id = []
         account_analytic_id = []
@@ -174,15 +196,14 @@ class PurchaseRequest(models.Model):
                 account_analytic_id.append(rec.account_analytic_id.id)
             if rec.production_id:
                 production_id.append(rec.production_id.id)
-        for group in order_lines_groups:
+        for group in groups:
+            lines = groups[group]
             keys = {}
-            domain = group['__domain']
-            vendor_code = group['vendor_code']
-            product_type = group['product_type']
-            vendor_id = vendor_code[0] if vendor_code else False
-            purchase_request_lines = self.env['purchase.request.line'].search(domain)
+            vendor_code = lines[0].vendor_code
+            product_type = lines[0].purchase_product_type
+            vendor_id = vendor_code.id if vendor_code else False
             po_line_data = []
-            for line in purchase_request_lines:
+            for line in lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
                 keys.update({
@@ -196,6 +217,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
+                    'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
@@ -213,14 +235,14 @@ class PurchaseRequest(models.Model):
                     'is_purchase_request': True,
                     'partner_id': vendor_id,
                     'purchase_type': product_type,
-                    'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
+                    'purchase_request_ids': [(6, 0, lines[0].request_id.ids)],
                     'order_line': po_line_data,
                     'occasion_code_ids': occasion_code_id,
                     'account_analytic_ids': account_analytic_id,
                     'source_document': source_document,
                     'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
-                    'currency_id': purchase_request_lines.currency_id.id if purchase_request_lines.currency_id else self.env.company.currency_id.id,
+                    'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
                 }
                 purchase_order |= purchase_order.create(po_data)
         return {
@@ -265,6 +287,7 @@ class PurchaseRequestLine(models.Model):
     is_close = fields.Boolean(string='Is Close', default=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
+    purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
@@ -301,7 +324,6 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):

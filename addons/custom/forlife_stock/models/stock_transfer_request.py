@@ -27,7 +27,7 @@ class StockTransferRequest(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel'),
                    ('done', 'Done')], default='draft', copy=False)
-    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Yêu cầu', copy=True)
+    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Chi tiết', copy=True)
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
@@ -62,7 +62,7 @@ class StockTransferRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/template_ycdc.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/template_import_ycdc.xlsx?download=true'
         }]
 
     def action_wait_confirm(self):
@@ -89,11 +89,11 @@ class StockTransferRequest(models.Model):
                     data_stock_transfer_line = (
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
-                               'work_from': item.production_from,
-                               'work_to': item.production_to,
+                               'work_from': item.production_from.id,
+                               'work_to': item.production_to.id,
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
-                    dic_data = {'state': 'draft',
+                    dic_data = {'state': 'approved',
                                 'employee_id': record.request_employee_id.id,
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
@@ -186,7 +186,7 @@ class StockTransferRequest(models.Model):
                                        'qty_plan': item.plan_quantity, 'product_str_id': item.id, 'qty_out': 0,
                                        'qty_in': 0,
                                        'is_from_button': True, 'qty_plan_tsq': item.quantity_remaining})
-                            dic_data = {'state': 'draft',
+                            dic_data = {'state': 'approved',
                                         'stock_request_id': record.id, 'location_id': item.location_id.id,
                                         'location_dest_id': item.location_dest_id.id,
                                         'stock_transfer_line': [data_stock_transfer_line]
@@ -303,11 +303,16 @@ class TransferRequestLine(models.Model):
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))
-            if vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
-                raise ValidationError(_("Đơn vị khác đơn vị của sản phẩm"))
+            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+                raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
         return super(TransferRequestLine, self).create(vals)
 
 
 class Location(models.Model):
     _inherit = "stock.location"
     _rec_names_search = ['code', 'complete_name', 'barcode']
+
+
+class AssetsAssets(models.Model):
+    _inherit = 'assets.assets'
+    _rec_names_search = ['code', 'name']

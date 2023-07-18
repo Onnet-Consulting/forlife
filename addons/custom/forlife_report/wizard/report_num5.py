@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 EMPLOYEE_DETAIL_TITLE = [
     'STT', 'Ngày', 'Số HĐ', 'Mã khách hàng', 'SĐT', 'Tên khách hàng', 'Nhân viên',
-    'SL mua', 'SL trả', 'TT', 'GG trên hàng', 'GG trên bill', 'Thực thu', 'Trả lại KH', 'Mô tả'
+    'SL mua', 'SL trả', 'TT', 'GG trên hàng', 'GG trên bill', 'Trả lại KH', 'Thực thu', 'Mô tả'
 ]
 ORDER_DETAIL_TITLE = [
     'STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'SL mua', 'SL trả', 'Giá bán', '% Giảm giá', 'Tiền giảm giá', 'Thành tiền'
@@ -48,13 +48,7 @@ class ReportNum5(models.TransientModel):
         employee_conditions = 'pol.employee_id notnull' if not self.employee_id else f'pol.employee_id = {str(self.employee_id.id)}'
 
         sql = f"""
-with uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
-    select
-        id,
-        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
-    from uom_uom
-),
-order_line_data as (
+with order_line_data as (
     select 
         concat(pol.employee_id || '-' || po.id) 												    as key_invoice,
         pol.employee_id																			    as employee_id,
@@ -67,7 +61,7 @@ order_line_data as (
         pol.product_id  																		    as product_id,
         pp.default_code 																		    as product_code,
         pol.full_product_name 																 	    as product_name,
-        uom.name                                                								    as uom_name,
+        coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')                 as uom_name,
         to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
         to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
         greatest(pol.qty, 0)                                                                        as sale_qty,
@@ -75,11 +69,10 @@ order_line_data as (
         coalesce(pol.original_price, 0)    												 		    as lst_price,
         coalesce((select sum(
             case when type = 'point' then recipe * 1000
-                when type = 'card' then recipe
                 when type = 'ctkm' then discounted_amount
-                else 0
+                else recipe
             end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)		        as money_reduced,
+        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)                as money_reduced,
         po.note 																 		 		    as note
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
@@ -87,7 +80,7 @@ order_line_data as (
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
-        left join uom_name_by_id uom on uom.id = pt.uom_id
+        left join uom_uom uom on uom.id = pt.uom_id
     where {employee_conditions} and pol.qty <> 0 and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
@@ -100,21 +93,13 @@ data_group as (
         product_code,
         product_name,
         by_day as date,
-        sum(sale_qty) as sale_qty,
-        sum(refund_qty) as refund_qty,
+        sale_qty as sale_qty,
+        refund_qty as refund_qty,
         uom_name,
         lst_price,
-        coalesce(sum(money_reduced), 0) as money_reduced,
-        sum(abs((sale_qty * lst_price) - (refund_qty * lst_price) - money_reduced)) as price_subtotal
+        abs(money_reduced) as money_reduced,
+        (sale_qty + refund_qty) * lst_price - abs(money_reduced) as price_subtotal
     from order_line_data
-    group by key_invoice,
-        employee_id,
-        product_id,
-        product_code,
-        product_name,
-        by_day,
-        uom_name,
-        lst_price
 ),
 detail_data_invoice_list as (
     select employee_id, json_object_agg(key_invoice, order_detail) as detail_invoice from (
@@ -134,9 +119,9 @@ prepare_value_data_invoice_list as (
         sum(sale_qty) as sale_qty,
         sum(refund_qty) as refund_qty,
         sum(sale_qty * lst_price) as tt,
-        sum(money_reduced) as money_reduced,
+        sum(greatest(money_reduced, 0)) as money_reduced,
         sum(0) as gg_bill,
-        sum(refund_qty * lst_price) as refund,
+        sum(refund_qty * lst_price + least(money_reduced, 0)) as refund,
         note
     from order_line_data
     group by employee_id,

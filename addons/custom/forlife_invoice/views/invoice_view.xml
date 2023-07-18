@@ -60,10 +60,10 @@
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" style="width:100%"/>
+                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
@@ -137,8 +137,7 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="purchase_uom" string="Đơn vị mua"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                            <field name="purchase_uom" string="Đơn vị mua"/>
                             <field name="quantity_purchased"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="product_uom_id"
@@ -153,7 +152,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"/>
+                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}" force_save="1"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount"
                                    force_save="1"

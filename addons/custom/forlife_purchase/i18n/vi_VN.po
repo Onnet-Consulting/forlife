@@ -39,6 +39,11 @@ msgstr "Tài sản"
 msgid "Sequence"
 msgstr "STT dòng"
 
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__date_planned
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__date_planned
+msgid "Expected Arrival"
+msgstr "Hạn xử lý"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__asset_code

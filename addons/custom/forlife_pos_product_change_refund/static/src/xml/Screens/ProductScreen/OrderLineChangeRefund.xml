@@ -6,13 +6,13 @@
             <t t-if="props.line.check_button">
                 <t t-if="!props.line.approvalStatus">
                     <div class="control-button" t-on-click="sendApprove"
-                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px;">
+                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px; min-width: 55px !important; font-size: 12px">
                         Send Approve
                     </div>
                 </t>
                 <t t-else="">
                     <div class="control-button" t-on-click="actUpdate"
-                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px;">
+                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px; min-width: 55px !important; font-size: 12px">
                         Update
                     </div>
                 </t>
@@ -33,6 +33,44 @@
                 <li style="width: 85%;">
                     <PosReasonRefund order_line="props.line"/>
                 </li>
+                <t t-if="props.line.pos_order_line_discount_details">
+                    <t t-if="props.line.quantity != 0">
+                        <t t-foreach="props.line.pos_order_line_discount_details" t-as="discount" t-key="discount.id">
+                            <li style="width: 50%;">
+                                <t t-if="discount.type == 'ctkm'">
+                                    <em>CTKM:</em>
+                                </t>
+                                <t t-if="discount.type == 'point'">
+                                    <em>Điểm:</em>
+                                </t>
+                                <t t-if="discount.type == 'make_price'">
+                                    <em>Làm giá:</em>
+                                </t>
+                                <t t-if="discount.type == 'product_defective'">
+                                    <em>Hàng lỗi:</em>
+                                </t>
+                            </li>
+                            <li style="width: 50%;">
+                                <span>
+                                    <t t-esc="env.pos.format_currency(((discount.money_reduced)/Math.abs(props.line.quantity_canbe_refund))*Math.abs(props.line.quantity))"/>
+                                </span>
+                            </li>
+                        </t>
+                    </t>
+                </t>
+                <t t-if="!props.line.handle_change_refund_price">
+                    <span></span>
+                </t>
+                <t t-else="">
+                    <li style="width: 50%;">
+                        <em>Xử lí đổi trả:</em>
+                    </li>
+                    <li style="width: 50%;">
+                        <span>
+                            <t t-esc="env.pos.format_currency(props.line.handle_change_refund_price)"/>
+                        </span>
+                    </li>
+                </t>
             </t>
         </xpath>
 
@@ -57,12 +95,12 @@
         <xpath expr="//li[hasclass('refund-percent-discount')]" position="replace">
             <li class="refund-percent-discount" style="width: 10%;">
                 <t t-if="!props.line.is_new_line">
-                    <t t-if="!props.line.beStatus">
+<!--                    <t t-if="!props.line.beStatus">-->
                         <t t-esc="getPercentDiscountRefund()"/>%
-                    </t>
-                    <t t-else="">
-                        0%
-                    </t>
+<!--                    </t>-->
+<!--                    <t t-else="">-->
+<!--                        0%-->
+<!--                    </t>-->
                 </t>
                 <t t-else="">
                     <t t-if="props.line.get_discount_str() !== '0'">
@@ -76,15 +114,15 @@
         </xpath>
 
         <xpath expr="//li[hasclass('refund-discount')]" position="replace">
-            <li class="refund-discount" style="width: 10%;">
+            <li class="refund-discount" style="width: 16%;">
                 <t t-if="!props.line.is_new_line">
                     <t t-if="props.line.quantity_canbe_refund !== 0">
-                        <t t-if="!props.line.beStatus">
-                            <t t-esc="env.pos.format_currency((props.line.money_is_reduced * Math.abs(props.line.quantity)) / props.line.quantity_canbe_refund)"/>
-                        </t>
-                        <t t-else="">
-                            0
-                        </t>
+<!--                        <t t-if="!props.line.beStatus">-->
+                            <t t-esc="env.pos.format_currency(((props.line.money_is_reduced * Math.abs(props.line.quantity)) / props.line.quantity_canbe_refund) + props.line.handle_change_refund_price)"/>
+<!--                        </t>-->
+<!--                        <t t-else="">-->
+<!--                            0-->
+<!--                        </t>-->
                     </t>
                 </t>
                 <t t-else="">

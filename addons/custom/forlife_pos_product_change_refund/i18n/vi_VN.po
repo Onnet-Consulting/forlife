@@ -976,6 +976,13 @@ msgid "Refuse"
 msgstr "Từ chối"
 
 #. module: forlife_pos_product_change_refund
+#. odoo-python
+#: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__cancel
+#, python-format
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__activity_user_id
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__activity_user_id
 msgid "Responsible User"

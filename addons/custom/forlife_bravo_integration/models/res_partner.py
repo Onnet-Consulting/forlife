@@ -8,6 +8,9 @@ class ResPartner(models.Model):
     _name = 'res.partner'
     _inherit = ['res.partner', 'bravo.model']
     _bravo_table = 'B20Customer'
+    _bravo_field_sync = [
+        'ref', 'name', 'phone', 'email', 'vat', 'contact_address_complete', 'group_id', 'credit_limit', 'property_purchase_currency_id'
+    ]
 
     br_1 = BravoCharField(odoo_name="ref", bravo_name="Code", identity=True)
     br_2 = BravoCharField(odoo_name="name", bravo_name="Name")
@@ -32,6 +35,7 @@ class ResPartnerGroup(models.Model):
     _name = 'res.partner.group'
     _inherit = ['res.partner.group', 'bravo.model']
     _bravo_table = 'B20Customer'
+    _bravo_field_sync = ['code', 'name']
 
     br_1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br_2 = BravoCharField(odoo_name="name", bravo_name="Name")

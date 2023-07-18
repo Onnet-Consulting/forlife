@@ -36,19 +36,19 @@
             <t t-if="props.line.is_new_line">
                 <t t-if="props.line.get_applied_promotion_str() or []">
                     <t t-foreach="props.line.get_applied_promotion_str()" t-as="promotion" t-key="promotion.id">
-                        <li style="width: 60%;">
+                        <li style="width: 50%;">
                             <em>Giảm giá theo CT <t t-esc="promotion.str"/></em>
                         </li>
-                        <li style="width: 30%;">
+                        <li style="width: 40%;">
                             <t t-esc="env.pos.format_currency(promotion.discount_amount)"/>
                         </li>
                     </t>
                 </t>
                 <t t-if="props.line.pricelist_item and !props.line.is_applied_promotion()">
-                    <li style="width: 60%; color: cadetblue; font-size: 12px">
+                    <li style="width: 50%; color: cadetblue; font-size: 12px">
                         <em><t t-esc="props.line.pricelist_item.display_name"/></em>
                     </li>
-                    <li style="width: 30%; color: cadetblue; font-size: 12px ">
+                    <li style="width: 40%; color: cadetblue; font-size: 12px ">
                         <strong t-esc="env.pos.format_currency(props.line.original_price - props.line.pricelist_item.fixed_price)"/>
                     </li>
                 </t>

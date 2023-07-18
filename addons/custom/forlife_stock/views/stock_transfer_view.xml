@@ -79,8 +79,8 @@
                             <!-- <field name="production_order_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/> -->
                             <field name="work_from" string="LSX từ" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="work_to" string="Đến LSX" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="total_package" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="total_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="total_package" attrs="{'readonly': [('state', 'not in', ('draft', 'wait_approve', 'approved'))]}"/>
+                            <field name="total_weight" attrs="{'readonly': [('state', 'not in', ('draft', 'wait_approve', 'approved'))]}"/>
                         </group>
                     </group>
                     <group string="Ghi chú">

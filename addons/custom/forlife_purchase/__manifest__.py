@@ -41,11 +41,15 @@
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
-        'views/stock_picking_view.xml'
+        'views/stock_picking_view.xml',
+        'views/production_import.xml',
+        'wizard/import_production.xml',
     ],
     "assets": {
         "web.assets_backend": [
             '/forlife_purchase/static/src/css/common.scss',
+            'forlife_purchase/static/src/xml/import_button.xml',
+            'forlife_purchase/static/src/js/import_button.js',
         ],
         'web.assets_qweb': [
         ],

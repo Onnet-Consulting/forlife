@@ -18,6 +18,7 @@ class PosOrderLine(models.Model):
     is_product_defective = fields.Boolean('Là sản phẩm lỗi', default=False)
     money_reduce_from_product_defective = fields.Float()
     product_defective_id = fields.Many2one('product.defective')
+    pay_point_line = fields.Integer('Pay Point Line')
 
     @api.depends('discount_details_lines.money_reduced')
     def _compute_money_point_is_reduced_line(self):
@@ -57,4 +58,5 @@ class PosOrderLine(models.Model):
         result['subtotal_paid'] = orderline.subtotal_paid
         result['money_reduce_from_product_defective'] = orderline.money_reduce_from_product_defective
         result['is_promotion'] = orderline.is_promotion
+        result['pos_order_line_discount_details'] = [discount._export_for_ui() for discount in orderline.discount_details_lines]
         return result

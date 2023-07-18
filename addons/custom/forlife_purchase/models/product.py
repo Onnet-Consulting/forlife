@@ -76,19 +76,15 @@ class ProductProduct(models.Model):
 
     @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):
-        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and not self.env.context.get('is_passersby', False):
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) \
+                and not self.env.context.get('is_passersby', False) and self.env.context.get('company_id', False):
             sql = """
             select id from product_product
             where product_tmpl_id in
                 ( select distinct(product_tmpl_id)
                 from product_supplierinfo
-                where  partner_id = %s)
-            union 
-            select id from product_product
-            where product_tmpl_id not in 
-                ( select distinct(product_tmpl_id)
-                from product_supplierinfo)
-            """ % (self.env.context.get('supplier_id'))
+                where  partner_id = %s and company_id = %s)
+            """ % (self.env.context.get('supplier_id'), self.env.context.get('company_id'))
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))
@@ -99,19 +95,15 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
-        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and not self.env.context.get('is_passersby', False):
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) \
+                and not self.env.context.get('is_passersby', False) and self.env.context.get('company_id', False):
             sql = """
             select id from product_product
             where product_tmpl_id in
                 ( select distinct(product_tmpl_id)
                 from product_supplierinfo
-                where  partner_id = %s)
-            union 
-            select id from product_product
-            where product_tmpl_id not in 
-                ( select distinct(product_tmpl_id)
-                from product_supplierinfo)
-            """ % (self.env.context.get('supplier_id'))
+                where  partner_id = %s and company_id = %s)
+            """ % (self.env.context.get('supplier_id'), self.env.context.get('company_id'))
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))

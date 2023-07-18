@@ -623,22 +623,22 @@ class AccountMove(models.Model):
             'move_type': 'entry',
             'invoice_line_ids': [(0, 0, {
                 'account_id': self.partner_id.property_account_payable_id.id,
-                # 'product_id': self.partner_id.property_account_payable_id.id,
+                # 'product_id': self.partner_id.property_account_payable_id.name,
                 'name': self.partner_id.property_account_payable_id.name,
                 'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
                 'credit': 0,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
-                'product_id': self.env.ref('forlife_purchase.product_discount_tax').name,
-                'credit': self.total_trade_discount * self.exchange_rate,
+                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
+                'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
+                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
             })] + [(0, 0, {
                 'account_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.id,
                 'name': self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id.name,
-                'debit': 0,
-                'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').name,
-                'credit': self.x_amount_tax * self.exchange_rate,
+                'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
+                'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').id,
+                'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
             })],
         })
         invoice_ck._post()
@@ -650,7 +650,7 @@ class AccountMove(models.Model):
                 if rec.exchange_rate_line_ids:
                     rec.create_invoice_tnk_db()
                     rec.create_tax_vat()
-            if rec.total_trade_discount or rec.x_amount_tax:
+            if rec.total_trade_discount:
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
@@ -728,13 +728,13 @@ class AccountMoveLine(models.Model):
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
                               compute='_compute_before_tax',
-                              store=1)
+                              store=0)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)',
                              compute='_compute_after_tax',
-                             store=1)
+                             store=0)
     total_product = fields.Float(string='Tổng giá trị tiền hàng',
                                  compute='_compute_total_product',
-                                 store=1)
+                                 store=0)
     @api.constrains('product_uom_id')
     def _check_product_uom_category_id(self):
         for line in self:
@@ -884,7 +884,10 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('vendor_price')
     def onchange_vendor_price(self):
-        self.price_unit = self.vendor_price
+        if self.exchange_quantity != 0:
+            self.price_unit = self.vendor_price / self.exchange_quantity
+        else:
+            self.price_unit = self.vendor_price
 
     @api.onchange('quantity_purchased', 'exchange_quantity')
     def onchange_quantity_purchased(self):
@@ -947,6 +950,8 @@ class AccountMoveLine(models.Model):
             self.is_check_promotions = True
         else:
             self.is_check_promotions = False
+
+
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"

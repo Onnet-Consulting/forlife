@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="add_button_import_in_tree_forlife_production_tree" model="ir.ui.view">
+            <field name="name">Button import</field>
+            <field name="model">forlife.production</field>
+            <field name="inherit_id" ref="forlife_purchase.forlife_production_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="js_class">button_import_in_tree</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

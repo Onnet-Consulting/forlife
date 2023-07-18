@@ -1,3 +1,4 @@
+from . import ir_rule
 from . import product_order_cost_line
 from . import purchase_order
 from . import forlife_event
@@ -12,3 +13,4 @@ from . import product_supplierinfo
 from . import hr_employee
 from . import stock_move
 from . import production_history
+from . import production_material_import
