@@ -11,4 +11,15 @@
         <field name="numbercall">-1</field>
         <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 19:00:00')"/>
     </record>
+    <record id="ir_cron_general_return_invoice_to_bkav_end_day" model="ir.cron">
+        <field name="name">Schedule: General return invoice at the end of the day</field>
+        <field name="model_id" ref="model_summary_account_move_pos_return"/>
+        <field name="state">code</field>
+        <field name="code">model.collect_return_invoice_to_bkav_end_day()</field>
+        <field name="active" eval="True"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 19:00:00')"/>
+    </record>
 </odoo>
