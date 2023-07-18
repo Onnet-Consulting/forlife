@@ -79,14 +79,41 @@ class SaleOrderNhanh(models.Model):
     #     return True
 
     @api.model
-    def start_sync_order_from_nhanh(self):
+    def start_sync_order_from_nhanh(self, *args, **kwargs):
         _logger.info("----------------Start Sync orders from NhanhVn --------------------")
         # Get datetime today and previous day
-        today = datetime.datetime.today().strftime("%y-%m-%d")
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         # Set up API information
         nhanh_configs = constant.get_nhanh_configs(self)
+        partner_group_id = self.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
+
+        uom = self.env.ref('uom.product_uom_unit').id
+
+        order_model = self.env['sale.order']
+        partner_model = self.env['res.partner']
+
+        # Add customer if not existed
+        nhanh_partner = partner_model.sudo().search(
+            [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+        if not nhanh_partner:
+            nhanh_partner = partner_model.sudo().create({
+                'code_current_customers': 'code_current_customers_nhanhvn',
+                'name': 'Nhanh.Vn',
+                'customer_rank': 1
+            })
+
+        location_ids = self.env['stock.location'].search([('nhanh_id', '!=', False)])
+
+        product = self.search_product([])
+
+        odoo_orders = order_model.sudo().search(
+            ['|', ('nhanh_id', '!=', False), ('nhanh_id', '!=', 0)]
+        ).read(['nhanh_id'])
+
+        odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
+
         for brand_id in self.env['res.brand'].sudo().search([]):
             nhanh_config = nhanh_configs.get(brand_id.id, {})
             if not nhanh_config:
@@ -96,172 +123,204 @@ class SaleOrderNhanh(models.Model):
                     or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
                 _logger.info(f'Nhanh configuration does not set')
                 continue
-            data = {
+            kwargs.update({
                 "fromDate": previous_day,
                 "toDate": today,
+            })
+            url = f"{NHANH_BASE_URL}/order/index"
+            data = {
+                "version": 2.0,
+                "appId": '%s' % nhanh_config.get('nhanh_connector.nhanh_app_id', 0),
+                "businessId": '%s' % nhanh_config.get('nhanh_connector.nhanh_business_id', 0),
+                "accessToken": nhanh_config.get('nhanh_connector.nhanh_access_token', ''),
+                "data": json.dumps(kwargs)
             }
-            url = f"{NHANH_BASE_URL}/order/index?version=2.0&appId={nhanh_config.get('nhanh_connector.nhanh_app_id', '')}" \
-                  f"&businessId={nhanh_config.get('nhanh_connector.nhanh_business_id', '')}&accessToken={nhanh_config.get('nhanh_connector.nhanh_access_token', '')}"
+
             # Get all orders from previous day to today from Nhanh.vn
+            print('----- brand_id', brand_id.id)
             try:
-                res_server = requests.post(url, json=json.dumps(data))
+                res_server = requests.post(url, data=data)
                 res = res_server.json()
+                print(res)
             except Exception as ex:
                 _logger.info(f'Get orders from NhanhVn error {ex}')
                 continue
             if res['code'] == 0:
                 _logger.info(f'Get order error {res["messages"]}')
                 continue
-            order_model = self.env['sale.order']
-            partner_model = self.env['res.partner']
-            data = res.get('data')
-            for page in range(1, data.get('totalRecords') + 1):
-                data['page'] = page
-                res_server = requests.post(url, json=json.dumps(data))
-                res = res_server.json()
-                nhanh_orders = res['data']['orders']
-                nhanh_order_keys = list(nhanh_orders.keys())
-                _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
-                # Get all odoo orders which don't exist in nhanhvn
-                odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
-                    ['nhanh_id'])
-                odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
-                # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
-                _logger.info(f'List order id from Odoo: {odoo_order_ids}')
-                # Delete in nhanh_orders if it existed in odoo_orders
-                for item in odoo_order_ids:
-                    if item in nhanh_orders:
-                        nhanh_orders.pop(item)
-                list(nhanh_orders)
+
+            
+            print('------------', brand_id.id)
+            list_customers = constant.get_customers_from_nhanh(self, brand_id=brand_id.id)
+
+            res_data = res.get('data')
+            nhanh_orders = res['data']['orders']
+            
+            # for page in range(2, res_data.get('totalRecords') + 1):
+            #     kwargs['page'] = page
+            #     data["data"] = json.dumps(kwargs)
+            #     try:
+            #         res_page_server = requests.post(url, data=data)
+            #         res_page_data = res_page_server.json()
+            #         nhanh_orders.update(res_page_data['data']['orders'])
+            #     except Exception as e:
+            #         _logger.info(str(e))
+            #         pass
+                
+            for item in odoo_order_ids:
+                if nhanh_orders.get(item):
+                # if item in nhanh_orders:
+                    nhanh_orders.pop(item)
+
             # _logger.info(nhanh_orders)
+            res_partner = partner_model.sudo().search([
+                '|', ('mobile','!=',False),
+                ('phone','!=',False)
+            ])
             for k, v in nhanh_orders.items():
-                name_customer = False
-                # Add customer if not existed
-                nhanh_partner = partner_model.sudo().search(
-                    [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
-                if not nhanh_partner:
-                    nhanh_partner = partner_model.sudo().create({
-                        'code_current_customers': 'code_current_customers_nhanhvn',
-                        'name': 'Nhanh.Vn',
-                        'customer_rank': 1
-                    })
-                partner = partner_model.sudo().search(
-                    ['|', ('mobile', '=', v['customerMobile']), ('phone', '=', v['customerMobile'])], limit=1)
-                if partner:
-                    name_customer = v['customerName']
-                if not partner:
-                    partner_value = {
-                        'phone': v['customerMobile'],
-                        'mobile': v['customerMobile'],
-                        'name': v['customerName'],
-                        'email': v['customerEmail'],
-                        'contact_address_complete': v['customerAddress'],
-                        'customer_nhanh_id': v['customerId'],
-                    }
-                    partner = partner_model.sudo().create(partner_value)
-                order_line = []
-                uom = self.env.ref('uom.product_uom_unit').id
-                location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                try:
+                    name_customer = False
+                    if not v['customerMobile']:
+                        continue
 
-                for item in v['products']:
-                    product = self.search_product(('nhanh_id', '=', item.get('productId')))
-                    if not product and item.get('productBarcode'):
-                        product = self.search_product(('barcode', '=', item.get('productBarcode')))
-                    if not product and item.get('productCode'):
-                        product = self.search_product(('barcode', '=', item.get('productCode')))
-                    if not product:
-                        product = self.env['product.template'].create({
-                            'detailed_type': 'asset',
-                            'nhanh_id': item.get('productId'),
-                            'check_data_odoo': False,
-                            'name': item.get('productName'),
-                            'barcode': item.get('productBarcode'),
-                            # 'code_product': item.get('productCode'),
-                            'list_price': item.get('price'),
-                            'uom_id': uom,
-                            'weight': item.get('shippingWeight', 0),
-                            'responsible_id': None
-                        })
-                    product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)],
-                                                                         limit=1)
-                    order_line.append((
-                        0, 0,
-                        {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
-                         'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
-                         'product_uom': product.uom_id.id if product.uom_id else uom,
-                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                         'x_location_id': location_id.id if location_id else None,
-                         'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
-                             'discount') else 0,
-                         'x_cart_discount_fixed_price': float(item.get('discount')) * float(
-                             item.get('quantity')) if item.get('discount') else 0}))
-                # Add orders  to odoo
-                _logger.info(v)
-                status = 'draft'
-                if v['statusCode'] == 'confirmed':
+                    partner = res_partner.filtered(
+                        lambda r: r.customer_nhanh_id == v['customerId'] or r.mobile == v['customerMobile']
+                        or r.phone == v['customerMobile']
+                    )
+                    if partner:
+                        name_customer = v['customerName']
+                    if not partner:
+                        customer = list_customers.get(str(v['customerId']))
+
+                        partner_value = {
+                            'phone': v['customerMobile'],
+                            'mobile': v['customerMobile'],
+                            'name': v['customerName'],
+                            'email': v['customerEmail'],
+                            'contact_address_complete': v['customerAddress'],
+                            'customer_nhanh_id': v['customerId'],
+                            'group_id': partner_group_id.id if partner_group_id else None
+                        }
+                        if customer:
+                            gender = ""
+                            if customer["gender"]:
+                                gender = constant.mapping_gender_nhanh.get(customer["gender"])
+
+                            partner_value.update({
+                                'gender': gender,
+                                'birthday': customer["birthday"],
+                                'vat': customer["taxCode"],
+                            })
+
+                        partner = partner_model.sudo().create(partner_value)
+                    order_line = []
+                    
+                    location_id = location_ids.filtered(lambda r: r.nhanh_id == int(v['depotId']))
+
+                    for item in v['products']:
+                        product = self.search_product(('nhanh_id', '=', item.get('productId')))
+                        if not product and item.get('productBarcode'):
+                            product = self.search_product(('barcode', '=', item.get('productBarcode')))
+                        if not product and item.get('productCode'):
+                            product = self.search_product(('barcode', '=', item.get('productCode')))
+                        if not product:
+                            product = self.env['product.template'].create({
+                                'detailed_type': 'asset',
+                                'nhanh_id': item.get('productId'),
+                                'check_data_odoo': False,
+                                'name': item.get('productName'),
+                                'barcode': item.get('productBarcode'),
+                                # 'code_product': item.get('productCode'),
+                                'list_price': item.get('price'),
+                                'uom_id': uom,
+                                'weight': item.get('shippingWeight', 0),
+                                'responsible_id': None
+                            })
+                        product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)],
+                                                                             limit=1)
+                        order_line.append((
+                            0, 0,
+                            {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
+                             'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
+                             'product_uom': product.uom_id.id if product.uom_id else uom,
+                             'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                             'x_location_id': location_id.id if location_id else None,
+                             'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
+                                 'discount') else 0,
+                             'x_cart_discount_fixed_price': float(item.get('discount')) * float(
+                                 item.get('quantity')) if item.get('discount') else 0}))
+                    # Add orders  to odoo
+                    _logger.info(v)
                     status = 'draft'
-                elif v['statusCode'] in ['Packing', 'Pickup']:
-                    status = 'sale'
-                elif v['statusCode'] in ['Shipping', 'Returning']:
-                    status = 'sale'
-                elif v['statusCode'] == 'success':
-                    status = 'done'
-                elif v['statusCode'] == 'canceled':
-                    status = 'cancel'
+                    if v['statusCode'] == 'confirmed':
+                        status = 'draft'
+                    elif v['statusCode'] in ['Packing', 'Pickup']:
+                        status = 'sale'
+                    elif v['statusCode'] in ['Shipping', 'Returning']:
+                        status = 'sale'
+                    elif v['statusCode'] == 'success':
+                        status = 'done'
+                    elif v['statusCode'] == 'canceled':
+                        status = 'cancel'
 
-                # nhân viên kinh doanh
-                user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
-                # đội ngũ bán hàng
-                team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
-                default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-                # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
-                # if not warehouse_id:
-                #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
-                #                                                       limit=1)
-                # delivery carrier
-                delivery_carrier_id = self.env['delivery.carrier'].sudo().search(
-                    [('nhanh_id', '=', v['carrierId'])], limit=1)
-                if not delivery_carrier_id:
-                    delivery_carrier_id = self.env['delivery.carrier'].sudo().create({
-                        'nhanh_id': v['carrierId'],
-                        'name': v['carrierName'],
-                        'code': v['carrierCode'],
-                        'service_name': v['carrierServiceName']
-                    })
-                value = {
-                    'nhanh_id': v['id'],
-                    'nhanh_order_status': v['statusCode'].lower(),
-                    'partner_id': nhanh_partner.id,
-                    'order_partner_id': partner.id,
-                    'nhanh_shipping_fee': v['shipFee'],
-                    'nhanh_customer_shipping_fee': v['customerShipFee'],
-                    'nhanh_sale_channel_id': v['saleChannel'],
-                    'source_record': True,
-                    'state': status,
-                    'code_coupon': v['couponCode'],
-                    'name_customer': name_customer,
-                    'note': v['privateDescription'],
-                    'note_customer': v['description'],
-                    'x_sale_chanel': 'online',
-                    # 'carrier_name': v['carrierName'],
-                    'user_id': user_id.id if user_id else None,
-                    'team_id': team_id.id if team_id else None,
-                    'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
-                    'delivery_carrier_id': delivery_carrier_id.id,
-                    'order_line': order_line
-                }
-                # đổi hàng
-                if v.get('returnFromOrderId', 0):
-                    origin_order_id = self.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', v.get('returnFromOrderId', 0))], limit=1)
-                    value.update({
-                        'x_is_return': True,
-                        'x_origin': origin_order_id.id if origin_order_id else None,
-                        'nhanh_origin_id': v.get('returnFromOrderId', 0)
-                    })
-                order_model.sudo().create(value)
-                _logger.info("----------------Sync orders from NhanhVn done--------------------")
+                    # nhân viên kinh doanh
+                    user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
+                    # đội ngũ bán hàng
+                    team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
+                    default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
+                    # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                    # if not warehouse_id:
+                    #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
+                    #                                                       limit=1)
+                    # delivery carrier
+                    delivery_carrier_id = self.env['delivery.carrier'].sudo().search(
+                        [('nhanh_id', '=', v['carrierId'])], limit=1)
+                    if not delivery_carrier_id:
+                        delivery_carrier_id = self.env['delivery.carrier'].sudo().create({
+                            'nhanh_id': v['carrierId'],
+                            'name': v['carrierName'],
+                            'code': v['carrierCode'],
+                            'service_name': v['carrierServiceName']
+                        })
+                    value = {
+                        'nhanh_id': v['id'],
+                        'nhanh_order_status': v['statusCode'].lower(),
+                        'partner_id': nhanh_partner.id,
+                        'order_partner_id': partner.id,
+                        'nhanh_shipping_fee': v['shipFee'],
+                        'nhanh_customer_shipping_fee': v['customerShipFee'],
+                        'nhanh_sale_channel_id': v['saleChannel'],
+                        'source_record': True,
+                        'state': status,
+                        'code_coupon': v['couponCode'],
+                        'name_customer': name_customer,
+                        'note': v['privateDescription'],
+                        'note_customer': v['description'],
+                        'x_sale_chanel': 'online',
+                        # 'carrier_name': v['carrierName'],
+                        'user_id': user_id.id if user_id else None,
+                        'team_id': team_id.id if team_id else None,
+                        'company_id': default_company_id.id if default_company_id else None,
+                        'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+                        'delivery_carrier_id': delivery_carrier_id.id,
+                        'order_line': order_line
+                    }
+                    # đổi hàng
+                    if v.get('returnFromOrderId', 0):
+                        origin_order_id = self.env['sale.order'].sudo().search(
+                            [('nhanh_id', '=', v.get('returnFromOrderId', 0))], limit=1)
+                        value.update({
+                            'x_is_return': True,
+                            'x_origin': origin_order_id.id if origin_order_id else None,
+                            'nhanh_origin_id': v.get('returnFromOrderId', 0)
+                        })
+                    order_model.sudo().create(value)
+                except Exception as e:
+                    _logger.info(str(e))
+                    pass
+            break
+
+        _logger.info("----------------Sync orders from NhanhVn done--------------------")
 
     @api.model
     def start_sync_customer_from_nhanh(self):
