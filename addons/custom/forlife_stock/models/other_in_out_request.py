@@ -132,7 +132,7 @@ class ForlifeOtherInOutRequest(models.Model):
                            'account_analytic_id': item.cost_center.id,
                            'product_other_id': item.id,
                            'picking_id': record.id})
-                dict_data = {'state': 'draft',
+                dict_data = {'state': 'approved',
                              'reason_type_id': item.type_other_id.id,
                              'other_import': True if record.type_other == 'other_import' else False,
                              'other_export': True if record.type_other == 'other_export' else False,

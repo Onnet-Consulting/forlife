@@ -89,11 +89,11 @@ class StockTransferRequest(models.Model):
                     data_stock_transfer_line = (
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
-                               'work_from': item.production_from,
-                               'work_to': item.production_to,
+                               'work_from': item.production_from.id,
+                               'work_to': item.production_to.id,
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
-                    dic_data = {'state': 'draft',
+                    dic_data = {'state': 'approved',
                                 'employee_id': record.request_employee_id.id,
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
@@ -186,7 +186,7 @@ class StockTransferRequest(models.Model):
                                        'qty_plan': item.plan_quantity, 'product_str_id': item.id, 'qty_out': 0,
                                        'qty_in': 0,
                                        'is_from_button': True, 'qty_plan_tsq': item.quantity_remaining})
-                            dic_data = {'state': 'draft',
+                            dic_data = {'state': 'approved',
                                         'stock_request_id': record.id, 'location_id': item.location_id.id,
                                         'location_dest_id': item.location_dest_id.id,
                                         'stock_transfer_line': [data_stock_transfer_line]
