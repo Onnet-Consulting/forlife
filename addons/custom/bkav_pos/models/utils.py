@@ -155,7 +155,7 @@ def collect_invoice_to_bkav_end_day(self, move_type, model, model_line):
             missing_line=[],
             page=0, 
             first_n=0, 
-            last_n=200
+            last_n=1000
         )
 
     for k, v in items.items():
