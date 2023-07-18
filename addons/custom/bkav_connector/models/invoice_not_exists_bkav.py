@@ -323,7 +323,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     "InvoiceNo": 0,
                     "OriginalInvoiceIdentify": '',  # dùng cho hóa đơn điều chỉnh
                 },
-                "PartnerInvoiceID": invoice.id,
+                "PartnerInvoiceID": 0,
+                "PartnerInvoiceStringID": invoice.name,
                 "ListInvoiceDetailsWS": list_invoice_detail
             })
         return bkav_data
