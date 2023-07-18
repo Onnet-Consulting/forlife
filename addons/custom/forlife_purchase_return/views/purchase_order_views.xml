@@ -8,8 +8,8 @@
             <field name="inherit_id" ref="purchase_request.purchase_order_form_forlife_inherit"/>
             <field name="arch" type="xml">
                 <field name="location_id" position="replace">
-                    <field name="location_id" string="Kho nhận" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', True),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
-                    <field name="location_id" string="Trả từ kho" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
+                    <field name="location_id" string="Kho nhận" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', True),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
+                    <field name="location_id" string="Trả từ kho" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                 </field>
             </field>
         </record>

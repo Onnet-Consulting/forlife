@@ -37,10 +37,10 @@
                 <header>
                     <button string="Back to draft" name="action_draft" type="object"
                             attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
-<!--                    <button string="Send" name="action_wait_approve"-->
-<!--                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>-->
-<!--                    <button string="Approve" name="action_approve" type="object"-->
-<!--                            attrs="{'invisible':[ ('state', '!=', 'wait_approve')]}"/>-->
+                    <button string="Send" name="action_wait_approve"
+                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                    <button string="Approve" name="action_approve" type="object"
+                            attrs="{'invisible':[ ('state', '!=', 'wait_approve')]}"/>
                     <button string="Out Approve" name="action_out_approve" type="object"
                             attrs="{'invisible':[ ('state', 'not in', ('approved', 'in_approve'))]}"/>
                     <button string="In Approve" name="action_in_approve" type="object"
@@ -79,8 +79,8 @@
                             <!-- <field name="production_order_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/> -->
                             <field name="work_from" string="LSX từ" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="work_to" string="Đến LSX" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="total_package" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="total_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="total_package" attrs="{'readonly': [('state', 'not in', ('draft', 'wait_approve', 'approved'))]}"/>
+                            <field name="total_weight" attrs="{'readonly': [('state', 'not in', ('draft', 'wait_approve', 'approved'))]}"/>
                         </group>
                     </group>
                     <group string="Ghi chú">
