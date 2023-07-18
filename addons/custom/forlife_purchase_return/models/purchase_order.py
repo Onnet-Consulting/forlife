@@ -181,7 +181,7 @@ class PurchaseOrder(models.Model):
                 picking_ids = picking_in.ids
 
                 for line in order.order_line:
-                    wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id and w.picking_id.x_is_check_return == True)
+                    wave = picking_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line.id and w.product_id.id == line.product_id.id and w.picking_id.x_is_check_return == True)
                     if wave:
                         for wave_item in wave:
                             data_line = self.get_data_line(line, wave_item, sequence, order, quantity=0)
