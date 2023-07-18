@@ -2351,7 +2351,10 @@ class PurchaseOrderLine(models.Model):
                         ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
                         if closest_quantity is None or line.min_qty > closest_quantity:
                             closest_quantity = line.min_qty
-                            rec.vendor_price = line.price
+                            if not rec.free_good:
+                                rec.vendor_price = line.price
+                            else:
+                                rec.vendor_price = 0
                             rec.exchange_quantity = line.amount_conversion
 
     # discount
