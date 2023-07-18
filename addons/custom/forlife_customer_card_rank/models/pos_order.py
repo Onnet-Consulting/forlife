@@ -190,7 +190,7 @@ class PosOrder(models.Model):
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
-                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * coefficient)
+                return int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert) * coefficient)
         return super().get_point_order(money_value, brand_id, is_purchased)
 
 
