@@ -3271,7 +3271,7 @@ class StockPicking(models.Model):
                             'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
-                            'reason_type_id': reason_type_6.id,
+                            # 'reason_type_id': reason_type_6.id,
                             'reason_id': export_production_order.id,
                         }))
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
@@ -3399,7 +3399,7 @@ class StockPicking(models.Model):
                     })
                     entry_npls._post()
                     if record.state == 'done':
-                        master_xk = self.create_xk_picking(po, record, list_line_xk, reason_type_6, export_production_order, entry_npls)
+                        master_xk = self.create_xk_picking(po, record, list_line_xk, export_production_order, entry_npls)
 
             if list_allowcation_npls:
                 merged_records_allowcation_npl = {}
@@ -3451,7 +3451,7 @@ class StockPicking(models.Model):
                     entry_allowcation_npls._post()
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
-    def create_xk_picking(self, po, record, list_line_xk, reason_type_6, export_production_order, account_move=None):
+    def create_xk_picking(self, po, record, list_line_xk, export_production_order, account_move=None):
         company_id = self.env.company.id
         picking_type_out = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
@@ -3460,7 +3460,7 @@ class StockPicking(models.Model):
             "is_locked": True,
             "immediate_transfer": False,
             'location_id': record.location_dest_id.id,
-            'reason_type_id': reason_type_6.id,
+            # 'reason_type_id': reason_type_6.id,
             'location_dest_id': export_production_order.id,
             'scheduled_date': datetime.now(),
             'origin': po.name,
