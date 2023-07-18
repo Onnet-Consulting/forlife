@@ -105,18 +105,14 @@ class TransferStockInventory(models.Model):
         picking_type_in = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_import'),
                                                                  ('company_id', '=', self.env.company.id)
                                                                  ], limit=1)
-        reason_type_4 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
-                                                                ('code', '=', '04')
-                                                                ], limit=1)
-        reason_type_5 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
-                                                                ('code', '=', '05')
-                                                                ], limit=1)
+        reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02')], limit=1)
+        reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02')], limit=1)
         if not reason_type_4:
             raise ValidationError(
-                'Bạn chưa có loại lý do Xuất cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 04')
+                'Bạn chưa có loại lý do Xuất cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = X02')
         if not reason_type_5:
             raise ValidationError(
-                'Bạn chưa có loại lý do Nhập cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 05')
+                'Bạn chưa có loại lý do Nhập cân đối tồn kho \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = N02')
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.user.company_id.name))
         picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
@@ -134,7 +130,7 @@ class TransferStockInventory(models.Model):
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
                     if not enter_inventory_balance:
-                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N201." % (self.env.user.company_id.name))
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N0201." % (self.env.user.company_id.name))
                     product_import = (0, 0, {
                         'product_id': line.product_to_id.id,
                         'product_uom_qty': line.qty_in,
@@ -150,7 +146,7 @@ class TransferStockInventory(models.Model):
                 else:
                     amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out, line.location_id.company_id).get('value')
                     if not import_inventory_balance_classify:
-                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N402." % (self.env.user.company_id.name))
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N0302." % (self.env.user.company_id.name))
                     product_import = (0, 0, {
                         'product_id': line.product_to_id.id,
                         'product_uom_qty': line.qty_in,
@@ -164,9 +160,9 @@ class TransferStockInventory(models.Model):
                         'amount_total': amount_total
                     })
                 if self.x_classify and (not export_inventory_balance_classify and not import_inventory_balance_classify):
-                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X802 hoặc N402." % (self.env.user.company_id.name))
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X0302 hoặc N0302." % (self.env.user.company_id.name))
                 elif not self.x_classify and (not export_inventory_balance and not enter_inventory_balance):
-                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã 1381000003 hoặc N201." % (self.env.user.company_id.name))
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã X0201 hoặc N0201." % (self.env.user.company_id.name))
 
                 product_export = (0, 0, {
                     'product_id': line.product_from_id.id,
@@ -230,13 +226,13 @@ class TransferStockInventory(models.Model):
 
     def get_location(self):
         export_inventory_balance = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', '1381000003')], limit=1)
+            [('company_id', '=', self.env.company.id), ('code', '=', 'X0201')], limit=1)
         enter_inventory_balance = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', 'N201')], limit=1)
+            [('company_id', '=', self.env.company.id), ('code', '=', 'N0201')], limit=1)
         export_inventory_balance_classify = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', 'X802')], limit=1)
+            [('company_id', '=', self.env.company.id), ('code', '=', 'X0302')], limit=1)
         import_inventory_balance_classify = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', 'N402')], limit=1)
+            [('company_id', '=', self.env.company.id), ('code', '=', 'N0302')], limit=1)
         return export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify
 
     def create_picking_and_move(self, item, data_ex_other):
