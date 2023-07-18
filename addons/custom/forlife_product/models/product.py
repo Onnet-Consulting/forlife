@@ -29,11 +29,3 @@ class Product(models.Model):
             return {'domain': {'categ_id': [('asset_group', '=', True)]}}
         else:
             return {'domain': {'categ_id': [('asset_group', '=', False)]}}
-
-class ProductProduct(models.Model):
-    _inherit = 'product.product'
-
-    code_design = fields.Char('Mã thiết kế')
-    group_row_1 = fields.Char('Nhóm hàng 1')
-    line_row_1 = fields.Char('Dòng hàng 1')
-    structure_1 = fields.Char('kết cấu 1')
