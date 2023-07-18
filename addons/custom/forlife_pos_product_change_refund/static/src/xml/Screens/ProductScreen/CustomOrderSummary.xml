@@ -20,9 +20,15 @@
 
     <xpath expr="//th[hasclass('total-money-discount')]" position="replace">
         <th class="total-money-discount">
+            <t t-set="_getTotalDiscountCustomDefective" t-value="getTotalDiscountCustomDefective()" />
             <t t-if="props.order.is_refund_product or props.order.is_change_product"></t>
             <t t-else="">
-                <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
+                <t t-if="_getTotalDiscountCustomDefective > 0">
+                    <t t-esc="env.pos.format_currency(_getTotalDiscountCustomDefective)"/>
+                </t>
+                <t t-else="">
+                    <t t-esc="env.pos.format_currency(_totalPriceTax - _totalPriceNotFormat)"/>
+                </t>
             </t>
         </th>
     </xpath>
