@@ -56,7 +56,7 @@ msgid "Card"
 msgstr "Thẻ"
 
 #. module: forlife_pos_point_order
-#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__product_defective
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__change_refund
 msgid "Change/Refund"
 msgstr "Đổi/trả"
 
