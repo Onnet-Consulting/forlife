@@ -51,7 +51,11 @@ class StockPickingOverPopupConfirm(models.TransientModel):
         list_line_over = []
         list_line_less = []
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            tolerance = pk.product_id.tolerance
+            # tolerance = pk.product_id.tolerance
+            tolerance = pk.product_id.tolerance_ids.filtered(
+                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
+                                                                                               reverse=False)[
+                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
             if pk.qty_done != pk_od.product_uom_qty:
                 if pk.qty_done > pk_od.product_uom_qty:
                     list_line_over.append((0, 0, {
@@ -91,7 +95,11 @@ class StockPickingOverPopupConfirm(models.TransientModel):
             }
             xk_picking = self.env['stock.picking'].create(master_data_over)
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            tolerance = pk.product_id.tolerance
+            # tolerance = pk.product_id.tolerance
+            tolerance = pk.product_id.tolerance_ids.filtered(
+                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
+                                                                                               reverse=False)[
+                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
             if pk.qty_done > pk_od.product_uom_qty:
                 pk.write({
                     'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
@@ -132,41 +140,42 @@ class StockPicking(models.Model):
 
     def button_forlife_validate(self):
         self.ensure_one()
-        # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
-        #     self._update_forlife_production()
-        view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
-        view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
-        # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
-        #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
-        #         tolerance = pk.product_id.tolerance
-        #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
-        #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
-        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-               zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-            return {
-                'name': 'Tạo phần dở dang thừa?',
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'res_model': 'stock.picking.over.popup.confirm',
-                'views': [(view_over.id, 'form')],
-                'view_id': view_over.id,
-                'target': 'new',
-                'context': dict(self.env.context, default_picking_id=self.id),
-            }
-        # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-        #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
-        #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
-        #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-        #     return {
-        #         'name': 'Tạo phần dở dang thừa/thiếu?',
-        #         'type': 'ir.actions.act_window',
-        #         'view_mode': 'form',
-        #         'res_model': 'stock.picking.over.popup.confirm',
-        #         'views': [(view_over_less.id, 'form')],
-        #         'view_id': view_over_less.id,
-        #         'target': 'new',
-        #         'context': dict(self.env.context, default_picking_id=self.id),
-        #     }
+        if self.is_pk_purchase:
+            # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+            #     self._update_forlife_production()
+            view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
+            view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
+            # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
+            #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
+            #         tolerance = pk.product_id.tolerance
+            #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
+            #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
+            if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+                   zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+                return {
+                    'name': 'Tạo phần dở dang thừa?',
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_model': 'stock.picking.over.popup.confirm',
+                    'views': [(view_over.id, 'form')],
+                    'view_id': view_over.id,
+                    'target': 'new',
+                    'context': dict(self.env.context, default_picking_id=self.id),
+                }
+            # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+            #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
+            #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+            #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+            #     return {
+            #         'name': 'Tạo phần dở dang thừa/thiếu?',
+            #         'type': 'ir.actions.act_window',
+            #         'view_mode': 'form',
+            #         'res_model': 'stock.picking.over.popup.confirm',
+            #         'views': [(view_over_less.id, 'form')],
+            #         'view_id': view_over_less.id,
+            #         'target': 'new',
+            #         'context': dict(self.env.context, default_picking_id=self.id),
+            #     }
         return self.button_validate()
 
     def action_confirm(self):
@@ -425,8 +434,8 @@ class StockPicking(models.Model):
         if "import_file" in self.env.context:
             if 'stock_name' in fields and 'move_line_ids_without_package/sequence' in fields:
                 for record in data:
-                    if 'stock_name' in fields and not record[fields.index('stock_name')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
+                    # if 'stock_name' in fields and not record[fields.index('stock_name')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
                     if 'move_line_ids_without_package/sequence' in fields and not record[fields.index('move_line_ids_without_package/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
                     if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
@@ -435,23 +444,27 @@ class StockPicking(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường hoàn thành"))
                     if 'move_line_ids_without_package/quantity_purchase_done' in fields and not record[fields.index('move_line_ids_without_package/quantity_purchase_done')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng mua hoàn thành"))
-                    if 'date_done' in fields and not record[fields.index('date_done')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
+                    # if 'date_done' in fields and not record[fields.index('date_done')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
                 fields[fields.index('stock_name')] = 'id'
                 fields[fields.index('move_line_ids_without_package/sequence')] = 'move_line_ids_without_package/id'
                 id = fields.index('id')
                 line_id = fields.index('move_line_ids_without_package/id')
                 product = fields.index('move_line_ids_without_package/product_id')
+                reference = None
                 for rec in data:
-                    picking = self.env['stock.picking'].search([('name', '=', rec[id])], limit=1)
+                    if rec[id]:
+                        reference = rec[id]
+                    picking = self.env['stock.picking'].search([('name', '=', reference)], limit=1)
                     if not picking:
-                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (rec[id])))
+                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (reference)))
                     if picking.state != 'assigned':
-                        raise ValidationError(_("Phiếu %s chỉ có thể update ở trạng thái sẵn sàng" % (rec[id])))
-                    rec[id] = picking.export_data(['id']).get('datas')[0][0]
+                        raise ValidationError(_("Phiếu %s chỉ có thể update ở trạng thái sẵn sàng" % (reference)))
+                    if rec[id]:
+                        rec[id] = picking.export_data(['id']).get('datas')[0][0]
                     if int(rec[line_id]) > len(picking.move_line_ids_without_package):
                         raise ValidationError(_("Phiếu %s không có dòng %s" % (picking.name, rec[line_id])))
-                    elif rec[product] != picking.move_line_ids_without_package[int(rec[line_id]) - 1].product_id.default_code:
+                    elif rec[product] != picking.move_line_ids_without_package[int(rec[line_id]) - 1].product_id.barcode:
                         raise ValidationError(_("Mã sản phẩm của phiếu %s không khớp ở dòng %s" % (picking.name, rec[line_id])))
                     else:
                         rec[line_id] = picking.move_line_ids_without_package[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]

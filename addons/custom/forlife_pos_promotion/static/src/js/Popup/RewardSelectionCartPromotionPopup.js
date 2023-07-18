@@ -131,7 +131,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                             : 0.0;
                     } else if (program.incl_reward_in_order_type == 'unit_price') {
                         amountPerLine =
-                            (!program.only_condition_product ? reward_products.has(line.product.id) : false)
+                            (!program.only_condition_product ? !reward_products.has(line.product.id) : false)
                             ? line.promotion_usage_ids.filter(usage => this.env.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
                                                         .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
                             : 0.0;
