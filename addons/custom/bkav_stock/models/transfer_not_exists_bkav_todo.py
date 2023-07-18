@@ -74,10 +74,10 @@ class TransferNotExistsBkav(models.Model):
             FROM (
                 (SELECT '000001' as code)
                 UNION ALL
-                (SELECT RIGHT(name,6) as code
-                FROM stock_transfer
-                WHERE name like %s
-                ORDER BY name desc
+                (SELECT RIGHT(code,6) as code
+                FROM transfer_not_exists_bkav
+                WHERE code like %s
+                ORDER BY code desc
                 LIMIT 1)) as compu
             ORDER BY code desc LIMIT 1
         """

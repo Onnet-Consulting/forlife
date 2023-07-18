@@ -41,6 +41,7 @@
             <field name="type_other">outcoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
         </record>
+
         <record id="export_inventory_balance_auto" model="stock.location">
             <field name="name">Xuất cân đối tồn kho - kiểm kê định kỳ</field>
             <field name="code">1381000004</field>
@@ -48,6 +49,7 @@
             <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
             <field name="company_id" eval="False"/>
         </record>
+
         <record id="export_production_order" model="stock.location">
             <field name="name">Xuất nguyên phụ liệu</field>
             <field name="code">1381000005</field>

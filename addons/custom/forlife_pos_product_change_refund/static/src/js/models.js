@@ -248,7 +248,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 total -= this.money_reduce_from_product_defective
             }
 
-            if (this.quantity_canbe_refund > 0 && !this.beStatus) {
+            if (this.quantity_canbe_refund > 0) {
                 reduced += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
             }
             return total + reduced;

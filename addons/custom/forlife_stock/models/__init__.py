@@ -16,3 +16,4 @@ from . import stock_valuation_layer
 from . import other_in_out_request
 from . import stock_picking_type
 from . import quantity_production_order
+from . import res_utilily
