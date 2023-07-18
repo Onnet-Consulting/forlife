@@ -6,3 +6,4 @@ class ForlifeReasonType(models.Model):
 
     name = fields.Char(string="Name")
     code = fields.Char(string="Code")
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
