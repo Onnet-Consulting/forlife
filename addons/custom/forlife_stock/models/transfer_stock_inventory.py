@@ -106,10 +106,10 @@ class TransferStockInventory(models.Model):
                                                                  ('company_id', '=', self.env.company.id)
                                                                  ], limit=1)
         if not picking_type_in:
-            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.company_id.name))
+            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.company.name))
         picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
         if not picking_type_out:
-            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.company_id.name))
+            raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.company.name))
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
         for rec in self:
             data_ex_other = {}
@@ -121,7 +121,7 @@ class TransferStockInventory(models.Model):
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
                     if not enter_inventory_balance:
-                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N0201." % (self.env.company_id.name))
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập cân đối tồn kho - tự kiểm kê với mã N0201." % (self.env.company.name))
                     if not enter_inventory_balance.reason_type_id.id:
                         raise ValidationError(
                             'Bạn chưa cấu hình loại lý lo trong lý do Nhập cân đối tồn kho - tự kiểm kê kho có mã: N0201.')
@@ -140,7 +140,7 @@ class TransferStockInventory(models.Model):
                 else:
                     amount_total = -line.product_from_id._prepare_out_svl_vals(line.qty_out, line.location_id.company_id).get('value')
                     if not import_inventory_balance_classify:
-                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N0302." % (self.env.company_id.name))
+                        raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác: Nhập tách/Gộp mã hàng hóa với mã N0302." % (self.env.company.name))
                     if not import_inventory_balance_classify.reason_type_id.id:
                         raise ValidationError(
                             'Bạn chưa cấu hình loại lý lo trong lý do Nhập tách/gộp mã hàng hóa có mã: N0302.')
@@ -157,9 +157,9 @@ class TransferStockInventory(models.Model):
                         'amount_total': amount_total
                     })
                 if self.x_classify and (not export_inventory_balance_classify and not import_inventory_balance_classify):
-                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X0302 hoặc N0302." % (self.env.company_id.name))
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác mã X0302 hoặc N0302." % (self.env.company.name))
                 elif not self.x_classify and (not export_inventory_balance and not enter_inventory_balance):
-                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã X0201 hoặc N0201." % (self.env.company_id.name))
+                    raise ValidationError("Công ty %s chưa được cấu hình lý do nhập khác xuất khác có mã X0201 hoặc N0201." % (self.env.company.name))
                 if not export_inventory_balance.reason_type_id.id:
                     raise ValidationError(
                         'Bạn chưa cấu hình loại lý lo trong lý do Xuất cân đối tồn kho - tự kiểm kê kho có mã: X0201.')
