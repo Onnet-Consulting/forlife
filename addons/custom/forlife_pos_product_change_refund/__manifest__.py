@@ -40,6 +40,7 @@
         # Wizards
         'wirards/reason_refuse.xml',
         # View
+        'views/pos_order_line_views.xml',
         'views/handle_change_refund_views.xml',
         'views/store_views.xml',
         'views/pos_order_views.xml',
