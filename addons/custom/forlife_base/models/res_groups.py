@@ -7,7 +7,7 @@ from odoo import fields, models, api, _
 class ResGroup(models.Model):
     _inherit = 'res.groups'
 
-    model_ids = fields.Many2many('ir.model', string='Model', compute='_get_model_id', store=True, compute_sudo=True)
+    # model_ids = fields.Many2many('ir.model', string='Model', compute='_get_model_id', store=True, compute_sudo=True)
     access_count = fields.Integer(string='Access count', compute='_get_access_count', compute_sudo=True)
 
     @api.depends('model_access')
