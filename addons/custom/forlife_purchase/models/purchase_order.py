@@ -2057,18 +2057,11 @@ class PurchaseOrderLine(models.Model):
             totals = list(tax_results['totals'].values())[0]
             amount_untaxed = totals['amount_untaxed']
             amount_tax = totals['amount_tax']
-            if line.free_good:
-                line.update({
-                    'price_subtotal': 0,
-                    'price_tax': 0,
-                    'price_total': 0,
-                })
-            else:
-                line.update({
-                    'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
-                    'price_tax': amount_tax,
-                    'price_total': amount_untaxed + amount_tax,
-                })
+            line.update({
+                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
+                'price_tax': amount_tax,
+                'price_total': amount_untaxed + amount_tax,
+            })
 
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
@@ -2366,22 +2359,6 @@ class PurchaseOrderLine(models.Model):
                 rec.write({'readonly_discount_percent': False,
                            'readonly_discount': False,
                            })
-                           
-
-    # discount
-    @api.depends("free_good")
-    def _compute_free_good(self):
-        for rec in self:
-            if rec.free_good:
-                rec.write({'discount': 0,
-                           'discount_percent': 0,
-                           'vendor_price': 0,
-                           'price_unit': 0,
-                           'price_subtotal': 0
-                           })
-                rec.readonly_discount_percent = rec.readonly_discount = True
-            else:
-                rec.readonly_discount_percent = rec.readonly_discount = False
 
 
     @api.onchange("discount_percent", 'vendor_price')
