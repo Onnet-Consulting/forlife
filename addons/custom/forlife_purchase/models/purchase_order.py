@@ -2804,7 +2804,7 @@ class StockPicking(models.Model):
                         cp = self.create_invoice_po_cost(po, record)
                         '''
                     # Tạo nhập khác xuất khác khi nhập kho
-                    if po.order_line_production_order:
+                    if po.order_line_production_order and not po.is_inter_company:
                         npl = self.create_invoice_npl(po, record)
                     for rec in record.move_ids_without_package:
                         if rec.work_production:

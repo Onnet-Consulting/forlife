@@ -72,6 +72,9 @@
                 <xpath expr="//div[@name='reminder']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
+                <xpath expr="//field[@name='order_line']" position="attributes">
+                     <attribute name="context">{'default_state': 'draft', 'default_location_id': location_id}</attribute>
+                </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
                     <page string="Nguyên phụ liệu" name="production_order_domain"
                           attrs="{'invisible': ['|', ('is_check_line_material_line', '=', True), ('is_inter_company', '=', True)]}">
