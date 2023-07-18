@@ -30,7 +30,7 @@ export class PromotionButton extends PosComponent {
             };
         });
 
-        order.orderlines = order.orderlines.filter(line => line.quantity > 0 || !line.is_new_line === false);
+        order.orderlines = order.orderlines.filter(line => line.quantity);
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -104,10 +104,10 @@ export class PromotionButton extends PosComponent {
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let programsList = potentialPrograms.map(el => el.program);
         let bestCombine;
-        if (programsList.every(p => p.promotion_type == 'pricelist')) {
+        if (programsList.every(p => p.promotion_type == 'pricelist' && !p.with_code)) {
             bestCombine = programsList;
         } else {
-            bestCombine = order.computeBestCombineOfProgram() || [];
+            bestCombine = order.computeBestCombineOfProgram(programsList) || [];
             bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p));
         }
         if (potentialPrograms.size === 0) {

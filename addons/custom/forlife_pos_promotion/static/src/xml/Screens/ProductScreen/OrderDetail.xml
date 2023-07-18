@@ -6,7 +6,12 @@
         <xpath expr="//tr[@id='amount_total_row']/th[1]" position="replace">
             <th colspan="2" style="font-size: 12px">
                 <t t-foreach="this.env.pos.get_order().activatedInputCodes" t-as="code" t-key="code.code">
-                    <t><span class="badge rounded-pill text-bg-info" style="margin-right: 1px" t-esc="code.code"/> </t>
+                    <span class="badge rounded-pill text-bg-info"
+                             style="margin-right: 1px; padding: 0 10px 0 5px;">
+                        <span t-esc="code.code"/>
+                        <i class="fa fa-trash" style="margin-left: 5px;"
+                               t-on-click="() => this.env.pos.get_order().clearCode(code)"/>
+                    </span>
                 </t>
             </th>
         </xpath>

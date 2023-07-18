@@ -15,7 +15,7 @@ class StockQuantPeriod(models.Model):
     closing_quantity = fields.Integer('Closing Quantity')
     price_unit = fields.Monetary('Price Unit')
     closing_value = fields.Monetary('Closing Value')
-    company_id = fields.Many2one('Company')
+    company_id = fields.Many2one('res.company', 'Company')
     account_id = fields.Many2one('account.account', 'Account')
     account_code = fields.Char('Account Code', related="account_id.code")
 

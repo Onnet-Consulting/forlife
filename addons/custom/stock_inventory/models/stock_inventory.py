@@ -33,8 +33,8 @@ class Inventory(models.Model):
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
         ('cancel', 'Hủy'),
-        ('first_inv', 'Kiểm kê bước 1'),
-        ('second_inv', 'Kiểm kê bước 2'),
+        ('first_inv', 'Xác nhận lần 1'),
+        ('second_inv', 'Xác nhận lần 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -45,9 +45,9 @@ class Inventory(models.Model):
                                     states={'draft': [('readonly', False)]}, required=True)
     view_location_id = fields.Many2one(related='warehouse_id.view_location_id')
 
-    location_ids = fields.Many2many('stock.location', string='Địa điểm', readonly=True, check_company=True,
+    location_id = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
         states={'draft': [('readonly', False)]},
-        domain="[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', view_location_id)]")
+        domain="[('usage', 'in', ['internal']), ('id', 'child_of', view_location_id)]")
 
     #
     # filter_by = fields.Selection(string='Filtrer par', selection=[
@@ -68,6 +68,9 @@ class Inventory(models.Model):
     exhausted = fields.Boolean('Gồm cả sản phẩm đã hết', readonly=True,
                                states={'draft': [('readonly', False)]})
 
+    move_out_count = fields.Integer(string="Dịch chuyển đi", compute='_compute_stock_move_count')
+    move_in_count = fields.Integer(string="Dịch chuyển đến", compute='_compute_stock_move_count')
+
     # total_valorisation = fields.Float(string='Tổng kiểm kê', compute='_compute_total_valorisation')
     #
     #
@@ -85,7 +88,42 @@ class Inventory(models.Model):
         if not self.user_has_groups('stock.group_stock_multi_locations'):
             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
             if warehouse:
-                self.location_ids = warehouse.lot_stock_id
+                self.location_id = warehouse.lot_stock_id
+
+    def _compute_stock_move_count(self):
+        for r in self:
+            r.move_out_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == r.location_id.id))
+            r.move_in_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == r.location_id.id))
+
+    def action_view_move_out(self):
+        """ Display moves raw for subcontracted product self. """
+        self.ensure_one()
+        self.ensure_one()
+        move_out_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == self.location_id.id)
+        return {
+            'name': _('Xuất hàng'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move',
+            'views': [(self.env.ref('stock.view_move_tree').id, 'list'), (self.env.ref('stock.view_move_form').id, 'form')],
+            'target': 'current',
+            'domain': [('id', 'in', move_out_ids.ids)],
+            'context': self.env.context
+        }
+
+    def action_view_move_in(self):
+        """ Display moves raw for subcontracted product self. """
+        self.ensure_one()
+        move_in_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == self.location_id.id)
+        return {
+            'name': _('Nhập hàng'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move',
+            'views': [(self.env.ref('stock.view_move_tree').id, 'list'), (self.env.ref('stock.view_move_form').id, 'form')],
+            'target': 'current',
+            'domain': [('id', 'in', move_in_ids.ids)],
+            'context': self.env.context
+        }
+
 
     def copy_data(self, default=None):
         name = _("%s (copy)") % (self.name)
@@ -96,7 +134,7 @@ class Inventory(models.Model):
         for inventory in self:
             if (inventory.state not in ('draft', 'cancel')
                and not self.env.context.get(MODULE_UNINSTALL_FLAG, False)):
-                raise UserError(_('You can only delete a draft inventory adjustment. If the inventory adjustment is not done, you can cancel it.'))
+                raise UserError(_('Bạn chỉ có thể xóa bản ghi kiểm kê ở trạng thái nháp. Nếu việc kiểm kê không được thực hiện, bạn có thể hủy bỏ nó.'))
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
@@ -119,7 +157,7 @@ class Inventory(models.Model):
         lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
         if inventory_lines and not lines:
             wiz_lines = [(0, 0, {'product_id': product.id, 'tracking': product.tracking}) for product in inventory_lines.mapped('product_id')]
-            wiz = self.env['stock.track.confirmation'].create({'inventory_id': self.id, 'tracking_line_ids': wiz_lines})
+            wiz = self.env['stock.track.confirmation'].create({'tracking_line_ids': wiz_lines})
             return {
                 'name': _('Tracked Products in Inventory Adjustment'),
                 'type': 'ir.actions.act_window',
@@ -189,6 +227,7 @@ class Inventory(models.Model):
                 self.env['stock.inventory.line'].create(inventory._get_inventory_lines_values())
             inventory.write(vals)
 
+    '''
     def action_open_inventory_lines(self):
         self.ensure_one()
         action = {
@@ -239,9 +278,12 @@ class Inventory(models.Model):
             'domain': domain,
         }
         return action
+        '''
+
     def init(self):
         get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
         self.env.cr.execute(get_quantity_inventory)
+
     def action_print(self):
         return self.env.ref('stock_inventory.action_report_inventory').report_action(self)
 
@@ -255,13 +297,13 @@ class Inventory(models.Model):
         :rtype: dict
         """
         self.ensure_one()
-        if self.location_ids:
-            domain_loc = [('id', 'child_of', self.location_ids.ids)]
+        if self.location_id:
+            domain_loc = [('id', 'child_of', self.location_id.ids)]
         else:
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        sql = f"""select * from get_quantity_inventory('{str(fields.Datetime.now())}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         return data
@@ -312,8 +354,8 @@ class Inventory(models.Model):
                 ('active', '=', True)], ['id'])
             product_ids = [p['id'] for p in product_ids]
 
-        if self.location_ids:
-            location_ids = self.location_ids.ids
+        if self.location_id:
+            location_ids = self.location_id.ids
         else:
             location_ids = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)]).lot_stock_id.ids
 
@@ -338,6 +380,17 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
+        '''
+        product_ids = tuple([p['product_id'] for p in quants_groups])
+        query = f"""
+            SELECT pp.id product_id, pt.uom_id 
+            FROM product_product pp JOIN product_template pt ON pp.product_tmpl_id = pt.id 
+            WHERE pp.id in {product_ids}
+        """
+        self._cr.execute(query)
+        product_uom_data = self._cr.dictfetchall()
+        uom_data = {x['product_id']:x['uom_id']  for x in product_uom_data} if product_uom_data else {}
+        '''
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
@@ -346,7 +399,7 @@ class Inventory(models.Model):
                 'x_first_qty': data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
-                'product_uom_id': self.env['product.product'].browse(data.get('product_id')).uom_id.id
+                'product_uom_id': data.get('uom_id')
             }
             vals.append(line)
         if self.exhausted:
@@ -363,9 +416,9 @@ class InventoryLine(models.Model):
     def _domain_location_id(self):
         if self.env.context.get('active_model') == 'stock.inventory':
             inventory = self.env['stock.inventory'].browse(self.env.context.get('active_id'))
-            if inventory.exists() and inventory.location_ids:
-                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_ids.ids
-        return "[('usage', 'in', ['internal', 'transit'])]"
+            if inventory.exists() and inventory.location_id:
+                return "[('usage', 'in', ['internal', 'transit']), ('id', 'child_of', %s)]" % inventory.location_id.ids
+        return "[('usage', 'in', ['internal'])]"
 
     @api.model
     def _domain_product_id(self):
@@ -381,6 +434,7 @@ class InventoryLine(models.Model):
     partner_id = fields.Many2one('res.partner', 'Owner', check_company=True)
     product_id = fields.Many2one('product.product', 'Sản phẩm', check_company=True,
                                  domain=lambda self: self._domain_product_id(), index=True, required=True)
+    barcode = fields.Char('Mã vạch', related='product_id.barcode')
     product_uom_id = fields.Many2one('uom.uom', 'Đơn vị tính', required=True, readonly=True)
     product_qty = fields.Float('Đếm được', default=0)
     categ_id = fields.Many2one(related='product_id.categ_id', store=True)
@@ -398,8 +452,7 @@ class InventoryLine(models.Model):
         index=True, readonly=True, store=True)
     state = fields.Selection(string='Status', related='inventory_id.state')
     theoretical_qty = fields.Float(
-        'Tồn hiện có',
-        digits='Product Unit of Measure', readonly=True)
+        'Tồn hiện có')
     x_first_qty = fields.Float(
         'Đã đếm',
         digits='Product Unit of Measure')
@@ -431,28 +484,31 @@ class InventoryLine(models.Model):
 
     @api.onchange('product_id')
     def get_line_default(self):
-        if self.inventory_id.location_ids:
-            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_ids.ids)]}}
-        elif self.inventory_id.warehourse_id:
-            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
+        if self.inventory_id.location_id:
+            self.location_id = self.inventory_id.location_id
+        if self.inventory_id.location_id:
+            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_id.ids)]}}
+        elif self.inventory_id.warehouse_id:
+            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehouse_id.id)]}}
         else:
             return False
 
     @api.onchange('theoretical_qty')
     def set_x_first_qty(self):
-        if self.theoretical_qty:
+        if self.theoretical_qty != self.x_first_qty:
             self.x_first_qty = self.theoretical_qty
 
     @api.onchange('x_first_qty')
     def set_product_qty(self):
-        if self.x_first_qty:
+        if self.x_first_qty != self.product_qty:
             self.product_qty = self.x_first_qty
 
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
         for line in self:
-            line.difference_qty = line.product_qty - line.theoretical_qty
+            if line.difference_qty != line.product_qty - line.theoretical_qty:
+                line.difference_qty = line.product_qty - line.theoretical_qty
 
     @api.depends('inventory_date', 'product_id.stock_move_ids', 'theoretical_qty', 'product_uom_id.rounding')
     def _compute_outdated(self):
@@ -520,24 +576,19 @@ class InventoryLine(models.Model):
         """
         for values in vals_list:
             if 'theoretical_qty' not in values:
-                theoretical_qty = self.env['product.product'].get_theoretical_quantity(
-                    values['product_id'],
-                    values['location_id'],
-                    lot_id=values.get('prod_lot_id'),
-                    package_id=values.get('package_id'),
-                    owner_id=values.get('partner_id'),
-                    to_uom=values.get('product_uom_id'),
-                )
+                check_quant = self.env['stock.quant'].search(
+                    [('product_id', '=', self.product_id.id), ('location_id', '=', self.location_id.id)])
+                theoretical_qty = check_quant.quantity if check_quant else 0
                 values['theoretical_qty'] = theoretical_qty
             if 'product_id' in values and 'product_uom_id' not in values:
                 values['product_uom_id'] = self.env['product.product'].browse(values['product_id']).uom_id.id
         res = super(InventoryLine, self).create(vals_list)
-        res._check_no_duplicate_line()
+        # res._check_no_duplicate_line()
         return res
 
     def write(self, vals):
         res = super(InventoryLine, self).write(vals)
-        self._check_no_duplicate_line()
+        # self._check_no_duplicate_line()
         return res
 
     def _check_no_duplicate_line(self):
@@ -560,9 +611,20 @@ class InventoryLine(models.Model):
         """ As no quants are created for consumable products, it should not be possible do adjust
         their quantity.
         """
-        for line in self:
-            if line.product_id.type != 'product':
-                raise ValidationError(_("You can only adjust storable products.") + '\n\n%s -> %s' % (line.product_id.display_name, line.product_id.type))
+        if self.product_id.ids:
+            query = """
+                SELECT pp.id
+                FROM product_product pp
+                    JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                WHERE pt.type != 'product'
+                    AND pp.id in {product_ids}
+            """.format(product_ids=tuple(self.product_id.ids))
+            self._cr.execute(query)
+            data = self._cr.dictfetchall()
+            if data:
+                for product in data:
+                    product_id = self.env['product.product'].browse(product['id'])
+                    raise ValidationError(_("You can only adjust storable products.") + '\n\n%s -> %s' % (product_id.display_name, product_id.type))
 
     def _get_move_values(self, qty, location_id, location_dest_id, out):
         self.ensure_one()

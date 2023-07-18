@@ -4,6 +4,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 
     const Registries = require('point_of_sale.Registries');
     var {Order, Orderline, PosGlobalState} = require('point_of_sale.models');
+    var core = require('web.core');
+    const _t = core._t;
+    var { Gui } = require('point_of_sale.Gui');
 
     const OrderGetPhone = (Order) => class extends Order {
 
@@ -76,6 +79,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             if (options.product_defective_id !== 0) {
                 orderline.product_defective_id = options.product_defective_id;
             }
+            if(options.pos_order_line_discount_details){
+                orderline.pos_order_line_discount_details = options.pos_order_line_discount_details;
+            }
             super.set_orderline_options(...arguments);
         }
 
@@ -94,16 +100,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 
         get_total_with_tax() {
             var total = super.get_total_with_tax()
-//            var vals = 0
             var defective = 0
             var reduced = 0;
-//            if(this.is_refund_product){
-//                for (let i = 0; i < this.orderlines.length; i++) {
-//                    if(!this.orderlines[i].is_new_line)
-//                     vals += parseInt(this.orderlines[i].get_display_price_with_reduce())
-//                }
-//                return vals
-//            }
+            var handle_change = 0;
             for (let i = 0; i < this.orderlines.length; i++) {
                 if (this.orderlines[i].is_product_defective) {
                     defective += parseInt(this.orderlines[i].money_reduce_from_product_defective)
@@ -111,8 +110,11 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
                 if (this.orderlines[i].quantity_canbe_refund > 0) {
                     reduced += (this.orderlines[i].money_is_reduced * Math.abs(this.orderlines[i].get_quantity())) / this.orderlines[i].quantity_canbe_refund;
                 }
+                if(this.orderlines[i].handle_change_refund_price){
+                    handle_change += this.orderlines[i].handle_change_refund_price
+                }
             }
-            return total - defective + reduced;
+            return total - defective + reduced + handle_change;
         }
 
     }
@@ -127,8 +129,10 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             // manhld
             this.approvalStatus = this.approvalStatus || false;
             this.beStatus = this.beStatus || false;
+            this.handle_change_refund_price = this.handle_change_refund_price || 0;
             this.check_button = this.check_button || false;
             this.is_new_line = this.is_new_line || false;
+            this.is_promotion = this.is_promotion || false;
             this.handle_change_refund_id = this.handle_change_refund_id || undefined;
             this.money_is_reduced = this.money_is_reduced || 0;
             this.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -137,6 +141,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = this.is_product_defective || false;
             this.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             this.product_defective_id = this.product_defective_id || 0;
+            this.subtotal_paid = this.subtotal_paid || 0;
+            this.pos_order_line_discount_details = this.pos_order_line_discount_details || [];
         }
 
         init_from_JSON(json) {
@@ -147,8 +153,10 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             // manhld
             this.approvalStatus = json.approvalStatus || false;
             this.beStatus = json.beStatus || false;
+            this.handle_change_refund_price = json.handle_change_refund_price || 0;
             this.check_button = json.check_button || false;
             this.is_new_line = json.is_new_line || false;
+            this.is_promotion = json.is_promotion || false;
             this.handle_change_refund_id = json.handle_change_refund_id || undefined;
             this.money_is_reduced = json.money_is_reduced || 0;
             this.money_point_is_reduced = json.money_point_is_reduced || 0;
@@ -157,6 +165,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_product_defective = json.is_product_defective || false;
             this.money_reduce_from_product_defective = json.money_reduce_from_product_defective || 0;
             this.product_defective_id = json.product_defective_id || 0;
+            this.subtotal_paid = json.subtotal_paid || 0;
+            this.pos_order_line_discount_details = json.pos_order_line_discount_details || [];
         }
 
         clone() {
@@ -167,8 +177,10 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             // manhld
             orderline.approvalStatus = this.approvalStatus;
             orderline.beStatus = this.beStatus;
+            orderline.handle_change_refund_price = this.handle_change_refund_price || 0;
             orderline.check_button = this.check_button;
             orderline.is_new_line = this.is_new_line;
+            orderline.is_promotion = this.is_promotion;
             orderline.handle_change_refund_id = this.handle_change_refund_id;
             orderline.money_is_reduced = this.money_is_reduced;
             orderline.money_point_is_reduced = this.money_point_is_reduced;
@@ -177,6 +189,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.is_product_defective = this.is_product_defective;
             orderline.money_reduce_from_product_defective = this.money_reduce_from_product_defective;
             orderline.product_defective_id = this.product_defective_id;
+            orderline.subtotal_paid = this.subtotal_paid || 0;
             return orderline;
         }
 
@@ -190,6 +203,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.beStatus = this.beStatus || false;
             json.check_button = this.check_button || false;
             json.is_new_line = this.is_new_line || false;
+            json.is_promotion = this.is_promotion || false;
             json.handle_change_refund_id = this.handle_change_refund_id || undefined;
             json.money_is_reduced = this.money_is_reduced || 0;
             json.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -198,38 +212,31 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.is_product_defective = this.is_product_defective || false;
             json.money_reduce_from_product_defective = this.money_reduce_from_product_defective || 0;
             json.product_defective_id = this.product_defective_id || 0;
+            json.subtotal_paid = this.subtotal_paid || 0;
+            json.pos_order_line_discount_details = this.pos_order_line_discount_details || [];
             return json;
         }
 
-//        get_unit_display_price_with_reduce(){
-//            var res = this.get_unit_display_price()
-//            if(this.order.is_refund_product && !this.is_new_line){
-//                if(this.get_quantity() !=0){
-//                   var result = (Math.abs(this.get_display_price()) - Math.abs(this.money_is_reduced))/Math.abs(this.get_quantity())
-//                   this.price_unit_refund = result
-//                   return result
-//                }
-//            }
-//            return res
-//        }
 
-        get_unit_display_price() {
-            var res = super.get_unit_display_price()
-            var total = 0;
-            if (this.money_reduce_from_product_defective > 0) {
-                total += this.money_reduce_from_product_defective
+        set_quantity(quantity, keep_price){
+            if(this.is_product_defective && quantity > 1){
+                    Gui.showPopup('ErrorPopup', {
+                        title: _t('Warning'),
+                        body: _t('Hành động sửa số lượng trên sản phẩm này bị cấm !')
+                    });
+                    return;
             }
-            return res - total
+            return super.set_quantity(quantity, keep_price)
         }
 
-        // get_display_price() {
-        //     var res = super.get_display_price()
-        //     var total = 0;
-        //     if (this.quantity_canbe_refund > 0) {
-        //         total += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
-        //     }
-        //     return res + total
-        // }
+        handle_refund_price() {
+            return this.handle_change_refund_price || 0;
+        }
+
+        get_display_price_after_discount(){
+            var total = super.get_display_price_after_discount(...arguments);
+            return total + this.handle_refund_price();
+        }
 
         get_price_with_tax() {
             var reduced = 0;

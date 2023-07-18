@@ -100,7 +100,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
-
+                                        'promotion_type': 'vip_amount',
                                         'account_id': promotion_account_id and promotion_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu theo chính sách vip"
@@ -113,7 +113,7 @@ class SaleOrder(models.Model):
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
-
+                                        'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
                         else:
@@ -139,6 +139,7 @@ class SaleOrder(models.Model):
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
+                                'promotion_type': 'discount',
                                 'account_id': discount_account_id and discount_account_id.id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp"
@@ -148,11 +149,37 @@ class SaleOrder(models.Model):
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': diff_price,
+                                'promotion_type': 'diff_price',
                                 'account_id': promotion_account_id and promotion_account_id.id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá"
                             })]
 
+                    # Nhanh shipping fee
+                    if rec.nhanh_shipping_fee and rec.nhanh_shipping_fee > 0:
+                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_shipping_fee')
+                        account_id = product_id and product_id.property_account_income_id
+                        rec.promotion_ids = [(0, 0, {
+                            'product_id': product_id and product_id.id,
+                            'value': - rec.nhanh_shipping_fee,
+                            'promotion_type': 'nhanh_shipping_fee',
+                            'account_id': account_id and account_id.id,
+                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                            'description': "Phí vận chuyển của nhà vận chuyển"
+                        })]
+
+                    # Customer shipping fee
+                    if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
+                        product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
+                        account_id = product_id and product_id.property_account_expense_id
+                        rec.promotion_ids = [(0, 0, {
+                            'product_id': product_id and product_id.id,
+                            'value': rec.nhanh_customer_shipping_fee,
+                            'promotion_type': 'customer_shipping_fee',
+                            'account_id': account_id and account_id.id,
+                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                            'description': "Phí vận chuyển của nhà vận chuyển"
+                        })]
                 elif rec.x_sale_chanel == "wholesale":
                     for line in rec.order_line:
                         if line.reward_id.reward_type == "discount":
@@ -171,6 +198,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': line_promotion.product_id.id,
                                         'value': discount_amount,
+                                        'promotion_type': 'reward',
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
@@ -192,15 +220,15 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     prm_price_discount = fields.Float(string="Price discount")
-    prm_price_total_discount = fields.Float(string="Price total discount", compute="_compute_amount_discount")
+    # prm_price_total_discount = fields.Float(string="Price total discount", compute="_compute_amount_discount")
     # ghn_price_unit_discount = fields.Float(string="Price unit discount (GHN)")
     # product_gift = fields.Boolean(string="Gift")
 
-    @api.depends("price_subtotal", "price_unit", "product_uom_qty", "order_id.x_sale_chanel", "x_cart_discount_fixed_price")
-    def _compute_amount_discount(self):
-        for rec in self:
-            # rec.prm_price_discount = False
-            rec.prm_price_total_discount = False
-            if rec.order_id.x_sale_chanel == "online":
-                # rec.prm_price_discount = rec.discount_price_unit * rec.product_uom_qty
-                rec.prm_price_total_discount = rec.price_subtotal - rec.x_cart_discount_fixed_price
+    # @api.depends("price_subtotal", "price_unit", "product_uom_qty", "order_id.x_sale_chanel", "x_cart_discount_fixed_price")
+    # def _compute_amount_discount(self):
+    #     for rec in self:
+    #         # rec.prm_price_discount = False
+    #         rec.prm_price_total_discount = False
+    #         if rec.order_id.x_sale_chanel == "online":
+    #             # rec.prm_price_discount = rec.discount_price_unit * rec.product_uom_qty
+    #             rec.prm_price_total_discount = rec.price_subtotal - rec.x_cart_discount_fixed_price

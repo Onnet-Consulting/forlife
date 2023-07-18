@@ -4,15 +4,16 @@
         <field name="model">forlife.production</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Forlife Production">
+            <tree string="Forlife Production" default_order="version desc,created_date desc">
                 <field name="code"/>
                 <field name="name"/>
-                <field name="implementation_department"/>
-                <field name="management_department"/>
+                <field name="implementation_id"/>
+                <field name="management_id"/>
                 <field name="production_department"/>
                 <field name="user_id"/>
                 <field name="created_date"/>
                 <field name="company_id"/>
+                <button name="action_open_history" string="History" type="object" class="oe_title"/>
             </tree>
         </field>
     </record>
@@ -23,39 +24,75 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
+                    <button string="Trở về nháp" name="action_draft" type="object"
+                            attrs="{'invisible': [('state', '!=', 'wait_confirm')]}"/>
+                    <button string="Gửi duyệt" name="action_wait_confirm"
+                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                    <button string="Phê duyệt" name="action_approved" type="object"
+                            attrs="{'invisible':[ ('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
+                </header>
+                <header>
+                    <button string="Đóng" name="action_done" type="object"
+                            attrs="{'invisible':[ '|', ('state', '!=', 'approved'),('status', '=', 'done')]}"/>
+                    <field name="status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="code"/>
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="created_date"/>
+                            <field name="active" invisible="1"/>
+                            <field name="version" attrs="{'invisible':[ ('version', '=', 0)], 'readonly':True}"/>
+                            <field name="code" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="name" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="created_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="selected_product_ids" invisible="1"/>
                         </group>
                         <group>
-                            <field name="implementation_department"/>
-                            <field name="management_department"/>
-                            <field name="production_department"/>
-                            <field name="produced_from_date"/>
-                            <field name="to_date"/>
+                            <field name="implementation_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="management_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="production_department" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="brand_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="produced_from_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="to_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Finished Product" name="finished_product">
                             <field name="forlife_production_finished_product_ids" mode="tree"
-                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                   attrs="{'readonly': [('state', '=', 'approved')]}">
                                 <tree editable="bottom">
                                     <field name="forlife_production_id" invisible="1"/>
+                                    <field name="is_check" invisible="1"/>
                                     <field name="product_id" domain="[('id', 'not in', parent.selected_product_ids)]"/>
                                     <field name="description"/>
+                                    <field name="color"/>
+                                    <field name="size"/>
                                     <field name="produce_qty"/>
                                     <field name="uom_id"/>
                                     <field name="unit_price" force_save="1"/>
-                                    <field name="stock_qty" readonly="1"/>
+                                    <field name="stock_qty" readonly="1" force_save="1"/>
                                     <field name="remaining_qty"/>
-                                    <button name="action_open_bom" string="BOM" type="object"/>
+                                    <button name="action_open_bom" attrs="{'invisible': [('is_check', '=', False)]}" string="BOM" type="object"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Nguyên liệu chính" name="material_product" attrs="{'invisible': [('material_import_ids', '=', [])]}">
+                            <field name="material_import_ids" mode="tree"
+                                   readonly="1">
+                                <tree editable="bottom">
+                                    <field name="production_id" invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="size"/>
+                                    <field name="color"/>
+                                    <field name="uom_id"/>
+                                    <field name="production_uom_id"/>
+                                    <field name="conversion_coefficient"/>
+                                    <field name="rated_level" force_save="1"/>
+                                    <field name="loss" readonly="1" force_save="1"/>
+                                    <field name="qty"/>
+                                    <field name="total"/>
                                 </tree>
                             </field>
                         </page>
@@ -91,8 +128,8 @@
             <tree string="" duplicate="0">
                 <field name="forlife_production_id"/>
                 <field name="description"/>
-                <field name="implementation_department"/>
-                <field name="management_department"/>
+                <field name="implementation_id"/>
+                <field name="management_id"/>
                 <field name="production_department"/>
                 <field name="product_id"/>
                 <field name="unit_price"/>
@@ -113,8 +150,8 @@
                                 <field name="forlife_production_id" readonly="1"/>
                                 <field name="product_id" readonly="1"/>
                                 <field name="produce_qty" readonly="1"/>
-                                <field name="implementation_department" />
-                                <field name="management_department" />
+                                <field name="implementation_id" />
+                                <field name="management_id" />
                                 <field name="production_department" />
                             </group>
                             <group>
@@ -143,20 +180,20 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Ingredients" name="ingredients">
-                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">
-                                    <tree editable="bottom">
-                                        <field name="product_id"/>
-                                        <field name="description"/>
-                                        <field name="uom_id"/>
-                                        <field name="production_uom_id"/>
-                                        <field name="conversion_coefficient"/>
-                                        <field name="rated_level"/>
-                                        <field name="loss"/>
-                                        <field name="total"/>
-                                    </tree>
-                                </field>
-                            </page>
+<!--                            <page string="Ingredients" name="ingredients">-->
+<!--                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">-->
+<!--                                    <tree editable="bottom">-->
+<!--                                        <field name="product_id"/>-->
+<!--                                        <field name="description"/>-->
+<!--                                        <field name="uom_id"/>-->
+<!--                                        <field name="production_uom_id"/>-->
+<!--                                        <field name="conversion_coefficient"/>-->
+<!--                                        <field name="rated_level"/>-->
+<!--                                        <field name="loss"/>-->
+<!--                                        <field name="total"/>-->
+<!--                                    </tree>-->
+<!--                                </field>-->
+<!--                            </page>-->
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">

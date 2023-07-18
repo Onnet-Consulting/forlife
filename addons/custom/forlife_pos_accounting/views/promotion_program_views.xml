@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_promotion_program_view_form">
+        <field name="name">inherit.promotion.program.view.form</field>
+        <field name="model">promotion.program</field>
+        <field name="inherit_id" ref="forlife_pos_promotion.promotion_program_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group/group[last()]" position="inside">
+                <field name="journal_id"/>
+                <field name="product_discount_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+       <record id="accountant_print_stock_group" model="res.groups">
+           <field name="name">Accountant Print Stock</field>
+       </record>
+
+       <record id="warehouse_print_stock_group" model="res.groups">
+           <field name="name">Warehouse Print Stock</field>
+       </record>
+
+    </data>
+</odoo>

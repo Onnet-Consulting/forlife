@@ -123,7 +123,7 @@
             <tree string="Lot/Serial Number Inventory" sample="1">
                 <field name="date"/>
                 <field name="name"/>
-                <field name="location_ids" widget="many2many_tags" optional="hide" groups="stock.group_stock_multi_locations"/>
+                <field name="location_id" optional="hide" groups="stock.group_stock_multi_locations"/>
                 <field name="product_ids" widget="many2many_tags" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state in ('draft', 'confirm')"/>
@@ -180,26 +180,40 @@
                 <field name="state" widget="statusbar" statusbar_visible="draft,first_inv,second_inv,done"/>
             </header>
             <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button type="object"
+                        name="action_view_move_out"
+                        class="oe_stat_button"
+                        icon="fa-arrows-v" attrs="{'invisible':[('move_out_count','=', 0)]}">
+                        <field name="move_out_count" widget="statinfo" string="Xuất hàng"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_move_in"
+                        class="oe_stat_button" icon="fa-arrows-v" attrs="{'invisible':[('move_in_count','=', 0)]}">
+                        <field name="move_in_count" widget="statinfo" string="Nhập hàng"/>
+                    </button>
+                </div>
                 <field name="view_location_id" invisible="1"/>
                 <field name="line_ids" invisible="1"/>
-                <div class="oe_button_box" name="button_box">
-                    <button string="Product Moves" type="object"
-                            name="action_view_related_move_lines"
-                            class="oe_stat_button" icon="fa-exchange"
-                            attrs="{'invisible': [('state', '!=', 'done')]}"
-                            context="{'no_reference': True}"/>
-                </div>
+<!--                <div class="oe_button_box" name="button_box">-->
+<!--                    <button string="Product Moves" type="object"-->
+<!--                            name="action_view_related_move_lines"-->
+<!--                            class="oe_stat_button" icon="fa-exchange"-->
+<!--                            attrs="{'invisible': [('state', '!=', 'done')]}"-->
+<!--                            context="{'no_reference': True}"/>-->
+<!--                </div>-->
                 <div class="oe_title">
                     <label for="name" class="oe_edit_only"/>
                     <h1><field name="name" placeholder="e.g. Annual inventory"/></h1>
                 </div>
                 <group>
                     <group>
-                        <field name="warehouse_id" options="{'no_create': True}"/>
-                        <field name="location_ids" options="{'no_create': True}"
-                               widget="many2many_tags"
-                               domain="[('warehouse_id', '=', warehouse_id)]"
-                               force_save="1"/>
+                        <field name="warehouse_id" options="{'no_create': True}"
+                               attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                        <field name="location_id" options="{'no_create': True}"
+                               domain="[('warehouse_id', '=', warehouse_id), ('usage', 'in', ['internal'])]"
+                               attrs="{'readonly': ['|', ('state','not in',('draft')), ('warehouse_id','=',False)]}"
+                               required="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
                                context="{'default_type': 'product'}"
@@ -219,18 +233,19 @@
                 </group>
                 <notebook>
                     <page string="Chi tiết kiểm kê" name="page_line_ids">
-                        <field name="line_ids" nolabel="1" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <field name="line_ids" nolabel="1" attrs="{'readonly': [('location_id','=',False)]}">
                             <tree editable="bottom">
-                                <field name="product_id"/>
-                                <field name="location_id"/>
+                                <field name="product_id" attrs="{'readonly': [('state','not in',('draft'))]}"/>
+                                <field name="barcode"/>
+                                <field name="location_id" attrs="{'readonly': [('state','not in',('draft'))]}"/>
                                 <field name="inventory_date" optional="hide" width="0.8"/>
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
                                 <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
-                                <field name="x_first_qty" string="Đã đếm"
-                                       attrs="{'readonly': [('state','!=','first_inv')]}"/>
-                                <field name="product_qty" string="SL xác nhận"/>
-                                <field name="difference_qty" optional="show"/>
+                                <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1"
+                                       attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
+                                <field name="product_qty" force_save="1" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
+                                <field name="difference_qty" force_save="1" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
                                 <field name="state" invisible="1"/>
                             </tree>

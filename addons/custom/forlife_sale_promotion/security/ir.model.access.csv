@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sale_order,access_sale_order,model_sale_order,base.group_user,1,1,1,1
+access_sale_order,access_sale_order,model_sale_order,stock.group_stock_user,1,1,1,1
 access_sale_order_promotion,access_sale_order_promotion,model_sale_order_promotion,base.group_user,1,1,1,1
 access_account_move_promotion,access_account_move_promotion,model_account_move_promotion,base.group_user,1,1,1,1
 access_check_promotion_wizard,access_check_promotion_wizard,model_check_promotion_wizard,base.group_user,1,1,1,1

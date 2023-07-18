@@ -22,45 +22,9 @@ class PosOrder(models.Model):
                             v.voucher_id.state = 'valid'
                         if v.voucher_id.price_residual == 0:
                             v.voucher_id.state = 'off value'
-                    else:
-                        if v.voucher_id.price_residual == 0:
-                            v.voucher_id.state = 'off value'
-                        if v.voucher_id.price_residual > 0:
-                            pos.generate_account_journal(voucher=v)
-                            v.voucher_id.state = 'off value'
-                            v.voucher_id.price_residual = 0
                     v.voucher_id.order_use_ids = [(4, pos.id)]
             pos.action_create_voucher()
         return pos_id
-
-    def generate_account_journal(self, voucher):
-        move_vals = {
-            'ref': self.name,
-            'date': self.date_order,
-            'journal_id': voucher.payment_method_id.journal_id.id,
-            'company_id': self.company_id.id,
-            'move_type': 'entry',
-            'pos_order_id': self.id,
-            'line_ids': [
-                (0, 0, {
-                    'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
-                    'account_id': voucher.payment_method_id.account_other_income.id,
-                    'debit': 0.0,
-                    'credit': voucher.voucher_id.price_residual,
-                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
-                }),
-                # credit line
-                (0, 0, {
-                    'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
-                    'account_id': voucher.payment_method_id.account_general.id,
-                    'debit': voucher.voucher_id.price_residual,
-                    'credit': 0.0,
-                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
-                }),
-            ]
-        }
-        move = self.env['account.move'].create(move_vals)._post()
-        return True
 
     @api.model
     def _order_fields(self, ui_order):
@@ -121,6 +85,7 @@ class PosOrder(models.Model):
                 'start_date': line.order_id.date_order,
                 'state': 'sold',
                 'price': line.product_id.price,
+                'notification_id': line.product_id.notification_id,
                 'price_used': 0,
                 'price_residual': line.product_id.price - 0,
                 'derpartment_id': program_voucher_id.derpartment_id.id if program_voucher_id.derpartment_id else None,

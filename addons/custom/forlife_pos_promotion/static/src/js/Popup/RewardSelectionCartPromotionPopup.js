@@ -2,6 +2,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     'use strict';
 
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
+    const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
     const { parse } = require('web.field_utils');
@@ -11,20 +12,20 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
     const { useState, onWillUnmount, onWillDestroy } = owl;
 
-    class RewardSelectionCartPromotionPopup extends AbstractAwaitablePopup {
+    class RewardSelectionCartPromotionPopup extends PosComponent {
 
         setup() {
             super.setup();
             this.state = useState({
-                reward_line_vals: this.props.reward_line_vals || [],
+                reward_line_vals: this.props.program.reward_line_vals || [],
                 program: this.props.program,
                 valid: this.props.valid,
                 programOptions: this.props.programOptions,
                 hasError: false,
-                additional_reward_remaining_qty: 0,
+//                additional_reward_remaining_qty: 0,
             });
             this.error_msg = '';
-            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+//            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 
             onWillUnmount(() => {
                 this.state.reward_line_vals.forEach(line => {
@@ -112,34 +113,45 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let selections = this._prepareRewardData(this.state.programOptions);
             let [to_apply_lines, remaining] = order.computeForListOfCartProgram(orderLines, selections);
 
-            let discount_total = 0.0;
-            let no_incl_line_total_amount = 0;
-
-            for (let [program_id, lines] of Object.entries(to_apply_lines)) {
-                discount_total += lines.reduce((acc, line) => {
-                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
-                    if (program.str_id == program_id && program.incl_reward_in_order_type == 'no_incl') {
-                        no_incl_line_total_amount += line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.original_price * line.quantity;}, 0.0);
-                    }; // todo: chỉ xét giảm của CT HĐ đang xét
-                    return acc + amountPerLine;
-                }, 0.0);
-            };
-            let order_total_amount = order.get_total_with_tax();
-            let amount_total_after_discount = 0.0;
-            if (program.incl_reward_in_order_type == 'no_incl') {
-                amount_total_after_discount = order_total_amount - no_incl_line_total_amount;
-            } else if (program.incl_reward_in_order_type == 'discounted_price') {
-                amount_total_after_discount = order_total_amount - discount_total;
-            };
-
             let selected_programs = this._get_selected_programs();
             let valid = true;
             let result = {};
             for (let program of selected_programs) {
-                if (program.incl_reward_in_order_type != 'unit_price' && program.order_amount_min > 0 && this.state.program.required_order_amount_min > amount_total_after_discount) {
-                    result[program.id] = false;
-                } else {
+                let option = this.state.programOptions.find(op=>op.id==program.id);
+                let amountCheck = option.amountCheck;
+                let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
+                let discounted_lines = (Object.values(to_apply_lines).flat(2) || []);
+                let discount_total = discounted_lines.reduce((acc, line) => {
+                    let amountPerLine;
+                    if (program.incl_reward_in_order_type == 'no_incl') {
+                        amountPerLine =
+                            (!reward_products.has(line.product.id) && (program.only_condition_product ? program.valid_product_ids.has(line.product.id) : true))
+                            ? line.promotion_usage_ids.filter(usage => this.env.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                        .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    } else if (program.incl_reward_in_order_type == 'unit_price') {
+                        amountPerLine =
+                            (!program.only_condition_product ? !reward_products.has(line.product.id) : false)
+                            ? line.promotion_usage_ids.filter(usage => this.env.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                        .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    } else {
+                        amountPerLine =
+                            (!program.only_condition_product || (program.only_condition_product && program.valid_product_ids.has(line.product.id)))
+                            ? line.promotion_usage_ids.filter(usage => this.env.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
+                                                        .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
+                            : 0.0;
+                    };
+                    return acc + amountPerLine;
+                }, 0.0);
+                let amount_total_after_discount = amountCheck - discount_total;
+                let check = program.order_amount_min == 0
+                            || (program.order_amount_min > 0 && option.required_order_amount_min <= amount_total_after_discount);
+
+                if (check) {
                     result[program.id] = true;
+                } else {
+                    result[program.id] = false;
                 };
             };
             if (Object.values(result).some(v => !v)) {
@@ -194,8 +206,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             }
             // Compute remaining qty of reward product
             let selectedQty_on_program = this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - selectedQty_on_program;
-            this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
+//            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - selectedQty_on_program;
+//            this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
         }
 
         onChangeQty(reward, target) {
@@ -230,31 +242,36 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             if (currentLine.isSelected) {
                 this.state.program.isSelected = true;
                 this._computeOnchangeQty(currentLine, 1);
-            }
-        }
-
-        confirm() {
-            this.state.reward_line_vals.forEach(l => {
-                if (l.quantity <= 0) {
-                    l.isSelected = false;
-                    l.quantity = 0;
-                }
-            });
-            const valid = this._check_valid_rewards()
-            if (valid) {
-                if (this.state.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
-                    this.state.program.isSelected = true;
-                } else {
+            } else {
+                if (this.selectedQtyOnProgram() == 0) {
                     this.state.program.isSelected = false;
                 };
-                this.state.hasError = false;
-                return super.confirm();
-            } else {
-                this.state.hasError = true;
-                this.error_msg = 'Đơn hàng không đủ giá trị tối thiểu sau khi khuyến mãi!';
-                return;
-            }
+            };
+
         }
+
+//        confirm() {
+//            this.state.reward_line_vals.forEach(l => {
+//                if (l.quantity <= 0) {
+//                    l.isSelected = false;
+//                    l.quantity = 0;
+//                }
+//            });
+//            const valid = this._check_valid_rewards()
+//            if (valid) {
+//                if (this.state.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
+//                    this.state.program.isSelected = true;
+//                } else {
+//                    this.state.program.isSelected = false;
+//                };
+//                this.state.hasError = false;
+//                return super.confirm();
+//            } else {
+//                this.state.hasError = true;
+//                this.error_msg = 'Đơn hàng không đủ giá trị tối thiểu sau khi khuyến mãi!';
+//                return;
+//            }
+//        }
 
 //        getPayload() {
 //            if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
@@ -265,14 +282,14 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 //            super.getPayload()
 //        }
 
-        cancel() {
-            const valid = this._check_valid_rewards()
-            if (!valid) {
-                this.state.program.isSelected = false;
-                this.state.reward_line_vals.forEach(function(l) {l.isSelected = false});
-            }
-            super.cancel()
-        }
+//        cancel() {
+//            const valid = this._check_valid_rewards()
+//            if (!valid) {
+//                this.state.program.isSelected = false;
+//                this.state.reward_line_vals.forEach(function(l) {l.isSelected = false});
+//            }
+//            super.cancel()
+//        }
     };
 
     RewardSelectionCartPromotionPopup.template = 'RewardSelectionCartPromotionPopup';

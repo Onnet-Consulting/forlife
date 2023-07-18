@@ -17,6 +17,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
                 'promotion_ids': [(0, 0, {
                     "product_id": prm.product_id.id,
                     "value": prm.value,
+                    "promotion_type": prm.promotion_type,
                     "account_id": prm.account_id.id,
                     "analytic_account_id": prm.analytic_account_id.id,
                     "description": prm.description,

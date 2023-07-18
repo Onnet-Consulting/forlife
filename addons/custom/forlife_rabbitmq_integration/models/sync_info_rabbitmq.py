@@ -3,12 +3,23 @@
 from odoo import api, fields, models, _
 import pika
 import json
-import copy
 
 
 class SyncInfoRabbitmqCore(models.AbstractModel):
     _name = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Core'
+    _exchange = ''
+    _routing_key = ''
+    _priority = 10
+
+    def get_sync_info_value(self):
+        return []
+
+    def action_sync_info_data(self, action):
+        data = self.get_sync_info_value()
+        if data:
+            self.push_message_to_rabbitmq(data, action, self._name)
+        return True
 
     def domain_record_sync_info(self):
         return self
@@ -26,14 +37,20 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         parameter = pika.ConnectionParameters(host=rabbitmq_connection.host, port=rabbitmq_connection.port, credentials=credentials)
         connection = pika.BlockingConnection(parameter)
         channel = connection.channel()
-        channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
         message = {
             'action': action,
             'target': rabbitmq_queue.target,
             'data': data
         }
         message = json.dumps(message).encode('utf-8')
-        channel.basic_publish(exchange='', routing_key=rabbitmq_queue.queue_name, body=message)
+        channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
+        if self._exchange:
+            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'}, exchange_type='x-delayed-message')
+            channel.queue_bind(queue=rabbitmq_queue.queue_name, exchange=self._exchange, routing_key=self._routing_key)
+            properties = pika.BasicProperties(headers={'x-delay': 5000}, delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE)
+            channel.basic_publish(exchange=self._exchange, routing_key=self._routing_key, body=message, properties=properties)
+        else:
+            channel.basic_publish(exchange='', routing_key=rabbitmq_queue.queue_name, body=message)
         connection.close()
 
 
@@ -43,20 +60,12 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Create'
     _create_action = 'create'
 
-    def get_sync_create_data(self):
-        ...
-
-    def action_create_record(self):
-        data = self.get_sync_create_data()
-        if data:
-            self.push_message_to_rabbitmq(data, self._create_action, self._name)
-
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
         record = res.domain_record_sync_info()
         if record:
-            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_create_record()
+            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
         return res
 
 
@@ -66,22 +75,18 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Update'
     _update_action = 'update'
 
-    def get_sync_update_data(self, field_update, values):
-        ...
+    def get_field_update(self):
+        return []
 
-    def action_update_record(self, field_update, values):
-        data = self.get_sync_update_data(field_update, values)
-        if data:
-            self.push_message_to_rabbitmq(data, self._update_action, self._name)
-
-    def check_update_info(self, values):
-        ...
+    def check_update_info(self, list_field, values):
+        return any([1 for field in list_field if field in values.keys()])
 
     def write(self, values):
         res = super().write(values)
-        field_update = self.check_update_info(values)
-        if field_update:
-            self.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_update_record(field_update, values)
+        check = self.check_update_info(self.get_field_update(), values)
+        record = self.domain_record_sync_info()
+        if check and record:
+            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
         return res
 
 
@@ -100,7 +105,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.domain_record_sync_info().ids
         res = super().unlink()
         if record_ids:
-            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ').action_delete_record(record_ids)
+            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 
 
@@ -111,39 +116,14 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
     _create_action = 'create'
     _update_action = 'update'
 
-    def get_sync_create_data(self):
-        data = []
-        for address in self:
-            vals = {
-                'id': address.id,
-                'created_at': address.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'updated_at': address.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'code': address.code or None,
-                'name': address.name or None
-            }
-            data.append(vals)
-        return data
+    def get_sync_info_value(self):
+        return [{
+            'id': line.id,
+            'created_at': line.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'code': line.code,
+            'name': line.name
+        } for line in self]
 
-    def check_update_info(self, values):
-        field_check_update = ['code', 'name']
-        return [item for item in field_check_update if item in values]
-
-    def get_sync_update_data(self, field_update, values):
-        map_key_rabbitmq = {
-            'code': 'code',
-            'name': 'name',
-        }
-        vals = {}
-        for odoo_key in field_update:
-            if map_key_rabbitmq.get(odoo_key):
-                vals.update({
-                    map_key_rabbitmq.get(odoo_key): values.get(odoo_key) or None
-                })
-        data = []
-        for address in self:
-            vals.update({
-                'id': address.id,
-                'updated_at': address.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-            })
-            data.extend([copy.copy(vals)])
-        return data
+    def get_field_update(self):
+        return ['code', 'name']

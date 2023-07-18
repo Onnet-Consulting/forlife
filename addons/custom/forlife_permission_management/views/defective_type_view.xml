@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="defective_type_view_form_inherit" model="ir.ui.view">
+            <field name="name">defective.type.view.form</field>
+            <field name="model">defective.type</field>
+            <field name="inherit_id" ref="forlife_pos_product_change_refund.defective_type_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="team_id"/>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

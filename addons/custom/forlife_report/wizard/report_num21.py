@@ -3,8 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = [
     'STT', 'Trạng thái', 'Ngày HĐ', 'Số HĐ', 'Mã kho xuất', 'Kho xuất', 'Mã kho nhận', 'Kho nhận', 'Đơn vị tính', 'Mã vạch',
@@ -27,10 +25,27 @@ class ReportNum21(models.TransientModel):
     is_delivery = fields.Boolean(_('Delivery'), default=False)
     is_receive = fields.Boolean(_('Receive'), default=False)
     is_done = fields.Boolean(_('Done'), default=False)
+    product_ids = fields.Many2many('product.product', 'report_num21_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num21_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num21_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num21_texture_rel', string='Texture')
 
     @api.onchange('location_province_ids')
     def onchange_location_province(self):
         self.warehouse_ids = self.warehouse_ids.filtered(lambda f: f.loc_province_id.id in (self.location_province_ids.ids or [False]))
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -42,7 +57,7 @@ class ReportNum21(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         status = []
         if self.is_all or (not self.is_all and not self.is_delivery and not self.is_receive and not self.is_done):
@@ -85,45 +100,49 @@ account_by_categ_id as (
     full outer join acc_cost on acc_whs.cate_id = acc_cost.cate_id
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids})
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ),
 prepare_data_tb as (
     select '{{"out_approve":"Xác nhận xuất","in_approve":"Xác nhận nhập","done":"Hoàn thành"}}'::json as status
 )
 select 
     row_number() over (order by st.id)                                          as num,
-    (select status::json -> st.state from prepare_data_tb)                      as trang_thai,
+    (select status::json ->> st.state from prepare_data_tb)                      as trang_thai,
     ''                                                                          as ngay_hd,
     st.name                                                                     as so_hd,
     s_loc.code                                                                  as ma_kho_xuat,
     s_loc.name                                                                  as kho_xuat,
     d_loc.code                                                                  as ma_kho_nhan,
     d_loc.name                                                                  as kho_nhan,
-    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')   as don_vi_tinh,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as don_vi_tinh,
     pp.barcode                                                                  as ma_vach,
     pp.default_code                                                             as ma_hang,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')     as ten_hang,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')     as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
-    case when pc.name ilike '%hàng hóa%' then 'Nhập mua'
-        when pc.name ilike '%thành phẩm%' then 'Sản xuất' else ''
+    case when pc.name ilike '%%hàng hóa%%' then 'Nhập mua'
+        when pc.name ilike '%%thành phẩm%%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ad_color.value                                                              as mau_sac,
-    ad_size.value                                                               as kich_co,
-    ''                                                                          as dien_giai,
+    ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                        as mau_sac,
+    ad.attrs::json -> '{attr_value.get('size', '')}'                           as kich_co,
+    st.note                                                                     as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    kieu_dang.value                                                             as kieu_dang,
+    ad.attrs::json -> '{attr_value.get('subclass1', '')}'                      as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -133,8 +152,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    doi_tuong.value                                                             as doi_tuong,
-    nam_sx.value                                                                as nam_sx
+    ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                      as doi_tuong,
+    ad.attrs::json -> '{attr_value.get('nam_san_xuat', '')}'                   as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id
@@ -144,11 +163,7 @@ from stock_transfer st
     left join product_template pt on pt.id = product_tmpl_id
     left join product_category pc on pc.id = pt.categ_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
-    left join attribute_data ad_size on ad_size.product_id = stl.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
-    left join attribute_data ad_color on ad_color.product_id = stl.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data kieu_dang on kieu_dang.product_id = stl.product_id and kieu_dang.attrs_code = '{attr_value.get('subclass1', '')}'
-    left join attribute_data doi_tuong on doi_tuong.product_id = stl.product_id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
-    left join attribute_data nam_sx on nam_sx.product_id = stl.product_id and nam_sx.attrs_code = '{attr_value.get('nam_sx', '')}'
+    left join attribute_data ad on ad.product_id = stl.product_id    
 where {format_date_query("st.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and stl.product_id = any (array{product_ids})
     and (s_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids}))
@@ -161,15 +176,26 @@ order by num
         self.ensure_one()
         allowed_company = allowed_company or [-1]
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        else:
+            product_ids = [-1]
         if not self.location_province_ids:
             warehouse_ids = self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('loc_province_id', '=', False)]).ids or [-1]
         else:
             warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([
                 ('company_id', 'in', allowed_company), ('loc_province_id', 'in', self.location_province_ids.ids)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

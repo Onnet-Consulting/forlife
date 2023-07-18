@@ -19,6 +19,12 @@
                             <span class="o_stat_text">Phiếu NPL</span>
                         </div>
                     </button>
+
+                    <button name="view_move_tax_entry" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':[('state', 'not in', ('done'))]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Chi tiết bút toán</span>
+                        </div>
+                    </button>
                 </xpath>
                  <xpath expr="//header//button[@name='action_assign']" position="attributes">
                      <attribute name="attrs">{'invisible':True}</attribute>
@@ -31,10 +37,13 @@
                     <field name="move_line_nosuggest_ids" invisible="1"/>
                     <field name="move_line_ids_without_package" attrs="{'readonly': [('state', '=', 'done')]}">
                         <tree editable="bottom" class="width-hh">
+                            <field name="is_production_order" invisible="1"/>
                             <field name="product_id"/>
                             <field name="location_dest_id"/>
                             <field name="lot_name"/>
                             <field name="purchase_uom"
+                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
+                            <field name="free_good"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_change"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
@@ -48,6 +57,9 @@
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="reserved_uom_qty" invisible="1"/>
+                            <field name="occasion_code_id" string="Mã vụ việc"/>
+                            <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
+                            <field name="account_analytic_id" string="Trung tâm chi phí"/>
                         </tree>
                     </field>
                 </xpath>

@@ -44,6 +44,8 @@ li.line-unit-price, li.percent_discount, li.discount {
 ul.head {
     display: flex;
     flex-wrap: nowrap;
+    top: 0;
+    position: sticky;
 }
 ul.custom-info-list {
     display: flex;

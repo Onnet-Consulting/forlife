@@ -7,56 +7,90 @@
     </t>
 
     <t t-name="ReportNum17MainTemplate">
-        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
-            <t t-call="ReportTitle"/>
-            <tbody>
-                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-                <t t-foreach="options.data" t-as="line">
-                    <tr>
-                        <td><t t-esc="line.num"/></td>
-                        <td><t t-esc="line.ma_cn"/></td>
-                        <td><t t-esc="line.ten_cn"/></td>
-                        <td><t t-esc="line.ngay"/></td>
-                        <td><t t-esc="line.so_ct"/></td>
-                        <td><t t-esc="line.ma_kh"/></td>
-                        <td><t t-esc="line.sdt"/></td>
-                        <td><t t-esc="line.ten_kh"/></td>
-                        <td><t t-esc="line.mo_ta"/></td>
-                        <td><t t-esc="line.ma_the_gg"/></td>
-                        <td><t t-esc="line.voucher"/></td>
-                        <td><t t-esc="line.sl_mua"/></td>
-                        <td><t t-esc="line.sl_tra"/></td>
-                        <td><t t-esc="format_decimal(line.cong, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tong_cong - line.giam_tren_hd, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_dat_coc, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_tra_lai, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_tich_luy, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tich_luy_hd, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_the, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
-                        <td><t t-esc="line.nguoi_lap"/></td>
-                        <td><t t-esc="line.ngay_lap"/></td>
-                        <td><t t-esc="line.nguoi_sua"/></td>
-                        <td><t t-esc="line.ngay_sua"/></td>
-                        <td><t t-esc="line.so_ct_nhap"/></td>
-                        <td><t t-esc="line.ngay_ct_nhap"/></td>
-                        <td><t t-esc="line.nhan_vien"/></td>
-                        <td><t t-esc="line.nhom_khach"/></td>
-                        <td><t t-esc="line.ma_van_don"/></td>
-                        <td><t t-esc="line.kenh_ban"/></td>
-                    </tr>
-                </t>
-            </tbody>
-        </table>
+        <div class="oe_max_height_500">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                    <t t-foreach="options.data" t-as="line">
+                        <tr class="show-detail" t-att-id="line.num - 1">
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.ma_cn"/></td>
+                            <td><t t-esc="line.ten_cn"/></td>
+                            <td><t t-esc="line.ngay"/></td>
+                            <td><t t-esc="line.so_ct"/></td>
+                            <td><t t-esc="line.ma_kh"/></td>
+                            <td><t t-esc="line.sdt"/></td>
+                            <td><t t-esc="line.ten_kh"/></td>
+                            <td><t t-esc="line.mo_ta"/></td>
+                            <td><t t-esc="line.ma_the_gg"/></td>
+                            <td><t t-esc="line.voucher"/></td>
+                            <td><t t-esc="line.sl_mua"/></td>
+                            <td><t t-esc="line.sl_tra"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong - line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_dat_coc, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_tra_lai, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_tich_luy, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tich_luy_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_the, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_nextpay, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
+                            <td><t t-esc="line.nguoi_lap"/></td>
+                            <td><t t-esc="line.ngay_lap"/></td>
+                            <td><t t-esc="line.nguoi_sua"/></td>
+                            <td><t t-esc="line.ngay_sua"/></td>
+                            <td><t t-esc="line.so_ct_goc"/></td>
+                            <td><t t-esc="line.ngay_ct_goc"/></td>
+                            <td><t t-esc="line.nhan_vien"/></td>
+                            <td><t t-esc="line.nhom_khach"/></td>
+                            <td><t t-esc="line.ma_van_don"/></td>
+                            <td><t t-esc="line.kenh_ban"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div id="transaction-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportTransactionDetailTemplate17">
+        <button class="oe_tab">Transaction Detail</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+        <div class="oe_max_height_500">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-foreach="data" t-as="line">
+                        <t t-set="thanh_tien" t-value="(line.sl_mua - line.sl_tra) * line.gia_ban"/>
+                        <tr>
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.ma_vach"/></td>
+                            <td><t t-esc="line.ten_sp"/></td>
+                            <td><t t-esc="line.don_vi"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
+                            <t t-if="thanh_tien != 0"><td class="right"><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
+                            <t t-else=""><td>0</td></t>
+                            <td class="right"><t t-esc="format_decimal(line.tien_giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(thanh_tien - line.tien_giam_gia, 0)"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
     </t>
 </template>

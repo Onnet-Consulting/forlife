@@ -15,7 +15,7 @@
     'category': 'Sales/Point of Sale',
 
     'depends': [
-        'pos_cache',
+        'point_of_sale',
         # TODO: make another module to inherit this ..... i'm in a rush here :shame:
         'forlife_pos_promotion',
 
@@ -23,5 +23,10 @@
     'data': [
         'security/ir.model.access.csv',
         'data/pos_model_cache_data.xml',
-    ]
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'onnet_pos_model_cache/static/**/*',
+        ],
+    }
 }

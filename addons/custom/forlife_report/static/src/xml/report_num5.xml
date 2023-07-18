@@ -19,9 +19,9 @@
                             <td><t t-esc="line.employee_code"/></td>
                             <td><t t-esc="line.employee_name"/></td>
                             <t t-foreach="widget.column_add" t-as="column">
-                                <td><t t-esc="format_decimal(line[column])"/></td>
+                                <td class="right"><t t-esc="format_decimal(line[column])"/></td>
                             </t>
-                            <td><t t-esc="format_decimal(line.total_amount)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.total_amount)"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>
                     </t>
@@ -53,12 +53,13 @@
                             <td><t t-esc="line.customer_phone"/></td>
                             <td><t t-esc="line.customer_name"/></td>
                             <td><t t-esc="line.employee_name"/></td>
-                            <td><t t-esc="format_decimal(line.sl)"/></td>
-                            <td><t t-esc="format_decimal(line.tt, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.refund, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.refund_qty, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tt, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.refund, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill - line.refund, 0)"/></td>
                             <td><t t-esc="line.note"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>
@@ -83,16 +84,17 @@
                                 <td><t t-esc="line.product_code"/></td>
                                 <td><t t-esc="line.product_name"/></td>
                                 <td><t t-esc="line.uom_name"/></td>
-                                <td><t t-esc="format_decimal(line.qty, 0)"/></td>
-                                <td><t t-esc="format_decimal(line.lst_price, 0)"/></td>
+                                <td class="right"><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
+                                <td class="right"><t t-esc="format_decimal(line.refund_qty, 0)"/></td>
+                                <td class="right"><t t-esc="format_decimal(line.lst_price, 0)"/></td>
                                 <t t-if="line.price_subtotal">
-                                    <td><t t-esc="(line.money_reduced / line.price_subtotal * 100)"/></td>
+                                    <td class="right"><t t-esc="format_decimal(line.money_reduced / line.price_subtotal * 100, 0)"/></td>
                                 </t>
                                 <t t-else="">
                                     <td>0</td>
                                 </t>
-                                <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
-                                <td><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
+                                <td class="right"><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                                <td class="right"><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
                             </tr>
                             <t t-set="num" t-value="num + 1"/>
                         </t>

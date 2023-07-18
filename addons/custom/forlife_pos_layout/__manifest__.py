@@ -8,7 +8,8 @@
     'license': 'LGPL-3',
     'category': 'Sales/Point of Sale',
     'depends': [
-        'point_of_sale'
+        'point_of_sale',
+        'pos_sale'
     ],
     'auto_install': True,
     'application': False,
@@ -28,12 +29,17 @@
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/ProductScreen.xml',
             'forlife_pos_layout/static/src/js/Screens/ProductScreen/CustomOrderSummary.js',
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/CustomOrderSummary.xml',
+            'forlife_pos_layout/static/src/js/Screens/ProductScreen/ProductsWidgetControlPanel.js',
             'forlife_pos_layout/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml',
+            # 'forlife_pos_layout/static/src/xml/ControlButtons/RemoveButton.xml',
+            'forlife_pos_layout/static/src/xml/Screens/TicketScreen.xml',
             'forlife_pos_layout/static/src/xml/Chrome.xml',
             'forlife_pos_layout/static/src/js/Chrome.js',
             'forlife_pos_layout/static/src/js/models.js',
             ('replace', 'point_of_sale/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js',
              'forlife_pos_layout/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js'),
+            'forlife_pos_layout/static/src/js/Popup/CashMovePopup.js',
+            'forlife_pos_layout/static/src/js/Screens/ProductScreen/ProductScreen.js',
         ],
     }
 }

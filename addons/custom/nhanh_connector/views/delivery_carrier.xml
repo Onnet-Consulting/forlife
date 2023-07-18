@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="delivery_carrier_view_tree" model="ir.ui.view">
+        <field name="name">delivery_carrier_view_tree</field>
+        <field name="model">delivery.carrier</field>
+        <field name="arch" type="xml">
+            <tree string="Delivery Carrier">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="service_name"/>
+                <field name="nhanh_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="delivery_carrier_view_action" model="ir.actions.act_window">
+        <field name="name">Delivery Carrier</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">delivery.carrier</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="delivery_carrier_menu" name="Delivery Carrier" parent="base.menu_ir_property"
+              action="delivery_carrier_view_action"/>
+
+</odoo>

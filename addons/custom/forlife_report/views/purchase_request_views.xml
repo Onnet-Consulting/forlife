@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="purchase_request_form_view_inherit" model="ir.ui.view">
+            <field name="name">purchase_request_form_view_inherit</field>
+            <field name="model">purchase.request</field>
+            <field name="inherit_id" ref="purchase_request.purchase_request_from_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//header" position="inside">
+                    <button name="%(print_purchase_request)d" string="Print Purchase Request" class="oe_highlight" type="action"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

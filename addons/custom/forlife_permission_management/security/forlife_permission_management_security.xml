@@ -33,6 +33,21 @@
             <field name="sequence">20</field>
         </record>
 
+        <record id="group_stock" model="res.groups">
+            <field name="name">Kho</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_mer" model="res.groups">
+            <field name="name">MER</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_inventory" model="res.groups">
+            <field name="name">Kiểm kê</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <record id="group_request_stock_transfer_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu điều chuyển Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
@@ -205,6 +220,26 @@
             <field name="sequence">50</field>
         </record>
 
+        <record id="group_purchase_department_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng phòng</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_product_code" model="res.groups">
+            <field name="name">Mua hàng-Tem mã sản phẩm</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_group_manager" model="res.groups">
+            <field name="name">Mua hàng-Trưởng nhóm-Chuyên viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <record id="group_purchase_group_admin" model="res.groups">
+            <field name="name">Mua hàng-ADMIN</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
         <record id="group_purchase_request_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu mua hàng Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
@@ -252,7 +287,7 @@
         </record>
 
         <record id="group_pos_pos_order" model="res.groups">
-            <field name="name">POS/Hoạt động/Đơn hàng POS</field>
+            <field name="name">POS/Đơn hàng/Đơn hàng POS</field>
             <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
         </record>
 
@@ -288,5 +323,116 @@
             <field name="category_id" ref="forlife_permission_management.module_category_accounting"/>
         </record>
 
+        <!--Group chức năng EC-->
+
+        <record model="ir.module.category" id="module_category_ec">
+            <field name="name">Function EC</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="group_ec_user" model="res.groups">
+            <field name="name">EC Nhân viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_ec"/>
+        </record>
+
+        <record id="group_ec_manager" model="res.groups">
+            <field name="name">EC Quản lý</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_ec"/>
+        </record>
+
+        <!--Group chức năng DAXD-->
+
+        <record model="ir.module.category" id="module_category_daxd">
+            <field name="name">Function DAXD</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <record id="group_daxd_user" model="res.groups">
+            <field name="name">DAXD Nhân viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_daxd"/>
+        </record>
+
+        <record id="group_daxd_manager" model="res.groups">
+            <field name="name">DAXD Quản lý</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_daxd"/>
+        </record>
+
+        <!--Group chức năng Hành chính-->
+        <record model="ir.module.category" id="module_category_office">
+            <field name="name">Function Office</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <record id="group_office_user" model="res.groups">
+            <field name="name">Hành chính</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_office"/>
+        </record>
+        <!--Group chức năng Sản xuất-->
+
+        <record model="ir.module.category" id="module_category_manufacture">
+            <field name="name">Function Sản xuất</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_manufacture" model="res.groups">
+            <field name="name">Sản xuất</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_manufacture"/>
+        </record>
+
+        <!--Group chức năng Kinh doanh-->
+
+        <record model="ir.module.category" id="module_category_business">
+            <field name="name">Function Kinh doanh</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_business_manager" model="res.groups">
+            <field name="name">QL kinh doanh</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_business"/>
+        </record>
+
+        <record id="group_business_monitor" model="res.groups">
+            <field name="name">GS kinh doanh</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_business"/>
+        </record>
+
+        <!--Group chức năng DVKH-->
+
+        <record model="ir.module.category" id="module_category_mkt">
+            <field name="name">Function Marketing</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_marketing" model="res.groups">
+            <field name="name">Marketing</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_mkt"/>
+        </record>
+
+        <!--Group chức năng DVKH-->
+
+        <record model="ir.module.category" id="module_category_dvkh">
+            <field name="name">Function DVKH</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_dvkh_1" model="res.groups">
+            <field name="name">DVKH 1</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_2" model="res.groups">
+            <field name="name">DVKH 2</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_3" model="res.groups">
+            <field name="name">DVKH 3</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
+
+        <record id="group_dvkh_4" model="res.groups">
+            <field name="name">DVKH 4</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_dvkh"/>
+        </record>
     </data>
 </odoo>

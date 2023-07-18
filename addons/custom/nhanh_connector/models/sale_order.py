@@ -15,29 +15,42 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
-    nhanh_id = fields.Integer(string='Id Nhanh.vn')
-    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
+    nhanh_id = fields.Integer(string='Id Nhanh.vn', copy=False)
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn', copy=False)
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
     name_customer = fields.Char(string='Tên khách hàng mới')
     note_customer = fields.Text(string='Ghi chú khách hàng')
     order_partner_id = fields.Many2one('res.partner', 'Khách Order')
-    carrier_name = fields.Char('Carrier Name')
+    # carrier_name = fields.Char('Carrier Name')
 
-    nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
+    nhanh_customer_phone = fields.Float(string='SDT Khách hàng')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
-        ('confirmed', 'Confirmed'),
-        ('packing', 'Packing'),
-        ('pickup', 'Pickup'),
-        ('shipping', 'Shipping'),
-        ('returning', 'Returning'),
-        ('success', 'Success'),
-        ('canceled', 'Canceled'),
+        ('new', 'Đơn mới'),
+        ('confirming', 'Đang xác nhận'),
+        ('customerconfirming', 'Chờ khách xác nhận'),
+        ('confirmed', 'Đã xác nhận'),
+        ('packing', 'Đang đóng gói'),
+        ('packed', 'Đã đóng gói'),
+        ('changedepot', 'Đổi kho xuất hàng'),
+        ('pickup', 'Chờ thu gom'),
+        ('shipping', 'Đang chuyển'),
+        ('success', 'Thành công'),
+        ('failed', 'Thất bại'),
+        ('canceled', 'Khách hủy'),
+        ('aborted', 'Hệ thống hủy'),
+        ('carriercanceled', 'Hãng vận chuyển hủy đơn'),
+        ('soldout', 'Hết hàng'),
+        ('returning', 'Đang chuyển hoàn'),
+        ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
+    delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
+    x_voucher  = fields.Float(string='Giá trị voucher (Nhanh)')
+    x_code_voucher = fields.Char(string="Mã voucher/code (Nhanh)")
 
     # def write(self, vals):
     #     res = super().write(vals)
@@ -201,13 +214,23 @@ class SaleOrderNhanh(models.Model):
                 # đội ngũ bán hàng
                 team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
                 default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-                warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
-                if not warehouse_id:
-                    warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
-                                                                      limit=1)
+                # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                # if not warehouse_id:
+                #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
+                #                                                       limit=1)
+                # delivery carrier
+                delivery_carrier_id = self.env['delivery.carrier'].sudo().search(
+                    [('nhanh_id', '=', v['carrierId'])], limit=1)
+                if not delivery_carrier_id:
+                    delivery_carrier_id = self.env['delivery.carrier'].sudo().create({
+                        'nhanh_id': v['carrierId'],
+                        'name': v['carrierName'],
+                        'code': v['carrierCode'],
+                        'service_name': v['carrierServiceName']
+                    })
                 value = {
                     'nhanh_id': v['id'],
-                    'nhanh_status': v['statusCode'],
+                    'nhanh_order_status': v['statusCode'].lower(),
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],
@@ -220,11 +243,12 @@ class SaleOrderNhanh(models.Model):
                     'note': v['privateDescription'],
                     'note_customer': v['description'],
                     'x_sale_chanel': 'online',
-                    'carrier_name': v['carrierName'],
+                    # 'carrier_name': v['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id  else None,
+                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+                    'delivery_carrier_id': delivery_carrier_id.id,
                     'order_line': order_line
                 }
                 # đổi hàng

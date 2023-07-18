@@ -43,7 +43,12 @@ class ReportBase(models.AbstractModel):
 
     @api.model
     def get_available_report(self):
-        return [r for r in AVAILABLE_REPORT.values()]
+        res = []
+        for k, v in AVAILABLE_REPORT.items():
+            val = dict(v)
+            val.update({'do_action': f'forlife_report.{k.replace(".", "_")}_window_action'})
+            res.extend([val])
+        return res
 
     def get_data(self, allowed_company):
         report_data = AVAILABLE_REPORT.get(self._name, {})

@@ -9,7 +9,6 @@ from . import purchase_order
 from . import product_category
 from . import uom_uom
 from . import occasion_code
-from . import stock_move
 from . import asset_location
 from . import hr_asset_transfer
 from . import assets_assets
@@ -21,3 +20,6 @@ from . import stock_location
 from . import forlife_production
 from . import documents
 from . import warehouse_group
+from . import expense_item
+from . import res_brand
+from . import pos_expense_label

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-extend="ListView.buttons" t-name="import.production.buttons">
+        <t t-jquery="button.o_list_button_add" t-operation="after">
+            <button type="object" class="btn btn-primary import_your_action" style="margin-left:10px;">
+                Nhập từ excel
+            </button>
+        </t>
+    </t>
+</templates>

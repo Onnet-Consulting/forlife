@@ -6,11 +6,16 @@ from odoo.exceptions import UserError, ValidationError
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    from_company = fields.Many2one('res.company')
+    to_company = fields.Many2one('res.company')
+
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        if res is not True:
+        if 'endloop' in self._context and self._context.get('endloop'):
             return res
-        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return and self.location_id.id_deposit:
+        ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
+            and self.location_id.stock_location_type_id.id == ec_warehouse_id:
             data = []
             if self.company_id.code == '1300':
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
@@ -40,8 +45,8 @@ class StockPicking(models.Model):
                     'other_export': True,
                     'move_ids_without_package': data,
                 })
-                orther_export.button_validate()
-        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.id_deposit:
+                orther_export.with_context(endloop=True).button_validate()
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
             data = []
             location_mapping = self.env['stock.location.mapping'].sudo().search(
                 [('location_id', '=', self.location_dest_id.id)])
@@ -71,12 +76,12 @@ class StockPicking(models.Model):
                 'other_import': True,
                 'move_ids_without_package': data,
             })
-            other_import.button_validate()
+            other_import.with_context(endloop=True).button_validate()
         return res
 
     @api.model
     def _create_picking_from_pos_order_lines(self, location_dest_id, lines, picking_type, partner=False):
-        picking = super(StockPicking, self)._create_picking_from_pos_order_lines(location_dest_id, lines, picking_type,
+        pickings = super(StockPicking, self)._create_picking_from_pos_order_lines(location_dest_id, lines, picking_type,
                                                                                  partner)
         Picking = self.env['stock.picking']
         stockable_lines = lines.filtered(
@@ -88,31 +93,33 @@ class StockPicking(models.Model):
         negative_lines = stockable_lines - positive_lines
         data = []
         if negative_lines:
-            location_mapping = self.env['stock.location.mapping'].sudo().search(
-                [('location_map_id', '=', picking.location_dest_id.id)])
-            location_id = self.env.ref('forlife_inventory.nhap_tra_lai_hang_ki_gui_tu_dong', raise_if_not_found=False)
-            if location_mapping and location_mapping.location_id.id_deposit and location_mapping.location_id.account_stock_give:
-                company = location_mapping.location_id.warehouse_id.company_id.id
-                for line in picking.move_ids_without_package:
-                    product = line.product_id
-                    data.append((0, 0, {
-                        'product_id': product.id,
-                        'location_id': location_id.id,
-                        'location_dest_id': location_mapping.location_id.id,
-                        'name': product.display_name,
-                        'date': datetime.now(),
-                        'product_uom': line.uom_id.id,
-                        'product_uom_qty': line.product_uom_qty,
-                        'quantity_done': line.quantity_done,
-                        'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
-                    }))
-                pickking_ortherimport = Picking.with_company(company).create({
-                    'reason_type_id': self.env.ref('forlife_inventory.reason_type_import_return_product', raise_if_not_found=False).id,
-                    'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
-                    'location_id': location_id.id,
-                    'location_dest_id': location_mapping.location_id.id,
-                    'other_import': True,
-                    'move_ids_without_package': data,
-                })
-                pickking_ortherimport.button_validate()
-        return picking
+            for picking in pickings:
+                if picking.location_dest_id.id:
+                    location_mapping = self.env['stock.location.mapping'].sudo().search(
+                        [('location_map_id', '=', picking.location_dest_id.id)])
+                    location_id = self.env.ref('forlife_inventory.nhap_tra_lai_hang_ki_gui_tu_dong', raise_if_not_found=False)
+                    if location_mapping and location_mapping.location_id.id_deposit and location_mapping.location_id.account_stock_give:
+                        company = location_mapping.location_id.warehouse_id.company_id.id
+                        for line in picking.move_ids_without_package:
+                            product = line.product_id
+                            data.append((0, 0, {
+                                'product_id': product.id,
+                                'location_id': location_id.id,
+                                'location_dest_id': location_mapping.location_id.id,
+                                'name': product.display_name,
+                                'date': datetime.now(),
+                                'product_uom': line.uom_id.id,
+                                'product_uom_qty': line.product_uom_qty,
+                                'quantity_done': line.quantity_done,
+                                'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
+                            }))
+                        pickking_ortherimport = Picking.with_company(company).create({
+                            'reason_type_id': self.env.ref('forlife_inventory.reason_type_import_return_product', raise_if_not_found=False).id,
+                            'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
+                            'location_id': location_id.id,
+                            'location_dest_id': location_mapping.location_id.id,
+                            'other_import': True,
+                            'move_ids_without_package': data,
+                        })
+                        pickking_ortherimport.button_validate()
+        return pickings

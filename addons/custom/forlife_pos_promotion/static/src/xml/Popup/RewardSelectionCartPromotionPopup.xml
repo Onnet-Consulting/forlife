@@ -2,31 +2,26 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="RewardSelectionCartPromotionPopup" owl="1">
-        <div class="popup popup-text popup-med-custom product-configurator-popup">
-            <header class="title">
-                <span>Chọn phần thưởng</span><br/>
-                <t t-esc="this.state.program.program.display_name" />
-            </header>
-            <p t-if="state.hasError" style="color: red; background-color: antiquewhite;">
-                <t t-esc="error_msg" />
-            </p>
+        <div style="border-left: outset; margin: 6px">
             <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.max_reward_quantity"/> sản phẩm</div>
             <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
-            <hr/>
-            <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+            <div t-if="this.state.program.program.reward_type == 'cart_discount_amount'">
+                <span style="font-weight: normal">Số tiền giảm: </span>
+                <strong t-esc="this.env.pos.format_currency(this.state.program.program.disc_amount)"/>
+            </div>
                 <ul>
-                    <t t-foreach="props.reward_line_vals" t-as="reward" t-key="reward.line.cid">
-                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0"
+                    <t t-foreach="props.program.reward_line_vals" t-as="reward" t-key="reward.line.cid">
+                        <li class="program-item"
                             t-att-class="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'unselectable' : 'selectable'">
                             <input type="checkbox" name="programs"
-                                   t-att-id="reward.line.cid"
+                                   t-att-id="reward.line.cid+this.state.program.program.str_id"
                                    t-att-checked="'checked' ? reward.isSelected : ''"
                                    t-att-value="reward.line.cid"
                                    t-on-click="() => this.selectItem(reward.line.cid)"
                                    t-att-disabled="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'selectable' : ''"
                             />
-                            <label t-att-for="reward.line.cid">
-                                [<t t-esc="reward.line.cid"/>]
+                            <label t-att-for="reward.line.cid+this.state.program.program.str_id">
+                                [<t t-esc="reward.line.product.barcode or reward.line.product.default_code"/>]
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
                             <ul class="info-list">
@@ -35,8 +30,8 @@
                                         <t t-esc="reward.line.quantity" />
                                     </strong>
                                     <span><t t-esc="this.pricePerUnit(reward)"/></span>
-                                    <i class="fa fa-light fa-arrow-right"/>
-                                    <span><t t-esc="this.getDiscountPrice(reward)"/></span>
+                                    <i t-if="this.state.program.program.reward_type!='cart_discount_amount'" class="fa fa-light fa-arrow-right"/>
+                                    <span t-if="this.state.program.program.reward_type!='cart_discount_amount'"><t t-esc="this.getDiscountPrice(reward)"/></span>
                                 </li>
                             </ul>
                             <div t-if="reward.isSelected" style="margin: 0 0 0 20px;">
@@ -51,24 +46,6 @@
                             </div>
                         </li>
                     </t>
-<!--                    <p t-if="this.state.program.program.reward_type == 'cart_get_x_free'">-->
-<!--                        <label>Chọn sản phẩm tặng khác:</label>-->
-<!--                        <div>-->
-<!--                            <input class="" type="number" id="'additional_reward_qty_program_'+state.program.id"-->
-<!--                                   min="0" t-att-max="state.additional_reward_remaining_qty"-->
-<!--                                   t-att-value="state.program.additional_reward_product_qty > 0 ? state.program.additional_reward_product_qty : 0"/>-->
-<!--                            <select t-att-id="'additional_reward_product_selected_'+props.program.id"-->
-<!--                                    style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">-->
-<!--                                <option t-att-value="0">&#45;&#45;Chọn sản phẩm&#45;&#45;</option>-->
-<!--                                <option t-foreach="this.env.pos.get_reward_product_ids(state.program.program)"-->
-<!--                                        t-as="product_id" t-key="product_id" t-att-value="product_id"-->
-<!--                                        t-att-selected="state.program.additional_reward_product_id == product_id and 'selected' or ''">-->
-<!--                                    <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>-->
-<!--                                    <t t-out="product.display_name"/>-->
-<!--                                </option>-->
-<!--                            </select>-->
-<!--                        </div>-->
-<!--                    </p>-->
                 </ul>
                 <style>
                     .unselectable {
@@ -78,15 +55,6 @@
                         background-color: rgb(237 248 252);
                     }
                 </style>
-            </main>
-            <footer class="footer">
-                <div t-if="this.props.valid" class="button highlight confirm" t-on-click="confirm">
-                    Apply
-                </div>
-                <div class="button cancel" t-on-click="cancel">
-                    Cancel
-                </div>
-            </footer>
         </div>
     </t>
 

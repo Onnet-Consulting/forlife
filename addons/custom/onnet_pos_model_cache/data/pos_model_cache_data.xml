@@ -2,10 +2,34 @@
 <odoo>
     <data>
         <record model="ir.cron" id="refresh_pos_cache_cron">
-            <field name="name">PoS: refresh MODEL cache</field>
+            <field name="name">PoS: refresh ALL cache</field>
             <field name="model_id" ref="model_pos_model_cache"/>
             <field name="state">code</field>
-            <field name="code">model.refresh_all_caches()</field>
+            <field name="code">model.refresh_all_model_caches()</field>
+            <field name="active" eval="False"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+        <record model="ir.cron" id="refresh_pos_product_cache_cron">
+            <field name="name">PoS: refresh PRODUCT cache</field>
+            <field name="model_id" ref="model_pos_model_cache"/>
+            <field name="state">code</field>
+            <field name="code">model.refresh_product_model_caches()</field>
+            <field name="active" eval="False"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+        <record model="ir.cron" id="refresh_pos_promotion_cache_cron">
+            <field name="name">PoS: refresh PROMOTION cache</field>
+            <field name="model_id" ref="model_pos_model_cache"/>
+            <field name="state">code</field>
+            <field name="code">model.refresh_promotion_model_caches()</field>
             <field name="active" eval="False"/>
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>

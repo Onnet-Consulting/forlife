@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_member_card_view_form">
+        <field name="name">inherit.member.card.view.form</field>
+        <field name="model">member.card</field>
+        <field name="inherit_id" ref="forlife_customer_card_rank.member_card_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group/group[last()]" position="inside">
+                <field name="product_discount_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

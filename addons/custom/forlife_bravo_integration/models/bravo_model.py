@@ -145,6 +145,7 @@ class BravoModelUpdateAction(models.AbstractModel):
     _name = 'bravo.model.update.action'
     _inherit = ['bravo.model.core']
     _description = 'Bravo Model Update Action'
+    _bravo_field_sync = []
 
     @api.model
     def bravo_get_default_update_value(self):
@@ -217,11 +218,15 @@ class BravoModelUpdateAction(models.AbstractModel):
 
         return queries
 
+    def bravo_check_need_sync(self, field_update):
+        return any([f in self._bravo_field_sync for f in field_update])
+
     def write(self, values):
         res = super().write(values)
-        queries = self.bravo_get_update_sql(values)
-        if queries:
-            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if self.bravo_check_need_sync(list(values.keys())):
+            queries = self.bravo_get_update_sql(values)
+            if queries:
+                self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
 
@@ -411,7 +416,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         # update records existed queries
         update_queries = existing_records.bravo_get_update_sql_for_existing_multiple_records(**kwargs)
         # insert remain records (don't exist in Bravo yet) queries
-        insert_queries = newly_records.bravo_get_insert_sql()
+        insert_queries = newly_records.bravo_get_insert_sql(**kwargs)
         return update_queries + insert_queries
 
     @api.model

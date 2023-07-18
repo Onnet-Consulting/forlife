@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Resource: stock.warehouse -->
         <record id="warehouse_ho" model="stock.warehouse">
             <field name="partner_id" ref="base.main_partner"/>
@@ -9,26 +9,39 @@
         </record>
 
         <record id="enter_inventory_balance" model="stock.location">
-            <field name="name">Nhập cân đối tồn kho - tự kiểm kê</field>
-            <field name="code">1381000001</field>
+            <field name="name">Nhập cân đối tồn kho  -  tự kiểm kê</field>
+            <field name="code">N0201</field>
             <field name="type_other">incoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
             <field name="company_id" eval="False"/>
         </record>
         <record id="enter_inventory_balance_auto" model="stock.location">
-            <field name="name">Nhập cân đối tồn kho - kiểm kê định kỳ</field>
-            <field name="code">1381000002</field>
+            <field name="name">Nhập cân đối tồn kho  -  kiểm kê định kỳ</field>
+            <field name="code">X701</field>
             <field name="type_other">incoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
             <field name="company_id" eval="False"/>
         </record>
         <record id="export_inventory_balance" model="stock.location">
             <field name="name">Xuất cân đối tồn kho - tự kiểm kê</field>
-            <field name="code">1381000003</field>
+            <field name="code">X0201</field>
             <field name="type_other">outcoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
-            <field name="company_id" eval="False"/>
         </record>
+        <record id="import_inventory_balance_classify" model="stock.location">
+            <field name="name">Nhập tách/Gộp mã hàng hóa</field>
+            <field name="code">N0302</field>
+            <field name="type_other">incoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+        </record>
+
+        <record id="export_inventory_balance_classify" model="stock.location">
+            <field name="name">Xuất tách/Gộp mã hàng hóa</field>
+            <field name="code">X0302</field>
+            <field name="type_other">outcoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+        </record>
+
         <record id="export_inventory_balance_auto" model="stock.location">
             <field name="name">Xuất cân đối tồn kho - kiểm kê định kỳ</field>
             <field name="code">1381000004</field>
@@ -36,6 +49,7 @@
             <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
             <field name="company_id" eval="False"/>
         </record>
+
         <record id="export_production_order" model="stock.location">
             <field name="name">Xuất nguyên phụ liệu</field>
             <field name="code">1381000005</field>

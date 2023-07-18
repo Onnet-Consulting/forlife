@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <record id="forlife_reason_type_incoming_exchange" model="forlife.reason.type">
             <field name="name">Nhập kho thành phẩm</field>
         </record>
 
         <record id="forlife_reason_type_outgoing_exchange" model="forlife.reason.type">
             <field name="name">Xuất nguyên phụ liệu</field>
+        </record>
+
+        <record id="forlife_location_incoming_exchange" model="stock.location">
+            <field name="name">Nhập kho thành phẩm sản xuất/Nhập nguyên phụ liệu gia công</field>
+            <field name="code">N0101/N0102</field>
+            <field name="usage">supplier</field>
+            <field name="type_other">incoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="is_work_order" eval="True"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_incoming_exchange"/>
+        </record>
+
+        <record id="forlife_location_outgoing_exchange" model="stock.location">
+            <field name="name">Chi phí sản xuất- Chi phí nguyên vật liệu/Chi phí sản xuất- Chi phí nguyên vật liệu gia công</field>
+            <field name="code">X1001/X1002</field>
+            <field name="usage">customer</field>
+            <field name="type_other">outcoming</field>
+            <field name="active" eval="True"/>
+            <field name="company_id" eval="False"/>
+            <field name="is_work_order" eval="True"/>
+            <field name="reason_type_id" ref="forlife_stock_exchange.forlife_reason_type_outgoing_exchange"/>
         </record>
     </data>
 </odoo>

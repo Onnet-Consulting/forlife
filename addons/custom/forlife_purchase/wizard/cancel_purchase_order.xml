@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="cancel_order_wizard_form" model="ir.ui.view">
+            <field name="name">cancel.purchase.order.form</field>
+            <field name="model">cancel.purchase.order</field>
+            <field name="arch" type="xml">
+                <form string="Cancel Reason">
+                    <group class="oe_title">
+                        <field name="cancel_reason" />
+                    </group>
+                    <footer>
+                        <button name="cancel_confirm_action" string="Đồng ý" type="object" class="btn-primary"/>
+                        <button string="Hủy" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="cancel_order_wizard" model="ir.actions.act_window">
+            <field name="name">Cancel Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cancel.purchase.order</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cancel_order_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

@@ -39,7 +39,7 @@ select row_number() over (order by po.date_order desc)                      as n
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
     rp.name                                                                 as suppliers_name,
     pp.barcode                                                              as product_code,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
     pol.product_qty,
     pol.price_unit,
     pol.discount_percent,
@@ -64,8 +64,7 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query(allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

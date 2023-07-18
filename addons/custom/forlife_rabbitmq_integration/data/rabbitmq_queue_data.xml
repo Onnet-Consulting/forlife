@@ -168,5 +168,13 @@
             <field name="target">voucher_program</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
+
+        <record id="notification_plan_queue" model="rabbitmq.queue">
+            <field name="queue_key">voucher.voucher</field>
+            <field name="queue_name">notification_plan_queue</field>
+            <field name="description">Gửi Notification Voucher</field>
+            <field name="target">voucher_code</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
     </data>
 </odoo>

@@ -89,8 +89,8 @@ data_details as (
         ps2.name                                                as phien_bh,
         pc2.name                                                as pos,
         am2.name                                                as so_ct,
-        ''                                                      as noi_dung,
-        ''                                                      as khoan_muc,
+        absl2.reason                                            as noi_dung,
+        pel.name                                                as khoan_muc,
         tk.tk_no                                                as tk_no,
         tk.tk_co                                                as tk_co,
         greatest(absl2.amount, 0)::float                        as tien_thu,
@@ -107,6 +107,7 @@ data_details as (
         join res_users ru on absl2.create_uid = ru.id
         left join hr_employee he on ru.id = he.user_id
         left join res_partner rp on ru.partner_id = rp.id
+        left join pos_expense_label pel on absl2.expense_label_id = pel.id
     order by num
 ),
 tong_thu_chi as (
@@ -142,8 +143,7 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query()
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLE_LAYER1,
             'title_layer2': TITLE_LAYER2,

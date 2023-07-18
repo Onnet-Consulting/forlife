@@ -9,20 +9,38 @@ import json
 _logger = logging.getLogger(__name__)
 
 
-class ProductNhanh(models.Model):
+class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    nhanh_id = fields.Integer(string="Id Nhanh.Vn")
-    # code_product = fields.Char(string="Mã sản phẩm")
-    ## Nếu tạo sản phẩm từ Odoo == True else == False
+    nhanh_id = fields.Integer(string="Id Nhanh.Vn", copy=False)
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
-    width_product = fields.Float('Width')
-    height_product = fields.Float('Height')
+    # width_product = fields.Float('Width', copy=False)
+    # height_product = fields.Float('Height', copy=False)
+    # weight = fields.Float('Weight', digits='Stock Weight', default=0.2)
+
+    def get_nhanh_name(self):
+        product_name = f"{self.name} {self.barcode}"
+
+        # màu và size
+        color_name = ','.join(
+            self.attribute_line_ids.filtered(lambda v: v.attribute_id.name.upper() == "MÀU").value_ids.mapped('name')
+        )
+        size_name = ','.join(
+            self.attribute_line_ids.filtered(lambda v: v.attribute_id.name.upper() == "SIZE").value_ids.mapped('name')
+        )
+
+        if color_name and not size_name:
+            product_name = f"{product_name} ({color_name})"
+        elif size_name and not color_name:
+            product_name = f"{product_name} (SIZE {size_name})"
+        elif size_name and color_name:
+            product_name = f"{product_name} ({color_name} / SIZE {size_name})"
+        return product_name
 
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        if not res.brand_id.id:
+        if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
             return res
         self.synchronized_create_product(res)
         return res
@@ -31,11 +49,12 @@ class ProductNhanh(models.Model):
         if res.check_data_odoo and res.brand_id.id:
             nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
             if nhanh_configs.get('nhanh_connector.nhanh_app_id', '') or nhanh_configs.get(
-                    'nhanh_connector.nhanh_business_id', '') or nhanh_configs.get('nhanh_connector.nhanh_access_token', ''):
+                    'nhanh_connector.nhanh_business_id', '') or nhanh_configs.get('nhanh_connector.nhanh_access_token',
+                                                                                  ''):
 
                 data = [{
                     "id": res.id,
-                    "name": res.name,
+                    "name": res.get_nhanh_name(),
                     "code": res.barcode if res.barcode else '',
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
@@ -77,11 +96,54 @@ class ProductNhanh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'name' not in vals and 'barcode' not in vals and 'list_price' not in vals and 'weight' not in vals:
+        fields_up = vals.keys()
+        require_fields = [
+            'name',
+            'attribute_line_ids',
+            'barcode',
+            'list_price',
+            'weight',
+            'brand_id',
+            'categ_id'
+        ]
+
+        last_fields = set(require_fields) - set(fields_up)
+        if len(last_fields) == len(require_fields):
             return res
+        data = []
+        is_create = False
         for item in self:
-            data = [{
-                "id": item.id,
+            if not item.nhanh_id:
+                if item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
+                    is_create = True
+
+            elif item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
+                data.append({
+                    "id": item._origin.id,
+                    "idNhanh": item.nhanh_id,
+                    "name": item.get_nhanh_name(),
+                    "code": item.barcode if item.barcode else '',
+                    "barcode": item.barcode if item.barcode else '',
+                    "importPrice": item.list_price,
+                    "price": item.list_price,
+                    "shippingWeight": item.weight * 1000,
+                    "status": 'New'
+                })
+
+        if len(data):
+            self.synchronized_price_nhanh(data)
+        if is_create:
+            self.synchronized_create_product(self)
+        
+        return res
+
+    def unlink(self):
+        data = []
+        for item in self:
+            if not item.nhanh_id or not item.categ_id.category_type_id.x_sync_nhanh:
+                continue
+            data.append({
+                "id": item._origin.id,
                 "idNhanh": item.nhanh_id,
                 "name": item.name,
                 "code": item.barcode if item.barcode else '',
@@ -89,24 +151,15 @@ class ProductNhanh(models.Model):
                 "importPrice": item.list_price,
                 "price": item.list_price,
                 "shippingWeight": item.weight * 1000,
-                "status": 'New'
-            }]
-            self.synchronized_price_nhanh(data)
-        return res
-
-    def unlink(self):
-        for item in self:
-            data = '[{"id": "' + str(item.id) + '","idNhanh":"' + str(item.nhanh_id) + '", "price": "' + str(int(
-                item.list_price)) + '", "name": "' + str(item.name) + '", "shippingWeight": "' + str(
-                int(item.weight)) + '", "status": "' + 'Inactive' + '", "barcode": "' + str(
-                item.barcode if item.barcode else '') + '"}]'
-            self.synchronized_price_nhanh(data)
-        res = super().unlink()
-
-        return res
+                "status": 'Inactive'
+            })
+        if not data:
+            return super().unlink()
+        self.synchronized_price_nhanh(data)
+        return super().unlink()
 
     def synchronized_price_nhanh(self, data):
-        nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id])
+        nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id]).get(self.brand_id.id)
         if nhanh_configs.get('nhanh_connector.nhanh_app_id', '') or nhanh_configs.get(
                 'nhanh_connector.nhanh_business_id', '') or nhanh_configs.get('nhanh_connector.nhanh_access_token', ''):
             status_nhanh = 1

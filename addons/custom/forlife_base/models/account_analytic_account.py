@@ -9,7 +9,8 @@ class AccountAnalyticAccount(models.Model):
     address = fields.Char('Địa chỉ')
 
     _sql_constraints = [
-        ('unique_code', 'CHECK(1 = 1)','Code must be unique!')
+        ('unique_code', 'CHECK(1 = 1)','Code must be unique!'),
+        ('unique_company_code', 'UNIQUE(code, company_id)', 'Code must be unique per company !')
     ]
 
     def write(self, values):

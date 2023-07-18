@@ -36,6 +36,15 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
         getTotalNotFormat() {
             return this.props.order.get_total_with_tax();
         }
+
+        getTotalDiscountCustomDefective() {
+            var total = 0;
+            const orderlines = this.props.order.orderlines;
+            for (const orderline of orderlines) {
+                total += orderline.getTotalDiscountLineDefective();
+            }
+            return total;
+        }
     }
     CustomOrderSummary.template = 'CustomOrderSummary';
 

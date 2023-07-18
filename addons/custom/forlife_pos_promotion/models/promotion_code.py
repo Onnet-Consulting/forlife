@@ -2,6 +2,7 @@
 import random
 import unicodedata
 from uuid import uuid4
+import requests
 
 from odoo import models, fields, api, _
 
@@ -13,7 +14,7 @@ class PromotionCode(models.Model):
     _rec_name = 'name'
 
     def _get_code(self):
-        letters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789'
+        letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789'
         code = ''.join(random.choices(letters, k=8))
         if self.env['promotion.code'].search([('name', 'like', code)]):
             self._get_code()
@@ -87,3 +88,24 @@ class PromotionCode(models.Model):
         }
         action['domain'] = [('id', 'in', self.reward_code_ids.ids)]
         return action
+
+    @api.model_create_multi
+    def create(self, values):
+        res = super().create(values)
+        codes = res.filtered(lambda f: f.partner_id)
+        if codes:
+            codes.sudo().with_delay(description="GỬI NOTIFICATION MÃ CODE TẶNG CHO KHÁCH HÀNG").push_notification_to_app()
+        return res
+
+    def push_notification_to_app(self):
+        app_api_link = {}
+        for l in self.env['forlife.app.api.link'].search([]):
+            app_api_link.update({l.key: l.value})
+        for c in self:
+            try:
+                link = app_api_link.get(c.program_id.brand_id.code)
+                if link:
+                    param = f'type=pushNotificationVIP&id={c.program_id.notification_id}&voucher={c.name}&gift=&customerId={c.partner_id.phone}'
+                    requests.get(link + param)
+            except:
+                pass

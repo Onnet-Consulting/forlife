@@ -22,6 +22,7 @@ class PromotionPricelistItem(models.Model):
     fixed_price = fields.Float('Fix price')
     barcode = fields.Char(related='product_id.barcode')
     qty_available = fields.Float(related='product_id.qty_available')
+    with_code = fields.Boolean(related='program_id.with_code')
 
     @api.constrains('program_id', 'program_id')
     def check_unique_product_id(self):
@@ -31,10 +32,16 @@ class PromotionPricelistItem(models.Model):
 
     def name_get(self):
         res = []
+        result = []
         for line in self:
             name = line.program_id.name + ': ' + \
                    (line.product_id.barcode and '[' + line.product_id.barcode + ']' + ' ' or '') + \
                    line.product_id.name + ': ' +\
                    tools.format_amount(self.env, line.fixed_price, line.program_id.currency_id)
             res += [(line.id, name)]
+        if 'show_price' in self._context and self._context.get('show_price'):
+            for line in self:
+                record_name = str(line.fixed_price)
+                result.append((line.id, record_name))
+            return result
         return res

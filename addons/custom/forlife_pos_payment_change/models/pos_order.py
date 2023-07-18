@@ -190,10 +190,11 @@ class PosOrder(models.Model):
                     if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (
                             r['quantity'] - r['reserved_quantity']) < rec['count']:
                         product_not_availabel.append(rec['product_name'])
-        sql_product_id = f"SELECT pp.id, pt.detailed_type FROM product_product as pp JOIN product_template as pt ON pp.product_tm" \
-                         f"pl_id = pt.id WHERE pp.id in {product_ids}"
+        sql_product_id = f"SELECT pp.id, pt.detailed_type FROM product_product as pp JOIN product_template as pt " \
+                         f"ON pp.product_tmpl_id = pt.id WHERE pp.id in {product_ids}"
         self._cr.execute(sql_product_id)
-        data_product_ids = [x['id'] for x in self._cr.dictfetchall()] if self._cr.dictfetchall() else []
+        product_types = self._cr.dictfetchall()
+        data_product_ids = [x['id'] for x in product_types] if product_types else []
         for rec in order_lines[0]:
             if rec['product_id'] not in list_product_exits and rec['product_id'] not in data_product_ids:
                 product_not_availabel.append(rec['product_name'])

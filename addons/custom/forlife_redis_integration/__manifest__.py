@@ -14,7 +14,7 @@
     'category': 'Tools',
     'version': '16.0.1.0.0',
 
-    'depends': ['base', 'queue_job', 'stock'],
+    'depends': ['base', 'queue_job', 'stock', 'forlife_stock'],
     'auto_install': True,
 
     'data': [

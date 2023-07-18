@@ -1,5 +1,16 @@
 import requests
+import logging
 import json
+
+NHANH_BASE_URL = 'https://open.nhanh.vn/api'
+
+
+event_type_mapping = {
+    'orderAdd': 'order_add',
+    'orderUpdate': 'order_update',
+    'orderDelete': 'order_delete',
+    'webhooksEnabled': 'webhook_enabled'
+}
 
 
 def get_proxies():
@@ -13,6 +24,9 @@ def get_proxies():
         "ftp": ftp_proxy
     }
     return proxies
+
+
+_logger = logging.getLogger(__name__)
 
 
 def get_params(self, brand_id=None):
@@ -56,8 +70,9 @@ def get_nhanh_configs(self, brand_ids=None):
         if nhanh_configs.get(config_id.id):
             continue
         nhanh_configs[config_id.brand_id.id] = {
-            'nhanh_connector.nhanh_business_id': config_id.nhanh_business_id,
-            'nhanh_connector.nhanh_app_id': config_id.nhanh_app_id,
+            'nhanh_connector.nhanh_business_id': int(
+                config_id.nhanh_business_id) if config_id.nhanh_business_id else '',
+            'nhanh_connector.nhanh_app_id': int(config_id.nhanh_app_id) if config_id.nhanh_app_id else '',
             'nhanh_connector.nhanh_secret_key': config_id.nhanh_secret_key,
             'nhanh_connector.nhanh_access_code': config_id.nhanh_access_code,
             'nhanh_connector.nhanh_access_token': config_id.nhanh_access_token,
@@ -65,3 +80,66 @@ def get_nhanh_configs(self, brand_ids=None):
             'nhanh_connector.nhanh_return_link': config_id.nhanh_return_link,
         }
     return nhanh_configs
+
+
+def get_order_from_nhanh_id(self, order_id):
+    order_information = None
+    nhanh_configs = get_nhanh_configs(self)
+
+    for brand_id in self.env['res.brand'].sudo().search([]):
+        nhanh_config = nhanh_configs.get(brand_id.id, {})
+        if not nhanh_config:
+            continue
+        # Won't run if exist at least one empty param
+        if 'nhanh_connector.nhanh_app_id' not in nhanh_config or 'nhanh_connector.nhanh_business_id' not in nhanh_config \
+                or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
+            _logger.info(f'Nhanh configuration does not set')
+            continue
+        url = f"{NHANH_BASE_URL}/order/index"
+        data = {
+            "version": 2.0,
+            "appId": '%s' % nhanh_config.get('nhanh_connector.nhanh_app_id', 0),
+            "businessId": '%s' % nhanh_config.get('nhanh_connector.nhanh_business_id', 0),
+            "accessToken": nhanh_config.get('nhanh_connector.nhanh_access_token', ''),
+            "data": '{"id": %s}' % (order_id)
+        }
+        try:
+            res_server = requests.post(url, data=data)
+            res = res_server.json()
+        except Exception as ex:
+            _logger.info(f'Get orders from NhanhVn error {ex}')
+            continue
+        if res['code'] == 0:
+            _logger.info(f'Get order error {res["messages"]}')
+            continue
+        if not res['data']['orders'].get(str(order_id)):
+            continue
+        order_information = res['data']['orders'].get(str(order_id))
+        break
+    return order_information if order_information else res.get("messages", ""), brand_id
+
+
+def get_customers_from_nhanh(self, brand_id=None, data={}):
+    url = f"{NHANH_BASE_URL}/customer/search"
+    kwargs = get_params(self, brand_id)
+    kwargs.update({
+        "data": json.dumps(data)
+    })
+    customers = {}
+    try:
+        res_server = requests.post(url, data=kwargs)
+        res = res_server.json()
+        if res['code'] == 0:
+            _logger.info(f'Get customers error {res["messages"]}')
+
+        customers = res["data"]["customers"]
+    except Exception as ex:
+        _logger.info(f'Get orders from NhanhVn error {ex}')
+    return customers
+
+
+mapping_gender_nhanh = {
+    "1": "male",
+    "2": "female",
+    "3": "other"
+}

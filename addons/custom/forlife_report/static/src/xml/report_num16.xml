@@ -12,12 +12,12 @@
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
-                        <td><t t-esc="line.date"/></td>
+                        <td><t t-esc="line.stt"/></td>
+                        <td><t t-esc="line.ngay"/></td>
                         <td><t t-esc="line.so_ct"/></td>
-                        <td><t t-esc="line.wh_name"/></td>
+                        <td><t t-esc="line.kho_xuat"/></td>
                         <td><t t-esc="line.so_ct2"/></td>
-                        <td><t t-esc="line.wh_name2"/></td>
+                        <td><t t-esc="line.kho_nhap"/></td>
                         <td><t t-esc="line.ma_khach"/></td>
                         <td><t t-esc="line.ten_khach"/></td>
                         <td><t t-esc="line.doi_tuong"/></td>
@@ -40,6 +40,7 @@
                         <td><t t-esc="line.dv_tinh"/></td>
                         <td><t t-esc="line.nhap"/></td>
                         <td><t t-esc="line.xuat"/></td>
+                        <td><t t-esc="line.don_gia"/></td>
                         <td><t t-esc="line.ma_loai"/></td>
                         <td><t t-esc="line.ngay_to_khai"/></td>
                         <td><t t-esc="line.dien_giai"/></td>

@@ -214,9 +214,9 @@ class PosOrder(models.Model):
                 brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
                 brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
                 if branch_id == brand_format:
-                    is_purchased = self.partner_id.is_purchased_of_format or False
+                    is_purchased = rec.partner_id.is_purchased_of_format or False
                 elif branch_id == brand_tokyolife:
-                    is_purchased = self.partner_id.is_purchased_of_forlife or False
+                    is_purchased = rec.partner_id.is_purchased_of_forlife or False
                 else:
                     is_purchased = False
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
@@ -249,7 +249,7 @@ class PosOrder(models.Model):
                     # rec.point_order = 999
                     total_price_refund_product = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl < 0).mapped('price_subtotal_incl'))  # X1
                     total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
-                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0).mapped('price_subtotal_incl'))  # Y
+                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0 and x.product_id.id in valid_product_ids).mapped('price_subtotal_incl'))  # Y
                     money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
                     rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:

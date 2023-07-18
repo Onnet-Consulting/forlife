@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum23Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum23MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum23MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <t t-if="line.stt == 0">
+                        <tr class="row_subtotal">
+                            <td/>
+                            <td><t t-esc="line.cua_hang"/></td>
+                            <td/>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
+                        </tr>
+                    </t>
+                    <t t-else="">
+                        <tr>
+                            <td><t t-esc="line.stt"/></td>
+                            <td><t t-esc="line.cua_hang"/></td>
+                            <td><t t-esc="line.hang"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_tien, 0)"/></td>
+                        </tr>
+                    </t>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

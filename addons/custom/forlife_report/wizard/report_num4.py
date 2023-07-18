@@ -2,8 +2,6 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['STT', 'Mã Hàng', 'Tên Hàng', 'Nhóm hàng', 'Màu', 'Size', 'Bộ sưu tập', 'Kết cấu', 'Dòng hàng', 'SL cuối kỳ']
 COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
@@ -15,14 +13,30 @@ class ReportNum4(models.TransientModel):
     _description = 'Report stock by product'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
-    product_domain = fields.Char('Product', default='[]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num4_product_rel', string='Products')
+    product_brand_id = fields.Many2one('product.category', 'Product Brand')
+    product_group_ids = fields.Many2many('product.category', 'report_num4_group_rel', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'report_num4_line_rel', string='Product Line')
+    texture_ids = fields.Many2many('product.category', 'report_num4_texture_rel', string='Texture')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num4_warehouse_rel', string='Warehouse')
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         where_query = f"""
             sm.company_id = any (array{allowed_company})
@@ -34,32 +48,35 @@ class ReportNum4(models.TransientModel):
 
         query = f"""
 with attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
-), 
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
+),
 product_cate_info as
     (select 
         pp.id     		                                                          as product_id,
         cate.complete_name                                                        as complete_name,
         pp.barcode                                                                as product_barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')   as product_name,
         pt.collection                                                             as collection,
-        ad_size.value                                                             as size,
-        ad_color.value                                                            as color
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as color
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
-        left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+        left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
     ),
 stock as 
@@ -96,11 +113,22 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
+        Product = self.env['product.product']
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif self.texture_ids:
+            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
+        elif self.product_line_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_group_ids:
+            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif self.product_brand_id:
+            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        else:
+            product_ids = [-1]
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

@@ -8,24 +8,25 @@ class PosSession(models.Model):
     def _get_product_ids_by_store(self):
         location_id = self.config_id.picking_type_id.default_location_src_id.id
         query = '''
-                    SELECT pp.id AS ppid, sq.quantity FROM stock_quant sq 
+                    SELECT pp.id AS ppid FROM stock_quant sq 
                     RIGHT JOIN product_product pp ON pp.id = sq.product_id 
                     JOIN product_template pt ON pt.id = pp.product_tmpl_id
                     WHERE location_id = %(location_id)s 
-                    AND sq.quantity > 0 or pt.detailed_type = 'service'
+                    AND sq.quantity > 0
+                    UNION ALL
+                    SELECT pp.id 
+                    FROM product_product pp
+                    INNER JOIN product_template pt on pp.product_tmpl_id = pt.id
+                    WHERE pt.detailed_type = 'service'
                 '''
         self.env.cr.execute(query, {'location_id': location_id})
         data = self.env.cr.fetchall()
         return [id[0] for id in data]
 
-    def _get_pos_ui_product_product(self, params):
-        self = self.with_context(**params['context'])
-        if self.config_id.limited_products_loading:
-            params['search_params']['limit'] = self.config_id.limited_products_amount
-        products = self.env['product.product'].search_read(**params['search_params'])
-
-        self._process_pos_ui_product_product(products)
-        return products
+    def _loader_params_product_product(self):
+        values = super(PosSession, self)._loader_params_product_product()
+        values['search_params']['fields'].append('full_attrs_desc')
+        return values
 
     def _get_attributes_by_ptal_id(self):
         return []
