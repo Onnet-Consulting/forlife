@@ -7,7 +7,7 @@ from odoo import fields, models, _
 class IrModel(models.Model):
     _inherit = 'ir.model'
 
-    menu_ids = fields.One2many('ir.ui.menu', string='Menu', compute='_get_menu_ids')
+    menu_ids = fields.Many2many('ir.ui.menu', string='Menu', compute='_get_menu_ids', store=True, compute_sudo=True)
 
     def _get_menu_ids(self):
         for model_id in self:
