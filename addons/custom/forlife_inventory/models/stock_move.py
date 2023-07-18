@@ -2,6 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
 
+
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
@@ -9,7 +10,10 @@ class StockMove(models.Model):
         am_vals = super(StockMove, self)._account_entry_move(qty, description, svl_id, cost)
         journal_id, acc_src, acc_dest, acc_valuation = self._get_accounting_data_for_valuation()
         if self._is_give():
-            am_vals.append(self.with_context(_is_give=True).with_company(self.mapped('move_line_ids.location_id.company_id'))._prepare_account_move_vals(acc_src, acc_valuation, journal_id, qty, description, svl_id, cost))
+            am_vals.append(
+                self.with_context(_is_give=True).with_company(self.mapped('move_line_ids.location_id.company_id'))._prepare_account_move_vals(acc_src, acc_valuation,
+                                                                                                                                              journal_id, qty,
+                                                                                                                                              description, svl_id, cost))
         return am_vals
 
     def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description):
@@ -60,6 +64,8 @@ class StockMove(models.Model):
 
     def _get_give_move_lines(self):
         res = self.env['stock.move.line']
+        warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
+        warehouse_type_id_ec = warehouse_type_id_ec.id if warehouse_type_id_ec else 0
         for move_line in self.move_line_ids:
             warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
             if move_line.owner_id and move_line.owner_id != move_line.company_id.partner_id:
@@ -67,9 +73,11 @@ class StockMove(models.Model):
             if move_line.picking_id.from_company and move_line.picking_id.from_company.code == '1300' and move_line.picking_id.to_company and move_line.picking_id.to_company.code == '1400':
                 if (move_line.picking_id.location_id.warehouse_id.whs_type.id in [warehouse_type_master]
                     and move_line.picking_id.location_dest_id.id_deposit) \
-                    or (move_line.picking_id.location_id.id_deposit
-                    and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master])\
-                    or (move_line.picking_id.location_id.id_deposit or move_line.picking_id.location_dest_id.id_deposit):
+                        or (move_line.picking_id.location_id.id_deposit
+                            and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master]):
+                    res |= move_line
+                if (move_line.picking_id.location_id.id_deposit and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_ec]) \
+                        or (move_line.picking_id.location_dest_id.id_deposit and move_line.picking_id.location_id.warehouse_id.whs_type.id in [warehouse_type_id_ec]):
                     res |= move_line
         return res
 
