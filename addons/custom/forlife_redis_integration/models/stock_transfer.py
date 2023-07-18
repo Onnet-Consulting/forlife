@@ -22,13 +22,13 @@ class StockTransferInherit(models.Model):
             if brand_id:
                 hash_key = 'INT-TKL' if brand_id.code == 'TKL' else 'INT-FM'
                 data = {
-                    "InvoiceNo": rec.name or '',
-                    "TotalCarriage": rec.total_package,
-                    "InvoiceDate": rec.create_date.strftime('%d-%m-%Y'),
-                    "Descriptions": rec.note or '',
-                    "Weight": rec.total_weight,
-                    "BranchID": rec.location_id.code or '',
-                    "BranchID2": rec.location_dest_id.code or ''
+                    "bill_code": rec.name or '',
+                    "num_of_packs": rec.total_package,
+                    "export_date": rec.create_date.strftime('%d-%m-%Y'),
+                    "description": rec.note or '',
+                    "weight": rec.total_weight,
+                    "branch_from": rec.location_id.code or '',
+                    "branch_to": rec.location_dest_id.code or ''
                 }
 
                 self.hset('internal_transfer', hash_key, rec.name, json.dumps(data))
