@@ -30,4 +30,6 @@ from . import attribute_code_config
 from . import ir_model
 from . import ir_ui_menu
 from . import search_by_name_code
+from . import res_groups
+from . import ir_model_access
 from . import stock_picking
