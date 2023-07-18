@@ -198,10 +198,11 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                             this._onDoRefund(partner, clickedOrder);
                         }
                     }
-                }
-                else{
+                } else {
                     this._onDoRefund(partner, clickedOrder);
                 }
+            } else {
+                this._onDoRefund(partner, clickedOrder);
             }
         }
 
