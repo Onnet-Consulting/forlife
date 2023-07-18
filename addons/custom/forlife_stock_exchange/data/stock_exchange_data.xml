@@ -10,7 +10,8 @@
         </record>
 
         <record id="forlife_location_incoming_exchange" model="stock.location">
-            <field name="name">Nhập kho thành phẩm sản xuất</field>
+            <field name="name">Nhập kho thành phẩm sản xuất/Nhập nguyên phụ liệu gia công</field>
+            <field name="code">N0101/N0102</field>
             <field name="usage">supplier</field>
             <field name="type_other">incoming</field>
             <field name="active" eval="True"/>
@@ -20,7 +21,8 @@
         </record>
 
         <record id="forlife_location_outgoing_exchange" model="stock.location">
-            <field name="name">Xuất kho nguyên phụ liệu sản xuất</field>
+            <field name="name">Chi phí sản xuất- Chi phí nguyên vật liệu/Chi phí sản xuất- Chi phí nguyên vật liệu gia công</field>
+            <field name="code">X1001/X1002</field>
             <field name="usage">customer</field>
             <field name="type_other">outcoming</field>
             <field name="active" eval="True"/>
