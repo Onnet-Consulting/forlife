@@ -2142,11 +2142,6 @@ class PurchaseOrderLine(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
 
-    def _prepare_account_move_line(self, move=False):
-        self.ensure_one()
-        res = super(AccountMoveLine, self)._prepare_account_move_line(move)
-        res['asset_code'] = self.asset_code
-
     @api.constrains('total_vnd_exchange_import',
                     'total_vnd_amount', 'before_tax',
                     'order_id.is_inter_company','order_id')
@@ -2364,6 +2359,7 @@ class PurchaseOrderLine(models.Model):
                 rec.write({'readonly_discount_percent': False,
                            'readonly_discount': False,
                            })
+
 
     @api.onchange("discount_percent", 'vendor_price')
     def _onchange_discount_percent(self):
