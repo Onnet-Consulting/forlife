@@ -517,11 +517,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     async set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
-        if (oldPartner !== this.get_partner() && this.state) {
+        // Nếu là đơn hàng mới trên POS mới (phân biệt với đơn locked tải từ backend) thực hiện gọi API lấy lịch sử KM
+        let isNewOrder = !this.pos.selectedOrder || this.pos.orders.map(order => order.uid).includes(this.uid) && this.pos.selectedOrder;
+        if (oldPartner !== this.get_partner() && isNewOrder) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
         };
-        if (!this.locked) {
+        if (isNewOrder) {
             await this.load_promotion_valid_new_partner();
             // Đặt lại và gán pricelist_item vào các order_line
             this.assign_pricelist_item_to_orderline();
