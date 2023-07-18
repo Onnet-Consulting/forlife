@@ -2322,15 +2322,19 @@ class PurchaseOrderLine(models.Model):
 
     # discount
     @api.depends("free_good")
-    def _compute_free_goodf(self):
+    def _compute_free_good(self):
         for rec in self:
             if rec.free_good:
                 rec.write({'discount': 0,
                            'discount_percent': 0,
+                           'readonly_discount_percent': True,
+                           'readonly_discount': True,
                            })
-                rec.readonly_discount_percent = rec.readonly_discount = True
             else:
-                rec.readonly_discount_percent = rec.readonly_discount = False
+                rec.write({'readonly_discount_percent': False,
+                           'readonly_discount': False,
+                           })
+                           
 
     # discount
     @api.onchange("free_good")
@@ -2343,6 +2347,7 @@ class PurchaseOrderLine(models.Model):
             self.readonly_discount_percent = self.readonly_discount = True
         else:
             self.readonly_discount_percent = self.readonly_discount = False
+
 
     @api.onchange("discount_percent", 'vendor_price')
     def _onchange_discount_percent(self):
