@@ -44,12 +44,14 @@ class StockTransfer(models.Model):
         default='transfer_between_warehouse', required=1)
     state = fields.Selection(
         string="Status",
-        selection=[('approved', 'Approved'),
+        selection=[('draft', 'Draft'),
+                   ('wait_approve', 'Wait Approve'),
+                   ('approved', 'Approved'),
                    ('out_approve', 'Out Approve'),
                    ('in_approve', 'In Approve'),
                    ('done', 'Done'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel')], default='approved')
+                   ('cancel', 'Cancel')], default='draft')
     is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False, copy=False)
     stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Chi tiết')
     total_package = fields.Float(string='Total Package (Number)')
@@ -391,7 +393,7 @@ class StockTransfer(models.Model):
                 }
             }
 
-    def _create_diff_transfer(self, data, state='approved', type=''):
+    def _create_diff_transfer(self, data, state='draft', type=''):
         self.ensure_one()
         return self.env['stock.transfer'].create({
             'reference_document': self.name,

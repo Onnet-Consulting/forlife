@@ -2376,7 +2376,10 @@ class PurchaseOrderLine(models.Model):
                         ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
                         if closest_quantity is None or line.min_qty > closest_quantity:
                             closest_quantity = line.min_qty
-                            rec.vendor_price = line.price
+                            if not rec.free_good:
+                                rec.vendor_price = line.price
+                            else:
+                                rec.vendor_price = 0
                             rec.exchange_quantity = line.amount_conversion
 
     # discount
@@ -3217,17 +3220,17 @@ class StockPicking(models.Model):
         if record.state == 'done':
             move = False
             ### Tìm bản ghi Xuât Nguyên Phụ Liệu
-            reason_type_6 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
-                                                                    ('code', '=', '06')
-                                                                    ], limit=1)
+            # reason_type_6 = self.env['forlife.reason.type'].search([('code', '=', 'X1201')], limit=1)
             export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id),
-                                                                         ('code', '=', '1381000005')
+                                                                         ('code', '=', 'X1201')
                                                                          ], limit=1)
-            if not reason_type_6:
-                raise ValidationError('Bạn chưa có loại lý do Xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 06')
+            # if not reason_type_6:
+            #     raise ValidationError('Bạn chưa có loại lý do Xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 06')
             if not export_production_order.x_property_valuation_in_account_id:
-                raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có code = 1381000005')
+                raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có mã: X1201')
             else:
+                if not export_production_order.reason_type_id:
+                    raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
                 move = self.env['stock.move'].search(
@@ -3245,7 +3248,8 @@ class StockPicking(models.Model):
                         if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                         if material_line.price_unit > 0:
-                            pbo = material_line.price_unit * r.quantity_done/item.product_qty
+                            # pbo = material_line.price_unit * r.quantity_done/item.product_qty
+                            pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,

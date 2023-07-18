@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-
+from .utils import collect_invoice_to_bkav_end_day
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
@@ -20,6 +20,13 @@ class SummaryAccountMovePosReturn(models.Model):
     number_bill = fields.Char('Số hóa đơn')
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
+
+
+    def collect_return_invoice_to_bkav_end_day(self):
+        model = self.env['summary.account.move.pos.return']
+        model_line = self.env['summary.account.move.pos.return.line']
+        return collect_invoice_to_bkav_end_day(self, 'out_refund', model, model_line)
+
 
 
 class SummaryAccountMovePosReturnLine(models.Model):

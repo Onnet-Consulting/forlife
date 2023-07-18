@@ -219,9 +219,7 @@ class StockPicking(models.Model):
     def create_return_valuation_npl(self):
         lines_npl = []
         picking_type_id, npl_location_id = self._get_picking_info_return(self.purchase_id)
-        reason_type_7 = self.env['forlife.reason.type'].search([('company_id', '=', self.env.company.id),
-                                                                ('code', '=', '07')
-                                                                ], limit=1).id
+        reason_type_7 = self.env['forlife.reason.type'].search([('code', '=', '07')], limit=1).id
         if not reason_type_7:
             raise ValidationError(
                 'Bạn chưa có loại lý do Nhập trả nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 07')
