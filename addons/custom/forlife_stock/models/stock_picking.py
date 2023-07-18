@@ -51,7 +51,11 @@ class StockPickingOverPopupConfirm(models.TransientModel):
         list_line_over = []
         list_line_less = []
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            tolerance = pk.product_id.tolerance
+            # tolerance = pk.product_id.tolerance
+            tolerance = pk.product_id.tolerance_ids.filtered(
+                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
+                                                                                               reverse=False)[
+                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
             if pk.qty_done != pk_od.product_uom_qty:
                 if pk.qty_done > pk_od.product_uom_qty:
                     list_line_over.append((0, 0, {
@@ -91,7 +95,11 @@ class StockPickingOverPopupConfirm(models.TransientModel):
             }
             xk_picking = self.env['stock.picking'].create(master_data_over)
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            tolerance = pk.product_id.tolerance
+            # tolerance = pk.product_id.tolerance
+            tolerance = pk.product_id.tolerance_ids.filtered(
+                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
+                                                                                               reverse=False)[
+                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
             if pk.qty_done > pk_od.product_uom_qty:
                 pk.write({
                     'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
@@ -132,41 +140,42 @@ class StockPicking(models.Model):
 
     def button_forlife_validate(self):
         self.ensure_one()
-        # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
-        #     self._update_forlife_production()
-        view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
-        view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
-        # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
-        #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
-        #         tolerance = pk.product_id.tolerance
-        #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
-        #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
-        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-               zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-            return {
-                'name': 'Tạo phần dở dang thừa?',
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'res_model': 'stock.picking.over.popup.confirm',
-                'views': [(view_over.id, 'form')],
-                'view_id': view_over.id,
-                'target': 'new',
-                'context': dict(self.env.context, default_picking_id=self.id),
-            }
-        # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-        #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
-        #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
-        #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-        #     return {
-        #         'name': 'Tạo phần dở dang thừa/thiếu?',
-        #         'type': 'ir.actions.act_window',
-        #         'view_mode': 'form',
-        #         'res_model': 'stock.picking.over.popup.confirm',
-        #         'views': [(view_over_less.id, 'form')],
-        #         'view_id': view_over_less.id,
-        #         'target': 'new',
-        #         'context': dict(self.env.context, default_picking_id=self.id),
-        #     }
+        if self.is_pk_purchase:
+            # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+            #     self._update_forlife_production()
+            view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
+            view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
+            # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
+            #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
+            #         tolerance = pk.product_id.tolerance
+            #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
+            #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
+            if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+                   zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+                return {
+                    'name': 'Tạo phần dở dang thừa?',
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_model': 'stock.picking.over.popup.confirm',
+                    'views': [(view_over.id, 'form')],
+                    'view_id': view_over.id,
+                    'target': 'new',
+                    'context': dict(self.env.context, default_picking_id=self.id),
+                }
+            # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
+            #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
+            #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
+            #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
+            #     return {
+            #         'name': 'Tạo phần dở dang thừa/thiếu?',
+            #         'type': 'ir.actions.act_window',
+            #         'view_mode': 'form',
+            #         'res_model': 'stock.picking.over.popup.confirm',
+            #         'views': [(view_over_less.id, 'form')],
+            #         'view_id': view_over_less.id,
+            #         'target': 'new',
+            #         'context': dict(self.env.context, default_picking_id=self.id),
+            #     }
         return self.button_validate()
 
     def action_confirm(self):

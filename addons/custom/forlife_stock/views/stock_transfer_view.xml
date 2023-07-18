@@ -37,10 +37,10 @@
                 <header>
                     <button string="Back to draft" name="action_draft" type="object"
                             attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
-                    <button string="Send" name="action_wait_approve"
-                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
-                    <button string="Approve" name="action_approve" type="object"
-                            attrs="{'invisible':[ ('state', '!=', 'wait_approve')]}"/>
+<!--                    <button string="Send" name="action_wait_approve"-->
+<!--                            type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>-->
+<!--                    <button string="Approve" name="action_approve" type="object"-->
+<!--                            attrs="{'invisible':[ ('state', '!=', 'wait_approve')]}"/>-->
                     <button string="Out Approve" name="action_out_approve" type="object"
                             attrs="{'invisible':[ ('state', 'not in', ('approved', 'in_approve'))]}"/>
                     <button string="In Approve" name="action_in_approve" type="object"
