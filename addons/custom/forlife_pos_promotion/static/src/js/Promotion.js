@@ -1922,7 +1922,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     to_reward_lines,
                     to_discount_lines,
                     isSelected,
-                    reward_line_vals: []
+                    reward_line_vals: [],
+                    floor
                 });
             };
         };
