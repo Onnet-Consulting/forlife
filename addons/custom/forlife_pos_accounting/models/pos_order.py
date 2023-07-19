@@ -1,6 +1,7 @@
 import pytz
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import float_round
 
 PROMOTION_JOURNAL_FIELD = {
     'points.promotion': 'account_journal_id',
@@ -46,6 +47,25 @@ class InheritPosOrder(models.Model):
             credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
             credit_account_id = (credit_account['income'] or credit_account['expense']).id
 
+        price_unit = order_line.price_unit
+        tax_entries_line = []
+        for tax in order_line.tax_ids_after_fiscal_position:
+            for repartition in tax['invoice_repartition_line_ids' if order_line.price_unit >= 0 else 'refund_repartition_line_ids']:
+                if repartition.repartition_type != 'tax':
+                    continue
+                tax_entry_amount = float_round(value=price_unit * tax.amount / 100, precision_digits=0)
+                if not tax_entry_amount:
+                    continue
+                price_unit -= tax_entry_amount
+                tax_entries_line.append((0, 0, {
+                    'name': tax.name,
+                    'account_id': repartition.account_id.id,
+                    'credit': 0,
+                    'debit': tax_entry_amount if tax_entry_amount >= 0 else -tax_entry_amount,
+                    'tax_tag_ids': [(6, 0, repartition.tag_ids.ids)],
+                    'display_type': repartition.repartition_type
+                }))
+
         return [
             (0, 0, {
                 'partner_id': partner_id,
@@ -55,14 +75,13 @@ class InheritPosOrder(models.Model):
                 'product_id': order_line.product_id.id,
                 'quantity': order_line.qty,
                 'discount': order_line.discount,
-                'price_unit': order_line.price_unit,
+                'price_unit': price_unit,
                 'name': name,
-                'tax_ids': [(6, 0, order_line.tax_ids_after_fiscal_position.ids)],
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'product',
                 'account_id': credit_account_id or None,
                 'credit': 0,
-                'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
+                'debit': price_unit if price_unit >= 0 else -price_unit,
             }), (0, 0, {
                 'partner_id': partner_id,
                 'is_state_registration': order_line.is_state_registration,
@@ -78,7 +97,7 @@ class InheritPosOrder(models.Model):
                 'credit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
                 'debit': 0,
             })
-        ]
+        ] + tax_entries_line
 
     def create_promotion_account_move(self):
         self.ensure_one()
