@@ -9,7 +9,7 @@
 
     'author': "ForLife",
     'website': "",
-    "license": "LGPL-3",
+    'license': 'LGPL-3',
 
     'category': 'Tools',
     'version': '16.0.1.0.0',

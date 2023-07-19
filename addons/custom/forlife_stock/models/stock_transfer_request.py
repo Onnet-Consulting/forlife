@@ -154,7 +154,7 @@ class StockTransferRequest(models.Model):
             raise ValidationError(
                 _('It is mandatory to enter all the commodity information before confirming the stock transfer request!'))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
@@ -299,7 +299,7 @@ class TransferRequestLine(models.Model):
             if rec.plan_quantity <= 0:
                 raise ValidationError(_("Plan quantity should not be less than or equal to 0 !!"))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))

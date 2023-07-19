@@ -13,6 +13,7 @@ from odoo.exceptions import ValidationError
 
 class ApisVietinBank(models.AbstractModel):
     _name = 'apis.vietinbank'
+    _description = 'APIs Vietinbank'
 
     def _ramdom_request(self):
         random_hex = ''.join(random.choices('0123456789ABCDEF', k=8))
@@ -130,7 +131,7 @@ class ApisVietinBank(models.AbstractModel):
 
 class VietinBankModel(models.TransientModel):
     _name = 'vietinbank.transaction.model'
-    _description = ''
+    _description = 'Vietinbank transaction'
 
     pos_order_id = fields.Many2one('pos.order', string='Pos Order')
     payment_method_id = fields.Many2one('pos.payment.method', string='Payment method')

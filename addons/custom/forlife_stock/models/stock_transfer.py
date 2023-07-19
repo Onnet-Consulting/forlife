@@ -441,7 +441,7 @@ class StockTransfer(models.Model):
                           # })],
                           })
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code

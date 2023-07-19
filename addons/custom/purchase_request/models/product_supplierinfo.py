@@ -19,7 +19,7 @@ class SupplierInfo(models.Model):
                 fields[fields.index('partner_id')] = 'supplier_code'
         return super().load(fields, data)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('supplier_code') and not vals.get('partner_id'):
             partner_id = self.env['res.partner'].search([('ref', '=', vals.get('supplier_code'))], limit=1).id

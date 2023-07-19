@@ -9,6 +9,7 @@ class ForlifeProduction(models.Model):
 
 class ProductionMaterialImport(models.Model):
     _name = 'production.material.import'
+    _description = "Production material import"
 
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Mã vật tư')

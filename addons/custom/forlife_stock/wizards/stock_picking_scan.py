@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class StockPickingScan(models.TransientModel):
     _name = 'stock.picking.scan'
+    _description = "Stock Picking Scan"
 
     picking_id = fields.Many2one(comodel_name='stock.picking', required=True)
     barcode = fields.Char('Barcode')
@@ -29,6 +30,7 @@ class StockPickingScan(models.TransientModel):
 
 class StockPickingScanLine(models.TransientModel):
     _name = 'stock.picking.scan.line'
+    _description = "Stock Picking Scan line"
 
     stock_picking_scan_id = fields.Many2one(comodel_name='stock.picking.scan', ondelete='cascade')
     move_line_id = fields.Many2one(comodel_name='stock.move.line', required=True, string='Sản phẩm')

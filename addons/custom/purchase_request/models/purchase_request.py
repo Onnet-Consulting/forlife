@@ -18,8 +18,8 @@ class PurchaseRequest(models.Model):
     user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
-    date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
-    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True, options={'format': 'DD-MM-YYYY'})
+    date_planned = fields.Datetime(string='Expected Arrival', required=True)
+    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True)
     order_lines = fields.One2many('purchase.request.line', 'request_id', copy=True)
     order_ids = fields.One2many('purchase.order', 'request_id')
     rejection_reason = fields.Char(string="Rejection_reason")
@@ -156,7 +156,7 @@ class PurchaseRequest(models.Model):
                 if time_request > time_plan:
                     raise ValidationError(_("Expected Arrival must be greater than request date"))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
@@ -305,7 +305,7 @@ class PurchaseRequestLine(models.Model):
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival')
     request_date = fields.Date(string='Request date')
-    purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
+    purchase_quantity = fields.Integer('Quantity Purchase', required=True)
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')

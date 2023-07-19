@@ -73,7 +73,7 @@ class TransferStockInventory(models.Model):
         res['create_date'] = datetime.now()
         return res
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
             vals['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
@@ -304,6 +304,7 @@ class TransferStockInventory(models.Model):
 
 class TransferStockInventoryLine(models.Model):
     _name = "transfer.stock.inventory.line"
+    _description = 'Kiểm kê cân tồn kho chi tiết'
 
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     product_from_id = fields.Many2one('product.product', string='Product From')

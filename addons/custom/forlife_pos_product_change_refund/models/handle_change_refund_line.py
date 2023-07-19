@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 
 class HandleChangeRefundLine(models.Model):
     _name = 'handle.change.refund.line'
+    _description = 'Handle Change refund line'
 
     handle_change_refund_id = fields.Many2one('handle.change.refund', _('Handle Change Refund'), ondelete='cascade')
     product_id = fields.Many2one('product.product', _('Product'))

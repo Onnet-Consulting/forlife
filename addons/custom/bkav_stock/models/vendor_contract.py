@@ -27,23 +27,23 @@ class VendorContract(models.Model):
         except Exception:
             return f'{prefix}0001'
 
-    name = fields.Char('Number Contract', track_visibility=True)
-    code = fields.Char('Code', track_visibility=True, default=_get_default_code)
+    name = fields.Char('Number Contract', tracking=True)
+    code = fields.Char('Code', tracking=True, default=_get_default_code)
     vendor_id = fields.Many2one('res.partner',
                                 string='Vendor',
-                                track_visibility=True)
-    effective_date = fields.Date('Effective date', track_visibility=True)
-    expiry_date = fields.Date('Expiry date', track_visibility=True)
+                                tracking=True)
+    effective_date = fields.Date('Effective date', tracking=True)
+    expiry_date = fields.Date('Expiry date', tracking=True)
     company_id = fields.Many2one('res.company',
                                  string='Company',
-                                 track_visibility=True,
+                                 tracking=True,
                                  default=lambda self: self.env.company)
-    description = fields.Text('Description', track_visibility=True)
+    description = fields.Text('Description', tracking=True)
     state = fields.Selection([('draft', 'Draft'), ('effective', 'Effective'),
                               ('expiry', 'Expiry'), ('cancel', 'Cancel')],
                              string='State',
                              default='draft',
-                             track_visibility=True)
+                             tracking=True)
 
     _sql_constraints = [
         ('check_expiry_date', 'check(expiry_date >= effective_date)',

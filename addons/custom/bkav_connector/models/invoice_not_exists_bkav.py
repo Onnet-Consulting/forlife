@@ -515,6 +515,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
 class InvoiceNotExistsBkavLine(models.Model):
     _name = 'invoice.not.exists.bkav.line'
+    _description = 'General Invoice Not Exists Bkav Line'
 
     parent_id = fields.Many2one('invoice.not.exists.bkav', copy=False)
     product_id = fields.Many2one('product.product', string='Product')
