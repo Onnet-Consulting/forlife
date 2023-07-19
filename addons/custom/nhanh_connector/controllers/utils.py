@@ -75,6 +75,7 @@ class NhanhClient:
                 'birthday': customer["birthday"],
                 'vat': customer["taxCode"],
             })
+        return self.cls.env['res.partner'].sudo().create(partner_value)
 
     def get_order_from_nhanh_id(self, order_id, brand_id):
         nhanh_configs = self.constant.get_nhanh_configs(self.cls)
