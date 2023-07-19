@@ -107,7 +107,9 @@ class TransferStockInventory(models.Model):
                                                                  ], limit=1)
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.company.name))
-        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'),
+                                                                  ('company_id', '=', self.env.company.id)
+                                                                  ], limit=1)
         if not picking_type_out:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.company.name))
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
