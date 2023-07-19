@@ -35,7 +35,7 @@ class BravoField(fields.Field):
         if self.bravo_default is not None:
             value = self.bravo_default
         else:
-            value = record[self.odoo_name]
+            value = record[self.odoo_name] if self.odoo_name else None
         return {self.bravo_name: value or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
@@ -124,6 +124,8 @@ class BravoMany2oneField(BravoField, fields.Many2one):
         super(BravoField, self).__int__(field_detail=field_detail, **kwargs)
 
     def compute_value(self, record):
+        if not self.field_detail or not self.odoo_name:
+            return {}
         field_value = record[self.odoo_name]
         for field_name in self.field_detail.split('.'):
             if not field_value:
