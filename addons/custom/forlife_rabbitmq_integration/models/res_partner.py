@@ -58,5 +58,6 @@ class ResPartner(models.Model):
             }
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['name', 'phone', 'email', 'birthday', 'state_id', 'street']

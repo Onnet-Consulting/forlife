@@ -15,6 +15,7 @@
         <t t-call="TokyoLifeOrderHeaderReceipt"/>
         <t t-call="TokyoLifeOrderLinesReceipt"/>
         <t t-call="TokyoLifeOrderPaymentLinesReceipt"/>
+        <t t-call="accumulated"/>
         <t t-call="TokyoLifeOrderFooterReceipt"/>
     </t>
 

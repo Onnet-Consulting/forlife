@@ -14,3 +14,4 @@ from . import nhanh_webhook_value
 from . import stock_warehouse
 from . import stock_location
 from . import delivery_carrier
+from . import stock_picking

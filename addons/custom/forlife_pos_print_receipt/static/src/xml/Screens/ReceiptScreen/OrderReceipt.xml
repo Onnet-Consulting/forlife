@@ -15,4 +15,27 @@
     <t t-name="SeparateLine" owl="1">
         <hr class="separate-line"/>
     </t>
+
+    <t t-name="accumulated" owl="1">
+        <div class="payment_lines"
+             t-if="receipt.accumulated_point.total_point &gt; 0 and receipt.accumulated_point.sum_total_point &gt; 0">
+            <table class="accumulated payment-detail">
+                <tbody>
+                    <tr>
+                        <td class="col1">Tích lũy HĐ</td>
+                        <td colspan="4" class="text-right">
+                            <t t-esc="receipt.accumulated_point.total_point"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col1">Điểm tích lũy</td>
+                        <td colspan="4" class="text-right">
+                            <t t-esc="receipt.accumulated_point.sum_total_point"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
 </templates>
