@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
-from ast import literal_eval
+import orjson
 
+from ast import literal_eval
 from odoo import models, fields, api
 from odoo.tools import date_utils
 from datetime import datetime
+
 import logging
 
 _logger = logging.getLogger(__name__)
+
 
 class PosModelCache(models.Model):
     _name = 'pos.model.cache'
@@ -18,17 +21,10 @@ class PosModelCache(models.Model):
     domain = fields.Text(required=True)
     model = fields.Char(required=True, index=True)
     model_fields = fields.Text(required=True)
-
     compute_user_id = fields.Many2one('res.users', 'Cache compute user', required=True)
     compute_company_id = fields.Many2one('res.company', 'Cache compute company', required=True)
     search_context = fields.Text(string="Search Context")
     last_update = fields.Datetime(string="Last update", default=datetime.now())
-
-    CRITICAL_FIELDS = [
-        'domain',
-        'model',
-        'model_fields',
-    ]
 
     @api.model
     def refresh_promotion_model_caches(self):
@@ -36,7 +32,6 @@ class PosModelCache(models.Model):
         for cache in caches:
             domain = [('write_date', '>', cache.last_update)]
             cache.refresh_model_cache(domain)
-
 
     @api.model
     def refresh_all_model_caches(self):
@@ -87,4 +82,4 @@ class PosModelCache(models.Model):
         return literal_eval(self.model_fields)
 
     def cache2json(self):
-        return json.loads(base64.decodebytes(self.cache).decode('utf-8'))
+        return orjson.loads(base64.decodebytes(self.cache).decode('utf-8'))
