@@ -20,10 +20,12 @@ _logger = logging.getLogger(__name__)
 
 class MainController(http.Controller):
 
-    @http.route('/nhanh/webhook/handler/<string:brand_code>', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, brand_code, **post):
-        request.brand_code = brand_code or None
+    @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
+    def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
+        business_id = value.get("businessId")
+        request.business_id = business_id
+
         event_type = value.get('event')
         if event_type in ['orderUpdate']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
