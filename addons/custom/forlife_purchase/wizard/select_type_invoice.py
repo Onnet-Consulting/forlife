@@ -37,7 +37,7 @@ class SelectTypeInvoice(models.TransientModel):
                     'res_model': 'account.move',
                     'view_id': False,
                     'view_mode': 'tree,form',
-                    'domain': [('move_type', '=', 'in_invoice'), ('id', 'in', moves.ids)],
+                    'domain': [('id', 'in', moves.ids)],
                 }
             else:
                 has_invalid_item = False

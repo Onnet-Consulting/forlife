@@ -82,16 +82,6 @@ class PurchaseOrder(models.Model):
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
-    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
-    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
-    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
-    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
-
-    @api.depends('total_trade_discount', 'x_tax')
-    def compute_x_amount_tax(self):
-        for rec in self:
-            if rec.total_trade_discount > 0 and rec.x_tax > 0:
-                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -325,13 +315,11 @@ class PurchaseOrder(models.Model):
             else:
                 record.is_done_picking = False
 
-    @api.constrains('exchange_rate', 'trade_discount')
+    @api.constrains('exchange_rate')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
                 raise ValidationError('Tỷ giá không được âm!')
-            if item.trade_discount < 0:
-                raise ValidationError('Chiết khấu thương mại không được âm!')
 
     # Các action header
     def action_view_invoice_ncc(self):
@@ -448,17 +436,6 @@ class PurchaseOrder(models.Model):
     #         rec.count_invoice_inter_service_fix = self.env['account.move'].search_count(
     #             [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'service')])
 
-    @api.onchange('trade_discount')
-    def onchange_total_trade_discount(self):
-        if self.trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
-
-    @api.onchange('total_trade_discount')
-    def onchange_trade_discount(self):
-        if self.total_trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
 
     def action_confirm(self):
         for record in self:
@@ -1640,15 +1617,9 @@ class PurchaseOrder(models.Model):
                     'reference': ', '.join(self.mapped('name')),
                     'ref': ', '.join(refs)[:2000],
                     'invoice_origin': ', '.join(origins),
-                    # 'is_check': True,
                     'type_inv': self.type_po_cost,
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
-                    'move_type': 'in_invoice',
-                    'trade_discount': self.trade_discount,
-                    'total_trade_discount': self.total_trade_discount,
-                    'x_tax': self.x_tax,
-                    'x_amount_tax': self.x_amount_tax,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
@@ -1685,6 +1656,11 @@ class PurchaseOrder(models.Model):
                     else:
                         account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                     line.account_id = account_id
+
+                if line.product_id and line.move_id.purchase_type == 'service' and line.move_id.is_trade_discount_move:
+                    if line.product_id.property_account_expense_id:
+                        line.account_id = line.product_id.property_account_expense_id.id
+
             # 3.1) ẩn nút trả hàng khi hóa đơn của pnk đã tồn tại
             # if moves:
             #     for item in moves:
@@ -1958,10 +1934,21 @@ class PurchaseOrder(models.Model):
                 del data['actual_cost']
             cost_line_vals.append((0, 0, data))
         values.update({
-            'trade_discount': self.trade_discount,
-            'total_trade_discount': self.total_trade_discount,
             'cost_line': cost_line_vals
         })
+        product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax')
+        if not product_discount_tax:
+            product_discount_tax = self.env['product.product'].search([('name', '=', 'Chiết khấu tổng đơn'), ('detailed_type', '=', 'service')], limit=1)
+
+        if self.order_line.filtered(lambda x: x.product_id.id == product_discount_tax.id):
+            values.update({
+                'move_type': 'in_refund',
+                'is_trade_discount_move': True,
+                'ref': f"{self.name} Chiết khấu tổng đơn",
+                'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
+                'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
+                'e_in_check': self.id,
+            })
         return values
 
     @api.constrains('partner_id')
@@ -2694,6 +2681,7 @@ class AccountMove(models.Model):
 
     is_from_ncc = fields.Boolean('From Ncc')
     reference = fields.Char(string='Tài liệu')
+    is_trade_discount_move = fields.Boolean('Is trade discount move', default=False)
 
     def action_post(self):
         for rec in self:
