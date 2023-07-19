@@ -324,7 +324,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     "OriginalInvoiceIdentify": '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": 0,
-                "PartnerInvoiceStringID": invoice.name,
+                "PartnerInvoiceStringID": invoice.code,
                 "ListInvoiceDetailsWS": list_invoice_detail
             })
         return bkav_data
@@ -486,7 +486,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             configs = self.get_bkav_config()
             data = {
                 "CmdType": int(configs.get('cmd_downloadPDF')),
-                "CommandObject": self.id,
+                "CommandObject": self.invoice_guid,
             }
             _logger.info(f'BKAV - data download invoice to BKAV: {data}')
             response_action = connect_bkav(data, configs)
