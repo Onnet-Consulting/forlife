@@ -18,6 +18,8 @@
                                     disabled="selectable"
                                     t-att-checked="'checked' ? program.isSelected : ''"
                             />
+                            <i t-att-class="program.fixed ? 'fa fa-caret-up' : 'fa fa-caret-down'"
+                               aria-hidden="true" t-on-click="()=>this.fixProgram(program)"/>
                             <label t-att-for="program.program.id" style="font-weight: bold;">
                                 [<t t-esc="program.program.id"/>]&nbsp;&nbsp;<t t-esc="program.program.display_name"/>
                             </label>
