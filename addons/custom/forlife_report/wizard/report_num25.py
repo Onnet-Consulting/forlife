@@ -149,8 +149,8 @@ select (
                            dg.muc_tieu_cua_hang                                as muc_tieu_cua_hang,
                            dgd.detail                                          as detail,
                            coalesce(dg.concurrent_position_id, dg.job_id)      as job_id,
-                           case when coalesce(dg.muc_tieu_ca_nhan, 0) > 0 then (dg.total/dg.muc_tieu_ca_nhan*100)::float else null end as pt_ht_cn,
-                           case when coalesce(dg.muc_tieu_cua_hang, 0) > 0 then (dgs.total/dg.muc_tieu_cua_hang*100)::float else null end as pt_ht_ch
+                           case when coalesce(dg.muc_tieu_ca_nhan, 0) > 0 then (dg.total/dg.muc_tieu_ca_nhan*100)::float else 0 end as pt_ht_canhan,
+                           case when coalesce(dg.muc_tieu_cua_hang, 0) > 0 then (dgs.total/dg.muc_tieu_cua_hang*100)::float else 0 end as pt_ht_cuahang
                     from data_groups dg
                              left join data_group_details dgd on dg.store_id = dgd.store_id and dg.employee_id = dgd.employee_id
                              left join data_group_stores dgs on dgs.store_id = dg.store_id
@@ -167,24 +167,24 @@ select (
     select json_agg(final_data.*)
         from final_data)                 as data,
     (select json_object_agg(vi_tri, pt_nhan_vien) as data
-        from (select vi_tri, json_object_agg(pt_nhan_vien, ti_le_tt) as pt_nhan_vien
+        from (select vi_tri, json_object_agg(pt_nhan_vien, tile_tructiep) as pt_nhan_vien
               from (select cr.job_id                                           as vi_tri,
                            pcbe.percentage                                     as pt_nhan_vien,
-                           json_object_agg(pcbt.percentage, pcbt.ratio::float) as ti_le_tt
+                           json_object_agg(pcbt.percentage, pcbt.ratio::float) as tile_tructiep
                     from coefficient_revenue cr
                              join percentage_complete_by_employee pcbe on cr.id = pcbe.coefficient_revenue_id
                              join percentage_complete_by_store pcbt on pcbe.id = pcbt.pc_by_employee_id
                     where cr.brand_id = {self.brand_id.id}
                     group by cr.job_id, pcbe.percentage) as x1
-              group by vi_tri) as x2)    as ti_le_tt,
+              group by vi_tri) as x2)    as tile_tructiep,
 
-    (select json_object_agg(vi_tri, ti_le_gt) as data
+    (select json_object_agg(vi_tri, tile_giantiep) as data
         from (select cr.job_id                                           as vi_tri,
-                     json_object_agg(pcbt.percentage, pcbt.ratio::float) as ti_le_gt
+                     json_object_agg(pcbt.percentage, pcbt.ratio::float) as tile_giantiep
               from coefficient_revenue cr
                        join percentage_complete_by_store pcbt on cr.id = pcbt.coefficient_revenue_id
               where cr.brand_id = {self.brand_id.id}
-              group by cr.job_id) as xx) as ti_le_gt,
+              group by cr.job_id) as xx) as tile_giantiep,
     (select json_object_agg(job_id, array[fixed_coefficient_direct::float, fixed_coefficient_indirect::float])
         from coefficient_revenue where brand_id = {self.brand_id.id}) as he_so_co_dinh
 """
@@ -201,63 +201,64 @@ select (
         return title
 
     def format_data(self, data):
-        _data = data and data[0] or []
+        _data = data and data[0] or {}
         res = []
         column_add = self.get_title_with_view_type(self.from_date, self.to_date, self.view_type)
-        ti_le_tt = _data.get('ti_le_tt')
-        ti_le_gt = _data.get('ti_le_gt')
-        he_so_co_dinh = _data.get('he_so_co_dinh')
-        for value in _data.get('data'):
+        tile_tructiep = _data.get('tile_tructiep') or {}
+        tile_giantiep = _data.get('tile_giantiep') or {}
+        he_so_co_dinh = _data.get('he_so_co_dinh') or {}
+        for value in (_data.get('data') or []):
             qty_by_time = value.pop('detail')
             for c in column_add:
                 value[c] = qty_by_time.get(c, 0) or 0
 
             # Tổng hợp thu nhập dự tính
             job_id = value.get('job_id')
-            pt_ht_cn = value.get('pt_ht_cn')
-            pt_ht_ch = value.get('pt_ht_ch')
+            pt_ht_canhan = value.get('pt_ht_canhan') or 0
+            pt_ht_cuahang = value.get('pt_ht_cuahang') or 0
             if job_id is not None:
-                thu_nhap_du_tinh = 0
-
                 # kiểm tra hệ số
                 _heso_codinh = he_so_co_dinh.get(str(job_id)) or [0, 0]
-                _hs_cd_tt = _heso_codinh[0]
-                _hs_cd_gt = _heso_codinh[1]
+                _heso_codinh_tructiep = _heso_codinh[0]
+                _heso_codinh_giantiep = _heso_codinh[1]
 
                 # Thu nhập theo hệ số trực tiếp
-                if _hs_cd_tt != 0:
-                    thu_nhap_du_tinh = value.get('tong_cong', 0) * _hs_cd_tt / 100
+                if _heso_codinh_tructiep != 0:
+                    thu_nhap_du_tinh_truc_tiep = value.get('tong_cong', 0) * _heso_codinh_tructiep / 100
                 else:
-                    pt_ht_cn_tt = ti_le_tt.get(str(job_id)) or {}
-                    pt_ht = 0
-                    pt_ht_str = ''
-                    for k in pt_ht_cn_tt.keys():
-                        _pt_ht = float(k)
-                        if _pt_ht <= pt_ht_cn and _pt_ht > pt_ht:
-                            pt_ht = _pt_ht
-                            pt_ht_str = k
-                    pt_ht_ch_tt = pt_ht_cn_tt.get(pt_ht_str) or {}
-                    pt_ht = 0
-                    hs_tt = 0
-                    for k, v in pt_ht_ch_tt.items():
-                        _pt_ht = float(k)
-                        if _pt_ht <= pt_ht_ch and _pt_ht > pt_ht:
-                            pt_ht = _pt_ht
-                            hs_tt = v
-                    thu_nhap_du_tinh = value.get('tong_cong', 0) * hs_tt / 100
+                    pt_ht_canhan_tructiep = tile_tructiep.get(str(job_id)) or {}
+                    phantram_hoanthanh = 0
+                    phantram_hoanthanh_str = ''
+                    for k in pt_ht_canhan_tructiep.keys():
+                        _phantram_hoanthanh = float(k)
+                        if _phantram_hoanthanh <= pt_ht_canhan and _phantram_hoanthanh >= phantram_hoanthanh:
+                            phantram_hoanthanh = _phantram_hoanthanh
+                            phantram_hoanthanh_str = k
+                    pt_ht_cuahang_tructiep = pt_ht_canhan_tructiep.get(phantram_hoanthanh_str) or {}
+                    phantram_hoanthanh = 0
+                    heso_tructiep = 0
+                    for k, v in pt_ht_cuahang_tructiep.items():
+                        _phantram_hoanthanh = float(k)
+                        if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh >= phantram_hoanthanh:
+                            phantram_hoanthanh = _phantram_hoanthanh
+                            heso_tructiep = v
+                    thu_nhap_du_tinh_truc_tiep = value.get('tong_cong', 0) * heso_tructiep / 100
 
                 # Thu nhập theo hệ số gián tiếp
-                pt_ht_ch_gt = ti_le_gt.get(str(job_id)) or {}
-                pt_ht = 0
-                hs_gt = 0
-                for k, v in pt_ht_ch_gt.items():
-                    _pt_ht = float(k)
-                    if _pt_ht <= pt_ht_ch and _pt_ht > pt_ht:
-                        pt_ht = _pt_ht
-                        hs_gt = v
+                pt_ht_cuahang_giantiep = tile_giantiep.get(str(job_id)) or {}
+                thu_nhap_du_tinh_gian_tiep = 0
+                if pt_ht_cuahang_giantiep and value.get('tong_hs_vt_gt'):
+                    phantram_hoanthanh = 0
+                    heso_giantiep = 0
+                    for k, v in pt_ht_cuahang_giantiep.items():
+                        _phantram_hoanthanh = float(k)
+                        if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh >= phantram_hoanthanh:
+                            phantram_hoanthanh = _phantram_hoanthanh
+                            heso_giantiep = v
+                    thu_nhap_du_tinh_gian_tiep = value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * heso_giantiep * _heso_codinh_giantiep
 
                 # Thu nhập dự tính
-                value['thu_nhap_du_tinh'] = thu_nhap_du_tinh + value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * hs_gt * _hs_cd_gt
+                value['thu_nhap_du_tinh'] = thu_nhap_du_tinh_truc_tiep + thu_nhap_du_tinh_gian_tiep
 
             res.append(value)
         return {
