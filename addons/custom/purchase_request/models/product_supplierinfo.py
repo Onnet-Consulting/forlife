@@ -21,11 +21,12 @@ class SupplierInfo(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if vals.get('supplier_code') and not vals.get('partner_id'):
-            partner_id = self.env['res.partner'].search([('ref', '=', vals.get('supplier_code'))], limit=1).id
-            vals.update({
-                'partner_id': partner_id
-            })
+        for val in vals:
+            if val.get('supplier_code') and not val.get('partner_id'):
+                partner_id = self.env['res.partner'].search([('ref', '=', val.get('supplier_code'))], limit=1).id
+                val.update({
+                    'partner_id': partner_id
+                })
         return super(SupplierInfo, self).create(vals)
 
     @api.onchange('product_tmpl_id')
