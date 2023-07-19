@@ -45,5 +45,6 @@ class ProductProduct(models.Model):
             ]
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['sku_code', 'barcode', 'active']

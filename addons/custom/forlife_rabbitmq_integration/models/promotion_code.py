@@ -34,6 +34,7 @@ class PromotionCode(models.Model):
             'surprising_reward_line_id': line.surprising_reward_line_id.id or None,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return [
             'program_id', 'name', 'amount', 'consumed_amount', 'limit_usage', 'expiration_date', 'reward_program_id',
