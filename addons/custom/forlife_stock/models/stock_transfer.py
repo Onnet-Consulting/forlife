@@ -682,7 +682,7 @@ class StockTransferLine(models.Model):
             quantity_plan = sum(
                 [line.qty_plan for line in start_transfer.stock_transfer_line.filtered(
                     lambda r: r.product_id == self.product_id)])
-            quantity = quantity_old + self.qty_out if type == 'out' else quantity_old + self.qty_in
+            quantity = (quantity_old + self.qty_out) if type == 'out' else (quantity_old + self.qty_in)
             if quantity > (quantity_plan + self.qty_plan) * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
                     product.default_code, product.name, tolerance))
@@ -690,20 +690,7 @@ class StockTransferLine(models.Model):
             quantity = self.qty_out if type == 'out' else self.qty_in
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                product.default_code, product.name, tolerance))
-        else:
-            start_transfer = self.env['stock.transfer'].search(
-                [('id', '!=', self.stock_transfer_id.id), ('stock_request_id', '=', self.stock_transfer_id.stock_request_id.id)])
-            quantity_old = sum(
-                [line.qty_out if type == 'out' else line.qty_in for line in start_transfer.stock_transfer_line.filtered(
-                    lambda r: r.product_id == self.product_id)])
-            quantity_plan = sum(
-                [line.qty_plan for line in start_transfer.stock_transfer_line.filtered(
-                    lambda r: r.product_id == self.product_id)])
-            quantity = quantity_old + self.qty_out if type == 'out' else quantity_old + self.qty_in
-            if quantity > (quantity_plan + self.qty_plan) * (1 + (tolerance / 100)):
-                raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                product.default_code, product.name, tolerance))
+                    product.default_code, product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):
