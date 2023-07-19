@@ -4,6 +4,7 @@ from datetime import date
 
 class RejectTransferStockInventory(models.TransientModel):
     _name = "reject.transfer.stock.inventory"
+    _description = "Reject Transfer"
 
     rejection_reason = fields.Text()
     cancel_reason = fields.Text()

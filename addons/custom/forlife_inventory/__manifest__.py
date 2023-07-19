@@ -3,6 +3,7 @@
     "name": "Forlife Inventory",
     "category": "Forlife Inventory",
     "version": "1.0.0",
+    'license': 'LGPL-3',
     "description": """Forlife Inventory""",
     "depends": [
         'forlife_stock',

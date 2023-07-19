@@ -340,7 +340,7 @@ class StockPicking(models.Model):
                 rec.write({'is_locked': True})
         return True
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         line = super(StockPicking, self).create(vals)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):

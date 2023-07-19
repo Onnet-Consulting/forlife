@@ -5,6 +5,7 @@ from odoo.tests import Form
 
 class ConfirmReturnSo(models.Model):
     _name = 'confirm.return.so'
+    _description = "Confirm Return SO"
 
     name = fields.Char('Xác nhận trả hàng', default='Xác nhận trả hàng')
     origin = fields.Many2one('sale.order')
@@ -13,6 +14,7 @@ class ConfirmReturnSo(models.Model):
 
 class ConfirmReturnSoLine(models.Model):
     _name = 'confirm.return.so.line'
+    _description = "Confirm Return SO details"
 
     master_id = fields.Many2one('confirm.return.so', 'Master data')
     picking_id = fields.Many2one('stock.picking', 'Phiếu kho')

@@ -3,6 +3,7 @@
     "name": "BKAV Stock",
     "category": "BKAV Stock",
     "version": "16",
+    'license': 'LGPL-3',
     "description": """BKAV Stock""",
     "depends": [
         'forlife_stock',

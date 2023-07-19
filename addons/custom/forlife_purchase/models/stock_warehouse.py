@@ -36,6 +36,7 @@ class StockWarehouse(models.Model):
 
 class StockWarehouseType(models.Model):
     _name = 'stock.warehouse.type'
+    _description = "Type of Warehouse"
 
     name = fields.Char(string='Name')
     code = fields.Char(string='code')

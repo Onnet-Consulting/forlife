@@ -2,6 +2,7 @@
     'name': 'Purchase Request',
     'summary': 'Purchase Request',
     'category': 'Inventory/Purchase',
+    'license': 'LGPL-3',
     'depends': [
         'base_automation',
         'forlife_purchase',
