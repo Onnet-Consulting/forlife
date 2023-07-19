@@ -89,12 +89,12 @@ with po_datas as (select po.id  as po_id,
                            coalesce(pt.name::json ->> '{self.env.user.lang}', pt.name::json ->> 'en_US')   as ten_sp,
                            coalesce(uom.name::json ->> '{self.env.user.lang}', uom.name::json ->> 'en_US') as don_vi,
                            greatest(pol.qty, 0)::float                                    as sl_mua,
-                           abs(least(pol.qty, 0))                                         as sl_tra,
+                           abs(least(pol.qty, 0))::float                                  as sl_tra,
                            coalesce(pol.original_price, 0)::float                         as gia_ban,
-                           (case
+                           abs(case
                                 when disc.type = 'point' then disc.recipe * 1000
-                                when disc.type = 'ctkm' then disc.discounted_amount
-                                else disc.recipe
+                                when disc.type = 'ctkm' then coalesce(disc.discounted_amount, 0)
+                                else coalesce(disc.recipe, 0)
                                end)::float                                                as tien_giam_gia,
                            (pul.discount_amount * pol.qty)::float                         as tien_the_gg
                     from pos_order_line pol
@@ -109,13 +109,13 @@ with po_datas as (select po.id  as po_id,
                            array_agg(to_json(chi_tiet_x.*)) as value_detail
                     from chi_tiet_x
                     group by po_id),
-     so_luong_x as (select po_id                        as po_id,
-                           sum(sl_mua)::float           as sl_mua,
-                           sum(sl_tra)                  as sl_tra,
-                           sum((sl_mua  - sl_tra) * gia_ban - tien_giam_gia)::float as cong,
-                           sum(tien_giam_gia)::float    as tien_giam_gia,
-                           sum(sl_tra * gia_ban)::float as tien_tra_lai,
-                           sum(tien_the_gg)::float      as tien_the_gg
+     so_luong_x as (select po_id                                                                       as po_id,
+                           sum(sl_mua)::float                                                          as sl_mua,
+                           sum(sl_tra)::float                                                          as sl_tra,
+                           sum(sl_mua * gia_ban - (sl_tra * gia_ban) + (
+                                case when sl_tra > 0 then tien_giam_gia else 0 end))::float            as cong,
+                           sum(case when sl_mua > 0 then tien_giam_gia else 0 end)::float              as tien_giam_gia,
+                           sum(tien_the_gg)::float                                                     as tien_the_gg
                     from chi_tiet_x
                     group by po_id)
 """
@@ -138,7 +138,7 @@ select row_number() over (order by po.id)                                       
        coalesce(sl_x.cong - sl_x.tien_giam_gia, 0)                                           as tong_cong,
        0                                                                                     as giam_tren_hd,
        0                                                                                     as tien_dat_coc,
-       coalesce(sl_x.tien_tra_lai, 0)                                                        as tien_tra_lai,
+       abs(least(po.amount_total, 0))                                                        as tien_tra_lai,
        (select coalesce(sum(points_store), 0) * 1000
         from (select points_store
               from partner_history_point
