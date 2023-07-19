@@ -107,7 +107,9 @@ class TransferStockInventory(models.Model):
                                                                  ], limit=1)
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.company.name))
-        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'),
+                                                                  ('company_id', '=', self.env.company.id)
+                                                                  ], limit=1)
         if not picking_type_out:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.company.name))
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
@@ -351,7 +353,7 @@ class TransferStockInventoryLine(models.Model):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Thương hiệu.' % product_id.name))
         if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level < 2):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Nhóm hàng.' % product_id.name))
-        if product_id.brand_id.code == 'FM' and (not product_id.categ_id or product_id.categ_id.level < 4):
+        if product_id.brand_id.code == 'FMT' and (not product_id.categ_id or product_id.categ_id.level < 4):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Kết cấu.' % product_id.name))
 
     @api.onchange('product_from_id', 'product_to_id')
