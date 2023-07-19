@@ -26,6 +26,7 @@ class ProgramVoucher(models.Model):
             'voucher_count': line.voucher_count or 0,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['start_date', 'end_date', 'apply_contemp_time', 'apply_many_times',
                 'is_full_price_applies', 'brand_id', 'name', 'using_limit', 'voucher_count']

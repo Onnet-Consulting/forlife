@@ -123,7 +123,7 @@
             <tree string="Lot/Serial Number Inventory" sample="1">
                 <field name="date"/>
                 <field name="name"/>
-                <field name="location_id" widget="many2many_tags" optional="hide" groups="stock.group_stock_multi_locations"/>
+                <field name="location_id" optional="hide" groups="stock.group_stock_multi_locations"/>
                 <field name="product_ids" widget="many2many_tags" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state in ('draft', 'confirm')"/>

@@ -15,6 +15,7 @@
         <t t-call="FormatOrderHeaderReceipt"/>
         <t t-call="FormatOrderLinesReceipt"/>
         <t t-call="FormatOrderPaymentLinesReceipt"/>
+        <t t-call="accumulated"/>
         <t t-call="FormatOrderFooterReceipt"/>
     </t>
 

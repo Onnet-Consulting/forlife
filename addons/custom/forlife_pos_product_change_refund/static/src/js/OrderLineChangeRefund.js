@@ -112,6 +112,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 var order = this.env.pos.get_order();
                 obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
+                obj.is_change_product = order.is_change_product;
+                obj.is_refund_product = order.is_refund_product;
                 line.product_id = this.props.line.product.id;
                 var price = this.props.line.price;
                 if (this.props.line.quantity_canbe_refund > 0) {
@@ -119,6 +121,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 }
                 line.price = price;
                 line.expire_change_refund_date = this.props.line.expire_change_refund_date;
+                line.refunded_orderline_id = this.props.line.refunded_orderline_id;
+                line.reason_refund_id = this.props.line.reason_refund_id;
                 obj.lines = [line];
 
                 this.props.line.approvalStatus = true;

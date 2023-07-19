@@ -30,5 +30,6 @@ class Store(models.Model):
             },
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['start_date', 'opening_time', 'closing_time']

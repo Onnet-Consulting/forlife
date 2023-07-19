@@ -23,6 +23,7 @@ class HandleChangeRefund(models.Model):
         default='draft', string=_('State'), tracking=True)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.company.currency_id.id)
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company.id)
+    type = fields.Selection([('exchange_goods', 'Exchange Goods'), ('refund_goods', 'Refund Goods')], string=_('Type'))
 
 
     line_ids = fields.One2many('handle.change.refund.line', 'handle_change_refund_id', _('Details'))
@@ -36,11 +37,18 @@ class HandleChangeRefund(models.Model):
             'store_id': data.get('store'),
             'state': 'draft',
         }
+        if data.get('is_change_product', False):
+            vals.update({'type': 'exchange_goods'})
+        if data.get('is_refund_product', False):
+            vals.update({'type': 'refund_goods'})
+
         for line in data.get('lines'):
             lst_line.append((0, 0, {
                 'product_id': line.get('product_id'),
                 'purchase_price': line.get('price'),
-                'expire_change_refund_date': line.get('expire_change_refund_date')
+                'expire_change_refund_date': line.get('expire_change_refund_date'),
+                'reason_refund_id': line.get('reason_refund_id'),
+                'pos_order_line_id': line.get('refunded_orderline_id')
             }))
         vals.update({'line_ids': lst_line})
         handle_change_refund_id = self.create(vals)

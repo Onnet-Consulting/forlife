@@ -26,6 +26,7 @@
         'views/product_inherit_view.xml',
         'views/product_category.xml',
         'views/product_attribute.xml',
-        'views/product_template_views.xml'
+        'views/product_template_views.xml',
+        'views/res_partner_inherit_view.xml',
     ]
 }

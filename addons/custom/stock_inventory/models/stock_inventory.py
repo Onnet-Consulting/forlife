@@ -644,7 +644,7 @@ class InventoryLine(models.Model):
                     JOIN product_template pt ON pp.product_tmpl_id = pt.id
                 WHERE pt.type != 'product'
                     AND pp.id in {product_ids}
-            """.format(product_ids=tuple(self.product_id.ids))
+            """.format(product_ids=tuple(self.product_id.ids + [0]))
             self._cr.execute(query)
             data = self._cr.dictfetchall()
             if data:
