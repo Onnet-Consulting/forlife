@@ -1144,7 +1144,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
 
         if (max_count && count >= max_count) {
-            var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
+            var total_price = to_discount_line_vals.filter(l=>!l.is_not_discount).reduce((p, {price, quantity}) => p + price*quantity, 0)
             for (const discount_line_val of to_discount_line_vals) {
                 discount_line_val.total_price = total_price;
             }
@@ -1222,7 +1222,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         to_discount_line_vals = Object.values(map_to_discount_line_vals);
 
-        var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
+        var total_price = to_discount_line_vals.filter(l=>!l.is_not_discount).reduce((p, {price, quantity}) => p + price*quantity, 0)
         for (const discount_line_val of to_discount_line_vals) {
             discount_line_val.total_price = total_price;
         }
