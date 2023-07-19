@@ -135,6 +135,9 @@ class ResUtility(models.AbstractModel):
                 inv = inventory.line_ids.filtered(lambda f: f.barcode == k)
                 if inv:
                     inv.sudo().write(get_value(inventory.state, v))
+            inventory.line_ids.filtered(lambda f: f.barcode not in list(value_exits.keys())).write({'x_first_qty': 0, 'product_qty': 0})
+        else:
+            inventory.line_ids.write({'x_first_qty': 0, 'product_qty': 0})
         if value_not_exits:
             products = self.env['product.product'].search([('barcode', 'in', list(value_not_exits.keys()))])
             values = []
