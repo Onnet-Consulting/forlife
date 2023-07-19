@@ -166,7 +166,7 @@ class MainController(http.Controller):
                     'state': 'draft',
                     'nhanh_order_status': order['statusCode'].lower(),
                     'name_customer': name_customer,
-                    'note': order['privateDescription'],
+                    'note': '#MN linhqq',
                     'note_customer': order['description'],
                     'x_sale_chanel': 'online',
                     # 'carrier_name': order['carrierName'],
@@ -234,7 +234,7 @@ class MainController(http.Controller):
                     })
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not odoo_order.picking_ids:
                         try:
-                            webhook_value_id.order_id.check_sale_promotion()
+                            odoo_order.check_sale_promotion()
                             odoo_order.action_create_picking()
                         except Exception as e:
                             pass
