@@ -353,7 +353,7 @@ class TransferStockInventoryLine(models.Model):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Thương hiệu.' % product_id.name))
         if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level < 2):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Nhóm hàng.' % product_id.name))
-        if product_id.brand_id.code == 'FM' and (not product_id.categ_id or product_id.categ_id.level < 4):
+        if product_id.brand_id.code == 'FMT' and (not product_id.categ_id or product_id.categ_id.level < 4):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Kết cấu.' % product_id.name))
 
     @api.onchange('product_from_id', 'product_to_id')
