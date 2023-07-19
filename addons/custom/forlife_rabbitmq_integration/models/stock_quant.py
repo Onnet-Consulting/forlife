@@ -17,7 +17,7 @@ class StockQuant(models.Model):
     def get_sync_info_value(self):
         return {
             'updated_at': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'store_data': [{
+            'data': [{
                 'store_id': line.location_id.warehouse_id.id,
                 'location_id': line.location_id.id,
                 'location_code': line.location_id.code or '',
@@ -34,5 +34,15 @@ class StockQuant(models.Model):
             return False
         return super().check_update_info(list_field, values)
 
+    @api.model
     def get_field_update(self):
         return ['quantity', 'reserved_quantity']
+
+    @api.model
+    def prepare_message(self, action, target, val):
+        val = dict(val)
+        val.update({
+            'action': action,
+            'target': target,
+        })
+        return val

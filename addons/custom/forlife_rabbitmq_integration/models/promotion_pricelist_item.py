@@ -22,5 +22,6 @@ class PromotionPricelistItem(models.Model):
             'fixed_price': line.fixed_price or 0,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['program_id', 'active', 'product_id', 'fixed_price']
