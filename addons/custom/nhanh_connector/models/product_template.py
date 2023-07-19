@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    nhanh_id = fields.Integer(string="Id Nhanh.Vn", copy=False)
+    nhanh_id = fields.Char(string="Id Nhanh.Vn", copy=False)
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     # width_product = fields.Float('Width', copy=False)
     # height_product = fields.Float('Height', copy=False)
@@ -37,12 +37,16 @@ class ProductTemplate(models.Model):
             product_name = f"{product_name} ({color_name} / SIZE {size_name})"
         return product_name
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)
         if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
             return res
-        self.synchronized_create_product(res)
+
+        self.sudo().with_delay(
+            description="Sync product to NhanhVn", channel="root.RabbitMQ"
+        ).synchronized_create_product(res)
+            # self.synchronized_create_product(res)
         return res
 
     def synchronized_create_product(self, res):
@@ -51,7 +55,6 @@ class ProductTemplate(models.Model):
             if nhanh_config.get('nhanh_connector.nhanh_app_id', '') or nhanh_config.get(
                     'nhanh_connector.nhanh_business_id', '') or nhanh_config.get('nhanh_connector.nhanh_access_token',
                                                                                   ''):
-
                 data = [{
                     "id": res.id,
                     "name": res.get_nhanh_name(),
@@ -102,7 +105,6 @@ class ProductTemplate(models.Model):
             'attribute_line_ids',
             'barcode',
             'list_price',
-            'weight',
             'brand_id',
             'categ_id'
         ]
@@ -126,14 +128,20 @@ class ProductTemplate(models.Model):
                     "barcode": item.barcode if item.barcode else '',
                     "importPrice": item.list_price,
                     "price": item.list_price,
-                    "shippingWeight": item.weight * 1000,
+                    "shippingWeight": 200,
                     "status": 'New'
                 })
 
         if len(data):
-            self.synchronized_price_nhanh(data)
+            self.sudo().with_delay(
+                description="Update & Sync product to NhanhVn", channel="root.RabbitMQ"
+            ).synchronized_price_nhanh(data)
+            # self.synchronized_price_nhanh(data)
         if is_create:
-            self.synchronized_create_product(self)
+            self.sudo().with_delay(
+                description="Sync product to NhanhVn", channel="root.RabbitMQ"
+            ).synchronized_create_product(self)
+            # self.synchronized_create_product(self)
         
         return res
 
@@ -150,7 +158,7 @@ class ProductTemplate(models.Model):
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
                 "price": item.list_price,
-                "shippingWeight": item.weight * 1000,
+                "shippingWeight": 200,
                 "status": 'Inactive'
             })
         if not data:
