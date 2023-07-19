@@ -104,6 +104,15 @@ class ResUtility(models.AbstractModel):
         sessions = self.env['inventory.session'].sudo().search_read([('inv_id', '=', inv_id)], ['data'])
         if not inventory or not sessions:
             return False
+        self._cr.execute(f"""
+        with inventorys as (select distinct pp.barcode, 1 as x
+                            from stock_inventory_line sil
+                                     join product_product pp on pp.id = sil.product_id and pp.barcode notnull
+                            where sil.inventory_id = {inv_id})
+        select json_object_agg(barcode, x) as product_exists from inventorys
+        """)
+        result = self._cr.dictfetchone()
+        product_exists = result.get('product_exists') or {}
         value_exits = {}
         value_not_exits = {}
         data = []
@@ -113,13 +122,13 @@ class ResUtility(models.AbstractModel):
             barcode = line.get('ItemID')
             qty = (line.get('Check') or 0) + (line.get('Loss') or 0) + (line.get('Err') or 0) + (line.get('Add') or 0) - (line.get('Sub') or 0)
             if barcode:
-                if line.get('notInList'):
-                    value_not_exits.update({
-                        barcode: (value_not_exits.get(barcode) or 0) + qty
-                    })
-                else:
+                if product_exists.get(barcode):
                     value_exits.update({
                         barcode: (value_exits.get(barcode) or 0) + qty
+                    })
+                else:
+                    value_not_exits.update({
+                        barcode: (value_not_exits.get(barcode) or 0) + qty
                     })
         if value_exits:
             for k, v in value_exits.items():
