@@ -67,20 +67,19 @@ class MainController(http.Controller):
         if event_type == 'orderUpdate':
             odoo_order = n_client.get_sale_order(order_id)
             is_create_wh_in = False
-            if odoo_order and order['statusCode'] in ['Returned']:
+            if odoo_order and data['status'] in ['Returned']:
                 odoo_order = None
                 is_create_wh_in = True
 
             if not odoo_order:
-                order_returned = order.get('returnFromOrderId', 0) or data['status'] in ['Returned']
+                order_returned = order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']
+                order_returned_not_success = order.get('returnFromOrderId', 0) and data['status'] in ['Returned']
                 if not is_create_wh_in:
-                    if data['status'].lower() != "confirmed" and not order_returned:
+                    if order_returned:
+                        if order_returned_not_success:
+                            return self.result_request(200, 0, _('Update sale order success'))
+                    elif data['status'].lower() != "confirmed":
                         return self.result_request(404, 1, _('Order confirmation is required'))
-
-                    if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
-                            'returnFromOrderId', 0)):
-                        webhook_value_id.unlink()
-                        return self.result_request(200, 0, _('update sale order success'))
 
                 default_company_id = n_client.get_company()
                 location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
@@ -207,27 +206,39 @@ class MainController(http.Controller):
                         'nhanh_origin_id': order.get('returnFromOrderId', 0)
                     })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
-                if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
-                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) or is_create_wh_in and \
-                        not webhook_value_id.order_id.picking_ids:
+
+                if is_create_wh_in or order_returned:
                     try:
-                        webhook_value_id.order_id.check_sale_promotion()
                         webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
-                        return self.result_request(200, 0, _('Create sale order success'))
+                        pass
+
                 elif data['status'] in ['Canceled', 'Aborted']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
                             'state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
+                else:
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not webhook_value_id.order_id.picking_ids:
+                        try:
+                            webhook_value_id.order_id.check_sale_promotion()
+                            webhook_value_id.order_id.action_create_picking()
+                        except:
+                            return self.result_request(200, 0, _('Create sale order success'))
+
                 return self.result_request(200, 0, _('Create sale order success'))
             else:
                 if data.get('status'):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
-                        odoo_order.action_create_picking()
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not odoo_order.picking_ids:
+                        try:
+                            webhook_value_id.order_id.check_sale_promotion()
+                            odoo_order.action_create_picking()
+                        except Exception as e:
+                            pass
+                        
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
