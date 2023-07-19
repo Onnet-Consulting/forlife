@@ -335,7 +335,6 @@ class StockPicking(models.Model):
                     layer.value = 0
                     #layer.account_move_id.button_draft()
                     #layer.account_move_id.button_cancel()
-                                    for layer in layers:
                     if layer.account_move_id:
                         reversal_data = {
                             "move_ids": [
