@@ -176,7 +176,10 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                        discount_ck = ((item.product.lst_price*item.quantity)*item.discount)/100
                     }
                     if(!item.card_rank_discount){
-                        item.card_rank_discount = 0
+                        item.card_rank_discount = 0;
+                    }
+                    if(!item.money_reduce_from_product_defective){
+                        item.money_reduce_from_product_defective = 0;
                     }
                     if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck)){
                         data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck);
