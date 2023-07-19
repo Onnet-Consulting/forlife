@@ -20,7 +20,7 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return res
         for picking in self:
-            if picking.state == 'done' and \
+            if picking.state == 'done' and not picking.purchase_id.is_inter_company and \
                     ((picking.purchase_id and picking.purchase_id.is_return) or \
                      (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
                 picking.create_return_valuation_npl()
