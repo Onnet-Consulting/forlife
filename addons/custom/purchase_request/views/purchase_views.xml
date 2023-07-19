@@ -56,6 +56,7 @@
                            domain="[('company_id', '=', partner_company_id), ('usage', '=', 'internal')]"
                            string="Kho nguồn"/>
                     <field name="location_id" string="Kho nhận"
+                           domain="[('usage', '=', 'internal')]"
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>

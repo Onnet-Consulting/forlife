@@ -178,7 +178,7 @@ class PurchaseRequest(models.Model):
         order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False)
         groups = {}
         for line in order_lines_ids:
-            key = str(line.vendor_code.id) + '-' + str(line.product_id.id) + '-' + str(line.purchase_product_type)
+            key = str(line.vendor_code.id) + '-' + str(line.purchase_product_type)
             if groups.get(key, False):
                 groups[key].append(line)
             else:

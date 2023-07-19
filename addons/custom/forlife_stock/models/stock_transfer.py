@@ -44,12 +44,14 @@ class StockTransfer(models.Model):
         default='transfer_between_warehouse', required=1)
     state = fields.Selection(
         string="Status",
-        selection=[('approved', 'Approved'),
+        selection=[('draft', 'Draft'),
+                   ('wait_approve', 'Wait Approve'),
+                   ('approved', 'Approved'),
                    ('out_approve', 'Out Approve'),
                    ('in_approve', 'In Approve'),
                    ('done', 'Done'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel')], default='approved')
+                   ('cancel', 'Cancel')], default='draft')
     is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False, copy=False)
     stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Chi tiết')
     total_package = fields.Float(string='Total Package (Number)')
@@ -391,7 +393,7 @@ class StockTransfer(models.Model):
                 }
             }
 
-    def _create_diff_transfer(self, data, state='approved', type=''):
+    def _create_diff_transfer(self, data, state='draft', type=''):
         self.ensure_one()
         return self.env['stock.transfer'].create({
             'reference_document': self.name,
@@ -669,17 +671,20 @@ class StockTransferLine(models.Model):
                 product.default_code, product.name, tolerance))
         else:
             start_transfer = self.env['stock.transfer'].search(
-                [('name', '=', self.stock_transfer_id.reference_document)], limit=1)
-            other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
+                [('id', '!=', self.stock_transfer_id.id), ('stock_request_id', '=', self.stock_transfer_id.stock_request_id.id)])
+            # other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
             quantity_old = sum(
-                [line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
+                [line.qty_out if type == 'out' else line.qty_in for line in start_transfer.stock_transfer_line.filtered(
                     lambda r: r.product_id == self.product_id)])
-            for rec in start_transfer.stock_transfer_line:
-                if rec.product_id == self.product_id:
-                    quantity = quantity_old + rec.qty_out if type == 'out' else quantity_old + rec.qty_in
-                    if quantity > rec.qty_start * (1 + (tolerance / 100)):
-                        raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                        product.default_code, product.name, tolerance))
+            quantity_plan = sum(
+                [line.qty_plan for line in start_transfer.stock_transfer_line.filtered(
+                    lambda r: r.product_id == self.product_id)])
+            # for rec in start_transfer.stock_transfer_line:
+            #     if rec.product_id == self.product_id:
+            quantity = quantity_old + self.qty_out if type == 'out' else quantity_old + self.qty_in
+            if quantity > (quantity_plan + self.qty_plan) * (1 + (tolerance / 100)):
+                raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
+                product.default_code, product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):
