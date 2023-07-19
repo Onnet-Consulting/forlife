@@ -62,6 +62,29 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
             });
         }
 
+        selectedQtyOnProgram(option) {
+            return option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+        }
+
+        fixProgram(option) {
+            option.fixed = !option.fixed;
+            if (option.isSelected && option.fixed) {
+                let selectedQty = this.selectedQtyOnProgram(option);
+                let realFloor = Math.ceil(selectedQty / option.program.reward_quantity);
+                if (realFloor < option.floor) {
+                    option.max_reward_quantity = realFloor * option.program.reward_quantity;
+                    option.required_order_amount_min = realFloor * option.program.order_amount_min;
+                };
+            } else if (!option.fixed) {
+                option.max_reward_quantity = option.floor * option.program.reward_quantity;
+                option.required_order_amount_min = option.floor * option.program.order_amount_min;
+                this.state.programs.filter(l=>l.id != option.id).forEach(option => {
+                    option.reward_line_vals.forEach(line => {line.isSelected = false;});
+                    option.selectedQty = 0;
+                });
+            };
+        }
+
         getPayload() {
             return this.props.programs
         }
