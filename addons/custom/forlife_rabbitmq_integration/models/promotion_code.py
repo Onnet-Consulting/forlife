@@ -20,6 +20,7 @@ class PromotionCode(models.Model):
             'amount': line.amount,
             'consumed_amount': line.consumed_amount or 0,
             'limit_usage': line.limit_usage or False,
+            'max_usage': line.max_usage or 0,
             'expiration_date': line.expiration_date.strftime('%Y-%m-%d') if line.expiration_date else None,
             'remaining_amount': line.remaining_amount,
             'reward_program_id': line.reward_program_id.id or None,
