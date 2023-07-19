@@ -50,9 +50,6 @@ class AccountMove(models.Model):
     invoice_synthetic_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     exchange_rate_line_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     cost_total = fields.Float(string='Tổng chi phí')
-    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
-    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
-                                readonly=False)
     x_entry_types = fields.Selection(copy=True, 
                                      string="Chi tiết loại bút toán custom",
                                      default='entry_normal',
@@ -64,11 +61,6 @@ class AccountMove(models.Model):
                                                 ('entry_material', 'Bút toán nguyên phụ liệu'),
                                                 ])
 
-    @api.depends('total_trade_discount', 'x_tax')
-    def compute_x_amount_tax(self):
-        for rec in self:
-            if rec.total_trade_discount > 0 and rec.x_tax > 0:
-                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -94,9 +86,6 @@ class AccountMove(models.Model):
     loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
     custom_total = fields.Float(string='Tổng chi phí thông quan')
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
-
-    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
-    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
 
     # field domain cho 2 field đơn mua hàng và phiếu nhập kho
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
@@ -431,25 +420,11 @@ class AccountMove(models.Model):
                 else:
                     rec.is_check_vendor_page = False
 
-    @api.constrains('exchange_rate', 'trade_discount')
+    @api.constrains('exchange_rate')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
                 raise ValidationError('Tỷ giá không được âm!')
-            if item.trade_discount < 0:
-                raise ValidationError('Chiết khấu thương mại không được âm!')
-
-    @api.onchange('trade_discount')
-    def onchange_total_trade_discount(self):
-        if self.trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
-
-    @api.onchange('total_trade_discount')
-    def onchange_trade_discount(self):
-        if self.total_trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
 
     def create_invoice_tnk_db(self):
         account_db = []
@@ -650,8 +625,8 @@ class AccountMove(models.Model):
                 if rec.exchange_rate_line_ids:
                     rec.create_invoice_tnk_db()
                     rec.create_tax_vat()
-            if rec.total_trade_discount:
-                rec.create_trade_discount()
+            # if rec.total_trade_discount:
+            #     rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
 
