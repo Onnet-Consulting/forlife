@@ -190,7 +190,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 //            orderline.price_unit_refund = this.price_unit_refund;
 //            orderline.price_subtotal_incl_refund = this.price_subtotal_incl_refund;
             orderline.is_product_defective = this.is_product_defective;
-            orderline.money_reduce_from_product_defective = this.money_reduce_from_product_defective;
+            orderline.money_reduce_from_product_defective = this.money_reduce_from_product_defective||0;
             orderline.product_defective_id = this.product_defective_id;
             orderline.subtotal_paid = this.subtotal_paid || 0;
             return orderline;
