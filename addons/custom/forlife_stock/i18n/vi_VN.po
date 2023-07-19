@@ -1372,3 +1372,8 @@ msgstr "Địa điểm nguồn"
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__location_dest_id
 msgid "Destination Location"
 msgstr "Địa điểm đích"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.inherit_stock_picking_for_other_export_form_view
+msgid "Are you sure you want to cancel?"
+msgstr "Bạn có chắc chắn muốn huỷ phiếu?"
