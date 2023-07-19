@@ -77,7 +77,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let price = line.original_price;
                 let qty = line.get_quantity();
                 let product_default_code = line.get_product().default_code || '';
-                let discount_amount = line.get_line_receipt_total_discount();
+                let discount_amount = line.get_line_receipt_total_discount() + (qty * price * line.get_discount() / 100);
                 let total_amount = line.get_display_price_after_discount();
                 let total_original_amount = price * qty;
                 if (!(product_id in merge_line_values)) {

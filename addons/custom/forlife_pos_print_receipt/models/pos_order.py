@@ -151,10 +151,11 @@ class PosOrder(models.Model):
         order_ids = super().create_from_ui(orders, draft)
         for o in order_ids:
             order = self.sudo().browse(o['id'])
+            store = 'forlife' if order.brand_id.code == 'TKL' else 'format'
             history_point = self.env['partner.history.point'].search([
                 ('partner_id', '=', order.partner_id.id),
                 ('date_order', '<=', order.date_order),
-                ('store', '=', 'format')
+                ('store', '=', store)
             ])
             o.update({
                 'total_point': order.total_point,

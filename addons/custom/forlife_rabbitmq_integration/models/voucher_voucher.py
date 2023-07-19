@@ -33,7 +33,7 @@ class VoucherVoucher(models.Model):
                     if v.order_pos:
                         param = f'type=pushNotificationVIP&id={v.notification_id}&voucher={v.name}&gift=&customerId={v.partner_id.phone}'
                     else:
-                        param = f'type=pushNotificationById&customerId={v.partner_id.phone}&NotiId={v.notification_id}&param={v.name}'
+                        param = f'type=pushNotificationbyId&customerId={v.partner_id.phone}&NotiId={v.notification_id}&param={v.name}'
                     requests.get(link + param)
             except:
                 pass
