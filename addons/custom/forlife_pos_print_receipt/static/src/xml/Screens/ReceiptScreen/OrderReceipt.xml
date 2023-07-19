@@ -17,8 +17,7 @@
     </t>
 
     <t t-name="accumulated" owl="1">
-        <div class="payment_lines"
-             t-if="receipt.accumulated_point.total_point &gt; 0 and receipt.accumulated_point.sum_total_point &gt; 0">
+        <div class="payment_lines" t-if="receipt.accumulated_point.total_point &gt; 0">
             <table class="accumulated payment-detail">
                 <tbody>
                     <tr>
@@ -35,6 +34,7 @@
                     </tr>
                 </tbody>
             </table>
+            <t t-call="SeparateLine"/>
         </div>
     </t>
 
