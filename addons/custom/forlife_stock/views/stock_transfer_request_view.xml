@@ -158,5 +158,6 @@
         <field name="name">Stock Transfer Request</field>
         <field name="res_model">stock.transfer.request</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('company_id','in',allowed_company_ids)]</field>
     </record>
 </odoo>
