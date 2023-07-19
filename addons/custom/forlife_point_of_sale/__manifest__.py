@@ -18,12 +18,14 @@
     'depends': [
         'point_of_sale',
         'hr',
+        'queue_job',
     ],
 
     'data': [
         'security/forlife_point_of_sale_security.xml',
         'security/ir.model.access.csv',
         'data/brand_data.xml',
+        'data/ir_attachment_data.xml',
 
         'views/brand_views.xml',
         'views/store_views.xml',
@@ -35,6 +37,8 @@
         'data/cron.xml',
         'views/ir_cron_views.xml',
         'views/account_move_views.xml',
+
+        'wizard/import_store_first_order_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [
