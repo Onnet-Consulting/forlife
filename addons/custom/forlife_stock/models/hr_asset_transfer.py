@@ -33,7 +33,7 @@ class HrAssetTransfer(models.Model):
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         return res
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('hr.asset.transfer.name.sequence') or 'AT'

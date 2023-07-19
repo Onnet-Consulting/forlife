@@ -33,7 +33,7 @@ class ProductProduct(models.Model):
             product_name = f"{product_name} ({color_name} / SIZE {size_name})"
         return product_name
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)
         if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:

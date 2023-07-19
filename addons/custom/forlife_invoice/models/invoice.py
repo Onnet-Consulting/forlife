@@ -1016,6 +1016,7 @@ class AccountMoveLine(models.Model):
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
+    _description = 'Vendor back'
 
     _sql_constraints = [
         (

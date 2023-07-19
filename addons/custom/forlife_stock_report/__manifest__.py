@@ -3,6 +3,7 @@
     "name": "Forlife Stock Report",
     "category": "Forlife Stock",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 6,
     "description": """Forlife Stock Report""",
     "depends": [

@@ -279,7 +279,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     #                       + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids)
     #                       + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if not vals.get('is_check'):
             vals.update({

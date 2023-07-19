@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class PosOlDiscountDetails(models.Model):
     _name = 'pos.order.line.discount.details'
+    _description = 'POS discount details'
 
     name = fields.Char('Program Name', compute='_compute_name')
     pos_order_line_id = fields.Many2one('pos.order.line')

@@ -43,7 +43,7 @@ class ProductTemplate(models.Model):
                 product_include.program_voucher_id = False
         return super(ProductTemplate, self).write(vals)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         if 'program_voucher_id' in vals_list and vals_list['program_voucher_id']:
             product_include = self.search([('program_voucher_id', '=', vals_list['program_voucher_id'])])

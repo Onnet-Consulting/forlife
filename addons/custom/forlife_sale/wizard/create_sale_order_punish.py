@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 
 class CreateSaleOrderPunish(models.Model):
     _name = 'create.sale.order.punish'
+    _description = "Create SO punish"
 
     x_partner_id = fields.Many2one('res.partner', string='Khách hàng')
 

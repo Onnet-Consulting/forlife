@@ -8,6 +8,7 @@ from odoo.modules.module import get_resource_path
 
 class ImportProductionFromExcel(models.TransientModel):
     _name = 'import.production.from.excel'
+    _description = "Production import"
 
     name = fields.Char(default='Nhập từ excel')
     file = fields.Binary(string='File excel')

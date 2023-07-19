@@ -3,6 +3,7 @@
     "name": "BKAV Connector",
     "category": "BKAV",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """BKAV Connector""",
     "depends": [

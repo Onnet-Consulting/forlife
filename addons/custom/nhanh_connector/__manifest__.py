@@ -3,6 +3,7 @@
     "name": "Nhanh Connector",
     "category": "Purchases",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """Nhanh Connector""",
     "depends": [

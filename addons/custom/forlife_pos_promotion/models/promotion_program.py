@@ -30,6 +30,7 @@ REWARD_TYPE = [
 
 class PromotionConditionProduct(models.Model):
     _name = 'promotion.condition.product'
+    _description = "Promotion Condition Product"
     _rec_name = 'product_product_id'
     _table = 'product_product_promotion_program_rel'
 
@@ -77,7 +78,7 @@ class PromotionProgram(models.Model):
 
     brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True, required=False)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
-    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
+    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date')
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
     month_ids = fields.Many2many(related='campaign_id.month_ids', string='Months')
     dayofmonth_ids = fields.Many2many(related='campaign_id.dayofmonth_ids', string='DayOfMonth')
