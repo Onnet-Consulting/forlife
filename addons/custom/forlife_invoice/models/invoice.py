@@ -815,6 +815,7 @@ class AccountMoveLine(models.Model):
     @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'total_vnd_amount')
     def _compute_before_tax(self):
         for rec in self:
+            rec.before_tax = 0
             cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
             for line in rec.move_id.invoice_line_ids:
                 total_cost_true = 0
@@ -825,7 +826,7 @@ class AccountMoveLine(models.Model):
                         line.before_tax = total_cost_true
                     line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                 else:
-                    line.before_tax = 0
+                    # line.before_tax = 0
                     if line.before_tax != 0:
                         line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                     else:
@@ -835,6 +836,7 @@ class AccountMoveLine(models.Model):
                  'move_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
+            rec.after_tax = 0
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             for line in rec.move_id.invoice_line_ids:
                 total_cost = 0
