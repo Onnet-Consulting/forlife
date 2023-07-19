@@ -57,6 +57,7 @@ class StockTransfer(models.Model):
     total_package = fields.Float(string='Total Package (Number)')
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char(copy=False)
+    origin = fields.Char(copy=False)
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
     note = fields.Text("Ghi chú")
     date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now(), copy=False)
@@ -448,6 +449,13 @@ class StockTransfer(models.Model):
             vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
                 warehouse if warehouse else '') + str(
                 datetime.now().year)
+        if vals.get('reference_document'):
+            stock = self.env['stock.transfer'].search([('name', '=', vals.get('reference_document'))], limit=1)
+            while stock and stock.reference_document:
+                stock = self.env['stock.transfer'].search([('name', '=', stock.reference_document)], limit=1)
+            vals['origin'] = stock.name
+        else:
+            vals['origin'] = vals['name']
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):
@@ -664,27 +672,25 @@ class StockTransferLine(models.Model):
         self.ensure_one()
         product = self.product_id
         tolerance = product.tolerance
-        if not self.stock_transfer_id.is_diff_transfer:
-            quantity = self.qty_out if type == 'out' else self.qty_in
-            if quantity > self.qty_plan * (1 + (tolerance / 100)):
-                raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                product.default_code, product.name, tolerance))
-        else:
-            start_transfer = self.env['stock.transfer'].search(
-                [('id', '!=', self.stock_transfer_id.id), ('stock_request_id', '=', self.stock_transfer_id.stock_request_id.id)])
-            # other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
+        start_transfer = self.env['stock.transfer'].search(
+            [('id', '!=', self.stock_transfer_id.id),
+             ('origin', '=', self.stock_transfer_id.origin)])
+        if start_transfer:
             quantity_old = sum(
                 [line.qty_out if type == 'out' else line.qty_in for line in start_transfer.stock_transfer_line.filtered(
                     lambda r: r.product_id == self.product_id)])
             quantity_plan = sum(
                 [line.qty_plan for line in start_transfer.stock_transfer_line.filtered(
                     lambda r: r.product_id == self.product_id)])
-            # for rec in start_transfer.stock_transfer_line:
-            #     if rec.product_id == self.product_id:
-            quantity = quantity_old + self.qty_out if type == 'out' else quantity_old + self.qty_in
+            quantity = (quantity_old + self.qty_out) if type == 'out' else (quantity_old + self.qty_in)
             if quantity > (quantity_plan + self.qty_plan) * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                product.default_code, product.name, tolerance))
+                    product.default_code, product.name, tolerance))
+        else:
+            quantity = self.qty_out if type == 'out' else self.qty_in
+            if quantity > self.qty_plan * (1 + (tolerance / 100)):
+                raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
+                    product.default_code, product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):

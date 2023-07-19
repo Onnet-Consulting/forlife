@@ -11,6 +11,7 @@ class StockTransferRequest(models.Model):
     _name = 'stock.transfer.request'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Stock Transfer'
+    _check_company_auto = True
 
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
     request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now(), required=True)
