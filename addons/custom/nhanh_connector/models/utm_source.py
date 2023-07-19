@@ -10,4 +10,5 @@ class UTMSource(models.Model):
     _inherit = 'utm.source'
 
     # tuuh
-    x_nhanh_id = fields.Boolean('ID Nhanh')
+    x_nhanh_id = fields.Char(string='ID Nhanh', default='')
+

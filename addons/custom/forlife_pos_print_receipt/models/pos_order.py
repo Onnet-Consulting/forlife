@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-import locale
+import ast
 
 
 class PosOrder(models.Model):
@@ -25,19 +25,23 @@ class PosOrder(models.Model):
             gif_code = []
             amount_total = 0
             accumulation = 0
+            list_product_point = []
             for line in self.lines:
+                if line.is_promotion:
+                    continue
                 discount = 0
+                amount_discount = sum(line.discount_details_lines.mapped('money_reduced'))
                 if item.brand_id.code == 'FMT':
                     if line.qty > 0 and line.original_price > 0:
-                        discount = round(((line.money_is_reduced / line.qty) / line.original_price) * 100)
+                        discount = round(((amount_discount / line.qty) / line.original_price) * 100)
                     if discount > 50:
-                        discount = f'{discount}%+'
+                        discount = '50%+'
                     else:
                         discount = f'{discount}%'
 
                 if item.brand_id.code == 'TKL':
-                    discount = self.env.company.currency_id.format(line.original_price)
-                    if line.original_price > 0:
+                    discount = self.env.company.currency_id.format(amount_discount)
+                    if amount_discount > 0:
                         discount = f'-{discount}'
                     else:
                         discount = f'{discount}'
@@ -57,13 +61,22 @@ class PosOrder(models.Model):
                     if p.program_id.promotion_type != 'code':
                         gif_code.append({'code': p.code_id.name, 'amount': 0})
                     else:
-                        gif_code.append({'code': p.code_id.name,
-                                         'amount': self.env.company.currency_id.format(p.discount_total)})
+                        gif_code.append({
+                            'code': p.code_id.name,
+                            'amount': p.discount_total
+                        })
 
                 for promotion_detail in line.discount_details_lines:
-                    if promotion_detail.type != 'point':
-                        continue
-                    accumulation += promotion_detail.money_reduced
+                    if promotion_detail.type == 'point':
+                        list_product_point.append({
+                            'name': line.product_id.name,
+                            'qty': line.qty,
+                            'barcode': line.product_id.barcode,
+                            'price_unit': self.env.company.currency_id.format(line.original_price),
+                            'discount': discount,
+                            'subtotal_paid': self.env.company.currency_id.format(line.subtotal_paid),
+                        })
+                        accumulation += promotion_detail.money_reduced
 
                 amount_total += line.subtotal_paid
                 total_qty += line.qty
@@ -72,7 +85,7 @@ class PosOrder(models.Model):
             for pm in item.payment_ids:
                 payment_method.append({
                     'name': pm.payment_method_id.name,
-                    'amount': f"({self.env.company.currency_id.format(pm.amount)})",
+                    'amount': f"{self.env.company.currency_id.format(pm.amount)}",
                 })
             history_point = self.env['partner.history.point'].search([
                 ('partner_id', '=', item.partner_id.id),
@@ -94,8 +107,9 @@ class PosOrder(models.Model):
                 'total_qty': total_qty,
                 'total_reduced': self.env.company.currency_id.format(total_reduced),
                 'amount_total': self.env.company.currency_id.format(amount_total),
-                'line_products': line_products,
-                'gif_code': gif_code,
+                'line_products': self.sum_product_with_promotion(line_products),
+                'list_product_point': list_product_point,
+                'gif_code': self.sum_amount_code(gif_code),
                 'amount_paid': self.env.company.currency_id.format(item.amount_paid),
                 'payment_method': payment_method,
                 'accumulation': accumulation,
@@ -103,3 +117,48 @@ class PosOrder(models.Model):
                 'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0
             })
         return data
+
+    def covert_to_list(self, data):
+        return ast.literal_eval(data)
+
+    def sum_amount_code(self, data):
+        grouped_data = {}
+        for item in data:
+            code = item['code']
+            if code in grouped_data:
+                grouped_data[code] += item['amount']
+            else:
+                grouped_data[code] = item['amount']
+
+        for d, value in grouped_data.items():
+            value = self.env.company.currency_id.format(value)
+            grouped_data[d] = f'({value})'
+
+        return grouped_data
+
+    def sum_product_with_promotion(self, data):
+        grouped_data = {}
+        for item in data:
+            code = f"{item['promotion_list']}"
+            if code in grouped_data:
+                grouped_data[code].append(item)
+            else:
+                grouped_data[code] = [item]
+        return grouped_data
+
+    @api.model
+    def create_from_ui(self, orders, draft=False):
+        order_ids = super().create_from_ui(orders, draft)
+        for o in order_ids:
+            order = self.sudo().browse(o['id'])
+            history_point = self.env['partner.history.point'].search([
+                ('partner_id', '=', order.partner_id.id),
+                ('date_order', '<=', order.date_order),
+                ('store', '=', 'format')
+            ])
+            o.update({
+                'total_point': order.total_point,
+                'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0,
+            })
+
+        return order_ids
