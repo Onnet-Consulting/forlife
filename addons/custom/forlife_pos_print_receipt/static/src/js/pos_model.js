@@ -9,8 +9,8 @@ patch(PosGlobalState.prototype, "rewrite_flush_orders", {
         return this._save_to_server(orders, options).then(function (server_ids) {
             for (let i = 0; i < server_ids.length; i++) {
                 self.validated_orders_name_server_id_map[server_ids[i].pos_reference] = server_ids[i].id;
-                self.sum_total_point = server_ids[i].sum_total_point
-                self.total_point = server_ids[i].total_point
+                self.sum_total_point = server_ids[i].sum_total_point || 0
+                self.total_point = server_ids[i].total_point || 0
             }
             return server_ids;
         }).finally(function () {
