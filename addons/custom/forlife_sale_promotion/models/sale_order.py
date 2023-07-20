@@ -180,8 +180,10 @@ class SaleOrder(models.Model):
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển của nhà vận chuyển"
                         })]
+                # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
                     for line in rec.order_line:
+                        # check khuyên mãi để tạo promotion
                         if line.reward_id.reward_type == "discount":
                             product_domain = line.reward_id._get_discount_product_domain()
                             for line_promotion in rec.order_line:
