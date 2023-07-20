@@ -16,3 +16,15 @@ class ReportController(Controller):
         )
         response.stream.write(request.env[model_name].browse(record_id).get_xlsx(safe_eval(allowed_company)))
         return response
+
+    @route(['/client/download/xlsx'], type='http', auth="user")
+    def report_client_download(self, **kwargs):
+        response = request.make_response(
+            None,
+            headers=[
+                ('Content-Type', 'application/vnd.ms-excel'),
+                ('Content-Disposition', content_disposition(kwargs.get('filename')))
+            ]
+        )
+        response.stream.write(request.env[kwargs.get('model_name')].get_xlsx(False, data=kwargs.get('data')))
+        return response

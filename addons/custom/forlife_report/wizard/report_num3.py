@@ -10,16 +10,15 @@ COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20]
 
 class ReportNum3(models.TransientModel):
     _name = 'report.num3'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Report stock in time range by warehouse'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
     product_ids = fields.Many2many('product.product', 'report_num3_product_rel', string='Products')
-    product_brand_id = fields.Many2one('product.category', 'Product Brand')
-    product_group_ids = fields.Many2many('product.category', 'report_num3_group_rel', string='Product Group')
-    product_line_ids = fields.Many2many('product.category', 'report_num3_line_rel', string='Product Line')
-    texture_ids = fields.Many2many('product.category', 'report_num3_texture_rel', string='Texture')
+    product_group_ids = fields.Many2many('product.category', 'report_num3_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num3_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num3_texture_rel', string='Level 4')
     collection = fields.Char('Collection')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num3_warehouse_rel', string='Warehouse')
     defective_inventory = fields.Boolean(string='Skip defective inventory')
