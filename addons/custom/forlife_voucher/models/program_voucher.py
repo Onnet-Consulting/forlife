@@ -26,7 +26,7 @@ class ProgramVoucher(models.Model):
 
     start_date = fields.Datetime('Start date', required=True)
 
-    end_date = fields.Datetime('End date', required=True, tracking=True)
+    end_date = fields.Datetime('End date', required=True)
 
     state_app = fields.Boolean('Trạng thái App')
 
@@ -129,7 +129,7 @@ class ProgramVoucher(models.Model):
             if code == Character[i]:
                 return Character[i + 1]
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         # if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
         #     raise UserError(_('Please set the infomation of Vourcher!'))

@@ -11,6 +11,7 @@ from odoo.exceptions import ValidationError
 
 class DisableNhanhProduct(models.TransientModel):
     _name = 'disable.nhanh.product'
+    _description = 'Disable nhanh.vn product'
 
     import_file = fields.Binary(attachment=False, string='Upload file')
     import_file_name = fields.Char()

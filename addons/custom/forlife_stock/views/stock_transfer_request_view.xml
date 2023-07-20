@@ -151,6 +151,20 @@
                 <field name="department_id"/>
                 <field name="request_date"/>
                 <field name="state"/>
+                <group expand="0" string="Filters">
+                    <filter string="Dự thảo" name="state" domain="[('state','=','draft')]"/>
+                    <filter string="Chờ duyệt" name="state" domain="[('state','=','wait_confirm')]"/>
+                    <filter string="Đã phê duyệt" name="state" domain="[('state','=','approved')]"/>
+                    <filter string="Từ chối" name="state" domain="[('state','=','reject')]"/>
+                    <filter string="Hủy" name="state" domain="[('state','=','cancel')]"/>
+                    <filter string="Hoàn thành" name="state" domain="[('state','=','done')]"/>
+                </group>
+                <group expand="0" string="Group">
+                    <filter name="request_date_group" string="Ngày tạo"
+                            context="{'group_by': 'request_date'}"/>
+                    <filter name="request_employee_id_group" string="Người tạo"
+                            context="{'group_by': 'request_employee_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -158,5 +172,6 @@
         <field name="name">Stock Transfer Request</field>
         <field name="res_model">stock.transfer.request</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('company_id','in',allowed_company_ids)]</field>
     </record>
 </odoo>

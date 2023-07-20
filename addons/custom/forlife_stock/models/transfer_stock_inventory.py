@@ -73,10 +73,13 @@ class TransferStockInventory(models.Model):
         res['create_date'] = datetime.now()
         return res
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
+        if not isinstance(vals, list):
+            vals = [vals]
+        for val in vals:
+            if val.get('code', 'New') == 'New':
+                val['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
         res = super(TransferStockInventory, self).create(vals)
         # if self._context.get('x_classify') and not res.x_classify:
         #     raise ValidationError('Giá trị xuất đang không khớp với giá trị nhập')
@@ -107,7 +110,9 @@ class TransferStockInventory(models.Model):
                                                                  ], limit=1)
         if not picking_type_in:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác.' % (self.env.company.name))
-        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'), ('company_id', '=', self.env.company.id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([('import_or_export', '=', 'other_export'),
+                                                                  ('company_id', '=', self.env.company.id)
+                                                                  ], limit=1)
         if not picking_type_out:
             raise ValidationError('Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác.' % (self.env.company.name))
         export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify = self.get_location()
@@ -304,6 +309,7 @@ class TransferStockInventory(models.Model):
 
 class TransferStockInventoryLine(models.Model):
     _name = "transfer.stock.inventory.line"
+    _description = 'Kiểm kê cân tồn kho chi tiết'
 
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     product_from_id = fields.Many2one('product.product', string='Product From')
@@ -350,7 +356,7 @@ class TransferStockInventoryLine(models.Model):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Thương hiệu.' % product_id.name))
         if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level < 2):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Nhóm hàng.' % product_id.name))
-        if product_id.brand_id.code == 'FM' and (not product_id.categ_id or product_id.categ_id.level < 4):
+        if product_id.brand_id.code == 'FMT' and (not product_id.categ_id or product_id.categ_id.level < 4):
             raise ValidationError(_('Sản phẩm "%s" chưa được cấu hình Kết cấu.' % product_id.name))
 
     @api.onchange('product_from_id', 'product_to_id')

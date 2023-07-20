@@ -63,6 +63,7 @@ class SaleOrder(models.Model):
             'nhanh_order_status': line.nhanh_order_status or None,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['note', 'state', 'order_line', 'warehouse_id', 'partner_id', 'order_date', 'nhanh_order', 'nhanh_order_status']
 

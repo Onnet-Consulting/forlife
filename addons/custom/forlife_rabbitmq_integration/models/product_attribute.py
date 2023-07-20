@@ -24,5 +24,6 @@ class ProductAttribute(models.Model):
             } for val in line.value_ids] if line.value_ids else None
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['attrs_code', 'name', 'value_ids']

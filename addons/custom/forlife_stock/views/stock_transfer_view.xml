@@ -24,6 +24,7 @@
                 <field name="work_from"/>
                 <field name="work_to"/>
                 <field name="create_date"/>
+                <field name="origin" invisible="1"/>
                 <field name="state" widget="badge"/>
             </tree>
         </field>
@@ -97,7 +98,7 @@
                                     <field name="product_id"  domain="[('product_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
                                     <field name="qty_plan" attrs="{'readonly': ['|', '|',('product_str_id', '!=', False), ('parent.state', 'not in', ('draft', 'wait_approve')), ('parent.is_diff_transfer', '=', True)]}"/>
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
-                                    <field name="qty_out" attrs="{'readonly': [('parent.state', '!=', 'approved'), ('parent.is_diff_transfer', '=', False)]}"/>
+                                    <field name="qty_out" attrs="{'readonly': [('parent.state', 'not in', ('in_approve', 'approved'))]}"/>
                                     <field name="qty_in" attrs="{'readonly': [('parent.state', '!=', 'out_approve')]}"/>
                                     <field name="quantity_remaining" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
                                     <field name="work_from" required="0" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
@@ -160,7 +161,8 @@
         <field name="model">stock.transfer</field>
         <field name="arch" type="xml">
             <search string="Groups">
-                 <field name="name"/>
+                <field name="name"/>
+                <field name="origin"/>
                 <field name="employee_id"/>
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
@@ -169,6 +171,37 @@
                 <field name="work_to"/>
                 <field name="create_date"/>
                 <field name="state" widget="badge"/>
+                <group expand="0" string="Filters">
+                    <filter string="Dự thảo" name="state" domain="[('state','=','draft')]"/>
+                    <filter string="Chờ phê duyệt" name="state" domain="[('state','=','wait_approve')]"/>
+                    <filter string="Đã phê duyệt" name="state" domain="[('state','=','approved')]"/>
+                    <filter string="Xác nhận xuất" name="state" domain="[('state','=','out_approve')]"/>
+                    <filter string="Xác nhận nhập" name="state" domain="[('state','=','in_approve')]"/>
+                    <filter string="Hoàn thành" name="state" domain="[('state','=','done')]"/>
+                    <filter string="Từ chối" name="state" domain="[('state','=','reject')]"/>
+                    <filter string="Hủy" name="state" domain="[('state','=','cancel')]"/>
+                    <separator/>
+                    <filter string="Chuyển khác" name="is_diff_transfer" domain="[('is_diff_transfer','=',True)]"/>
+                    <separator/>
+                    <filter string="Điều chuyển phát sinh thừa" name="type" domain="[('type','=','excess')]"/>
+                    <filter string="Điều chuyển phát sinh thiếu" name="type" domain="[('type','=','lack')]"/>
+                </group>
+                <group expand="0" string="Group">
+                    <filter name="stock_request_id_group" string="Yêu cầu điều chuyển"
+                            context="{'group_by': 'stock_request_id'}"/>
+                    <filter name="origin_group" string="Tài liệu gốc"
+                            context="{'group_by': 'origin'}"/>
+                    <filter name="state_group" string="Trạng thái"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="location_id_group" string="Từ kho"
+                            context="{'group_by': 'location_id'}"/>
+                    <filter name="location_dest_id_group" string="Đến kho"
+                            context="{'group_by': 'location_dest_id'}"/>
+                    <filter name="create_date_group" string="Ngày tạo"
+                            context="{'group_by': 'create_date'}"/>
+                    <filter name="employee_id_group" string="Người tạo"
+                            context="{'group_by': 'employee_id'}"/>
+                </group>
             </search>
         </field>
     </record>

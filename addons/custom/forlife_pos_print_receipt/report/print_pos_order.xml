@@ -21,20 +21,25 @@
                             <div class="text-center mt-2">
                                 <t t-esc="doc['phone']"/>
                             </div>
-                            <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2">
+                            <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2"
+                                 style="width: 100%;margin: auto;border: 1px solid;">
                                 <div class="text-center">
-                                    Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa đơn sau 24h và nhận thông
-                                    tin các ưu đãi mới nhất, lớn nhất
+                                    <div>
+                                        Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa
+                                    </div>
+                                    <div>
+                                        đơn sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                                    </div>
                                 </div>
                                 <img class="mt-2"
                                      t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', 'text', 150, 150)"/>
-                                <div class="text-center mt-2">
+                                <div class="text-center mt-3">
                                     Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng
                                 </div>
                             </div>
                             <div class="section mt-2">
                                 <table class="table table-bordered">
-                                    <tbody>
+                                    <tbody style="border-color: #FFF;">
                                         <tr>
                                             <td>Ngày giờ:</td>
                                             <td>
@@ -67,50 +72,96 @@
                                 </table>
                             </div>
                             <div class="section">
-                                <table class="table">
+                                <table class="table no_color_border">
                                     <tbody>
-                                        <tr>
-                                            <td>Tên hàng</td>
-                                            <td>SL</td>
-                                            <td>Đơn giá</td>
-                                            <td t-if="doc['brand'] == 'TKL'">GG</td>
-                                            <td t-if="doc['brand'] == 'FMT'">-%GG</td>
-                                            <td>Tổng tiền</td>
+                                        <tr style="border-top: 1px solid #dee2e6; border-left: unset; border-right: unset; border-color: #FFF">
+                                            <td>
+                                                <strong>Tên hàng</strong>
+                                            </td>
+                                            <td>
+                                                <strong>SL</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Đơn giá</strong>
+                                            </td>
+                                            <td t-if="doc['brand'] == 'TKL'">
+                                                <strong>GG</strong>
+                                            </td>
+                                            <td t-if="doc['brand'] == 'FMT'">
+                                                <strong>-%GG</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Tổng tiền</strong>
+                                            </td>
                                         </tr>
                                     </tbody>
-                                    <tbody>
-                                        <t t-foreach="doc['line_products']" t-as="line">
-                                            <t t-if="len(line['promotion_list']) &gt; 0">
-                                                <t t-foreach="line['promotion_list']" t-as="prom">
-                                                    <tr>
-                                                        <td colspan="5">
-                                                            <strong>-
-                                                                <t t-esc="prom"/>
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                </t>
+                                    <tbody style="border-color: #FFF; border-top: 1px solid #dee2e6;">
+                                        <tr>
+                                            <td colspan="5">
+                                                <hr/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['line_products'].items()" t-as="line">
+                                            <t t-foreach="o.covert_to_list(line[0])" t-as="prom">
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <strong>-
+                                                            <t t-esc="prom"/>
+                                                        </strong>
+                                                    </td>
+                                                </tr>
                                             </t>
+                                            <t t-foreach="line[1]" t-as="line_item">
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <t t-esc="line_item['name']"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="line_item['barcode']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['qty']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['price_unit']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important; white-space: nowrap;">
+                                                        <t t-esc="line_item['discount']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['subtotal_paid']"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <tr t-if="len(doc['list_product_point']) &gt; 0">
+                                            <td colspan="5">
+                                                <strong>Tiêu tích lũy</strong>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['list_product_point']" t-as="line_point">
                                             <tr>
                                                 <td colspan="5">
-                                                    <t t-esc="line['name']"/>
+                                                    <t t-esc="line_point['name']"/>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <t t-esc="line['barcode']"/>
+                                                    <t t-esc="line_point['barcode']"/>
                                                 </td>
                                                 <td style="text-align: right !important;">
-                                                    <t t-esc="line['qty']"/>
+                                                    <t t-esc="line_point['qty']"/>
                                                 </td>
                                                 <td style="text-align: right !important;">
-                                                    <t t-esc="line['price_unit']"/>
+                                                    <t t-esc="line_point['price_unit']"/>
                                                 </td>
                                                 <td style="text-align: right !important; white-space: nowrap;">
-                                                    <t t-esc="line['discount']"/>
+                                                    <t t-esc="line_point['discount']"/>
                                                 </td>
                                                 <td style="text-align: right !important;">
-                                                    <t t-esc="line['subtotal_paid']"/>
+                                                    <t t-esc="line_point['subtotal_paid']"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -120,7 +171,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Tổng cộng</td>
+                                            <td colspan="2">Tổng cộng</td>
                                             <td style="text-align: right !important;">
                                                 <t t-esc="doc['total_qty']"/>
                                             </td>
@@ -129,18 +180,20 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Chiết khấu</td>
-                                            <td colspan="4" style="text-align: right !important;">
+                                            <td colspan="2">Chiết khấu</td>
+                                            <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['total_reduced']"/>
                                             </td>
                                         </tr>
-                                        <t t-foreach="doc['gif_code']" t-as="code">
+                                        <t t-foreach="doc['gif_code'].items()" t-as="code">
                                             <tr>
-                                                <td>
-                                                    <t t-esc="code['code']"/>
+                                                <td colspan="2">
+                                                    <strong>
+                                                        <t t-esc="code[0]"/>
+                                                    </strong>
                                                 </td>
-                                                <td colspan="4" style="text-align: right !important;">
-                                                    <t t-esc="code['amount']"/>
+                                                <td colspan="3" style="text-align: right !important;">
+                                                    <t t-esc="code[1]"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -150,24 +203,24 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Tổng tiền thanh toán</td>
-                                            <td colspan="4" style="text-align: right !important;">
+                                            <td colspan="2">Tổng tiền thanh toán</td>
+                                            <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['amount_paid']"/>
                                             </td>
                                         </tr>
                                         <t t-foreach="doc['payment_method']" t-as="pm">
                                             <tr>
-                                                <td>
+                                                <td colspan="2">
                                                     <t t-esc="pm['name']"/>
                                                 </td>
-                                                <td colspan="4" style="text-align: right !important;">
+                                                <td colspan="3" style="text-align: right !important;">
                                                     <t t-esc="pm['amount']"/>
                                                 </td>
                                             </tr>
                                         </t>
                                         <tr>
-                                            <td>Tiêu tích lũy</td>
-                                            <td colspan="4" style="text-align: right !important;">
+                                            <td colspan="2">Tiêu tích lũy</td>
+                                            <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['accumulation']"/>
                                             </td>
                                         </tr>
@@ -177,21 +230,25 @@
                                             </td>
                                         </tr>
                                         <tr t-if="doc['total_point'] &gt; 0">
-                                            <td>Tích lũy HĐ</td>
-                                            <td colspan="4" style="text-align: right !important;">
+                                            <td colspan="2">Tích lũy HĐ</td>
+                                            <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['total_point']"/>
                                             </td>
                                         </tr>
                                         <tr t-if="doc['total_point'] &gt; 0">
-                                            <td>Điểm tích lũy</td>
-                                            <td colspan="4" style="text-align: right !important;">
+                                            <td colspan="2">Điểm tích lũy</td>
+                                            <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['sum_total_point']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                                <hr/>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-
                             <t t-esc="doc['receipt_footer']"/>
                         </div>
                     </t>

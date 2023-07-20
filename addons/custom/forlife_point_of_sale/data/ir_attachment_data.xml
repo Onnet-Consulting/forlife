@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="template_import_store_first_order" model="ir.attachment">
+            <field name="name">Mẫu nhập cửa hàng đầu tiên của khách.xlsx</field>
+            <field name="datas" type="base64" file="forlife_point_of_sale/static/xlsx/template_store_first_order_import.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
