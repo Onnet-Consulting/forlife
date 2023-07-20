@@ -4,7 +4,7 @@ from odoo import models, fields, api
 class InheritStockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=True)
+    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=False)
 
     # @api.depends(
     #     'move_ids_without_package',
@@ -20,7 +20,7 @@ class InheritStockPicking(models.Model):
 class InheritStockMove(models.Model):
     _inherit = 'stock.move'
 
-    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', compute_sudo=True, store=True)
+    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', compute_sudo=True, store=False)
 
     @api.depends('product_id', 'product_id.is_need_scan_barcode')
     def _compute_need_scan_barcode(self):
@@ -31,7 +31,7 @@ class InheritStockMove(models.Model):
 class InheritStockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
-    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', compute_sudo=True, store=True)
+    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', compute_sudo=True, store=False)
 
     @api.depends('product_id', 'product_id.is_need_scan_barcode')
     def _compute_need_scan_barcode(self):
