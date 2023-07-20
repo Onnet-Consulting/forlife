@@ -7,6 +7,7 @@ from odoo.addons.forlife_report.wizard.available_report_list import AVAILABLE_RE
 from pytz import timezone
 from datetime import datetime
 import base64
+import json
 
 
 def format_date_query(column_name, tz_offset):
@@ -87,11 +88,10 @@ class ReportCategoryType(models.AbstractModel):
 class ExportExcelClient(models.AbstractModel):
     _name = 'export.excel.client'
     _description = 'Export excel from client'
-    file_report = fields.Binary(string='Report File')
 
     @api.model
     def export_excel_from_client(self, data, filename):
-        data = data.encode('utf-8')
+        data = json.dumps(data).encode('utf-8')
         base64_bytes = base64.b64encode(data)
         base64_string = base64_bytes.decode("utf-8")
         return {

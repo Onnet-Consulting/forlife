@@ -6,6 +6,7 @@ import copy
 import io
 import re
 import base64
+import json
 
 
 class ReportBase(models.AbstractModel):
@@ -29,8 +30,10 @@ class ReportBase(models.AbstractModel):
         if 'data' in kwargs:
             data = kwargs.get('data')
             base64_bytes = data.encode("utf-8")
-            sample_string_bytes = base64.b64decode(base64_bytes)
-            final_string = sample_string_bytes.decode("utf-8")
+            if not (b'==' in base64_bytes):
+                base64_bytes += b'='
+            sample_string_bytes = base64.b64decode(base64_bytes).decode("utf-8")
+            final_string = json.loads(sample_string_bytes)
 
             replace_list = set(re.findall(r'\d\.\d', final_string))
             for r in replace_list:
