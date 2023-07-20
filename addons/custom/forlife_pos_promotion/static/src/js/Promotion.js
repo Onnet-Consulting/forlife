@@ -2149,6 +2149,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     // For Combo Program
     applyAComboProgramToLineVales(program, comboLineList, number_of_combo, rewardLine) {
+        let self = this;
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
         if (activatedCodeObj) {code = activatedCodeObj.id};
@@ -2160,7 +2161,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         function getDiscountedAmountAPart() {
             return comboLineList.reduce((tmp_line, line) => {
                 let tmp_pro = line.promotion_usage_ids.reduce((tmp, usage) => {
-                    if (usage.str_id == this.pos.get_str_id(program)) {
+                    if (usage.str_id == self.pos.get_str_id(program)) {
                         tmp += usage.discount_amount * line.quantity
                     };
                     return tmp;
