@@ -787,7 +787,8 @@ class AccountMoveLine(models.Model):
             rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
             # rec.total_vnd_exchange = rec.total_vnd_amount + rec.before_tax
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'total_vnd_amount')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
+                 'move_id.invoice_line_ids')
     def _compute_before_tax(self):
         for rec in self:
             rec.before_tax = 0

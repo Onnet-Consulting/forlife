@@ -233,9 +233,22 @@ class Inventory(models.Model):
 
     def action_start(self):
         self.ensure_one()
+        self._get_product_ids()
         self._action_start()
         self._check_company()
         # return self.action_open_inventory_lines()
+
+    def _get_product_ids(self):
+        data_list = []
+        for product in self.product_ids:
+            data = (0, 0, {
+                'product_id': product.id,
+                'barcode': product.barcode,
+                'location_id': self.location_id.id,
+            })
+            data_list.append(data)
+        self.line_ids = data_list
+
 
     def _action_start(self):
         """ Confirms the Inventory Adjustment and generates its inventory lines
