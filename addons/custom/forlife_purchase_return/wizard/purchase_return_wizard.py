@@ -13,7 +13,7 @@ class PurchaseReturnWizardLine(models.TransientModel):
     purchase_returned = fields.Integer("Returned Quantity", required=True)
     purchase_remain = fields.Integer("Remain Quantity", required=True)
     exchange_quantity = fields.Float("Exchange", digits='Product Unit of Measure', required=True)
-    quantity = fields.Integer("Quantity", digits='Product Unit of Measure')
+    quantity = fields.Integer("Quantity")
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
     vendor_price = fields.Float(string="Vendor Price")
     price_unit = fields.Float(string="Unit Price")

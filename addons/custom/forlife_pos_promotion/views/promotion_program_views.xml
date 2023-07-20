@@ -30,7 +30,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_issued_vouchers" icon="fa-ticket"
-                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"
+                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}" String="Open Issued Vouchers"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -41,7 +41,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
-                                attrs="{'invisible': [('total_order_count', '=', 0)]}"
+                                attrs="{'invisible': [('total_order_count', '=', 0)]}" String="Open Orders"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -52,7 +52,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_pricelist_items" icon="fa-list"
-                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"
+                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}" String="Open Pricelist"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
