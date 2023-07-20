@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="import_inventory_session_view_form" model="ir.ui.view">
+            <field name="name">import_inventory_session_view_form</field>
+            <field name="model">import.inventory.session.wizard</field>
+            <field name="arch" type="xml">
+                <form string="import_inventory_session_form">
+                    <sheet>
+                        <group>
+                            <field name="import_file" filename="import_file_name"/>
+                            <field name="import_file_name" invisible="1"/>
+                            <field name="inv_id" invisible="1" force_save="1"/>
+                        </group>
+                        <group string="Lỗi nhập  liệu" attrs="{'invisible': [('error_file', '=', False)]}">
+                            <field name="error_file" filename="error_file_name" readonly="1" force_save="1"/>
+                            <field name="error_file_name" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Hủy"/>
+                        <button name="download_template_file" type="object" string="Tải mẫu" class="oe_highlight"/>
+                        <button name="action_import" type="object" string="Nhập" class="oe_highlight" attrs="{'invisible': [('import_file', '=', False)]}"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="import_inventory_session_action" model="ir.actions.act_window">
+            <field name="name">Nhập liệu kiểm kê</field>
+            <field name="res_model">import.inventory.session.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
