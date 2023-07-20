@@ -86,6 +86,7 @@ class PurchaseOrder(models.Model):
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
     x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+    location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
 
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):
@@ -2769,7 +2770,7 @@ class StockPicking(models.Model):
             product_ids = [
                 (quant['product_id'][0], quant['quantity'] or 0)
                 for quant in self.env['stock.quant'].read_group(
-                    domain=[('location_id', '=', self.location_dest_id.id),  ('product_id', 'in', material_product_ids)],
+                    domain=[('location_id', '=', po.location_export_material_id.id),  ('product_id', 'in', material_product_ids)],
                     fields=['quantity'],
                     groupby='product_id')
             ]
@@ -3282,7 +3283,7 @@ class StockPicking(models.Model):
                             'product_id': material_line.product_id.id,
                             'product_uom': material_line.uom.id,
                             'price_unit': material_line.price_unit,
-                            'location_id': record.location_dest_id.id,
+                            'location_id': po.location_export_material_id.id,
                             'location_dest_id': export_production_order.id,
                             'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
@@ -3475,7 +3476,7 @@ class StockPicking(models.Model):
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
-            'location_id': record.location_dest_id.id,
+            'location_id': po.location_export_material_id.id,
             # 'reason_type_id': reason_type_6.id,
             'location_dest_id': export_production_order.id,
             'scheduled_date': datetime.now(),
