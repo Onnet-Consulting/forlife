@@ -240,10 +240,14 @@ class Inventory(models.Model):
 
     def _get_product_ids(self):
         data_list = []
-        for product in self.product_ids:
+        check_quant = self.env['stock.quant'].search(
+            [('product_id', '=', self.product_ids.mapped('id')), ('location_id', '=', self.location_id.id)])
+        for product in check_quant:
+            theoretical_qty = product.quantity if product else 0
             data = (0, 0, {
-                'product_id': product.id,
-                'barcode': product.barcode,
+                'product_id': product.product_id.id,
+                'barcode': product.product_id.barcode,
+                'theoretical_qty': theoretical_qty,
                 'location_id': self.location_id.id,
             })
             data_list.append(data)
