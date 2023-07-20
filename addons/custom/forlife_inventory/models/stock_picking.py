@@ -42,16 +42,23 @@ class StockPicking(models.Model):
         if type_create == 'import':
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
-            location_id = self.env['stock.location'].sudo().search(['&', '|', ('code', '=', 'X701'),('company_id','=',company_id),('company_id','=',False)], limit=1).id
+            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701')])
+            location_id = location_id.filtered(lambda x: x.company_id.code == '1400' or not x.company_id)[0].id
+            if not location_id:
+                raise UserError(_(f"Không tìm thấy địa điểm {self.location_id.name_get()[0][1]} ở công ty bán lẻ"))
             location_dest_id = location_mapping.location_map_id.id
             reason_type_id = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id
+
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
         else:
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
             location_id = location_mapping.location_map_id.id
-            location_dest_id = self.env['stock.location'].sudo().search(['&', '|', ('code', '=', 'X0202'),('company_id','=',company_id),('company_id','=',False)], limit=1).id
+            location_dest_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')])
+            location_dest_id = location_dest_id.filtered(lambda x: x.company_id.code == '1400' or not x.company_id)[0].id
+            if not location_dest_id:
+                raise UserError(_(f"Không tìm thấy địa điểm {self.location_dest_id.name_get()[0][1]} ở công ty bán lẻ"))
             reason_type_id = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
