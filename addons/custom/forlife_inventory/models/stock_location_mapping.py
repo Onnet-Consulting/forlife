@@ -1,4 +1,5 @@
 from odoo import api, fields, models,_
+from odoo.exceptions import ValidationError
 
 class StockLocationMapping(models.Model):
     _name = 'stock.location.mapping'
@@ -10,6 +11,13 @@ class StockLocationMapping(models.Model):
 
     def name_get(self):
         return [(rec.id, '%s' % rec.location_id.name_get()[0][1]) for rec in self]
+
+    @api.constrains('location_id')
+    def constrain_location_id(self):
+        for r in self:
+            location_exits = self.env['stock.location.mapping'].sudo().search([('location_id','=',r.location_id.id),('id','!=', self.id)])
+            if location_exits:
+                raise ValidationError(_('Đã tồn tại liên kết này !'))
 
     @api.depends('location_id')
     def _compute_location_mapping(self):

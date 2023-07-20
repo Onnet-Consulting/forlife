@@ -108,7 +108,6 @@ export class PromotionButton extends PosComponent {
             bestCombine = programsList;
         } else {
             bestCombine = order.computeBestCombineOfProgram(programsList) || [];
-            bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p));
         }
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
@@ -118,20 +117,20 @@ export class PromotionButton extends PosComponent {
             return false;
         };
         const optionProgramsList = potentialPrograms.map((pro) => ({
-            id: pro.program.str_id,
+            id: this.env.pos.get_str_id(pro.program),
             label: pro.program.display_name,
             program: pro.program,
-            isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
-            index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
+            isSelected: bestCombine.length > 0 ? bestCombine.some(p => p == this.env.pos.get_str_id(pro.program)) : false,
+            index: bestCombine.length > 0 ? bestCombine.indexOf(this.env.pos.get_str_id(pro.program)) + 1 : -1,
             forecastedNumber: pro.number,
-            order_apply: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
+            order_apply: bestCombine.length > 0 ? bestCombine.indexOf(this.env.pos.get_str_id(pro.program)) + 1 : -1,
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
             reward_type: pro.program.reward_type,
             reward_product_ids: pro.program.reward_product_ids,
             reward_for_referring: pro.program.reward_for_referring,
             need_of_reward_selection: false,
-            codeObj: pro.program.codes[order.access_token]
+            codeObj: this.env.pos.getPromotionCode(pro.program)
         }));
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {

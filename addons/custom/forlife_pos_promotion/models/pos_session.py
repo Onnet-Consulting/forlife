@@ -128,6 +128,8 @@ class PosSession(models.Model):
             'search_params': {
                 'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
                 'fields': [
+                    'active',
+                    'state',
                     'name',
                     'from_date',
                     'to_date',

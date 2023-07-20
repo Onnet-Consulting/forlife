@@ -9,10 +9,10 @@
 
                 <xpath expr="//notebook//page//field[@name='line_ids']" position="before">
                     <field name="file_binary_name" invisible="1"/>
-                    <field string="Tải lên tệp tin" name="file_binary" filename="file_binary_name"/>
-                    <button name="import_file_1st" string="Import lần 1" class="oe_highlight" type="object"
+                    <field string="Tải lên tệp tin" name="file_binary" filename="file_binary_name" attrs="{'invisible': [('state', 'not in', ('first_inv', 'second_inv'))]}"/>
+                    <button name="import_file_1st" string="Import SL lần 1" class="oe_highlight" type="object"
                             attrs="{'invisible': ['|', ('file_binary', '=', False), ('state', '!=', 'first_inv')]}"/>
-                    <button name="import_file_2nd" string="Import lần 2" class="oe_highlight" type="object"
+                    <button name="import_file_2nd" string="Import SL lần 2" class="oe_highlight" type="object"
                             attrs="{'invisible': ['|', ('file_binary', '=', False), ('state', '!=', 'second_inv')]}"/>
                 </xpath>
 

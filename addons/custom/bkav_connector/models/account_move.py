@@ -55,7 +55,7 @@ class AccountMoveBKAV(models.Model):
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
 
-    origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc', domain=[('move_type', '=', 'out_invoice')])
+    origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
 
     def write(self, vals):
@@ -239,7 +239,6 @@ class AccountMoveBKAV(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
-                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
@@ -388,3 +387,13 @@ class AccountMoveBKAV(models.Model):
                        % (self.eivoice_file.id, self.eivoice_file.name),
                 'target': 'self',
             }
+
+    def action_cancel(self):
+        res = super(AccountMoveBKAV, self).action_cancel()
+        self.cancel_invoice_bkav()
+        return res
+    
+    def unlink(self):
+        for item in self:
+            item.delete_invoice_bkav()
+        return super(AccountMoveBKAV, self).unlink()
