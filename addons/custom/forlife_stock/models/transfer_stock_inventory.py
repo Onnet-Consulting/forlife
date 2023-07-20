@@ -116,7 +116,6 @@ class TransferStockInventory(models.Model):
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
             for line in rec.transfer_stock_inventory_line_ids:
                 key_import = (str(line.location_id), 'import')
-
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
                     if not enter_inventory_balance:
