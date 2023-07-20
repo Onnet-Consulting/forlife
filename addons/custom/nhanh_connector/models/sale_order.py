@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo.addons.nhanh_connector.models import constant
 from odoo import api, fields, models, _
+from odoo.tests import Form
 import json
 
 import datetime
@@ -51,6 +52,8 @@ class SaleOrderNhanh(models.Model):
     delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
     x_voucher  = fields.Float(string='Giá trị voucher (Nhanh)')
     x_code_voucher = fields.Char(string="Mã voucher/code (Nhanh)")
+    x_is_change = fields.Boolean(string="Đơn đổi hàng")
+    nhanh_return_id = fields.Char(string='Id đơn trả Nhanh.vn', copy=False)
 
     # def write(self, vals):
     #     res = super().write(vals)
@@ -520,3 +523,43 @@ class SaleOrderNhanh(models.Model):
 
     def search_product(self, domain_product):
         return self.env['product.template'].search([domain_product])
+
+
+
+    def create_stock_picking_so_from_nhanh_with_return_so(self):
+        so_id = self.x_origin
+        picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
+        product_ids = {}
+        for line in self.order_line:
+            product_ids[line.product_id.id] = line.product_uom_qty
+
+        for picking in picking_ids:
+            move_ids = picking.move_ids.filtered(lambda r: r.product_id.id in list(product_ids.keys()))
+            print('----------', move_ids)
+            if len(move_ids):
+                stock_return_picking_form = Form(
+                    self.env['stock.return.picking'].with_context(active_id=picking.id,
+                                                                  active_model='stock.picking')
+                )
+                return_wiz = stock_return_picking_form.save()
+                quantity = 0
+                for product_return_move in return_wiz.product_return_moves:
+                    if not product_ids.get(product_return_move.product_id.id):
+                        product_return_move.unlink()
+                    else:
+                        qty = product_ids[product_return_move.product_id.id]
+                        if qty > 0:
+                            if product_return_move.quantity >= qty:
+                                product_return_move.quantity = qty
+                                product_ids.pop(product_return_move.product_id.id)
+                            else:
+                                product_ids[product_return_move.product_id.id] = qty - product_return_move.quantity
+
+                        quantity += product_return_move.quantity
+
+                return_wiz.product_return_moves.quantity = quantity
+                return_wiz.product_return_moves.to_refund = True
+                new_picking_id, pick_type_id = return_wiz._create_returns()
+                print(new_picking_id, pick_type_id)
+
+                                
