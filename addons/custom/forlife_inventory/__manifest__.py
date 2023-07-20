@@ -3,7 +3,6 @@
     "name": "Forlife Inventory",
     "category": "Forlife Inventory",
     "version": "1.0.0",
-    'license': 'LGPL-3',
     "description": """Forlife Inventory""",
     "depends": [
         'forlife_stock',
@@ -12,7 +11,6 @@
     "data": [
         'security/ir.model.access.csv',
         'data/stock_location.xml',
-        'views/stock_inventory_view.xml',
         'views/stock_location_view.xml',
         'views/location_mapping_view.xml'
     ],
