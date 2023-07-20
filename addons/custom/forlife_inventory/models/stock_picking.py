@@ -12,8 +12,8 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        reason_type_5 = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id
-        reason_type_4 = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id
+        reason_type_5 = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id or self.env['forlife.reason.type'].search([('code','=', 'N02')])
+        reason_type_4 = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id or self.env['forlife.reason.type'].search([('code','=', 'X02')])
         location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701')], limit=1)
         location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         if 'endloop' in self._context and self._context.get('endloop'):
