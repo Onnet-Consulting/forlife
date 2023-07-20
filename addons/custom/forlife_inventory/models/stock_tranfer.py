@@ -24,19 +24,24 @@ class StockTranfer(models.Model):
             if warehouse_dest_id in [warehouse_type_id_tl, warehouse_type_id_fm] and warehouse_id in [
                 warehouse_type_master, warehouse_type_id_ec] \
                     and (s_location_dest_type_id == s_location_pos or s_location_dest_type_id == s_location_sell_ecommerce):
-                location_mapping = self.env['stock.location.mapping'].sudo().search(
-                    [('location_id', '=', location_dest_id.id)])
-
-                self._create_orther_import_export(location_mapping, data, type='import', location=location_dest_id)
+                if location_dest_id.id_deposit:
+                    location_mapping = self.env['stock.location.mapping'].sudo().search(
+                        [('location_id', '=', location_dest_id.id)])
+                    if not location_mapping:
+                        raise UserError(
+                            _(f"Vui lòng cấu hình liên kết cho địa điểm {location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                    self._create_orther_import_export(location_mapping, data, type='import', location=location_dest_id)
 
             elif warehouse_dest_id in [warehouse_type_master, warehouse_type_id_ec] and warehouse_id in [
                 warehouse_type_id_tl, warehouse_type_id_fm] \
                     and (s_location_type_id == s_location_pos or s_location_type_id == s_location_sell_ecommerce):
-
-                location_mapping = self.env['stock.location.mapping'].sudo().search(
-                    [('location_id', '=', location_id.id)])
-
-                self._create_orther_import_export(location_mapping, data, type='export', location=location_id)
+                if location_id.id_deposit:
+                    location_mapping = self.env['stock.location.mapping'].sudo().search(
+                        [('location_id', '=', location_id.id)])
+                    if not location_mapping:
+                        raise UserError(
+                            _(f"Vui lòng cấu hình liên kết cho địa điểm {location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                    self._create_orther_import_export(location_mapping, data, type='export', location=location_id)
 
             else:
                 return False
@@ -45,39 +50,35 @@ class StockTranfer(models.Model):
         return True
 
     def _create_orther_import_export(self, location_mapping, data, type, location):
-        if location_mapping:
-            company = location_mapping.location_map_id.warehouse_id.company_id.id
-            if type == 'import':
-                for data_line in data:
-                    data_line[2].update({'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong', raise_if_not_found=False).id,
-                                         'location_dest_id': location_mapping.location_map_id.id})
-                stock_picking = self.env['stock.picking'].with_company(company).create({
-                    'transfer_id': self.id,
-                    'reason_type_id':self.env.ref('forlife_inventory.reason_type_import_auto').id,
-                    'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
-                    'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id,
-                    'location_dest_id': location_mapping.location_map_id.id,
-                    'move_ids_without_package': data,
-                    'other_import': True
-                })
-            else:
-                for data_line in data:
-                    data_line[2].update({'location_id': location_mapping.location_map_id.id,
-                                         'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id})
-                stock_picking = self.env['stock.picking'].with_company(company).create({
-                    'transfer_id': self.id,
-                    'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto').id,
-                    'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
-                    'location_id': location_mapping.location_map_id.id,
-                    'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
-                    'move_ids_without_package': data,
-                    'other_export': True
-                })
-            stock_picking.button_validate()
-            return stock_picking
+        company = location_mapping.location_map_id.warehouse_id.company_id.id
+        if type == 'import':
+            for data_line in data:
+                data_line[2].update({'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong', raise_if_not_found=False).id,
+                                     'location_dest_id': location_mapping.location_map_id.id})
+            stock_picking = self.env['stock.picking'].with_company(company).create({
+                'transfer_id': self.id,
+                'reason_type_id':self.env.ref('forlife_inventory.reason_type_import_auto').id,
+                'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id,
+                'location_dest_id': location_mapping.location_map_id.id,
+                'move_ids_without_package': data,
+                'other_import': True
+            })
         else:
-            raise UserError(
-                _(f"Vui lòng cấu hình liên kết cho địa điểm {location.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            for data_line in data:
+                data_line[2].update({'location_id': location_mapping.location_map_id.id,
+                                     'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id})
+            stock_picking = self.env['stock.picking'].with_company(company).create({
+                'transfer_id': self.id,
+                'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto').id,
+                'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                'location_id': location_mapping.location_map_id.id,
+                'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
+                'move_ids_without_package': data,
+                'other_export': True
+            })
+        stock_picking.button_validate()
+        return stock_picking
 
     def create_tranfer_with_type_kigui(self):
         company = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_match'))])
@@ -102,16 +103,18 @@ class StockTranfer(models.Model):
                 company_match = self.env['res.company'].sudo().search([('code', '=', '1400')])
                 location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_id.id)])
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)])
+                if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
                 location = location_mapping.with_company(company_match).location_map_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_map_id.id
             else:
                 company_match = self.env['res.company'].sudo().search([('code', '=', '1300')])
                 location_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_id.id)])
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)])
+                if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
-            if not location_mapping or not location_dest_mapping:
-                raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
             if location_mapping and location_dest_mapping:
                 line = []
                 for l in self.stock_transfer_line:
