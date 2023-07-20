@@ -2884,7 +2884,7 @@ class StockPicking(models.Model):
 
     def view_move_tax_entry(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
-        domain = [('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids)]
+        domain = ['|', ('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids), ('move_id.stock_move_id', 'in', self.move_ids.ids)]
         return dict(action, domain=domain)
 
     def create_expense_entries(self, po):
