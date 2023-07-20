@@ -30,28 +30,28 @@ class StockPicking(models.Model):
         if po and not po.is_inter_company and po.type_po_cost == 'cost' and po.location_id.id_deposit and self.purchase_id.company_id.code == '1300':
             if product_is_voucher and not product_not_voucher:
                 self.create_other_give(type_create='from_po')
-        if self.company_id.code == '1400' and self.reason_type_id.id in [reason_type_4, reason_type_5] and self.location_id.id == location_enter_inventory_balance_auto.id and self.location_dest_id.id_deposit:
+        if self.company_id.code == '1300' and self.reason_type_id.id in [reason_type_4, reason_type_5] and self.location_id.id == location_enter_inventory_balance_auto.id and self.location_dest_id.id_deposit:
             if product_is_voucher and not product_not_voucher:
                 self.create_check_inventory(type_create='import')
-        if self.company_id.code == '1400' and self.reason_type_id.id in [reason_type_4,reason_type_5] and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
+        if self.company_id.code == '1300' and self.reason_type_id.id in [reason_type_4,reason_type_5] and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
             if product_is_voucher and not product_not_voucher:
                 self.create_check_inventory(type_create='export')
         return res
 
     def create_check_inventory(self, type_create):
         if type_create == 'import':
-            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', self.location_dest_id.id)])
-            company_id = location_mapping.location_id.company_id.id
-            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id','=',company_id)], limit=1).id
-            location_dest_id = location_mapping.location_id.id
+            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
+            company_id = location_mapping.location_map_id.company_id.id
+            location_id = self.env['stock.location'].sudo().search(['&', '|', ('code', '=', 'X701'),('company_id','=',company_id),('company_id','=',False)], limit=1).id
+            location_dest_id = location_mapping.location_map_id.id
             reason_type_id = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
         else:
-            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', self.location_id.id)])
-            company_id = location_mapping.location_id.company_id.id
-            location_id = location_mapping.location_id.id
-            location_dest_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id','=',company_id)], limit=1).id
+            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
+            company_id = location_mapping.location_map_id.company_id.id
+            location_id = location_mapping.location_map_id.id
+            location_dest_id = self.env['stock.location'].sudo().search(['&', '|', ('code', '=', 'X0202'),('company_id','=',company_id),('company_id','=',False)], limit=1).id
             reason_type_id = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
@@ -72,7 +72,7 @@ class StockPicking(models.Model):
             }))
         other = self.env['stock.picking'].with_company(company_id).create({
             'reason_type_id': reason_type_id,
-            'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
+            'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
             'location_id': location_id,
             'location_dest_id': location_dest_id,
             'other_import': True if type_create == 'import' else False,
