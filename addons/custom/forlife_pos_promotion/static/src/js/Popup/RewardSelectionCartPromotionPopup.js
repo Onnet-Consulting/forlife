@@ -43,6 +43,19 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         }
 
+        hasNoDisabledNoSelectedReward() {
+            let self = this;
+            return this.state.reward_line_vals.some(reward => self.getSelectedQtyOfLine(reward) < reward.line.quantity && !reward.isSelected)
+        }
+
+        getDisplayStyle(reward) {
+            if (!reward.isSelected && this.state.program.fixed && this.state.program.isSelected && !this.hasNoDisabledNoSelectedReward()) {
+                return 'display:none'
+            } else {
+                return ''
+            }
+        }
+
         selectedQtyOnProgram() {
             let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 //            if (this.state.program.additional_reward_product_id) {
