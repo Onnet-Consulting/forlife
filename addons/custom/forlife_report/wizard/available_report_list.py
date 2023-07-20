@@ -171,4 +171,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum28Template',
         'reportPager': True,
     },
+    'report.num29': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách CCDC và TSCD',
+        'reportTemplate': 'ReportNum29Template',
+        'reportPager': True,
+    },
 }
