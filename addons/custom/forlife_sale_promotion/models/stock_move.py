@@ -26,6 +26,9 @@ class StockMove(models.Model):
 
         order_line = self.sale_line_id.order_id.order_line
 
+        # begin inherit
+        # kiểm tra đơn hàng nếu tất cả sp đều check là hàng tặng thì lấy tk hàng tặng trong sp ngược lại phụ thuộc vào
+        # đơn online hay bán buôn để lấy tk chi phí bán buôn hoặc chi online
         if order_line and all(line.x_free_good for line in order_line):
             if self.product_id.categ_id.product_gift_account_id:
                 acc_dest = self.product_id.categ_id.product_gift_account_id.id
@@ -35,6 +38,8 @@ class StockMove(models.Model):
         elif self.picking_id.sale_id.x_sale_chanel == "wholesale":
             if self.product_id.categ_id.expense_sale_account_id:
                 acc_dest = self.product_id.categ_id.expense_sale_account_id.id
+
+        # end inherit====================#
 
         acc_valuation = accounts_data.get('stock_valuation', False)
         if acc_valuation:

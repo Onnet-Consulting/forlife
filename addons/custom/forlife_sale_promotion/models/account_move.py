@@ -32,28 +32,7 @@ class AccountMove(models.Model):
         else:
             action = {'type': 'ir.actions.act_window_close'}
 
-        # context = {
-        #     'default_move_type': 'out_invoice',
-        # }
-        # if len(self) == 1:
-        #     context.update({
-        #         'default_partner_id': self.partner_id.id,
-        #         'default_partner_shipping_id': self.partner_shipping_id.id,
-        #         'default_invoice_payment_term_id': self.payment_term_id.id or self.partner_id.property_payment_term_id.id or self.env['account.move'].default_get(['invoice_payment_term_id']).get('invoice_payment_term_id'),
-        #         'default_invoice_origin': self.name,
-        #     })
-        # action['context'] = context
         return action
-
-        result = self.env['ir.actions.act_window']._for_xml_id('account.action_account_moves_all')
-        # if len(source_orders) > 1:
-        #     result['domain'] = [('id', 'in', source_orders.ids)]
-        # elif len(source_orders) == 1:
-        #     result['views'] = [(self.env.ref('sale.view_order_form', False).id, 'form')]
-        #     result['res_id'] = source_orders.idF
-        # else:
-        #     result = {'type': 'ir.actions.act_window_close'}
-        return result
 
     def action_post(self):
         res = super(AccountMove, self).action_post()
@@ -86,12 +65,14 @@ class AccountMove(models.Model):
                     account_debit_id = pr.account_id
                     account_credit_id = account_payable_customer_id
 
+                # cho phép tạo bút toán với các promotion type
                 if line_allow:
                     account_tax = pr.product_id.taxes_id
                     account_tax_id = False
                     product_with_tax_value = abs(pr.value)
                     product_value_without_tax = abs(pr.value)
                     product_tax_value = 0
+                    # check thue
                     if account_tax and len(account_tax):
                         account_tax_ids = account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                         if len(account_tax_ids) and account_tax_ids[0].account_id:
@@ -116,11 +97,12 @@ class AccountMove(models.Model):
                         'credit': product_value_without_tax
                     })
 
+                    # có thế thì tạo bút toán cho thuế
                     if account_tax_id:
                         line_ids.append({
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': account_tax_id and account_tax_id.id,
+                            'account_id': pr.account_id and pr.account_id.id,
                             'analytic_account_id': pr.analytic_account_id.id,
                             'debit': 0,
                             'credit': product_tax_value
@@ -152,6 +134,7 @@ class AccountMoveLine(models.Model):
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         for line in self:
+            # set tài khoản tương ứng khi tạo hóa đơn từ đơn hàng
             super(AccountMoveLine, line)._compute_account_id()
             product_lines = self.filtered(lambda line: line.display_type == 'product' and line.move_id.is_invoice(True))
             for line in product_lines:
