@@ -429,9 +429,13 @@ class PurchaseOrderLine(models.Model):
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
         vals = super(PurchaseOrderLine, self)._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
         if self.order_id.is_return:
+            location_id = vals['location_dest_id']
+            location_dest_id = vals['location_id']
             vals.update({
                 'occasion_code_id': self.occasion_code_id.id,
                 'work_production': self.production_id.id,
                 'account_analytic_id': self.account_analytic_id.id,
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
             })
         return vals
