@@ -64,7 +64,7 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                 <field name="odoo_price_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
                 <field name="discount_price_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
-                <field name="discount_after_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                <!--field name="discount_after_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/-->
             </xpath>
         </field>
     </record>
