@@ -217,6 +217,8 @@
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
                                context="{'default_type': 'product'}"
+                               attrs="{'readonly': [('state','!=','draft')]}"
+                               force_save="1"
                                widget="many2many_tags"/>
 <!--                        <field name="categ_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '2')]}"/>-->
 <!--                        <field name="marque_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '3')]}"/>-->
