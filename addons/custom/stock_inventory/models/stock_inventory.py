@@ -215,7 +215,9 @@ class Inventory(models.Model):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
         # as quants cannot be reuse from inventory location (users can still manually move the products before/after the inventory if they want).
-        self.mapped('move_ids').filtered(lambda move: move.state != 'done')._action_done()
+        stock_move_ids = self.mapped('move_ids').filtered(lambda move: move.state != 'done')._action_done()
+        stock_move_ids.move_line_ids.write({'date': self.date})
+        stock_move_ids.write({'date': self.date})
         return True
 
     def action_check(self):
@@ -329,7 +331,7 @@ class Inventory(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        sql = f"""select * from get_quantity_inventory('{str(fields.Datetime.now())}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         return data
