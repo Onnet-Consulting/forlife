@@ -111,7 +111,7 @@ class AccountMove(models.Model):
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
 
     # lấy id để search ghi lại ref cho bút toán phát sinh
-    e_in_check = fields.Char('')
+    e_in_check = fields.Integer(index=True)
 
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),

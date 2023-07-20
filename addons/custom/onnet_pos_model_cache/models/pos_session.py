@@ -15,14 +15,16 @@ class PosSession(models.Model):
             ('compute_user_id', '=', SUPERUSER_ID),
             ('domain', '=', domain_str),
             ('model_fields', '=', fields_str),
-            ('model', '=', 'promotion.pricelist.item')
+            ('model', '=', 'promotion.pricelist.item'),
+            ('compute_company_id', '=', self.env.user.company_id.id)
         ])
         if not cache_for_user:
             cache_for_user = pos_cache.create({
                 'domain': domain_str,
                 'model_fields': fields_str,
                 'compute_user_id': SUPERUSER_ID,
-                'model': 'promotion.pricelist.item'
+                'model': 'promotion.pricelist.item',
+                'compute_company_id': self.env.user.company_id.id
             })
             cache_for_user.refresh_cache()
 
