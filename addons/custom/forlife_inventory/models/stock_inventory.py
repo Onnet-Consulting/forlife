@@ -54,7 +54,7 @@ class StockInventory(models.Model):
             barcode = (sheet.cell(index, 3).value).strip()
             product_id = Product.search([('barcode', '=', barcode)], limit=1)
             if not product_id:
-                continue
+                raise ValidationError(_("Ở dòng %s không tồn tại barcode '%s' cho sản phẩm này." % (index + 1, barcode)))
             qty = sheet.cell(index, 5).value
             if not self.is_number(qty):
                 raise ValidationError(_("Số lượng xác nhận lần 1 không hợp lệ tại dòng '%s'." % (index + 1)))
