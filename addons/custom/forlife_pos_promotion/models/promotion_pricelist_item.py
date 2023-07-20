@@ -23,6 +23,7 @@ class PromotionPricelistItem(models.Model):
     barcode = fields.Char(related='product_id.barcode')
     qty_available = fields.Float(related='product_id.qty_available')
     with_code = fields.Boolean(related='program_id.with_code')
+    reward_type = fields.Selection(related='program_id.reward_type')
 
     @api.constrains('program_id', 'program_id')
     def check_unique_product_id(self):

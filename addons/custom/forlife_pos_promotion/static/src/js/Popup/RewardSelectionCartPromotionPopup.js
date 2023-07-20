@@ -82,7 +82,10 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 newPrice = program.disc_fixed_price;
             } else if (program.reward_type == 'cart_get_x_free') {
                 newPrice = 0.0;
-            };
+            } else if (program.reward_type == 'cart_pricelist') {
+                let plItem = program.pricelistItems.find(pl => pl.product_id == reward.line.product.id);
+                newPrice = plItem && plItem.fixed_price || reward.line.price;
+            }
             return `  ${this.env.pos.format_currency(newPrice)}`;
         }
 

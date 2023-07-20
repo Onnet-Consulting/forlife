@@ -68,7 +68,6 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
-//        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
         var self = this;
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
@@ -172,7 +171,6 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
-//            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
@@ -1695,6 +1693,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 line.is_cart_discounted = true;
             }
         }
+        else if (program.reward_type == 'cart_pricelist') {
+            for (let line of to_discount_lines) {
+                let pricelistItem = program.pricelistItems.find(pl => pl.product_id == line.product.id);
+                let originalPrice = line.price;
+                let newPrice = pricelistItem.fixed_price;
+                let discAmount = originalPrice - newPrice;
+                line.price = newPrice;
+                line.promotion_usage_ids.push(new PromotionUsageLine(
+                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                line.is_cart_discounted = true;
+            }
+        }
         if (diff_amount_new_line) {
             to_discount_lines.push(diff_amount_new_line);
         }
@@ -1749,7 +1759,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let required_order_amount_min = program.order_amount_min;
             let required_min_quantity = program.min_quantity;
             let floor = 1;
-            let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
+            let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids
+                                : program.reward_type == 'cart_pricelist' ? program.productPricelistItems
+                                : program.discount_product_ids;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1782,12 +1794,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let no_incl_ols;
                 if (program.reward_type == 'cart_get_x_free') {
                     no_incl_ols = orderLines.filter(l=>!l.get_total_discounted() && l.quantity > 0)
-                                            .filter(l=>program.reward_product_ids.has(l.product.id)
+                                            .filter(l=>reward_products.has(l.product.id)
                                                     // Nếu "Không bao gồm" SPKM và "Chỉ xét SPĐK", trừ SPKM có trong điều kiện
                                                     &&(program.only_condition_product ? program.valid_product_ids.has(l.product.id) : true));
                 } else {
                     no_incl_ols = orderLines.filter(l=>!l.get_total_discounted() && l.quantity > 0)
-                                            .filter(l=>program.discount_product_ids.has(l.product.id)
+                                            .filter(l=>reward_products.has(l.product.id)
                                                     // Nếu "Không bao gồm" SPKM và "Chỉ xét SPĐK", trừ SPKM có trong điều kiện
                                                     &&(program.only_condition_product ? program.valid_product_ids.has(l.product.id) : true));
                 };
@@ -2150,6 +2162,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     // For Combo Program
     applyAComboProgramToLineVales(program, comboLineList, number_of_combo, rewardLine) {
+        let self = this;
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
         if (activatedCodeObj) {code = activatedCodeObj.id};
@@ -2161,7 +2174,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         function getDiscountedAmountAPart() {
             return comboLineList.reduce((tmp_line, line) => {
                 let tmp_pro = line.promotion_usage_ids.reduce((tmp, usage) => {
-                    if (usage.str_id == this.pos.get_str_id(program)) {
+                    if (usage.str_id == self.pos.get_str_id(program)) {
                         tmp += usage.discount_amount * line.quantity
                     };
                     return tmp;
