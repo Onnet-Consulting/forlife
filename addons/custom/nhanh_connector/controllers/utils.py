@@ -35,7 +35,9 @@ class NhanhClient:
         return nhanh_partner
 
     def get_brand(self):
-        return self.cls.env['res.brand'].sudo().search([('code', '=', self.cls.brand_code)], limit=1)
+        config = self.cls.env['nhanh.brand.config'].sudo().search([('nhanh_business_id', '=', self.cls.business_id)], limit=1)
+        
+        return config.brand_id
 
     def get_partner_group(self):
         return self.cls.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
@@ -75,6 +77,7 @@ class NhanhClient:
                 'birthday': customer["birthday"],
                 'vat': customer["taxCode"],
             })
+        return self.cls.env['res.partner'].sudo().create(partner_value)
 
     def get_order_from_nhanh_id(self, order_id, brand_id):
         nhanh_configs = self.constant.get_nhanh_configs(self.cls)
