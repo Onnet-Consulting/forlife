@@ -17,7 +17,7 @@ class AccountAnalyticAccount(models.Model):
         self.check_contrains(values)
         return super(AccountAnalyticAccount, self).write(values)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         self.check_contrains(vals_list)
         return super(AccountAnalyticAccount, self).create(vals_list)

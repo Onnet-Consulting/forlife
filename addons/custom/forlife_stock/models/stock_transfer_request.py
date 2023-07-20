@@ -11,6 +11,7 @@ class StockTransferRequest(models.Model):
     _name = 'stock.transfer.request'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Stock Transfer'
+    _check_company_auto = True
 
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
     request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now(), required=True)
@@ -89,11 +90,11 @@ class StockTransferRequest(models.Model):
                     data_stock_transfer_line = (
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
-                               'work_from': item.production_from,
-                               'work_to': item.production_to,
+                               'work_from': item.production_from.id,
+                               'work_to': item.production_to.id,
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
-                    dic_data = {'state': 'draft',
+                    dic_data = {'state': 'approved',
                                 'employee_id': record.request_employee_id.id,
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
@@ -154,7 +155,7 @@ class StockTransferRequest(models.Model):
             raise ValidationError(
                 _('It is mandatory to enter all the commodity information before confirming the stock transfer request!'))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
@@ -186,7 +187,7 @@ class StockTransferRequest(models.Model):
                                        'qty_plan': item.plan_quantity, 'product_str_id': item.id, 'qty_out': 0,
                                        'qty_in': 0,
                                        'is_from_button': True, 'qty_plan_tsq': item.quantity_remaining})
-                            dic_data = {'state': 'draft',
+                            dic_data = {'state': 'approved',
                                         'stock_request_id': record.id, 'location_id': item.location_id.id,
                                         'location_dest_id': item.location_dest_id.id,
                                         'stock_transfer_line': [data_stock_transfer_line]
@@ -299,7 +300,7 @@ class TransferRequestLine(models.Model):
             if rec.plan_quantity <= 0:
                 raise ValidationError(_("Plan quantity should not be less than or equal to 0 !!"))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))

@@ -36,7 +36,8 @@ class ImportPartnerCardRank(models.TransientModel):
             raise ValidationError(_("Please choose brand and upload file template before click Import button !"))
         workbook = xlrd.open_workbook(file_contents=base64.decodebytes(self.import_file))
         self._cr.execute(f"""
-            select (select json_object_agg(phone, id) from res_partner where phone notnull)                             as customers,
+            select (select json_object_agg(rp.phone, rp.id) from res_partner rp
+                    join res_partner_group rpg on rp.group_id = rpg.id and rpg.code = 'C' where rp.phone notnull)       as customers,
                    (select json_object_agg(customer_id, id) from partner_card_rank where brand_id = {self.brand_id.id}) as partner_cr_by_id      
         """)
         data = self._cr.dictfetchone()
@@ -50,7 +51,7 @@ class ImportPartnerCardRank(models.TransientModel):
             customer_phone = line[0] or ''
             customer_id = customer_by_phone.get(customer_phone)
             if not customer_id:
-                error.append(f"Dòng {index + self.row_start}, không tìm khách hàng có số điện thoại là '{line[0]}'")
+                error.append(f"Dòng {index + self.row_start}, không tìm thấy khách hàng có số điện thoại là '{line[0]}'")
             old_card_rank_id = int(line[1])
             new_card_rank_id = int(line[2])
             program_cr_id = int(line[3])
@@ -83,6 +84,7 @@ class ImportPartnerCardRank(models.TransientModel):
                     new_data.update({customer_id: new_data.get(customer_id, []) + val})
         if error:
             return self.return_error_log('\n'.join(error))
+        list_uuid = []
         if new_data:
             final_new_data = [{
                 'customer_id': customer,
@@ -94,15 +96,20 @@ class ImportPartnerCardRank(models.TransientModel):
                 number_split = min(500, len(final_new_data))
                 split_data = final_new_data[:number_split]
                 final_new_data = final_new_data[number_split:]
-                self.with_delay(description='Import partner card rank (create)').create_partner_card_rank(split_data)
-                # self.create_partner_card_rank(split_data)
+                queue_job = self.with_delay(description='Import partner card rank (create)').create_partner_card_rank(split_data)
+                list_uuid.append(queue_job.uuid)
         while len(add_data) > 0:
             number_split = min(1000, len(add_data))
             split_data = add_data[:number_split]
             add_data = add_data[number_split:]
-            self.with_delay(description='Import partner card rank (update)').create_partner_card_rank_line(split_data)
-            # self.create_partner_card_rank_line(split_data)
-        return True
+            queue_job = self.with_delay(description='Import partner card rank (update)').create_partner_card_rank_line(split_data)
+            list_uuid.append(queue_job.uuid)
+        action = True
+        if list_uuid:
+            action = self.env.ref('queue_job.action_queue_job').read()[0]
+            action['domain'] = [('uuid', 'in', list_uuid)]
+            action['context'] = '{}'
+        return action
 
     def create_partner_card_rank(self, values):
         self.env['partner.card.rank'].sudo().create(values)

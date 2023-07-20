@@ -20,13 +20,13 @@
         <div class="payment_lines" t-if="receipt.accumulated_point.total_point &gt; 0">
             <table class="accumulated payment-detail">
                 <tbody>
-                    <tr>
+                    <tr t-if="receipt.accumulated_point.total_point &gt; 0">
                         <td class="col1">Tích lũy HĐ</td>
                         <td colspan="4" class="text-right">
                             <t t-esc="receipt.accumulated_point.total_point"/>
                         </td>
                     </tr>
-                    <tr>
+                    <tr t-if="receipt.accumulated_point.sum_total_point &gt; 0">
                         <td class="col1">Điểm tích lũy</td>
                         <td colspan="4" class="text-right">
                             <t t-esc="receipt.accumulated_point.sum_total_point"/>

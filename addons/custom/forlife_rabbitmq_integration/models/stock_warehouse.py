@@ -59,6 +59,7 @@ class StockWarehouse(models.Model):
             } for location in line.view_location_id.child_internal_location_ids],
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return [
             'name', 'short_name_internal', 'code', 'status_ids', 'whs_type', 'whs_longitude', 'whs_latitude',

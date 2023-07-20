@@ -60,6 +60,7 @@ class PromotionProgram(models.Model):
                                 } for combo in line.combo_line_ids],
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return [
             'campaign_id', 'active', 'max_usage', 'limit_usage_per_order', 'limit_usage_per_customer', 'registering_tax',

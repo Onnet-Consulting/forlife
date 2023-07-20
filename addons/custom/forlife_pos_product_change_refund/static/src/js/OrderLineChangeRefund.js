@@ -112,6 +112,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 var order = this.env.pos.get_order();
                 obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
+                obj.is_change_product = order.is_change_product;
+                obj.is_refund_product = order.is_refund_product;
                 line.product_id = this.props.line.product.id;
                 var price = this.props.line.price;
                 if (this.props.line.quantity_canbe_refund > 0) {
@@ -119,6 +121,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 }
                 line.price = price;
                 line.expire_change_refund_date = this.props.line.expire_change_refund_date;
+                line.refunded_orderline_id = this.props.line.refunded_orderline_id;
+                line.reason_refund_id = this.props.line.reason_refund_id;
                 obj.lines = [line];
 
                 this.props.line.approvalStatus = true;
@@ -141,10 +145,28 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
             }
 
             getTotalDiscount() {
-                var total = super.getTotalDiscount(...arguments);
-                if(this.props.line.money_reduce_from_product_defective > 0){
+                // TODO: class được extend từ class forlife_pos_layout.OrderlineChangeRefund
+                // TODO: => kết quả super.getTotalDiscount(...args) == 0.0.
+                // TODO: Do đó, phải thực hiện như cách ở dưới
+//                var total = super.getTotalDiscount(...arguments);
+                var total = 0.0;
+                if(this.props.line.money_reduce_from_product_defective > 0) {
                     total += this.props.line.money_reduce_from_product_defective;
-                }
+                };
+                // Card rank
+                total += this.props.line.get_card_rank_discount();
+                // Promotion Program
+                const applied_promotions = this.props.line.get_applied_promotion_str();
+                for (const applied_promotion of applied_promotions) {
+                    if (applied_promotion) {
+                        total += applied_promotion.discount_amount;
+                    };
+                };
+                // Point Order
+                if (this.props.line.point) {
+                    total += Math.abs(this.props.line.point);
+                };
+                //
                 return total;
             }
 

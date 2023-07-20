@@ -74,7 +74,7 @@
                 <t t-call="DetailReportTitle"/>
                 <tbody>
                     <t t-foreach="data" t-as="line">
-                        <t t-set="thanh_tien" t-value="(line.sl_mua - line.sl_tra) * line.gia_ban"/>
+                        <t t-set="thanh_tien" t-value="(line.sl_mua + line.sl_tra) * line.gia_ban"/>
                         <tr>
                             <td><t t-esc="line.num"/></td>
                             <td><t t-esc="line.ma_vach"/></td>
@@ -84,7 +84,7 @@
                             <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
                             <t t-if="thanh_tien != 0"><td class="right"><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
-                            <t t-else=""><td>0</td></t>
+                            <t t-else=""><td class="right">0</td></t>
                             <td class="right"><t t-esc="format_decimal(line.tien_giam_gia, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(thanh_tien - line.tien_giam_gia, 0)"/></td>
                         </tr>

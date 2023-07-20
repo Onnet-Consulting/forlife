@@ -5,7 +5,7 @@ class ProductCategory(models.Model):
 
     number_days_change_refund = fields.Integer('Hạn đổi trả', tracking=True)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         res = super(ProductCategory, self).create(vals_list)
         if 'number_days_change_refund' in vals_list:

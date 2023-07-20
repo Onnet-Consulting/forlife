@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <tree string="Production Order">
 <!--                <field name="sequence" widget="handle"/>-->
+                <field name="company_id"/>
                 <field name="product_id"/>
                 <field name="code" string="Diễn giải"/>
                 <field name="type"/>
@@ -30,6 +31,7 @@
                         <group>
                             <field name="code" string="Diễn giải"/>
                             <field name="type" widget="radio"/>
+                            <field name="company_id" readonly="1" force_save="1"/>
                         </group>
                     </group>
                     <notebook>

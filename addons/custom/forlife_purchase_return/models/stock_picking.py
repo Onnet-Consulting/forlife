@@ -50,13 +50,13 @@ class StockPicking(models.Model):
 
         return picking_type_id, location_id
 
-    def create_return_picking_npl(self, po, record, lines_npl):
+    def create_return_picking_npl(self, po, record, lines_npl, reason_type_7):
         picking_type_id, location_id = self._get_picking_info_return(po)
 
         vals = {
             "is_locked": True,
             "immediate_transfer": False,
-            'reason_type_id': self.env.ref('forlife_stock.reason_type_7').id,
+            'reason_type_id': reason_type_7,
             'location_id': location_id.id,
             'location_dest_id': record.location_id.id,
             'scheduled_date': fields.datetime.now(),
@@ -76,20 +76,23 @@ class StockPicking(models.Model):
     def create_return_valuation_npl(self):
         lines_npl = []
         picking_type_id, npl_location_id = self._get_picking_info_return(self.purchase_id)
-        reason_type_id = self.env.ref('forlife_stock.reason_type_7').id
+        reason_type_7 = self.env['forlife.reason.type'].search([('code', '=', '07')], limit=1).id
+        if not reason_type_7:
+            raise ValidationError(
+                'Bạn chưa có loại lý do Nhập trả nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 07')
         if not self.purchase_id.is_return:
             for move in self.move_ids:
                 for material_line_id in move.purchase_line_id.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product):
-                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, reason_type_id, move.purchase_line_id)
+                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, reason_type_7, move.purchase_line_id)
                     lines_npl.append(data)
         else:
             for move in self.move_ids:
                 for material_line_id in move.purchase_line_id.origin_po_line_id.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product):
-                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, reason_type_id, move.purchase_line_id.origin_po_line_id)
+                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, reason_type_7, move.purchase_line_id.origin_po_line_id)
                     lines_npl.append(data)
 
         if lines_npl:
-            self.create_return_picking_npl(self.purchase_id, self, lines_npl)
+            self.create_return_picking_npl(self.purchase_id, self, lines_npl, reason_type_7)
         return True
 
     def _prepare_material_lines(self, move, material_line_id, npl_location_id, reason_type_id, purchase_line_id):

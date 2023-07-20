@@ -29,7 +29,6 @@
         'data/product_category_data.xml',
         'data/stock_warehouse_data.xml',
         'data/forlife_app_api_link_data.xml',
-        'data/attribute_code_config_data.xml',
 
         'views/uom_uom_view.xml',
         'views/account_tax_view.xml',
@@ -53,6 +52,7 @@
         'views/menu_item.xml',
 
         'views/ir_ui_menu_view.xml',
+        'views/res_groups_view.xml',
     ],
     "post_init_hook": "post_init_hook",
     'assets': {

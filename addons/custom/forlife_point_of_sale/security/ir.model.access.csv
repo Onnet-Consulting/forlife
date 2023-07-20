@@ -4,3 +4,4 @@ access_store_user,store user,model_store,base.group_user,1,0,0,0
 access_res_brand_manager,res.brand manager,model_res_brand,base.group_system,1,1,0,0
 access_res_brand_user,res.brand user,model_res_brand,base.group_user,1,0,0,0
 access_store_first_order,store.first.order,model_store_first_order,base.group_user,1,0,0,0
+access_import_store_first_order,import.store.first.order,model_import_store_first_order,base.group_system,1,1,1,0

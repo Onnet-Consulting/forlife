@@ -57,6 +57,7 @@ class StockTransfer(models.Model):
     total_package = fields.Float(string='Total Package (Number)')
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char(copy=False)
+    origin = fields.Char(copy=False)
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
     note = fields.Text("Ghi chú")
     date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now(), copy=False)
@@ -441,13 +442,20 @@ class StockTransfer(models.Model):
                           # })],
                           })
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
             vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
                 warehouse if warehouse else '') + str(
                 datetime.now().year)
+        if vals.get('reference_document'):
+            stock = self.env['stock.transfer'].search([('name', '=', vals.get('reference_document'))], limit=1)
+            while stock and stock.reference_document:
+                stock = self.env['stock.transfer'].search([('name', '=', stock.reference_document)], limit=1)
+            vals['origin'] = stock.name
+        else:
+            vals['origin'] = vals['name']
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):
@@ -481,8 +489,8 @@ class StockTransfer(models.Model):
         if "import_file" in self.env.context:
             if 'name' in fields and 'stock_transfer_line/sequence' in fields:
                 for record in data:
-                    if not record[fields.index('name')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
+                    # if not record[fields.index('name')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
                     if not record[fields.index('stock_transfer_line/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
                     if 'stock_transfer_line/product_id' in fields and not record[fields.index('stock_transfer_line/product_id')]:
@@ -491,25 +499,29 @@ class StockTransfer(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng xuất"))
                     if 'stock_transfer_line/qty_in' in fields and not record[fields.index('stock_transfer_line/qty_in')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng nhập"))
-                    if 'date_in_approve' in fields and not record[fields.index('date_in_approve')]:
-                        raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày xác nhận nhập"))
+                    # if 'date_in_approve' in fields and not record[fields.index('date_in_approve')]:
+                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày xác nhận nhập"))
                 fields[fields.index('name')] = 'id'
                 fields[fields.index('stock_transfer_line/sequence')] = 'stock_transfer_line/id'
                 id = fields.index('id')
                 line_id = fields.index('stock_transfer_line/id')
                 product = fields.index('stock_transfer_line/product_id')
+                reference = None
                 for rec in data:
-                    stock = self.env['stock.transfer'].search([('name', '=', rec[id])], limit=1)
+                    if rec[id]:
+                        reference = rec[id]
+                    stock = self.env['stock.transfer'].search([('name', '=', reference)], limit=1)
                     if not stock:
-                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (rec[id])))
+                        raise ValidationError(_("Không tồn tại mã phiếu %s" % (reference)))
                     if stock.state != 'out_approve' and 'stock_transfer_line/qty_in' in fields:
                         raise ValidationError(_("Phiếu %s chỉ có thể cập nhật số lượng nhập ở trạng thái xác nhận xuất" % (stock.name)))
                     if stock.state != 'approved' and 'stock_transfer_line/qty_out' in fields:
                         raise ValidationError(_("Phiếu %s chỉ có thể cập nhật số lượng xuất ở trạng thái đã phê duyệt" % (stock.name)))
-                    rec[id] = stock.export_data(['id']).get('datas')[0][0]
+                    if rec[id]:
+                        rec[id] = stock.export_data(['id']).get('datas')[0][0]
                     if int(rec[line_id]) > len(stock.stock_transfer_line):
                         raise ValidationError(_("Phiếu %s không có dòng %s" % (stock.name, rec[line_id])))
-                    elif rec[product] != stock.stock_transfer_line[int(rec[line_id]) - 1].product_id.default_code:
+                    elif rec[product] != stock.stock_transfer_line[int(rec[line_id]) - 1].product_id.barcode:
                         raise ValidationError(_("Mã sản phẩm của phiếu %s không khớp ở dòng %s" % (stock.name, rec[line_id])))
                     else:
                         rec[line_id] = \
@@ -660,24 +672,25 @@ class StockTransferLine(models.Model):
         self.ensure_one()
         product = self.product_id
         tolerance = product.tolerance
-        if not self.stock_transfer_id.is_diff_transfer:
+        start_transfer = self.env['stock.transfer'].search(
+            [('id', '!=', self.stock_transfer_id.id),
+             ('origin', '=', self.stock_transfer_id.origin)])
+        if start_transfer:
+            quantity_old = sum(
+                [line.qty_out if type == 'out' else line.qty_in for line in start_transfer.stock_transfer_line.filtered(
+                    lambda r: r.product_id == self.product_id)])
+            quantity_plan = sum(
+                [line.qty_plan for line in start_transfer.stock_transfer_line.filtered(
+                    lambda r: r.product_id == self.product_id)])
+            quantity = (quantity_old + self.qty_out) if type == 'out' else (quantity_old + self.qty_in)
+            if quantity > (quantity_plan + self.qty_plan) * (1 + (tolerance / 100)):
+                raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
+                    product.default_code, product.name, tolerance))
+        else:
             quantity = self.qty_out if type == 'out' else self.qty_in
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                product.default_code, product.name, tolerance))
-        else:
-            start_transfer = self.env['stock.transfer'].search(
-                [('name', '=', self.stock_transfer_id.reference_document)], limit=1)
-            other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
-            quantity_old = sum(
-                [line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
-                    lambda r: r.product_id == self.product_id)])
-            for rec in start_transfer.stock_transfer_line:
-                if rec.product_id == self.product_id:
-                    quantity = quantity_old + rec.qty_out if type == 'out' else quantity_old + rec.qty_in
-                    if quantity > rec.qty_start * (1 + (tolerance / 100)):
-                        raise ValidationError('Sản phẩm [%s] %s không được nhập quá %s %% số lượng ban đầu' % (
-                        product.default_code, product.name, tolerance))
+                    product.default_code, product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):

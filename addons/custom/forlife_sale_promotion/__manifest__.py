@@ -7,6 +7,7 @@
     """,
     'author': "ForLife",
     'version': '1.0',
+    'license': 'LGPL-3',
 
     'category': 'SALE ORDER',
 

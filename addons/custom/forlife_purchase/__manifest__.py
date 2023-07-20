@@ -3,6 +3,7 @@
     "name": "Forlife Purchase",
     "category": "Purchases",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """Forlife Purchase""",
     "depends": [

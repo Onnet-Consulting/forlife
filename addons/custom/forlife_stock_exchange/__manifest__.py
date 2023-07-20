@@ -2,6 +2,7 @@
 {
     "name": "Forlife Stock Exchange",
     "category": "Forlife Stock Exchange",
+    'license': 'LGPL-3',
     "description": """Forlife Stock Exchange""",
     "depends": [
         'forlife_stock',

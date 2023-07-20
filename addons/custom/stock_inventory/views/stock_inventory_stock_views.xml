@@ -123,7 +123,7 @@
             <tree string="Lot/Serial Number Inventory" sample="1">
                 <field name="date"/>
                 <field name="name"/>
-                <field name="location_id" widget="many2many_tags" optional="hide" groups="stock.group_stock_multi_locations"/>
+                <field name="location_id" optional="hide" groups="stock.group_stock_multi_locations"/>
                 <field name="product_ids" widget="many2many_tags" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state in ('draft', 'confirm')"/>
@@ -204,7 +204,7 @@
 <!--                </div>-->
                 <div class="oe_title">
                     <label for="name" class="oe_edit_only"/>
-                    <h1><field name="name" placeholder="e.g. Annual inventory"/></h1>
+                    <h1><field name="name" readonly="1" placeholder="e.g. Annual inventory"/></h1>
                 </div>
                 <group>
                     <group>
@@ -242,10 +242,10 @@
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
                                 <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
-                                <field name="x_first_qty" string="SL xác nhận lần 1"
+                                <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1"
                                        attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
-                                <field name="product_qty" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
-                                <field name="difference_qty" optional="show"/>
+                                <field name="product_qty" force_save="1" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
+                                <field name="difference_qty" force_save="1" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
                                 <field name="state" invisible="1"/>
                             </tree>

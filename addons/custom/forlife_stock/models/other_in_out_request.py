@@ -91,7 +91,7 @@ class ForlifeOtherInOutRequest(models.Model):
             if not rec.other_in_out_request_line_ids:
                 raise ValidationError(_("Bạn chưa thêm sản phẩm nào"))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('other.request.name.sequence') or 'YCNK'
@@ -262,7 +262,7 @@ class ForlifeOtherInOutRequestLine(models.Model):
         if self.product_id:
             self.uom_id = self.product_id.uom_id.id
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         if self.env.context.get('import_file'):
             product = self.env['product.product'].browse(vals.get('product_id'))

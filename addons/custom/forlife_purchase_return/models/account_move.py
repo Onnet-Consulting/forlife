@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         if 'invoice_line_ids' in vals_list:
             for line in vals_list['invoice_line_ids']:

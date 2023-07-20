@@ -37,7 +37,7 @@ class ProductTemplate(models.Model):
             product_name = f"{product_name} ({color_name} / SIZE {size_name})"
         return product_name
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)
         if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
@@ -47,9 +47,9 @@ class ProductTemplate(models.Model):
 
     def synchronized_create_product(self, res):
         if res.check_data_odoo and res.brand_id.id:
-            nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
-            if nhanh_configs.get('nhanh_connector.nhanh_app_id', '') or nhanh_configs.get(
-                    'nhanh_connector.nhanh_business_id', '') or nhanh_configs.get('nhanh_connector.nhanh_access_token',
+            nhanh_config = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
+            if nhanh_config.get('nhanh_connector.nhanh_app_id', '') or nhanh_config.get(
+                    'nhanh_connector.nhanh_business_id', '') or nhanh_config.get('nhanh_connector.nhanh_access_token',
                                                                                   ''):
 
                 data = [{
@@ -59,12 +59,12 @@ class ProductTemplate(models.Model):
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
                     "price": res.list_price,
-                    "shippingWeight": res.weight * 1000,
+                    "shippingWeight": 200,
                     "status": 'New'
                 }]
 
                 try:
-                    res_server = self.post_data_nhanh(nhanh_configs, data)
+                    res_server = self.post_data_nhanh(nhanh_config, data)
                     status_nhanh = 1
                     res_json = res_server.json()
                     if status_nhanh == 1:
@@ -159,12 +159,12 @@ class ProductTemplate(models.Model):
         return super().unlink()
 
     def synchronized_price_nhanh(self, data):
-        nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id]).get(self.brand_id.id)
-        if nhanh_configs.get('nhanh_connector.nhanh_app_id', '') or nhanh_configs.get(
-                'nhanh_connector.nhanh_business_id', '') or nhanh_configs.get('nhanh_connector.nhanh_access_token', ''):
+        nhanh_config = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id]).get(self.brand_id.id)
+        if nhanh_config.get('nhanh_connector.nhanh_app_id', '') or nhanh_config.get(
+                'nhanh_connector.nhanh_business_id', '') or nhanh_config.get('nhanh_connector.nhanh_access_token', ''):
             status_nhanh = 1
             try:
-                res_server = self.post_data_nhanh(nhanh_configs, data)
+                res_server = self.post_data_nhanh(nhanh_config, data)
                 res_json = res_server.json()
             except Exception as ex:
                 status_nhanh = 0

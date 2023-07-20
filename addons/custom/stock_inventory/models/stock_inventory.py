@@ -185,6 +185,32 @@ class Inventory(models.Model):
         self.post_inventory()
         return True
 
+    def get_ir_sequence_inventory(self, location_id=None):
+        code = 'PKK_LOCATION_'+self.env['stock.location'].browse(location_id).code
+        ir_sequence = self.env['ir.sequence'].search([('code', '=', code)], limit=1)
+        if ir_sequence:
+            return ir_sequence
+        vals = {
+            'name': 'Kiểm kê kho: ' + code,
+            'code': code,
+            'company_id': None,
+            'prefix': '%(y)s',
+            'padding': 6,
+            'number_increment': 1,
+            'number_next_actual': 1
+        }
+        ir_sequence = self.env['ir.sequence'].create(vals)
+        return ir_sequence
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for val in vals_list:
+            ir = self.get_ir_sequence_inventory(val.get('location_id'))
+            location_code = self.env['stock.location'].browse(val.get('location_id')).code
+            val['name'] = 'PKK' + location_code + ir.next_by_id()
+        res = super(Inventory, self).create(vals_list)
+        return res
+
     def post_inventory(self):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
@@ -283,6 +309,7 @@ class Inventory(models.Model):
     def init(self):
         get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
         self.env.cr.execute(get_quantity_inventory)
+
     def action_print(self):
         return self.env.ref('stock_inventory.action_report_inventory').report_action(self)
 
@@ -582,12 +609,12 @@ class InventoryLine(models.Model):
             if 'product_id' in values and 'product_uom_id' not in values:
                 values['product_uom_id'] = self.env['product.product'].browse(values['product_id']).uom_id.id
         res = super(InventoryLine, self).create(vals_list)
-        res._check_no_duplicate_line()
+        # res._check_no_duplicate_line()
         return res
 
     def write(self, vals):
         res = super(InventoryLine, self).write(vals)
-        self._check_no_duplicate_line()
+        # self._check_no_duplicate_line()
         return res
 
     def _check_no_duplicate_line(self):
@@ -610,9 +637,20 @@ class InventoryLine(models.Model):
         """ As no quants are created for consumable products, it should not be possible do adjust
         their quantity.
         """
-        for line in self:
-            if line.product_id.type != 'product':
-                raise ValidationError(_("You can only adjust storable products.") + '\n\n%s -> %s' % (line.product_id.display_name, line.product_id.type))
+        if self.product_id.ids:
+            query = """
+                SELECT pp.id
+                FROM product_product pp
+                    JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                WHERE pt.type != 'product'
+                    AND pp.id in {product_ids}
+            """.format(product_ids=tuple(self.product_id.ids + [0]))
+            self._cr.execute(query)
+            data = self._cr.dictfetchall()
+            if data:
+                for product in data:
+                    product_id = self.env['product.product'].browse(product['id'])
+                    raise ValidationError(_("You can only adjust storable products.") + '\n\n%s -> %s' % (product_id.display_name, product_id.type))
 
     def _get_move_values(self, qty, location_id, location_dest_id, out):
         self.ensure_one()
