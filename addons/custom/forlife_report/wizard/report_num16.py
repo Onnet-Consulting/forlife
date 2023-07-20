@@ -13,16 +13,15 @@ TITLES = [
 
 class ReportNum16(models.TransientModel):
     _name = 'report.num16'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Report stock move'
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
     product_ids = fields.Many2many('product.product', 'report_num16_product_rel', string='Products')
-    product_brand_id = fields.Many2one('product.category', 'Product Brand')
-    product_group_ids = fields.Many2many('product.category', 'report_num16_group_rel', string='Product Group')
-    product_line_ids = fields.Many2many('product.category', 'report_num16_line_rel', string='Product Line')
-    texture_ids = fields.Many2many('product.category', 'report_num16_texture_rel', string='Texture')
+    product_group_ids = fields.Many2many('product.category', 'report_num16_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num16_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num16_texture_rel', string='Level 4')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num16_warehouse_rel', string='Warehouse')
     move_type = fields.Selection([('all', _('All')), ('in', _('In')), ('out', _('Out'))], 'Move Type', default='all', required=True)
 

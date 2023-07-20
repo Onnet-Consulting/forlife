@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 from odoo.tools.misc import xlsxwriter
 import copy
 import io
+import re
+import base64
 
 
 class ReportBase(models.AbstractModel):
@@ -22,22 +24,47 @@ class ReportBase(models.AbstractModel):
     def view_report(self):
         ...
 
-    def generate_xlsx_report(self, workbook, allowed_company):
-        ...
+    @api.model
+    def generate_xlsx_report(self, workbook, allowed_company, **kwargs):
+        if 'data' in kwargs:
+            data = kwargs.get('data')
+            base64_bytes = data.encode("utf-8")
+            sample_string_bytes = base64.b64decode(base64_bytes)
+            final_string = sample_string_bytes.decode("utf-8")
 
-    def get_xlsx(self, allowed_company):
+            replace_list = set(re.findall(r'\d\.\d', final_string))
+            for r in replace_list:
+                final_string = final_string.replace(r, r[0] + r[2])
+
+            formats = self.get_format_workbook(workbook)
+            final_data = final_string.split('\n')
+            sheet = workbook.add_worksheet('data')
+            row = 0
+            for vals in final_data:
+                col = 0
+                for val in vals.split('\t'):
+                    if row == 0:
+                        sheet.write(row, col, val, formats.get('title_format'))
+                    else:
+                        sheet.write(row, col, val, formats.get('normal_format'))
+                    col += 1
+                row += 1
+
+    @api.model
+    def get_xlsx(self, allowed_company, **kwargs):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {
             'in_memory': True,
             'strings_to_formulas': False,
         })
-        self.generate_xlsx_report(workbook, allowed_company)
+        self.generate_xlsx_report(workbook, allowed_company, **kwargs)
         workbook.close()
         output.seek(0)
         generated_file = output.read()
         output.close()
         return generated_file
 
+    @api.model
     def get_format_workbook(self, workbook):
         header_format = {
             'bold': 1,

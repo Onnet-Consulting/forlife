@@ -4,12 +4,16 @@ odoo.define('forlife_report.report_base', function (require) {
     const core = require('web.core');
     const AbstractAction = require('web.AbstractAction');
     const {round_decimals: round_di} = require('web.utils');
+    const field_utils = require('web.field_utils');
     const QWeb = core.qweb;
     const _t = core._t;
 
     function format_decimal(amount, precision = 0) {
         if (typeof amount === 'number') {
             amount = round_di(amount, precision).toFixed(precision);
+            amount = field_utils.format.float(round_di(amount, precision), {
+                digits: [69, precision],
+            });
         }
 
         return amount;
@@ -74,7 +78,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.reportTitle = data.reportTitle;
             this.reportTemplate = data.reportTemplate;
             this.reportPager = data.reportPager;
-            this.report_filename = data.reportTitle + '.xls';
+            this.report_filename = data.reportTitle + '.xlsx';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
             this.column_add = data.column_add;
@@ -113,17 +117,22 @@ odoo.define('forlife_report.report_base', function (require) {
         },
 
         export_data_by_id: function (id, filename) {
-            var tableSelect = document.getElementById(id);
+            let tableSelect = document.getElementById(id);
             if (!tableSelect) {
                 alert(_.str.sprintf(_t("Data not found by id '%s'"), id));
             } else {
-                var downloadLink = document.createElement("a");
-                document.body.appendChild(downloadLink);
-                downloadLink.href = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURI("\uFEFF" + tableSelect.outerHTML);
-                downloadLink.download = filename;
-                downloadLink.click();
+                let export_data = tableSelect.outerText;
+                this._rpc({
+                    model: this.report_model,
+                    method: 'export_excel_from_client',
+                    args: [export_data, filename],
+                    context: this.odoo_context
+                }).then(res => {
+                    this.do_action(res);
+                });
             }
         },
+
         action_back: function () {
             window.history.back();
         }
@@ -163,7 +172,7 @@ odoo.define('forlife_report.report_base', function (require) {
                 "widget": this,
             }));
         },
-        do_action_report: function (e){
+        do_action_report: function (e) {
             this.do_action(e.currentTarget.id);
         },
     })
