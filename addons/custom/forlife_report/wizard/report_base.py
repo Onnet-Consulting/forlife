@@ -6,6 +6,8 @@ from odoo.addons.forlife_report.wizard.available_report_list import AVAILABLE_RE
 
 from pytz import timezone
 from datetime import datetime
+import base64
+import json
 
 
 def format_date_query(column_name, tz_offset):
@@ -68,4 +70,33 @@ class ReportBase(models.AbstractModel):
                 'report_model': self._name,
             },
             'params': {'active_model': self._name},
+        }
+
+
+class ReportCategoryType(models.AbstractModel):
+    _name = 'report.category.type'
+    _description = 'Category Type Relate'
+
+    category_type_id = fields.Many2one('product.category.type', string="Type of Product Category")
+    product_brand_id = fields.Many2one('product.category', 'Level 1')
+
+    @api.onchange('category_type_id')
+    def onchange_category_type(self):
+        self.product_brand_id = self.product_brand_id.filtered(lambda f: f.category_type_id in self.category_type_id)
+
+
+class ExportExcelClient(models.AbstractModel):
+    _name = 'export.excel.client'
+    _description = 'Export excel from client'
+
+    @api.model
+    def export_excel_from_client(self, data, filename):
+        data = json.dumps(data).encode('utf-8')
+        base64_bytes = base64.b64encode(data)
+        base64_string = base64_bytes.decode("utf-8")
+        return {
+            'type': 'ir.actions.act_url',
+            'name': self._description,
+            'url': f'/client/download/xlsx?model_name={self._name}&data={base64_string}&filename={filename}',
+            'target': 'current',
         }

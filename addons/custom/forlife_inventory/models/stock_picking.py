@@ -12,8 +12,8 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        reason_type_5 = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id or self.env['forlife.reason.type'].search([('code','=', 'N02')])
-        reason_type_4 = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id or self.env['forlife.reason.type'].search([('code','=', 'X02')])
+        reason_type_5 = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False) or self.env['forlife.reason.type'].search([('code','=', 'N02')])
+        reason_type_4 = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False) or self.env['forlife.reason.type'].search([('code','=', 'X02')])
         location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701')], limit=1)
         location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         if 'endloop' in self._context and self._context.get('endloop'):
@@ -30,15 +30,15 @@ class StockPicking(models.Model):
         if po and not po.is_inter_company and po.type_po_cost == 'cost' and po.location_id.id_deposit and self.purchase_id.company_id.code == '1300':
             if product_is_voucher and not product_not_voucher:
                 self.create_other_give(type_create='from_po')
-        if self.company_id.code == '1300' and self.reason_type_id.id in [reason_type_4, reason_type_5] and self.location_id.id == location_enter_inventory_balance_auto.id and self.location_dest_id.id_deposit:
+        if self.company_id.code == '1300' and self.reason_type_id.id == reason_type_5.id and self.location_id.id == location_enter_inventory_balance_auto.id and self.location_dest_id.id_deposit:
             if product_is_voucher and not product_not_voucher:
-                self.create_check_inventory(type_create='import')
-        if self.company_id.code == '1300' and self.reason_type_id.id in [reason_type_4,reason_type_5] and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
+                self.create_check_inventory(type_create='import', reason_type=reason_type_5)
+        if self.company_id.code == '1300' and self.reason_type_id.id == reason_type_4.id and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
             if product_is_voucher and not product_not_voucher:
-                self.create_check_inventory(type_create='export')
+                self.create_check_inventory(type_create='export', reason_type=reason_type_4)
         return res
 
-    def create_check_inventory(self, type_create):
+    def create_check_inventory(self, type_create, reason_type):
         if type_create == 'import':
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
@@ -47,7 +47,7 @@ class StockPicking(models.Model):
             if not location_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_id.name_get()[0][1]} ở công ty bán lẻ"))
             location_dest_id = location_mapping.location_map_id.id
-            reason_type_id = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id
+            reason_type_id = reason_type.id
 
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
@@ -59,7 +59,7 @@ class StockPicking(models.Model):
             location_dest_id = location_dest_id.filtered(lambda x: x.company_id.code == '1400' or not x.company_id)[0].id
             if not location_dest_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_dest_id.name_get()[0][1]} ở công ty bán lẻ"))
-            reason_type_id = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id
+            reason_type_id = reason_type.id
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
         data = []

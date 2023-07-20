@@ -16,7 +16,7 @@ TRANSACTION_DETAIL_TITLE = ['STT', 'Mã vạch', 'Tên sản phẩm', 'Đơn v�
 
 class ReportNum17(models.TransientModel):
     _name = 'report.num17'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'export.excel.client']
     _description = 'Invoice sales and refund list'
 
     lock_date = fields.Date('Lock date')
