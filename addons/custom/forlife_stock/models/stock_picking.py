@@ -1,6 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
-from datetime import datetime, timedelta, time
+from datetime import date, datetime, timedelta, time
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
 from odoo.exceptions import ValidationError
 
@@ -333,8 +333,31 @@ class StockPicking(models.Model):
                     layer.quantity = 0
                     layer.unit_cost = 0
                     layer.value = 0
-                    layer.account_move_id.button_draft()
-                    layer.account_move_id.button_cancel()
+                    #layer.account_move_id.button_draft()
+                    #layer.account_move_id.button_cancel()
+                for layer in layers:
+                    if layer.account_move_id:
+                        reversal_data = {
+                            "move_ids": [
+                                [
+                                    6,
+                                    0,
+                                    [
+                                        layer.account_move_id.id
+                                    ]
+                                ]
+                            ],
+                            "reason": False,
+                            "date_mode": "custom",
+                            "journal_id": layer.account_move_id.journal_id.id,
+                            "date": date.today().strftime("%Y-%m-%d")
+                        }
+                        action = self.env['account.move.reversal'].sudo().create(reversal_data).reverse_moves()
+                        new_mov = self.env['account.move'].browse(action['res_id'])
+                        new_mov.write({
+                            'stock_move_id': layer.stock_move_id.id
+                        })
+                        new_mov.action_post()
             else:
                 rec.move_ids._action_cancel()
                 rec.write({'is_locked': True})

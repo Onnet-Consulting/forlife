@@ -75,8 +75,11 @@ class TransferStockInventory(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
+        if not isinstance(vals, list):
+            vals = [vals]
+        for val in vals:
+            if val.get('code', 'New') == 'New':
+                val['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
         res = super(TransferStockInventory, self).create(vals)
         # if self._context.get('x_classify') and not res.x_classify:
         #     raise ValidationError('Giá trị xuất đang không khớp với giá trị nhập')

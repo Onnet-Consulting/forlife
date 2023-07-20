@@ -62,6 +62,51 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
             });
         }
 
+        selectedQtyOnProgram(option) {
+            return option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+        }
+
+        fixProgram(option) {
+            option.fixed = !option.fixed;
+            if (option.isSelected) {
+                if (option.fixed) {
+                    // Recompute floor
+                    let selectedQty = this.selectedQtyOnProgram(option);
+                    let realFloor = Math.ceil(selectedQty / option.program.reward_quantity);
+                    if (realFloor < option.floor) {
+                        option.max_reward_quantity = realFloor * option.program.reward_quantity;
+                        option.required_order_amount_min = realFloor * option.program.order_amount_min;
+                    };
+                } else {
+                    // Reset floor
+                    option.max_reward_quantity = option.floor * option.program.reward_quantity;
+                    option.required_order_amount_min = option.floor * option.program.order_amount_min;
+                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
+                        option.reward_line_vals.forEach(line => {line.isSelected = false;});
+                        option.selectedQty = 0;
+                        option.isSelected = false;
+                    });
+                };
+
+            } else {
+                if (!option.fixed) {
+                    // Reset floor
+                    option.max_reward_quantity = option.floor * option.program.reward_quantity;
+                    option.required_order_amount_min = option.floor * option.program.order_amount_min;
+                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
+                        option.reward_line_vals.forEach(line => {line.isSelected = false;});
+                        option.selectedQty = 0;
+                        option.isSelected = false;
+                    });
+                } else {
+                    if (option.floor > 1) {
+                        option.max_reward_quantity = (option.floor - 1) * option.program.reward_quantity;
+                        option.required_order_amount_min = (option.floor - 1) * option.program.order_amount_min;
+                    };
+                };
+            };
+        }
+
         getPayload() {
             return this.props.programs
         }

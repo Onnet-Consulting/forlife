@@ -28,7 +28,8 @@ class StockTransferInherit(models.Model):
                     "description": rec.note or '',
                     "weight": rec.total_weight,
                     "branch_from": rec.location_id.code or '',
-                    "branch_to": rec.location_dest_id.code or ''
+                    "branch_to": rec.location_dest_id.code or '',
+                    "partner_id": rec.transporter_id.code or '',
                 }
 
                 self.hset('internal_transfer', hash_key, rec.name, json.dumps(data))
