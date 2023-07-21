@@ -1299,7 +1299,7 @@ msgstr "Phiếu xuất khác"
 #: model:ir.ui.menu,name:forlife_stock.asset_transfer_stock_inventory_menu
 #: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
 msgid "Transfer Stock Inventory"
-msgstr "Nhập xuất tách mã-kiểm kê cân tồn"
+msgstr "Kiểm kê cân tồn"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_price_unit

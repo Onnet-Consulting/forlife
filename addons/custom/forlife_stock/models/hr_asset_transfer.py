@@ -33,11 +33,12 @@ class HrAssetTransfer(models.Model):
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         return res
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('hr.asset.transfer.name.sequence') or 'AT'
-        return super(HrAssetTransfer, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.asset.transfer.name.sequence') or 'AT'
+        return super(HrAssetTransfer, self).create(vals_list)
 
     def action_draft(self):
         for record in self:

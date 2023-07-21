@@ -91,11 +91,12 @@ class ForlifeOtherInOutRequest(models.Model):
             if not rec.other_in_out_request_line_ids:
                 raise ValidationError(_("Bạn chưa thêm sản phẩm nào"))
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('other.request.name.sequence') or 'YCNK'
-        return super(ForlifeOtherInOutRequest, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('other.request.name.sequence') or 'YCNK'
+        return super(ForlifeOtherInOutRequest, self).create(vals_list)
 
     def action_draft(self):
         for record in self:
@@ -262,12 +263,13 @@ class ForlifeOtherInOutRequestLine(models.Model):
         if self.product_id:
             self.uom_id = self.product_id.uom_id.id
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         if self.env.context.get('import_file'):
-            product = self.env['product.product'].browse(vals.get('product_id'))
-            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
-                raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
-        return super(ForlifeOtherInOutRequestLine, self).create(vals)
+            for vals in vals_list:
+                product = self.env['product.product'].browse(vals.get('product_id'))
+                if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+                    raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
+        return super(ForlifeOtherInOutRequestLine, self).create(vals_list)
 
 

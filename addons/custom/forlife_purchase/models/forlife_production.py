@@ -11,7 +11,7 @@ class ForlifeProduction(models.Model):
 
     code = fields.Char("Production Order Code", required=True)
     name = fields.Char("Production Order Name", required=True)
-    version = fields.Integer("Version", default=0)
+    version = fields.Integer("Version", default=0, copy=False)
     active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user, required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
@@ -279,13 +279,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     #                       + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids)
     #                       + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids))
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('is_check'):
-            vals.update({
-                'is_check': True
-            })
-        return super(ForlifeProductionFinishedProduct, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('is_check'):
+                vals.update({
+                    'is_check': True
+                })
+        return super(ForlifeProductionFinishedProduct, self).create(vals_list)
 
     @api.constrains('produce_qty', 'stock_qty')
     def constrains_stock_qty_produce_qty(self):

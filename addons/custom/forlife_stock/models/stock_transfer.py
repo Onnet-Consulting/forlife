@@ -442,21 +442,22 @@ class StockTransfer(models.Model):
                           # })],
                           })
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
-            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
-                warehouse if warehouse else '') + str(
-                datetime.now().year)
-        if vals.get('reference_document'):
-            stock = self.env['stock.transfer'].search([('name', '=', vals.get('reference_document'))], limit=1)
-            while stock and stock.reference_document:
-                stock = self.env['stock.transfer'].search([('name', '=', stock.reference_document)], limit=1)
-            vals['origin'] = stock.name
-        else:
-            vals['origin'] = vals['name']
-        return super(StockTransfer, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
+                vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
+                    warehouse if warehouse else '') + str(
+                    datetime.now().year)
+            if vals.get('reference_document'):
+                stock = self.env['stock.transfer'].search([('name', '=', vals.get('reference_document'))], limit=1)
+                while stock and stock.reference_document:
+                    stock = self.env['stock.transfer'].search([('name', '=', stock.reference_document)], limit=1)
+                vals['origin'] = stock.name
+            else:
+                vals['origin'] = vals['name']
+        return super(StockTransfer, self).create(vals_list)
 
     def unlink(self):
         if any(item.state not in ('draft', 'cancel') for item in self):
