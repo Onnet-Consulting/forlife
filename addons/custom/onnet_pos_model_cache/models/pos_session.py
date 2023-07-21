@@ -67,7 +67,7 @@ class PosSession(models.Model):
             return super()._get_pos_ui_product_product(params)
         records = self.get_products_from_cache()
         self._process_pos_ui_product_product(records)
-        return records[:100000]
+        return records
 
     def get_cached_products(self, start, end):
         records = self.get_products_from_cache()
