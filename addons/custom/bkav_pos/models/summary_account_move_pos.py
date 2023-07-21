@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-from .utils import collect_invoice_to_bkav_end_day
+from .utils import collect_pos_to_bkav_end_day, genarate_code
 
 class SummaryAccountMovePos(models.Model):
     _name = 'summary.account.move.pos'
@@ -117,13 +117,6 @@ class SummaryAccountMovePos(models.Model):
     #             'invoice_date': date.today(),
     #             'line_ids': list(lines_store.values())
     #         }
-
-
-    def collect_sales_invoice_to_bkav_end_day(self):
-        model = self.env['summary.account.move.pos']
-        model_line = self.env['summary.account.move.pos.line']
-        return collect_invoice_to_bkav_end_day(self, 'out_invoice', model, model_line)
-        
 
 
     """
@@ -473,6 +466,202 @@ class SummaryAccountMovePos(models.Model):
                 })
         return vals_posi, vals_neg
     """
+
+
+    def get_items(self):
+        last_day = date.today() - timedelta(days=1)
+        domain = [
+            ('exists_bkav', '=', False),
+            ('date_order', '<=', last_day),
+            ('is_post_bkav_store', '=', True),
+        ]
+
+        pos_order = self.env['pos.order'].search(domain)
+
+        lines = self.env['pos.order.line'].search([
+            ('order_id', 'in', pos_order.ids),
+            ('refunded_orderline_id', '=', False),
+            ('qty', '>', 0)
+        ])
+        return lines
+
+
+    def collect_sales_invoice_to_bkav_end_day(self, lines):
+        model = self.env['summary.account.move.pos']
+        model_line = self.env['summary.account.move.pos.line']
+        return collect_pos_to_bkav_end_day(self, lines, model, model_line)
+
+    def include_line_by_product(self, lines):
+        pos_order = lines.mapped("order_id")
+        stores = pos_order.mapped("store_id")
+        data = {}
+        company_ids = {}
+        for store in stores:
+            exits_products = {}
+            lines_store = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
+            items = {}
+            for line in lines:
+                if not line.product_id.barcode:
+                    continue
+
+                pk = f"{line.product_id.barcode}_{float(line.price_unit)}"
+                if items.get(pk):
+                    item = items[pk]
+                    invoice_ids = item["invoice_ids"]
+                    invoice_ids.append(line.order_id.id)
+                    item["quantity"] += line.qty
+                    item["invoice_ids"] = list(set(invoice_ids))
+                else:
+                    items[pk] = {
+                        "product_id": line.product_id.id,
+                        "quantity": line.qty,
+                        "price_unit": line.price_bkav,
+                        "invoice_ids": [line.order_id.id]
+                    }
+            data[store.id] = items
+            company_ids[store.id] = lines_store[0].company_id.id
+
+        return stores, data, company_ids
+
+
+    def recursive_move_items(
+        self, 
+        items={},
+        stores={},
+        store_id=0,
+        lines=[],
+        page=0,
+        code=0,
+        model=None,
+        company_ids={}
+    ):
+        store = stores.get(store_id)
+        company_id = company_ids.get(store_id)
+        first = 0
+        last = 1000
+        pk = f"{store_id}_{page}"
+        if len(lines) > 1000:
+            separate_lines = lines[first:last]
+            del lines[first:last]
+            items[pk] = {
+                'code': code,
+                'company_id': company_id,
+                'store_id': store.id,
+                'partner_id': store.contact_id.id,
+                'invoice_date': date.today(),
+                'line_ids': separate_lines
+            }
+            page += 1
+            self.recursive_move_items(
+                items=items,
+                stores=stores,
+                store_id=store_id,
+                lines=lines,
+                page=page,
+                code=genarate_code(self, model, default_code=code),
+                model=model,
+                company_ids=company_ids
+            )
+        else:
+            items[pk] = {
+                'code': code,
+                'company_id': company_id,
+                'store_id': store.id,
+                'partner_id': store.contact_id.id,
+                'invoice_date': date.today(),
+                'line_ids': lines
+            }
+
+    def collect_invoice_balance_clearing(self, records, store_data, company_ids):
+        items = {}
+        model = self.env['synthetic.account.move.pos']
+        model_line = self.env['synthetic.account.move.pos.line']
+        code = genarate_code(self, model)
+        for k, v in records.items():
+            self.recursive_move_items(
+                items=items,
+                stores=store_data,
+                store_id=k,
+                lines=v,
+                page=0,
+                code=code,
+                model=model,
+                company_ids=company_ids
+            )
+
+        for k, v in items.items():
+            res_line = model_line.create(v["line_ids"])
+            v["line_ids"] = res_line.ids
+
+        vals_list = list(items.values())
+
+        res = model.create(vals_list)
+
+
+    def collect_invoice_difference(self, records, store_data, company_ids):
+        items = {}
+        model = self.env['summary.adjusted.invoice.pos']
+        model_line = self.env['summary.adjusted.invoice.pos.line']
+        code = genarate_code(self, model)
+        for k, v in records.items():
+            self.recursive_move_items(
+                items=items,
+                stores=store_data,
+                store_id=k,
+                lines=v,
+                page=0,
+                code=code,
+                model=model,
+                company_ids=company_ids
+            )
+
+        for k, v in items.items():
+            res_line = model_line.create(v["line_ids"])
+            v["line_ids"] = res_line.ids
+
+        vals_list = list(items.values())
+
+        res = model.create(vals_list)
+
+
+    def collect_invoice_to_bkav_end_day(self):
+        sales = self.env['summary.account.move.pos'].get_items()
+        refunds = self.env['summary.account.move.pos.return'].get_items()
+        self.collect_sales_invoice_to_bkav_end_day(sales)
+        self.env['summary.account.move.pos.return'].collect_return_invoice_to_bkav_end_day(refunds)
+
+        sale_stores, sale_data, sale_company_ids = self.include_line_by_product(sales)
+        refund_stores, refund_data, refund_company_ids = self.include_line_by_product(refunds)
+        store_data = {}
+        if len(refund_data.keys()):
+            matching_records = {}
+            remaining_data = {}
+            for store in refund_stores:
+                matching_store_records = []
+                remaining_store_data = []
+                store_id = store.id
+                refund_lines_store = refund_data[store_id]
+                if sale_data.get(store_id):
+                    lines_store = sale_data[store_id]
+                    for k, v in lines_store.items():
+                        if refund_lines_store.get(k):
+                            refund_line_store = refund_lines_store[k]
+                            if v["quantity"] > -(refund_line_store["quantity"]):
+                                v["quantity"] += refund_line_store["quantity"]
+                                v["invoice_ids"].extend(refund_line_store["invoice_ids"])
+                                v["invoice_ids"] = list(set(v["invoice_ids"]))
+                                matching_store_records.append(v)
+                            elif v["quantity"] < -(refund_line_store["quantity"]):
+                                remaining_store_data.append(v)
+                store_data[store_id] = store
+                matching_records[store_id] = matching_store_records
+                remaining_data[store_id] = remaining_store_data
+            self.collect_invoice_balance_clearing(matching_records, store_data, sale_company_ids)
+            self.collect_invoice_difference(remaining_data, store_data, sale_company_ids)
+        sales.mapped("order_id").write({"exists_bkav": True})
+        refunds.mapped("order_id").write({"exists_bkav": True})
+        return True
+
 
 class SummaryAccountMovePosLine(models.Model):
     _name = 'summary.account.move.pos.line'

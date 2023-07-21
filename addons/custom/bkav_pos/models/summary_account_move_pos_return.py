@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-from .utils import collect_invoice_to_bkav_end_day
+from .utils import collect_pos_to_bkav_end_day
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
@@ -22,10 +22,27 @@ class SummaryAccountMovePosReturn(models.Model):
     einvoice_date = fields.Date(string="Ngày phát hành")
 
 
-    def collect_return_invoice_to_bkav_end_day(self):
+    def get_items(self):
+        last_day = date.today() - timedelta(days=1)
+        domain = [
+            ('exists_bkav', '=', False),
+            #('date_order', '>=', last_day),
+            ('is_post_bkav_store', '=', True),
+        ]
+
+        pos_order = self.env['pos.order'].search(domain)
+
+        lines = self.env['pos.order.line'].search([
+            ('order_id', 'in', pos_order.ids),
+            ('refunded_orderline_id', '!=', False)
+        ])
+        return lines
+
+
+    def collect_return_invoice_to_bkav_end_day(self, lines):
         model = self.env['summary.account.move.pos.return']
         model_line = self.env['summary.account.move.pos.return.line']
-        return collect_invoice_to_bkav_end_day(self, 'out_refund', model, model_line)
+        return collect_pos_to_bkav_end_day(self, lines, model, model_line)
 
 
 

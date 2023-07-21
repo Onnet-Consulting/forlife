@@ -57,6 +57,8 @@ class PosOrderBKAV(models.Model):
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)    
 
+    is_post_bkav_store = fields.Boolean(string='Có phát hành hóa đơn bkav', related='store_id.is_post_bkav')
+    
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status_get_values(self):
