@@ -364,23 +364,24 @@ class StockPicking(models.Model):
         return True
 
     @api.model_create_multi
-    def create(self, vals):
-        line = super(StockPicking, self).create(vals)
+    def create(self, vals_list):
+        line = super(StockPicking, self).create(vals_list)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
-            for rec in line.move_ids_without_package:
-                rec._onchange_product_id()
-                '''
-                rec.location_id = vals['location_id']
-                rec.location_dest_id = vals['location_dest_id']
-                '''
-                #todo: handle above source, raise exception when import picking (business unknown)
-                location_values = {}
-                if rec.location_id != line.location_id:
-                    location_values['location_id'] = line.location_id.id
-                if rec.location_dest_id != line.location_dest_id:
-                    location_values['location_dest_id'] = line.location_dest_id.id
-                if location_values:
-                    rec.update(location_values)
+            for record in line:
+                for rec in record.move_ids_without_package:
+                    rec._onchange_product_id()
+                    '''
+                    rec.location_id = vals['location_id']
+                    rec.location_dest_id = vals['location_dest_id']
+                    '''
+                    #todo: handle above source, raise exception when import picking (business unknown)
+                    location_values = {}
+                    if rec.location_id != record.location_id:
+                        location_values['location_id'] = record.location_id.id
+                    if rec.location_dest_id != record.location_dest_id:
+                        location_values['location_dest_id'] = record.location_dest_id.id
+                    if location_values:
+                        rec.update(location_values)
         return line
 
     def button_validate(self):
