@@ -11,7 +11,7 @@
                 </xpath>
                 <xpath expr="//page[@id='aml_tab']" position="after">
                     <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible': ['|',('state','=','draft'),('move_type','not in',('out_invoice', 'out_refund','in_refund'))]}">
+                          attrs="{'invisible': ['|','|',('pos_order_id','!=',False),('state','=','draft'),('move_type','not in',('out_invoice', 'out_refund','in_refund'))]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"

@@ -65,14 +65,21 @@ class PosOrderBKAV(models.Model):
 
 
     def get_invoice_identify(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.get_invoice_identify(self)
 
     def getting_invoice_status(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.getting_invoice_status(self)
+    
+    def _check_info_before_bkav(self):
+        if not self.invoice_info_company_name or not self.invoice_info_address or not self.invoice_info_tax_number:
+            return False
+        if not self.store_id.is_post_bkav:
+            return False
+        return True
 
 
     def get_bkav_data(self):
@@ -117,10 +124,10 @@ class PosOrderBKAV(models.Model):
                 "Invoice": {
                     "InvoiceTypeID": 1,
                     "InvoiceDate": str(invoice_date).replace(' ', 'T'),
-                    "BuyerName": pos.partner_id.name if pos.partner_id.name else '',
-                    "BuyerTaxCode": pos.partner_id.vat if pos.partner_id.vat else '',
-                    "BuyerUnitName": pos.partner_id.name if pos.partner_id.name else '',
-                    "BuyerAddress": pos.partner_id.country_id.name if pos.partner_id.country_id.name else '',
+                    "BuyerName": pos.invoice_info_company_name,
+                    "BuyerTaxCode": pos.invoice_info_tax_number ,
+                    "BuyerUnitName": pos.invoice_info_company_name,
+                    "BuyerAddress": pos.invoice_info_address,
                     "BuyerBankAccount": '',
                     "PayMethodID": 1,
                     "ReceiveTypeID": 3,
@@ -145,7 +152,7 @@ class PosOrderBKAV(models.Model):
 
 
     def create_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         # validate với trường hợp điều chỉnh thay thế
         # if self.issue_invoice_type in ('edit', 'replace') and not self.origin_move_id.invoice_no:
@@ -155,12 +162,12 @@ class PosOrderBKAV(models.Model):
 
 
     def publish_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.publish_invoice_bkav(self)
 
     def update_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         # validate với trường hợp điều chỉnh thay thế
         # if self.issue_invoice_type in ('edit', 'replace') and not self.origin_move_id.invoice_no:
@@ -169,22 +176,22 @@ class PosOrderBKAV(models.Model):
         return bkav_action.create_invoice_bkav(self,data)
 
     def get_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.get_invoice_bkav(self)
 
     def cancel_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
-        if not self.store_id.is_post_bkav:
+        if not self._check_info_before_bkav():
             return
         return bkav_action.download_invoice_bkav(self)
 

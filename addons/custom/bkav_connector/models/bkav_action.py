@@ -102,7 +102,6 @@ def publish_invoice_bkav(self):
         "CmdType": int(configs.get('cmd_publishInvoice')),
         "CommandObject": self.invoice_guid,
     }
-    # connect_bkav(data, configs)
     _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
     try:
         response = connect_bkav(data, configs)
