@@ -47,7 +47,10 @@ class SaleOrder(models.Model):
     @api.depends('warehouse_id')
     def _compute_location_id(self):
         for r in self:
-            r.x_location_id = r.warehouse_id.lot_stock_id
+            if r.source_record:
+                r.x_location_id = r.order_line[0].x_location_id
+            else:
+                r.x_location_id = r.warehouse_id.lot_stock_id
 
     x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
 

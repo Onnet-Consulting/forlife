@@ -134,6 +134,7 @@ class MainController(http.Controller):
 
                 # nhân viên kinh doanh
                 user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
+
                 # đội ngũ bán hàng
                 team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
                 
@@ -163,6 +164,7 @@ class MainController(http.Controller):
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': order['shipFee'],
+                    'nhanh_customer_shipping_fee': order['customerShipFee'],
                     'source_record': True,
                     'code_coupon': order['couponCode'],
                     'state': 'draft',
