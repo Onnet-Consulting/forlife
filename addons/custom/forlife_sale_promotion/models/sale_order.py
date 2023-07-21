@@ -106,6 +106,7 @@ class SaleOrder(models.Model):
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
                                     })]
+                                    ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
 
                                 if ln.x_cart_discount_fixed_price - price_percent > 0:
@@ -118,6 +119,7 @@ class SaleOrder(models.Model):
                                         'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
+                                    ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
                             self.env.cr.rollback()
                             rec.write({"state": "check_promotion"})
@@ -145,6 +147,7 @@ class SaleOrder(models.Model):
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp"
                             })]
+                            ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
                         if diff_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
@@ -155,6 +158,7 @@ class SaleOrder(models.Model):
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá"
                             })]
+                            ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
                     # Nhanh shipping fee
                     if rec.nhanh_shipping_fee and rec.nhanh_shipping_fee > 0:
@@ -209,6 +213,7 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
+                                    ln.x_account_analytic_id = discount_account_id and discount_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
                 rec.write({"state": "done_sale"})
