@@ -178,7 +178,7 @@
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
                             <field name="reward_type" attrs="{'invisible': [('promotion_type', '=', 'pricelist')]}"/>
                             <field name="progressive_reward_compute"
-                                attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_get_x_free'))]}"/>
+                                attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_get_x_free', 'cart_pricelist'))]}"/>
                             <field name="disc_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_amount', 'code_amount', 'cart_discount_amount'))]}"/>
 
