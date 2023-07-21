@@ -208,7 +208,7 @@ class AccountMoveBKAV(models.Model):
         if not self._check_invoice_bkav():
             return
         # validate với trường hợp điều chỉnh thay thế
-        if self.issue_invoice_type in ('edit', 'replace') and not self.origin_move_id.invoice_no:
+        if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
 
         configs = self.get_bkav_config()
@@ -268,7 +268,7 @@ class AccountMoveBKAV(models.Model):
 
 
     def update_invoice_bkav(self):
-        if not self._check_invoice_bkav():
+        if not self._check_invoice_bkav() or self.is_post_bkav:
             return
         configs = self.get_bkav_config()
         data = {

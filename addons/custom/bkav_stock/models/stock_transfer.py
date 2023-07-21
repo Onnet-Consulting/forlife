@@ -220,7 +220,6 @@ class StockTransfer(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
-                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
@@ -249,12 +248,11 @@ class StockTransfer(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-                'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
 
     def update_invoice_bkav(self):
-        if self.is_general == True:
+        if self.is_general or self.is_post_bkav:
             return
         configs = self.get_bkav_config()
         data = {
