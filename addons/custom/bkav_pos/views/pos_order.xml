@@ -47,5 +47,78 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="bkav_invoice_pos_form_view" model="ir.ui.view">
+            <field name="name">bkav.invoice.pos.form.inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='notes']" position="after">
+                    <page id="bkav_invoice" string="BKAV Invoice">
+                        <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
+                        <button name="create_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
+                                string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="get_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Get eInvoice" groups="account.group_account_invoice"/>
+                        <button name="update_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Update eInvoice" groups="account.group_account_invoice"/>
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="download_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Download eInvoice" groups="account.group_account_invoice"/>
+                        <br/>
+                        <group string="Thông tin xuất hóa đơn">
+                            <group>
+                                <field name="invoice_info_company_name"/>
+                                <field name="invoice_info_address"/>
+                                <field name="invoice_info_tax_number"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <group string="Thông tin BKAV trả về">
+                            <group>
+                                <field name="exists_bkav" readonly="1"/>
+                                <field name="is_general" readonly="1"/>
+                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
+                                <!-- <field name="origin_move_id"
+                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/> -->
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_form" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="is_post_bkav" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
+                                <field name="invoice_state_e" readonly="1"/>
+                                <field name="invoice_guid" readonly="1"/>
+                                <field name="invoice_e_date" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bkav_invoice_pos_info_form_view" model="ir.ui.view">
+            <field name="name">pos_order_info_form_inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="forlife_point_of_sale.pos_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_info_company_name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_info_address']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_info_tax_number']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

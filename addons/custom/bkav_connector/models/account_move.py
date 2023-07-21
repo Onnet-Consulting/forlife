@@ -140,7 +140,7 @@ class AccountMoveBKAV(models.Model):
         for invoice in self:
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            sign = 1 if invoice.move_type in ('out_invoice', 'in_invoice') else -1
+            sign = 1 if invoice.move_type in ('out_invoice', 'in_refund') else -1
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
@@ -258,8 +258,6 @@ class AccountMoveBKAV(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        # connect_bkav(data, configs)
-        _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
         except Exception as ex:
@@ -310,7 +308,6 @@ class AccountMoveBKAV(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-                'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
 
