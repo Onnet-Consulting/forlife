@@ -55,8 +55,17 @@ def getting_invoice_status(self):
 def create_invoice_bkav(self,data):
     configs = get_bkav_config(self)
     _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
+    CmdType = int(configs.get('cmd_addInvoice'))
+    if 'issue_invoice_type' in self:
+        if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
+            raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
+        if self.issue_invoice_type == 'adjust':
+            CmdType = int(configs.get('cmd_addInvoiceEdit'))
+        elif self.issue_invoice_type == 'replace':
+            CmdType = int(configs.get('cmd_addInvoiceReplace'))
+
     data = {
-        "CmdType": int(configs.get('cmd_addInvoice')),
+        "CmdType": CmdType,
         "CommandObject": data,
     }
     _logger.info(f'BKAV - data create invoice to BKAV: {data}')
