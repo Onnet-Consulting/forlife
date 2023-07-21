@@ -7,6 +7,8 @@ from . import product_category
 from . import product_category_type
 from . import utm_source
 from . import promotion_campaign
+from . import promotion_program
+from . import promotion_pricelist_item
 from . import constant
 from . import nhanh_brand_config
 from . import nhanh_webhook_value

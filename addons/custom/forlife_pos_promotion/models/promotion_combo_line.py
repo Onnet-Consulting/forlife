@@ -12,7 +12,7 @@ class PromotionComboLine(models.Model):
     _description = 'Promotion Combo Line'
 
     program_id = fields.Many2one('promotion.program')
-    name = fields.Char(realted='program_id.name')
+    name = fields.Char(related='program_id.name')
     product_ids = fields.Many2many(
         'product.product', relation='product_product_promotion_combo_line_rel', string='Products',
         domain="[('available_in_pos', '=', True)]")

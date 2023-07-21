@@ -749,7 +749,7 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
     forlife_production_stock_move_ids = fields.Many2many('stock.move')
-    remaining_qty = fields.Float(string='Còn lại', compute='_compute_remaining_qty')
+    remaining_qty = fields.Float(string='Còn lại', compute='_compute_remaining_qty',compute_sudo=True)
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):

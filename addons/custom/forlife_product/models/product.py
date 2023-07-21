@@ -21,7 +21,7 @@ class Product(models.Model):
     code_design = fields.Char('Mã thiết kế')
     group_row_1 = fields.Char('Nhóm hàng 1')
     line_row_1 = fields.Char('Dòng hàng 1')
-    structure = fields.Char('kết cấu 1')
+    structure = fields.Char('Kết cấu 1')
 
     @api.onchange('detailed_type')
     def onchange_detailed_type(self):

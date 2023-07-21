@@ -13,7 +13,7 @@ TITLES = [
 
 class ReportNum21(models.TransientModel):
     _name = 'report.num21'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Report stock transfer'
 
     from_date = fields.Date(string='From date', required=True)
@@ -26,10 +26,9 @@ class ReportNum21(models.TransientModel):
     is_receive = fields.Boolean(_('Receive'), default=False)
     is_done = fields.Boolean(_('Done'), default=False)
     product_ids = fields.Many2many('product.product', 'report_num21_product_rel', string='Products')
-    product_brand_id = fields.Many2one('product.category', 'Product Brand')
-    product_group_ids = fields.Many2many('product.category', 'report_num21_group_rel', string='Product Group')
-    product_line_ids = fields.Many2many('product.category', 'report_num21_line_rel', string='Product Line')
-    texture_ids = fields.Many2many('product.category', 'report_num21_texture_rel', string='Texture')
+    product_group_ids = fields.Many2many('product.category', 'report_num21_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num21_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num21_texture_rel', string='Level 4')
 
     @api.onchange('location_province_ids')
     def onchange_location_province(self):

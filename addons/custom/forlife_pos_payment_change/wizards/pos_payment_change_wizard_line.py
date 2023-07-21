@@ -20,6 +20,6 @@ class PosPaymentChangeWizardOldLine(models.TransientModel):
     currency_id = fields.Many2one(
         "res.currency", store=True, string="Currency", readonly=True, help="Utility field to express amount currency")
     amount = fields.Monetary(
-        related='payment_id.amount', required=True, readonly=True, default=0.0, currency_field="currency_id")
+        related='payment_id.amount', required=True, readonly=True, currency_field="currency_id")
     new_payment_method_id = fields.Many2one(
         'pos.payment.method', 'Payment Method', required=False, readonly=False, domain=lambda s: s.domain_new_payment_method_id())

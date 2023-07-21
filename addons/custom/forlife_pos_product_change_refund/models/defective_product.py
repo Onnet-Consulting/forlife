@@ -72,7 +72,7 @@ class ProductDefective(models.Model):
         if self.money_reduce > 0 and self.percent_reduce > 0:
             raise UserError(_('Chỉ được phép nhập 1 trong 2 loại giảm!'))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         res = super(ProductDefective, self).create(vals_list)
         if res.quantity_require == 0:

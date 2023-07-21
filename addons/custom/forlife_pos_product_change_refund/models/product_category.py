@@ -3,9 +3,9 @@ from odoo import api, fields, models, _
 class ProductCategory(models.Model):
     _inherit = 'product.category'
 
-    number_days_change_refund = fields.Integer('Hạn đổi trả', tracking=True)
+    number_days_change_refund = fields.Integer('Hạn đổi trả')
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         res = super(ProductCategory, self).create(vals_list)
         if 'number_days_change_refund' in vals_list:

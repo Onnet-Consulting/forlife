@@ -3,6 +3,7 @@
     "name": "Forlife Invoice",
     "category": "Invoice",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """Forlife Invoice""",
     "depends": [

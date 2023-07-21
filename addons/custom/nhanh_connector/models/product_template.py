@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    nhanh_id = fields.Integer(string="Id Nhanh.Vn", copy=False)
+    nhanh_id = fields.Char(string="Id Nhanh.Vn", copy=False)
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     # width_product = fields.Float('Width', copy=False)
     # height_product = fields.Float('Height', copy=False)
@@ -37,20 +37,42 @@ class ProductTemplate(models.Model):
             product_name = f"{product_name} ({color_name} / SIZE {size_name})"
         return product_name
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)
         if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
             return res
-        self.synchronized_create_product(res)
+
+        self.sudo().with_delay(
+            description="Sync product to NhanhVn", channel="root.RabbitMQ"
+        ).synchronized_create_product(res)
+            # self.synchronized_create_product(res)
         return res
+
+    def get_pcpc_price_list_by_product(self, product_id):
+        domain = [
+            ('is_for_nhanh', '=', True), 
+            ('program_id', '!=', False),
+            ('product_tmpl_id', '=', product_id.id),
+            ('state', '=', 'in_progress'),
+            ('to_date', '>=', fields.Datetime.now()),
+            ('from_date', '<=', fields.Datetime.now()),
+        ]
+        pl_res = self.env["promotion.pricelist.item"].sudo().search(domain, order="fixed_price ASC", limit=1)
+        if pl_res:
+            price = pl_res.fixed_price
+        else:
+            price = product_id.list_price
+        return price
 
     def synchronized_create_product(self, res):
         if res.check_data_odoo and res.brand_id.id:
             nhanh_config = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
-            if nhanh_config.get('nhanh_connector.nhanh_app_id', '') or nhanh_config.get(
-                    'nhanh_connector.nhanh_business_id', '') or nhanh_config.get('nhanh_connector.nhanh_access_token',
-                                                                                  ''):
+            if nhanh_config.get('nhanh_connector.nhanh_app_id', '') \
+                or nhanh_config.get('nhanh_connector.nhanh_business_id', '') \
+                or nhanh_config.get('nhanh_connector.nhanh_access_token',''):
+
+                price = self.get_pcpc_price_list_by_product(res)
 
                 data = [{
                     "id": res.id,
@@ -58,7 +80,7 @@ class ProductTemplate(models.Model):
                     "code": res.barcode if res.barcode else '',
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
-                    "price": res.list_price,
+                    "price": price,
                     "shippingWeight": 200,
                     "status": 'New'
                 }]
@@ -102,7 +124,6 @@ class ProductTemplate(models.Model):
             'attribute_line_ids',
             'barcode',
             'list_price',
-            'weight',
             'brand_id',
             'categ_id'
         ]
@@ -118,6 +139,8 @@ class ProductTemplate(models.Model):
                     is_create = True
 
             elif item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
+                price = self.get_pcpc_price_list_by_product(item)
+
                 data.append({
                     "id": item._origin.id,
                     "idNhanh": item.nhanh_id,
@@ -125,15 +148,21 @@ class ProductTemplate(models.Model):
                     "code": item.barcode if item.barcode else '',
                     "barcode": item.barcode if item.barcode else '',
                     "importPrice": item.list_price,
-                    "price": item.list_price,
-                    "shippingWeight": item.weight * 1000,
+                    "price": price,
+                    "shippingWeight": 200,
                     "status": 'New'
                 })
 
         if len(data):
-            self.synchronized_price_nhanh(data)
+            self.sudo().with_delay(
+                description="Update & Sync product to NhanhVn", channel="root.RabbitMQ"
+            ).synchronized_price_nhanh(data)
+            # self.synchronized_price_nhanh(data)
         if is_create:
-            self.synchronized_create_product(self)
+            self.sudo().with_delay(
+                description="Sync product to NhanhVn", channel="root.RabbitMQ"
+            ).synchronized_create_product(self)
+            # self.synchronized_create_product(self)
         
         return res
 
@@ -150,7 +179,7 @@ class ProductTemplate(models.Model):
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
                 "price": item.list_price,
-                "shippingWeight": item.weight * 1000,
+                "shippingWeight": 200,
                 "status": 'Inactive'
             })
         if not data:
@@ -177,6 +206,7 @@ class ProductTemplate(models.Model):
                     pass
         return True
 
+
     def post_data_nhanh(self, configs, data):
         url = f"{constant.base_url()}/product/add"
         payload = {
@@ -188,3 +218,26 @@ class ProductTemplate(models.Model):
         }
         res_server = requests.post(url, data=payload)
         return res_server
+
+
+    def synchronized_product_exists_nhanh(self, line, pl_list_price=False):
+        data = []
+        price = self.list_price
+        if pl_list_price:
+            price = line.fixed_price
+
+        data.append({
+            "id": self._origin.id,
+            "idNhanh": self.nhanh_id,
+            "name": self.name,
+            "code": self.barcode if self.barcode else '',
+            "barcode": self.barcode if self.barcode else '',
+            "importPrice": self.list_price,
+            "price": price,
+            "shippingWeight": 200,
+            "status": 'New'
+        })
+        self.sudo().with_delay(
+            description="Update & Sync product to NhanhVn", channel="root.RabbitMQ"
+        ).synchronized_price_nhanh(data)
+

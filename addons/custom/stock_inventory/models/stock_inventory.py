@@ -71,6 +71,9 @@ class Inventory(models.Model):
     move_out_count = fields.Integer(string="Dịch chuyển đi", compute='_compute_stock_move_count')
     move_in_count = fields.Integer(string="Dịch chuyển đến", compute='_compute_stock_move_count')
 
+    detail_ids = fields.One2many('inventory.detail', 'inventory_id', string='Chi tiết đếm kiểm', copy=False, readonly=True)
+    x_status = fields.Integer('Trạng thái chi tiết', default=0)
+
     # total_valorisation = fields.Float(string='Tổng kiểm kê', compute='_compute_total_valorisation')
     #
     #
@@ -215,7 +218,9 @@ class Inventory(models.Model):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
         # as quants cannot be reuse from inventory location (users can still manually move the products before/after the inventory if they want).
-        self.mapped('move_ids').filtered(lambda move: move.state != 'done')._action_done()
+        stock_move_ids = self.mapped('move_ids').filtered(lambda move: move.state != 'done')._action_done()
+        stock_move_ids.move_line_ids.write({'date': self.date})
+        stock_move_ids.write({'date': self.date})
         return True
 
     def action_check(self):
@@ -329,7 +334,7 @@ class Inventory(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        sql = f"""select * from get_quantity_inventory('{str(fields.Datetime.now())}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         return data
@@ -431,6 +436,46 @@ class Inventory(models.Model):
         if self.exhausted:
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
+
+    def clone_detail_data(self):
+        self.ensure_one()
+        if self.detail_ids:
+            return False
+        val = []
+        for line in self.line_ids:
+            val.append({
+                'inventory_id': self.id,
+                'product_id': line.product_id.id,
+                'ma_hang': line.product_id.barcode,
+                'ten_hang': line.product_id.name,
+                'mau': line.product_id.id,
+                'size': line.product_id.id,
+                'nhom_san_pham': line.product_id.categ_id.complete_name,
+                'don_vi': line.product_id.uom_id.id,
+                'gia': line.product_id.lst_price,
+                'ton_phan_mam': line.theoretical_qty,
+            })
+        if val:
+            self.env['inventory.detail'].create(val)
+            self.write({'x_status': 1})
+
+    def btn_import_excel(self):
+        self.ensure_one()
+        action = self.env.ref('stock_inventory.import_inventory_session_action').read()[0]
+        action['context'] = dict(self._context, default_inv_id=self.id)
+        return action
+
+    def btn_action_confirm1(self):
+        pass
+
+    def btn_action_confirm2(self):
+        pass
+
+    @api.model
+    def update_inventory_detail(self):
+        if not self:
+            return False
+        # todo: xử lý cập nhật chi tiết kiểm đếm
 
 
 class InventoryLine(models.Model):

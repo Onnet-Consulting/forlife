@@ -90,13 +90,13 @@ class AccountMove(models.Model):
         if self.is_check_cost_view and self.is_check_cost_out_source:
             self.is_check_cost_view = False
 
+    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+
     transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
     loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
     custom_total = fields.Float(string='Tổng chi phí thông quan')
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
-
-    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
-    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
 
     # field domain cho 2 field đơn mua hàng và phiếu nhập kho
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
@@ -450,6 +450,7 @@ class AccountMove(models.Model):
         if self.total_trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
                 self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
+
 
     def create_invoice_tnk_db(self):
         account_db = []
@@ -955,6 +956,7 @@ class AccountMoveLine(models.Model):
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
+    _description = 'Vendor back'
 
     _sql_constraints = [
         (

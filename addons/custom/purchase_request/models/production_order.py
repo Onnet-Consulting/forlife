@@ -9,7 +9,7 @@ class ProductionOrder(models.Model):
     _rec_name = 'product_id'
 
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         res = super(ProductionOrder, self).create(vals)
         if res.product_id:
