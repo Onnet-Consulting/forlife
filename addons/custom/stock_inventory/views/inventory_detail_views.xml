@@ -34,7 +34,7 @@
                     <field name="bot2"/>
                     <field name="tong_kiem_dem_thuc_te"/>
                     <field name="chenh_lech_kiem_ke"/>
-                    <field name="note"/>
+                    <field name="ghi_chu"/>
                     <field name="phien_dem"/>
                 </tree>
             </field>
@@ -55,7 +55,7 @@
                                 <field name="nhom_san_pham"/>
                                 <field name="don_vi"/>
                                 <field name="gia"/>
-                                <field name="note"/>
+                                <field name="ghi_chu"/>
                                 <field name="phien_dem"/>
                             </group>
                             <group>

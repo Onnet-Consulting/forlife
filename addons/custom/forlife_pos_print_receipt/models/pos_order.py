@@ -26,6 +26,7 @@ class PosOrder(models.Model):
             amount_total = 0
             accumulation = 0
             list_product_point = []
+            product_point = self.lines.filtered(lambda x: x.discount_details_lines.type == 'point').mapped('product_id.id')
             for line in self.lines:
                 if line.is_promotion:
                     continue
@@ -45,16 +46,16 @@ class PosOrder(models.Model):
                         discount = f'-{discount}'
                     else:
                         discount = f'{discount}'
-
-                line_products.append({
-                    'promotion_list': line.promotion_usage_ids.mapped('program_id.name'),
-                    'name': line.product_id.name,
-                    'qty': line.qty,
-                    'barcode': line.product_id.barcode,
-                    'price_unit': self.env.company.currency_id.format(line.original_price),
-                    'discount': discount,
-                    'subtotal_paid': self.env.company.currency_id.format(line.subtotal_paid),
-                })
+                if line.product_id.id not in product_point:
+                    line_products.append({
+                        'promotion_list': line.promotion_usage_ids.mapped('program_id.name'),
+                        'name': line.product_id.name,
+                        'qty': line.qty,
+                        'barcode': line.product_id.barcode,
+                        'price_unit': self.env.company.currency_id.format(line.original_price),
+                        'discount': discount,
+                        'subtotal_paid': self.env.company.currency_id.format(line.subtotal_paid),
+                    })
                 for p in line.promotion_usage_ids:
                     if not p.code_id:
                         continue
