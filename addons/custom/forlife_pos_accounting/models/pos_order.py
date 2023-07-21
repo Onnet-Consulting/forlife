@@ -47,25 +47,6 @@ class InheritPosOrder(models.Model):
             credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
             credit_account_id = (credit_account['income'] or credit_account['expense']).id
 
-        price_unit = order_line.price_unit
-        tax_entries_line = []
-        for tax in order_line.tax_ids_after_fiscal_position:
-            for repartition in tax['invoice_repartition_line_ids' if order_line.price_unit >= 0 else 'refund_repartition_line_ids']:
-                if repartition.repartition_type != 'tax':
-                    continue
-                tax_entry_amount = float_round(value=price_unit * tax.amount / 100, precision_digits=0)
-                if not tax_entry_amount:
-                    continue
-                price_unit -= tax_entry_amount
-                tax_entries_line.append((0, 0, {
-                    'name': tax.name,
-                    'account_id': repartition.account_id.id,
-                    'credit': 0,
-                    'debit': tax_entry_amount if tax_entry_amount >= 0 else -tax_entry_amount,
-                    'tax_tag_ids': [(6, 0, repartition.tag_ids.ids)],
-                    'display_type': repartition.repartition_type
-                }))
-
         return [
             (0, 0, {
                 'partner_id': partner_id,
@@ -73,31 +54,32 @@ class InheritPosOrder(models.Model):
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
-                'quantity': order_line.qty,
+                'quantity': 1,
                 'discount': order_line.discount,
-                'price_unit': price_unit,
+                'price_unit': order_line.price_unit,
+                'tax_ids': [(6, 0, order_line.tax_ids_after_fiscal_position.ids)],
                 'name': name,
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'product',
                 'account_id': credit_account_id or None,
                 'credit': 0,
-                'debit': price_unit if price_unit >= 0 else -price_unit,
+                'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
                 'partner_id': partner_id,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
-                'quantity': order_line.qty,
+                'quantity': 1,
                 'discount': order_line.discount,
-                'price_unit': order_line.price_unit,
+                'price_unit': order_line.price_subtotal_incl,
                 'name': name,
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'payment_term',
                 'account_id': order_line.order_id.partner_id.property_account_receivable_id.id,
-                'credit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
+                'credit': order_line.price_subtotal_incl if order_line.price_subtotal_incl >= 0 else -order_line.price_subtotal_incl,
                 'debit': 0,
             })
-        ] + tax_entries_line
+        ]
 
     def create_promotion_account_move(self):
         self.ensure_one()
@@ -314,14 +296,15 @@ class InheritPosOrderLine(models.Model):
     def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
+        price_unit = product_id.taxes_id.compute_all(price)['total_excluded']
         return {
             'order_id': self.order_id.id,
             'product_src_id': self.id,
             'promotion_id': promotion.id,
             'promotion_model': promotion._name,
             'qty': 1 if not self.refunded_orderline_id else -1,
-            'price_unit': price,
-            'price_subtotal': price,
+            'price_unit': price_unit,
+            'price_subtotal': price_unit,
             'price_subtotal_incl': price,
             'discount': 0,
             'product_id': product_id.id,
