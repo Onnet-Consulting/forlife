@@ -167,7 +167,7 @@ class AccountMoveBKAV(models.Model):
                         "TaxRateID": tax_rate_id,
                         "TaxRate": line.tax_ids[0].amount
                     })
-                if invoice.issue_invoice_type == 'edit':
+                if invoice.issue_invoice_type == 'adjust':
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
@@ -210,11 +210,16 @@ class AccountMoveBKAV(models.Model):
         # validate với trường hợp điều chỉnh thay thế
         if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
+        CmdType = int(configs.get('cmd_addInvoice'))
+        if self.issue_invoice_type == 'adjust':
+            CmdType = int(configs.get('cmd_addInvoiceEdit'))
+        elif self.issue_invoice_type == 'replace':
+            CmdType = int(configs.get('cmd_addInvoiceReplace'))
 
         configs = self.get_bkav_config()
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
-            "CmdType": int(configs.get('cmd_addInvoice')),
+            "CmdType": CmdType,
             "CommandObject": self.get_bkav_data()
         }
         _logger.info(f'BKAV - data create invoice to BKAV: {data}')
