@@ -529,11 +529,11 @@ class SaleOrderNhanh(models.Model):
     def create_stock_picking_so_from_nhanh_with_return_so(self):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
-        product_ids = {}
-        for line in self.order_line:
-            product_ids[line.product_id.id] = line.product_uom_qty
-
         for picking in picking_ids:
+            print(picking)
+            product_ids = {}
+            for line in self.order_line:
+                product_ids[line.product_id.id] = line.product_uom_qty
             move_ids = picking.move_ids.filtered(lambda r: r.product_id.id in list(product_ids.keys()))
             print('----------', move_ids)
             if len(move_ids):

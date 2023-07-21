@@ -235,8 +235,8 @@ class MainController(http.Controller):
                 if is_create_wh_in or order_returned:
                     try:
                         # print('--------------- INTO ---------------------------')
-                        # webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
-                        webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
+                        webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
+                        # webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
                         pass
 
