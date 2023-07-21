@@ -44,12 +44,11 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
-    @api.depends('warehouse_id')
-    def _compute_location_id(self):
-        for r in self:
-            r.x_location_id = r.warehouse_id.lot_stock_id
+    def _get_x_location_id(self):
+        warehouse_id = self.user_id.with_company(self.company_id.id)._get_default_warehouse_id()
+        return warehouse_id.lot_stock_id.id
 
-    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', default=_get_x_location_id)
 
     @api.onchange('x_location_id')
     def _onchange_location(self):
@@ -423,15 +422,10 @@ class SaleOrderLine(models.Model):
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id
-        if self.order_id.x_sale_type:
-            if not self.order_id.x_manufacture_order_code_id:
-                domain = [('detailed_type', '=', self.order_id.x_sale_type)]
-                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
+        if self.order_id.x_manufacture_order_code_id:
             product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped(
                 'product_id').ids
-            domain = [('detailed_type', '=', self.order_id.x_sale_type),
-                      ('id', 'in', product_ids)]
+            domain = [('id', 'in', product_ids)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 
@@ -529,14 +523,6 @@ class SaleOrderLine(models.Model):
             self.price_unit = [r.get('fixed_price') for r in result][0]
             
             '''
-
-    def _prepare_invoice_line(self, **optional_values):
-        res = super()._prepare_invoice_line(**optional_values)
-        res.update({
-            'x_product_code_id': self.x_product_code_id.id,
-            'work_order': self.x_manufacture_order_code_id.id
-        })
-        return res
 
     def _convert_to_tax_base_line_dict(self):
         """ Convert the current record to a dictionary in order to use the generic taxes computation method
