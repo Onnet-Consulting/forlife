@@ -44,15 +44,13 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
-    @api.depends('warehouse_id')
-    def _compute_location_id(self):
-        for r in self:
-            r.x_location_id = r.warehouse_id.lot_stock_id
+    def _get_x_location_id(self):
+        warehouse_id = self.user_id.with_company(self.company_id.id)._get_default_warehouse_id()
+        return warehouse_id.lot_stock_id.id
 
-    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', compute='_compute_location_id')
+    x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', default=_get_x_location_id)
 
-    @api.onchange('x_location_id')
-    def _onchange_location(self):
+    def _get_x_location_id(self):
         for line in self.order_line:
             line.x_location_id = self.x_location_id
 
