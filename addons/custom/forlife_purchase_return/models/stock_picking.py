@@ -93,7 +93,7 @@ class StockPicking(models.Model):
             self.create_return_picking_npl(self.purchase_id, self, lines_npl)
         return True
 
-    def _prepare_material_lines(self, move, material_line_id, npl_location_id, reason_type_id, purchase_line_id):
+    def _prepare_material_lines(self, move, material_line_id, npl_location_id, purchase_line_id):
         product_plan_qty = move.quantity_done * (material_line_id.product_qty / purchase_line_id.product_qty)
         return (0, 0, {
             'product_id': material_line_id.product_id.id,
@@ -104,7 +104,7 @@ class StockPicking(models.Model):
             'product_uom_qty': product_plan_qty,
             'quantity_done': product_plan_qty,
             'amount_total': material_line_id.production_line_price_unit * product_plan_qty,
-            'reason_type_id': reason_type_id,
+            'reason_type_id': npl_location_id.reason_type_id.id or False,
             'reason_id': npl_location_id.id,
             'include_move_id': move.id
         })
