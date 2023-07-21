@@ -14,6 +14,7 @@ class SaleOrderPromotion(models.Model):
     account_id = fields.Many2one('account.account', string="Account")
     description = fields.Char(string="Description")
     order_id = fields.Many2one("sale.order", string="Order")
+    product_uom_qty = fields.Float(string="Quantity", digits='Product Unit of Measure',)
     promotion_type = fields.Selection([
         ('diff_price', 'diff_price'),
         ('discount', 'discount'),

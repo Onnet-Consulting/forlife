@@ -51,7 +51,7 @@ class AccountMove(models.Model):
                 if not account_payable_customer_id:
                     raise UserError("Chưa cấu hình tài khoản phải trả cho khách hàng")
 
-                account_tax = pr.product_id.taxes_id
+                account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                 account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
 
                 if pr.promotion_type in ['vip_amount', 'reward']:
@@ -70,7 +70,7 @@ class AccountMove(models.Model):
 
                 # cho phép tạo bút toán với các promotion type
                 if line_allow:
-                    account_tax = pr.product_id.taxes_id
+                    account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                     account_tax_id = False
                     product_with_tax_value = abs(pr.value)
                     product_value_without_tax = abs(pr.value)
@@ -80,7 +80,7 @@ class AccountMove(models.Model):
                         account_tax_ids = account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                         if len(account_tax_ids) and account_tax_ids[0].account_id:
                             account_tax_id = account_tax_ids[0].account_id
-                            product_value_without_tax = account_tax_id and product_with_tax_value - (product_with_tax_value * account_tax[0].amount / 100)
+                            product_value_without_tax = round(account_tax_id and ((product_with_tax_value * 100) / (account_tax[0].amount + 100)), 0)
                             product_tax_value = product_with_tax_value - product_value_without_tax
 
                     line_ids.append({
@@ -109,7 +109,6 @@ class AccountMove(models.Model):
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
                             'account_id': pr.account_id and pr.account_id.id,
-                            'account_id': account_repartition_tax and account_repartition_tax[0].account_id.id,
                             'analytic_account_id': pr.analytic_account_id.id,
                             'debit': 0,
                             'credit': product_tax_value
