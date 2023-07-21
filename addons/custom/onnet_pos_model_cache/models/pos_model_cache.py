@@ -54,8 +54,10 @@ class PosModelCache(models.Model):
         Recompute the cache data without search_read all records
         model: model name, e.g: product.product, promotion.pricelist.item,...
         """
-        changed_records = self.env[self.model].with_user(self.compute_user_id.id).with_company(self.compute_company_id).search(validate_domain)
-        changed_records = changed_records.sudo().filtered_domain(self.get_model_domain())
+        self.env = self.with_user(self.compute_user_id.id).env(context={'allowed_company_ids': self.compute_company_id.ids})
+
+        changed_records = self.env[self.model].search(validate_domain)
+        changed_records = changed_records.filtered_domain(self.get_model_domain())
         changed_records = changed_records.read(self.get_model_fields())
         record_by_id = {x.get('id'): x for x in changed_records}
         if changed_records:

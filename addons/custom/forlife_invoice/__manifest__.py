@@ -22,6 +22,7 @@
         'security/expense_security.xml',
         'views/expense_category_views.xml',
         'views/expense_item_views.xml',
+        'views/stock_location.xml',
     ],
     "assets": {
         "web.assets_backend": [

@@ -32,7 +32,7 @@ class ReportNum28(models.TransientModel):
                 aa.name as ten,
                 aa.item_code as ma_luu_kho,
                 pt.name as ten_luu_kho,
-                aa.state as trang_thai,
+                (case when aa.state = 'using' then 'Đang sử dụng' else 'Đã thanh lý' end) as trang_thai,
                 aa.unit as dvt,
                 aa.quantity as sl,
                 concat_ws('-', he.code, he.name) as nhan_vien,

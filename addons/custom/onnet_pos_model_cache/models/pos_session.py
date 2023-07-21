@@ -1,6 +1,7 @@
 from odoo import models, SUPERUSER_ID
 import logging
 _logger = logging.getLogger(__name__)
+ADMIN_ID = 2
 
 
 class PosSession(models.Model):
@@ -12,7 +13,7 @@ class PosSession(models.Model):
         domain_str = str([list(item) if isinstance(item, (list, tuple)) else item for item in loading_info['search_params']['domain']])
         pos_cache = self.env['pos.model.cache']
         cache_for_user = pos_cache.search([
-            ('compute_user_id', '=', SUPERUSER_ID),
+            ('compute_user_id', '=', ADMIN_ID),
             ('domain', '=', domain_str),
             ('model_fields', '=', fields_str),
             ('model', '=', 'promotion.pricelist.item'),
@@ -22,7 +23,7 @@ class PosSession(models.Model):
             cache_for_user = pos_cache.create({
                 'domain': domain_str,
                 'model_fields': fields_str,
-                'compute_user_id': SUPERUSER_ID,
+                'compute_user_id': ADMIN_ID,
                 'model': 'promotion.pricelist.item',
                 'compute_company_id': self.env.user.company_id.id
             })
@@ -43,7 +44,7 @@ class PosSession(models.Model):
         domain_str = str([list(item) if isinstance(item, (list, tuple)) else item for item in loading_info['search_params']['domain']])
         pos_cache = self.env['pos.model.cache']
         cache_for_user = pos_cache.search([
-            ('compute_user_id', '=', SUPERUSER_ID),
+            ('compute_user_id', '=', ADMIN_ID),
             ('domain', '=', domain_str),
             ('model_fields', '=', fields_str),
             ('model', '=', 'product.product'),
@@ -54,7 +55,7 @@ class PosSession(models.Model):
             cache_for_user = pos_cache.create({
                 'domain': domain_str,
                 'model_fields': fields_str,
-                'compute_user_id': SUPERUSER_ID,
+                'compute_user_id': ADMIN_ID,
                 'model': 'product.product',
                 'compute_company_id': self.env.user.company_id.id
             })
@@ -66,7 +67,7 @@ class PosSession(models.Model):
             return super()._get_pos_ui_product_product(params)
         records = self.get_products_from_cache()
         self._process_pos_ui_product_product(records)
-        return records[:100000]
+        return records
 
     def get_cached_products(self, start, end):
         records = self.get_products_from_cache()

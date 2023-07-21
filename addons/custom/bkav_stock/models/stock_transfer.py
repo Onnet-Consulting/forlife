@@ -94,11 +94,8 @@ class StockTransfer(models.Model):
             'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
         }
     
-
     def getting_invoice_status(self):
         if self.is_general == True:
-            return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         configs = self.get_bkav_config()
         data = {
@@ -111,7 +108,6 @@ class StockTransfer(models.Model):
             self.message_post(body=(response.get('Object')))
         else:
             self.data_compare_status = str(response.get('Object'))
-
 
     def get_bkav_data(self):
         bkav_data = []
@@ -220,7 +216,6 @@ class StockTransfer(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
-                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
@@ -249,12 +244,11 @@ class StockTransfer(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-                'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
 
     def update_invoice_bkav(self):
-        if self.is_general == True:
+        if self.is_general or self.is_post_bkav:
             return
         configs = self.get_bkav_config()
         data = {
@@ -273,16 +267,12 @@ class StockTransfer(models.Model):
     def publish_invoice_bkav(self):
         if self.is_general == True:
             return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         configs = self.get_bkav_config()
 
         data = {
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        connect_bkav(data, configs)
-        _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
         except Exception as ex:
@@ -297,8 +287,6 @@ class StockTransfer(models.Model):
 
     def download_invoice_bkav(self):
         if self.is_general == True:
-            return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         if not self.eivoice_file:
             configs = self.get_bkav_config()
@@ -334,8 +322,6 @@ class StockTransfer(models.Model):
     def cancel_invoice_bkav(self):
         if self.is_general == True:
             return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
-            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_cancelInvoice')),
@@ -362,8 +348,6 @@ class StockTransfer(models.Model):
 
     def delete_invoice_bkav(self):
         if self.is_general == True:
-            return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
             return
         configs = self.get_bkav_config()
         data = {

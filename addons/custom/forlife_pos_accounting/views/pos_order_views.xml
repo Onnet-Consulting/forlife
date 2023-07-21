@@ -33,14 +33,6 @@
                 <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
-<!--            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='tax_ids_after_fiscal_position']" position="attributes">-->
-<!--                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>-->
-<!--            </xpath>-->
-
-            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='price_subtotal']" position="attributes">
-                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
-            </xpath>
-
         </field>
     </record>
 </odoo>

@@ -27,8 +27,8 @@ class VendorContract(models.Model):
         except Exception:
             return f'{prefix}0001'
 
-    name = fields.Char('Number Contract', tracking=True)
-    code = fields.Char('Code', tracking=True, default=_get_default_code)
+    name = fields.Char('Number Contract', tracking=True, copy=False)
+    code = fields.Char('Code', tracking=True, default=_get_default_code, copy=False)
     vendor_id = fields.Many2one('res.partner',
                                 string='Vendor',
                                 tracking=True)
