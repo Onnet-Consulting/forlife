@@ -220,7 +220,6 @@ class StockTransfer(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
-                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
