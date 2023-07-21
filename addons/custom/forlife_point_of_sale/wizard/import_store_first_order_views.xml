@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="import_store_first_order_view_form" model="ir.ui.view">
+            <field name="name">import_store_first_order_view_form</field>
+            <field name="model">import.store.first.order</field>
+            <field name="arch" type="xml">
+                <form string="import_store_first_order_form">
+                    <sheet>
+                        <group>
+                            <field name="brand_id" class="oe_inline"/>
+                            <field name="row_start" class="oe_inline"/>
+                            <field name="import_file" filename="import_file_name"/>
+                            <field name="import_file_name" invisible="1"/>
+                        </group>
+                        <group string="Import error" attrs="{'invisible': [('error_file', '=', False)]}">
+                            <field name="error_file" filename="error_file_name" readonly="1" force_save="1"/>
+                            <field name="error_file_name" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Cancel"/>
+                        <button name="download_template_file" type="object" string="Download Template" class="oe_highlight"/>
+                        <button name="action_import" type="object" string="Import" class="oe_highlight" attrs="{'invisible': ['|', ('import_file', '=', False), ('brand_id', '=', False)]}"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="import_store_first_order_action" model="ir.actions.act_window">
+            <field name="name">Import Store First Order</field>
+            <field name="res_model">import.store.first.order</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="import_store_first_order_menu" parent="point_of_sale.menu_point_config_product" action="import_store_first_order_action" sequence="4"/>
+
+    </data>
+</odoo>
