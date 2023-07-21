@@ -543,6 +543,7 @@ class SaleOrderLine(models.Model):
     def _prepare_invoice_line(self, **optional_values):
         rslt = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
         rslt.update({
-            'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price
+            'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price,
+            'account_analytic_id': self.x_account_analytic_id.id or False,
         })
         return rslt
