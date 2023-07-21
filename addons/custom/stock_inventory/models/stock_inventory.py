@@ -188,8 +188,8 @@ class Inventory(models.Model):
         self.post_inventory()
         return True
 
-    def get_ir_sequence_inventory(self, location_id=None):
-        code = 'PKK_LOCATION_'+self.env['stock.location'].browse(location_id).code
+    def get_ir_sequence_inventory(self, warehouse_code=None):
+        code = 'PKK_WAREHOUSE_'+warehouse_code
         ir_sequence = self.env['ir.sequence'].search([('code', '=', code)], limit=1)
         if ir_sequence:
             return ir_sequence
@@ -208,9 +208,10 @@ class Inventory(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for val in vals_list:
-            ir = self.get_ir_sequence_inventory(val.get('location_id'))
-            location_code = self.env['stock.location'].browse(val.get('location_id')).code
-            val['name'] = 'PKK' + location_code + ir.next_by_id()
+            if 'warehouse_id' in val and val.get('warehouse_id'):
+                warehouse_code = self.env['stock.warehouse'].browse(val.get('warehouse_id')).code
+                ir = self.get_ir_sequence_inventory(warehouse_code)
+                val['name'] = 'PKK' + warehouse_code + ir.next_by_id()
         res = super(Inventory, self).create(vals_list)
         return res
 
