@@ -103,6 +103,7 @@ class SaleOrder(models.Model):
                                         'promotion_type': 'vip_amount',
                                         'account_id': promotion_account_id and promotion_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                                        'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
                                     })]
                                 # Ưu tiên 4
@@ -113,6 +114,7 @@ class SaleOrder(models.Model):
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                                        'product_uom_qty': ln.product_uom_qty,
                                         'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
@@ -159,6 +161,8 @@ class SaleOrder(models.Model):
                     if rec.nhanh_shipping_fee and rec.nhanh_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_shipping_fee')
                         account_id = product_id and product_id.property_account_income_id
+                        if not account_id:
+                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
@@ -172,6 +176,8 @@ class SaleOrder(models.Model):
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
                         account_id = product_id and product_id.property_account_expense_id
+                        if not account_id:
+                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
