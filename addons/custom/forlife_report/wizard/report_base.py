@@ -119,7 +119,7 @@ class ExportExcelClient(models.AbstractModel):
         output.seek(0)
         attachment_id = self.env['ir.attachment'].sudo().create({
             'name': filename,
-            'datas': base64.encodestring(output.read()),
+            'datas': base64.encodebytes(output.read()),
         })
         output.close()
         return {

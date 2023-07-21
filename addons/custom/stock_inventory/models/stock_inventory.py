@@ -473,9 +473,11 @@ class Inventory(models.Model):
 
     def btn_action_confirm1(self):
         self.write({'x_status': 2})
+        self.message_post(body='Xác nhận dữ liệu đếm kiểm lần 1')
 
     def btn_action_confirm2(self):
         self.write({'x_status': 3})
+        self.message_post(body='Xác nhận dữ liệu đếm kiểm lần 2')
 
     def btn_show_all_inv_session(self):
         action = self.env.ref('stock_inventory.inventory_session_action_active_id').read()[0]
