@@ -62,6 +62,11 @@ class PosOrder(models.Model):
             if l[2]['money_reduce_from_product_defective'] >0:
                 l[2]['price_subtotal'] = l[2]['price_subtotal'] - l[2]['money_reduce_from_product_defective']
                 l[2]['price_unit'] = l[2]['price_unit'] - l[2]['money_reduce_from_product_defective']
+            if l[2]['handle_change_refund_price'] > 0:
+                l[2]['discount_details_lines'] = [(0, 0, {
+                    'type': 'change_refund',
+                    'recipe': -l[2]['handle_change_refund_price']
+                })]
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
         Voucher = self.env['voucher.voucher']
