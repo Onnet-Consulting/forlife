@@ -25,6 +25,7 @@ REWARD_TYPE = [
         ('cart_discount_fixed_price', 'Cart Discount Fixed Price'),
         ('cart_discount_amount', 'Cart Discount Amount'),
         ('cart_get_x_free', 'Cart Get X Free'),
+        ('cart_pricelist', 'Cart Pricelist Sale'),
     ]
 
 

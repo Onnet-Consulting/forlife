@@ -53,7 +53,7 @@ class PosSession(models.Model):
             limit=params['search_params']['limit'],
             order='create_date DESC').sorted(key='fixed_price', reverse=False)
         for item in result:
-            if item.with_code:
+            if (item.with_code or item.reward_type == 'cart_pricelist') and item.product_id.lst_price > item.fixed_price:
                 pricelist_items |= item
             elif item.product_id.id not in product_set and item.product_id.lst_price > item.fixed_price and item.product_id.id in product_ids:
                 pricelist_items |= item

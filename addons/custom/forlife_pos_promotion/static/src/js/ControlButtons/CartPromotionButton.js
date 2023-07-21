@@ -75,6 +75,7 @@ export class CartPromotionButton extends PosComponent {
     }
 
     async onClick() {
+        console.log('clickButton pos:', this.env.pos);
         const order = this.env.pos.get_order();
         // Reset Cart Program
         order._resetCartPromotionPrograms();
