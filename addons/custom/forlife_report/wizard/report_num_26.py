@@ -40,7 +40,7 @@ class ReportNum26(models.TransientModel):
                 sl1.complete_name AS tu_kho,
                 sl2.complete_name AS den_kho,
                 st.name AS so_phieu_dc,
-                ROW_NUMBER() OVER (PARTITION BY stl.id ORDER BY stl.id) num,
+                ROW_NUMBER() OVER (PARTITION BY stl.stock_transfer_id ORDER BY stl.id) num,
                 pp.barcode AS barcode,
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') AS ten_sp,
                 attr.attrs->>'{attr_value.get('mau_sac', '')}' AS mau,
