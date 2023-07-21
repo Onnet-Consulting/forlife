@@ -20,10 +20,12 @@ _logger = logging.getLogger(__name__)
 
 class MainController(http.Controller):
 
-    @http.route('/nhanh/webhook/handler/<string:brand_code>', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, brand_code, **post):
-        request.brand_code = brand_code or None
+    @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
+    def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
+        business_id = value.get("businessId")
+        request.business_id = business_id
+
         event_type = value.get('event')
         if event_type in ['orderUpdate']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
@@ -166,7 +168,7 @@ class MainController(http.Controller):
                     'state': 'draft',
                     'nhanh_order_status': order['statusCode'].lower(),
                     'name_customer': name_customer,
-                    'note': order['privateDescription'],
+                    'note': order["privateDescription"],
                     'note_customer': order['description'],
                     'x_sale_chanel': 'online',
                     # 'carrier_name': order['carrierName'],
@@ -191,6 +193,29 @@ class MainController(http.Controller):
                     x_voucher = 0
                     x_code_voucher = ""
 
+                #X270941175 #N270941350
+                if private_description.find("#X") != -1 and private_description.find("#N") != -1:
+                    x = private_description.split()
+                    return_changed = {
+                        "x_is_change": True,
+                    }
+                    for v in x:
+                        if v.find("#X") != -1 or v.find("#N") != -1:
+                            y = v.strip()
+                            if y.find("#X") != -1:
+                                z = y.replace("#X", "")
+                                origin_order_id = request.env['sale.order'].sudo().search(
+                                    [('nhanh_id', '=', z)], limit=1)
+                                return_changed['x_origin'] = origin_order_id.id if origin_order_id else None
+                                return_changed['nhanh_origin_id'] = z
+
+                            if y.find("#N") != -1:
+                                z = y.replace("#N", "")
+                                return_changed['nhanh_return_id'] = z
+                        else:
+                            continue
+                    value.update(return_changed)
+
                 value.update({
                     "x_voucher": x_voucher,
                     "x_code_voucher": x_code_voucher
@@ -209,6 +234,8 @@ class MainController(http.Controller):
 
                 if is_create_wh_in or order_returned:
                     try:
+                        # print('--------------- INTO ---------------------------')
+                        # webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
                         webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
                         pass
@@ -234,7 +261,7 @@ class MainController(http.Controller):
                     })
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not odoo_order.picking_ids:
                         try:
-                            webhook_value_id.order_id.check_sale_promotion()
+                            odoo_order.check_sale_promotion()
                             odoo_order.action_create_picking()
                         except Exception as e:
                             pass

@@ -8,14 +8,13 @@ COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
 
 class ReportNum2(models.TransientModel):
     _name = 'report.num2'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Report stock with sale price by warehouse'
 
     product_ids = fields.Many2many('product.product', 'report_num2_product_rel', string='Products')
-    product_brand_id = fields.Many2one('product.category', 'Product Brand')
-    product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Product Group')
-    product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Product Line')
-    texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Texture')
+    product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Level 4')
     collection = fields.Char('Collection')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num2_warehouse_rel', string='Warehouse')
 

@@ -82,6 +82,17 @@ class PurchaseOrder(models.Model):
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
+    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+    location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
+
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -315,11 +326,13 @@ class PurchaseOrder(models.Model):
             else:
                 record.is_done_picking = False
 
-    @api.constrains('exchange_rate')
+    @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
                 raise ValidationError('Tỷ giá không được âm!')
+            if item.trade_discount < 0:
+                raise ValidationError('Chiết khấu thương mại không được âm!')
 
     # Các action header
     def action_view_invoice_ncc(self):
@@ -436,6 +449,17 @@ class PurchaseOrder(models.Model):
     #         rec.count_invoice_inter_service_fix = self.env['account.move'].search_count(
     #             [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'service')])
 
+    @api.onchange('trade_discount')
+    def onchange_total_trade_discount(self):
+        if self.trade_discount:
+            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
+                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
+
+    @api.onchange('total_trade_discount')
+    def onchange_trade_discount(self):
+        if self.total_trade_discount:
+            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
+                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
 
     def action_confirm(self):
         for record in self:
@@ -1620,6 +1644,10 @@ class PurchaseOrder(models.Model):
                     'type_inv': self.type_po_cost,
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
+                    'trade_discount': self.trade_discount,
+                    'total_trade_discount': self.total_trade_discount,
+                    'x_tax': self.x_tax,
+                    'x_amount_tax': self.x_amount_tax,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
@@ -1934,6 +1962,8 @@ class PurchaseOrder(models.Model):
                 del data['actual_cost']
             cost_line_vals.append((0, 0, data))
         values.update({
+            'trade_discount': self.trade_discount,
+            'total_trade_discount': self.total_trade_discount,
             'cost_line': cost_line_vals
         })
         product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax')
@@ -2741,7 +2771,7 @@ class StockPicking(models.Model):
             product_ids = [
                 (quant['product_id'][0], quant['quantity'] or 0)
                 for quant in self.env['stock.quant'].read_group(
-                    domain=[('location_id', '=', self.location_dest_id.id),  ('product_id', 'in', material_product_ids)],
+                    domain=[('location_id', '=', po.location_export_material_id.id),  ('product_id', 'in', material_product_ids)],
                     fields=['quantity'],
                     groupby='product_id')
             ]
@@ -2885,7 +2915,7 @@ class StockPicking(models.Model):
 
     def view_move_tax_entry(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
-        domain = [('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids)]
+        domain = ['|', ('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids), ('move_id.stock_move_id', 'in', self.move_ids.ids)]
         return dict(action, domain=domain)
 
     def create_expense_entries(self, po):
@@ -3254,7 +3284,7 @@ class StockPicking(models.Model):
                             'product_id': material_line.product_id.id,
                             'product_uom': material_line.uom.id,
                             'price_unit': material_line.price_unit,
-                            'location_id': record.location_dest_id.id,
+                            'location_id': po.location_export_material_id.id,
                             'location_dest_id': export_production_order.id,
                             'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
@@ -3447,7 +3477,7 @@ class StockPicking(models.Model):
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
-            'location_id': record.location_dest_id.id,
+            'location_id': po.location_export_material_id.id,
             # 'reason_type_id': reason_type_6.id,
             'location_dest_id': export_production_order.id,
             'scheduled_date': datetime.now(),

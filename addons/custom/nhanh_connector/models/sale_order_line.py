@@ -10,12 +10,12 @@ class SaleOrderLineNhanh(models.Model):
 
     discount_price_unit = fields.Float('Đơn giá giảm', compute="_compute_discount_price_unit")
     odoo_price_unit = fields.Float('Đơn giá (Odoo)', compute="_compute_odoo_price_unit")
-    discount_after_unit = fields.Float('Giá trị sau giảm', compute="_compute_discount_after_unit")
+    # discount_after_unit = fields.Float('Giá trị sau giảm', compute="_compute_discount_after_unit")
 
 
-    def _compute_discount_after_unit(self):
-        for line in self:
-            line.discount_after_unit = line.price_unit - line.x_cart_discount_fixed_price
+    # def _compute_discount_after_unit(self):
+    #     for line in self:
+    #         line.discount_after_unit = line.price_unit - line.x_cart_discount_fixed_price
 
     def _compute_discount_price_unit(self):
         for item in self:

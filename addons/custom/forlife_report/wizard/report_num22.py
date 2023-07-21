@@ -9,7 +9,7 @@ TITLE_LAYER2 = ['STT', 'Ngày', 'Phiên bán hàng', 'Số CT', 'Nội dung', 'K
 
 class ReportNum22(models.TransientModel):
     _name = 'report.num22'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'export.excel.client']
     _description = 'Cash receipts report'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)

@@ -9,6 +9,7 @@
         </xpath>
     </t>
     <t t-name="ReportNum2MainTemplate">
+        <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
             <t t-call="ReportTitle"/>
             <tbody>
@@ -18,9 +19,9 @@
                         <td class="product_name"><t t-esc="line.product_name"/></td>
                         <td><t t-esc="line.product_size"/></td>
                         <td><t t-esc="line.product_color"/></td>
-                        <td><t t-esc="line.quantity"/></td>
-                        <td><t t-esc="line.list_price"/></td>
-                        <td><t t-esc="line.discount_price"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.quantity)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.list_price)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.discount_price)"/></td>
                     </tr>
                 </t>
             </tbody>
@@ -44,7 +45,7 @@
                 <t t-foreach="detail.lines" t-as="line">
                     <tr>
                         <td><t t-esc="line.warehouse_name"/></td>
-                        <td><t t-esc="line.quantity"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.quantity)"/></td>
                     </tr>
                 </t>
             </tbody>

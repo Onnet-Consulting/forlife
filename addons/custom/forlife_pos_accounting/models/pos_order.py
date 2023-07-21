@@ -1,6 +1,7 @@
 import pytz
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import float_round
 
 PROMOTION_JOURNAL_FIELD = {
     'points.promotion': 'account_journal_id',
@@ -53,11 +54,11 @@ class InheritPosOrder(models.Model):
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
-                'quantity': order_line.qty,
+                'quantity': 1,
                 'discount': order_line.discount,
                 'price_unit': order_line.price_unit,
-                'name': name,
                 'tax_ids': [(6, 0, order_line.tax_ids_after_fiscal_position.ids)],
+                'name': name,
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'product',
                 'account_id': credit_account_id or None,
@@ -68,15 +69,14 @@ class InheritPosOrder(models.Model):
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
-                'quantity': order_line.qty,
+                'quantity': 1,
                 'discount': order_line.discount,
-                'price_unit': order_line.price_unit,
+                'price_unit': order_line.price_subtotal_incl,
                 'name': name,
-                'tax_ids': [(6, 0, order_line.tax_ids_after_fiscal_position.ids)],
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'payment_term',
                 'account_id': order_line.order_id.partner_id.property_account_receivable_id.id,
-                'credit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
+                'credit': order_line.price_subtotal_incl if order_line.price_subtotal_incl >= 0 else -order_line.price_subtotal_incl,
                 'debit': 0,
             })
         ]
@@ -90,17 +90,15 @@ class InheritPosOrder(models.Model):
         for line in self.lines:
             if not line.product_src_id:
                 continue
-            promotion = self.env[line.promotion_model].sudo().browse(line.promotion_id)
-            # if line.promotion_model == 'promotion.program' and promotion.reward_type not in REWARD_TYPE:
-            #     continue
-            journal = promotion[PROMOTION_JOURNAL_FIELD[line.promotion_model]]
+            promotion = None if not line.promotion_model else self.env[line.promotion_model].sudo().browse(line.promotion_id)
+            journal = line.get_journal_by_product() if not promotion else promotion[PROMOTION_JOURNAL_FIELD[line.promotion_model]]
             if not journal:
                 raise ValidationError(_("Cannot found journal promotion's product %s") % line.product_id.name)
             partner_id = journal.company_consignment_id.id or self.partner_id.id
-            credit_account_id = journal.default_account_id.id
-            _key = ','.join((line.promotion_model, str(line.promotion_id)))
+            # credit_account_id = journal.default_account_id.id
+            _key = f'promotion_{line.id}' if not promotion else ','.join((line.promotion_model, str(line.promotion_id)))
             if _key in values:
-                values[_key]['line_ids'] += self._create_promotion_account_move(line, partner_id, credit_account_id)
+                values[_key]['line_ids'] += self._create_promotion_account_move(line, partner_id, None)
             else:
                 values[_key] = {
                     'invoice_origin': self.name,
@@ -115,7 +113,7 @@ class InheritPosOrder(models.Model):
                     'invoice_user_id': self.user_id.id,
                     'invoice_date': invoice_date.astimezone(timezone).date(),
                     'fiscal_position_id': self.fiscal_position_id.id,
-                    'line_ids': self._create_promotion_account_move(line, partner_id, credit_account_id),
+                    'line_ids': self._create_promotion_account_move(line, partner_id, None),
                     'invoice_payment_term_id': self.partner_id.property_payment_term_id.id or False,
                     'invoice_cash_rounding_id': self.config_id.rounding_method.id
                     if self.config_id.cash_rounding and (not self.config_id.only_round_cash_method or any(
@@ -227,7 +225,7 @@ class InheritPosOrder(models.Model):
         for line in order['data']['lines']:
             line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
             if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
-                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty']))
+                line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty'], line[-1].get('discount_details_lines', [])))
 
             price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
             taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
@@ -269,7 +267,8 @@ class InheritPosOrderLine(models.Model):
             ('make_price', 'Make Price'),
             ('card', 'Card'),
             ('product_defective', 'Product Defective'),
-            ('handle', 'Handle')
+            ('handle', 'Handle'),
+            ('change_refund', 'Change/Refund'),
         ],
         string='Promotion Type', index=True, readonly=True
     )
@@ -297,14 +296,15 @@ class InheritPosOrderLine(models.Model):
     def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
+        price_unit = product_id.taxes_id.compute_all(price)['total_excluded']
         return {
             'order_id': self.order_id.id,
             'product_src_id': self.id,
             'promotion_id': promotion.id,
             'promotion_model': promotion._name,
             'qty': 1 if not self.refunded_orderline_id else -1,
-            'price_unit': price,
-            'price_subtotal': price,
+            'price_unit': price_unit,
+            'price_subtotal': price_unit,
             'price_subtotal_incl': price,
             'discount': 0,
             'product_id': product_id.id,
@@ -351,12 +351,19 @@ class InheritPosOrderLine(models.Model):
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
-                product_id=pol.order_id.card_rank_program_id.product_discount_id if discount.type == 'card' else pol.order_id.program_store_point_id.product_discount_id,
+                product_id=
+                pol.order_id.card_rank_program_id.product_discount_id if discount.type == 'card' else
+                pol.order_id.program_store_point_id.product_discount_id if discount.type == 'point' else
+                pol.order_id.session_id.company_id[
+                    'product_default_pos_defective_goods_id' if discount.type == 'product_defective' else
+                    'product_default_pos_handle_discount_id' if discount.type == 'handle' else
+                    'product_default_pos_return_goods_id'
+                ],
                 price=-discount.money_reduced,
-                promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id,
-                is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration(),
+                promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
+                is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration() if discount.type == 'point' else False,
                 promotion_type=discount.type
-            ) for discount in self.discount_details_lines if discount.type in ('card', 'point')
+            ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
         ]
 
     @api.model_create_multi
@@ -371,7 +378,7 @@ class InheritPosOrderLine(models.Model):
             self.create(pols_promotion_values)
         return pols
 
-    def generate_promotion_values(self, original_qty=0):
+    def generate_promotion_values(self, original_qty=0, discount_details=None):
         return {
             'is_reward_line': self.is_reward_line,
             'with_purchase_condition': self.with_purchase_condition,
@@ -395,7 +402,17 @@ class InheritPosOrderLine(models.Model):
                 'listed_price': -p.listed_price,
                 'recipe': p.recipe / self.qty * original_qty,
                 'discounted_amount': p.discounted_amount / self.qty * original_qty
-            }) for p in self.discount_details_lines],
+            }) for p in self.discount_details_lines] + (discount_details or []),
         }
+
+    def get_journal_by_product(self):
+        company = self.order_id.session_id.company_id
+        if self.product_id.id == company.product_default_pos_defective_goods_id.id:
+            return company.journal_default_pos_defective_goods_id
+        elif self.product_id.id == company.product_default_pos_handle_discount_id.id:
+            return company.journal_default_pos_handle_discount_id
+        elif self.product_id.id == company.product_default_pos_return_goods_id.id:
+            return company.journal_default_pos_return_goods_id
+        return self.env['account.journal']
 
 

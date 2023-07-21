@@ -55,7 +55,7 @@ class AccountMoveBKAV(models.Model):
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
 
-    origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc', domain=[('move_type', '=', 'out_invoice')])
+    origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
 
     def write(self, vals):
@@ -140,7 +140,7 @@ class AccountMoveBKAV(models.Model):
         for invoice in self:
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            sign = 1 if invoice.move_type in ('out_invoice', 'in_invoice') else -1
+            sign = 1 if invoice.move_type in ('out_invoice', 'in_refund') else -1
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
@@ -167,7 +167,7 @@ class AccountMoveBKAV(models.Model):
                         "TaxRateID": tax_rate_id,
                         "TaxRate": line.tax_ids[0].amount
                     })
-                if invoice.issue_invoice_type == 'edit':
+                if invoice.issue_invoice_type == 'adjust':
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
@@ -207,13 +207,18 @@ class AccountMoveBKAV(models.Model):
         if not self._check_invoice_bkav():
             return
         # validate với trường hợp điều chỉnh thay thế
-        if self.issue_invoice_type in ('edit', 'replace') and not self.origin_move_id.invoice_no:
-            raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
-
         configs = self.get_bkav_config()
+        if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
+            raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
+        CmdType = int(configs.get('cmd_addInvoice'))
+        if self.issue_invoice_type == 'adjust':
+            CmdType = int(configs.get('cmd_addInvoiceEdit'))
+        elif self.issue_invoice_type == 'replace':
+            CmdType = int(configs.get('cmd_addInvoiceReplace'))
+            
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
-            "CmdType": int(configs.get('cmd_addInvoice')),
+            "CmdType": CmdType,
             "CommandObject": self.get_bkav_data()
         }
         _logger.info(f'BKAV - data create invoice to BKAV: {data}')
@@ -239,7 +244,6 @@ class AccountMoveBKAV(models.Model):
                 if result_data.get('MessLog'):
                     self.message_post(body=result_data.get('MessLog'))
                 self.getting_invoice_status()
-                self.publish_invoice_bkav()
             except:
                 self.get_invoice_bkav()
 
@@ -253,8 +257,6 @@ class AccountMoveBKAV(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        # connect_bkav(data, configs)
-        _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
         except Exception as ex:
@@ -268,7 +270,7 @@ class AccountMoveBKAV(models.Model):
 
 
     def update_invoice_bkav(self):
-        if not self._check_invoice_bkav():
+        if not self._check_invoice_bkav() or self.is_post_bkav:
             return
         configs = self.get_bkav_config()
         data = {
@@ -305,7 +307,6 @@ class AccountMoveBKAV(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-                'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
 
 
@@ -388,3 +389,13 @@ class AccountMoveBKAV(models.Model):
                        % (self.eivoice_file.id, self.eivoice_file.name),
                 'target': 'self',
             }
+
+    def action_cancel(self):
+        res = super(AccountMoveBKAV, self).action_cancel()
+        self.cancel_invoice_bkav()
+        return res
+    
+    def unlink(self):
+        for item in self:
+            item.delete_invoice_bkav()
+        return super(AccountMoveBKAV, self).unlink()

@@ -376,8 +376,6 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             "CmdType": int(configs.get('cmd_publishInvoice')),
             "CommandObject": self.invoice_guid,
         }
-        # connect_bkav(data, configs)
-        _logger.info(f'BKAV - data publish invoice to BKAV: {data}')
         try:
             response = connect_bkav(data, configs)
         except Exception as ex:
@@ -394,6 +392,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         self = self.sudo()
         self = self.with_company(self.company_id)
         configs = self.get_bkav_config()
+        if self.is_post_bkav:
+            return
         data = {
             "CmdType": int(configs.get('cmd_updateInvoice')),
             "CommandObject": self.get_bkav_data()
