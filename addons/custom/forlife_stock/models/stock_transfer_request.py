@@ -156,10 +156,11 @@ class StockTransferRequest(models.Model):
                 _('It is mandatory to enter all the commodity information before confirming the stock transfer request!'))
 
     @api.model_create_multi
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
-        return super(StockTransferRequest, self).create(vals)
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
+        return super(StockTransferRequest, self).create(vals_list)
 
     def unlink(self):
         for rec in self:
@@ -301,12 +302,13 @@ class TransferRequestLine(models.Model):
                 raise ValidationError(_("Plan quantity should not be less than or equal to 0 !!"))
 
     @api.model_create_multi
-    def create(self, vals):
+    def create(self, vals_list):
         if self.env.context.get('import_file'):
-            product = self.env['product.product'].browse(vals.get('product_id'))
-            if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
-                raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
-        return super(TransferRequestLine, self).create(vals)
+            for vals in vals_list:
+                product = self.env['product.product'].browse(vals.get('product_id'))
+                if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+                    raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
+        return super(TransferRequestLine, self).create(vals_list)
 
 
 class Location(models.Model):
