@@ -146,19 +146,20 @@ class StockPicking(models.Model):
 
     def validate_picking_give_voucher(self, other, company_id):
         other.action_confirm()
-        for line in self.move_line_ids_without_package:
-            product = line.product_id
-            for o in other.move_line_ids_without_package:
-                if product.tracking == 'serial' and product.id == o.product_id.id:
-                    lot = self.env['stock.lot'].with_company(company_id).create({
-                        'name': line.lot_name,
-                        'product_id': product.id,
-                        'company_id': company_id
-                    })
-                    o.lot_id = lot.id
-                    o.lot_name = lot.name
-        other.with_context(endloop=True).button_validate()
-        return other
+        if self.move_line_ids_without_package:
+            for i in range(0, len(self.move_line_ids_without_package)):
+                line = self.move_line_ids_without_package[i]
+                lot = self.env['stock.lot'].with_company(company_id).create({
+                    'name': line.lot_name,
+                    'product_id': line.product_id.id,
+                    'company_id': company_id
+                })
+                other.move_line_ids_without_package[i].write({
+                    'lot_id': lot.id,
+                    'lot_name': lot.name
+                })
+            other.with_context(endloop=True).button_validate()
+            return other
 
     @api.model
     def _create_picking_from_pos_order_lines(self, location_dest_id, lines, picking_type, partner=False):
