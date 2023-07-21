@@ -9,11 +9,11 @@
                         <div class="page">
                             <div t-if="doc['brand'] == 'TKL'" class="logo text-center">
                                 <img class="pos-receipt-logo tokyolife"
-                                     src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" width="100%"/>
                             </div>
                             <div t-if="doc['brand'] == 'FMT'" class="logo text-center">
                                 <img class="pos-receipt-logo tokyolife"
-                                     src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-format.png" width="80%"/>
                             </div>
                             <div class="text-center mt-2">
                                 <t t-esc="doc['address']"/>
@@ -22,13 +22,12 @@
                                 <t t-esc="doc['phone']"/>
                             </div>
                             <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2"
-                                 style="width: 100%;margin: auto;border: 1px solid;">
+                                 style="width: 95%;margin: auto;border: 1px solid;">
                                 <div class="text-center">
                                     <div>
-                                        Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa
-                                    </div>
-                                    <div>
-                                        đơn sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                                        <strong>
+                                            Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa đơn sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                                        </strong>
                                     </div>
                                 </div>
                                 <img class="mt-2"
@@ -75,22 +74,22 @@
                                 <table class="table no_color_border">
                                     <tbody>
                                         <tr style="border-top: 1px solid #dee2e6; border-left: unset; border-right: unset; border-color: #FFF">
-                                            <td>
+                                            <td style="white-space: normal;">
                                                 <strong>Tên hàng</strong>
                                             </td>
-                                            <td>
+                                            <td style="white-space: normal;">
                                                 <strong>SL</strong>
                                             </td>
-                                            <td>
+                                            <td style="white-space: normal;">
                                                 <strong>Đơn giá</strong>
                                             </td>
-                                            <td t-if="doc['brand'] == 'TKL'">
+                                            <td style="white-space: normal;" t-if="doc['brand'] == 'TKL'">
                                                 <strong>GG</strong>
                                             </td>
-                                            <td t-if="doc['brand'] == 'FMT'">
+                                            <td style="white-space: normal;" t-if="doc['brand'] == 'FMT'">
                                                 <strong>-%GG</strong>
                                             </td>
-                                            <td>
+                                            <td style="white-space: normal;">
                                                 <strong>Tổng tiền</strong>
                                             </td>
                                         </tr>
@@ -98,7 +97,7 @@
                                     <tbody style="border-color: #FFF; border-top: 1px solid #dee2e6;">
                                         <tr>
                                             <td colspan="5">
-                                                <hr/>
+                                                <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
                                         <t t-foreach="doc['line_products'].items()" t-as="line">
@@ -167,7 +166,7 @@
                                         </t>
                                         <tr>
                                             <td colspan="5">
-                                                <hr/>
+                                                <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
                                         <tr>
@@ -199,7 +198,7 @@
                                         </t>
                                         <tr>
                                             <td colspan="5">
-                                                <hr/>
+                                                <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
                                         <tr>
@@ -226,7 +225,7 @@
                                         </tr>
                                         <tr t-if="doc['total_point'] &gt; 0">
                                             <td colspan="5">
-                                                <hr/>
+                                                <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
                                         <tr t-if="doc['total_point'] &gt; 0">
@@ -243,7 +242,7 @@
                                         </tr>
                                         <tr>
                                             <td colspan="5">
-                                                <hr/>
+                                                <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -257,17 +256,18 @@
         </template>
 
         <record id="paperformat_pos_A6" model="report.paperformat">
-            <field name="name">POS A6</field>
-            <field name="default" eval="True"/>
-            <field name="format">A6</field>
-            <field name="orientation">Portrait</field>
-            <field name="margin_top">3</field>
-            <field name="margin_bottom">3</field>
-            <field name="margin_left">3</field>
-            <field name="margin_right">3</field>
-            <field name="header_line" eval="False"/>
-            <field name="header_spacing">3</field>
-            <field name="dpi">96</field>
+            <field name="name">Bill Pos</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">72</field>
+            <field name="page_width">3276</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="disable_shrinking" eval="True"/>
+            <field name="dpi">170</field>
         </record>
 
         <record id="print_print_order_pos_action" model="ir.actions.report">
