@@ -108,6 +108,8 @@ def publish_invoice_bkav(self):
 
 
 def update_invoice_bkav(self,data):
+    if self.is_post_bkav:
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_updateInvoice')),

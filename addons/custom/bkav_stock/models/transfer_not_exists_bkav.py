@@ -386,7 +386,6 @@ class TransferNotExistsBkav(models.Model):
                 'invoice_form': result_data.get('InvoiceForm'),
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-                'invoice_state_e': str(result_data.get('InvoiceStatusID'))
             })
             self._update_stock_transfer()
 
@@ -396,6 +395,8 @@ class TransferNotExistsBkav(models.Model):
         if not self.company_id:
             self.company_id = self.location_id.company_id
         self = self.with_company(self.location_id.company_id)
+        if self.is_post_bkav:
+            return
         configs = self.get_bkav_config()
         data = {
             "CmdType": int(configs.get('cmd_updateInvoice')),
