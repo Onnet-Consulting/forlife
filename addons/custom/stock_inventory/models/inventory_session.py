@@ -14,11 +14,13 @@ class InventorySession(models.Model):
     active = fields.Boolean('Hiệu lực', default=True)
     data = fields.Binary('Data')
     line_ids = fields.One2many('inventory.session.line', 'inv_session_id', string='Chi tiết')
+    type = fields.Selection([('app', 'Từ app kiểm kê'), ('web', 'Nhập bổ sung từ web'), ('other', 'Nhập dữ liệu khác'), ('add', 'Nhập bổ sung lần 2')], 'Loại', default='app')
 
     @api.model
     def action_inactive_session(self):
-        self.write({'active': False})
-        self.inv_id.update_inventory_detail()
+        self.sudo().write({'active': False})
+        if not self._context.get('not_update_inv'):
+            self.inv_id.update_inventory_detail()
 
     @api.model_create_multi
     def create(self, values):
@@ -50,4 +52,4 @@ class InventorySessionLine(models.Model):
     tru_hang_kiem_dup = fields.Integer('Từ hàng kiểm đúp', default=0)
     them2 = fields.Integer('Thêm 2', default=0)
     bot2 = fields.Integer('Bớt 2', default=0)
-    note = fields.Integer('Ghi chú', default=0)
+    ghi_chu = fields.Char('Ghi chú')
