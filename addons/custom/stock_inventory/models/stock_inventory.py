@@ -38,16 +38,16 @@ class Inventory(models.Model):
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
-        copy=False, index=True, readonly=True, tracking=True, default='draft')
+                             copy=False, index=True, readonly=True, tracking=True, default='draft')
     company_id = fields.Many2one('res.company', 'Công ty', readonly=True, index=True, required=True,
                                  states={'draft': [('readonly', False)]}, default=lambda self: self.env.company)
     warehouse_id = fields.Many2one('stock.warehouse', string='Kho hàng', readonly=True, check_company=True,
-                                    states={'draft': [('readonly', False)]}, required=True)
+                                   states={'draft': [('readonly', False)]}, required=True)
     view_location_id = fields.Many2one(related='warehouse_id.view_location_id')
 
     location_id = fields.Many2one('stock.location', string='Địa điểm', readonly=True, check_company=True,
-        states={'draft': [('readonly', False)]},
-        domain="[('usage', 'in', ['internal']), ('id', 'child_of', view_location_id)]")
+                                  states={'draft': [('readonly', False)]},
+                                  domain="[('usage', 'in', ['internal']), ('id', 'child_of', view_location_id)]")
 
     #
     # filter_by = fields.Selection(string='Filtrer par', selection=[
@@ -72,7 +72,8 @@ class Inventory(models.Model):
     move_in_count = fields.Integer(string="Dịch chuyển đến", compute='_compute_stock_move_count')
 
     detail_ids = fields.One2many('inventory.detail', 'inventory_id', string='Chi tiết đếm kiểm', copy=False, readonly=True)
-    x_status = fields.Integer('Trạng thái chi tiết', default=0)
+    x_status = fields.Integer('Trạng thái chi tiết', default=0,
+                              help='1: Đã đồng bộ từ chi tiết kiểm kê\n2: Cửa hàng đã xác nhận lần 1\n3: Cửa hàng đã xác nhận lần 2')
 
     # total_valorisation = fields.Float(string='Tổng kiểm kê', compute='_compute_total_valorisation')
     #
@@ -127,7 +128,6 @@ class Inventory(models.Model):
             'context': self.env.context
         }
 
-
     def copy_data(self, default=None):
         name = _("%s (copy)") % (self.name)
         default = dict(default or {}, name=name)
@@ -136,7 +136,7 @@ class Inventory(models.Model):
     def unlink(self):
         for inventory in self:
             if (inventory.state not in ('draft', 'cancel')
-               and not self.env.context.get(MODULE_UNINSTALL_FLAG, False)):
+                    and not self.env.context.get(MODULE_UNINSTALL_FLAG, False)):
                 raise UserError(_('Bạn chỉ có thể xóa bản ghi kiểm kê ở trạng thái nháp. Nếu việc kiểm kê không được thực hiện, bạn có thể hủy bỏ nó.'))
         return super(Inventory, self).unlink()
 
@@ -189,7 +189,7 @@ class Inventory(models.Model):
         return True
 
     def get_ir_sequence_inventory(self, warehouse_code=None):
-        code = 'PKK_WAREHOUSE_'+warehouse_code
+        code = 'PKK_WAREHOUSE_' + warehouse_code
         ir_sequence = self.env['ir.sequence'].search([('code', '=', code)], limit=1)
         if ir_sequence:
             return ir_sequence
@@ -227,7 +227,7 @@ class Inventory(models.Model):
     def action_check(self):
         """ Checks the inventory and computes the stock move to do """
         # tde todo: clean after _generate_moves
-        for inventory in self.filtered(lambda x: x.state not in ('done','cancel')):
+        for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
             # first remove the existing stock moves linked to this inventory
             inventory.with_context(prefetch_fields=False).mapped('move_ids').unlink()
             inventory.line_ids._generate_moves()
@@ -440,19 +440,24 @@ class Inventory(models.Model):
 
     def clone_detail_data(self):
         self.ensure_one()
-        if self.detail_ids:
+        if self.detail_ids or not self.line_ids:
             return False
         val = []
+        attr_codes = self.env['res.utility'].get_attribute_code_config()
+        attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=self.line_ids.product_id.ids)
         for line in self.line_ids:
+            product_attr_value = attr_values.get(str(line.product_id.id)) or {}
+            mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
+            size = product_attr_value.get(attr_codes.get('size')) or []
             val.append({
                 'inventory_id': self.id,
                 'product_id': line.product_id.id,
                 'ma_hang': line.product_id.barcode,
                 'ten_hang': line.product_id.name,
-                'mau': line.product_id.id,
-                'size': line.product_id.id,
+                'mau': ','.join(mau),
+                'size': ','.join(size),
                 'nhom_san_pham': line.product_id.categ_id.complete_name,
-                'don_vi': line.product_id.uom_id.id,
+                'don_vi': line.product_id.uom_id.name,
                 'gia': line.product_id.lst_price,
                 'ton_phan_mam': line.theoretical_qty,
             })
@@ -467,16 +472,125 @@ class Inventory(models.Model):
         return action
 
     def btn_action_confirm1(self):
-        pass
+        self.write({'x_status': 2})
 
     def btn_action_confirm2(self):
-        pass
+        self.write({'x_status': 3})
+
+    def btn_show_all_inv_session(self):
+        action = self.env.ref('stock_inventory.inventory_session_action_active_id').read()[0]
+        action['context'] = dict(self._context)
+        return action
+
+    def btn_export_inventory_detail(self):
+        self.ensure_one()
+        return self.env['import.inventory.session.wizard'].create({'inv_id': self.id}).print_xlsx()
 
     @api.model
     def update_inventory_detail(self):
         if not self:
             return False
-        # todo: xử lý cập nhật chi tiết kiểm đếm
+        for inv in self:
+            session_lines = self.env['inventory.session'].search([('inv_id', '=', inv.id)]).line_ids
+            line_product_miss = inv.detail_ids.product_id - session_lines.product_id
+            line_product_not_exist = session_lines.product_id - inv.detail_ids.product_id
+            line_product_update = session_lines.product_id - line_product_not_exist
+            if line_product_miss:
+                inv.detail_ids.filtered(lambda i: i.product_id.id in line_product_miss.ids).write(inv._get_update_value(vals={}))
+            if session_lines:
+                sql = f"""
+with concat_name as (select product_id, array_agg(concat(inv_id, '-', session_id)) as phien_dem
+                     from (select distinct isl.product_id as product_id,
+                                           ise.inv_id     as inv_id,
+                                           ise.id         as session_id
+                           from inventory_session_line isl
+                                    join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
+                           where ise.inv_id = {inv.id}
+                           order by isl.product_id, ise.inv_id, ise.id) as data1
+                     group by product_id),
+     get_note as (select distinct product_id, ghi_chu
+                  from (select isl.product_id,
+                               isl.ghi_chu,
+                               row_number() over (partition by isl.product_id order by isl.id desc) as num
+                        from inventory_session_line isl
+                                 join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
+                        where ise.inv_id = {inv.id} and ise.type = 'other') as data2
+                  where num = 1)
+select json_object_agg(product_id, data.*) as inv_data
+from (select isl.product_id                       as product_id,
+             sum(isl.kiem_ke_thuc_te)             as kiem_ke_thuc_te,
+             sum(isl.phien_dem_bo_sung)           as phien_dem_bo_sung,
+             sum(isl.hang_khong_kiem_dem)         as hang_khong_kiem_dem,
+             sum(isl.tui_ban_hang)                as tui_ban_hang,
+             sum(isl.hang_khong_tem)              as hang_khong_tem,
+             sum(isl.hang_khong_cheat_duoc)       as hang_khong_cheat_duoc,
+             sum(isl.hang_loi_chua_duyet)         as hang_loi_chua_duyet,
+             sum(isl.hang_loi_da_duyet)           as hang_loi_da_duyet,
+             sum(isl.them1)                       as them1,
+             sum(isl.bot1)                        as bot1,
+             sum(isl.cong_hang_ban_ntl_chua_kiem) as cong_hang_ban_ntl_chua_kiem,
+             sum(isl.tru_hang_ban_da_kiem)        as tru_hang_ban_da_kiem,
+             sum(isl.bo_sung_hang_chua_cheat)     as bo_sung_hang_chua_cheat,
+             sum(isl.tru_hang_kiem_dup)           as tru_hang_kiem_dup,
+             sum(isl.them2)                       as them2,
+             sum(isl.bot2)                        as bot2,
+             cn.phien_dem                         as phien_dem,
+             coalesce(gn.ghi_chu, '')             as ghi_chu
+      from inventory_session_line isl
+               join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
+               left join concat_name cn on cn.product_id = isl.product_id
+               left join get_note gn on gn.product_id = isl.product_id
+      where ise.inv_id = {inv.id}
+      group by isl.product_id, cn.phien_dem, gn.ghi_chu) as data
+                """
+                self._cr.execute(sql)
+                inv_data = self._cr.dictfetchone().get('inv_data') or {}
+                for product in line_product_update:
+                    inv.detail_ids.filtered(lambda i: i.product_id.id == product.id).write(inv._get_update_value(vals=inv_data.get(str(product.id))))
+                if line_product_not_exist:
+                    attr_codes = self.env['res.utility'].get_attribute_code_config()
+                    attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=line_product_not_exist.ids)
+                    detail_vals = []
+                    for product in line_product_not_exist:
+                        product_attr_value = attr_values.get(str(product.id)) or {}
+                        mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
+                        size = product_attr_value.get(attr_codes.get('size')) or []
+                        field_add = {
+                            'inventory_id': inv.id,
+                            'product_id': product.id,
+                            'ma_hang': product.barcode,
+                            'ten_hang': product.name,
+                            'mau': ','.join(mau),
+                            'size': ','.join(size),
+                            'nhom_san_pham': product.categ_id.complete_name,
+                            'don_vi': product.uom_id.name,
+                            'gia': product.lst_price,
+                            'ton_phan_mam': 0,
+                        }
+                        detail_vals.append(inv._get_update_value(vals=inv_data.get(str(product.id)), field_add=field_add))
+                    if detail_vals:
+                        self.env['inventory.detail'].sudo().create(detail_vals)
+
+    @api.model
+    def _get_update_value(self, vals, **kwargs):
+        field_list = {
+            'kiem_ke_thuc_te': 0, 'phien_dem_bo_sung': 0, 'hang_khong_kiem_dem': 0, 'tui_ban_hang': 0,
+            'hang_khong_tem': 0, 'hang_khong_cheat_duoc': 0, 'hang_loi_chua_duyet': 0, 'hang_loi_da_duyet': 0,
+            'them1': 0, 'bot1': 0, 'cong_hang_ban_ntl_chua_kiem': 0, 'tru_hang_ban_da_kiem': 0, 'phien_dem': [],
+            'bo_sung_hang_chua_cheat': 0, 'tru_hang_kiem_dup': 0, 'them2': 0, 'bot2': 0, 'ghi_chu': False,
+        }
+        field_list.update(kwargs.get('field_add') or {})
+        values = {}
+        for field, v in field_list.items():
+            if field == 'phien_dem':
+                values.update({
+                    field: '|'.join(vals.get(field) or v)
+                })
+            else:
+                values.update({
+                    field: vals.get(field) or v
+                })
+        return values
 
 
 class InventoryLine(models.Model):
@@ -532,7 +646,7 @@ class InventoryLine(models.Model):
                                   readonly=True, digits='Product Unit of Measure', search="_search_difference_qty")
     inventory_date = fields.Datetime('Ngày kiểm kho', readonly=True, default=fields.Datetime.now)
     outdated = fields.Boolean(string='Quantity outdated',
-        compute='_compute_outdated', search='_search_outdated')
+                              compute='_compute_outdated', search='_search_outdated')
 
     product_tracking = fields.Selection(string='Tracking', related='product_id.tracking', readonly=True)
 
@@ -574,7 +688,6 @@ class InventoryLine(models.Model):
     def set_product_qty(self):
         if self.x_first_qty != self.product_qty:
             self.product_qty = self.x_first_qty
-
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):

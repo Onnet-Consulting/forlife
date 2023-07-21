@@ -80,6 +80,47 @@ class ResUtility(models.AbstractModel):
         return ast.literal_eval(self.env['ir.config_parameter'].sudo().get_param('attr_code_config') or '{}')
 
     @api.model
+    def get_attribute_value_by_product_id(self, product_ids, lang='vi_VN'):
+        self._cr.execute(f"""
+        select json_object_agg(product_id, attrs) as attrs_data
+        from (select product_id                         as product_id,
+                     json_object_agg(attrs_code, value) as attrs
+              from (select pp.id                                                                                          as product_id,
+                           pa.attrs_code                                                                                  as attrs_code,
+                           array_agg(distinct coalesce(pav.name::json ->> '{lang}', pav.name::json ->> 'en_US')) as value
+                    from product_template_attribute_line ptal
+                             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+                             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+                             left join product_attribute pa on ptal.attribute_id = pa.id
+                             left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+                    where pa.attrs_code notnull {f'and pp.id = any(array{product_ids})' if product_ids else ''}
+                    group by pp.id, pa.attrs_code) as att
+              group by product_id) as data
+        """)
+        return self._cr.dictfetchone().get('attrs_data') or {}
+
+    @api.model
+    def get_attribute_value_by_product_barcode(self, barcode_list, lang='vi_VN'):
+        self._cr.execute(f"""
+                select json_object_agg(barcode, attrs) as attrs_data
+                from (select barcode                            as barcode,
+                             json_object_agg(attrs_code, value) as attrs
+                      from (select pp.barcode                                                                                     as barcode,
+                                   pa.attrs_code                                                                                  as attrs_code,
+                                   array_agg(distinct coalesce(pav.name::json ->> '{lang}', pav.name::json ->> 'en_US')) as value
+                            from product_template_attribute_line ptal
+                                     left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+                                     left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+                                     left join product_attribute pa on ptal.attribute_id = pa.id
+                                     left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+                            where pa.attrs_code notnull {f'and pp.barcode = any(array{barcode_list})' if barcode_list else ''}
+                             and pp.barcode notnull
+                            group by pp.barcode, pa.attrs_code) as att
+                      group by barcode) as data
+                """)
+        return self._cr.dictfetchone().get('attrs_data') or {}
+
+    @api.model
     def get_warehouse_type_info(self):
         return self.env['stock.warehouse.type'].search_read([], ['id', 'code', 'name'])
 

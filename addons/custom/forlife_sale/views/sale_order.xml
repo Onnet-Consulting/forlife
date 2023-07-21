@@ -79,7 +79,7 @@
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
                     <field name="x_product_code_id"
-                           attrs="{'column_invisible': [('parent.x_sale_type','=','product')], 'required': [('parent.x_sale_type','=','asset')]}"
+                           attrs="{'column_invisible': [('parent.x_sale_type','!=','asset')], 'required': [('parent.x_sale_type','=','asset')]}"
                            force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="before">

@@ -30,7 +30,7 @@ class StockPicking(models.Model):
         for line in self.move_ids:
             if self.sale_id.x_origin and self.sale_id.x_origin.promotion_ids:
                 promotion_id = self.sale_id.x_origin.promotion_ids.filtered(lambda x: x.product_id.id == line.product_id.id)
-                if promotion_id:
+                if promotion_id and promotion_id.product_uom_qty:
                     promotion_ids.append((0, 0, {
                         "product_id": promotion_id.product_id.id,
                         "value": - (promotion_id.value / promotion_id.product_uom_qty) * line.quantity_done,

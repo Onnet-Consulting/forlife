@@ -1144,7 +1144,6 @@ class PurchaseOrder(models.Model):
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
-            # 'sequence': sequence,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': wave_item.quantity_change,
@@ -1165,11 +1164,8 @@ class PurchaseOrder(models.Model):
             'work_order': wave_item.work_production.id,
             'account_analytic_id': wave_item.account_analytic_id.id,
             'import_tax': line.import_tax,
-            # 'tax_amount': line.tax_amount,
             'special_consumption_tax': line.special_consumption_tax,
-            # 'special_consumption_tax_amount': line.special_consumption_tax_amount,
             'vat_tax': line.vat_tax,
-            # 'vat_tax_amount': line.vat_tax_amount,
         }
         return data_line
 
@@ -1328,9 +1324,7 @@ class PurchaseOrder(models.Model):
         return data_line
 
     def create_invoice_normal_control_len(self, order, line,
-                                          matching_item,
-                                          total_nine_quantity):
-        quantity = matching_item.qty_done - total_nine_quantity
+                                          matching_item, quantity):
         data_line = {
             'ware_id': matching_item.id,
             'ware_name': matching_item.picking_id.name,
@@ -1501,36 +1495,63 @@ class PurchaseOrder(models.Model):
                                          ('state', '=', 'done'),
                                          ('picking_type_id.code', '=', 'outgoing')
                                          ]
-                        # x_is_check_return tẹo xóa
                         picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
                         picking_in_return = self.env['stock.picking'].search(domain_normal_out + [('ware_check', '=', False)])
                         picking_in_true = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', True)])
                         for line in order.order_line:
                             if not order.is_return:
                                 wave = picking_in.move_line_ids_without_package.filtered(
-                                lambda w: w.move_id.purchase_line_id.id == line.id
-                                and w.product_id.id == line.product_id.id
-                                and w.picking_type_id.code == 'incoming'
-                                and w.picking_id.x_is_check_return == False)
+                                    lambda w: w.move_id.purchase_line_id.id == line.id
+                                              and w.product_id.id == line.product_id.id
+                                              and w.picking_type_id.code == 'incoming'
+                                              and w.picking_id.x_is_check_return == False)
                             else:
                                 wave = picking_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line.id
                                                                                                 and w.product_id.id == line.product_id.id
                                                                                                 and w.picking_id.x_is_check_return == False)
-
-                            if order.select_type_inv == 'normal':
-                                if picking_in:
-                                    for wave_item in wave:
-                                        purchase_return = picking_in_return.move_line_ids_without_package.filtered(
-                                            lambda r: r.move_id.purchase_line_id.id == wave_item.move_id.purchase_line_id.id
-                                                      and r.product_id.id == wave_item.product_id.id
-                                                      and r.picking_id.relation_return == wave_item.picking_id.id
-                                                      and r.picking_id.x_is_check_return == True)
-                                        if purchase_return:
-                                            for x_return in purchase_return:
-                                                if wave_item.picking_id.name == x_return.picking_id.relation_return:
-                                                    data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
+                            if picking_in:
+                                for wave_item in wave:
+                                    purchase_return = picking_in_return.move_line_ids_without_package.filtered(
+                                        lambda r: r.move_id.purchase_line_id.id == wave_item.move_id.purchase_line_id.id
+                                                  and r.product_id.id == wave_item.product_id.id
+                                                  and r.picking_id.relation_return == wave_item.picking_id.id
+                                                  and r.picking_id.x_is_check_return == True)
+                                    if purchase_return:
+                                        for x_return in purchase_return:
+                                            if wave_item.picking_id.name == x_return.picking_id.relation_return:
+                                                data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
+                                    else:
+                                        data_line = self.create_invoice_normal(order, line, wave_item)
+                                    if line.display_type == 'line_section':
+                                        pending_section = line
+                                        continue
+                                    if pending_section:
+                                        line_vals = pending_section._prepare_account_move_line()
+                                        line_vals.update(data_line)
+                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                        sequence += 1
+                                        pending_section = None
+                                    wave_item.picking_id.ware_check = True
+                                    line_vals = line._prepare_account_move_line()
+                                    line_vals.update(data_line)
+                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                    sequence += 1
+                                invoice_vals_list.append(invoice_vals)
+                            elif picking_in_true:
+                                invoice_relationship = self.env['account.move.line'].search(
+                                    [('ware_id', '=', picking_in_true.move_line_ids_without_package.mapped('id'))])
+                                for item in picking_in_true.move_line_ids_without_package:
+                                    invoice_l = invoice_relationship.filtered(lambda x: x.ware_id.id == item.id)
+                                    if invoice_l.purchase_line_id.id == line.id:
+                                        total_nine_quantity = 0
+                                        matching_item = item
+                                        for nine in invoice_relationship:
+                                            total_nine_quantity += nine.quantity
+                                        quantity = matching_item.qty_done - total_nine_quantity
+                                        if quantity > 0:
+                                            data_line = self.create_invoice_normal_control_len(order, line, matching_item, quantity)
                                         else:
-                                            data_line = self.create_invoice_normal(order, line, wave_item)
+                                            raise ValidationError('Hóa đơn đã được khống chế số lượng theo số lượng phiếu nhập kho tương ứng')
                                         if line.display_type == 'line_section':
                                             pending_section = line
                                             continue
@@ -1544,37 +1565,6 @@ class PurchaseOrder(models.Model):
                                         line_vals.update(data_line)
                                         invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                         sequence += 1
-                                    invoice_vals_list.append(invoice_vals)
-                                elif picking_in_true:
-                                    # all_equal = True  # Biến kiểm tra tất cả các cặp item và nine có bằng nhau hay không
-                                    matching_nine = None
-                                    invoice_relationship = self.env['account.move.line'].search(
-                                        [('ware_id', '=', picking_in_true.move_line_ids_without_package.mapped('id'))])
-                                    for item in picking_in_true.move_line_ids_without_package:
-                                        invoice_l = invoice_relationship.filtered(lambda x: x.ware_id == item.id)
-                                        if invoice_l.move_id.purchase_line_id.id == line.id:
-                                            total_nine_quantity = 0
-                                            matching_item = invoice_l
-                                            for nine in invoice_relationship:
-                                                total_nine_quantity += nine.quantity
-                                                matching_nine = nine
-                                            if matching_item.qty_done - total_nine_quantity:
-                                                data_line = self.create_invoice_normal_control_len(order, line,
-                                                                                               matching_item,
-                                                                                               total_nine_quantity)
-                                                if line.display_type == 'line_section':
-                                                    pending_section = line
-                                                    continue
-                                                if pending_section:
-                                                    line_vals = pending_section._prepare_account_move_line()
-                                                    line_vals.update(data_line)
-                                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                                    sequence += 1
-                                                    pending_section = None
-                                                line_vals = line._prepare_account_move_line()
-                                                line_vals.update(data_line)
-                                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                                                sequence += 1
                     else:
                         invoice_relationship = self.env['account.move'].search([('reference', '=', order.name),
                                                                                 ('partner_id', '=', order.partner_id.id),
@@ -1768,8 +1758,6 @@ class PurchaseOrder(models.Model):
                     for wave_item in picking_in.move_line_ids_without_package:
                         if wave_item.move_id.purchase_line_id.id == line.id and wave_item.product_id.id == line.product_id.id:
                             data_line = self.create_invoice_normal(order, line, wave_item)
-                        # else:
-                        #     raise UserError(_('Đơn mua có mã phiếu là %s đã có hóa đơn liên quan tương ứng với phiếu nhập kho!') % order.name)
                             sequence += 1
                             key = order.purchase_type, order.partner_id.id, order.company_id.id
                             invoice_vals = order._prepare_invoice()
@@ -1782,7 +1770,6 @@ class PurchaseOrder(models.Model):
                                                  'select_type_inv': order.select_type_inv,
                                                  'is_check_select_type_inv': True,
                                                  'purchase_order_product_id': self.ids,
-                                                 # 'receiving_warehouse_id': [(6, 0, receiving_warehouse_ids)],
                                                  })
                             order = order.with_company(order.company_id)
                             line_vals = line._prepare_account_move_line()
@@ -1824,7 +1811,6 @@ class PurchaseOrder(models.Model):
                                              'select_type_inv': order.select_type_inv,
                                              'is_check_select_type_inv': True,
                                              'purchase_order_product_id': self.ids,
-                                             # 'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
                                              })
                         order = order.with_company(order.company_id)
                         line_vals = line._prepare_account_move_line()
@@ -1837,16 +1823,16 @@ class PurchaseOrder(models.Model):
                                 key: invoice_vals
                             })
             else:
+                picking_labor_in = self.env['stock.picking'].search([('origin', 'in', self.mapped('name')),
+                                                                     ('state', '=', 'done'),
+                                                                     ('labor_check', '=', True),
+                                                                     ('x_is_check_return', '=', False),
+                                                                     ('picking_type_id.code', '=', 'incoming')
+                                                                     ])
+                material = self.env['purchase.order.line.material.line'].search(
+                    [('purchase_order_line_id', '=', self.order_line_production_order.mapped('id'))])
                 for line in order.order_line:
-                    picking_labor_in = self.env['stock.picking'].search([('origin', 'in', self.mapped('name')),
-                                                                         ('state', '=', 'done'),
-                                                                         ('labor_check', '=', True),
-                                                                         ('x_is_check_return', '=', False),
-                                                                         ('picking_type_id.code', '=', 'incoming')
-                                                                         ])
                     if self.order_line_production_order:
-                        material = self.env['purchase.order.line.material.line'].search(
-                            [('purchase_order_line_id', '=', self.order_line_production_order.mapped('id'))])
                         for nine in self.order_line_production_order:
                             for material_line in material:
                                 if material_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs' and picking_labor_in:
@@ -1867,7 +1853,6 @@ class PurchaseOrder(models.Model):
                                          'select_type_inv': order.select_type_inv,
                                          'is_check_select_type_inv': True,
                                          'purchase_order_product_id': self.ids,
-                                         # 'receiving_warehouse_id': [(6, 0, receiving_warehouse_ids)],
                                          })
                     order = order.with_company(order.company_id)
                     line_vals = line._prepare_account_move_line()
@@ -3238,12 +3223,9 @@ class StockPicking(models.Model):
         if record.state == 'done':
             move = False
             ### Tìm bản ghi Xuât Nguyên Phụ Liệu
-            # reason_type_6 = self.env['forlife.reason.type'].search([('code', '=', 'X1201')], limit=1)
             export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id),
                                                                          ('code', '=', 'X1201')
                                                                          ], limit=1)
-            # if not reason_type_6:
-            #     raise ValidationError('Bạn chưa có loại lý do Xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Loại lý do có code = 06')
             if not export_production_order.x_property_valuation_in_account_id:
                 raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có mã: X1201')
             else:

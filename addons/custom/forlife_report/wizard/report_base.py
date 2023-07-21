@@ -7,7 +7,9 @@ from odoo.addons.forlife_report.wizard.available_report_list import AVAILABLE_RE
 from pytz import timezone
 from datetime import datetime
 import base64
-import json
+import re
+from odoo.tools.misc import xlsxwriter
+import io
 
 
 def format_date_query(column_name, tz_offset):
@@ -91,12 +93,37 @@ class ExportExcelClient(models.AbstractModel):
 
     @api.model
     def export_excel_from_client(self, data, filename):
-        data = json.dumps(data).encode('utf-8')
-        base64_bytes = base64.b64encode(data)
-        base64_string = base64_bytes.decode("utf-8")
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        replace_list = set(re.findall(r'\d\.\d', data))
+        for r in replace_list:
+            data = data.replace(r, r[0] + r[2])
+        formats = self.get_format_workbook(workbook)
+        final_data = data.split('\n')
+        sheet = workbook.add_worksheet('data')
+        sheet.set_row(0, 25)
+        row = 0
+        for vals in final_data:
+            col = 0
+            for val in vals.split('\t'):
+                if row == 0:
+                    sheet.write(row, col, val, formats.get('title_format'))
+                else:
+                    sheet.write(row, col, val, formats.get('normal_format'))
+                col += 1
+            row += 1
+        workbook.close()
+        output.seek(0)
+        attachment_id = self.env['ir.attachment'].sudo().create({
+            'name': filename,
+            'datas': base64.encodestring(output.read()),
+        })
+        output.close()
         return {
             'type': 'ir.actions.act_url',
-            'name': self._description,
-            'url': f'/client/download/xlsx?model_name={self._name}&data={base64_string}&filename={filename}',
-            'target': 'current',
+            'url': f"web/content/?model=ir.attachment&id={attachment_id.id}&filename_field=name&field=datas&name={attachment_id.name}&download=true",
+            'target': 'new',
         }
