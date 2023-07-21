@@ -208,6 +208,7 @@ class AccountMoveBKAV(models.Model):
         if not self._check_invoice_bkav():
             return
         # validate với trường hợp điều chỉnh thay thế
+        configs = self.get_bkav_config()
         if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
         CmdType = int(configs.get('cmd_addInvoice'))
@@ -215,8 +216,7 @@ class AccountMoveBKAV(models.Model):
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
         elif self.issue_invoice_type == 'replace':
             CmdType = int(configs.get('cmd_addInvoiceReplace'))
-
-        configs = self.get_bkav_config()
+            
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
             "CmdType": CmdType,
