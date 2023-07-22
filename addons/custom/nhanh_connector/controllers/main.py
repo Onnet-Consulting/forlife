@@ -182,6 +182,7 @@ class MainController(http.Controller):
                     'order_line': order_line,
                     'nhanh_customer_phone': order['customerMobile'],
                     'source_id': utm_source_id.id if utm_source_id else None,
+                    'x_location_id': location_id.id,
                 }
                 # Check the order is paid online or not
                 private_description = order["privateDescription"]

@@ -207,7 +207,10 @@ class SaleOrder(models.Model):
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
-                                account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                if ir_property:
+                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                else:
+                                    account_id = None
                             else:
                                 account_id = product_id.property_account_income_id.id
                         except Exception as e:
@@ -227,6 +230,7 @@ class SaleOrder(models.Model):
                     # Customer shipping fee
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
+
                         try:
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
@@ -235,11 +239,15 @@ class SaleOrder(models.Model):
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
-                                account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                if ir_property:
+                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                else:
+                                    account_id = None
                             else:
                                 account_id = product_id.property_account_expense_id
                         except Exception as e:
                             account_id = None
+
 
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
@@ -248,7 +256,7 @@ class SaleOrder(models.Model):
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
-                            'account_id': account_id and account_id.id,
+                            'account_id': account_id,
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển của nhà vận chuyển"
                         })]
