@@ -88,7 +88,7 @@ class SaleOrder(models.Model):
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
-                                    [('code', 'like', '%' + warehouse_code + '%')], limit=1)
+                                    [('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
                                 gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
@@ -106,6 +106,7 @@ class SaleOrder(models.Model):
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
                                     })]
+                                    ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
 
                                 if ln.x_cart_discount_fixed_price - price_percent > 0:
@@ -118,17 +119,17 @@ class SaleOrder(models.Model):
                                         'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp"
                                     })]
+                                    ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
                             self.env.cr.rollback()
                             rec.write({"state": "check_promotion"})
-                            action = self.env['ir.actions.actions']._for_xml_id(
-                                'forlife_sale_promotion.action_check_promotion_wizard')
+                            action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {'default_message': _("Order note '#VIP' invalid!")}
                             return action
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
-                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%'+warehouse_code+'%')], limit=1)
+                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
@@ -146,6 +147,7 @@ class SaleOrder(models.Model):
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp"
                             })]
+                            ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
                         if diff_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
@@ -156,6 +158,7 @@ class SaleOrder(models.Model):
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá"
                             })]
+                            ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
                     # Nhanh shipping fee
                     if rec.nhanh_shipping_fee and rec.nhanh_shipping_fee > 0:
@@ -194,8 +197,7 @@ class SaleOrder(models.Model):
                             product_domain = line.reward_id._get_discount_product_domain()
                             for line_promotion in rec.order_line:
                                 warehouse_code = line_promotion.x_location_id.warehouse_id.code
-                                analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
-                                    [('code', 'like', '%' + warehouse_code + '%')], limit=1)
+                                analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
 
                                 if line_promotion.product_id.filtered_domain(
                                         product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line:
@@ -211,6 +213,7 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
+                                    ln.x_account_analytic_id = discount_account_id and discount_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
                 rec.write({"state": "done_sale"})

@@ -4,9 +4,6 @@ from odoo import api, fields, models, _
 from odoo.tools.misc import xlsxwriter
 import copy
 import io
-import re
-import base64
-import json
 
 
 class ReportBase(models.AbstractModel):
@@ -14,53 +11,33 @@ class ReportBase(models.AbstractModel):
     _description = 'Report Base'
 
     def print_xlsx(self):
+        filename = self.get_filename()
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename or self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
             'target': 'current'
 
         }
+
+    def get_filename(self):
+        return self._description
 
     def view_report(self):
         ...
 
     @api.model
-    def generate_xlsx_report(self, workbook, allowed_company, **kwargs):
-        if 'data' in kwargs:
-            data = kwargs.get('data')
-            base64_bytes = data.encode("utf-8")
-            if not (b'==' in base64_bytes):
-                base64_bytes += b'='
-            sample_string_bytes = base64.b64decode(base64_bytes).decode("utf-8")
-            final_string = json.loads(sample_string_bytes)
-
-            replace_list = set(re.findall(r'\d\.\d', final_string))
-            for r in replace_list:
-                final_string = final_string.replace(r, r[0] + r[2])
-
-            formats = self.get_format_workbook(workbook)
-            final_data = final_string.split('\n')
-            sheet = workbook.add_worksheet('data')
-            row = 0
-            for vals in final_data:
-                col = 0
-                for val in vals.split('\t'):
-                    if row == 0:
-                        sheet.write(row, col, val, formats.get('title_format'))
-                    else:
-                        sheet.write(row, col, val, formats.get('normal_format'))
-                    col += 1
-                row += 1
+    def generate_xlsx_report(self, workbook, allowed_company):
+        ...
 
     @api.model
-    def get_xlsx(self, allowed_company, **kwargs):
+    def get_xlsx(self, allowed_company):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {
             'in_memory': True,
             'strings_to_formulas': False,
         })
-        self.generate_xlsx_report(workbook, allowed_company, **kwargs)
+        self.generate_xlsx_report(workbook, allowed_company)
         workbook.close()
         output.seek(0)
         generated_file = output.read()
@@ -78,7 +55,8 @@ class ReportBase(models.AbstractModel):
             'border': 1,
             'align': 'center',
             'valign': 'vcenter',
-            'bg_color': '#dbeef4'
+            'bg_color': '#dbeef4',
+            'text_wrap': True,
         }
         subtotal_format = {
             'bold': 1,
