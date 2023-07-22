@@ -464,6 +464,7 @@ class Inventory(models.Model):
         if val:
             self.env['inventory.detail'].create(val)
             self.write({'x_status': 1})
+            self.message_post(body='Đã đồng bộ danh sách sản phẩm Chi tiết kiểm kê sang Chi tiết kiểm đếm')
 
     def btn_import_excel(self):
         self.ensure_one()
@@ -474,15 +475,53 @@ class Inventory(models.Model):
     def btn_action_confirm1(self):
         self.write({'x_status': 2})
         self.message_post(body='Xác nhận dữ liệu đếm kiểm lần 1')
+        self.action_update_qty_inventory_line(state='lan1')
 
     def btn_action_confirm2(self):
         self.write({'x_status': 3})
         self.message_post(body='Xác nhận dữ liệu đếm kiểm lần 2')
+        self.action_update_qty_inventory_line(state='lan2')
+
+    def action_update_qty_inventory_line(self, state):
+        _new_vals = []
+        for line in self:
+            for detail in line.detail_ids:
+                record = line.line_ids.filtered(lambda s: s.product_id.id == detail.product_id.id)
+                if record:
+                    record.sudo().write(self.env[self._name].get_value(state, detail))
+                else:
+                    val = dict(self.env[self._name].get_value(state, detail))
+                    val.update({
+                        'inventory_id': line.id,
+                        'product_id': detail.product_id.id,
+                        'product_uom_id': detail.product_id.uom_id.id,
+                        'location_id': line.location_id.id
+                    })
+                    _new_vals.append(val)
+        if _new_vals:
+            self.env['stock.inventory.line'].sudo().create(_new_vals)
+
+    @api.model
+    def get_value(self, state, detail):
+        val = {}
+        if state == 'lan1':
+            val = {
+                'x_first_qty': detail.tong_kiem_ke_thuc_te_1 or 0,
+            }
+        if state == 'lan2':
+            val = {
+                'product_qty': detail.tong_kiem_dem_thuc_te or 0,
+            }
+        return val
 
     def btn_show_all_inv_session(self):
         action = self.env.ref('stock_inventory.inventory_session_action_active_id').read()[0]
         action['context'] = dict(self._context)
         return action
+
+    def open_all_inv_session_detail(self):
+        self.ensure_one()
+        return self.env.ref('stock_inventory.session_detail_by_product_action').read()[0]
 
     def btn_export_inventory_detail(self):
         self.ensure_one()
@@ -640,9 +679,9 @@ class InventoryLine(models.Model):
         index=True, readonly=True, store=True)
     state = fields.Selection(string='Status', related='inventory_id.state')
     theoretical_qty = fields.Float(
-        'Tồn hiện có')
+        'Tồn hiện có', default=0)
     x_first_qty = fields.Float(
-        'Đã đếm',
+        'Đã đếm', default=0,
         digits='Product Unit of Measure')
     difference_qty = fields.Float('Chênh lệch', compute='_compute_difference',
                                   readonly=True, digits='Product Unit of Measure', search="_search_difference_qty")
