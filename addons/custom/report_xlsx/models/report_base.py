@@ -4,9 +4,6 @@ from odoo import api, fields, models, _
 from odoo.tools.misc import xlsxwriter
 import copy
 import io
-import re
-import base64
-import json
 
 
 class ReportBase(models.AbstractModel):
@@ -14,13 +11,17 @@ class ReportBase(models.AbstractModel):
     _description = 'Report Base'
 
     def print_xlsx(self):
+        filename = self.get_filename()
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename or self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
             'target': 'current'
 
         }
+
+    def get_filename(self):
+        return self._description
 
     def view_report(self):
         ...

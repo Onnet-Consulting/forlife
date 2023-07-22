@@ -27,7 +27,7 @@ class ImportInventorySessionWizard(models.TransientModel):
         sheet.set_row(5, 30)
         sheet.set_row(6, 35)
         sheet.set_row(7, 32)
-        sheet.write(0, 0, 'CHÊNH LỆCH KIỂM KÊ CỬA HÀNG', formats.get('header_format'))
+        sheet.write(0, 0, f'CHÊNH LỆCH KIỂM KÊ CỬA HÀNG {self.inv_id.warehouse_id.name or ""}', formats.get('header_format'))
         sheet.write(1, 0, '', formats.get('format_color1'))
         sheet.write(2, 0, '', formats.get('format_color2'))
         sheet.write(3, 0, '', formats.get('format_color3'))
@@ -36,7 +36,7 @@ class ImportInventorySessionWizard(models.TransientModel):
         sheet.write(2, 1, '<= Hàng kiểm đếm được tính vào số lượng kiểm kê')
         sheet.write(3, 1, '<= Hàng bị trừ khỏi số liệu kiểm kê')
         sheet.write(4, 1, '<= Kết quả')
-        sheet.merge_range('A6:B6', 'LẤY TỒN NGÀY:', formats.get('normal_format'))
+        sheet.merge_range('A6:B6', f'LẤY TỒN NGÀY: {self.inv_id.date.strftime("%d/%m/%Y") if self.inv_id.date else ""}', formats.get('normal_format'))
         sheet.merge_range('P6:Q6', 'HÀNG LỖI', formats.get('format_color5'))
         sheet.merge_range('R6:S6', 'XỬ LÝ HÀNG TÌM ĐƯỢC NGAY TẠI CỬA HÀNG', formats.get('format_color5'))
         sheet.merge_range('T6:U6', 'XỬ LÝ HÓA ĐƠN VÀ NTL', formats.get('format_color5'))
@@ -100,7 +100,6 @@ class ImportInventorySessionWizard(models.TransientModel):
             row += 1
             stt += 1
 
-    @api.model
     def download_template_file(self):
         attachment_id = self.env.ref(f'stock_inventory.{self._context.get("template_xml_id")}')
         return {
@@ -109,6 +108,9 @@ class ImportInventorySessionWizard(models.TransientModel):
             'url': f'web/content/?model=ir.attachment&id={attachment_id.id}&filename_field=name&field=datas&download=true&name={attachment_id.name}',
             'target': 'new'
         }
+
+    def get_filename(self):
+        return f"CLKK {self.inv_id.warehouse_id.name or ''} {self.inv_id.date.strftime('%d%m%Y')}"
 
     @api.onchange('import_file')
     def onchange_import_file(self):
