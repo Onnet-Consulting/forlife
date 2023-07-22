@@ -7,6 +7,7 @@
             <field name="model">inventory.detail</field>
             <field name="arch" type="xml">
                 <tree string="inventory_detail_tree">
+                    <button name="open_detail" class="oe_highlight" type="object" string="Xem chi tiết"/>
                     <field name="ma_hang"/>
                     <field name="ten_hang"/>
                     <field name="mau"/>
@@ -82,6 +83,9 @@
                             </group>
                         </group>
                     </sheet>
+                    <footer>
+                        <button name="open_detail" class="oe_highlight" type="object" string="Xem chi tiết"/>
+                    </footer>
                 </form>
             </field>
         </record>

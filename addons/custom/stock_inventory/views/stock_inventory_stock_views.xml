@@ -263,7 +263,8 @@
                                 context="{'template_xml_id': 'template_import_inventory_session_add2', 'start_row': 2}"/>
                         <button name="btn_action_confirm1" type="object" class="oe_highlight margin_btn" string="Xác nhận lần 1" attrs="{'invisible': [('state', '!=', 'first_inv')]}"/>
                         <button name="btn_action_confirm2" type="object" class="oe_highlight margin_btn" string="Xác nhận lần 2" attrs="{'invisible': [('state', '!=', 'second_inv')]}"/>
-                        <button name="btn_show_all_inv_session" type="object" class="oe_highlight margin_btn" string="Chi tiết phiên"/>
+                        <button name="btn_show_all_inv_session" type="object" class="oe_highlight margin_btn" string="Phiên đã nhập"/>
+                        <button name="open_all_inv_session_detail" type="object" class="oe_highlight margin_btn" string="Chi tiết phiên"/>
                         <button name="btn_export_inventory_detail" type="object" class="oe_highlight margin_btn" string="Xuất Excel"/>
                         <separator/>
                         <field name="detail_ids" nolabel="1"/>
