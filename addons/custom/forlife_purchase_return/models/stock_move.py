@@ -26,7 +26,7 @@ class StockMove(models.Model):
 
     def _get_price_unit(self):
         self.ensure_one()
-        if self.origin_returned_move_id or self.purchase_line_id.order_id.is_return:
+        if (self.origin_returned_move_id and self.purchase_line_id) or self.purchase_line_id.order_id.is_return:
             price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
             line = self.purchase_line_id
             order = line.order_id
