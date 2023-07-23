@@ -134,6 +134,7 @@ class MainController(http.Controller):
 
                 # nhân viên kinh doanh
                 user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
+
                 # đội ngũ bán hàng
                 team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
                 
@@ -163,6 +164,7 @@ class MainController(http.Controller):
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': order['shipFee'],
+                    'nhanh_customer_shipping_fee': order['customerShipFee'],
                     'source_record': True,
                     'code_coupon': order['couponCode'],
                     'state': 'draft',
@@ -180,6 +182,7 @@ class MainController(http.Controller):
                     'order_line': order_line,
                     'nhanh_customer_phone': order['customerMobile'],
                     'source_id': utm_source_id.id if utm_source_id else None,
+                    'x_location_id': location_id.id,
                 }
                 # Check the order is paid online or not
                 private_description = order["privateDescription"]
@@ -235,8 +238,8 @@ class MainController(http.Controller):
                 if is_create_wh_in or order_returned:
                     try:
                         # print('--------------- INTO ---------------------------')
-                        # webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
-                        webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
+                        webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
+                        # webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
                         pass
 

@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 import json
 import logging
 from ...bkav_connector.models.bkav_connector import connect_bkav
+
 _logger = logging.getLogger(__name__)
 
 
@@ -59,7 +60,6 @@ class SyntheticAccountMovePos(models.Model):
                        % (self.eivoice_file.id, self.eivoice_file.name),
                 'target': 'self',
             }
-
 
 class SyntheticAccountMovePosLine(models.Model):
     _name = 'synthetic.account.move.pos.line'

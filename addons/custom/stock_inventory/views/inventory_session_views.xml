@@ -7,24 +7,25 @@
             <field name="model">inventory.session.line</field>
             <field name="arch" type="xml">
                 <tree string="inventory_session_line_tree">
+                    <field name="inv_session_id"/>
                     <field name="product_id"/>
-                    <field name="kiem_ke_thuc_te"/>
-                    <field name="phien_dem_bo_sung"/>
-                    <field name="hang_khong_kiem_dem"/>
-                    <field name="tui_ban_hang"/>
-                    <field name="hang_khong_tem"/>
-                    <field name="hang_khong_cheat_duoc"/>
-                    <field name="hang_loi_chua_duyet"/>
-                    <field name="hang_loi_da_duyet"/>
-                    <field name="them1"/>
-                    <field name="bot1"/>
-                    <field name="cong_hang_ban_ntl_chua_kiem"/>
-                    <field name="tru_hang_ban_da_kiem"/>
-                    <field name="bo_sung_hang_chua_cheat"/>
-                    <field name="tru_hang_kiem_dup"/>
-                    <field name="them2"/>
-                    <field name="bot2"/>
-                    <field name="note"/>
+                    <field name="kiem_ke_thuc_te" sum="Tổng"/>
+                    <field name="phien_dem_bo_sung" sum="Tổng"/>
+                    <field name="hang_khong_kiem_dem" sum="Tổng"/>
+                    <field name="tui_ban_hang" sum="Tổng"/>
+                    <field name="hang_khong_tem" sum="Tổng"/>
+                    <field name="hang_khong_cheat_duoc" sum="Tổng"/>
+                    <field name="hang_loi_chua_duyet" sum="Tổng"/>
+                    <field name="hang_loi_da_duyet" sum="Tổng"/>
+                    <field name="them1" sum="Tổng"/>
+                    <field name="bot1" sum="Tổng"/>
+                    <field name="cong_hang_ban_ntl_chua_kiem" sum="Tổng"/>
+                    <field name="tru_hang_ban_da_kiem" sum="Tổng"/>
+                    <field name="bo_sung_hang_chua_cheat" sum="Tổng"/>
+                    <field name="tru_hang_kiem_dup" sum="Tổng"/>
+                    <field name="them2" sum="Tổng"/>
+                    <field name="bot2" sum="Tổng"/>
+                    <field name="ghi_chu"/>
                 </tree>
             </field>
         </record>
@@ -36,6 +37,7 @@
                 <form string="inventory_session_line_form">
                     <sheet>
                         <group>
+                            <field name="inv_session_id"/>
                             <field name="product_id"/>
                             <field name="kiem_ke_thuc_te"/>
                             <field name="phien_dem_bo_sung"/>
@@ -53,11 +55,34 @@
                             <field name="tru_hang_kiem_dup"/>
                             <field name="them2"/>
                             <field name="bot2"/>
-                            <field name="note"/>
+                            <field name="ghi_chu"/>
                         </group>
                     </sheet>
                 </form>
             </field>
+        </record>
+
+        <record id="inventory_session_line_view_filter" model="ir.ui.view">
+            <field name="name">inventory_session_line_view_filter</field>
+            <field name="model">inventory.session.line</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="inv_session_id"/>
+                    <field name="product_id"/>
+                    <field name="ghi_chu"/>
+                    <group expand='0' string='Nhóm theo...'>
+                        <filter string='Sản phẩm' name="product" context="{'group_by' : 'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="session_detail_by_product_action" model="ir.actions.act_window">
+            <field name="name">Chi tiết KK theo sản phẩm</field>
+            <field name="res_model">inventory.session.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('inv_session_id.inv_id', '=', active_id)]</field>
+            <field name="context">{'search_default_product': 1}</field>
         </record>
     </data>
 
@@ -68,7 +93,11 @@
             <field name="model">inventory.session</field>
             <field name="arch" type="xml">
                 <tree string="inventory_session_tree">
+                    <field name="id" readonly="1" string="Phiên"/>
                     <field name="inv_id"/>
+                    <field name="type"/>
+                    <field name="create_uid" string="Được tạo bởi" readonly="1"/>
+                    <field name="create_date" string="Ngày tạo" readonly="1"/>
                     <field name="note"/>
                 </tree>
             </field>
@@ -79,9 +108,21 @@
             <field name="model">inventory.session</field>
             <field name="arch" type="xml">
                 <form string="inventory_session_form">
-                    <group>
+                    <group col="3">
+                        <group>
+                            <field name="id" readonly="1" string="Phiên"/>
+                        </group>
                         <group>
                             <field name="inv_id"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="create_uid" string="Được tạo bởi" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="create_date" string="Ngày tạo" readonly="1"/>
                         </group>
                         <group>
                             <field name="note"/>
@@ -100,6 +141,13 @@
             <field name="name">Phiên đếm kiểm</field>
             <field name="res_model">inventory.session</field>
             <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="inventory_session_action_active_id" model="ir.actions.act_window">
+            <field name="name">Phiên đếm kiểm</field>
+            <field name="res_model">inventory.session</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('inv_id', '=', active_id)]</field>
         </record>
 
         <record id="inventory_session_form_view_action" model="ir.actions.act_window">
