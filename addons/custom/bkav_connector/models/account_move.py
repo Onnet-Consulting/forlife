@@ -74,18 +74,17 @@ class AccountMoveBKAV(models.Model):
                 pass
             
 
-
     def _check_invoice_bkav(self):
         #HD ban hang thong thuong
-        if self.move_type in ('out_invoice', 'out_refund'):
+        so_orders = self.line_ids.line_ids.sale_line_ids.order_id
+        if self.move_type in ('out_invoice', 'out_refund') and so_orders:
             return True
         #HD tra hang NCC
-        source_orders = self.line_ids.purchase_line_id.order_id
-        if self.move_type == 'in_refund' and source_orders:
+        po_orders = self.line_ids.purchase_line_id.order_id
+        if self.move_type == 'in_refund' and po_orders:
             return True
         return False
     
-
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status_get_values(self):
@@ -138,35 +137,41 @@ class AccountMoveBKAV(models.Model):
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
+            sale_order_id = invoice.line_ids.line_ids.sale_line_ids.order_id
+            
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
             sign = 1 if invoice.move_type in ('out_invoice', 'in_refund') else -1
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
+                vat = 0
+                if line.tax_ids:
+                    vat = line.tax_ids[0].amount
                 item = {
-                    "ItemName": item_name if not line.promotions else item_name + " (Hàng tặng không thu tiền)",
+                    "ItemName": item_name if not line.promotions or not line.x_free_good else item_name + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
-                    "Price": (line.price_unit - line.price_unit * line.discount / 100) * sign,
+                    "Price": round(line.price_total/ (line.quantity * (1 + vat/100))) * sign,
                     "Amount": line.price_total * sign,
                     "TaxAmount": (line.tax_amount or 0.0) * sign,
                     "ItemTypeID": 0,
+                    "DiscountRate": line.discount/100,
+                    "DiscountAmount": line.price_total / (1-line.discount/100),
                     "IsDiscount": 1 if line.promotions else 0
                 }
-                if line.tax_ids:
-                    if line.tax_ids[0].amount == 0:
-                        tax_rate_id = 0
-                    elif line.tax_ids[0].amount == 5:
-                        tax_rate_id = 1
-                    elif line.tax_ids[0].amount == 10:
-                        tax_rate_id = 3
-                    else:
-                        tax_rate_id = 6
-                    item.update({
-                        "TaxRateID": tax_rate_id,
-                        "TaxRate": line.tax_ids[0].amount
-                    })
+                if vat == 0:
+                    tax_rate_id = 0
+                elif vat == 5:
+                    tax_rate_id = 1
+                elif vat == 10:
+                    tax_rate_id = 3
+                else:
+                    tax_rate_id = 6
+                item.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
                 if invoice.issue_invoice_type == 'adjust':
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm

@@ -10,6 +10,9 @@
                     <field name="company_type"/>
                 </xpath>
                 <xpath expr="//page[@id='aml_tab']" position="after">
+                    <field name="pos_order_id" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                    <field name="move_type" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice"
                           attrs="{'invisible': ['|','|',('pos_order_id','!=',False),('state','=','draft'),('move_type','not in',('out_invoice', 'out_refund','in_refund'))]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
