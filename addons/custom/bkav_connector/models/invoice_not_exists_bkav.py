@@ -210,6 +210,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     invoice_id.is_general = True
                     invoice_id.exists_bkav = True
 
+
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
