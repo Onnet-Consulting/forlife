@@ -65,7 +65,7 @@ class PosOrder(models.Model):
             if l[2]['handle_change_refund_price'] > 0:
                 l[2]['discount_details_lines'] = [(0, 0, {
                     'type': 'change_refund',
-                    'recipe': l[2]['handle_change_refund_price']
+                    'recipe': -l[2]['handle_change_refund_price']
                 })]
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
