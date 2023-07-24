@@ -25,11 +25,11 @@ def _validate_accounting_entries(self):
         company_code = svl.stock_move_id.picking_id.company_id.code
         if svl.stock_move_id.picking_id.from_po_give and company_code == '1400':
             continue
-        if company_code == '1300' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
+        if company_code == '1400' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
                                                                                     reason_type_5.id] and svl.stock_move_id.picking_id.location_id.id == location_enter_inventory_balance_auto.id \
                 and svl.stock_move_id.picking_id.location_dest_id.id_deposit:
             continue
-        if company_code == '1300' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
+        if company_code == '1400' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
                                                                                     reason_type_5.id] and svl.stock_move_id.picking_id.location_dest_id.id == location_dest_check_id.id and svl.stock_move_id.picking_id.location_id.id_deposit:
             continue
         move = svl.stock_move_id
