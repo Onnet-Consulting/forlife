@@ -70,8 +70,10 @@ class MainController(http.Controller):
             odoo_order = n_client.get_sale_order(order_id)
             is_create_wh_in = False
             if odoo_order and data['status'] in ['Returned']:
+                origin_order_id = odoo_order
                 odoo_order = None
                 is_create_wh_in = True
+                nhanh_origin_id = order_id
 
             if not odoo_order:
                 order_returned = order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']
@@ -226,22 +228,24 @@ class MainController(http.Controller):
                 
                 # đổi trả hàng
                 if order_returned or is_create_wh_in:
-                    origin_order_id = request.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
+                    if not is_create_wh_in:
+                        origin_order_id = request.env['sale.order'].sudo().search([
+                            ('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))
+                        ], limit=1)
+                        nhanh_origin_id = order.get('returnFromOrderId', 0)
+
                     value.update({
                         'x_is_return': True,
                         'x_origin': origin_order_id.id if origin_order_id else None,
-                        'nhanh_origin_id': order.get('returnFromOrderId', 0)
+                        'nhanh_origin_id': nhanh_origin_id
                     })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
 
                 if is_create_wh_in or order_returned:
                     try:
-                        # print('--------------- INTO ---------------------------')
                         webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
-                        # webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
-                    except:
-                        pass
+                    except Exception as e:
+                        print(str(e))
 
                 elif data['status'] in ['Canceled', 'Aborted']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
@@ -270,10 +274,11 @@ class MainController(http.Controller):
                             pass
                         
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
+
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()
-                        odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
+                        odoo_order.action_cancel_for_nhanh()
                     return self.result_request(200, 0, _('Update sale order success'))
                 else:
                     return self.result_request(404, 1, _('Update sale order false'))
