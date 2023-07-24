@@ -12,6 +12,7 @@ class ForlifeOtherInOutRequest(models.Model):
 
     name = fields.code = fields.Char(string="Mã phiếu", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="Nhân viên")
+    user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
     department_id = fields.Many2one('hr.department', string="Phòng ban")
     company_id = fields.Many2one('res.partner', string="Công ty")
     type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
@@ -38,17 +39,19 @@ class ForlifeOtherInOutRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        res['user_id'] = self.env.user.id if self.env.user else False
+        res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         if "import_file" in self.env.context:
-            if not self.env.user.employee_id:
+            if not self.env.user:
                 raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
-            if not self.env.user.employee_id.department_id:
+            if not self.env.user.department_default_id:
                 raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
-    @api.onchange('employee_id')
-    def _onchange_employee_id(self):
-        self.department_id = self.employee_id.department_id.id
+    @api.onchange('user_id')
+    def _onchange_user_id(self):
+        if self.user_id.department_default_id:
+            self.department_id = self.user_id.department_default_id.id
 
     @api.onchange('type_other')
     def onchange_type_other(self):
