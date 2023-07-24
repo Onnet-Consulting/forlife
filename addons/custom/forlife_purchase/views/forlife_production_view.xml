@@ -197,8 +197,9 @@
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">
+                                        <field name="currency_id" invisible="1"/>
                                         <field name="product_id"/>
-                                        <field name="rated_level"/>
+                                        <field name="rated_level" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     </tree>
                                 </field>
                             </page>
