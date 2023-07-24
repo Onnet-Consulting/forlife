@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-
-from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime, timedelta
-import logging
+from datetime import datetime
 import json
 from .bkav_connector import connect_bkav
 
+import logging
 _logger = logging.getLogger(__name__)
-
-disable_create_function = False
 
 
 def get_invoice_identify(self):
@@ -38,7 +34,7 @@ def get_bkav_config(self):
         'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
     }
 
-def getting_invoice_status(self):
+def get_invoice_status(self):
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_getStatusInvoice')),
@@ -52,12 +48,12 @@ def getting_invoice_status(self):
         self.data_compare_status = str(response.get('Object'))
 
 
-def create_invoice_bkav(self,data):
+def create_invoice_bkav(self, data,is_publish=False, origin_id=False):
     configs = get_bkav_config(self)
     _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
     CmdType = int(configs.get('cmd_addInvoice'))
     if 'issue_invoice_type' in self:
-        if self.issue_invoice_type in ('adjust', 'replace') and not self.origin_move_id.invoice_no:
+        if self.issue_invoice_type in ('adjust', 'replace') and not origin_id and not origin_id.invoice_no:
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
         if self.issue_invoice_type == 'adjust':
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
@@ -90,8 +86,10 @@ def create_invoice_bkav(self,data):
             })
             if result_data.get('MessLog'):
                 self.message_post(body=result_data.get('MessLog'))
-            getting_invoice_status(self)
-            publish_invoice_bkav(self)
+            if is_publish:
+                publish_invoice_bkav(self)
+            else: 
+                get_invoice_bkav(self)
         except:
             get_invoice_bkav(self)
 
@@ -128,14 +126,14 @@ def update_invoice_bkav(self,data):
     if response.get('Status') == 1:
         raise ValidationError(response.get('Object'))
     else:
-        self.getting_invoice_status()
+        get_invoice_bkav(self)
 
 
 def get_invoice_bkav(self):
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_getInvoice')),
-        "CommandObject": self.id
+        "CommandObject": self.invoice_guid
     }
     _logger.info(f'BKAV - data get invoice from BKAV: {data}')
     response = connect_bkav(data, configs)
@@ -151,11 +149,11 @@ def get_invoice_bkav(self):
             'invoice_form': result_data.get('InvoiceForm'),
             'invoice_serial': result_data.get('InvoiceSerial'),
             'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-            'invoice_state_e': str(result_data.get('InvoiceStatusID'))
         })
+        get_invoice_status(self)
 
 
-def cancel_invoice_bkav(self):
+def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_cancelInvoice')),
@@ -165,7 +163,8 @@ def cancel_invoice_bkav(self):
                     "InvoiceGUID": self.invoice_guid,
                     "Reason": "Hủy vì sai sót"
                 },
-                "PartnerInvoiceID": self.id,
+                "PartnerInvoiceID": PartnerInvoiceID,
+                "PartnerInvoiceStringID": PartnerInvoiceStringID,
             }
         ]
     }
@@ -175,10 +174,10 @@ def cancel_invoice_bkav(self):
         raise ValidationError(response.get('Object'))
     else:
         self.is_check_cancel = True
-        getting_invoice_status(self)
+        get_invoice_status(self)
 
 
-def delete_invoice_bkav(self):
+def delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_deleteInvoice')),
@@ -188,7 +187,8 @@ def delete_invoice_bkav(self):
                     "InvoiceGUID": self.invoice_guid,
                     "Reason": "Xóa vì sai sót"
                 },
-                "PartnerInvoiceID": self.id,
+                "PartnerInvoiceID": PartnerInvoiceID,
+                "PartnerInvoiceStringID": PartnerInvoiceStringID,
             }
         ]
     }
