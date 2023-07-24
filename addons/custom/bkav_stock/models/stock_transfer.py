@@ -57,12 +57,6 @@ class StockTransfer(models.Model):
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
-    issue_invoice_type = fields.Selection([
-        ('vat', 'GTGT'),
-        ('adjust', 'Điều chỉnh'),
-        ('replace', 'Thay thế')
-    ], 'Loại phát hành', default='vat', required=True)
-
     
 
     def get_bkav_data(self):
@@ -166,9 +160,7 @@ class StockTransfer(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        origin_id = False
-        is_publish = True
-        return bkav_action.create_invoice_bkav(self,data, is_publish, origin_id)
+        return bkav_action.create_invoice_bkav(self,data)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():
