@@ -67,6 +67,9 @@ class Inventory(models.Model):
     exhausted = fields.Boolean('Gồm cả sản phẩm đã hết', readonly=True,
                                states={'draft': [('readonly', False)]})
 
+    move_out_count = fields.Integer(string="Dịch chuyển đi", compute='_compute_stock_move_count')
+    move_in_count = fields.Integer(string="Dịch chuyển đến", compute='_compute_stock_move_count')
+
     # total_valorisation = fields.Float(string='Tổng kiểm kê', compute='_compute_total_valorisation')
     #
     #
@@ -85,6 +88,41 @@ class Inventory(models.Model):
             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
             if warehouse:
                 self.location_id = warehouse.lot_stock_id
+
+    def _compute_stock_move_count(self):
+        for r in self:
+            r.move_out_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == r.location_id.id))
+            r.move_in_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == r.location_id.id))
+
+    def action_view_move_out(self):
+        """ Display moves raw for subcontracted product self. """
+        self.ensure_one()
+        self.ensure_one()
+        move_out_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == self.location_id.id)
+        return {
+            'name': _('Xuất hàng'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move',
+            'views': [(self.env.ref('stock.view_move_tree').id, 'list'), (self.env.ref('stock.view_move_form').id, 'form')],
+            'target': 'current',
+            'domain': [('id', 'in', move_out_ids.ids)],
+            'context': self.env.context
+        }
+
+    def action_view_move_in(self):
+        """ Display moves raw for subcontracted product self. """
+        self.ensure_one()
+        move_in_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == self.location_id.id)
+        return {
+            'name': _('Nhập hàng'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move',
+            'views': [(self.env.ref('stock.view_move_tree').id, 'list'), (self.env.ref('stock.view_move_form').id, 'form')],
+            'target': 'current',
+            'domain': [('id', 'in', move_in_ids.ids)],
+            'context': self.env.context
+        }
+
 
     def copy_data(self, default=None):
         name = _("%s (copy)") % (self.name)
@@ -481,19 +519,20 @@ class InventoryLine(models.Model):
 
     @api.onchange('theoretical_qty')
     def set_x_first_qty(self):
-        if self.theoretical_qty:
+        if self.theoretical_qty != self.x_first_qty:
             self.x_first_qty = self.theoretical_qty
 
     @api.onchange('x_first_qty')
     def set_product_qty(self):
-        if self.x_first_qty:
+        if self.x_first_qty != self.product_qty:
             self.product_qty = self.x_first_qty
 
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
         for line in self:
-            line.difference_qty = line.product_qty - line.theoretical_qty
+            if line.difference_qty != line.product_qty - line.theoretical_qty:
+                line.difference_qty = line.product_qty - line.theoretical_qty
 
     @api.depends('inventory_date', 'product_id.stock_move_ids', 'theoretical_qty', 'product_uom_id.rounding')
     def _compute_outdated(self):

@@ -43,6 +43,19 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         }
 
+        hasNoDisabledNoSelectedReward() {
+            let self = this;
+            return this.state.reward_line_vals.some(reward => self.getSelectedQtyOfLine(reward) < reward.line.quantity && !reward.isSelected)
+        }
+
+        getDisplayStyle(reward) {
+            if (!reward.isSelected && this.state.program.fixed && this.state.program.isSelected && !this.hasNoDisabledNoSelectedReward()) {
+                return 'display:none'
+            } else {
+                return ''
+            }
+        }
+
         selectedQtyOnProgram() {
             let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 //            if (this.state.program.additional_reward_product_id) {
@@ -82,7 +95,10 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 newPrice = program.disc_fixed_price;
             } else if (program.reward_type == 'cart_get_x_free') {
                 newPrice = 0.0;
-            };
+            } else if (program.reward_type == 'cart_pricelist') {
+                let plItem = program.pricelistItems.find(pl => pl.product_id == reward.line.product.id);
+                newPrice = plItem && plItem.fixed_price || reward.line.price;
+            }
             return `  ${this.env.pos.format_currency(newPrice)}`;
         }
 
@@ -120,8 +136,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 let option = this.state.programOptions.find(op=>op.id==program.id);
                 let amountCheck = option.amountCheck;
                 let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
-
-                let discount_total = (to_apply_lines[program.str_id] || []).reduce((acc, line) => {
+                let discounted_lines = (Object.values(to_apply_lines).flat(2) || []);
+                let discount_total = discounted_lines.reduce((acc, line) => {
                     let amountPerLine;
                     if (program.incl_reward_in_order_type == 'no_incl') {
                         amountPerLine =
@@ -131,7 +147,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                             : 0.0;
                     } else if (program.incl_reward_in_order_type == 'unit_price') {
                         amountPerLine =
-                            (!program.only_condition_product ? reward_products.has(line.product.id) : false)
+                            (!program.only_condition_product ? !reward_products.has(line.product.id) : false)
                             ? line.promotion_usage_ids.filter(usage => this.env.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')
                                                         .reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0)
                             : 0.0;

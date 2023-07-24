@@ -116,7 +116,6 @@ class TransferStockInventory(models.Model):
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
             for line in rec.transfer_stock_inventory_line_ids:
                 key_import = (str(line.location_id), 'import')
-
                 key_export = (str(line.location_id), 'export')
                 if not self.x_classify:
                     if not enter_inventory_balance:
@@ -311,6 +310,40 @@ class TransferStockInventoryLine(models.Model):
     unit_price_to = fields.Float(string="Unit Price", compute='compute_unit_price_to')
     total_in = fields.Float(string='Total In', compute='compute_total_in')
     mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
+
+    @api.onchange('product_from_id', 'product_to_id')
+    def _get_domain_product(self):
+        if self.transfer_stock_inventory_id.x_classify:
+            return {'domain': {'product_from_id': [('product_type', '=', 'product')],
+                               'product_to_id': [('product_type', '=', 'product')]}}
+        else:
+            self._cr.execute("""
+                select pp.id from product_product pp 
+                left join product_template pt on pt.id = pp.product_tmpl_id 
+                left join res_brand rb on rb.id = pt.brand_id 
+                where rb.code in ('TKL','FMT')
+                """)
+            result = [r[0] for r in self._cr.fetchall()]
+            return {'domain': {'product_from_id': [('product_type', '=', 'product'), ('id', 'in', result)],
+                               'product_to_id': [('product_type', '=', 'product'), ('id', 'in', result)]}}
+
+    def check_brand(self, product_id):
+        if product_id.brand_id.code == 'TKL' and (not product_id.categ_id or product_id.categ_id.level != 2):
+            raise ValidationError(_('Sản phẩm bạn chọn chưa được cấu hình Nhóm hàng'))
+        if product_id.brand_id.code == 'FMT' and (not product_id.categ_id or product_id.categ_id.level != 4):
+            raise ValidationError(_('Sản phẩm bạn chọn chưa được cấu hình Kết cấu'))
+
+    @api.onchange('product_from_id', 'product_to_id')
+    def check_validate(self):
+        if not self.transfer_stock_inventory_id.x_classify:
+            if self.product_from_id:
+                self.check_brand(self.product_from_id)
+            if self.product_to_id:
+                self.check_brand(self.product_to_id)
+            if self.product_from_id and self.product_to_id:
+                if self.product_from_id.brand_id.id != self.product_to_id.brand_id.id:
+                    raise ValidationError(_('Sản phẩm [%s] và [%s] không cùng thương hiệu' % (
+                        self.product_from_id.name, self.product_to_id.name)))
 
     @api.depends('qty_out', 'unit_price_from')
     def compute_total_out(self):

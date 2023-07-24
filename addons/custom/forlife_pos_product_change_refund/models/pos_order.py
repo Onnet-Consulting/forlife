@@ -62,6 +62,11 @@ class PosOrder(models.Model):
             if l[2]['money_reduce_from_product_defective'] >0:
                 l[2]['price_subtotal'] = l[2]['price_subtotal'] - l[2]['money_reduce_from_product_defective']
                 l[2]['price_unit'] = l[2]['price_unit'] - l[2]['money_reduce_from_product_defective']
+            if l[2]['handle_change_refund_price'] > 0:
+                l[2]['discount_details_lines'] = [(0, 0, {
+                    'type': 'change_refund',
+                    'recipe': -l[2]['handle_change_refund_price']
+                })]
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
         Voucher = self.env['voucher.voucher']
@@ -163,8 +168,9 @@ class PosOrder(models.Model):
             if (history_points and history_points[0].date_order < old_orders[0].date_order) or not history_points:
                 origin_order_id = item.lines.refunded_orderline_id.mapped('order_id')
                 order_point = 0
+                product_point = 0
                 if origin_order_id:
-                    # Điểm đơn hàng = Tổng điểm (điểm cộng đơn + điểm cộng sự kiện + điểm cộng hệ số)
+                    # Điểm đơn hàng gốc = Tổng điểm (điểm cộng đơn + điểm cộng sự kiện + điểm cộng hệ số)
                     total_order_point = origin_order_id.point_order + origin_order_id.point_event_order + origin_order_id.plus_point_coefficient
                     if total_order_point > 0:
                         # Lấy toàn bộ line k có điểm của đơn gốc
@@ -172,12 +178,21 @@ class PosOrder(models.Model):
                         subtotal_paid_origin = sum(origin_lines_not_points.mapped('subtotal_paid'))
                         if subtotal_paid_origin:
                             # Lấy toàn bộ line k có điểm cộng của đơn trả
-                            lines_not_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (not x.point_addition and not x.point_addition_event and not x.plus_point_coefficient and not x.is_promotion))
+                            lines_not_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (not x.refunded_orderline_id.point_addition and not x.refunded_orderline_id.point_addition_event and not x.refunded_orderline_id.plus_point_coefficient and not x.is_promotion))
                             subtotal_paid_line = abs(sum(lines_not_points.mapped('subtotal_paid')))
                             order_point = 0 if subtotal_paid_line == 0 else math.floor((subtotal_paid_line/subtotal_paid_origin) * total_order_point)
 
-                # Điểm sản phẩm = Tổng điểm (điểm cộng đơn + điểm cộng sự kiện + điểm cộng hệ số) ở tất cả line
-                product_point = abs(sum(item.lines.mapped('point_addition')) + sum(item.lines.mapped('point_addition_event')) + sum(item.lines.mapped('plus_point_coefficient')))
+                    # Tính điểm trả sản phẩm vào trường pay_point_line
+                    # Điểm trả sản phẩm = (SL trả/ SL gốc) * Tổng điểm (điểm cộng đơn + điểm cộng sự kiện + điểm cộng hệ số) ở line gốc
+                    for line in item.lines.filtered(lambda x: x.refunded_orderline_id and x.qty and not x.is_promotion):
+                        origin_line = line.refunded_orderline_id
+                        # Tổng điểm cộng line gốc
+                        line_origin_point = origin_line.point_addition + origin_line.point_addition_event + origin_line.plus_point_coefficient
+                        # (SL trả/ SL gốc) * Tổng điểm cộng line gốc
+                        pay_point_line = math.floor(abs(line.qty)/origin_line.qty * line_origin_point)
+                        line.pay_point_line = pay_point_line
+                        product_point += pay_point_line
+
                 pay_point = order_point + product_point
             item.pay_point = pay_point
 

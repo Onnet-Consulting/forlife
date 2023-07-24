@@ -8,24 +8,20 @@ class ResGroup(models.Model):
     _inherit = 'res.groups'
 
     model_ids = fields.Many2many('ir.model', string='Model', compute='_get_model_id', store=True, compute_sudo=True)
-    model_count = fields.Integer(string='Model count', compute='_get_model_id', compute_sudo=True)
+    access_count = fields.Integer(string='Access count', compute='_get_access_count', compute_sudo=True)
 
     @api.depends('model_access')
-    def _get_model_id(self):
+    def _get_access_count(self):
         for group in self:
-            arr_model = []
-            if group.model_access:
-                arr_model = group.model_access.mapped('model_id.id')
-            group.model_ids = [(6, 0, arr_model)]
-            group.model_count = len(arr_model)
+            group.access_count = len(group.model_access)
 
     def model_smart_button(self):
         return {
             'name': 'Models',
             'type': 'ir.actions.act_window',
-            'res_model': 'ir.model',
+            'res_model': 'ir.model.access',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', self.model_ids.ids)],
+            'domain': [('id', 'in', self.model_access.ids)],
             'context': {'group_by': 'menu_ids'},
         }

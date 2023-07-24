@@ -20,14 +20,15 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_approve" type="object" class="oe_highlight" string="Approve" states="draft"/>
+                        <button name="action_approve" type="object" class="oe_highlight" string="Approve"
+                                states="draft"/>
                         <button name="action_refuse" type="object" string="Refuse" states="draft"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,approved,refuse,cancelled"/>
                     </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="pos_order_id" invisible="1"/>
+                                <field name="pos_order_id" readonly="1" force_save="1"/>
                                 <field name="origin_order"/>
                                 <field name="store_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
                             </group>
@@ -35,6 +36,7 @@
                                 <field name="company_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="send_approval_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="type" readonly="1" force_save="1"/>
                             </group>
                         </group>
                         <notebook>
@@ -45,10 +47,30 @@
                                         <field name="currency_id" invisible="1"/>
                                         <field name="product_id" readonly="1"/>
                                         <field name="purchase_price" readonly="1"/>
+                                        <field name="pos_order_line_id" invisible="1"/>
                                         <field name="return_price"/>
                                         <field name="expire_change_refund_date"/>
+                                        <field name="reason_refund_id" readonly="1" force_save="1"/>
                                         <field name="note"/>
+                                        <button name="action_open_lines_root" class="btn-secondary" type="object"
+                                                icon="fa-list"/>
                                     </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="company_id" invisible="1"/>
+                                                <field name="currency_id" invisible="1"/>
+                                                <field name="product_id"/>
+                                                <field name="purchase_price"/>
+                                                <field name="pos_order_line_id"/>
+                                            </group>
+                                            <group>
+                                                <field name="expire_change_refund_date"/>
+                                                <field name="return_price"/>
+                                                <field name="reason_refund_id"/>
+                                            </group>
+                                        </group>
+                                    </form>
                                 </field>
                             </page>
                         </notebook>

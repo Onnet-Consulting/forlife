@@ -8,7 +8,7 @@
             <xpath expr="//sheet/group" position="before">
                 <div class="oe_button_box" name="button_box">
                     <button name="model_smart_button" type="object" class="oe_stat_button">
-                        <field name="model_count" widget="statinfo" string="Models"/>
+                        <field name="access_count" widget="statinfo" string="Access"/>
                     </button>
                 </div>
             </xpath>

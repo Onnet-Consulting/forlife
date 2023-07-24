@@ -44,6 +44,7 @@ class PosOrderLine(models.Model):
                         'listed_price': line['original_price']
                     })
                 ]
+                line['discount'] = 0.0
         return super(PosOrderLine, self).create(vals_list)
 
     def _export_for_ui(self, orderline):

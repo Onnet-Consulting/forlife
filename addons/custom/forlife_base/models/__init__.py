@@ -27,3 +27,4 @@ from . import pos_payment
 from . import ir_model
 from . import ir_ui_menu
 from . import res_groups
+from . import ir_model_access
