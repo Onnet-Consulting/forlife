@@ -296,7 +296,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         data = self.get_bkav_data()
         origin_id = False
         is_publish = True
-        return bkav_action.create_invoice_bkav(self,data, is_publish, origin_id)
+        issue_invoice_type = self.issue_invoice_type
+        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():
