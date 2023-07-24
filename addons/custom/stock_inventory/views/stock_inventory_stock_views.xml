@@ -169,6 +169,7 @@
             <form string="Inventory">
             <header>
                 <button name="action_start" states="draft" string="Bắt đầu kiểm kê" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                <button name="clone_detail_data" type="object" class="oe_highlight" string="Xác nhận chốt tồn" attrs="{'invisible': [('state', '!=', 'waiting')]}"/>
                 <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'first_inv'), ('x_status', '!=', 2)]}" class="oe_highlight"/>
 <!--                <button name="action_open_inventory_lines" string="Tiếp tục kiểm kê" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" type="object" class="oe_highlight" groups="stock.group_stock_user"/>-->
                 <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'progress'), ('line_ids', '!=', [])]}" class="oe_highlight"/>
@@ -177,7 +178,7 @@
                 <button name="action_cancel_draft" states="cancel" string="Đưa về nháp" type="object"/>
                 <button name="action_cancel_draft" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" string="Hủy kiểm kê" type="object"
                     confirm="Nếu bạn hủy phiếu kiểm kê này, tất cả chi tiết kiểm kê của phiếu này sẽ bị xóa. Bạn có chắc chắn muốn hủy phiếu??"/>
-                <field name="state" widget="statusbar" statusbar_visible="draft,first_inv,second_inv,done"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,waiting,first_inv,second_inv,done"/>
             </header>
             <sheet>
                 <div class="oe_button_box" name="button_box">
@@ -215,11 +216,6 @@
                                attrs="{'readonly': ['|', ('state','not in',('draft')), ('warehouse_id','=',False)]}"
                                required="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
-                        <field name="product_ids"
-                               context="{'default_type': 'product'}"
-                               attrs="{'readonly': [('state','!=','draft')]}"
-                               force_save="1"
-                               widget="many2many_tags"/>
 <!--                        <field name="categ_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '2')]}"/>-->
 <!--                        <field name="marque_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '3')]}"/>-->
                         <field name="exhausted" invisible="1"/>
@@ -234,6 +230,28 @@
                     </group>
                 </group>
                 <notebook>
+                    <page string="Sản phẩm" name="product" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <button name="action_filter_product" type="object" class="oe_highlight margin_btn"
+                                string="Filter product" context="{'default_inventory_id': id}" states="draft"/>
+                        <field name="product_ids" context="{'default_type': 'product'}" attrs="{'readonly': [('state','!=','draft')]}" force_save="1">
+                            <tree create="0">
+                                <field name="default_code" optional="show"/>
+                                <field name="barcode" optional="show"/>
+                                <field name="name"/>
+                                <field name="categ_id" optional="show"/>
+                                <field name="uom_id" optional="show"/>
+                            </tree>
+                            <form create="0" edit="0" delete="0">
+                                <group>
+                                    <field name="name"/>
+                                    <field name="default_code"/>
+                                    <field name="barcode"/>
+                                    <field name="categ_id"/>
+                                    <field name="uom_id"/>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
                     <page string="Chi tiết kiểm kê" name="page_line_ids">
                         <field name="line_ids" nolabel="1" attrs="{'readonly': [('location_id','=',False)]}">
                             <tree editable="bottom">
@@ -243,9 +261,10 @@
                                 <field name="inventory_date" optional="hide" width="0.8"/>
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
-                                <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
+                                <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Tồn phần mềm"/>
                                 <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1"
                                        attrs="{'readonly': [('state','not in',('draft','first_inv'))]}"/>
+                                <field name="difference_qty1" force_save="1" optional="show"/>
                                 <field name="product_qty" force_save="1" string="SL xác nhận lần 2" attrs="{'readonly': [('state','not in',('draft','second_inv'))]}"/>
                                 <field name="difference_qty" force_save="1" optional="show"/>
                                 <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
@@ -254,8 +273,7 @@
                         </field>
                     </page>
                     <page string="Chi tiết đếm kiểm" name="detail_ids">
-                        <button name="clone_detail_data" type="object" class="oe_highlight margin_btn" string="Đồng bộ" attrs="{'invisible': [('x_status', '!=', 0)]}"/>
-                        <button name="btn_import_excel" type="object" class="oe_highlight  margin_btn" string="Nhập phiên bố sung" attrs="{'invisible': [('state', '!=', 'first_inv')]}"
+                        <button name="btn_import_excel" type="object" class="oe_highlight margin_btn" string="Nhập phiên bố sung" attrs="{'invisible': [('state', '!=', 'first_inv')]}"
                                 context="{'template_xml_id': 'template_import_inventory_session_add', 'start_row': 1}"/>
                         <button name="btn_import_excel" type="object" class="oe_highlight margin_btn" string="Nhập số liệu KK khác" attrs="{'invisible': [('state', '!=', 'first_inv')]}"
                                 context="{'template_xml_id': 'template_import_inventory_session_other', 'start_row': 2}"/>
@@ -263,9 +281,9 @@
                                 context="{'template_xml_id': 'template_import_inventory_session_add2', 'start_row': 2}"/>
                         <button name="btn_action_confirm1" type="object" class="oe_highlight margin_btn" string="Xác nhận lần 1" attrs="{'invisible': [('state', '!=', 'first_inv')]}"/>
                         <button name="btn_action_confirm2" type="object" class="oe_highlight margin_btn" string="Xác nhận lần 2" attrs="{'invisible': [('state', '!=', 'second_inv')]}"/>
-                        <button name="btn_show_all_inv_session" type="object" class="oe_highlight margin_btn" string="Phiên đã nhập"/>
-                        <button name="open_all_inv_session_detail" type="object" class="oe_highlight margin_btn" string="Chi tiết phiên"/>
-                        <button name="btn_export_inventory_detail" type="object" class="oe_highlight margin_btn" string="Xuất Excel"/>
+                        <button name="btn_show_all_inv_session" states="first_inv,second_inv,confirm,done" type="object" class="oe_highlight margin_btn" string="Phiên đã nhập"/>
+                        <button name="open_all_inv_session_detail" states="first_inv,second_inv,confirm,done" type="object" class="oe_highlight margin_btn" string="Chi tiết phiên"/>
+                        <button name="btn_export_inventory_detail" states="first_inv,second_inv,confirm,done" type="object" class="oe_highlight margin_btn" string="Xuất Excel"/>
                         <separator/>
                         <field name="detail_ids" nolabel="1"/>
                         <field name="x_status" invisible="1"/>

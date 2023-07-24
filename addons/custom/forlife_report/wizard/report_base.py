@@ -75,18 +75,6 @@ class ReportBase(models.AbstractModel):
         }
 
 
-class ReportCategoryType(models.AbstractModel):
-    _name = 'report.category.type'
-    _description = 'Category Type Relate'
-
-    category_type_id = fields.Many2one('product.category.type', string="Type of Product Category")
-    product_brand_id = fields.Many2one('product.category', 'Level 1')
-
-    @api.onchange('category_type_id')
-    def onchange_category_type(self):
-        self.product_brand_id = self.product_brand_id.filtered(lambda f: f.category_type_id in self.category_type_id)
-
-
 class ExportExcelClient(models.AbstractModel):
     _name = 'export.excel.client'
     _description = 'Export excel from client'

@@ -7,6 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import float_compare, float_is_zero
 from odoo import api, fields, models, _, tools
+import json
 
 
 def read_sql_file(file_path):
@@ -32,9 +33,10 @@ class Inventory(models.Model):
                                states={'done': [('readonly', True)]})
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
+        ('waiting', 'Chờ chốt tồn'),
         ('cancel', 'Hủy'),
-        ('first_inv', 'Xác nhận lần 1'),
-        ('second_inv', 'Xác nhận lần 2'),
+        ('first_inv', 'Chờ xác nhận lần 1'),
+        ('second_inv', 'Chờ xác nhận lần 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -233,14 +235,35 @@ class Inventory(models.Model):
             inventory.line_ids._generate_moves()
 
     def action_cancel_draft(self):
-        self.mapped('move_ids')._action_cancel()
-        self.line_ids.unlink()
-        self.write({'state': 'draft'})
+        self.sudo().mapped('move_ids')._action_cancel()
+        self.sudo().line_ids.unlink()
+        self.sudo().detail_ids.unlink()
+        self.sudo().write({'state': 'draft', 'x_status': 0})
 
     def action_start(self):
         self.ensure_one()
-        self._action_start()
-        self._check_company()
+        self._cr.execute(f"""
+        select array_agg(distinct name) as picking
+        from (select distinct sp.name as name
+              from stock_picking sp
+                       join stock_location sl on (sp.location_id = sl.id or sp.location_dest_id = sl.id)
+              where state = 'assigned'
+                and sl.code = '{self.location_id.code}'
+              union all
+              select distinct st.name as name
+              from stock_transfer st
+                       join stock_location sl on st.location_dest_id = sl.id
+              where state = 'out_approve'
+                and sl.code = '{self.location_id.code}') as datas
+        """)
+        result = self._cr.dictfetchone().get('picking') or []
+        if result:
+            action = self.env.ref('stock_inventory.request_confirmation_picking_wizard_action').read()[0]
+            action['context'] = dict(self._context, default_inventory_id=self.id, default_name=json.dumps(result))
+            return action
+        else:
+            self._action_start()
+            self._check_company()
         # return self.action_open_inventory_lines()
 
     def _action_start(self):
@@ -252,7 +275,7 @@ class Inventory(models.Model):
             if inventory.state != 'draft':
                 continue
             vals = {
-                'state': 'first_inv',
+                'state': 'waiting',
                 # 'date': fields.Datetime.now()
             }
             if not inventory.line_ids and not inventory.start_empty:
@@ -426,9 +449,9 @@ class Inventory(models.Model):
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
-                'product_qty': 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
+                'product_qty': 0, # 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
                 'theoretical_qty': data.get('quanty'),
-                'x_first_qty': data.get('quanty'),
+                'x_first_qty': 0, # data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
                 'product_uom_id': data.get('uom_id')
@@ -463,7 +486,7 @@ class Inventory(models.Model):
             })
         if val:
             self.env['inventory.detail'].create(val)
-            self.write({'x_status': 1})
+            self.write({'state': 'first_inv', 'x_status': 1})
             self.message_post(body='Đã đồng bộ danh sách sản phẩm Chi tiết kiểm kê sang Chi tiết kiểm đếm')
 
     def btn_import_excel(self):
@@ -633,6 +656,11 @@ from (select isl.product_id                       as product_id,
                 })
         return values
 
+    def action_filter_product(self):
+        action = self.env.ref('stock_inventory.filter_product_wizard_action').read()[0]
+        action['res_id'] = self.env['filter.product.wizard'].search([('inventory_id', '=', self.id)], limit=1).id
+        return action
+
 
 class InventoryLine(models.Model):
     _name = "stock.inventory.line"
@@ -683,8 +711,9 @@ class InventoryLine(models.Model):
     x_first_qty = fields.Float(
         'Đã đếm', default=0,
         digits='Product Unit of Measure')
-    difference_qty = fields.Float('Chênh lệch', compute='_compute_difference',
+    difference_qty = fields.Float('Chênh lệch lần 2', compute='_compute_difference',
                                   readonly=True, digits='Product Unit of Measure', search="_search_difference_qty")
+    difference_qty1 = fields.Float('Chênh lệch lần 1', compute='_compute_difference', digits='Product Unit of Measure')
     inventory_date = fields.Datetime('Ngày kiểm kho', readonly=True, default=fields.Datetime.now)
     outdated = fields.Boolean(string='Quantity outdated',
                               compute='_compute_outdated', search='_search_outdated')
@@ -720,21 +749,21 @@ class InventoryLine(models.Model):
         else:
             return False
 
-    @api.onchange('theoretical_qty')
-    def set_x_first_qty(self):
-        if self.theoretical_qty != self.x_first_qty:
-            self.x_first_qty = self.theoretical_qty
+    # @api.onchange('theoretical_qty')
+    # def set_x_first_qty(self):
+    #     if self.theoretical_qty != self.x_first_qty:
+    #         self.x_first_qty = self.theoretical_qty
 
-    @api.onchange('x_first_qty')
-    def set_product_qty(self):
-        if self.x_first_qty != self.product_qty:
-            self.product_qty = self.x_first_qty
+    # @api.onchange('x_first_qty')
+    # def set_product_qty(self):
+    #     if self.x_first_qty != self.product_qty:
+    #         self.product_qty = self.x_first_qty
 
-    @api.depends('product_qty', 'theoretical_qty')
+    # @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
         for line in self:
-            if line.difference_qty != line.product_qty - line.theoretical_qty:
-                line.difference_qty = line.product_qty - line.theoretical_qty
+            line.difference_qty1 = line.x_first_qty - line.theoretical_qty
+            line.difference_qty = line.product_qty - line.x_first_qty
 
     @api.depends('inventory_date', 'product_id.stock_move_ids', 'theoretical_qty', 'product_uom_id.rounding')
     def _compute_outdated(self):
