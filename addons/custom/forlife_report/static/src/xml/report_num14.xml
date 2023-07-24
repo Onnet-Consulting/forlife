@@ -21,7 +21,7 @@
                         <td><t t-esc="line.customer_name"/></td>
                         <td><t t-esc="line.product_code"/></td>
                         <td><t t-esc="line.product_name"/></td>
-                        <td><t t-esc="format_decimal(line.qty, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.qty, 2)"/></td>
                     </tr>
                 </t>
             </tbody>

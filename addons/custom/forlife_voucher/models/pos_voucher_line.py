@@ -20,7 +20,7 @@ class PosVoucherLine(models.Model):
     partner = fields.Many2one('res.partner')
     store_ids = fields.Many2many('store')
     state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True,
-                             tracking=True, default='new')
+                             default='new')
     start_date = fields.Datetime('Start date')
     apply_contemp_time = fields.Boolean()
     payment_method_id = fields.Many2one('pos.payment.method')
@@ -29,6 +29,10 @@ class PosVoucherLine(models.Model):
     program_voucher_id = fields.Many2one('program.voucher')
     product_voucher_name = fields.Char('Product Voucher Name')
     derpartment_name = fields.Char('Derpartment Name')
+    derpartment_id = fields.Many2one('hr.department')
+    state_app = fields.Boolean()
+    apply_many_times = fields.Boolean()
+    order_use_ids = fields.Integer()
 
     def _export_for_ui(self, voucher):
         return {

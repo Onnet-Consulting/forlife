@@ -117,7 +117,9 @@ class PosSession(models.Model):
                 'to_store_tranfer': extras['shop']
                 if 'shop' in extras and _type == 'out' and extras['shop'] and extras['type_tranfer'] == 2 else False,
                 'is_reference': True if 'reference' in extras and extras['reference'] else False,
-                'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') != 0 else False
+                'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') != 0 else False,
+                'expense_label_id': extras.get('expense_label', False),
+                'reason': reason or '',
             }
             for session in sessions
         ])

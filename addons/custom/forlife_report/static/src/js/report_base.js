@@ -78,9 +78,10 @@ odoo.define('forlife_report.report_base', function (require) {
             this.reportTitle = data.reportTitle;
             this.reportTemplate = data.reportTemplate;
             this.reportPager = data.reportPager;
-            this.report_filename = data.reportTitle + '.xls';
+            this.report_filename = data.reportTitle + '.xlsx';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
+            this.column_add = data.column_add;
             this.record_per_page = data.recordPerPage || this.data.length;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);
@@ -116,17 +117,22 @@ odoo.define('forlife_report.report_base', function (require) {
         },
 
         export_data_by_id: function (id, filename) {
-            var tableSelect = document.getElementById(id);
+            let tableSelect = document.getElementById(id);
             if (!tableSelect) {
                 alert(_.str.sprintf(_t("Data not found by id '%s'"), id));
             } else {
-                var downloadLink = document.createElement("a");
-                document.body.appendChild(downloadLink);
-                downloadLink.href = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURI("\uFEFF" + tableSelect.outerHTML);
-                downloadLink.download = filename;
-                downloadLink.click();
+                let export_data = tableSelect.outerText;
+                this._rpc({
+                    model: this.report_model,
+                    method: 'export_excel_from_client',
+                    args: [export_data, filename],
+                    context: this.odoo_context
+                }).then(res => {
+                    this.do_action(res);
+                });
             }
         },
+
         action_back: function () {
             window.history.back();
         }
@@ -134,6 +140,9 @@ odoo.define('forlife_report.report_base', function (require) {
 
     const AvailableReportAction = AbstractAction.extend({
         reportTemplate: 'AvailableReport',
+        events: {
+            'click .open_view': 'do_action_report',
+        },
 
         willStart: async function () {
             const reportPromise = this._rpc({
@@ -162,6 +171,9 @@ odoo.define('forlife_report.report_base', function (require) {
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
             }));
+        },
+        do_action_report: function (e) {
+            this.do_action(e.currentTarget.id);
         },
     })
 

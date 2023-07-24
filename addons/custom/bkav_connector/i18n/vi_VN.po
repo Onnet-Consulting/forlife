@@ -1,0 +1,240 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bkav_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-11 08:13+0000\n"
+"PO-Revision-Date: 2023-06-11 08:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.invoice_not_exists_bkav_form
+msgid "Detail"
+msgstr "Chi tiết sản phẩm"
+
+#. module: bkav_connector
+#: model:ir.model,name:bkav_connector.model_invoice_not_exists_bkav
+msgid "General Invoice Not Exists Bkav"
+msgstr "Tổng hợp hóa đơn Nhanh.vn chưa có HĐĐT"
+
+#. module: bkav_connector
+#: model:ir.actions.act_window,name:bkav_connector.invoice_not_exists_bkav_action
+#: model:ir.ui.menu,name:bkav_connector.invoice_not_exists_bkav_menu
+msgid "General invoice not exists BKAV"
+msgstr "Tổng hợp hóa đơn Nhanh.vn chưa có HĐĐT"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_account_bank_statement_line__invoice_date
+#: model:ir.model.fields,field_description:bkav_connector.field_account_move__invoice_date
+#: model:ir.model.fields,field_description:bkav_connector.field_account_payment__invoice_date
+msgid "Invoice E Date"
+msgstr "Ngày phát hành"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_account_bank_statement_line__invoice_guid
+#: model:ir.model.fields,field_description:bkav_connector.field_account_move__invoice_guid
+#: model:ir.model.fields,field_description:bkav_connector.field_account_payment__invoice_guid
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__invoice_guid
+msgid "Invoice Guid"
+msgstr ""
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_account_bank_statement_line__invoice_no
+#: model:ir.model.fields,field_description:bkav_connector.field_account_move__invoice_no
+#: model:ir.model.fields,field_description:bkav_connector.field_account_payment__invoice_no
+msgid "Invoice No"
+msgstr ""
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__invoice_date
+msgid "Invoice date"
+msgstr "Ngày phát hành"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__invoice_no
+msgid "Invoice no"
+msgstr ""
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__invoice_ids
+#: model_terms:ir.ui.view,arch_db:bkav_connector.invoice_not_exists_bkav_form
+msgid "Invoices"
+msgstr "Hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model,name:bkav_connector.model_account_move
+msgid "Journal Entry"
+msgstr "Bút toán "
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__move_date
+msgid "Move date"
+msgstr "Ngày hóa đơn"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.invoice_not_exists_bkav_form
+msgid "Negative Detail"
+msgstr "Chi tiết SP điều chỉnh"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav__negative_line_ids
+msgid "Negative Lines"
+msgstr "Chi tiết SP điều chỉnh"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__product_id
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__product_id
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__quantity
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__quantity
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: bkav_connector
+#: model:ir.actions.server,name:bkav_connector.ir_cron_general_invoice_not_exists_bkav_ir_actions_server
+#: model:ir.cron,cron_name:bkav_connector.ir_cron_general_invoice_not_exists_bkav
+msgid "Schedule: General invoice not exists BKAV"
+msgstr "Schedule: Tổng hợp hóa đơn chưa phát hành HĐĐT"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__price_subtotal
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__price_subtotal
+msgid "Subtotal"
+msgstr "Thành tiền"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__taxes_id
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__taxes_id
+msgid "Tax %"
+msgstr "Thuế %"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__price_unit
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__price_unit
+msgid "Unit Price"
+msgstr "Đơn giá"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_line__uom_id
+#: model:ir.model.fields,field_description:bkav_connector.field_invoice_not_exists_bkav_negative_line__uom_id
+msgid "Unit of Measure"
+msgstr "ĐVT"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_add_einvoice
+msgid "Add e invoice"
+msgstr "Tạo mới hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_token_create
+msgid "Api Token Create"
+msgstr "Tạo token"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.res_config_settings_view_form_bkav_connector
+msgid "BKAV Config Parameter"
+msgstr "Cấu hình tham số BKAV"
+
+#. module: bkav_connector
+#: model:ir.model,name:bkav_connector.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cấu hình"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_delete_einvoice
+msgid "Delete e invoice"
+msgstr "Xóa thông tin hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_download_invoice_as_pdf
+msgid "Download invoice as pdf"
+msgstr "Download hóa đơn điện tử dạng pdf"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_download_invoice_as_xml
+msgid "Download invoice as xml"
+msgstr "Download hóa đơn điện tử dạng xml"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_email
+msgid "Email"
+msgstr ""
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_get_availiable_serial
+msgid "Get availiable serial"
+msgstr "Lấy mẫu và ký hiệu hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_get_invoice_by_id
+msgid "Get invoice by id"
+msgstr "Lấy thông tin hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_get_status_invoices
+msgid "Get status invoices"
+msgstr "Lấy trạng thái hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_invoice_business
+msgid "Invoice business"
+msgstr "Nghiệp Vụ Hóa Đơn (Điều chỉnh, Thay thế)"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_password
+msgid "Password"
+msgstr ""
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_publish_invoice
+msgid "Publish invoice"
+msgstr "Phát hành hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_search_einvoice
+msgid "Search e invoice"
+msgstr "Tìm kiếm hóa đơn"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_res_config_settings__bkav_update_einvoice
+msgid "Update e invoice"
+msgstr "Cập nhật hóa đơn"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.bakv_invoice_form_view
+msgid "Preview eInvoice"
+msgstr "Preview HĐĐT"
+
+#. module: bkav_connector
+#: model_terms:ir.ui.view,arch_db:bkav_connector.bakv_invoice_form_view
+msgid "Dowload eInvoice"
+msgstr "Tải HĐĐT"
+
+#. module: bkav_connector
+#: model:ir.model.fields,field_description:bkav_connector.field_account_move__eivoice_file
+msgid "eInvoice PDF"
+msgstr "Tệp HĐĐT PDF"
+
+#. module: bkav_connector
+#. odoo-python
+#: code:addons/bkav_connector/models/invoice.py:0
+#: code:addons/bkav_connector/models/invoice.py:0
+#, python-format
+msgid "Don't have any eInvoice in this invoice. Please check again!"
+msgstr "Không có HĐĐT ở hóa đơn này. Vui lòng kiểm tra lại!"

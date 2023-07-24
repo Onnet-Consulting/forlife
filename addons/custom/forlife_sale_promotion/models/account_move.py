@@ -50,7 +50,8 @@ class AccountMove(models.Model):
                 account_payable_customer_id = self.partner_id.property_account_payable_id
                 if not account_payable_customer_id:
                     raise UserError("Chưa cấu hình tài khoản phải trả cho khách hàng")
-
+                account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
+                account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                 if pr.promotion_type in ['vip_amount', 'reward']:
                     line_allow = True
                     account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id
@@ -67,7 +68,7 @@ class AccountMove(models.Model):
 
                 # cho phép tạo bút toán với các promotion type
                 if line_allow:
-                    account_tax = pr.product_id.taxes_id
+                    account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                     account_tax_id = False
                     product_with_tax_value = abs(pr.value)
                     product_value_without_tax = abs(pr.value)
@@ -77,7 +78,7 @@ class AccountMove(models.Model):
                         account_tax_ids = account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                         if len(account_tax_ids) and account_tax_ids[0].account_id:
                             account_tax_id = account_tax_ids[0].account_id
-                            product_value_without_tax = account_tax_id and product_with_tax_value - (product_with_tax_value * account_tax[0].amount / 100)
+                            product_value_without_tax = round(account_tax_id and ((product_with_tax_value * 100) / (account_tax[0].amount + 100)), 0)
                             product_tax_value = product_with_tax_value - product_value_without_tax
 
                     line_ids.append({
@@ -96,6 +97,9 @@ class AccountMove(models.Model):
                         'debit': 0,
                         'credit': product_value_without_tax
                     })
+                    if pr.promotion_type == 'nhanh_shipping_fee':
+                        if not account_repartition_tax or not account_repartition_tax[0].account_id:
+                            raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
 
                     # có thế thì tạo bút toán cho thuế
                     if account_tax_id:
@@ -141,8 +145,8 @@ class AccountMoveLine(models.Model):
                 if line.product_id:
                     sale_line_id = line.sale_line_ids
                     order_id = sale_line_id.order_id
-                    income_online_account_id = line.product_id.categ_id.income_online_account_id
-                    income_sale_account_id = line.product_id.categ_id.income_sale_account_id
+                    income_online_account_id = line.with_company(line.company_id).product_id.categ_id.income_online_account_id
+                    income_sale_account_id = line.with_company(line.company_id).product_id.categ_id.income_sale_account_id
                     if not sale_line_id.x_free_good:
                         if order_id.x_sale_chanel == "online" and income_online_account_id:
                             line.account_id = income_online_account_id or line.account_id

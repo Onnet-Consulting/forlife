@@ -28,20 +28,23 @@ class PosConfig(models.Model):
             ('program_id', 'in', programs)
         ])
         result = dict()
+        no_active_programs = []
         value_programs = {key: 0 for key in programs}
         for usage in usages:
             value_programs[usage.program_id.id] += usage.order_line_id.qty
         for (program_id, qty) in value_programs.items():
             program = self.env['promotion.program'].browse(program_id)
-            if program.promotion_type in ['code', 'cart']:
-                applied_number = len(usages.filtered(lambda u: u.program_id.id == program_id).mapped('order_id'))
+            if not program.exists():
+                no_active_programs.append(program_id)
             else:
-                applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
-            result[program_id] = applied_number
+                if program.promotion_type in ['code', 'cart', 'pricelist']:
+                    applied_number = len(usages.filtered(lambda u: u.program_id.id == program_id).mapped('order_id'))
+                else:
+                    applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
+                result[program_id] = applied_number
 
         # Get history limit qty per program
-        combo_program_ids = input_program_ids.filtered(
-            lambda p: p.limit_usage_per_program and p.promotion_type in ('combo', 'code', 'cart'))
+        combo_program_ids = input_program_ids.filtered(lambda p: p.exists() and p.limit_usage_per_program)
         limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
         all_usage_promotions = {}
         for program in combo_program_ids:
@@ -53,6 +56,7 @@ class PosConfig(models.Model):
                 applied_number = len(usages.mapped('order_id'))
             all_usage_promotions[program.id] = applied_number
         result['all_usage_promotions'] = all_usage_promotions
+        result['no_active_programs'] = no_active_programs
         return result
 
     def load_promotion_valid_new_partner(self, partner_id, promotion_programs):
@@ -62,10 +66,11 @@ class PosConfig(models.Model):
             return []
         partner = self.env['res.partner'].sudo().browse(partner_id)
         result = []
-        self.env.cr.execute("SELECT id,customer_domain FROM promotion_program WHERE id IN %(promotion_programs)s",
+        self.env.cr.execute("SELECT id,customer_domain FROM promotion_program "
+                            "WHERE id IN %(promotion_programs)s AND active = true AND state = 'in_progress'",
                             {'promotion_programs': tuple(promotion_programs)})
         existed = self.env.cr.dictfetchall()
-        existed_customer_domain = {str(p['id']): p['customer_domain'] for p in existed}
+        existed_customer_domain = {str(p['id']): p.get('customer_domain', '[]') for p in existed}
         for program_id in promotion_programs:
             if program_id in existed_customer_domain.keys() and partner.filtered_domain(literal_eval(existed_customer_domain[program_id])):
                 result.append(program_id)

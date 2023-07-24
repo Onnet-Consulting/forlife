@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_inventory_form_custom" model="ir.ui.view">
+            <field name="name">view_inventory_form_custom</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock_inventory.view_inventory_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_approved_first'][1]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_approved_first</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approved_first'][2]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_approved_first</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_approved_second,stock.group_stock_manager</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel_draft'][2]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

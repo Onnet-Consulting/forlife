@@ -5,8 +5,6 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
 COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
@@ -21,7 +19,7 @@ class ReportNum6(models.TransientModel):
     date = fields.Date('Date', required=True)
     start_time = fields.Float('Start time', default=0)
     end_time = fields.Float('End time', default=23 + (59 / 60))
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num6_warehouse_rel', string='Warehouse')
 
     @api.constrains('start_time', 'end_time')
     def check_times(self):
@@ -33,7 +31,7 @@ class ReportNum6(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         start_time = datetime.strptime('{} {:02d}:{:02d}:00'.format(
             self.date, int(self.start_time // 1), int(self.start_time % 1 * 60)), '%Y-%m-%d %H:%S:%M') + relativedelta(hours=-tz_offset)
@@ -88,7 +86,7 @@ product_info as (
     select 
         pp.id                                                                   as product_id,
         pp.barcode                                                              as barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+        coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
         split_part(pc.complete_name, ' / ', 2)                          		as product_group,
         split_part(pc.complete_name, ' / ', 3)                          		as product_line
     from product_product pp
@@ -97,17 +95,21 @@ product_info as (
     where pp.id in (select product_id from products)
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id in (select product_id from products)
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 )
 select row_number() over ()                                                       as num,
         pr.product_id                                                             as product_id,
@@ -119,17 +121,15 @@ select row_number() over ()                                                     
         pi.product_name                                                           as product_name,
         pi.product_group                                                          as product_group,
         pi.product_line                                                           as product_line,
-        ad_size.value                                                             as product_size,
-        ad_color.value                                                            as product_color,
-        ad_gender.value                                                           as gender
+        ad.attrs::json -> '{attr_value.get('size', '')}'                          as product_size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                       as product_color,
+        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                     as gender        
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
     left join product_info pi on pi.product_id = pr.product_id
-    left join attribute_data ad_size on ad_size.product_id = pr.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
-    left join attribute_data ad_color on ad_color.product_id = pr.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
-    left join attribute_data ad_gender on ad_gender.product_id = pr.product_id and ad_gender.attrs_code = '{attr_value.get('gioi_tinh', '')}'
+    left join attribute_data ad on ad.product_id = pr.product_id
 order by num
 """
         return query
@@ -138,10 +138,10 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1]
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (
+                self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1])
         query = self._get_query(warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,

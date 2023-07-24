@@ -1,0 +1,424 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_product_combo
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20230507\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-13 07:08+0000\n"
+"PO-Revision-Date: 2023-06-13 07:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
+msgid "Account Mapping"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_product__attribute_ids
+msgid "Attribute"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/models/product_combo.py:0
+#: code:addons/forlife_product_combo/models/product_combo_line.py:0
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__canceled
+#, python-format
+msgid "Canceled"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__color_attribute_id
+msgid "Color Deviation Allowed"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__combo_id
+msgid "Combo"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__combo_product_ids
+msgid "Combo Applied Products"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_comboview_form
+msgid "Combo Sequence"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__code
+msgid "Combo code"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__create_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__create_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__create_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__create_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__create_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__create_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__account_move__invoice_type__decrease
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__wizard_increase_decrease_invoice__invoice_type__decrease
+msgid "Decrease"
+msgstr "Giảm"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,help:forlife_product_combo.field_product_combo_line__product_uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__description_combo
+msgid "Description combo"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__line_ids
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
+msgid "Detail"
+msgstr "Chi tiết hóa đơn"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__discount
+msgid "Discount (%)"
+msgstr "Chiết khấu %"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__display_name
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__display_name
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__display_name
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.constraint,message:forlife_product_combo.constraint_product_combo_combo_check_date
+msgid "End date may not be before the starting date."
+msgstr ""
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/models/product_combo.py:0
+#: code:addons/forlife_product_combo/models/product_combo_line.py:0
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__finished
+#, python-format
+msgid "Finished"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__from_date
+msgid "From Date"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_combo_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/models/product_combo.py:0
+#: code:addons/forlife_product_combo/models/product_combo_line.py:0
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__in_progress
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_combo_view_search
+#, python-format
+msgid "In Progress"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__account_move__invoice_type__increase
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__wizard_increase_decrease_invoice__invoice_type__increase
+msgid "Increase"
+msgstr "Tăng"
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_wizard_increase_decrease_invoice_line
+msgid "Increase Decrease Invoice Line Wizard"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_wizard_increase_decrease_invoice
+msgid "Increase Decrease Invoice Wizard"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.account_move_forlife_combo_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.inherit_invoice_form_view
+msgid "Increase/ Decrease Invoice"
+msgstr "Tăng/giảm hóa đơn"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__is_refund
+msgid "Is Refund"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_account_move
+msgid "Journal Entry"
+msgstr "Bút toán "
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo____last_update
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line____last_update
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice____last_update
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__write_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__write_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__write_uid
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__write_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__write_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__write_date
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__max_quantity
+msgid "Maximum Quantity"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__invoice_line_id
+msgid "Move Line"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__origin_invoice_id
+msgid "Move Origin"
+msgstr ""
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/models/product_combo.py:0
+#: code:addons/forlife_product_combo/models/product_combo_line.py:0
+#: model:ir.model.fields.selection,name:forlife_product_combo.selection__product_combo__state__new
+#, python-format
+msgid "New"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.actions.act_window,help:forlife_product_combo.product_combo_action
+msgid "No program found."
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_bank_statement_line__origin_invoice_id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_move__origin_invoice_id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_payment__origin_invoice_id
+msgid "Origin Invoice"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__parent_id
+msgid "Parent"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_product_template
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__product_id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__product_id
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_product_combo
+#: model:ir.actions.act_window,name:forlife_product_combo.product_combo_action
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_product__combo_id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_template__combo_id
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_comboview_form
+msgid "Product Combo"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: forlife_product_combo
+#: model:ir.ui.menu,name:forlife_product_combo.menu_product_combo
+msgid "Product combo"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_comboview_form
+msgid "Products"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__quantity
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__sku
+msgid "SKU"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__size_attribute_id
+msgid "Size Deviation Allowed"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__state
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__state
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_combo_view_search
+msgid "State"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__price_subtotal
+msgid "Subtotal"
+msgstr "Thành tiền"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__tax_amount
+msgid "Tax Amount"
+msgstr "Tiền thuế"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__tax_ids
+msgid "Taxes"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo__to_date
+msgid "To Date"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__price_total
+msgid "Total"
+msgstr "Thành tiền"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_bank_statement_line__invoice_type
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_move__invoice_type
+#: model:ir.model.fields,field_description:forlife_product_combo.field_account_payment__invoice_type
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__invoice_type
+msgid "Type"
+msgstr "Loại"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__price_unit
+msgid "Unit Price"
+msgstr "Đơn giá"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_product_combo_line__product_uom_id
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__uom_id
+msgid "Unit of Measure"
+msgstr "Đơn vị"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__vendor_price
+msgid "Vendor Price"
+msgstr ""
+
+#. module: forlife_product_combo
+#. odoo-javascript
+#: code:addons/forlife_product_combo/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#: code:addons/forlife_product_combo/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#: code:addons/forlife_product_combo/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid "Warning"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.actions.act_window,name:forlife_product_combo.wizard_increase_decrease_invoice_action
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.wizard_increase_decrease_invoice_view_form
+msgid "Wizard increase decrease invoice"
+msgstr "Tăng/giảm hóa đơn"
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.product_comboview_form
+msgid "combo code"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_product_combo
+msgid "product combo"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model,name:forlife_product_combo.model_product_combo_line
+msgid "product combo Line"
+msgstr ""
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice__selected_all
+msgid "Selected all"
+msgstr "Chọn tất cả"
+
+#. module: forlife_product_combo
+#: model:ir.model.fields,field_description:forlife_product_combo.field_wizard_increase_decrease_invoice_line__is_selected
+msgid "Selected"
+msgstr "Chọn"
+
+#. module: forlife_product_combo
+#. odoo-python
+#: code:addons/forlife_product_combo/wizard/wizard_increase_decrease_invoice.py:0
+#: code:addons/m_onnet_odoo_mfl2201er/addons/custom/forlife_product_combo/wizard/wizard_increase_decrease_invoice.py:0
+#, python-format
+msgid "Please select at least 1 line to create an Increment/Decrease entry!"
+msgstr "Vui lòng chọn ít nhất 1 dòng để tạo bút toán Tăng/giảm!"
+
+#. module: forlife_product_combo
+#: model_terms:ir.ui.view,arch_db:forlife_product_combo.account_move_forlife_combo_inherit
+msgid "Increase/Decrease Invoice"
+msgstr "HĐ Tăng/giảm"

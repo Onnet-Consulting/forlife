@@ -20,16 +20,17 @@
         'stock',
         'report_xlsx',
         'forlife_base',
+        'forlife_stock',
+        'purchase_request',
         'forlife_point_of_sale',
         'forlife_customer_card_rank',
+        'forlife_pos_product_change_refund',
+        'forlife_business_objective_plan',
     ],
 
     'data': [
         'security/ir.model.access.csv',
-
-        'data/attribute_code_config_data.xml',
-
-        'views/attribute_code_config_views.xml',
+        'security/res_group_security.xml',
 
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',
@@ -55,6 +56,27 @@
         'wizard/report_num20_views.xml',
         'wizard/report_num21_views.xml',
         'wizard/report_num22_views.xml',
+        'wizard/report_num23_views.xml',
+        'wizard/report_num24_views.xml',
+        'wizard/report_num25_views.xml',
+        'wizard/report_num_26.xml',
+        'wizard/report_num_27.xml',
+        'wizard/report_num_28.xml',
+        'wizard/report_num_29.xml',
+
+        'report/report_paperformat.xml',
+        'report/print_purchase_request.xml',
+        'report/print_purchase_order.xml',
+        'report/print_stock_transfer_ingoing.xml',
+        'report/print_stock_transfer_outgoing.xml',
+        'report/print_stock_picking_ingoing.xml',
+        'report/print_stock_picking_outgoing.xml',
+
+        'views/attribute_code_config_views.xml',
+        'views/purchase_order_views.xml',
+        'views/purchase_request_views.xml',
+        'views/stock_transfer_views.xml',
+        'views/stock_picking_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

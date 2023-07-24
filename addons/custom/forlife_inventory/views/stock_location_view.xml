@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="forlife_inventory_stock_location_view">
+            <field name="name">forlife.inventory.stock.location.view</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='id_deposit']" position="after">
+                    <field name="account_stock_give" attrs="{'invisible':[('id_deposit','=',False)], 'required': [('id_deposit','=',True)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

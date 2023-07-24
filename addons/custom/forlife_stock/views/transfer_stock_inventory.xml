@@ -34,14 +34,14 @@
                     <button string="Approve" name="action_approve"
                             type="object"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
-                            confirm="Bạn có thực sự muốn phê duyệt cân đối tồn kho?"/>
+                            confirm="Bạn có thực sự muốn phê duyệt phiếu không?"/>
                     <button string="Reject" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
-                            type="action"
+                            type="action" id="reject"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
                             context="{'click_button': 'reject'}"/>
-                    <button string="Cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
+                    <button string="Cancel" id="cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject'))]}"
-                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu kiểm kê cân tồn không?"/>
+                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu không?"/>
                      <button string="Trở về nháp" name="action_draft"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
@@ -128,17 +128,17 @@
         </field>
     </record>
     <record id="transfer_stock_inventory_action" model="ir.actions.act_window">
-        <field name="name">Nhập xuất tách mã-kiểm kê cân tồn</field>
+        <field name="name">Kiểm kê cân tồn</field>
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
     </record>
 
 
     <record id="transfer_stock_inventory_classify_action" model="ir.actions.act_window">
-        <field name="name">Phân loại hàng lỗi</field>
+        <field name="name">Xử lý hàng lỗi</field>
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('x_classify', '=', True)]</field>
-        <field name="context">{"x_classify":1}</field>
+        <field name="context">{'x_classify':1, 'default_x_classify':1}</field>
     </record>
 </odoo>

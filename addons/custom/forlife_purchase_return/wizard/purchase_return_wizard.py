@@ -1,6 +1,5 @@
 from odoo import fields, models, api, _
-from collections import defaultdict
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseReturnWizardLine(models.TransientModel):
@@ -14,10 +13,12 @@ class PurchaseReturnWizardLine(models.TransientModel):
     purchase_returned = fields.Integer("Returned Quantity", required=True)
     purchase_remain = fields.Integer("Remain Quantity", required=True)
     exchange_quantity = fields.Float("Exchange", digits='Product Unit of Measure', required=True)
-    quantity = fields.Integer("Quantity", digits='Product Unit of Measure', required=True)
+    quantity = fields.Integer("Quantity")
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
     vendor_price = fields.Float(string="Vendor Price")
+    price_unit = fields.Float(string="Unit Price")
     purchase_line_id = fields.Many2one('purchase.order.line')
+    is_selected = fields.Boolean(string='Selected')
 
     @api.onchange('quantity')
     def _onchange_quantity(self):
@@ -42,17 +43,20 @@ class PurchaseReturnWizard(models.TransientModel):
 
     purchase_id = fields.Many2one('purchase.order')
     purchase_return_lines = fields.One2many('purchase.return.wizard.line', 'wizard_id', 'Lines')
-    # move_dest_exists = fields.Boolean('Chained Move Exists', readonly=True)
-    # original_location_id = fields.Many2one('stock.location')
-    # parent_location_id = fields.Many2one('stock.location')
     company_id = fields.Many2one(related='purchase_id.company_id')
     location_id = fields.Many2one(
         'stock.location', 'Return Location',
         domain="['|', '&', ('return_location', '=', True), ('company_id', '=', False), '&', ('return_location', '=', True), ('company_id', '=', company_id)]")
+    selected_all = fields.Boolean(string='Selected all')
+
+    @api.onchange('selected_all')
+    def onchange_selected_all(self):
+        self.purchase_return_lines.write({
+            'is_selected': self.selected_all
+        })
 
     @api.onchange('purchase_id')
     def _onchange_purchase_id(self):
-        move_dest_exists = False
         purchase_return_lines = [(5,)]
         if self.purchase_id and self.purchase_id.custom_state != 'approved':
             raise UserError(_("You may only return Approved Purchase."))
@@ -61,12 +65,8 @@ class PurchaseReturnWizard(models.TransientModel):
         line_fields = [f for f in self.env['stock.return.picking.line']._fields.keys()]
         purchase_return_lines_data_tmpl = self.env['purchase.return.wizard.line'].default_get(line_fields)
         for line in self.purchase_id.order_line:
-            if line.received <= 0:
+            if line.qty_received <= 0 or (line.qty_received - line.qty_returned) <= 0:
                 continue
-            if (line.received - line.qty_returned) <= 0:
-                continue
-            # if move.move_dest_ids:
-            #     move_dest_exists = True
             purchase_return_lines_data = dict(purchase_return_lines_data_tmpl)
             purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line))
             if purchase_return_lines_data.get('purchase_remain', 0) > 0:
@@ -76,21 +76,15 @@ class PurchaseReturnWizard(models.TransientModel):
             raise UserError(_("No products to return (only lines in Done state and not fully returned yet can be returned)."))
         if self.purchase_id:
             self.purchase_return_lines = purchase_return_lines
-            # self.move_dest_exists = move_dest_exists
-            # self.parent_location_id = self.purchase_id.picking_type_id.warehouse_id and self.purchase_id.picking_type_id.warehouse_id.view_location_id.id or self.purchase_id.location_id.location_id.id
-            # self.original_location_id = self.purchase_id.location_id.id
-            # location_id = self.purchase_id.partner_id.property_stock_supplier.id
-            # if self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.return_location:
-            #     location_id = self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.id
             self.location_id = self.purchase_id.location_id.id
 
     @api.model
     def _prepare_stock_return_purchase_line_vals(self, purchase_line):
-        purchase_received = purchase_line.received
+        purchase_received = purchase_line.qty_received
         purchase_returned = purchase_line.qty_returned
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price
-        # quantity = float_round(quantity, precision_rounding=purchase_line.product_id.purchase_uom.rounding)
+        price_unit = purchase_line.price_unit
         return {
             'product_id': purchase_line.product_id.id,
             'purchase_received': purchase_received,
@@ -99,6 +93,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'exchange_quantity': exchange_quantity,
             'quantity': 0,
             'vendor_price': vendor_price,
+            'price_unit': price_unit,
             'uom_id': purchase_line.purchase_uom.id if purchase_line.purchase_uom else purchase_line.product_id.uom_id.id,
             'purchase_line_id': purchase_line.id
         }
@@ -115,8 +110,6 @@ class PurchaseReturnWizard(models.TransientModel):
             'source_document': _("Return of %s") % self.purchase_id.name,
             'dest_address_id': self.purchase_id.partner_id.id
         }
-        # TestPickShip.test_mto_moves_return, TestPickShip.test_mto_moves_return_extra,
-        # TestPickShip.test_pick_pack_ship_return, TestPickShip.test_pick_ship_return, TestPickShip.test_return_lot
         if self.purchase_id.location_id:
             vals['source_location_id'] = self.purchase_id.location_id.id
         if self.location_id:
@@ -124,37 +117,62 @@ class PurchaseReturnWizard(models.TransientModel):
         return vals
 
     def _prepare_purchase_line_default_values(self, return_line):
+        if return_line.purchase_line_id.discount_percent:
+            discount = return_line.purchase_line_id.discount_percent * return_line.purchase_line_id.price_unit * return_line.quantity * 0.01
+            readonly_discount = True
+        else:
+            readonly_discount = False
+            discount = 0
+        price_unit = return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity and return_line.vendor_price else return_line.purchase_line_id.price_unit
+        location_id = self.location_id.id if self.location_id else (return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id)
+        purchase_quantity = return_line.quantity / return_line.exchange_quantity if return_line.exchange_quantity else return_line.quantity
+
+        production_data = []
+        for material_line_id in return_line.purchase_line_id.purchase_order_line_material_line_ids:
+            production_data.append((0, 0, {
+                'product_id': material_line_id.product_id.id,
+                'uom': material_line_id.uom.id,
+                'production_order_product_qty': material_line_id.production_order_product_qty,
+                'production_line_product_qty': return_line.purchase_line_id.product_qty,
+                'production_line_price_unit': material_line_id.production_line_price_unit,
+                'price_unit': material_line_id.price_unit if material_line_id.product_id.x_type_cost_product else 0,
+                'product_qty': (material_line_id.product_qty/return_line.purchase_line_id.product_qty) * return_line.quantity,
+                'is_from_po': True,
+                'compute_flag': False,
+            }))
+
         vals = {
             'product_id': return_line.product_id.id,
             'description': return_line.product_id.name,
             'product_uom': return_line.uom_id.id,
-            'purchase_quantity': return_line.quantity / return_line.exchange_quantity,
+            'purchase_quantity': purchase_quantity,
             'exchange_quantity': return_line.exchange_quantity,
             'product_qty': return_line.quantity,
             'vendor_price': return_line.vendor_price,
-            'price_unit': return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity else 0,
-            'origin_po_line_id': return_line.purchase_line_id.id
+            'price_unit': price_unit,
+            'origin_po_line_id': return_line.purchase_line_id.id,
+            'purchase_uom': return_line.purchase_line_id.purchase_uom.id,
+            'taxes_id': [(6, 0, return_line.purchase_line_id.taxes_id.ids)],
+            'discount_percent': return_line.purchase_line_id.discount_percent,
+            'discount': discount,
+            'readonly_discount': readonly_discount,
+            'occasion_code_id': return_line.purchase_line_id.occasion_code_id.id,
+            'production_id': return_line.purchase_line_id.production_id.id,
+            'account_analytic_id': return_line.purchase_line_id.account_analytic_id.id,
+            'receive_date': return_line.purchase_line_id.receive_date,
+            'location_id': location_id,
+            'purchase_order_line_material_line_ids': production_data,
         }
         return vals
 
     def _create_returns(self):
         line_vals = []
-        for return_line in self.purchase_return_lines:
+        for return_line in self.purchase_return_lines.filtered(lambda x: x.is_selected):
             # TODO : float_is_zero?
             if return_line.quantity:
-                # po_line = return_line.purchase_line_id.copy({
-                #     'product_id': return_line.product_id.id
-                # })
-                # po_line.onchange_product_id()
-                # po_line.write(self._prepare_purchase_line_default_values(return_line))
                 line_vals.append((0, 0, self._prepare_purchase_line_default_values(return_line)))
 
         new_purchase = self.purchase_id.copy(self._prepare_purchase_default_values(line_vals))
-        # for line in new_purchase.order_line:
-        #     current_val = line.read(['purchase_quantity', 'exchange_quantity', 'vendor_price', 'price_unit'])
-        #     line.onchange_product_id()
-        #     line.write(current_val[0])
-        #     line.onchange_price_unit()
         picking_type_id = new_purchase.picking_type_id.id
         new_purchase.message_post_with_view('mail.message_origin_link',
             values={'self': new_purchase, 'origin': self.purchase_id},
@@ -162,6 +180,11 @@ class PurchaseReturnWizard(models.TransientModel):
         return new_purchase.id, picking_type_id
 
     def create_returns(self):
+        line_selected = self.purchase_return_lines.filtered(lambda x: x.is_selected)
+        if not line_selected:
+            raise ValidationError(_('Please select at least 1 line to create an PO return!'))
+        if line_selected.filtered(lambda x: x.quantity == 0):
+            raise ValidationError(_('Please input quantity greater than 0 in line selected!'))
         for wizard in self:
             new_purchase_id, pick_type_id = wizard._create_returns()
         # Override the context to disable all the potential filters that could have been set previously

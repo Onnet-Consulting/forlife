@@ -33,7 +33,8 @@
         'views/pos_order.xml',
         'views/res_partner_view.xml',
         'security/ir.model.access.csv',
-        'views/promotion_inherit_view.xml'
+        'views/promotion_inherit_view.xml',
+        'views/point_compensate_request_views.xml',
     ],
     'installable': True,
     'application': True,
@@ -41,6 +42,7 @@
         'point_of_sale.assets': [
             'forlife_pos_point_order/static/src/xml/OrderDetails.xml',
             'forlife_pos_point_order/static/src/xml/OrderLineDetails.xml',
+            'forlife_pos_point_order/static/src/xml/OrderLineChangeRefund.xml',
             'forlife_pos_point_order/static/src/xml/PointsConsumption.xml',
             'forlife_pos_point_order/static/src/xml/PointsConsumptionPopup.xml',
             'forlife_pos_point_order/static/src/xml/EditlistPopup.xml',

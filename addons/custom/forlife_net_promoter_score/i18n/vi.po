@@ -6,21 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 10:27+0000\n"
-"PO-Revision-Date: 2023-02-23 10:27+0000\n"
+"POT-Creation-Date: 2023-06-02 02:51+0000\n"
+"PO-Revision-Date: 2023-06-02 02:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-
-#. module: forlife_net_promoter_score
-#: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_app_api_link_action
-#: model:ir.model,name:forlife_net_promoter_score.model_forlife_app_api_link
-#: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_app_api_link_menu
-msgid "App Api Link"
-msgstr "Đường dẫn đẩy thông báo lên App"
 
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__areas
@@ -49,26 +42,10 @@ msgid "Brands"
 msgstr "Thương hiệu"
 
 #. module: forlife_net_promoter_score
-#. odoo-python
-#: code:addons/forlife_net_promoter_score/models/forlife_comment.py:0
-#, python-format
-msgid "Can't find App API link with key '%s'"
-msgstr "Không tìm thấy đường dẫn đẩy thông báo lên App bằng từ khóa '%s'"
-
-#. module: forlife_net_promoter_score
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
-msgid "Cancel"
-msgstr "Hủy"
-
-#. module: forlife_net_promoter_score
-#. odoo-python
-#: code:addons/forlife_net_promoter_score/models/forlife_comment.py:0
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_comment_action
 #: model:ir.model,name:forlife_net_promoter_score.model_forlife_comment
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__comment
 #: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_comment_menu
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
-#, python-format
 msgid "Comment"
 msgstr "Đánh giá NPS"
 
@@ -78,35 +55,20 @@ msgid "Comment Date"
 msgstr "Ngày đánh giá"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment
-msgid "Comment NPS"
-msgstr "Ghi chú"
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment_id
-msgid "Comments"
-msgstr ""
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__company_id
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__company_id
 msgid "Company"
 msgstr "Công ty"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_uid
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_uid
 msgid "Created by"
 msgstr "Được tạo bởi"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_date
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
@@ -138,10 +100,8 @@ msgid "Description"
 msgstr "Diễn giải"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__display_name
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
@@ -167,20 +127,13 @@ msgid "Finish date may not be before the starting date."
 msgstr "Ngày kết thúc không được trước ngày bắt đầu."
 
 #. module: forlife_net_promoter_score
-#: model:ir.model,name:forlife_net_promoter_score.model_form_update_comment
-msgid "Form Update Comment"
-msgstr "Phom đánh giá NPS"
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__header
 msgid "Header"
 msgstr "Tiêu đề"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__id
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__id
 msgid "ID"
 msgstr ""
@@ -207,38 +160,22 @@ msgid "Is Desc"
 msgstr ""
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__key
-msgid "Key"
-msgstr "Từ khóa"
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.constraint,message:forlife_net_promoter_score.constraint_forlife_app_api_link_key_uniq
-msgid "Key must be unique"
-msgstr "Từ khóa phải là duy nhất"
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question____last_update
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_uid
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_date
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -266,7 +203,6 @@ msgid "NPS Report"
 msgstr "Báo cáo NPS"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__name
 msgid "Name"
 msgstr "Tên"
@@ -287,20 +223,14 @@ msgid "Number Of Record"
 msgstr "Số bản ghi"
 
 #. module: forlife_net_promoter_score
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
-msgid "OK"
-msgstr ""
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__point
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__point
 msgid "Point"
 msgstr "Đánh giá"
 
 #. module: forlife_net_promoter_score
 #: model:ir.model,name:forlife_net_promoter_score.model_pos_order
 msgid "Point of Sale Orders"
-msgstr ""
+msgstr "Đơn bán lẻ"
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
@@ -312,11 +242,6 @@ msgstr "Trang sau"
 #: model:ir.cron,cron_name:forlife_net_promoter_score.ir_cron_action_push_notification
 msgid "Push Notification To App"
 msgstr "Đẩy thông báo NPS đến App"
-
-#. module: forlife_net_promoter_score
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
-msgid "Push Notify"
-msgstr "Gửi thông báo"
 
 #. module: forlife_net_promoter_score
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_question_action
@@ -438,26 +363,6 @@ msgid "Time is overlapping."
 msgstr "Thời gian bị chồng chéo."
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__tz
-msgid "Timezone"
-msgstr ""
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__tz_offset
-msgid "Timezone offset"
-msgstr ""
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.fields,help:forlife_net_promoter_score.field_net_promoter_score_report__tz_offset
-msgid "Timezone offset in hours"
-msgstr ""
-
-#. module: forlife_net_promoter_score
-#: model:ir.model.fields,help:forlife_net_promoter_score.field_net_promoter_score_report__tz
-msgid "Timezone used for selecting datetime data from DB"
-msgstr ""
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__to_date
 msgid "To Date"
 msgstr "Đến ngày"
@@ -468,11 +373,6 @@ msgid "Type"
 msgstr "Loại"
 
 #. module: forlife_net_promoter_score
-#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__value
-msgid "Value"
-msgstr "Đường dẫn"
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__view_report
 msgid "View Report"
 msgstr ""
@@ -481,11 +381,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
 msgid "customer1,customer2...."
 msgstr "maKH1,maKH2..."
-
-#. module: forlife_net_promoter_score
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_app_api_link_view_tree
-msgid "forlife_app_api_link_tree"
-msgstr ""
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_form
@@ -506,11 +401,6 @@ msgstr "phom câu hỏi"
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_tree
 msgid "forlife_question_tree"
 msgstr "danh sách câu hỏi"
-
-#. module: forlife_net_promoter_score
-#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
-msgid "form_update_comment_form"
-msgstr ""
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form

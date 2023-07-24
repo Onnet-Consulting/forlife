@@ -6,11 +6,51 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='ref']" position="after">
-                    <field name="is_post_bkav"/>
-                </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type"/>
+                </xpath>
+                <xpath expr="//page[@id='aml_tab']" position="before">
+                    <field name="pos_order_id" invisible="1"/> 
+                </xpath>
+                <xpath expr="//page[@id='aml_tab']" position="after">
+                    <page id="bkav_invoice" string="BKAV Invoice"
+                          attrs="{'invisible': ['|','|',('pos_order_id','!=',False),('state','=','draft'),('move_type','not in',('out_invoice', 'out_refund','in_refund'))]}">
+                        <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
+                        <button name="create_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
+                                string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="get_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Get eInvoice" groups="account.group_account_invoice"/>
+                        <button name="update_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Update eInvoice" groups="account.group_account_invoice"/>
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="download_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Download eInvoice" groups="account.group_account_invoice"/>
+                        <br/>
+                        <group>
+                            <group>
+                                <field name="exists_bkav" readonly="1"/>
+                                <field name="is_general" readonly="1"/>
+                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
+                                <field name="origin_move_id"
+                                       attrs="{'invisible': ['|',('move_type','not in',('out_invoice', 'out_refund')),('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_form" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="is_post_bkav" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
+                                <field name="invoice_state_e" readonly="1"/>
+                                <field name="invoice_guid" readonly="1"/>
+                                <field name="invoice_e_date" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
             </field>
         </record>

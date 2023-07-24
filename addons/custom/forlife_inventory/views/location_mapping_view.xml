@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="stock_location_mapping_tree_view">
+            <field name="name">stock.location.mapping.tree.view</field>
+            <field name="model">stock.location.mapping</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="location_id"/>
+                    <field name="location_map_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="stock_location_mapping_form_view">
+            <field name="name">stock.location.mapping.form.view</field>
+            <field name="model">stock.location.mapping</field>
+            <field name="arch" type="xml">
+                <form string="Địa điểm cấu hình">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="location_id"/>
+                            </group>
+                            <group>
+                                <field name="location_map_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="forlife_stock_location_mapping_action">
+            <field name="name">Location Mapping</field>
+            <field name="res_model">stock.location.mapping</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new record
+              </p>
+            </field>
+        </record>
+        <menuitem name="Location Mapping" id="stock_location_mapping_menu_item" action="forlife_stock_location_mapping_action" parent="stock.menu_stock_config_settings"/>
+    </data>
+</odoo>

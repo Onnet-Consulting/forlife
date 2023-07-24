@@ -7,6 +7,8 @@ class HrAssetTransfer(models.Model):
     _description = 'Hr Asset Transfer'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
 
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
     department_id = fields.Many2one('hr.department', string="Department", related='employee_id.department_id')
@@ -31,11 +33,12 @@ class HrAssetTransfer(models.Model):
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
         return res
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('hr.asset.transfer.name.sequence') or 'AT'
-        return super(HrAssetTransfer, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.asset.transfer.name.sequence') or 'AT'
+        return super(HrAssetTransfer, self).create(vals_list)
 
     def action_draft(self):
         for record in self:
@@ -43,6 +46,8 @@ class HrAssetTransfer(models.Model):
 
     def action_wait_approve(self):
         for record in self:
+            for item in record.hr_asset_transfer_line_ids:
+                item.check_asset_code()
             record.write({'state': 'wait_approve'})
 
     def action_approved(self):
@@ -51,7 +56,6 @@ class HrAssetTransfer(models.Model):
                           'validate_date': fields.Datetime.now()
                           })
             for item in record.hr_asset_transfer_line_ids:
-                item.check_asset_code()
                 item.asset_code.write({'employee': item.employee_to_id.id,
                                        'dept_code': item.account_analytic_to_id.id,
                                        'location': item.asset_location_to_id.id
@@ -71,6 +75,8 @@ class HrAssetTransfer(models.Model):
 class HrAssetTransferLine(models.Model):
     _name = 'hr.asset.transfer.line'
     _description = 'Hr Asset Transfer Line'
+
+    company_id = fields.Many2one('res.company', related='hr_asset_transfer_id.company_id')
 
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
     employee_from_id = fields.Many2one('hr.employee', string="Employee From")
@@ -106,4 +112,4 @@ class HrAssetTransferLine(models.Model):
             if rec.asset_location_from_id.id != rec.asset_code.location.id:
                 raise ValidationError(_('Wrong value for asset location. Please check again!'))
             if not rec.check_required:
-                raise ValidationError(_('Chưa nhập 1 trong 3 trường!'))
+                raise ValidationError(_('Nhập 1 trong các trường thông tin bắt buộc: Nhân viên, Địa điểm, Trung tâm chi phí!'))

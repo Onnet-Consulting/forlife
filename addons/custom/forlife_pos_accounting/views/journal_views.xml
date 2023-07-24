@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_view_account_journal_form">
+        <field name="name">inherit.view.account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group/group[last()]" position="inside">
+                <field name="company_consignment_id"/>
+            </xpath>
+
+            <xpath expr="//form" position="inside">
+                <field name="account_consignment_tmpl_ids" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

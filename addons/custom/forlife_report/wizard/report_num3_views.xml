@@ -12,9 +12,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="report_by"/>
-                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
-                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}" attrs="{'invisible': [('report_by', '=', 'area')]}"/>
+                            <field name="report_by" widget="radio" options="{'horizontal': True}"/>
+                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" attrs="{'invisible': [('report_by', '=', 'area')]}"/>
                             <field name="all_areas" attrs="{'invisible': [('report_by', '=', 'branch')]}"/>
                             <field name="area_ids" widget="many2many_tags" attrs="{'invisible': ['|', ('all_areas', '=', True), ('report_by', '=', 'branch')]}"/>
                         </group>
@@ -23,6 +22,15 @@
                             <field name="defective_inventory"/>
                             <field name="order_inventory"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="category_type_id" options="{'no_create': True}"/>
+                        <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="collection"/>
                     </group>
                 </sheet>
             </form>

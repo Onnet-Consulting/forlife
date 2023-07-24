@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="purchase_material_form_permission" model="ir.ui.view">
+            <field name="name">purchase_material_form_permission</field>
+            <field name="model">purchase.material</field>
+            <field name="inherit_id" ref="purchase_request.purchase_material_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_materials_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_materials_approve_reject</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

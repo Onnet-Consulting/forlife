@@ -23,12 +23,15 @@ REWARD_TYPE = [
         ('cart_get_voucher', 'Cart Get Voucher'),
         ('cart_discount_percent', 'Cart Discount Percent'),
         ('cart_discount_fixed_price', 'Cart Discount Fixed Price'),
+        ('cart_discount_amount', 'Cart Discount Amount'),
         ('cart_get_x_free', 'Cart Get X Free'),
     ]
 
 
 class PromotionConditionProduct(models.Model):
     _name = 'promotion.condition.product'
+    _description = "Promotion Condition Product"
+    _rec_name = 'product_product_id'
     _table = 'product_product_promotion_program_rel'
 
     product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
@@ -37,6 +40,23 @@ class PromotionConditionProduct(models.Model):
     def init(self):
         self.env.cr.execute("""
             ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        program = self.promotion_program_id
+        res = super(PromotionConditionProduct, self).unlink()
+        if program:
+            program._compute_json_valid_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        programs = self.env['promotion.program'].search([('id', 'in', self.promotion_program_id.ids)])
+        programs._compute_json_valid_product_ids()
 
 
 class PromotionProgram(models.Model):
@@ -58,7 +78,7 @@ class PromotionProgram(models.Model):
 
     brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
-    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
+    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date')
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
     month_ids = fields.Many2many(related='campaign_id.month_ids', string='Months')
     dayofmonth_ids = fields.Many2many(related='campaign_id.dayofmonth_ids', string='DayOfMonth')
@@ -130,6 +150,8 @@ class PromotionProgram(models.Model):
         compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
+    only_condition_product = fields.Boolean('Only Condition Product?')
+    is_original_price = fields.Boolean('Is Price Original?', help='Price of condition product must be original!')
     order_amount_min = fields.Float()
     incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
     incl_reward_in_order_type = fields.Selection([
@@ -167,6 +189,8 @@ class PromotionProgram(models.Model):
 
     discount_product_ids = fields.Many2many(
         'product.product', 'promotion_program_discount_product_rel', domain="[('available_in_pos', '=', True)]")
+    discount_product_count = fields.Integer(compute='_compute_discount_product_count')
+    reward_product_count = fields.Integer(compute='_compute_reward_product_count')
     reward_product_ids = fields.Many2many(
         'product.product', 'promotion_program_reward_product_rel', domain="[('available_in_pos', '=', True)]")
     reward_quantity = fields.Float()
@@ -184,6 +208,8 @@ class PromotionProgram(models.Model):
 
     apply_online = fields.Boolean(string='Apply online', default=False)
     for_new_customer = fields.Boolean(string='For new customer', default=False)
+
+    notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app')
 
     @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
@@ -250,6 +276,36 @@ class PromotionProgram(models.Model):
             else:
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
+
+    @api.depends('discount_product_ids')
+    def _compute_discount_product_count(self):
+        sql = """
+        SELECT promotion_program_id, count(product_product_id) FROM promotion_program_discount_product_rel
+        WHERE promotion_program_id in %(promotion_programs)s
+        GROUP BY promotion_program_id
+        """
+        self.env.cr.execute(sql, {'promotion_programs': tuple(self.ids)})
+        result = {
+            promotion_program_id: count
+            for promotion_program_id, count in self.env.cr.fetchall()
+        }
+        for pro in self:
+            pro.discount_product_count = result.get(pro.id, 0)
+
+    @api.depends('reward_product_ids')
+    def _compute_reward_product_count(self):
+        sql = """
+        SELECT promotion_program_id, count(product_product_id) FROM promotion_program_reward_product_rel
+        WHERE promotion_program_id in %(promotion_programs)s
+        GROUP BY promotion_program_id
+        """
+        self.env.cr.execute(sql, {'promotion_programs': tuple(self.ids)})
+        result = {
+            promotion_program_id: count
+            for promotion_program_id, count in self.env.cr.fetchall()
+        }
+        for pro in self:
+            pro.reward_product_count = result.get(pro.id, 0)
 
     @api.depends('product_ids', 'product_categ_ids')
     def _compute_json_valid_product_ids(self):
@@ -335,6 +391,11 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name=_("%s (copy)") % self.name)
+        return super().copy(default)
 
     def action_recompute_new_field_binary(self):
         self.search([])._compute_json_valid_product_ids()
@@ -442,6 +503,7 @@ class PromotionProgram(models.Model):
 
 class PromotionDiscountProduct(models.Model):
     _name = 'promotion.discount.product'
+    _rec_name = 'product_product_id'
     _description = 'Promotion Discount Product'
     _table = 'promotion_program_discount_product_rel'
 
@@ -455,6 +517,7 @@ class PromotionDiscountProduct(models.Model):
 
 class PromotionRewardProduct(models.Model):
     _name = 'promotion.reward.product'
+    _rec_name = 'product_product_id'
     _description = 'Promotion Reward Product'
     _table = 'promotion_program_reward_product_rel'
 

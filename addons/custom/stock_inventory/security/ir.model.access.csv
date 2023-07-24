@@ -1,8 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-stock_inventory,stock_inventory,model_stock_inventory,base.group_user,1,1,1,1
-stock_inventory_line,stock_inventory_line,model_stock_inventory_line,base.group_user,1,1,1,1
 
-
-
-
-
+access_inventory_session,inventory_session_user,model_inventory_session,base.group_user,1,0,0,0
+access_inventory_session_line,inventory_session_line_user,model_inventory_session_line,base.group_user,1,0,0,0
+access_inventory_detail,inventory.detail,model_inventory_detail,base.group_user,1,1,1,1
+access_import_inventory_session,import.inventory.session.wizard,model_import_inventory_session_wizard,base.group_user,1,1,1,0

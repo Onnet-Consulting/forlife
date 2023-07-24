@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_view_pos_pos_form">
+        <field name="name">inherit.view.pos.pos.form</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree" position="inside">
+                <field name="subtotal_paid"/>
+                <field name="product_src_id"/>
+                <field name="is_state_registration" readonly="1" force_save="1"/>
+                <field name="is_promotion" readonly="1" force_save="1"/>
+                <field name="promotion_type" readonly="1" force_save="1"/>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='qty']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='product_uom_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='original_price']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='discount']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

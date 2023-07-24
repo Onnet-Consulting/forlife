@@ -35,13 +35,11 @@ class PosOrder(models.Model):
                     if new_rank.priority >= program.card_rank_id.priority:
                         self.update_status_card_rank(partner_card_rank)
                         self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
-                        self.save_order_to_program(program)
                         break
                     else:
                         if total_value_to_up >= program.min_turnover:
                             self.update_status_card_rank(partner_card_rank)
                             self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
-                            self.save_order_to_program(program)
                             break
         else:
             for program in member_cards:
@@ -51,7 +49,6 @@ class PosOrder(models.Model):
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     if value_to_upper_order >= program.min_turnover:
                         self.create_partner_card_rank(value_to_upper_order, program.id, program.card_rank_id.id)
-                        self.save_order_to_program(program)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
@@ -80,9 +77,10 @@ class PosOrder(models.Model):
         partner_card_rank_line_ids = PartnerCardRankLine.search(
             [('partner_card_rank_id', '=', partner_card_rank_id.id), ('status', '=', True)])
         if partner_card_rank_line_ids:
-            partner_card_rank_line_ids.write({
-                'status': False
-            })
+            for partner_card_rank_line_id in partner_card_rank_line_ids:
+                partner_card_rank_line_id.write({
+                    'status': False
+                })
     def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id,
                                         total_value_to_up, program_id):
          self.env['partner.card.rank.line'].sudo().create({
@@ -97,11 +95,6 @@ class PosOrder(models.Model):
             'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
             'program_cr_id': program_id,
             'status': True if old_rank_id != new_rank_id else False
-        })
-
-    def save_order_to_program(self, program):
-        program.sudo().write({
-            'order_ids': [(4, self.id)]
         })
 
     @api.model
@@ -197,7 +190,7 @@ class PosOrder(models.Model):
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
-                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * coefficient)
+                return int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert) * coefficient)
         return super().get_point_order(money_value, brand_id, is_purchased)
 
 

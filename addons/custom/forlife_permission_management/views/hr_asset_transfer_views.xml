@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="hr_asset_transfer_form_view_permission" model="ir.ui.view">
+            <field name="name">hr_asset_transfer_form_view_permission</field>
+            <field name="model">hr.asset.transfer</field>
+            <field name="inherit_id" ref="forlife_stock.hr_asset_transfer_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approved']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_asset_transfer_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

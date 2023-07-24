@@ -1152,6 +1152,11 @@ msgid "Date Done"
 msgstr "Ngày Hoạch toán"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__date_done
+msgid "Date Done"
+msgstr "Ngày hoàn thành"
+
+#. module: forlife_stock
 #: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_action
 #: model:ir.model,name:forlife_stock.model_transfer_stock_inventory
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__transfer_stock_inventory_id
@@ -1294,7 +1299,7 @@ msgstr "Phiếu xuất khác"
 #: model:ir.ui.menu,name:forlife_stock.asset_transfer_stock_inventory_menu
 #: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
 msgid "Transfer Stock Inventory"
-msgstr "Nhập xuất tách mã-kiểm kê cân tồn"
+msgstr "Kiểm kê cân tồn"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_price_unit
@@ -1354,3 +1359,21 @@ msgstr "Yêu cầu nhập khác/xuất khác"
 #: model:ir.ui.menu,name:forlife_stock.other_in_out_request
 msgid "Other In Out Request"
 msgstr "Yêu cầu nhập khác/xuất khác"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_quantity_production_order__location_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__location_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__location_id
+msgid "Source Location"
+msgstr "Địa điểm nguồn"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__location_dest_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__location_dest_id
+msgid "Destination Location"
+msgstr "Địa điểm đích"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.inherit_stock_picking_for_other_export_form_view
+msgid "Are you sure you want to cancel?"
+msgstr "Bạn có chắc chắn muốn huỷ phiếu?"

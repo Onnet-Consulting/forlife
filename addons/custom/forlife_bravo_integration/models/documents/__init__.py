@@ -4,3 +4,6 @@ from . import stock_picking
 from . import stock_picking_other_import
 from . import stock_picking_other_export
 from . import sale_order
+from . import pos_session
+from . import journal_entry_payroll
+from . import stock_picking_transfer_bkav

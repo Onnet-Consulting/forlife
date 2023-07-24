@@ -19,6 +19,7 @@
         'point_of_sale.assets': [
             'forlife_pos_search_customer/static/src/xml/Screens/PartnerListScreen/PartnerListScreen.xml',
             'forlife_pos_search_customer/static/src/js/Screens/PartnerListScreen/PartnerListScreen.js',
+            'forlife_pos_search_customer/static/src/js/Screens/PartnerListScreen/PartnerDetailsEdit.js',
             'forlife_pos_search_customer/static/src/js/Screens/ProductScreen/ProductScreen.js',
             'forlife_pos_search_customer/static/src/css/searchbar_customer.css',
         ],

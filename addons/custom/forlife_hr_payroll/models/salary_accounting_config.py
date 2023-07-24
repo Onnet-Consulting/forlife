@@ -23,8 +23,8 @@ class SalaryAccountingConfig(models.Model):
     _sql_constraints = [
         ('unique_combination', 'UNIQUE(company_id, entry_id, purpose_id, debit_account_id, credit_account_id)',
          'The combination of Company, Entry, Purpose, Debit account and Credit account must be unique !'),
-        ('unique_combination_2', 'UNIQUE(company_id, entry_id, debit_account_id, debit_partner_id)',
-         'The combination of Company, Entry, Debit account and Debit partner must be unique !'),
-        ('unique_combination_2', 'UNIQUE(company_id, entry_id, credit_account_id, credit_partner_id)',
-         'The combination of Company, Entry, Credit account and Credit partner must be unique !'),
+        ('unique_combination_debit', 'UNIQUE(company_id, entry_id, debit_account_id, debit_partner_id, purpose_id)',
+         'The combination of Company, Entry, Purpose, Debit account and Debit partner must be unique !'),
+        ('unique_combination_credit', 'UNIQUE(company_id, entry_id, credit_account_id, credit_partner_id, purpose_id)',
+         'The combination of Company, Entry, Purpose, Credit account and Credit partner must be unique !'),
     ]

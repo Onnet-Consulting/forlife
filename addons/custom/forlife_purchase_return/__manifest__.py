@@ -3,6 +3,7 @@
     "name": "Forlife Purchase Return",
     "category": "Purchases",
     "version": "1.0.0",
+    'license': 'LGPL-3',
     "description": """Forlife Purchase Return""",
     "depends": [
         'forlife_purchase',
@@ -16,6 +17,8 @@
         'wizard/stock_return_picking.xml',
         'wizard/purchase_return_wizard.xml',
         'views/purchase_order_views.xml',
+        'views/stock_picking_type_views.xml',
+        'views/stock_picking_view.xml',
     ],
     "assets": {
     },

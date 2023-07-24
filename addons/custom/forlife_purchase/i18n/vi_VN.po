@@ -34,6 +34,17 @@ msgstr "Áp dụng tỷ lệ quy đổi"
 msgid "Asset"
 msgstr "Tài sản"
 
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__sequence
+msgid "Sequence"
+msgstr "STT dòng"
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__date_planned
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__date_planned
+msgid "Expected Arrival"
+msgstr "Hạn xử lý"
+
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__asset_code
 msgid "Asset Code"
@@ -328,7 +339,7 @@ msgstr "Bộ phận quản lý"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__production_department
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__production_department
 msgid "Production Department"
-msgstr "Bộ phận sản xuất"
+msgstr "Phân loại sản xuất"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__produced_from_date
@@ -583,6 +594,7 @@ msgstr "Số lượng quy đổi"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__vendor_price
+#: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Vendor Price"
 msgstr "Giá nhà cung cấp"
 
@@ -876,6 +888,7 @@ msgid "Materials"
 msgstr "Nguyên liệu chính"
 
 #. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__forlife_bom_service_cost_ids
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_bom_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_finished_form
@@ -1008,10 +1021,14 @@ msgstr "Hệ số quy đổi"
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__rated_level
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__rated_level
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__rated_level
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__rated_level
 msgid "Rated Level"
 msgstr "Định mức"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__rated_level
+msgid "Rated Level"
+msgstr "Định mức (VNĐ)"
 
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__loss

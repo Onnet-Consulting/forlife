@@ -14,6 +14,8 @@ class AccountBank(models.Model):
         ('4', 'Buy Expense'),
     ], string='POS Transfer Type', default=False, readonly=True)
     pos_config_id = fields.Many2one(related='pos_session_id.config_id')
+    expense_label_id = fields.Many2one('pos.expense.label', ondelete='restrict')
+    reason = fields.Char('Reason')
 
     def _prepare_move_line_default_vals(self, counterpart_account_id=None):
         if self.pos_transfer_type == '3' and self.pos_session_id:

@@ -26,14 +26,6 @@ class StockReturnPicking(models.TransientModel):
                 })
         return res
 
-    # @api.onchange('picking_id')
-    # def _onchange_picking_id(self):
-    #     res = super(StockReturnPicking, self)._onchange_picking_id()
-    #     for return_line in self.product_return_moves:
-    #         if return_line.quantity_remain <= 0:
-    #             return_line.unlink()
-    #     return res
-
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
         res = super(StockReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)

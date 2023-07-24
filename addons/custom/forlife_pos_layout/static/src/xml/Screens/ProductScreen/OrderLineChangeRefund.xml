@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="OrderlineChangeRefund" owl="1">
+        <t t-if="props.line.money_reduce_from_product_defective > 0">
+            <t t-set="color" t-value="'background-color:#FFA07A;'"/>
+        </t>
+        <t t-else="">
+            <t t-set="color" t-value="''"/>
+        </t>
+        <li t-on-click="selectLine" class="orderline" t-att-style="color" t-att-class="addedClasses">
+            <ul class="custom-info-list" style="font-size: 14px">
+                <li class="product-name" style="width: 100%">
+                    <t t-esc="props.line.get_full_product_name()"/>
+                    <span> </span>
+                    <t t-if="props.line.get_product().tracking!=='none' &amp;&amp; (env.pos.picking_type.use_create_lots || env.pos.picking_type.use_existing_lots)">
+                        <t t-if="props.line.has_valid_product_lot()">
+                            <i t-on-click.stop="lotIconClicked"
+                               class="oe_link_icon fa fa-list oe_icon line-lot-icon oe_green"
+                               aria-label="Valid product lot"
+                               role="img"
+                               title="Valid product lot"
+                            />
+                        </t>
+                        <t t-else="">
+                            <i t-on-click.stop="lotIconClicked"
+                               class="oe_link_icon fa fa-list oe_icon line-lot-icon oe_red"
+                               aria-label="Invalid product lot"
+                               role="img"
+                               title="Invalid product lot"
+                            />
+                        </t>
+                    </t>
+                </li>
+                <li class="refund-code" style="width: 15%;">
+                    <t t-esc="props.line.product.default_code"/>
+                </li>
+                <li class="input-qty-refund" style="width: 6%;">
+
+                </li>
+                <li class="input-qty-new" style="width: 6%;">
+
+                </li>
+                <t t-set="_totalDiscountSinglemanual" t-value="getTotalDiscountSingleManual()"/>
+                <li class="refund-line-unit-price" style="width: 13%;">
+                    <t t-if="props.line.display_discount_policy() == 'without_discount' and
+                        env.pos.round_decimals_currency(props.line.get_unit_display_price()) &lt; env.pos.round_decimals_currency(props.line.get_taxed_lst_unit_price())">
+                        <s>
+                            <t t-esc="env.pos.format_currency(props.line.get_taxed_lst_unit_price())"/>
+                        </s>
+                        <t t-if="env.pos.config.iface_tax_included === 'total'">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price() + _totalDiscountSinglemanual)"/>
+                        </t>
+                        <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price())"/>
+                        </t>
+                    </t>
+                        <t t-else="">
+                        <t t-if="env.pos.config.iface_tax_included === 'total'">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price() + _totalDiscountSinglemanual)"/>
+                        </t>
+                            <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price())"/>
+                        </t>
+                    </t>
+                </li>
+
+                <t t-set="_percentDiscount" t-value="getPercentDiscount()"/>
+                <t t-set="_percentDiscountManual" t-value="getPercentDiscountManual()"/>
+                <li class="refund-percent-discount" style="width: 13%;">
+                    <t t-if="props.line.get_discount_str() !== '0'">
+                        <t t-esc="_percentDiscountManual"/>%
+                    </t>
+                        <t t-else="">
+                        <t t-esc="_percentDiscount"/>%
+                    </t>
+                </li>
+
+                <t t-set="_totalDiscount" t-value="getTotalDiscount()"/>
+                <t t-set="_totalDiscountmanual" t-value="getTotalDiscountManual()"/>
+                <li class="refund-discount" style="width: 10%;">
+                    <t t-if="props.line.get_discount_str() !== '0'">
+                        <t t-esc="env.pos.format_currency(_totalDiscountmanual)"/>
+                    </t>
+                    <t t-else="">
+                        <t t-esc="env.pos.format_currency(_totalDiscount)"/>
+                    </t>
+                </li>
+                <li class="refund-price" style="width: 16%;">
+                    <t t-esc="env.pos.format_currency(props.line.get_display_price_after_discount())"/>
+                </li>
+                <li class="available-refund" style="width: 8%; text-align: center">
+
+                </li>
+                <li class="btn-change-refund" style="width: 10%;">
+
+                </li>
+
+                <t t-if="props.line.get_discount_str() !== '0'">
+                    <li class="info" style="width: 50%;">
+                        With a
+                        <em>
+                            <t t-esc="props.line.get_discount_str()"/>%
+                        </em>
+                        discount
+                    </li>
+                        <li class="info" style="width: 50%;">
+                        <t t-esc="env.pos.format_currency(_totalDiscountmanual)"/>
+                    </li>
+                </t>
+                <t t-if="customerNote">
+                    <li class="info orderline-note" style="width: 100%;">
+                        <i class="fa fa-sticky-note" role="img" aria-label="Customer Note"
+                           title="Customer Note"/>
+                        <t t-esc="customerNote"/>
+                    </li>
+                </t>
+            </ul>
+        </li>
+    </t>
+
+</templates>

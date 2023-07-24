@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="print_order_pos_tmpl">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="datas" t-value="o.prepare_data_receipt_report()"/>
+                    <t t-foreach="datas" t-as="doc">
+                        <div class="page">
+                            <div t-if="doc['brand'] == 'TKL'" class="logo text-center">
+                                <img class="pos-receipt-logo tokyolife"
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" width="100%"/>
+                            </div>
+                            <div t-if="doc['brand'] == 'FMT'" class="logo text-center">
+                                <img class="pos-receipt-logo tokyolife"
+                                     src="/forlife_pos_print_receipt/static/src/img/logo-format.png" width="80%"/>
+                            </div>
+                            <div class="text-center mt-2">
+                                <t t-esc="doc['address']"/>
+                            </div>
+                            <div class="text-center mt-2">
+                                <t t-esc="doc['phone']"/>
+                            </div>
+                            <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2"
+                                 style="width: 95%;margin: auto;border: 1px solid;">
+                                <div class="text-center">
+                                    <div>
+                                        <strong>
+                                            Kính mời Quý khách quét mã QR, cài App tích lũy 1% giá trị hóa đơn sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                                        </strong>
+                                    </div>
+                                </div>
+                                <img class="mt-2"
+                                     t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', 'text', 150, 150)"/>
+                                <div class="text-center mt-3">
+                                    Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng
+                                </div>
+                            </div>
+                            <div class="section mt-2">
+                                <table class="table table-bordered">
+                                    <tbody style="border-color: #FFF;">
+                                        <tr>
+                                            <td>Ngày giờ:</td>
+                                            <td>
+                                                <t t-esc="doc['date_order']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Số hóa đơn:</td>
+                                            <td>
+                                                <t t-esc="doc['order_name']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Khách hàng:</td>
+                                            <td>
+                                                <t t-esc="doc['partner']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nhân viên:</td>
+                                            <td>
+                                                <t t-esc="doc['employee']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ghi chú:</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="section">
+                                <table class="table no_color_border">
+                                    <tbody>
+                                        <tr style="border-top: 1px solid #dee2e6; border-left: unset; border-right: unset; border-color: #FFF">
+                                            <td style="white-space: normal;">
+                                                <strong>Tên hàng</strong>
+                                            </td>
+                                            <td style="white-space: normal;">
+                                                <strong>SL</strong>
+                                            </td>
+                                            <td style="white-space: normal;">
+                                                <strong>Đơn giá</strong>
+                                            </td>
+                                            <td style="white-space: normal;" t-if="doc['brand'] == 'TKL'">
+                                                <strong>GG</strong>
+                                            </td>
+                                            <td style="white-space: normal;" t-if="doc['brand'] == 'FMT'">
+                                                <strong>-%GG</strong>
+                                            </td>
+                                            <td style="white-space: normal;">
+                                                <strong>Tổng tiền</strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody style="border-color: #FFF; border-top: 1px solid #dee2e6;">
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['line_products'].items()" t-as="line">
+                                            <t t-foreach="o.covert_to_list(line[0])" t-as="prom">
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <strong>-
+                                                            <t t-esc="prom"/>
+                                                        </strong>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <t t-foreach="line[1]" t-as="line_item">
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <t t-esc="line_item['name']"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="line_item['barcode']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['qty']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['price_unit']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important; white-space: nowrap;">
+                                                        <t t-esc="line_item['discount']"/>
+                                                    </td>
+                                                    <td style="text-align: right !important;">
+                                                        <t t-esc="line_item['subtotal_paid']"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <tr t-if="len(doc['list_product_point']) &gt; 0">
+                                            <td colspan="5">
+                                                <strong>Tiêu tích lũy</strong>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['list_product_point']" t-as="line_point">
+                                            <tr>
+                                                <td colspan="5">
+                                                    <t t-esc="line_point['name']"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="line_point['barcode']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line_point['qty']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line_point['price_unit']"/>
+                                                </td>
+                                                <td style="text-align: right !important; white-space: nowrap;">
+                                                    <t t-esc="line_point['discount']"/>
+                                                </td>
+                                                <td style="text-align: right !important;">
+                                                    <t t-esc="line_point['subtotal_paid']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">Tổng cộng</td>
+                                            <td style="text-align: right !important;">
+                                                <t t-esc="doc['total_qty']"/>
+                                            </td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['amount_total']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">Chiết khấu</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['total_reduced']"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['gif_code'].items()" t-as="code">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <strong>
+                                                        <t t-esc="code[0]"/>
+                                                    </strong>
+                                                </td>
+                                                <td colspan="3" style="text-align: right !important;">
+                                                    <t t-esc="code[1]"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">Tổng tiền thanh toán</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['amount_paid']"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc['payment_method']" t-as="pm">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <t t-esc="pm['name']"/>
+                                                </td>
+                                                <td colspan="3" style="text-align: right !important;">
+                                                    <t t-esc="pm['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="2">Tiêu tích lũy</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['accumulation']"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td colspan="5">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td colspan="2">Tích lũy HĐ</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['total_point']"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['total_point'] &gt; 0">
+                                            <td colspan="2">Điểm tích lũy</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['sum_total_point']"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <t t-esc="doc['receipt_footer']"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="paperformat_pos_A6" model="report.paperformat">
+            <field name="name">Bill Pos</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">72</field>
+            <field name="page_width">3276</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="disable_shrinking" eval="True"/>
+            <field name="dpi">170</field>
+        </record>
+
+        <record id="print_print_order_pos_action" model="ir.actions.report">
+            <field name="name">Print Pos Order</field>
+            <field name="model">pos.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_pos_print_receipt.print_order_pos_tmpl</field>
+            <field name="report_file">forlife_pos_print_receipt.print_order_pos_tmpl</field>
+            <field name="print_report_name">'Bill - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_pos_A6"/>
+        </record>
+
+    </data>
+</odoo>

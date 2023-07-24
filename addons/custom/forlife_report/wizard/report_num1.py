@@ -3,8 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.safe_eval import safe_eval
-import ast
 
 TITLES = [
     'STT', 'Kho', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Đơn vị', 'Giá', 'Số lượng',
@@ -21,8 +19,9 @@ class ReportNum1(models.TransientModel):
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    product_domain = fields.Char('Product', default='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
+    product_ids = fields.Many2many('product.product', 'report_num1_product_rel', string='Products',
+                                   domain='["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num1_warehouse_rel', string='Warehouse')
     # fixme: ('wholesale', 'Bán buôn'), ('ecom', 'Bán Online'), ('company', 'Bán liên công ty')],
     picking_type = fields.Selection([('all', 'Tất cả'), ('retail', 'Bán lẻ')],
                                     'Picking type', required=True, default='all')
@@ -37,7 +36,7 @@ class ReportNum1(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         query = []
         product_condition = f'and pol.product_id = any (array{product_ids})'
@@ -51,9 +50,8 @@ select
     pol.original_price                                                as original_price,
     sum(pol.qty)::float                                               as qty,
     sum(case when disc.type = 'point' then disc.recipe * 1000
-            when disc.type = 'card' then disc.recipe
             when disc.type = 'ctkm' then disc.discounted_amount
-            else 0
+            else disc.recipe
         end 
       + (pol.original_price * pol.qty) * pol.discount / 100.0)::float as discount,
     sum(pol.qty * pol.original_price)::float                          as total_amount,
@@ -122,17 +120,21 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     order by cate.id 
 ),
 attribute_data as (
-    select 
-        pp.id                                                                                   as product_id,
-        pa.attrs_code                                                                           as attrs_code,
-        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
-    from product_template_attribute_line ptal
-    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
-    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
-    left join product_attribute pa on ptal.attribute_id = pa.id
-    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
-    where pp.id = any (array{product_ids}) 
-    group by pp.id, pa.attrs_code
+    select product_id                         as product_id,
+           json_object_agg(attrs_code, value) as attrs
+    from (
+        select 
+            pp.id                                                                                   as product_id,
+            pa.attrs_code                                                                           as attrs_code,
+            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+        from product_template_attribute_line ptal
+            left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+            left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+            left join product_attribute pa on ptal.attribute_id = pa.id
+            left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+        where pp.id = any (array{product_ids}) and pa.attrs_code notnull
+        group by pp.id, pa.attrs_code) as att
+    group by product_id
 ),
 product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng product.product ID
     select 
@@ -142,38 +144,29 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
         pt.categ_id,
         pt.uom_name,
         pt.cate_name,
-        ad_size.value as size,
-        ad_color.value as color
+        ad.attrs::json -> '{attr_value.get('size', '')}' as size,
+        ad.attrs::json -> '{attr_value.get('mau_sac', '')}' as color
     from product_product pp
-        left join (select
-                    id, categ_id, cate_name,
-                    substr(product_name, 2, length(product_name)-2) as product_name,
-                    substr(uom_name, 2, length(uom_name)-2) as uom_name
-                   from (select 
-                            pt1.id,
-                            pt1.categ_id,
-                            pc.complete_name as cate_name,
-                            coalesce(pt1.name::json -> '{user_lang_code}', pt1.name::json -> 'en_US')::text as product_name,
-                            coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text as uom_name
-                         from product_template pt1
-                            left join uom_uom uom on uom.id = pt1.uom_id
-                            left join product_category pc on pc.id = pt1.categ_id
-                        ) as subname_table
+        left join (select 
+                        pt1.id,
+                        pt1.categ_id,
+                        pc.complete_name as cate_name,
+                        coalesce(pt1.name::json ->> '{user_lang_code}', pt1.name::json ->> 'en_US') as product_name,
+                        coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as uom_name
+                     from product_template pt1
+                        left join uom_uom uom on uom.id = pt1.uom_id
+                        left join product_category pc on pc.id = pt1.categ_id
                 ) as pt
         on pt.id = pp.product_tmpl_id
-        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
-        left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+        left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
     order by pp.product_tmpl_id asc
 ),
 uom_name_by_id as ( -- lấy tên đơn vị tính đã convert bằng ID
-    select 
+    select
         id,
-        substr(name, 2, length(name)-2) as name
-    from (select
-            id,
-            coalesce(name::json -> '{user_lang_code}', name::json -> 'en_US')::text as name
-        from uom_uom) as tb
+        coalesce(name::json ->> '{user_lang_code}', name::json ->> 'en_US') as name
+    from uom_uom
 ),
 result_table as (
     {' UNION ALL '.join(query)}
@@ -206,11 +199,11 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
+        product_ids = self.product_ids.ids if self.product_ids else (self.env['product.product'].search(
+            ["&", ("voucher", "=", False), "|", ("detailed_type", "=", "product"), ("detailed_type", "=", "service")]).ids or [-1])
+        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             'data': data,

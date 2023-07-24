@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.tools import date_utils
+from odoo.exceptions import ValidationError
 
 MONTH_SELECTION = [
     ('1', '1'),
@@ -235,15 +236,19 @@ class SalaryRecord(models.Model):
 
     def generate_account_moves(self):
         self.ensure_one()
-        self.generate_account_move_with_tc_options(True)
-        self.generate_account_move_with_tc_options(False)
+        self.generate_account_move_with_tc_options_and_work_order(True, True)
+        self.generate_account_move_with_tc_options_and_work_order(True, False)
+        self.generate_account_move_with_tc_options_and_work_order(False, True)
+        self.generate_account_move_with_tc_options_and_work_order(False, False)
         return True
 
-    def generate_account_move_with_tc_options(self, is_tc_entry):
-        salary_accounting_ids = self.salary_accounting_ids.filtered(lambda l: l.is_tc_entry == is_tc_entry)
+    def generate_account_move_with_tc_options_and_work_order(self, is_tc_entry, has_work_order):
+        salary_accounting_ids = self.salary_accounting_ids.filtered(
+            lambda l: l.is_tc_entry == is_tc_entry and bool(l.production_id) == has_work_order)
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}
+        default_journal_id = self.get_default_journal_id_for_salary_move()
         for line in salary_accounting_ids:
             line_value = dict(
                 partner_id=line.partner_id.id,
@@ -254,6 +259,7 @@ class SalaryRecord(models.Model):
                 asset_id=line.asset_id.id,
                 work_order=line.production_id.id,
                 occasion_code_id=line.occasion_code_id.id,
+                expense_item_id=line.expense_item_id.id
             )
             entry = line.entry_id
             entry_id = entry.id
@@ -272,7 +278,8 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if is_tc_entry else 'QT'
+            'x_asset_fin': 'TC' if is_tc_entry else 'QT',
+            'journal_id': default_journal_id
         }
 
         accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)
@@ -285,10 +292,28 @@ class SalaryRecord(models.Model):
                 'line_ids': [(0, 0, line_value) for line_value in move_lines]
             })
             move = account_move.create(move_value)
+            self.check_valid_salary_move(move)
             move.action_post()
             accounting_lines = accounting_line_by_entry[entry_id]
             accounting_lines.write({'move_id': move.id})
         return True
+
+    def check_valid_salary_move(self, move):
+        journal_lines = move.line_ids
+        debit_lines = journal_lines.filtered(lambda l: l.debit > 0)
+        credit_lines = journal_lines - debit_lines
+        if len(debit_lines) > 1 and len(credit_lines) > 1:
+            raise ValidationError(_("Bút toán không được phép nhiều nợ - nhiều có!"))
+
+    def get_default_journal_id_for_salary_move(self):
+        JOURNAL_CODE = '971'
+        salary_journal = self.env['account.journal'].search([
+            ('code', '=', JOURNAL_CODE),
+            ('company_id', '=', self.company_id.id)
+        ], limit=1)
+        if not salary_journal:
+            raise ValidationError(_("Không tìm thấy sổ nhật ký có mã %s") % JOURNAL_CODE)
+        return salary_journal.id
 
     def reverse_account_moves(self):
         if not self.move_ids:

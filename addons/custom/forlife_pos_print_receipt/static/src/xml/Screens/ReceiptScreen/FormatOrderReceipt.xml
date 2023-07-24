@@ -15,6 +15,7 @@
         <t t-call="FormatOrderHeaderReceipt"/>
         <t t-call="FormatOrderLinesReceipt"/>
         <t t-call="FormatOrderPaymentLinesReceipt"/>
+        <t t-call="accumulated"/>
         <t t-call="FormatOrderFooterReceipt"/>
     </t>
 
@@ -93,7 +94,6 @@
             <t t-call="SeparateLine"/>
 
             <table class="lines-detail">
-                <t t-debug="pdb"/>
                 <tbody>
                     <t t-if="receipt.normal_lines.length > 0">
                         <t t-foreach='receipt.normal_lines' t-as='line' t-key="line.id">
@@ -137,28 +137,31 @@
     </t>
 
     <t t-name="FormatOrderLinesDetailReceipt" owl="1">
-        <tr>
-            <td colspan="5">
-                <t t-esc="line.product_name_wrapped[0]"/>
-            </td>
-        </tr>
-        <tr class="product-price-qty-detail">
-            <td class="num_1 text">
-                <t t-esc="line.product_default_code || ''"/>
-            </td>
-            <td class="num_2 number">
-                <t t-esc="line.quantity"/>
-            </td>
-            <td class="num_3 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
-            </td>
-            <td class="num_4 number">
-                <t t-esc="line.discount_percent"/>%
-            </td>
-            <td class="num_5 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
-            </td>
-        </tr>
+        <t t-if="line.quantity != 0">
+            <tr>
+                <td colspan="5">
+                    <t t-esc="line.full_product_name"/>
+                    <!--<t t-esc="line.product_name_wrapped[0]"/>-->
+                </td>
+            </tr>
+            <tr class="product-price-qty-detail">
+                <td class="num_1 text">
+                    <t t-esc="line.product_default_code || ''"/>
+                </td>
+                <td class="num_2 number">
+                    <t t-esc="line.quantity"/>
+                </td>
+                <td class="num_3 number">
+                    <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
+                </td>
+                <td class="num_4 number">
+                    <t t-esc="line.discount_percent"/>%
+                </td>
+                <td class="num_5 number">
+                    <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
+                </td>
+            </tr>
+        </t>
     </t>
 
     <t t-name="FormatOrderPaymentLinesReceipt" owl="1">

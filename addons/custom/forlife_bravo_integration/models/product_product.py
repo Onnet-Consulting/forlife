@@ -3,14 +3,30 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from ..fields import BravoCharField, BravoDatetimeField, BravoMany2oneField
+from odoo.addons.forlife_bravo_integration.models.product_category import CONTEXT_CATEGORY_ACCOUNT_KEY
 
 import re
+
+
+class ProductTemplate(models.Model):
+    _name = 'product.template'
+    _inherit = ['product.template', 'bravo.model.update.action']
+    _bravo_field_sync = ['name', 'sku_code', 'uom_id', 'categ_id', 'attribute_line_ids']
+
+    def write(self, values):
+        res = super().write(values)
+        if self.bravo_check_need_sync(list(values.keys())):
+            queries = self.product_variant_ids.bravo_get_update_sql(values)
+            if queries:
+                self.env['product.product'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        return res
 
 
 class ProductProduct(models.Model):
     _name = 'product.product'
     _inherit = ['product.product', 'bravo.model']
     _bravo_table = 'B20Item'
+    _bravo_field_sync = ['barcode']
 
     def bravo_get_companies(self):
         company_codes = ['1100', '1200', '1300', '1400']
@@ -34,7 +50,7 @@ class ProductProduct(models.Model):
 
     def bravo_get_product_category_hierarchy(self, product):
         category_object = self.env['product.category']
-        accounting_category = (product.categ_id and product.categ_id.is_accounting_category) or category_object
+        accounting_category = product.categ_id if product.categ_id.is_accounting_category else category_object
         category_ids = [x for x in product.categ_id.parent_path.split('/') if x]
         category_level = [int(x) for x in category_ids]
         len_category = len(category_level)
@@ -62,7 +78,7 @@ class ProductProduct(models.Model):
         ]
         bravo_column_names.extend(attribute_column_names)
         attribute_column_name_code_mapping = {
-            "SeasonCode": "020",
+            "SeasonCode": "AT027",
         }
         if not self:
             if to_update:
@@ -73,13 +89,13 @@ class ProductProduct(models.Model):
             value = {
                 bravo_column_names[0]: record.barcode or None,
                 bravo_column_names[1]: record.name,
-                bravo_column_names[2]: record.sku_code or None,
+                bravo_column_names[2]: record.sku_code or record.product_tmpl_id.sku_code or None,
                 bravo_column_names[3]: record.uom_id.code or None,
                 bravo_column_names[4]: c1.bravo_get_category_code() or None,
                 bravo_column_names[5]: c2.bravo_get_category_code() or None,
                 bravo_column_names[6]: c3.bravo_get_category_code() or None,
                 bravo_column_names[7]: c4.bravo_get_category_code() or None,
-                bravo_column_names[8]: accounting_c.bravo_get_category_code() or None,
+                bravo_column_names[8]: accounting_c.bravo_get_category_code(**{CONTEXT_CATEGORY_ACCOUNT_KEY: True}) or None,
             }
             if record.detailed_type != 'product':
                 product_type = 0
@@ -103,13 +119,15 @@ class ProductProduct(models.Model):
                 bravo_column_names[9]: product_type
             })
 
-            attribute_values = record.product_template_variant_value_ids or record.product_template_attribute_value_ids
             attribute_values = record.product_tmpl_id.valid_product_template_attribute_line_ids
             product_attribute_code_value_mapping = {}
             for attr_value in attribute_values:
+                if attr_value.value_count < 1:
+                    continue
+                # get only one value from attribute values
                 attribute_code = attr_value.attribute_id.attrs_code
                 product_attribute_code_value_mapping.update({
-                    attribute_code: attr_value.name
+                    attribute_code: attr_value.value_ids[0].code
                 })
 
             for attribute_name_column in attribute_column_names:

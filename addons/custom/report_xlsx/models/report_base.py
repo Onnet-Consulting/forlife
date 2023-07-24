@@ -11,20 +11,26 @@ class ReportBase(models.AbstractModel):
     _description = 'Report Base'
 
     def print_xlsx(self):
+        filename = self.get_filename()
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename or self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
             'target': 'current'
 
         }
 
+    def get_filename(self):
+        return self._description
+
     def view_report(self):
         ...
 
+    @api.model
     def generate_xlsx_report(self, workbook, allowed_company):
         ...
 
+    @api.model
     def get_xlsx(self, allowed_company):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {
@@ -38,6 +44,7 @@ class ReportBase(models.AbstractModel):
         output.close()
         return generated_file
 
+    @api.model
     def get_format_workbook(self, workbook):
         header_format = {
             'bold': 1,
@@ -48,7 +55,15 @@ class ReportBase(models.AbstractModel):
             'border': 1,
             'align': 'center',
             'valign': 'vcenter',
-            'bg_color': '#dbeef4'
+            'bg_color': '#dbeef4',
+            'text_wrap': True,
+        }
+        subtotal_format = {
+            'bold': 1,
+            'border': 1,
+            'align': 'left',
+            'valign': 'vcenter',
+            'bg_color': '#c2f7ad'
         }
         normal_format = {
             'border': 1,
@@ -89,6 +104,9 @@ class ReportBase(models.AbstractModel):
         float_number_format.set_num_format('#,##0.00')
         int_number_format = workbook.add_format(int_number_format)
         int_number_format.set_num_format('#,##0')
+        int_subtotal_format = workbook.add_format(subtotal_format)
+        int_subtotal_format.set_num_format('#,##0')
+        subtotal_format = workbook.add_format(subtotal_format)
 
         float_number_title_format = workbook.add_format(float_number_title_format)
         float_number_title_format.set_num_format('#,##0.00')
@@ -106,4 +124,6 @@ class ReportBase(models.AbstractModel):
             'int_number_format': int_number_format,
             'float_number_title_format': float_number_title_format,
             'int_number_title_format': int_number_title_format,
+            'subtotal_format': subtotal_format,
+            'int_subtotal_format': int_subtotal_format,
         }

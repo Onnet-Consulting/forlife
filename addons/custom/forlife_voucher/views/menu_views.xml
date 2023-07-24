@@ -31,5 +31,12 @@
                   parent="forlife_voucher.forlife_voucher_menuitem_root"
                   action="forlife_voucher.forlife_voucher_action" sequence="8"/>
 
+        <menuitem id="product_voucher_menu"
+                  name="Product Voucher"
+                  parent="forlife_voucher.forlife_voucher_menuitem_root"
+                  action="product_voucher_action"
+                  sequence="100"
+        />
+
     </data>
 </odoo>

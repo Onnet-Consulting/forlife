@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="other_reasons_for_import_and_export_form_view_id_add_expense" model="ir.ui.view">
+            <field name="name">stock.location</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="forlife_stock.other_reasons_for_import_and_export_form_view_id"/>
+            <field name="arch" type="xml">
+
+                <field name="type_other" position="after">
+                    <field name="expense_item_id"/>
+                </field>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

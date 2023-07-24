@@ -1,0 +1,152 @@
+<odoo>
+    <record id="production_history_tree" model="ir.ui.view">
+        <field name="name">production.history.tree</field>
+        <field name="model">production.history</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Forlife Production" create="0">
+                <field name="version"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="implementation_id"/>
+                <field name="management_id"/>
+                <field name="production_department"/>
+                <field name="user_id"/>
+                <field name="created_date"/>
+<!--                <field name="company_id"/>-->
+            </tree>
+        </field>
+    </record>
+
+    <record id="production_history_form" model="ir.ui.view">
+        <field name="name">production.history.form</field>
+        <field name="model">production.history</field>
+        <field name="arch" type="xml">
+            <form string="" create="0">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="version" readonly="1"/>
+                            <field name="code" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="created_date" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="implementation_id" readonly="1"/>
+                            <field name="management_id" readonly="1"/>
+                            <field name="production_department" readonly="1"/>
+                            <field name="produced_from_date" readonly="1"/>
+                            <field name="to_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Sản phẩm hoàn thành" name="product_history">
+                            <field name="forlife_production_finished_product_ids" mode="tree">
+                                <tree create="0" delete="0" editable="bottom">
+                                    <field name="forlife_production_id" invisible="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="description" readonly="1"/>
+                                    <field name="produce_qty" readonly="1"/>
+                                    <field name="uom_id" readonly="1"/>
+                                    <field name="unit_price" readonly="1"/>
+                                    <field name="stock_qty" readonly="1"/>
+                                    <field name="remaining_qty" readonly="1"/>
+                                    <button name="action_open_bom_history" string="BOM" type="object"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="production_bom_history_form" model="ir.ui.view">
+            <field name="name">production.history.line.form</field>
+            <field name="model">production.history.line</field>
+            <field name="arch" type="xml">
+                <form string="" duplicate="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="forlife_production_id" readonly="1"/>
+                                <field name="product_id" readonly="1"/>
+                                <field name="produce_qty" readonly="1"/>
+                                <field name="implementation_id" readonly="1"/>
+                                <field name="management_id" readonly="1"/>
+                                <field name="production_department" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="forlife_production_name" readonly="1"/>
+                                <field name="description" readonly="1"/>
+                                <field name="uom_id" readonly="1"/>
+                                <field name="write_date" readonly="1" string="Ngày cập nhật"/>
+                            </group>
+                            <group class="d-flex">
+                                <field name="unit_price" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Nguyên liệu chính" name="materials">
+                                <field name="forlife_bom_material_ids" mode="tree" string="Nguyên vật liệu">
+                                    <tree editable="bottom" create="0" delete="0">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="description" readonly="1"/>
+                                        <field name="uom_id" readonly="1"/>
+                                        <field name="production_uom_id" readonly="1"/>
+                                        <field name="conversion_coefficient" readonly="1"/>
+                                        <field name="rated_level" readonly="1"/>
+                                        <field name="loss" readonly="1"/>
+                                        <field name="total" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+<!--                            <page string="Phụ liệu" name="ingredients">-->
+<!--                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">-->
+<!--                                    <tree editable="bottom" create="0">-->
+<!--                                        <field name="product_id" readonly="1"/>-->
+<!--                                        <field name="description" readonly="1"/>-->
+<!--                                        <field name="uom_id" readonly="1"/>-->
+<!--                                        <field name="production_uom_id" readonly="1"/>-->
+<!--                                        <field name="conversion_coefficient" readonly="1"/>-->
+<!--                                        <field name="rated_level" readonly="1"/>-->
+<!--                                        <field name="loss" readonly="1"/>-->
+<!--                                        <field name="total" readonly="1"/>-->
+<!--                                    </tree>-->
+<!--                                </field>-->
+<!--                            </page>-->
+                            <page string="Chi phí" name="service_costs">
+                                <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
+                                    <tree editable="bottom" create="0" delete="0">
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="rated_level" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+    <record id="production_history_action" model="ir.actions.act_window">
+        <field name="name">Forlife Production</field>
+        <field name="res_model">production.history</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

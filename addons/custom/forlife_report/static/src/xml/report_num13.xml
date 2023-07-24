@@ -19,15 +19,16 @@
                         <td><t t-esc="line.po_name"/></td>
                         <td><t t-esc="line.po_date"/></td>
                         <td><t t-esc="line.suppliers_name"/></td>
-                        <td><t t-esc="line.product_code"/></td>
+                        <td><t t-esc="line.sku_code"/></td>
+                        <td><t t-esc="line.barcode"/></td>
                         <td><t t-esc="line.product_name"/></td>
-                        <td><t t-esc="format_decimal(line.product_qty, 2)"/></td>
-                        <td><t t-esc="format_decimal(line.price_unit, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.discount_percent, 3)"/></td>
-                        <td><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.qty_received, 2)"/></td>
-                        <td><t t-esc="format_decimal(line.qty_not_received, 2)"/></td>
-                        <td><t t-esc="format_decimal(line.qty_invoiced, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.product_qty, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.price_unit, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.discount_percent, 3)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.qty_received, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.qty_not_received, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.qty_invoiced, 2)"/></td>
                     </tr>
                 </t>
             </tbody>

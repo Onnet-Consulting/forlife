@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
-    'STT', 'Số PR', 'Ngày PR', 'Số PO', 'Ngày PO', 'NCC', 'Mã hàng', 'Tên hàng', 'SL',
+    'STT', 'Số PR', 'Ngày PR', 'Số PO', 'Ngày PO', 'NCC', 'Mã SKU', 'Barcode', 'Tên hàng', 'SL',
     'Đơn giá', 'CK (%)', 'Thành tiền', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
 ]
 
@@ -38,8 +38,9 @@ select row_number() over (order by po.date_order desc)                      as n
     po.name                                                                 as po_name,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
     rp.name                                                                 as suppliers_name,
-    pp.barcode                                                              as product_code,
-    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+    pt.sku_code                                                             as sku_code,
+    pp.barcode                                                              as barcode,
+    coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
     pol.product_qty,
     pol.price_unit,
     pol.discount_percent,
@@ -64,8 +65,7 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         query = self._get_query(allowed_company)
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
+        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
             "data": data,
@@ -87,17 +87,18 @@ order by num
         for value in data.get('data'):
             sheet.write(row, 0, value.get('num'), formats.get('center_format'))
             sheet.write(row, 1, value.get('pr_name'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('pr_date'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('po_name'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('po_date'), formats.get('center_format'))
-            sheet.write(row, 8, value.get('suppliers_name'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('product_code'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('pr_date'), formats.get('center_format'))
+            sheet.write(row, 3, value.get('po_name'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('po_date'), formats.get('center_format'))
+            sheet.write(row, 5, value.get('suppliers_name'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('sku_code'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('product_name'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('product_qty', 0), formats.get('float_number_format'))
-            sheet.write(row, 9, value.get('price_unit', 0), formats.get('int_number_format'))
-            sheet.write(row, 9, value.get('discount_percent', 0), formats.get('float_number_format'))
-            sheet.write(row, 9, value.get('price_subtotal', 0), formats.get('int_number_format'))
-            sheet.write(row, 9, value.get('qty_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 9, value.get('qty_not_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 9, value.get('qty_invoiced', 0), formats.get('float_number_format'))
+            sheet.write(row, 10, value.get('price_unit', 0), formats.get('int_number_format'))
+            sheet.write(row, 11, value.get('discount_percent', 0), formats.get('float_number_format'))
+            sheet.write(row, 12, value.get('price_subtotal', 0), formats.get('int_number_format'))
+            sheet.write(row, 13, value.get('qty_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 14, value.get('qty_not_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 15, value.get('qty_invoiced', 0), formats.get('float_number_format'))
             row += 1

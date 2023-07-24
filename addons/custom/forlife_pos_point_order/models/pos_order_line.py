@@ -24,8 +24,24 @@ class PosOrderLine(models.Model):
                 vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
                     (0, 0, {
                         'type': 'point',
-                        'listed_price': line['price_unit'],
+                        'listed_price': line['original_price'],
                         'recipe': -line['point']/1000,
+                    })
+                ]
+            if 'money_reduce_from_product_defective' in line and line['money_reduce_from_product_defective']:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'product_defective',
+                        'recipe': line['money_reduce_from_product_defective'],
+                        'listed_price': line['original_price']
+                    })
+                ]
+            if 'discount' in line and line['discount']:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'handle',
+                        'recipe': (line['discount']*line['qty']*line['original_price'])/100,
+                        'listed_price': line['original_price']
                     })
                 ]
         return super(PosOrderLine, self).create(vals_list)
@@ -78,7 +94,7 @@ class PosOrderLine(models.Model):
                 else:
                     if dict_products_points:
                         for key, val in dict_products_points.items():
-                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.is_product_auto is False:
+                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.product_id.is_product_auto is False:
                                 if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
                                     rec.point_addition = int(dict_products_points[key]) * rec.qty
                                 elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
@@ -93,7 +109,7 @@ class PosOrderLine(models.Model):
                     #####
                     if product_ids_valid_event:
                         for key, val in product_ids_valid_event.items():
-                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.is_product_auto is False:
+                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.product_id.is_product_auto is False:
                                 rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
                                 break
                             else:

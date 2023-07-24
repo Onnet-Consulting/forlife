@@ -744,3 +744,28 @@ msgstr "Mã vụ việc"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__production_id
 msgid "Manufacturing Order"
 msgstr "Lệnh sản xuất"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__attention
+msgid "Attention"
+msgstr "Chú ý"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__delivery_address
+msgid "Delivery Address"
+msgstr "Địa chỉ"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__receiver_id
+msgid "Receiver"
+msgstr "Người nhận"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Receiver's information"
+msgstr "Thông tin nhận"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__use_department_id
+msgid "Use Department"
+msgstr "Phòng ban sử dụng"

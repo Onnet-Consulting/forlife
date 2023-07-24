@@ -15,3 +15,4 @@ class AccountMoveLine(models.Model):
 
     asset_id = fields.Many2one('assets.assets', string='Project Code')
     occasion_code_id = fields.Many2one('occasion.code', string='Internal Order Code')
+    expense_item_id = fields.Many2one('expense.item', string='Expense Item')

@@ -19,6 +19,7 @@
                             <span class="o_stat_text">Phiếu NPL</span>
                         </div>
                     </button>
+                </xpath>
                  <xpath expr="//header//button[@name='action_assign']" position="attributes">
                      <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath>
@@ -30,23 +31,27 @@
                     <field name="move_line_nosuggest_ids" invisible="1"/>
                     <field name="move_line_ids_without_package" attrs="{'readonly': [('state', '=', 'done')]}">
                         <tree editable="bottom" class="width-hh">
+                            <field name="is_production_order" invisible="1"/>
                             <field name="product_id"/>
                             <field name="location_dest_id"/>
                             <field name="lot_name"/>
                             <field name="purchase_uom"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
+                            <field name="free_good"
+                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_change"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_purchase_done"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
-                            <field name="qty_done"
-                                   decoration-warning="reserved_uom_qty &lt; qty_done"
-                                   decoration-success="reserved_uom_qty == qty_done" force_save="1"
-                                   attrs="{'readonly': [('parent.state', '=', 'done')]}"/>
+                            <field name="qty_done" decoration-warning="reserved_uom_qty &lt; qty_done" decoration-success="reserved_uom_qty == qty_done" force_save="1" attrs="{'readonly': [('parent.state', '=', 'done')]}"/>
                             <field name="product_uom_id"/>
+<!--                            <field name="is_need_scan_barcode" invisible="1"/>-->
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="reserved_uom_qty" invisible="1"/>
+                            <field name="occasion_code_id" string="Mã vụ việc"/>
+                            <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
+                            <field name="account_analytic_id" string="Trung tâm chi phí"/>
                         </tree>
                     </field>
                 </xpath>

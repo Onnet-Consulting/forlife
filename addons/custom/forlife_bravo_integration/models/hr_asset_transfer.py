@@ -10,13 +10,17 @@ class HrAssetTransfer(models.Model):
     def action_approved(self):
         super().action_approved()
         queries = self.hr_asset_transfer_line_ids.bravo_get_insert_sql()
-        self.env['hr.asset.transfer.line'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
+        if queries:
+            self.env['hr.asset.transfer.line'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
 
 
 class HrAssetTransferLine(models.Model):
     _name = 'hr.asset.transfer.line'
     _inherit = ['hr.asset.transfer.line', 'bravo.model.insert.action']
     _bravo_table = 'B30TransferAsset'
+
+    company_id = fields.Many2one('res.company', string='Company')
+
 
     br1 = BravoMany2oneField('hr.asset.transfer', odoo_name='hr_asset_transfer_id', bravo_name='CompanyCode',
                              field_detail='company_id.code')

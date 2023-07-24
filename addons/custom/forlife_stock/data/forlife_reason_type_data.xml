@@ -17,11 +17,11 @@
         </record>
 
         <record id="reason_type_4" model="forlife.reason.type">
-            <field name="code">04</field>
+            <field name="code">X02</field>
             <field name="name">Xuất cân đối tồn kho</field>
         </record>
         <record id="reason_type_5" model="forlife.reason.type">
-            <field name="code">05</field>
+            <field name="code">N02</field>
             <field name="name">Nhập cân đối tồn kho</field>
         </record>
         <record id="reason_type_6" model="forlife.reason.type">
@@ -32,6 +32,14 @@
         <record id="reason_type_7" model="forlife.reason.type">
             <field name="code">07</field>
             <field name="name">Nhập trả nguyên phụ liệu</field>
+        </record>
+        <record id="reason_type_8" model="forlife.reason.type">
+            <field name="code">N03</field>
+            <field name="name">Xuất tách/gộp mã tồn kho </field>
+        </record>
+        <record id="reason_type_9" model="forlife.reason.type">
+            <field name="code">X03</field>
+            <field name="name">Nhập tách/gộp mã tồn kho</field>
         </record>
     </data>
 </odoo>

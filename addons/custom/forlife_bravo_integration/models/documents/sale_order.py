@@ -38,7 +38,7 @@ class AccountMove(models.Model):
             "Address": partner.contact_address_complete,
             "TaxRegNo": partner.vat,
             "Description": self.invoice_description,
-            "EmployeeCode": self.user_id.employee_id.code,
+            "EmployeeCode": self.env.user.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin else 0,
             "DebitAccount": receivable_account_code,
             "DueDate": self.invoice_date_due,
@@ -62,7 +62,7 @@ class AccountMove(models.Model):
 
             invoice_tax_ids = invoice_line.tax_ids
             # get journal line that matched tax with invoice line
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id & invoice_tax_ids)
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
             if journal_tax_lines:
                 tax_line = journal_tax_lines[0]
                 journal_value_line.update({

@@ -27,7 +27,6 @@
         'point_of_sale.assets': [
             'forlife_pos_promotion/static/src/js/Promotion.js',
             'forlife_pos_promotion/static/src/js/CustomOrderline.js',
-            # 'forlife_pos_promotion/static/src/js/OrderSummary.js',
             'forlife_pos_promotion/static/src/js/CustomOrderSummary.js',
             'forlife_pos_promotion/static/src/js/ProductScreen.js',
             'forlife_pos_promotion/static/src/js/PartnerListScreen.js',
@@ -35,6 +34,7 @@
             'forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js',
             'forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/ResetPromotionProgramsButton.js',
+            'forlife_pos_promotion/static/src/js/ControlButtons/ResetLinePromotionProgramsButton.js',
             'forlife_pos_promotion/static/src/js/Popup/ComboDetailsPopup.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/CartPromotionButton.js',
             'forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js',
@@ -49,9 +49,11 @@
 
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderDetail.xml',
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/CustomOrderline.xml',
+            'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/CartPromotionButton.xml',
+            'forlife_pos_promotion/static/src/xml/ControlButtons/ResetLinePromotionProgramsButton.xml',
             'forlife_pos_promotion/static/src/xml/Popup/CartPromotionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml',

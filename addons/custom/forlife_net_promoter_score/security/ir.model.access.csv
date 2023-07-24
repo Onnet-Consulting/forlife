@@ -2,7 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_forlife_question_manager,forlife.question manager,model_forlife_question,forlife_net_promoter_score.net_promoter_score_manager,1,1,1,1
 access_forlife_question_user,forlife.question user,model_forlife_question,base.group_user,1,0,0,0
 access_forlife_comment,forlife.comment,model_forlife_comment,forlife_net_promoter_score.net_promoter_score_manager,1,0,0,0
-access_forlife_app_api_link_manager,forlife.app.api.link manager,model_forlife_app_api_link,base.group_system,1,1,1,0
-access_forlife_app_api_link_view,forlife.app.api.link view,model_forlife_app_api_link,base.group_user,1,0,0,0
 access_net_promoter_score_report,net_promoter_score_report,model_net_promoter_score_report,forlife_net_promoter_score.net_promoter_score_manager,1,1,1,1
-access_form_update_comment,form.update.comment,model_form_update_comment,forlife_net_promoter_score.net_promoter_score_manager,1,1,1,1

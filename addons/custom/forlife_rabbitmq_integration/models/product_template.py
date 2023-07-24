@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-import copy
 
 
 class ProductTemplate(models.Model):
@@ -9,39 +8,43 @@ class ProductTemplate(models.Model):
     _inherit = ['product.template', 'sync.info.rabbitmq.update']
     _update_action = 'update'
 
-    def check_update_info(self, values):
-        if not self.mapped('product_variant_ids'):
-            return False
-        field_check_update = ['name', 'uom_id', 'categ_id', 'list_price']
-        return [item for item in field_check_update if item in values]
+    def domain_record_sync_info(self):
+        return self.filtered(lambda f: f.detailed_type == 'product')
 
-    def get_sync_update_data(self, field_update, values):
-        map_key_rabbitmq = {
-            'list_price': 'price',
-            'name': 'name',
-        }
-        vals = {}
-        for odoo_key in field_update:
-            if map_key_rabbitmq.get(odoo_key):
-                vals.update({
-                    map_key_rabbitmq.get(odoo_key): values.get(odoo_key) or None
-                })
-        if 'uom_id' in values:
-            uom = self.env['uom.uom'].search_read([('id', '=', values.get('uom_id'))], ['name'])
-            vals['unit'] = uom[0].get('name') if uom else None
-        if 'categ_id' in values:
-            category = self.env['product.category'].search([('id', '=', values.get('categ_id'))], limit=1)
-            vals['category'] = {
-                'id': category.id,
-                'parent_id': category.parent_id.id or None,
-                'name': category.name,
-                'code': category.category_code,
-            } if category else None
-        data = []
-        for product in self.mapped('product_variant_ids'):
-            vals.update({
-                'id': product.id,
-                'updated_at': product.product_tmpl_id.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-            })
-            data.extend([copy.copy(vals)])
-        return data
+    def get_sync_info_value(self):
+        return [{
+            'id': line.id,
+            'created_at': line.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'product_code': line.sku_code or None,
+            'sku': line.barcode or None,
+            'name': line.name or None,
+            'unit': line.uom_id.name or None,
+            'price': line.lst_price or None,
+            'active': line.active,
+            'sale_ok': line.sale_ok,
+            'category': {
+                'id': line.categ_id.id,
+                'parent_id': line.categ_id.parent_id.id or None,
+                'name': line.categ_id.name,
+                'code': line.categ_id.category_code,
+            } if line.categ_id else None,
+            'attributes': [
+                {
+                    'id': attr.attribute_id.id,
+                    'name': attr.attribute_id.name or None,
+                    'code': attr.attribute_id.attrs_code or None,
+                    'value': {
+                        'id': attr.value_ids.id,
+                        'name': attr.value_ids.name or None,
+                        'code': attr.value_ids.code or None
+                    }
+                } for attr in line.attribute_line_ids
+            ]
+        } for line in self.mapped('product_variant_ids')]
+
+    @api.model
+    def get_field_update(self):
+        if not self.mapped('product_variant_ids'):
+            return []
+        return ['name', 'uom_id', 'categ_id', 'list_price', 'sale_ok']

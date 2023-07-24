@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_picking_form_view_inherit" model="ir.ui.view">
+            <field name="name">stock_picking_form_view_inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//header" position="inside">
+                    <button name="%(accountant_print_stock_picking_ingoing)d" invisible="context.get('default_other_export', False)"
+                            string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                    <button name="%(warehouse_print_stock_picking_ingoing)d" invisible="context.get('default_other_export', False)"
+                            string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                    <button name="%(accountant_print_stock_picking_outgoing)d" invisible="context.get('default_other_import', False)"
+                            string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                    <button name="%(warehouse_print_stock_picking_outgoing)d" invisible="context.get('default_other_import', False)"
+                            string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

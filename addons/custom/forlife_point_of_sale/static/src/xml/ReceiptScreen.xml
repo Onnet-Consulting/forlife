@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_point_of_sale.CustomReceiptScreen" t-inherit-mode="extension" t-inherit="point_of_sale.ReceiptScreen" owl="1">
+        <xpath expr="//div[hasclass('default-view')]" position="after">
+            <div id="button-set-partner" class="button-set-partner"
+                 t-on-click="setPartnerToNewOrder">
+                <span>Đặt khách hàng này cho đơn hàng mới</span>
+            </div>
+        </xpath>
+    </t>
+</templates>

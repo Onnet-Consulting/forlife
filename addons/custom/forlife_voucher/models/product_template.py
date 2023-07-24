@@ -43,10 +43,19 @@ class ProductTemplate(models.Model):
                 product_include.program_voucher_id = False
         return super(ProductTemplate, self).write(vals)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         if 'program_voucher_id' in vals_list and vals_list['program_voucher_id']:
             product_include = self.search([('program_voucher_id', '=', vals_list['program_voucher_id'])])
             if product_include:
                 product_include.program_voucher_id = False
         return super(ProductTemplate, self).create(vals_list)
+
+    def get_notification_id(self, price):
+        if len(self.product_variant_ids) < 1:
+            return False
+        elif len(self.product_variant_ids) == 1:
+            return self.product_variant_ids.notification_id
+        else:
+            product = self.product_variant_ids.filtered(lambda f: f.price == price)
+            return (product and product[0].notification_id) or False

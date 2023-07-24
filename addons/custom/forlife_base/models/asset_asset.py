@@ -3,6 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class AssetsAssets(models.Model):
     _name = 'assets.assets'
+    _description = 'Assets'
 
     type = fields.Selection([('CCDC', 'CCDC'), ('TSCD', 'TSCD'), ('XDCB', 'XDCB')], string='Type')
     code = fields.Char('Code', size=24, required=True)
@@ -33,12 +34,14 @@ class AssetsAssets(models.Model):
     ]
 
     def write(self, values):
-        self.check_type(values)
+        if not self._context.get('from_bravo'):
+            self.check_type(values)
         return super(AssetsAssets, self).write(values)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        self.check_type(vals)
+        if not self._context.get('from_bravo'):
+            self.check_type(vals)
         return super(AssetsAssets, self).create(vals)
 
     def check_type(self,vals):

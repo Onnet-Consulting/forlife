@@ -3,6 +3,7 @@
     "name": "Forlife Purchase",
     "category": "Purchases",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """Forlife Purchase""",
     "depends": [
@@ -26,9 +27,12 @@
         'security/purchase_security.xml',
         'security/ir.model.access.csv',
         'wizard/reject_purchase_order.xml',
+        'wizard/cancel_purchase_order.xml',
+        'wizard/select_type_invoice.xml',
         'views/purchase_order_view.xml',
         'views/forlife_event_view.xml',
         'views/forlife_production_view.xml',
+        'views/production_history_view.xml',
         'views/forlife_bom.xml',
         'views/stock_warehouse_type.xml',
         'views/product_view.xml',
@@ -38,11 +42,15 @@
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
-        'views/stock_picking_view.xml'
+        'views/stock_picking_view.xml',
+        'views/production_import.xml',
+        'wizard/import_production.xml',
     ],
     "assets": {
         "web.assets_backend": [
             '/forlife_purchase/static/src/css/common.scss',
+            'forlife_purchase/static/src/xml/import_button.xml',
+            'forlife_purchase/static/src/js/import_button.js',
         ],
         'web.assets_qweb': [
         ],

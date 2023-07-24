@@ -3,6 +3,7 @@
     "name": "Forlife Stock",
     "category": "Forlife Stock",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 6,
     "description": """Forlife Stock""",
     "depends": [
@@ -15,7 +16,8 @@
         'stock',
         'stock_account',
         'stock_landed_costs',
-        'quality_control'
+        'quality_control',
+        'forlife_base'
     ],
     "data": [
         'data/data_stock_location_type.xml',
@@ -25,10 +27,14 @@
         'wizards/reject_transfer_stock_inventory_view.xml',
         'wizards/reject_asset_transfer.xml',
         'wizards/reject_in_out_request.xml',
+        'wizards/stock_backorder_confirmation_views.xml',
+        'wizards/stock_picking_scan.xml',
         'security/ir.model.access.csv',
         'data/base_automation.xml',
         'views/stock_transfer_request_view.xml',
+        'views/stock_picking_type.xml',
         'views/stock_transfer_view.xml',
+        'views/quantity_production_order_view.xml',
         'views/stock_location_type_view.xml',
         'views/stock_location_view.xml',
         'views/stock_custom_location_view.xml',

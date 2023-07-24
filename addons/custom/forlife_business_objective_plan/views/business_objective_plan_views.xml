@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="business_objective_plan_view_tree" model="ir.ui.view">
+            <field name="name">business_objective_plan_view_tree</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <tree string="business_objective_plan_tree">
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="brand_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_view_form" model="ir.ui.view">
+            <field name="name">business_objective_plan_view_form</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <form string="business_objective_plan_form">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="e.g. X 2023"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <label for="from_date" string="Date"/>
+                                <div>from
+                                    <field name="from_date" class="oe_inline" required="1"/>
+                                    to
+                                    <field name="to_date" class="oe_inline" required="1"/>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('is_lock_brand', '=', True)]}"/>
+                            </group>
+                        </group>
+                        <div class="row">
+                            <div class="col-6">
+                                <separator string="BO store"/>
+                                <button name="open_business_objective" class="oe_highlight margin_btn" type="object" string=" Detail"
+                                        title="Detail" aria-label="Detail" icon="fa-users" context="{'action_xml_id': 'bo_store_view'}"/>
+                                <button name="btn_create_manual" class="oe_highlight margin_btn" type="object" string=" Create manual"
+                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{ 'action_xml_id': 'bo_store_view', 'bo_store': 1}"/>
+                                <button name="btn_import_excel" class="oe_highlight margin_btn" type="object" string=" Import excel" title="Import excel"
+                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_store', 'action_xml_id': 'bo_store_view'}"/>
+                            </div>
+                            <div class="col-6">
+                                <separator string="BO employee"/>
+                                <button name="open_business_objective" class="oe_highlight margin_btn" type="object" string=" Detail"
+                                        title="Detail" aria-label="Detail" icon="fa-user" context="{'action_xml_id': 'bo_employee_view'}"/>
+                                <button name="btn_create_manual" class="oe_highlight margin_btn" type="object" string=" Create manual"
+                                        title="Create manual" aria-label="Create manual" icon="fa-plus" context="{'action_xml_id': 'bo_employee_view', 'bo_employee': 1}"/>
+                                <button name="btn_import_excel" class="oe_highlight margin_btn" type="object" string=" Import excel" title="Import excel"
+                                        aria-label="Import excel" icon="fa-file-excel-o" context="{'template_xml_id': 'template_import_bo_employee', 'action_xml_id': 'bo_employee_view'}"/>
+                            </div>
+                        </div>
+                        <field name="is_lock_brand" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_filter" model="ir.ui.view">
+            <field name="name">business_objective_plan_filter</field>
+            <field name="model">business.objective.plan</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name"/>
+                    <field name="brand_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="business_objective_plan_action" model="ir.actions.act_window">
+            <field name="name">Objective Plan</field>
+            <field name="res_model">business.objective.plan</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'show_code_name': 1}</field>
+        </record>
+
+        <record id="business_objective_plan_view_form_create_temp" model="ir.ui.view">
+            <field name="name">business_objective_plan_view_form_create_temp</field>
+            <field name="model">business.objective.plan</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="business_objective_plan_form">
+                    <sheet>
+                        <div invisible="not context.get('bo_store')">
+                            <separator string="BO store"/>
+                            <field name="bo_store_temp_ids">
+                                <tree editable="top">
+                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                                           domain="[('brand_id', '=', context.get('brand_id'))]" required="1"/>
+                                    <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="revenue_target" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </div>
+                        <div invisible="not context.get('bo_employee')">
+                            <separator string="BO employee"/>
+                            <field name="bo_employee_temp_ids">
+                                <tree editable="top">
+                                    <field name="store_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}"
+                                           domain="[('brand_id', '=', context.get('brand_id'))]" required="1"/>
+                                    <field name="sale_province_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="employee_id" context="{'show_code_name': 1}" options="{'no_create': True, 'no_open': True}" required="1"/>
+                                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="concurrent_position_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="revenue_target"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button string="OK" type="object" name="btn_save" class="btn-primary"/>
+                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

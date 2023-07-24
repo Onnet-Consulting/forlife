@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-29 02:30+0000\n"
-"PO-Revision-Date: 2023-05-29 02:30+0000\n"
+"POT-Creation-Date: 2023-07-15 06:51+0000\n"
+"PO-Revision-Date: 2023-07-15 06:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,11 +26,13 @@ msgid ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tbody><tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    <div>\n"
-"                        Dear anh chị cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out=\"object.config_id.name or ''\">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:\n"
+"                        Dear anh chị cửa hàng <t t-out=\"object.name or ''\">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out=\"object.name or ''\">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:\n"
 "                        <br/>\n"
-"                        <t t-foreach=\"object.config_id.get_pos_opened()\" t-as=\"pos_config\" t-key=\"key\">\n"
-"                            <t t-out=\"pos_config[0]\"/> mở ngày <t t-out=\"pos_config[1]\"/>\n"
-"                        </t>\n"
+"                        <ul>\n"
+"                            <t t-foreach=\"object.get_pos_opened()\" t-as=\"pos_session\">\n"
+"                                <li><t t-out=\"pos_session.config_id.name\"/> mở ngày <t t-out=\"pos_session.start_at\"/></li>\n"
+"                            </t>\n"
+"                        </ul>\n"
 "                        <br/><br/>\n"
 "                        Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br/>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.\n"
 "<br/>\n"
@@ -92,6 +94,7 @@ msgstr "Tài khoản phân tích"
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.brand_action
 #: model:ir.model,name:forlife_point_of_sale.model_res_brand
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__brand_id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__brand_id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__brand_id
 #: model:ir.ui.menu,name:forlife_point_of_sale.brand_menu
@@ -107,6 +110,11 @@ msgstr "Mã thương hiệu phải là duy nhất !"
 #: model:ir.model.constraint,message:forlife_point_of_sale.constraint_store_first_order_data_uniq
 msgid "Brand on Customer must be unique !"
 msgstr "Thương hiệu trên Khách hàng là duy nhất !"
+
+#. module: forlife_point_of_sale
+#: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.import_store_first_order_view_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__cashier_ids
@@ -129,9 +137,16 @@ msgid "Company"
 msgstr "Công ty"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Connection Error"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_res_partner
 msgid "Contact"
-msgstr "Danh bạ"
+msgstr "Liên hệ"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__contact_id
@@ -139,6 +154,7 @@ msgid "Contact Store"
 msgstr "Liên hệ cửa hàng"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__create_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__create_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__create_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__create_uid
@@ -146,6 +162,7 @@ msgid "Created by"
 msgstr "Được tạo bởi"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__create_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__create_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__create_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__create_date
@@ -168,6 +185,7 @@ msgid "Cảnh báo đóng POS"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__display_name
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__display_name
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__display_name
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__display_name
@@ -175,16 +193,70 @@ msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: forlife_point_of_sale
+#: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.import_store_first_order_view_form
+msgid "Download Template"
+msgstr "Tải mẫu"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__employee_ids
 msgid "Employees"
 msgstr "Nhân viên cửa hàng"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__error_file_name
+msgid "Error File Name"
+msgstr "Tên file lỗi"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__error_file
+msgid "Error file"
+msgstr "File lỗi"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Error: no internet connection."
+msgstr ""
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_product_product__full_attrs_desc
+msgid "Full Attrs Desc"
+msgstr "Thuộc tính trên POS"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__id
 msgid "ID"
 msgstr ""
+
+#. module: forlife_point_of_sale
+#: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.import_store_first_order_view_form
+msgid "Import"
+msgstr "Nhập"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__import_file_name
+msgid "Import File Name"
+msgstr "Tên file nhập"
+
+#. module: forlife_point_of_sale
+#: model:ir.actions.act_window,name:forlife_point_of_sale.import_store_first_order_action
+#: model:ir.ui.menu,name:forlife_point_of_sale.import_store_first_order_menu
+msgid "Import Store First Order"
+msgstr "Nhập cửa hàng đầu tiên"
+
+#. module: forlife_point_of_sale
+#: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.import_store_first_order_view_form
+msgid "Import error"
+msgstr "Lỗi nhập liệu"
+
+#. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_import_store_first_order
+msgid "Import store first order"
+msgstr "Nhập cửa hàng đầu tiên"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_bank_statement_line__invoice_info_address
@@ -216,6 +288,7 @@ msgid "Journal Entry"
 msgstr "Bút toán "
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order____last_update
@@ -223,6 +296,7 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__write_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__write_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__write_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__write_uid
@@ -230,6 +304,7 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__write_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__write_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__write_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__write_date
@@ -264,6 +339,13 @@ msgid "Opened POS:"
 msgstr "Các POS đang mở"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Opening"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__opening_time
 msgid "Opening time"
 msgstr "Thời gian mở cửa"
@@ -283,6 +365,13 @@ msgid "Opening/closing time should be between 0 and 24"
 msgstr "Thời gian mở/đóng phải nằm trong khoảng từ 0 đến 24"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Order is not synced. Check your internet connection"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__pos_config_ids
 msgid "POS Config"
 msgstr "Danh sách POS"
@@ -293,6 +382,22 @@ msgid "POS Payment Method"
 msgstr "Phương thức thanh toán"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Payments in"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#. odoo-python
+#: code:addons/forlife_point_of_sale/wizard/import_store_first_order.py:0
+#, python-format
+msgid ""
+"Please choose brand and upload file template before click Import button !"
+msgstr "Vui lòng chọn thương hiệu và tải lên file nhập liệu trước khi nhấn nút Nhập !"
+
+#. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_pos_config
 msgid "Point of Sale Configuration"
 msgstr "Cấu hình điểm bán lẻ"
@@ -300,12 +405,34 @@ msgstr "Cấu hình điểm bán lẻ"
 #. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Đơn bán lẻ"
+msgstr "Đơn hàng điểm bán lẻ"
 
 #. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_pos_session
 msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
+
+#. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_product_attribute
+msgid "Product Attribute"
+msgstr "Thuộc tính sản phẩm"
+
+#. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Remaining unsynced orders"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__row_start
+msgid "Row start"
+msgstr "Dòng bắt đầu"
 
 #. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_ir_cron
@@ -322,6 +449,18 @@ msgstr "Tìm kiếm"
 #: model:ir.model.fields,help:forlife_point_of_sale.field_store__code
 msgid "Short name used to identify your warehouse"
 msgstr "Mã cửa hàng liên kết từ mã kho"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_product_attribute__show_orderline_on_pos
+msgid "Show on POS"
+msgstr "Hiển thị trên đơn POS"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Some, if not all, post-processing after syncing order failed."
+msgstr ""
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__start_date
@@ -367,6 +506,13 @@ msgid "Stores"
 msgstr "Cửa hàng"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "There are unsynced orders. Do you want to sync these orders?"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.actions.server,name:forlife_point_of_sale.noti_pos_not_closed_ir_actions_server
 #: model:ir.cron,cron_name:forlife_point_of_sale.noti_pos_not_closed
 msgid "Thông báo chưa đóng phiên"
@@ -387,6 +533,25 @@ msgid "Tên công ty"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Tổng chi"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ClosePosPopup.xml:0
+#, python-format
+msgid "Tổng thu"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_import_store_first_order__import_file
+msgid "Upload file"
+msgstr "Tải lên tệp"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__warehouse_id
 msgid "Warehouse"
 msgstr "Kho"
@@ -404,6 +569,11 @@ msgid "brand_tree"
 msgstr "danh sách thương hiệu"
 
 #. module: forlife_point_of_sale
+#: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.import_store_first_order_view_form
+msgid "import_store_first_order_form"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_form
 msgid "store_form"
 msgstr "Chi tiết cửa hàng"
@@ -412,6 +582,13 @@ msgstr "Chi tiết cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_tree
 msgid "store_tree"
 msgstr "Danh sách cửa hàng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/ReceiptScreen.xml:0
+#, python-format
+msgid "Đặt khách hàng này cho đơn hàng mới"
+msgstr ""
 
 #. module: forlife_point_of_sale
 #. odoo-javascript

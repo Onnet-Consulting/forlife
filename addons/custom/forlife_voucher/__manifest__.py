@@ -31,7 +31,6 @@
         'views/program_voucher.xml',
         'views/setup_voucher.xml',
         'views/voucher_view.xml',
-        'views/menu_views.xml',
         'views/product_category.xml',
         'views/product_product.xml',
         'views/product_template.xml',
@@ -41,7 +40,9 @@
         'views/hr_department.xml',
         'views/pos_order.xml',
         'views/pos_payment_method.xml',
-        'views/product_program_import_view.xml'
+        'views/product_program_import_view.xml',
+        'views/quick_config_voucher.xml',
+        'views/menu_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

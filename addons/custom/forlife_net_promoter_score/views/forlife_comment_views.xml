@@ -15,8 +15,6 @@
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
-                    <button name="action_push_notification_manual" type="object" string="Push Notify" class="oe_highlight" attrs="{'invisible': [('status', '!=', -1)]}"/>
-                    <button name="btn_send_comment_from_app" type="object" string="Comment" class="oe_highlight" attrs="{'invisible': [('status', '!=', 0)]}"/>
                 </tree>
             </field>
         </record>
@@ -77,26 +75,5 @@
 
         <menuitem id="forlife_comment_menu" name="Comment" parent="point_of_sale.menu_point_of_sale" action="forlife_comment_action" sequence="100"/>
 
-    </data>
-    <data>
-        <record id="form_update_comment_view_form" model="ir.ui.view">
-            <field name="name">form_update_comment_view_form</field>
-            <field name="model">form.update.comment</field>
-            <field name="arch" type="xml">
-                <form string="form_update_comment_form">
-                    <sheet>
-                        <group>
-                            <field name="point"/>
-                            <field name="comment"/>
-                            <field name="comment_id" invisible="1"/>
-                        </group>
-                        <footer>
-                            <button name="btn_ok" type="object" string="OK" class="btn-primary" context="{'update_comment': True}"/>
-                            <button special="cancel" string="Cancel" class="btn-secondary"/>
-                        </footer>
-                    </sheet>
-                </form>
-            </field>
-        </record>
     </data>
 </odoo>

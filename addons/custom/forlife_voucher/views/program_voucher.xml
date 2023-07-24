@@ -49,6 +49,7 @@
                             <field name="purpose_id" attrs="{'readonly': [('voucher_count','>',0)]}" context="{'get_name': 1}"/>
                             <field name="derpartment_id" attrs="{'readonly': [('voucher_count','>',0)]}"/>
                             <field name="apply_many_times" attrs="{'invisible': [('type','=', 'v')]}"/>
+                            <field name="is_full_price_applies"/>
                             <field name="apply_contemp_time"/>
                             <field name="using_limit"/>
                             <field name="brand_id" attrs="{'readonly': [('voucher_count','>',0)]}"/>

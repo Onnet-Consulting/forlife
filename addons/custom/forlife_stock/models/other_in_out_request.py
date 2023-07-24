@@ -7,29 +7,77 @@ class ForlifeOtherInOutRequest(models.Model):
     _description = 'Forlife Other In Out Request'
     _order = 'create_date desc'
 
+    def _domain_location_id(self):
+        return "[('reason_type_id', '=', type_other_id)]"
+
     name = fields.code = fields.Char(string="Mã phiếu", default="New", copy=False)
-    employee_id = fields.Many2one('hr.employee', string="Nhân viên", default=lambda self: self.env.user.employee_id.id)
-    department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
+    employee_id = fields.Many2one('hr.employee', string="Nhân viên")
+    department_id = fields.Many2one('hr.department', string="Phòng ban")
     company_id = fields.Many2one('res.partner', string="Công ty")
-    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do', required=True)
+    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     type_other = fields.Selection([('other_import', 'Nhập khác'),
                                    ('other_export', 'Xuất khác'),
                                    ], default='other_import', string='Loại phiếu', required=True)
-    location_id = fields.Many2one('stock.location', string='Location From', required=True)
-    location_dest_id = fields.Many2one('stock.location', string='Location To', required=True)
-    date_planned = fields.Datetime(string='Ngày kế hoạch')
+    location_id = fields.Many2one('stock.location', string='Location From', domain=_domain_location_id)
+    location_dest_id = fields.Many2one('stock.location', string='Location To')
+    date_planned = fields.Datetime(string='Ngày kế hoạch', required=True)
     status = fields.Selection([('draft', 'Dự thảo'),
                                ('wait_approve', 'Chờ duyệt'),
                                ('approved', 'Đã duyệt'),
                                ('done', 'Hoàn thành'),
                                ('cancel', 'Hủy'),
                                ('reject', 'Từ chối')], default='draft', copy=False)
-    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Stock Picking', copy=True)
+    other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Chi tiết', copy=True)
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
+
+    @api.model
+    def default_get(self, default_fields):
+        res = super().default_get(default_fields)
+        res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
+        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        if "import_file" in self.env.context:
+            if not self.env.user.employee_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
+            if not self.env.user.employee_id.department_id:
+                raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
+        return res
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        self.department_id = self.employee_id.department_id.id
+
+    @api.onchange('type_other')
+    def onchange_type_other(self):
+        if self.type_other:
+            self.type_other_id = False
+            self.location_id = False
+            self.location_dest_id = False
+
+    @api.onchange('type_other_id')
+    def _onchange_line_type_other_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.type_other_id = self.type_other_id.id
+
+    @api.onchange('location_id')
+    def _onchange_line_location_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.reason_to_id = self.location_id.id if self.type_other == 'other_import' else False
+            rec.reason_from_id = self.location_id.id if self.type_other == 'other_export' else False
+
+    @api.onchange('location_dest_id')
+    def _onchange_line_location_dest_id(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.whs_to_id = self.location_dest_id.id if self.type_other == 'other_import' else False
+            rec.whs_from_id = self.location_dest_id.id if self.type_other == 'other_export' else False
+
+    @api.onchange('date_planned')
+    def _onchange_line_date_planned(self):
+        for rec in self.other_in_out_request_line_ids:
+            rec.date_expected = self.date_planned
 
     @api.depends('other_import_export_ids', 'other_import_export_ids.state')
     def compute_qty_match(self):
@@ -43,11 +91,12 @@ class ForlifeOtherInOutRequest(models.Model):
             if not rec.other_in_out_request_line_ids:
                 raise ValidationError(_("Bạn chưa thêm sản phẩm nào"))
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('other.request.name.sequence') or 'YCNK'
-        return super(ForlifeOtherInOutRequest, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('other.request.name.sequence') or 'YCNK'
+        return super(ForlifeOtherInOutRequest, self).create(vals_list)
 
     def action_draft(self):
         for record in self:
@@ -72,12 +121,12 @@ class ForlifeOtherInOutRequest(models.Model):
                            'product_uom_qty': item.quantity,
                            'product_uom': item.uom_id.id,
                            'name': item.description,
-                           'reason_type_id': record.type_other_id.id,
-                           'reason_id': item.reason_to_id.id,
+                           'reason_type_id': item.type_other_id.id,
+                           'reason_id': item.reason_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
                            'is_amount_total': item.reason_to_id.is_price_unit,
                            'is_production_order': item.reason_to_id.is_work_order,
-                           'location_id': record.location_id.id,
-                           'location_dest_id': record.location_dest_id.id,
+                           'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
+                           'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
                            'amount_total': item.product_id.standard_price if not item.reason_to_id.is_price_unit else 0,
                            'occasion_code_id': item.occasion_id.id,
                            'work_production': item.production_id.id,
@@ -85,13 +134,15 @@ class ForlifeOtherInOutRequest(models.Model):
                            'product_other_id': item.id,
                            'picking_id': record.id})
                 dict_data = {'state': 'draft',
-                             'reason_type_id': record.type_other_id.id,
-                             'other_import': True,
-                             'location_id': record.location_id.id,
-                             'location_dest_id': record.location_dest_id.id,
+                             'reason_type_id': item.type_other_id.id,
+                             'other_import': True if record.type_other == 'other_import' else False,
+                             'other_export': True if record.type_other == 'other_export' else False,
+                             'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
+                             'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
                              'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
                              'company_id': self.env.company.id,
                              'scheduled_date': record.date_planned,
+                             'is_from_request': True,
                              'origin': record.name,
                              'other_import_export_request_id': record.id,
                              'move_ids_without_package': [data_other_line]
@@ -143,24 +194,61 @@ class ForlifeOtherInOutRequest(models.Model):
         for item in self:
             item.count_other_import_export = len(item.other_import_export_ids)
 
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            for record in data:
+                if 'other_in_out_request_line_ids/product_id' in fields and not record[fields.index('other_in_out_request_line_ids/product_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                if 'other_in_out_request_line_ids/date_expected' in fields and not record[fields.index('other_in_out_request_line_ids/date_expected')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày dự kiến"))
+                if 'other_in_out_request_line_ids/quantity' in fields and not record[fields.index('other_in_out_request_line_ids/quantity')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng"))
+                if 'other_in_out_request_line_ids/uom_id' in fields and not record[fields.index('other_in_out_request_line_ids/uom_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị"))
+                if 'other_in_out_request_line_ids/type_other_id' in fields and not record[fields.index('other_in_out_request_line_ids/type_other_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường loại lý do"))
+                if 'other_in_out_request_line_ids/whs_from_id' in fields and not record[fields.index('other_in_out_request_line_ids/whs_from_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường từ kho"))
+                if 'other_in_out_request_line_ids/whs_to_id' in fields and not record[fields.index('other_in_out_request_line_ids/whs_to_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đến kho"))
+                if 'other_in_out_request_line_ids/reason_from_id' in fields and not record[fields.index('other_in_out_request_line_ids/reason_from_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường lý do xuất"))
+                if 'other_in_out_request_line_ids/reason_to_id' in fields and not record[fields.index('other_in_out_request_line_ids/reason_to_id')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường lý do nhập"))
+        return super().load(fields, data)
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu yêu cầu nhập khác'),
+            'template': '/forlife_stock/static/src/xlsx/template_ycnk.xlsx?download=true'
+        }, {
+            'label': _('Tải xuống mẫu yêu cầu xuất khác'),
+            'template': '/forlife_stock/static/src/xlsx/template_ycxk.xlsx?download=true'
+        }]
+
 
 class ForlifeOtherInOutRequestLine(models.Model):
     _name = 'forlife.other.in.out.request.line'
     _description = 'Forlife Other In Out Request Line'
 
+    def _domain_location_id(self):
+        return "[('reason_type_id', '=', type_other_id)]"
     other_in_out_request_id = fields.Many2one('forlife.other.in.out.request', ondelete='cascade', required=True)
     product_id = fields.Many2one('product.product', required=True, string='Sản phẩm')
     description = fields.Char(string='Mô tả', related="product_id.name")
     asset_id = fields.Many2one('assets.assets', string='Tài sản')
     date_expected = fields.Datetime(string='Ngày dự kiến')
+    type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     quantity = fields.Float(string='Số lượng', required=True)
-    uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
+    uom_id = fields.Many2one('uom.uom', string='Đơn vị')
     whs_from_id = fields.Many2one('stock.location', string='Từ kho')
-    reason_from_id = fields.Many2one('stock.location', string='Lý do')
+    reason_from_id = fields.Many2one('stock.location', string='Lý do xuất', domain=_domain_location_id)
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
-    reason_to_id = fields.Many2one('stock.location', string='Lý do')
+    reason_to_id = fields.Many2one('stock.location', string='Lý do nhập', domain=_domain_location_id)
     occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
-    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất')
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
 
@@ -169,5 +257,19 @@ class ForlifeOtherInOutRequestLine(models.Model):
         for rec in self:
             if rec.quantity <= 0:
                 raise ValidationError(_("Số lượng phải lớn hơn 0"))
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        if self.product_id:
+            self.uom_id = self.product_id.uom_id.id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if self.env.context.get('import_file'):
+            for vals in vals_list:
+                product = self.env['product.product'].browse(vals.get('product_id'))
+                if product and vals.get('uom_id') and vals.get('uom_id') != product.uom_id.id:
+                    raise ValidationError(_("Đơn vị nhập vào không khớp với đơn vị lưu kho của sản phẩm [%s] %s" % (product.code, product.name)))
+        return super(ForlifeOtherInOutRequestLine, self).create(vals_list)
 
 

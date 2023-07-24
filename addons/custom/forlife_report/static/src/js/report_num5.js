@@ -15,7 +15,6 @@ odoo.define('forlife_report.report_num5', function (require) {
         parse_data: function (data) {
             this.employee_detail = data.employee_detail;
             this.order_detail = data.order_detail;
-            this.column_add = data.column_add;
             this.report_type_id = 'all_employee';
             this._super(...arguments);
         },

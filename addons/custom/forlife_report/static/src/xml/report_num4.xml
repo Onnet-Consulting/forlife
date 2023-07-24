@@ -22,7 +22,7 @@
                         <td><t t-esc="line.collection"/></td>
                         <td><t t-esc="line.texture"/></td>
                         <td><t t-esc="line.product_line"/></td>
-                        <td><t t-esc="format_decimal(line.total_qty)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.total_qty)"/></td>
                     </tr>
                 </t>
             </tbody>
