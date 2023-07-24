@@ -200,7 +200,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
         for rec in self:
             if rec.compute_flag:
                 if rec.production_line_product_qty > 0:
-                    rec.product_qty = rec.purchase_order_line_id.product_qty * rec.production_line_product_qty
+                    rec.product_qty = (rec.purchase_order_line_id.product_qty * rec.production_line_product_qty)/rec.production_order_product_qty
                 else:
                     rec.product_qty = 0
             else:
