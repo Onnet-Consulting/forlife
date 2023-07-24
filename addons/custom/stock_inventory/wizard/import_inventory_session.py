@@ -45,9 +45,9 @@ class ImportInventorySessionWizard(models.TransientModel):
         TITLES = [
             'STT', 'MÃ HÀNG', 'TÊN HÀNG', 'MÀU', 'SIZE', 'NHÓM SẢN PHẨM', 'ĐƠN VỊ', 'GIÁ', 'TỒN PHẦN MỀM',
             'KIỂM KÊ THỰC TẾ', 'PHIÊN ĐẾM BỔ SUNG', 'HÀNG KHÔNG ĐẾM KIỂM', 'TÚI BÁN HÀNG', 'HÀNG KHÔNG TEM',
-            'HÀNG KHÔNG CHEAT ĐƯỢC MÃ VẠCH', 'HÀNG LỖI CHƯA ĐƯỢC DUYỆT', 'HÀNG LỖI ĐÃ ĐƯỢC DUYỆT', 'THÊM', 'BỚT',
+            'HÀNG KHÔNG CHEAT ĐƯỢC MÃ VẠCH', 'HÀNG LỖI CHƯA ĐƯỢC DUYỆT', 'HÀNG LỖI ĐÃ ĐƯỢC DUYỆT', 'THÊM LẦN 1', 'BỚT LẦN 1',
             'CỘNG HÀNG BÁN / NTL CHƯA KIỂM', 'TRỪ HÀNG BÁN ĐÃ KIỂM', 'BỔ XUNG HÀNG CHƯA ĐƯỢC CHEAT', 'TRỪ HÀNG KIỂM ĐÚP',
-            'TỔNG KIỂM KÊ THỰC TẾ LẦN 1', 'THÊM: …SP', 'BỚT: …SP', 'TỔNG KIỂM KÊ THỰC TẾ', 'CHÊNH LỆCH KIỂM KÊ', 'NOTE', 'PHIÊN ĐẾM']
+            'TỔNG KIỂM KÊ THỰC TẾ LẦN 1', 'THÊM LẦN 2', 'BỚT LẦN 2', 'TỔNG KIỂM KÊ THỰC TẾ', 'CHÊNH LỆCH KIỂM KÊ', 'NOTE', 'PHIÊN ĐẾM']
         for idx, title in enumerate(TITLES):
             sheet.write(6, idx, title, formats.get('title_format'))
         NOTES = [

@@ -50,10 +50,10 @@ class AccountMove(models.Model):
                 account_payable_customer_id = self.partner_id.property_account_payable_id
                 if not account_payable_customer_id:
                     raise UserError("Chưa cấu hình tài khoản phải trả cho khách hàng")
-
+                    
                 account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                 account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
-
+                
                 if pr.promotion_type in ['vip_amount', 'reward']:
                     line_allow = True
                     account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id

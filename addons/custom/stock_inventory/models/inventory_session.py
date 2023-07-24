@@ -6,7 +6,7 @@ from odoo import api, fields, models, _
 class InventorySession(models.Model):
     _name = 'inventory.session'
     _description = 'Inventory Session'
-    _rec_name = 'inv_id'
+    _rec_name = 'id'
     _order = 'inv_id, id'
 
     inv_id = fields.Many2one('stock.inventory', 'Phiếu kiểm kê', ondelete='restrict')
@@ -44,12 +44,13 @@ class InventorySessionLine(models.Model):
     hang_khong_cheat_duoc = fields.Integer('Hàng không cheat được mã vạch', default=0)
     hang_loi_chua_duyet = fields.Integer('Hàng lỗi chưa được duyệt', default=0)
     hang_loi_da_duyet = fields.Integer('Hàng lỗi đã được duyệt', default=0)
-    them1 = fields.Integer('Thêm 1', default=0)
-    bot1 = fields.Integer('Bớt 1', default=0)
+    them1 = fields.Integer('Thêm lần 1', default=0)
+    bot1 = fields.Integer('Bớt lần 1', default=0)
     cong_hang_ban_ntl_chua_kiem = fields.Integer('Công hàng bán / ntl chưa kiểm', default=0)
     tru_hang_ban_da_kiem = fields.Integer('Trừ hàng bán đã kiểm', default=0)
     bo_sung_hang_chua_cheat = fields.Integer('Bổ sung hàng chưa được cheat', default=0)
     tru_hang_kiem_dup = fields.Integer('Từ hàng kiểm đúp', default=0)
-    them2 = fields.Integer('Thêm 2', default=0)
-    bot2 = fields.Integer('Bớt 2', default=0)
+    them2 = fields.Integer('Thêm lần 2', default=0)
+    bot2 = fields.Integer('Bớt lần 2', default=0)
     ghi_chu = fields.Char('Ghi chú')
+    active = fields.Boolean('Hiệu lực', related='inv_session_id.active')

@@ -218,6 +218,7 @@ class SaleOrder(models.Model):
                         
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
+                            
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
@@ -230,7 +231,6 @@ class SaleOrder(models.Model):
                     # Customer shipping fee
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
-
                         try:
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
@@ -284,7 +284,7 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
-                                    ln.x_account_analytic_id = discount_account_id and discount_account_id.id
+                                    line_promotion.x_account_analytic_id = discount_account_id and discount_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
                 rec.write({"state": "done_sale"})

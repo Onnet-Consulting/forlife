@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
 from datetime import datetime
-import logging
 import json
-_logger = logging.getLogger(__name__)
-from ...bkav_connector.models.bkav_connector import connect_bkav
+from ...bkav_connector.models import bkav_action
 
 
 class StockTransfer(models.Model):
@@ -17,6 +14,11 @@ class StockTransfer(models.Model):
     location_name = fields.Char('Tên kho xuất')
     location_dest_name = fields.Char('Tên kho nhập')
     transporter_id = fields.Many2one('res.partner', string="Người/Đơn vị vận chuyển")
+
+    @api.onchange('delivery_contract_id')
+    def _onchange_delivery_contract(self):
+        if self.delivery_contract_id:
+            self.transporter_id = self.delivery_contract_id.vendor_id.id
 
     @api.onchange('location_id','location_dest_id')
     def _onchange_name_location(self):
@@ -61,60 +63,14 @@ class StockTransfer(models.Model):
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
 
-
-    @api.depends('data_compare_status')
-    def _compute_data_compare_status(self):
-        for rec in self:
-            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
-
-
-    def get_invoice_identify(self):
-        invoice_form = self.invoice_form or ''
-        invoice_serial = self.invoice_serial or ''
-        invoice_no = self.invoice_no or ''
-        return f"[{invoice_form}]_[{invoice_serial}]_[{invoice_no}]"
     
-    def get_bkav_config(self):
-        return {
-            'bkav_url': self.env['ir.config_parameter'].sudo().get_param('bkav.url'),
-            'partner_token': self.env['ir.config_parameter'].sudo().get_param('bkav.partner_token'),
-            'partner_guid': self.env['ir.config_parameter'].sudo().get_param('bkav.partner_guid'),
-            'cmd_addInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice'),
-            'cmd_addInvoiceStock': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_stock'),
-            'cmd_addInvoiceEdit': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit'),
-            'cmd_addInvoiceEditDiscount': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_edit_discount'),
-            'cmd_addInvoiceReplace': self.env['ir.config_parameter'].sudo().get_param('bkav.add_einvoice_replace'),
-            'cmd_updateInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.update_einvoice'),
-            'cmd_deleteInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.delete_einvoice'),
-            'cmd_cancelInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.cancel_einvoice'),
-            'cmd_publishInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.publish_invoice'),
-            'cmd_getInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_einvoice'),
-            'cmd_getStatusInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_status_einvoice'),
-            'cmd_downloadPDF': self.env['ir.config_parameter'].sudo().get_param('bkav.download_pdf'),
-            'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
-        }
-    
-    def getting_invoice_status(self):
-        if self.is_general == True:
-            return
-        configs = self.get_bkav_config()
-        data = {
-            "CmdType": int(configs.get('cmd_getStatusInvoice')),
-            "CommandObject": self.invoice_guid,
-        }
-        _logger.info(f'BKAV - data get invoice status to BKAV: {data}')
-        response = connect_bkav(data, configs)
-        if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
-        else:
-            self.data_compare_status = str(response.get('Object'))
 
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
             InvoiceTypeID = 5
             ShiftCommandNo = invoice.name
-            if invoice.location_dest_id.id_deposit:
+            if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
@@ -134,7 +90,6 @@ class StockTransfer(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
-            partner_id = company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -147,11 +102,14 @@ class StockTransfer(models.Model):
                         "InWareHouse": invoice.location_dest_name if invoice.location_dest_name else invoice.location_dest_id.location_id.name+'/'+invoice.location_dest_id.name,
                         "Transportation": 'Ô tô/Xe máy',
                     }
-            if invoice.location_dest_id.id_deposit:
-                location_get_tax_id = self.env['stock.location'].sudo().search([('code','=',invoice.location_dest_id.code),('company_id','!=', company_id.id)],limit=1).sudo()
+            if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
+                check_lc_id = invoice.location_dest_id if invoice.location_dest_id.id_deposit else invoice.location_id
+                location_get_tax_id = self.env['stock.location'].sudo().search([('code','=',check_lc_id.code),('company_id','!=', company_id.id)],limit=1).sudo()
                 uidefind.update({
                     "TaxCodeAgent": location_get_tax_id.sudo().company_id.vat if location_get_tax_id.sudo() and location_get_tax_id.sudo().company_id else '',
+                    "ReferenceNote": location_get_tax_id.sudo().company_id.name,
                 })
+                partner_id = location_get_tax_id.sudo().company_id.partner_id
             bkav_data.append({
                 "Invoice": {
                     "InvoiceTypeID": InvoiceTypeID,
@@ -183,190 +141,69 @@ class StockTransfer(models.Model):
                 "ListInvoiceAttachFileWS": [],
             })
         return bkav_data
-
-    def create_invoice_bkav(self):
-        if self.is_general == True:
-            return
-        configs = self.get_bkav_config()
-        _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
-        data = {
-            "CmdType": int(configs.get('cmd_addInvoiceStock')),
-            "CommandObject": self.get_bkav_data()
-        }
-        _logger.info(f'BKAV - data create invoice to BKAV: {data}')
-        try:
-            response = connect_bkav(data, configs)
-        except Exception as ex:
-            _logger.error(f'BKAV connect_bkav: {ex}')
+        
+    def _check_info_before_bkav(self):
+        if self.is_general:
             return False
-        if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
-        else:
-            result_data = json.loads(response.get('Object', {}))[0]
-            try:
-                # ghi dữ liệu
-                self.write({
-                    'exists_bkav': True,
-                    'invoice_guid': result_data.get('InvoiceGUID'),
-                    'invoice_no': result_data.get('InvoiceNo'),
-                    'invoice_form': result_data.get('InvoiceForm'),
-                    'invoice_serial': result_data.get('InvoiceSerial'),
-                    'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f') if result_data.get('InvoiceDate') else None
-                })
-                if result_data.get('MessLog'):
-                    self.message_post(body=result_data.get('MessLog'))
-                self.getting_invoice_status()
-            except:
-                self.get_invoice_bkav()
+        return True
 
+    @api.depends('data_compare_status')
+    def _compute_data_compare_status(self):
+        for rec in self:
+            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
-    def get_invoice_bkav(self):
-        if self.is_general == True:
+    def get_invoice_identify(self):
+        if not self._check_info_before_bkav():
             return
-        if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return bkav_action.get_invoice_identify(self)
+
+    def get_invoice_status(self):
+        if not self._check_info_before_bkav():
             return
-        configs = self.get_bkav_config()
-        data = {
-            "CmdType": int(configs.get('cmd_getInvoice')),
-            "CommandObject": self.invoice_guid
-        }
-        _logger.info(f'BKAV - data get invoice from BKAV: {data}')
-        response = connect_bkav(data, configs)
-        if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
-        else:
-            result_data = json.loads(response.get('Object', {})).get('Invoice', {})
-            self.write({
-                'data_compare_status': str(result_data.get('InvoiceStatusID')),
-                'exists_bkav': True,
-                'invoice_guid': result_data.get('InvoiceGUID'),
-                'invoice_no': result_data.get('InvoiceNo'),
-                'invoice_form': result_data.get('InvoiceForm'),
-                'invoice_serial': result_data.get('InvoiceSerial'),
-                'invoice_e_date': datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S') if result_data.get('InvoiceDate') else None,
-            })
-
-
-    def update_invoice_bkav(self):
-        if self.is_general or self.is_post_bkav:
+        return bkav_action.get_invoice_status(self)
+    
+    def create_invoice_bkav(self):
+        if not self._check_info_before_bkav():
             return
-        configs = self.get_bkav_config()
-        data = {
-            "CmdType": int(configs.get('cmd_updateInvoice')),
-            "CommandObject": self.get_bkav_data()
-        }
-        _logger.info(f'BKAV - data update invoice to BKAV: {data}')
-        response = connect_bkav(data, configs)
-        if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
-        else:
-            self.getting_invoice_status()
-            self.get_invoice_bkav()
-
+        data = self.get_bkav_data()
+        origin_id = False
+        is_publish = True
+        return bkav_action.create_invoice_bkav(self,data, is_publish, origin_id)
 
     def publish_invoice_bkav(self):
-        if self.is_general == True:
+        if not self._check_info_before_bkav():
             return
-        configs = self.get_bkav_config()
+        return bkav_action.publish_invoice_bkav(self)
 
-        data = {
-            "CmdType": int(configs.get('cmd_publishInvoice')),
-            "CommandObject": self.invoice_guid,
-        }
-        try:
-            response = connect_bkav(data, configs)
-        except Exception as ex:
-            _logger.error(f'BKAV connect_bkav: {ex}')
-            return False
-        if response.get('Status') == 1:
-            self.message_post(body=(response.get('Object')))
-        else:
-            self.is_post_bkav = True
-            self.get_invoice_bkav()
-
-
-    def download_invoice_bkav(self):
-        if self.is_general == True:
+    def update_invoice_bkav(self):
+        if not self._check_info_before_bkav():
             return
-        if not self.eivoice_file:
-            configs = self.get_bkav_config()
-            data = {
-                "CmdType": int(configs.get('cmd_downloadPDF')),
-                "CommandObject": self.invoice_guid,
-            }
-            _logger.info(f'BKAV - data download invoice to BKAV: {data}')
-            response_action = connect_bkav(data, configs)
-            if response_action.get('Status') == 1:
-                self.message_post(body=(response_action.get('Object')))
-            else:
-                attachment_id = self.env['ir.attachment'].sudo().create({
-                    'name': f"{self.invoice_no}.pdf",
-                    'datas': json.loads(response_action.get('Object')).get('PDF', ''),
-                })
-                self.eivoice_file = attachment_id
-                return {
-                    'type': 'ir.actions.act_url',
-                    'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                           % (self.eivoice_file.id, self.eivoice_file.name),
-                    'target': 'self',
-                }
-        else:
-            return {
-                'type': 'ir.actions.act_url',
-                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                       % (self.eivoice_file.id, self.eivoice_file.name),
-                'target': 'self',
-            }
-        
+        data = self.get_bkav_data()
+        return bkav_action.create_invoice_bkav(self,data)
+
+    def get_invoice_bkav(self):
+        if not self._check_info_before_bkav():
+            return
+        return bkav_action.get_invoice_bkav(self)
 
     def cancel_invoice_bkav(self):
-        if self.is_general == True:
+        if not self._check_info_before_bkav():
             return
-        configs = self.get_bkav_config()
-        data = {
-            "CmdType": int(configs.get('cmd_cancelInvoice')),
-            "CommandObject": [
-                {
-                    "Invoice": {
-                        "InvoiceGUID": self.invoice_guid,
-                        "Reason": "Hủy vì sai sót"
-                    },
-                    "PartnerInvoiceID": 0,
-                    "PartnerInvoiceStringID": self.name,
-                }
-            ]
-        }
-        _logger.info(f'BKAV - data cancel invoice to BKAV: {data}')
-        response = connect_bkav(data, configs)
-        if response.get('Status') == 1:
-            raise ValidationError(response.get('Object'))
-        else:
-            self.is_check_cancel = True
-            self.exists_bkav = False
-            self.getting_invoice_status()
-
+        PartnerInvoiceID = 0,
+        PartnerInvoiceStringID = self.name
+        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
 
     def delete_invoice_bkav(self):
-        if self.is_general == True:
+        if not self._check_info_before_bkav():
             return
-        configs = self.get_bkav_config()
-        data = {
-            "CmdType": int(configs.get('cmd_deleteInvoice')),
-            "CommandObject": [
-                {
-                    "Invoice": {
-                        "InvoiceGUID": self.invoice_guid,
-                        "Reason": "Xóa vì sai sót"
-                    },
-                    "PartnerInvoiceID": 0,
-                    "PartnerInvoiceStringID": self.name,
-                }
-            ]
-        }
-        _logger.info(f'BKAV - data delete invoice to BKAV: {data}')
-        response = connect_bkav(data, configs)
-        if response.get('Status') == 1:
-            raise ValidationError(response.get('Object'))
+        PartnerInvoiceID = 0,
+        PartnerInvoiceStringID = self.name
+        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+
+    def download_invoice_bkav(self):
+        if not self._check_info_before_bkav():
+            return
+        return bkav_action.download_invoice_bkav(self)
 
 
     def action_cancel(self):

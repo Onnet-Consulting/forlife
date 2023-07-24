@@ -44,6 +44,10 @@ class VendorContract(models.Model):
                              string='State',
                              default='draft',
                              tracking=True)
+    contract_type = fields.Selection([('economic', 'Economic'), ('transport', 'Transport')],
+                             string='Contract Type',
+                             default='economic',
+                             tracking=True)
 
     _sql_constraints = [
         ('check_expiry_date', 'check(expiry_date >= effective_date)',

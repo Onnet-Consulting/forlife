@@ -8,8 +8,8 @@
             <field name="inherit_id" ref="forlife_stock.stock_transfer_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='stock_request_id']" position="before">
-                    <field name="vendor_contract_id" domain="[('state','=','effective')]"/>
-                    <field name="delivery_contract_id" domain="[('state','=','effective')]"/>
+                    <field name="vendor_contract_id" domain="[('state','=','effective'),('contract_type','=','economic')]"/>
+                    <field name="delivery_contract_id" domain="[('state','=','effective'),('contract_type','=','transport')]"/>
                     <field name="transporter_id"/>
                 </xpath>
                 <xpath expr="//field[@name='location_id']" position="after">
