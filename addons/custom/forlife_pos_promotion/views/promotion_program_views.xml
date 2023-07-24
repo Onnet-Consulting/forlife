@@ -30,7 +30,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_issued_vouchers" icon="fa-ticket"
-                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"
+                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}" String="Open Issued Vouchers"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -41,7 +41,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
-                                attrs="{'invisible': [('total_order_count', '=', 0)]}"
+                                attrs="{'invisible': [('total_order_count', '=', 0)]}" String="Open Orders"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -52,7 +52,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_pricelist_items" icon="fa-list"
-                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"
+                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}" String="Open Pricelist"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -143,22 +143,22 @@
                         <field name="is_original_price" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="incl_reward_in_order_type"
                                attrs="{'invisible': [('promotion_type', 'not in', ('cart'))], 'required': [('promotion_type', '=', 'cart')]}"/>
-                        <field name="product_ids"
-                               attrs="{ 'invisible': [('promotion_type', 'not in', ('code', 'cart'))],
-                                        'required': [('promotion_type', '=', 'code'), ('discount_apply_on', '=', 'specific_products')]}">
-                            <tree limit="20">
-                                <field name="name"/>
-                                <field name="barcode"/>
-                                <field name="lst_price"/>
-                            </tree>
-                        </field>
+<!--                        <field name="product_ids"-->
+<!--                               attrs="{ 'invisible': [('promotion_type', 'not in', ('code', 'cart'))],-->
+<!--                                        'required': [('promotion_type', '=', 'code'), ('discount_apply_on', '=', 'specific_products')]}">-->
+<!--                            <tree limit="20">-->
+<!--                                <field name="name"/>-->
+<!--                                <field name="barcode"/>-->
+<!--                                <field name="lst_price"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
                         <field name="json_valid_product_ids" invisible="1"/>
 <!--                        <field name="product_categ_ids" widget="many2many_tags"-->
 <!--                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>-->
                         <field name="min_quantity" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <label for="product_count" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <div class="o_row" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
-                            <button name="open_products" type="object" string="Products" class="btn-secondary" attrs="{'invisible':[('product_count','=',0)]}">
+                            <button name="action_open_condition_product" type="object" string="Products" class="btn-secondary" attrs="{'invisible':[('product_count','=',0)]}">
                               <field name="product_count" string="Products"/>
                             </button>
                             <button name="action_open_condition_product" type="object" string="Import Products" class="btn-secondary"

@@ -335,6 +335,7 @@ class StockPicking(models.Model):
                     layer.value = 0
                     #layer.account_move_id.button_draft()
                     #layer.account_move_id.button_cancel()
+                for layer in layers:
                     if layer.account_move_id:
                         reversal_data = {
                             "move_ids": [
@@ -352,6 +353,11 @@ class StockPicking(models.Model):
                             "date": date.today().strftime("%Y-%m-%d")
                         }
                         action = self.env['account.move.reversal'].sudo().create(reversal_data).reverse_moves()
+                        new_mov = self.env['account.move'].browse(action['res_id'])
+                        new_mov.write({
+                            'stock_move_id': layer.stock_move_id.id
+                        })
+                        new_mov.action_post()
             else:
                 rec.move_ids._action_cancel()
                 rec.write({'is_locked': True})

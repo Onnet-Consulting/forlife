@@ -50,6 +50,9 @@ class AccountMove(models.Model):
     invoice_synthetic_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     exchange_rate_line_ids = fields.One2many('account.move.line', 'move_id', domain=[('display_type', 'in', ('product', 'line_section', 'line_note'))])
     cost_total = fields.Float(string='Tổng chi phí')
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
+                                readonly=False)
     x_entry_types = fields.Selection(copy=True, 
                                      string="Chi tiết loại bút toán custom",
                                      default='entry_normal',
@@ -61,6 +64,11 @@ class AccountMove(models.Model):
                                                 ('entry_material', 'Bút toán nguyên phụ liệu'),
                                                 ])
 
+    @api.depends('total_trade_discount', 'x_tax')
+    def compute_x_amount_tax(self):
+        for rec in self:
+            if rec.total_trade_discount > 0 and rec.x_tax > 0:
+                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -81,6 +89,9 @@ class AccountMove(models.Model):
     def _onchange_is_check_cost_out_source(self):
         if self.is_check_cost_view and self.is_check_cost_out_source:
             self.is_check_cost_view = False
+
+    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
 
     transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
     loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
@@ -218,28 +229,27 @@ class AccountMove(models.Model):
                         rec.purchase_type = 'product'
                         product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
                         for cost in product_cost.cost_line:
+                            if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                                raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % cost.product_id.name)
                             for item in product_cost.order_line:
                                 for pk_l in rec.receiving_warehouse_id.move_ids_without_package:
-                                    if str(item.id) == pk_l.po_l_id and item.product_id.id == pk_l.product_id.id:
-                                        if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                                            raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % cost.product_id.name)
+                                    if item.id == pk_l.purchase_line_id.id:
+                                        if cost.is_check_pre_tax_costs:
+                                            cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
                                         else:
-                                            if cost.is_check_pre_tax_costs:
-                                                cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
-                                            else:
-                                                cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
-                                            existing_line = invoice_line_ids.filtered(
-                                                lambda line: line.product_id.id == cost.product_id.id)
-                                            if not existing_line:
-                                                invoice_line_ids += self.env['account.move.line'].new({
-                                                    'product_id': cost.product_id.id,
-                                                    'description': cost.name,
-                                                    'price_unit': cost_total,
-                                                    'cost_id': cost.id,
-                                                })
-                                            else:
-                                                existing_line.price_unit += cost_total
-                                        rec.invoice_line_ids = invoice_line_ids
+                                            cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
+                                        existing_line = invoice_line_ids.filtered(
+                                            lambda line: line.product_id.id == cost.product_id.id)
+                                        if not existing_line:
+                                            invoice_line_ids += self.env['account.move.line'].new({
+                                                'product_id': cost.product_id.id,
+                                                'description': cost.name,
+                                                'price_unit': cost_total,
+                                                'cost_id': cost.id,
+                                            })
+                                        else:
+                                            existing_line.price_unit += cost_total
+                                    rec.invoice_line_ids = invoice_line_ids
                 elif rec.select_type_inv == 'labor':
                     if rec.receiving_warehouse_id:
                         rec.purchase_type = 'product'
@@ -262,66 +272,38 @@ class AccountMove(models.Model):
                                         else:
                                             existing_line.price_unit += out_source_line.price_unit * (pnk_l.quantity_done / out_source.product_qty)
                                 rec.invoice_line_ids = invoice_line_ids
-                elif rec.select_type_inv == 'normal':
+                else:
                     if rec.receiving_warehouse_id:
                         rec.purchase_type = 'product'
                         product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
                         for product in product_cost.order_line:
+                            if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                                raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
                             for pnk in rec.receiving_warehouse_id.move_line_ids_without_package:
-                                if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                                    raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
-                                else:
-                                    if str(product.id) == str(pnk.po_id):
-                                        invoice_line_ids += self.env['account.move.line'].new({
-                                            'product_id': product.product_id.id,
-                                            'description': product.name,
-                                            'request_code': product.request_purchases,
-                                            'promotions': product.free_good,
-                                            'quantity_purchased': pnk.quantity_purchase_done,
-                                            'product_uom_id': product.product_uom.id,
-                                            'exchange_quantity': pnk.quantity_change,
-                                            'quantity': pnk.qty_done,
-                                            'vendor_price': product.vendor_price,
-                                            'price_unit': product.price_unit,
-                                            'warehouse': product.location_id.id,
-                                            'tax_ids': product.taxes_id.ids,
-                                            'tax_amount': product.price_tax,
-                                            'price_subtotal': product.price_subtotal,
-                                            'discount_percent': product.discount,
-                                            'discount': product.discount_percent,
-                                            'event_id': product.free_good,
-                                            'work_order': product.production_id.id,
-                                            'account_analytic_id': product.account_analytic_id.id,
-                                        })
+                                if product.id == pnk.move_id.purchase_line_id.id:
+                                    invoice_line_ids += self.env['account.move.line'].new({
+                                        'purchase_line_id': product.id,
+                                        'product_id': product.product_id.id,
+                                        'description': product.name,
+                                        'request_code': product.request_purchases,
+                                        'promotions': product.free_good,
+                                        'quantity_purchased': pnk.quantity_purchase_done,
+                                        'product_uom_id': product.product_uom.id,
+                                        'exchange_quantity': pnk.quantity_change,
+                                        'quantity': pnk.qty_done,
+                                        'vendor_price': product.vendor_price,
+                                        'price_unit': product.price_unit,
+                                        'warehouse': product.location_id.id,
+                                        'tax_ids': product.taxes_id.ids,
+                                        'tax_amount': product.price_tax,
+                                        'price_subtotal': product.price_subtotal,
+                                        'discount_percent': product.discount,
+                                        'discount': product.discount_percent,
+                                        'event_id': product.free_good,
+                                        'work_order': product.production_id.id,
+                                        'account_analytic_id': product.account_analytic_id.id,
+                                    })
                                 rec.invoice_line_ids = invoice_line_ids
-                else:
-                    rec.receiving_warehouse_id = False
-                    product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
-                    for product in product_cost.order_line:
-                        if product.order_id.purchase_type == 'service' or product.order_id.purchase_type == 'asset':
-                            rec.purchase_type = product.product_type
-                            invoice_line_ids += self.env['account.move.line'].new({
-                                'product_id': product.product_id.id,
-                                'description': product.name,
-                                'request_code': product.request_purchases,
-                                'promotions': product.free_good,
-                                'quantity_purchased': product.purchase_quantity,
-                                'product_uom_id': product.product_uom.id,
-                                'exchange_quantity': product.exchange_quantity,
-                                'quantity': product.product_qty,
-                                'vendor_price': product.vendor_price,
-                                'price_unit': product.price_unit,
-                                'warehouse': product.location_id.id,
-                                'tax_ids': product.taxes_id.ids,
-                                'tax_amount': product.price_tax,
-                                'price_subtotal': product.price_subtotal,
-                                'discount_percent': product.discount,
-                                'discount': product.discount_percent,
-                                'event_id': product.free_good,
-                                'work_order': product.production_id.id,
-                                'account_analytic_id': product.account_analytic_id.id,
-                            })
-                            rec.invoice_line_ids = invoice_line_ids
             else:
                 if rec.select_type_inv == 'service':
                     rec.purchase_type = 'service'
@@ -330,23 +312,21 @@ class AccountMove(models.Model):
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
     def constrains_total_vnd_amount(self):
+        invoice_relationship = self.search(
+            [('purchase_order_product_id', 'in', self.purchase_order_product_id.ids),
+             ('purchase_type', '=', 'service')])
         for rec in self:
-            if rec.purchase_type != 'product':
-                purchase_relationship = self.env['purchase.order'].search([('name', 'in', rec.purchase_order_product_id.mapped('name')),
-                                                                           ('partner_id', '=', rec.partner_id.id),
-                                                                           ])
-
-                invoice_relationship = self.env['account.move'].search([('purchase_order_product_id', 'in', purchase_relationship.ids),
-                                                                  ])
+            if rec.purchase_type == 'service':
                 reference = []
-                for item in purchase_relationship:
+                for item in rec.purchase_order_product_id:
                     reference.append(item.name)
                     ref_join = ', '.join(reference)
-                if invoice_relationship:
-                    if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(purchase_relationship.order_line.mapped('total_vnd_amount')):
-                        raise UserError(
-                            _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
-                            % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join, sum(purchase_relationship.order_line.mapped('total_vnd_amount'))))
+                if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount')):
+                    raise ValidationError(
+                        _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
+                        % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
+                           sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
+                           
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
     def constrains_quantity_line(self):
@@ -420,11 +400,26 @@ class AccountMove(models.Model):
                 else:
                     rec.is_check_vendor_page = False
 
-    @api.constrains('exchange_rate')
+    @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
                 raise ValidationError('Tỷ giá không được âm!')
+            if item.trade_discount < 0:
+                raise ValidationError('Chiết khấu thương mại không được âm!')
+
+    @api.onchange('trade_discount')
+    def onchange_total_trade_discount(self):
+        if self.trade_discount:
+            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
+                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
+
+    @api.onchange('total_trade_discount')
+    def onchange_trade_discount(self):
+        if self.total_trade_discount:
+            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
+                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
+
 
     def create_invoice_tnk_db(self):
         account_db = []
@@ -625,8 +620,8 @@ class AccountMove(models.Model):
                 if rec.exchange_rate_line_ids:
                     rec.create_invoice_tnk_db()
                     rec.create_tax_vat()
-            # if rec.total_trade_discount:
-            #     rec.create_trade_discount()
+            if rec.total_trade_discount:
+                rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
 

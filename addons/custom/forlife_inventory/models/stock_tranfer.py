@@ -5,6 +5,7 @@ class StockTranfer(models.Model):
     _inherit = 'stock.transfer'
 
 
+
     def _create_stock_picking_other_import_and_export(self, data, location_id, location_dest_id):
         # fetch-data-to-compare
 

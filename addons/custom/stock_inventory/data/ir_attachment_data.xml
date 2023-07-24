@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="template_import_inventory_session_add" model="ir.attachment">
+            <field name="name">Mẫu nhập phiên đếm bổ sung.xlsx</field>
+            <field name="datas" type="base64" file="stock_inventory/static/xlsx/template_import_inventory_session_add.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+        <record id="template_import_inventory_session_other" model="ir.attachment">
+            <field name="name">Mẫu nhập số liệu kiểm kê khác.xlsx</field>
+            <field name="datas" type="base64" file="stock_inventory/static/xlsx/template_import_inventory_session_other.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+
+        <record id="template_import_inventory_session_add2" model="ir.attachment">
+            <field name="name">Mẫu nhập phiên đếm bổ sung lần 2.xlsx</field>
+            <field name="datas" type="base64" file="stock_inventory/static/xlsx/template_import_inventory_session_add2.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

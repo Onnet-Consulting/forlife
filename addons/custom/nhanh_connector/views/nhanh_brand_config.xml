@@ -24,7 +24,7 @@
                         <field name="nhanh_access_code" class="text-break"/>
                         <field name="nhanh_return_link" />
                         <field name="link_get_access_code"/>
-                        <field name="nhanh_business_id" readonly="1"/>
+                        <field name="nhanh_business_id"/>
                         <field name="nhanh_access_token" readonly="1" class="text-break"/>
                         <field name="nhanh_access_token_expired" readonly="1"/>
                     </group>

@@ -24,7 +24,8 @@ odoo.define('forlife_report.report_num2', function (require) {
                 "detail": {
                     product_name,
                     "lines": product_data
-                }
+                },
+                "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("line_stock_detail");
             if (element_rm.length > 0){

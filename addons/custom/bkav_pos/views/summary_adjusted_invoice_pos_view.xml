@@ -80,14 +80,14 @@
     </record>
 
     <record id="summary_adjusted_invoice_pos_action" model="ir.actions.act_window">
-        <field name="name">Hóa đơn điều chỉnh cuối ngày</field>
+        <field name="name">Hóa đơn chênh lệch cuối ngày</field>
         <field name="res_model">summary.adjusted.invoice.pos</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem id="summary_adjusted_invoice_pos_menu"
               parent="summary_account_move_menu"
-              name="Hóa đơn điều chỉnh cuối ngày"
+              name="Hóa đơn chênh lệch cuối ngày"
               action="summary_adjusted_invoice_pos_action"
               sequence="10"/>
 </odoo>
