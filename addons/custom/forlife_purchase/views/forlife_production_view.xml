@@ -78,9 +78,8 @@
                             </field>
                         </page>
 
-                        <page string="Nguyên liệu chính" name="material_product" attrs="{'invisible': [('material_import_ids', '=', [])]}">
-                            <field name="material_import_ids" mode="tree"
-                                   readonly="1">
+                        <page string="Nguyên liệu chính" name="material_product">
+                            <field name="material_import_ids" mode="tree" attrs="{'readonly': [('state', '=', 'approved')]}">
                                 <tree editable="bottom">
                                     <field name="production_id" invisible="1"/>
                                     <field name="product_id"/>
@@ -93,6 +92,19 @@
                                     <field name="loss" readonly="1" force_save="1"/>
                                     <field name="qty"/>
                                     <field name="total"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Chi phí" name="expense_product">
+                            <field name="expense_import_ids" mode="tree" attrs="{'readonly': [('state', '=', 'approved')]}">
+                                <tree editable="bottom">
+                                    <field name="production_id" invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="cost_norms" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="total_cost_norms" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 </tree>
                             </field>
                         </page>
