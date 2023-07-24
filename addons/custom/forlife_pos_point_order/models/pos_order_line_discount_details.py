@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class PosOlDiscountDetails(models.Model):
     _name = 'pos.order.line.discount.details'
+    _description = 'POS discount details'
 
     name = fields.Char('Program Name', compute='_compute_name')
     pos_order_line_id = fields.Many2one('pos.order.line')
@@ -28,9 +29,9 @@ class PosOlDiscountDetails(models.Model):
             rec.money_reduced = rec.get_money_reduced()
 
     def get_money_reduced(self):
-        if self.pos_order_line_id.is_product_defective or self.pos_order_line_id.discount > 0:
-            return self.recipe
-        return self.recipe * 1000
+        if self.type == 'point':
+            return self.recipe * 1000
+        return self.recipe
 
     def _compute_name(self):
         for line in self:
@@ -41,3 +42,11 @@ class PosOlDiscountDetails(models.Model):
         if self.type == 'point':
             name = self.program_name.name
         return name
+
+    def _export_for_ui(self):
+        return {
+            'id': self.id,
+            'pos_order_line_id': self.pos_order_line_id.id,
+            'money_reduced': self.money_reduced,
+            'type': self.type,
+        }

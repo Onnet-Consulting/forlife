@@ -4,6 +4,7 @@ import json
 import logging
 from odoo import api, fields, models, _
 from odoo.addons.nhanh_connector.models import constant
+from .utils import NhanhClient
 
 event_type_mapping = {
     'orderAdd': 'order_add',
@@ -19,10 +20,12 @@ _logger = logging.getLogger(__name__)
 
 class MainController(http.Controller):
 
-    @http.route('/nhanh/webhook/handler/<string:brand_code>', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, brand_code, **post):
-        request.brand_code = brand_code or None
+    @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
+    def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
+        business_id = value.get("businessId")
+        request.business_id = business_id
+
         event_type = value.get('event')
         if event_type in ['orderUpdate']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
@@ -51,76 +54,64 @@ class MainController(http.Controller):
                                          headers={'Content-Type': 'application/json'})
 
     def handle_order(self, event_type, data, webhook_value_id=None):
+        n_client = NhanhClient(request, constant)
         order_id = data.get('orderId')
-        brand = request.env['res.brand'].sudo().search([('code', '=', request.brand_code)], limit=1)
-        order, brand_id = constant.get_order_from_nhanh_id(request, order_id)
-        if brand and brand.id:
-            brand_id = brand
-        
+        brand_id = n_client.get_brand()
+        try:
+            order = n_client.get_order_from_nhanh_id(order_id, brand_id)
+        except Exception as e:
+            order = None
+
         if not order:
             return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
+
+
         if event_type == 'orderUpdate':
-            odoo_order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1)
+            odoo_order = n_client.get_sale_order(order_id)
             is_create_wh_in = False
-            if odoo_order and order['statusCode'] in ['Returned']:
+            if odoo_order and data['status'] in ['Returned']:
                 odoo_order = None
                 is_create_wh_in = True
 
             if not odoo_order:
-                order_returned = order.get('returnFromOrderId', 0) or data['status'] in ['Returned']
+                order_returned = order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']
+                order_returned_not_success = order.get('returnFromOrderId', 0) and data['status'] in ['Returned']
                 if not is_create_wh_in:
-                    if data['status'].lower() != "confirmed" and not order_returned:
+                    if order_returned:
+                        if order_returned_not_success:
+                            return self.result_request(200, 0, _('Update sale order success'))
+                    elif data['status'].lower() != "confirmed":
                         return self.result_request(404, 1, _('Order confirmation is required'))
 
-                    if not ((order.get('returnFromOrderId', 0) and data['status'] in ['Success']) or not order.get(
-                            'returnFromOrderId', 0)):
-                        webhook_value_id.unlink()
-                        return self.result_request(200, 0, _('update sale order success'))
+                default_company_id = n_client.get_company()
+                location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
+
                 name_customer = False
                 # Add customer if not existed
-                nhanh_partner = self.partner_model().sudo().search(
-                    [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
-                if not nhanh_partner:
-                    nhanh_partner = self.partner_model().sudo().create({
-                        'code_current_customers': 'code_current_customers_nhanhvn',
-                        'name': 'Nhanh.Vn',
-                        'customer_rank': 1
-                    })
-                partner_group_id = request.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
-                partner = self.partner_model().sudo().search(
-                    ['|', ('mobile', '=', order['customerMobile']), ('phone', '=', order['customerMobile']),
-                     ('group_id', '=', partner_group_id.id)], limit=1)
+                nhanh_partner = n_client.get_nhanh_partner()
+
+                partner_group_id = n_client.get_partner_group()
+
+                partner = n_client.get_res_partner(partner_group_id, order)
                 if partner:
                     name_customer = order['customerName']
+                    if not n_client.check_customer_exists_store_first_order(partner):
+                        if location_id and location_id.warehouse_id:
+                            n_client.create_store_first_order_for_customer(
+                                partner, int(order['depotId'])
+                            )
+
                 if not partner:
                     list_customers = constant.get_customers_from_nhanh(request, brand_id=brand_id.id, data={"mobile": order['customerMobile']})
                     customer = list_customers.get(str(order['customerId']))
-                    partner_value = {
-                        'phone': order['customerMobile'],
-                        'mobile': order['customerMobile'],
-                        'name': order['customerName'],
-                        'email': order['customerEmail'],
-                        'street': order['customerAddress'],
-                        'contact_address_complete': order['customerAddress'],
-                        'customer_nhanh_id': order['customerId'],
-                        'retail_type_ids': [(6, 0, request.env['res.partner.retail'].sudo().search(
-                            [('brand_id', '=', brand_id.id), ('code', 'in', ('3', '6'))]).ids)],
-                        'group_id': partner_group_id.id if partner_group_id else None
-                    }
-                    if customer:
-                        gender = ""
-                        if customer["gender"]:
-                            gender = constant.mapping_gender_nhanh.get(customer["gender"])
+                    partner = n_client.create_res_partner(order, brand_id, partner_group_id, customer)
+                    if location_id and location_id.warehouse_id:
+                        n_client.create_store_first_order_for_customer(
+                            partner, int(order['depotId'])
+                        )
 
-                        partner_value.update({
-                            'gender': gender,
-                            'birthday': customer["birthday"],
-                            'vat': customer["taxCode"],
-                        })
-                    partner = self.partner_model().sudo().create(partner_value)
                 order_line = []
-                location_id = request.env['stock.location'].sudo().search([('nhanh_id', '=', int(order['depotId']))],
-                                                                          limit=1)
+                
                 for item in order['products']:
                     product_id = self.product_product_model().sudo().search([('nhanh_id', '=', item.get('productId'))],
                                                                             limit=1)
@@ -143,9 +134,10 @@ class MainController(http.Controller):
 
                 # nhân viên kinh doanh
                 user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
+
                 # đội ngũ bán hàng
                 team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
-                default_company_id = request.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
+                
                 # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
                 # if not warehouse_id:
                 #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
@@ -172,12 +164,13 @@ class MainController(http.Controller):
                     'partner_id': nhanh_partner.id,
                     'order_partner_id': partner.id,
                     'nhanh_shipping_fee': order['shipFee'],
+                    'nhanh_customer_shipping_fee': order['customerShipFee'],
                     'source_record': True,
                     'code_coupon': order['couponCode'],
                     'state': 'draft',
                     'nhanh_order_status': order['statusCode'].lower(),
                     'name_customer': name_customer,
-                    'note': order['privateDescription'],
+                    'note': order["privateDescription"],
                     'note_customer': order['description'],
                     'x_sale_chanel': 'online',
                     # 'carrier_name': order['carrierName'],
@@ -189,6 +182,7 @@ class MainController(http.Controller):
                     'order_line': order_line,
                     'nhanh_customer_phone': order['customerMobile'],
                     'source_id': utm_source_id.id if utm_source_id else None,
+                    'x_location_id': location_id.id,
                 }
                 # Check the order is paid online or not
                 private_description = order["privateDescription"]
@@ -201,6 +195,29 @@ class MainController(http.Controller):
                 else:
                     x_voucher = 0
                     x_code_voucher = ""
+
+                #X270941175 #N270941350
+                if private_description.find("#X") != -1 and private_description.find("#N") != -1:
+                    x = private_description.split()
+                    return_changed = {
+                        "x_is_change": True,
+                    }
+                    for v in x:
+                        if v.find("#X") != -1 or v.find("#N") != -1:
+                            y = v.strip()
+                            if y.find("#X") != -1:
+                                z = y.replace("#X", "")
+                                origin_order_id = request.env['sale.order'].sudo().search(
+                                    [('nhanh_id', '=', z)], limit=1)
+                                return_changed['x_origin'] = origin_order_id.id if origin_order_id else None
+                                return_changed['nhanh_origin_id'] = z
+
+                            if y.find("#N") != -1:
+                                z = y.replace("#N", "")
+                                return_changed['nhanh_return_id'] = z
+                        else:
+                            continue
+                    value.update(return_changed)
 
                 value.update({
                     "x_voucher": x_voucher,
@@ -217,27 +234,41 @@ class MainController(http.Controller):
                         'nhanh_origin_id': order.get('returnFromOrderId', 0)
                     })
                 webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
-                if (not order.get('returnFromOrderId', 0) and data['status'] in ['Packing', 'Pickup']) or (
-                        order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']) or is_create_wh_in and \
-                        not webhook_value_id.order_id.picking_ids:
+
+                if is_create_wh_in or order_returned:
                     try:
-                        webhook_value_id.order_id.check_sale_promotion()
-                        webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
+                        # print('--------------- INTO ---------------------------')
+                        webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
+                        # webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
                     except:
-                        return self.result_request(200, 0, _('Create sale order success'))
+                        pass
+
                 elif data['status'] in ['Canceled', 'Aborted']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
                             'state'):
                         for picking_id in odoo_order.picking_ids:
                             picking_id.action_cancel()
+                else:
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not webhook_value_id.order_id.picking_ids:
+                        try:
+                            webhook_value_id.order_id.check_sale_promotion()
+                            webhook_value_id.order_id.action_create_picking()
+                        except:
+                            return self.result_request(200, 0, _('Create sale order success'))
+
                 return self.result_request(200, 0, _('Create sale order success'))
             else:
                 if data.get('status'):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ['Packing', 'Pickup'] and not odoo_order.picking_ids:
-                        odoo_order.action_create_picking()
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not odoo_order.picking_ids:
+                        try:
+                            odoo_order.check_sale_promotion()
+                            odoo_order.action_create_picking()
+                        except Exception as e:
+                            pass
+                        
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
@@ -268,6 +299,12 @@ class MainController(http.Controller):
 
     def partner_model(self):
         return request.env['res.partner']
+
+    def store_first_order_model(self):
+        return request.env['store.first.order']
+
+    def store_model(self):
+        return request.env['store']
 
     def sale_order_model(self):
         return request.env['sale.order']

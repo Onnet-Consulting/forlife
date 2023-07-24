@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-11 08:31+0000\n"
-"PO-Revision-Date: 2023-05-11 08:31+0000\n"
+"POT-Creation-Date: 2023-07-13 09:44+0000\n"
+"PO-Revision-Date: 2023-07-13 09:44+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -302,7 +302,7 @@ msgstr "Hệ số"
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_res_partner
 msgid "Contact"
-msgstr "Danh bạ"
+msgstr "Liên hệ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__create_uid
@@ -368,6 +368,8 @@ msgstr "Tài khoản chiết khấu hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineChangeRefund.xml:0
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineChangeRefund.xml:0
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
 #, python-format
@@ -390,6 +392,11 @@ msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.import_partner_card_rank_view_form
+msgid "Download Template"
+msgstr "Tải mẫu"
+
+#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Duplicate"
 msgstr "Nhân bản"
@@ -398,6 +405,16 @@ msgstr "Nhân bản"
 #: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_member_card_check_dates
 msgid "End date may not be before the starting date."
 msgstr "Ngày kết thúc không được trước ngày bắt đầu."
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__error_file_name
+msgid "Error File Name"
+msgstr "Tên file lỗi"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__error_file
+msgid "Error file"
+msgstr "File lỗi"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_follower_ids
@@ -428,7 +445,15 @@ msgstr "Từ ngày"
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
 #, python-format
-msgid "Giảm giá theo hạng thẻ"
+msgid "Giảm giá hàng lỗi"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineChangeRefund.xml:0
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
+#, python-format
+msgid "Giảm giá theo CT"
 msgstr ""
 
 #. module: forlife_customer_card_rank
@@ -490,6 +515,11 @@ msgstr "Nhập LS nâng hạng"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__import_file_name
 msgid "Import File Name"
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.import_partner_card_rank_view_form
+msgid "Import error"
+msgstr "Lỗi nhập liệu"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_import_partner_card_rank
@@ -679,11 +709,6 @@ msgid "Order Status Tokyolife"
 msgstr ""
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__order_ids
-msgid "Orders"
-msgstr "Đơn hàng"
-
-#. module: forlife_customer_card_rank
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ProductScreen.js:0
 #, python-format
@@ -725,6 +750,14 @@ msgstr "Chi tiết hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
+#: code:addons/forlife_customer_card_rank/wizard/import_partner_card_rank.py:0
+#, python-format
+msgid ""
+"Please choose brand and upload file template before click Import button !"
+msgstr "Vui lòng chọn thương hiệu và tải lên file nhập liệu trước khi nhấn nút Nhập !"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #, python-format
 msgid ""
@@ -733,13 +766,6 @@ msgid ""
 msgstr ""
 "Vui lòng nhập giá trị lớn hơn 0 vào mộ trong hai trường 'Điểm hệ số đơn đầu "
 "tiên' hoặc 'Điểm cộng đơn đầu tiên'."
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/wizard/import_partner_card_rank.py:0
-#, python-format
-msgid "Please upload file template before click Import button !"
-msgstr "Vui lòng tải lên file dữ liệu trước khi nhấn nút Nhập !"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__plus_point_coefficient
@@ -765,7 +791,7 @@ msgstr "Chi tiết đơn hàng bán lẻ"
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Đơn bán lẻ"
+msgstr "Đơn hàng điểm bán lẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_session

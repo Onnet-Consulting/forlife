@@ -171,12 +171,19 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                             usage_total += item.promotion_usage_ids[k].discount_amount
                         }
                     }
+                    let discount_ck = 0;
+                    if(item.discount >0){
+                       discount_ck = ((item.product.lst_price*item.quantity)*item.discount)/100
+                    }
                     if(!item.card_rank_discount){
                         item.card_rank_discount = 0
                     }
-                    if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total*item.quantity - item.card_rank_discount)){
-                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total*item.quantity - item.card_rank_discount);
-                        so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total*item.quantity - item.card_rank_discount;
+                    if(!item.money_reduce_from_product_defective){
+                        item.money_reduce_from_product_defective =0;
+                    }
+                    if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck)){
+                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck);
+                        so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck;
                     }else{
                         so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                         data[i].value.price_residual = 0;

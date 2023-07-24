@@ -8,6 +8,21 @@
             <field name="arch" type="xml">
                 <field name="default_code" position="after">
                     <field name="sku_code"/>
+                    <field name="special_group_product"/>
+                    <field name="stamp"/>
+                    <field name="heso"/>
+                    <field name="trongluong"/>
+                    <field name="kichthuoc"/>
+                    <field name="khovai"/>
+                    <field name="pantone"/>
+                    <field name="mau_ncc"/>
+                    <field name="ma_sp_ncc"/>
+                    <field name="tenhangcu"/>
+                    <field name="makithuat"/>
+                    <field name="code_design"/>
+                    <field name="group_row_1"/>
+                    <field name="line_row_1"/>
+                    <field name="structure"/>
                 </field>
             </field>
         </record>

@@ -22,5 +22,6 @@ class ProductCategory(models.Model):
             'level': line.level or None,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['category_code', 'complete_name', 'name', 'parent_id', 'level']

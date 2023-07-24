@@ -10,6 +10,7 @@ from odoo.tools.convert import safe_eval
 
 class PromotionConfiguration(models.AbstractModel):
     _name = 'promotion.configuration'
+    _description = 'Promotion Program'
 
     sequence = fields.Integer(default=10)
 
@@ -22,7 +23,7 @@ class PromotionConfiguration(models.AbstractModel):
     dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
     hour_ids = fields.Many2many('hour.data', string='Hours')
 
-    customer_domain = fields.Char('Customer Domain', default='[]')
+    customer_domain = fields.Char('Customer Domain')
     valid_customer_ids = fields.Many2many('res.partner', compute='_compute_valid_customer_ids')
 
     def _get_partners(self):

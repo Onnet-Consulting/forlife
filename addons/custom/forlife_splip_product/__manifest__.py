@@ -3,6 +3,7 @@
     "name": "Forlife Splip Products",
     "category": "Forlife Splip Products",
     "version": "1.0.0",
+    'license': 'LGPL-3',
     "description": """Forlife Splip Products""",
     "depends": [
         'account',

@@ -72,32 +72,38 @@ class ProductDefective(models.Model):
         if self.money_reduce > 0 and self.percent_reduce > 0:
             raise UserError(_('Chỉ được phép nhập 1 trong 2 loại giảm!'))
 
-    def write(self, values):
-        res = super(ProductDefective, self).write(values)
-        for rec in self:
-            if rec.money_reduce == 0 and rec.percent_reduce ==0:
-                raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
-        return res
-
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         res = super(ProductDefective, self).create(vals_list)
-        if res.money_reduce == 0 and res.percent_reduce ==0:
-            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
         if res.quantity_require == 0:
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
 
     def action_send_request_approve(self):
         product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id), ('id','!=',self.id),('store_id','=',self.store_id.id),('state','=','approved')])
-        if self.quantity_defective_approved > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
+        if self.quantity_require > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
             raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
         self.state = 'waiting approve'
         self._send_mail_approve(self.id)
 
     def action_approve(self):
         self.ensure_one()
+        product_defective_exits = self.env['product.defective'].sudo().search([('product_id', '=', self.product_id.id), ('id', '!=', self.id), ('store_id', '=', self.store_id.id), ('state', '=', 'approved')])
+        if self.quantity_defective_approved > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
+            raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
         self.quantity_can_be_sale = self.quantity_defective_approved
+        if self.money_reduce == 0 and self.percent_reduce == 0:
+            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho một trong hai trường "Số tiền giảm" và "Phần trăm giảm" !'))
+        price = 0
+        if self.program_pricelist_item_id:
+            if self.total_reduce > self.program_pricelist_item_id.fixed_price:
+                price = self.program_pricelist_item_id.fixed_price
+        else:
+            if self.total_reduce > self.price:
+                price = self.price
+        if price:
+            raise UserError(_('Tổng giảm không được lớn hơn %s' % str(price)))
+
         self.state = 'approved'
 
     def action_refuse(self):

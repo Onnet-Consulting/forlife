@@ -36,10 +36,27 @@ class ResUtility(models.AbstractModel):
     def create_inventory_session(self, inv_id, data, note=None):
         if not isinstance(data, list):
             raise ValueError('Dữ liệu kiểm kê phải là 1 danh sách')
+        self._cr.execute(f"""
+            select json_object_agg(barcode, id) as products from product_product where barcode notnull and barcode <> ''
+        """)
+        products = self._cr.dictfetchone()
+        products = products.get('products') or {}
+        line_dict = {}
+        for val in data:
+            product = products.get(val.get('ItemID'))
+            if product:
+                line_dict.update({
+                    product: (line_dict.get(product) or 0) + (val.get('Check') or 0)
+                })
+        lines = [(0, 0, {
+            'product_id': k,
+            'kiem_ke_thuc_te': v,
+        }) for k, v in line_dict.items()]
         res = self.env['inventory.session'].sudo().create({
             'inv_id': inv_id,
             'data': base64.b64encode((json.dumps(data)).encode('utf-8')),
             'note': note,
+            'line_ids': lines,
         })
         return {
             'message': 'Cập nhật phiên đếm kiểm thành công',
@@ -76,7 +93,7 @@ class ResUtility(models.AbstractModel):
 
     @api.model
     def delete_inventory_session(self, inv_session_id):
-        self.env['inventory.session'].sudo().browse(inv_session_id).write({'active': False})
+        self.env['inventory.session'].sudo().browse(inv_session_id).action_inactive_session()
         return 'Xóa thành công'
 
     @api.model
@@ -84,7 +101,7 @@ class ResUtility(models.AbstractModel):
         inv = self.env['stock.inventory'].sudo().search([('id', '=', inv_id), ('state', 'in', ('first_inv', 'second_inv'))], limit=1)
         if not inv:
             raise ValueError('Không thể xác nhận kiểm đếm tại thời điểm này')
-        self.with_delay(description=f"Cập nhật dữ liệu kiểm đếm cho phiếu kiểm kê [{inv.id} - {inv.name}]").action_confirm_inventory_session(inv.id)
+        # self.with_delay(description=f"Cập nhật dữ liệu kiểm đếm cho phiếu kiểm kê [{inv.id} - {inv.name}]").action_confirm_inventory_session(inv.id)
         return 'Cập nhật dữ liệu tổng kiểm đếm thành công'
 
     @api.model
@@ -104,6 +121,15 @@ class ResUtility(models.AbstractModel):
         sessions = self.env['inventory.session'].sudo().search_read([('inv_id', '=', inv_id)], ['data'])
         if not inventory or not sessions:
             return False
+        self._cr.execute(f"""
+        with inventorys as (select distinct pp.barcode, 1 as x
+                            from stock_inventory_line sil
+                                     join product_product pp on pp.id = sil.product_id and pp.barcode notnull
+                            where sil.inventory_id = {inv_id})
+        select json_object_agg(barcode, x) as product_exists from inventorys
+        """)
+        result = self._cr.dictfetchone()
+        product_exists = result.get('product_exists') or {}
         value_exits = {}
         value_not_exits = {}
         data = []
@@ -113,19 +139,22 @@ class ResUtility(models.AbstractModel):
             barcode = line.get('ItemID')
             qty = (line.get('Check') or 0) + (line.get('Loss') or 0) + (line.get('Err') or 0) + (line.get('Add') or 0) - (line.get('Sub') or 0)
             if barcode:
-                if line.get('notInList'):
-                    value_not_exits.update({
-                        barcode: (value_not_exits.get(barcode) or 0) + qty
-                    })
-                else:
+                if product_exists.get(barcode):
                     value_exits.update({
                         barcode: (value_exits.get(barcode) or 0) + qty
+                    })
+                else:
+                    value_not_exits.update({
+                        barcode: (value_not_exits.get(barcode) or 0) + qty
                     })
         if value_exits:
             for k, v in value_exits.items():
                 inv = inventory.line_ids.filtered(lambda f: f.barcode == k)
                 if inv:
                     inv.sudo().write(get_value(inventory.state, v))
+            inventory.line_ids.filtered(lambda f: f.barcode not in list(value_exits.keys())).write({'x_first_qty': 0, 'product_qty': 0})
+        else:
+            inventory.line_ids.write({'x_first_qty': 0, 'product_qty': 0})
         if value_not_exits:
             products = self.env['product.product'].search([('barcode', 'in', list(value_not_exits.keys()))])
             values = []

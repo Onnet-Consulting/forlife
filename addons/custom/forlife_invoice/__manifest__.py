@@ -3,6 +3,7 @@
     "name": "Forlife Invoice",
     "category": "Invoice",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 1,
     "description": """Forlife Invoice""",
     "depends": [
@@ -21,6 +22,7 @@
         'security/expense_security.xml',
         'views/expense_category_views.xml',
         'views/expense_item_views.xml',
+        'views/stock_location.xml',
     ],
     "assets": {
         "web.assets_backend": [

@@ -7,6 +7,7 @@ from odoo.exceptions import UserError
 
 class AccountMovePromotion(models.Model):
     _name = 'account.move.promotion'
+    _description = 'Account Move promotion'
 
     product_id = fields.Many2one('product.product', string='Product')
     value = fields.Float(string='Value')

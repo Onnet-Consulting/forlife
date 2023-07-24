@@ -30,6 +30,7 @@ REWARD_TYPE = [
 
 class PromotionConditionProduct(models.Model):
     _name = 'promotion.condition.product'
+    _description = "Promotion Condition Product"
     _rec_name = 'product_product_id'
     _table = 'product_product_promotion_program_rel'
 
@@ -77,7 +78,7 @@ class PromotionProgram(models.Model):
 
     brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True, required=False)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
-    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
+    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date')
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
     month_ids = fields.Many2many(related='campaign_id.month_ids', string='Months')
     dayofmonth_ids = fields.Many2many(related='campaign_id.dayofmonth_ids', string='DayOfMonth')
@@ -142,8 +143,8 @@ class PromotionProgram(models.Model):
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     product_domain = fields.Char()
     min_quantity = fields.Float('Minimum Quantity', default=1)
-    valid_product_ids = fields.Many2many(
-        'product.product', compute='_compute_valid_product_ids', string='Valid Products')
+    # valid_product_ids = fields.Many2many(
+        # 'product.product', compute='_compute_valid_product_ids', string='Valid Products')
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Valid Product Counts')
     json_valid_product_ids = fields.Binary(
         compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
@@ -214,7 +215,7 @@ class PromotionProgram(models.Model):
     def _check_duplicate_product_in_combo(self):
         for program in self:
             if program.promotion_type == 'combo' and program.combo_line_ids:
-                list_of_set = [set(line.mapped('valid_product_ids.id')) for line in program.combo_line_ids]
+                list_of_set = [set(line.mapped('product_ids.id')) for line in program.combo_line_ids]
                 combine_couple_of_set = itertools.combinations(list_of_set, 2)
                 for couple in combine_couple_of_set:
                     if couple[0] & couple[1]:
@@ -268,13 +269,8 @@ class PromotionProgram(models.Model):
     @api.depends('product_ids', 'product_categ_ids')
     def _compute_valid_product_ids(self):
         for line in self:
-            if line.product_ids or line.product_categ_ids:
-                domain = line._get_valid_product_domain()
-                domain = expression.AND([[('available_in_pos', '=', True)], domain])
-                line.valid_product_ids = self.env['product.product'].search(domain)
-            else:
-                line.valid_product_ids = self.env['product.product']
-            line.product_count = len(line.valid_product_ids)
+            product_ids_list = line._get_valid_product_ids()
+            line.product_count = len(product_ids_list)
 
     @api.depends('discount_product_ids')
     def _compute_discount_product_count(self):
@@ -309,8 +305,8 @@ class PromotionProgram(models.Model):
     @api.depends('product_ids', 'product_categ_ids')
     def _compute_json_valid_product_ids(self):
         for pro in self:
-            product_ids = pro.valid_product_ids.ids or []
-            product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
+            product_ids_list = pro._get_valid_product_ids()
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids_list).encode('utf-8'))
             pro.json_valid_product_ids = product_ids_json_encode
 
     @api.depends('incl_reward_in_order')
@@ -338,6 +334,14 @@ class PromotionProgram(models.Model):
             program.qty_min_required = 0
             if program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty'] and program.reward_ids:
                 program.qty_min_required = min(program.reward_ids.mapped('quantity_min')) or 0
+
+    def _get_valid_product_ids(self):
+        self.ensure_one()
+        sql = "SELECT product_product_id FROM product_product_promotion_program_rel " \
+              "WHERE promotion_program_id = %s;" % self.id
+        self.env.cr.execute(sql)
+        data = self.env.cr.fetchall()
+        return list(itertools.chain(*data)) or []
 
     def _show_gen_code(self):
         for program in self:
@@ -403,7 +407,7 @@ class PromotionProgram(models.Model):
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
-        action['domain'] = [('id', 'in', self.valid_product_ids.ids)]
+        action['domain'] = [('id', 'in', self.product_ids.ids)]
         return action
 
     def action_open_condition_product(self):

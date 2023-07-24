@@ -11,15 +11,34 @@
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_right_pane">
                         <span class="o_form_label">Default Product</span>
+                        <i class="fa fa-info-circle me-1" title="This setting is common to all PoS." pos-data-toggle="tooltip"/>
                         <div class="text-muted">Default Product Defective Goods / Handel Discount (PoS)</div>
                         <div class="content-group mt16">
                             <div class="row" title="Default Product Defective Goods (PoS).">
                                 <label for="product_default_pos_defective_goods_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="product_default_pos_defective_goods_id" domain="[('company_id', '=', company_id), ('type', '=', 'service')]"/>
+                                <field name="product_default_pos_defective_goods_id" domain="[('type', '=', 'service')]"/>
                             </div>
+                            <div class="row" title="Default Journal Defective Goods (PoS).">
+                                <label for="journal_default_pos_defective_goods_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="journal_default_pos_defective_goods_id" domain="[('company_id', '=', company_id)]"/>
+                            </div>
+                            <br/>
                             <div class="row" title="Default Product Handel Discount (PoS)">
                                 <label for="product_default_pos_handle_discount_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="product_default_pos_handle_discount_id" domain="[('company_id', '=', company_id), ('type', '=', 'service')]"/>
+                                <field name="product_default_pos_handle_discount_id" domain="[('type', '=', 'service')]"/>
+                            </div>
+                            <div class="row" title="Default Journal Handel Discount (PoS)">
+                                <label for="journal_default_pos_handle_discount_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="journal_default_pos_handle_discount_id" domain="[('company_id', '=', company_id)]"/>
+                            </div>
+                            <br/>
+                            <div class="row" title="Default Product Change/Return Goods (PoS)">
+                                <label for="product_default_pos_return_goods_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="product_default_pos_return_goods_id" domain="[('type', '=', 'service')]"/>
+                            </div>
+                            <div class="row" title="Default Journal Change/Return Goods (PoS)">
+                                <label for="journal_default_pos_return_goods_id" class="col-lg-3 o_light_label" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="journal_default_pos_return_goods_id" domain="[('company_id', '=', company_id)]"/>
                             </div>
                         </div>
                     </div>

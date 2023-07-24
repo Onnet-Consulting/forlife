@@ -30,6 +30,7 @@ class PromotionCampaign(models.Model):
             'hour_ids': line.hour_ids.mapped('code'),
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['name', 'state', 'from_date', 'to_date', 'brand_id', 'customer_domain',
                 'store_ids', 'month_ids', 'dayofmonth_ids', 'dayofweek_ids', 'hour_ids']

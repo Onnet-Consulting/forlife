@@ -8,6 +8,7 @@ import tempfile
 
 class QuickConfigVoucher(models.TransientModel):
     _name = 'quick.config.voucher'
+    _description = "Quick Config Voucher"
 
     name = fields.Char(string='Name', default='Đổi trạng thái voucher', readonly=True)
     method = fields.Selection([('active', 'Hiệu lực'), ('in_active', 'Vô hiệu')],

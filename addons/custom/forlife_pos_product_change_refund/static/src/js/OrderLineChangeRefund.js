@@ -87,14 +87,13 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                     args: [args],
                 })
                 if (data_update.status === 'approve') {
-                    this.props.line.set_unit_price(data_update.price);
+                    this.props.line.handle_change_refund_price = data_update.price;
                     this.props.line.beStatus = true;
                     const order = this.env.pos.get_order();
                     if (order) {
                         order.approved = true;
                     }
-                }
-                else {
+                }else {
                     this.props.line.beStatus = false;
                 }
 			}
@@ -113,6 +112,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 var order = this.env.pos.get_order();
                 obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
+                obj.is_change_product = order.is_change_product;
+                obj.is_refund_product = order.is_refund_product;
                 line.product_id = this.props.line.product.id;
                 var price = this.props.line.price;
                 if (this.props.line.quantity_canbe_refund > 0) {
@@ -120,6 +121,8 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 }
                 line.price = price;
                 line.expire_change_refund_date = this.props.line.expire_change_refund_date;
+                line.refunded_orderline_id = this.props.line.refunded_orderline_id;
+                line.reason_refund_id = this.props.line.reason_refund_id;
                 obj.lines = [line];
 
                 this.props.line.approvalStatus = true;
@@ -142,22 +145,51 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
             }
 
             getTotalDiscount() {
-                var total = super.getTotalDiscount(...arguments);
-                if(this.props.line.money_reduce_from_product_defective > 0){
+                // TODO: class được extend từ class forlife_pos_layout.OrderlineChangeRefund
+                // TODO: => kết quả super.getTotalDiscount(...args) == 0.0.
+                // TODO: Do đó, phải thực hiện như cách ở dưới
+//                var total = super.getTotalDiscount(...arguments);
+                var total = 0.0;
+                if(this.props.line.money_reduce_from_product_defective > 0) {
                     total += this.props.line.money_reduce_from_product_defective;
-                }
+                };
+                // Card rank
+                total += this.props.line.get_card_rank_discount();
+                // Promotion Program
+                const applied_promotions = this.props.line.get_applied_promotion_str();
+                for (const applied_promotion of applied_promotions) {
+                    if (applied_promotion) {
+                        total += applied_promotion.discount_amount;
+                    };
+                };
+                // Point Order
+                if (this.props.line.point) {
+                    total += Math.abs(this.props.line.point);
+                };
+                //
                 return total;
             }
 
             getPercentDiscountRefund() {
                 var percent_discount = 0;
+                var percent_handle_change_refund_price = 0;
                 var reduced = Math.abs(this.props.line.money_is_reduced);
                 var quantity = this.props.line.get_quantity();
                 var order_amount = this.props.line.get_unit_display_price() * quantity;
                 var quantity_can_refund = this.props.line.quantity_canbe_refund;
                 if (order_amount !== 0 && quantity_can_refund !== 0) {
-                    percent_discount = ((reduced * quantity / quantity_can_refund) / order_amount) * 100;
+                    if(quantity!=0){
+                       percent_discount = ((reduced * quantity / quantity_can_refund) / order_amount) * 100;
+                    }else{
+                       percent_discount=0;
+                    }
                 }
+                if(order_amount != 0){
+                    percent_handle_change_refund_price = Math.abs(this.props.line.handle_change_refund_price/order_amount)*100
+                }else{
+                    percent_handle_change_refund_price = 0
+                }
+                percent_discount = percent_discount + percent_handle_change_refund_price
                 return Math.round(percent_discount * 100) / 100;
             }
 

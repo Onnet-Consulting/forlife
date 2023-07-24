@@ -6,9 +6,11 @@ from odoo import _, api, fields, models
 
 class CheckPromotion(models.TransientModel):
     _name = 'check.promotion.wizard'
+    _description = 'Check Promotion wizard'
 
-    message = fields.Char(String="Message")
+    message = fields.Char(string="Message")
 
+    # wizard kiểm tra CTKM, cập nhật lại trạng thái cho đơn hàng
     @api.model
     def default_get(self, fields_list):
         active_id = self._context and self._context.get('active_id')

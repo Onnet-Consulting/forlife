@@ -162,12 +162,15 @@
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
+                                <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="name" readonly="1" string='Mô tả'/>
                                 <field name="currency_id"/>
-                                <field name="exchange_rate"/>
+                                <field name="exchange_rate" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="foreign_amount"/>
-                                <field name="vnd_amount"/>
+                                <field name="vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="actual_cost" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1" force_save="1"/>
+                                <field name="cost_paid" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1" force_save="1"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
                         </field>
@@ -188,10 +191,10 @@
                                 <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="description"/>
-                                <field name="product_uom"/>
+                                <field name="product_uom" string="Đơn vị tính"/>
                                 <field name="price_unit" string="Đơn giá" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="product_qty" sum="discounted subtotal"/>
-                                <field name="company_currency" invisible="1"/>
+                                <field name="product_qty" sum="discounted subtotal" string="Số lượng"/>
+                                <!-- <field name="company_currency" invisible="1"/> -->
                                 <field name="discount"/>
                                 <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}" sum="total_vnd_amount"/>
                                 <field name="before_tax" sum="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
@@ -246,10 +249,10 @@
                     <field name="partner_domain" invisible="1" />
                     <field name="partner_id" string="Nhà cung cấp"
                            attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
-                           domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                           domain="[('is_purchase_inter_company', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
-                    <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="currency_id"
+                    <field name="purchase_type" required="1" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="currency_id" required="1"
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -272,15 +275,15 @@
                     <field name="date_planned_import" string='Hạn xử lý' invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
-                    <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="date_order" required="1" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
 
 
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
-                    <field name="total_trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
-                    <field name="x_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
-                    <field name="x_amount_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}"/>
+                    <field name="trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
+                    <field name="x_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
+                    <field name="x_amount_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
                     <field name="is_done_picking" invisible="1"/>
 <!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>

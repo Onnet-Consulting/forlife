@@ -54,7 +54,7 @@ class Voucher(models.Model):
     brand_id = fields.Many2one('res.brand', 'Brand', related='program_voucher_id.brand_id')
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
-    using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
+    using_limit = fields.Integer('Giới hạn sử dụng', related='program_voucher_id.using_limit')
 
     has_accounted = fields.Boolean(default=False)
     notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app,'
@@ -302,7 +302,7 @@ class Voucher(models.Model):
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         if 'import_file' in self._context and self._context.get('import_file'):
             if 'phone_number' in vals_list and vals_list['phone_number']:

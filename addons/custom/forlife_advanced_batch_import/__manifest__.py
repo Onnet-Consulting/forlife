@@ -8,6 +8,7 @@
     'description': """
         Separate Origin file import to many sub files, and import them
     """,
+    'license': 'LGPL-3',
 
     'author': "thang.dao@on.net.vn",
     'website': "https://on.net.vn/",

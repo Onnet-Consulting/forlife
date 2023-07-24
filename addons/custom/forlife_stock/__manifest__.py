@@ -3,6 +3,7 @@
     "name": "Forlife Stock",
     "category": "Forlife Stock",
     "version": "1.3.1",
+    'license': 'LGPL-3',
     "sequence": 6,
     "description": """Forlife Stock""",
     "depends": [
@@ -15,7 +16,8 @@
         'stock',
         'stock_account',
         'stock_landed_costs',
-        'quality_control'
+        'quality_control',
+        'forlife_base'
     ],
     "data": [
         'data/data_stock_location_type.xml',

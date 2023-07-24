@@ -9,6 +9,7 @@ class StockQuant(models.Model):
     _inherit = ['stock.quant', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update']
     _create_action = 'update'
     _update_action = 'update'
+    _priority = 1
 
     def domain_record_sync_info(self):
         return self.filtered(lambda f: f.location_id.warehouse_id.whs_type.code in ('3', '4', '5'))
@@ -16,7 +17,7 @@ class StockQuant(models.Model):
     def get_sync_info_value(self):
         return {
             'updated_at': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'store_data': [{
+            'data': [{
                 'store_id': line.location_id.warehouse_id.id,
                 'location_id': line.location_id.id,
                 'location_code': line.location_id.code or '',
@@ -33,5 +34,15 @@ class StockQuant(models.Model):
             return False
         return super().check_update_info(list_field, values)
 
+    @api.model
     def get_field_update(self):
         return ['quantity', 'reserved_quantity']
+
+    @api.model
+    def prepare_message(self, action, target, val):
+        val = dict(val)
+        val.update({
+            'action': action,
+            'target': target,
+        })
+        return val

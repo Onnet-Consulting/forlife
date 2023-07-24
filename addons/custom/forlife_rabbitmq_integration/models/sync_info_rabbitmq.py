@@ -10,7 +10,9 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Core'
     _exchange = ''
     _routing_key = ''
+    _priority = 10
 
+    @api.model
     def get_sync_info_value(self):
         return []
 
@@ -29,6 +31,14 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
             raise ValueError(_("RabbitQM queue by key '%s' not found !") % queue_key)
         return rabbitmq_queue[0]
 
+    @api.model
+    def prepare_message(self, action, target, val):
+        return {
+            'action': action,
+            'target': target,
+            'data': val
+        }
+
     def push_message_to_rabbitmq(self, data, action, queue_key):
         rabbitmq_queue = self.get_rabbitmq_queue_by_queue_key(queue_key)
         rabbitmq_connection = rabbitmq_queue.rabbitmq_connection_id
@@ -36,15 +46,11 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         parameter = pika.ConnectionParameters(host=rabbitmq_connection.host, port=rabbitmq_connection.port, credentials=credentials)
         connection = pika.BlockingConnection(parameter)
         channel = connection.channel()
-        message = {
-            'action': action,
-            'target': rabbitmq_queue.target,
-            'data': data
-        }
+        message = self.prepare_message(action, rabbitmq_queue.target, data)
         message = json.dumps(message).encode('utf-8')
         channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
         if self._exchange:
-            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'})
+            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'}, exchange_type='x-delayed-message')
             channel.queue_bind(queue=rabbitmq_queue.queue_name, exchange=self._exchange, routing_key=self._routing_key)
             properties = pika.BasicProperties(headers={'x-delay': 5000}, delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE)
             channel.basic_publish(exchange=self._exchange, routing_key=self._routing_key, body=message, properties=properties)
@@ -64,7 +70,7 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
         res = super().create(vals_list)
         record = res.domain_record_sync_info()
         if record:
-            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._create_action)
+            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
         return res
 
 
@@ -74,9 +80,11 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Update'
     _update_action = 'update'
 
+    @api.model
     def get_field_update(self):
         return []
 
+    @api.model
     def check_update_info(self, list_field, values):
         return any([1 for field in list_field if field in values.keys()])
 
@@ -85,7 +93,7 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
         check = self.check_update_info(self.get_field_update(), values)
         record = self.domain_record_sync_info()
         if check and record:
-            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._update_action)
+            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
         return res
 
 
@@ -104,7 +112,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.domain_record_sync_info().ids
         res = super().unlink()
         if record_ids:
-            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ').action_delete_record(record_ids)
+            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 
 
@@ -124,5 +132,6 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
             'name': line.name
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return ['code', 'name']

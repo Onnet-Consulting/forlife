@@ -69,10 +69,10 @@
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" style="width:100%"/>
+                    <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
@@ -228,7 +228,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
-                    <page string="Thuế nhập khẩu"
+                    <page string="Thông tin thuế"
                           attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
@@ -253,12 +253,13 @@
                         <field name="cost_line" widget="section_and_note_one2many"
                                attrs="{'readonly': [('state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
+                                <field name="company_currency" invisible="1"/>
                                 <field name="product_id"/>
                                 <field name="name" readonly="1" string='Mô tả'/>
                                 <field name="currency_id"/>
-                                <field name="exchange_rate"/>
+                                <field name="exchange_rate" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="foreign_amount"/>
-                                <field name="vnd_amount"/>
+                                <field name="vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
                          </field>

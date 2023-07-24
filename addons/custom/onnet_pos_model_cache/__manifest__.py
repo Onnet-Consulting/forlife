@@ -26,7 +26,7 @@
     ],
     'assets': {
         'point_of_sale.assets': [
-            'onnet_pos_model_cache/static/**/*',
+            # 'onnet_pos_model_cache/static/**/*',
         ],
     }
 }

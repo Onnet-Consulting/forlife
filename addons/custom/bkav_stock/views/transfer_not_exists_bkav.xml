@@ -4,7 +4,7 @@
         <field name="name">name</field>
         <field name="model">transfer.not.exists.bkav</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" edit="0" delete="0">
                 <sheet>
                     <group>
                         <group>
@@ -21,6 +21,7 @@
                             <field name="vendor_contract_id" readonly="1"/>
                             <field name="delivery_contract_id" readonly="1"/>
                             <field name="transporter_id" readonly="1"/>
+                            <field name="state" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -48,14 +49,15 @@
                             <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                             <button name="create_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':[('invoice_guid', '!=', False)]}" string="Create eInvoice" groups="account.group_account_invoice"/>
                             <button name="get_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':[('invoice_guid', '=', False)]}" string="Get eInvoice" groups="account.group_account_invoice"/>
-                            <button name="update_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':[('invoice_guid', '=', False)]}" string="Update eInvoice" groups="account.group_account_invoice"/>
-                            <button name="publish_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':[('invoice_guid', '=', False)]}" string="Publish eInvoice" groups="account.group_account_invoice"/>
+                            <button name="update_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}" string="Update eInvoice" groups="account.group_account_invoice"/>
+                            <button name="publish_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}" string="Publish eInvoice" groups="account.group_account_invoice"/>
                             <button name="download_invoice_bkav" type="object" class="btn btn-primary" attrs="{'invisible':[('invoice_guid', '=', False)]}" string="Download eInvoice" groups="account.group_account_invoice"/>
                             <br/>
                             <br/>
                             <group>
                                 <group>
                                     <field name="exists_bkav" readonly="1"/>
+                                    <field name="is_post_bkav" readonly="1"/>
                                     <field name="invoice_no" readonly="1"/>
                                     <field name="invoice_form" readonly="1"/>
                                     <field name="invoice_serial" readonly="1"/>
@@ -77,7 +79,7 @@
         <field name="name">transfer.not.exists.bkav.name</field>
         <field name="model">transfer.not.exists.bkav</field>
         <field name="arch" type="xml">
-            <tree create="0">
+            <tree create="0" edit="0" delete="0">
                 <field name="code" readonly="1"/>
                 <field name="location_id" readonly="1"/>
                 <field name="location_name" readonly="1"/>

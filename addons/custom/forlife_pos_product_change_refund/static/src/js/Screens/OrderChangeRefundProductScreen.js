@@ -198,10 +198,11 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                             this._onDoRefund(partner, clickedOrder);
                         }
                     }
-                }
-                else{
+                } else {
                     this._onDoRefund(partner, clickedOrder);
                 }
+            } else {
+                this._onDoRefund(partner, clickedOrder);
             }
         }
 
@@ -558,6 +559,15 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 today.setHours(0, 0, 0, 0);
 
                 var check_button = (expire_change_refund_date < today);
+                var pos_order_line_discount_details = []
+                orderline.pos_order_line_discount_details.forEach(function(item){
+                    pos_order_line_discount_details.push({
+                            'id': item.id,
+                            'pos_order_line_id': item.pos_order_line_id,
+                            'money_reduced': item.money_reduced,
+                            'type': item.type,
+                    })
+                })
 
                 const newToRefundDetail = {
                     qty: 0,
@@ -577,6 +587,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                         check_button: check_button,
                         tax_ids: orderline.get_taxes().map(tax => tax.id),
                         discount: orderline.discount,
+                        pos_order_line_discount_details: pos_order_line_discount_details
                     },
                     destinationOrderUid: false,
                 };
@@ -610,6 +621,15 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
          */
         _prepareRefundOrderlineOptions(toRefundDetail) {
             const { qty, orderline } = toRefundDetail;
+            var pos_order_line_discount_details = []
+            orderline.pos_order_line_discount_details.forEach(function(item){
+                pos_order_line_discount_details.push({
+                        'id': item.id,
+                        'pos_order_line_id': item.pos_order_line_id,
+                        'money_reduced': item.money_reduced,
+                        'type': item.type,
+                })
+            })
             return {
                 quantity: 0,
                 price: orderline.price,
@@ -623,6 +643,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 refunded_orderline_id: orderline.id,
                 tax_ids: orderline.tax_ids,
                 discount: orderline.discount,
+                pos_order_line_discount_details: pos_order_line_discount_details
             }
         }
         _setOrder(order) {

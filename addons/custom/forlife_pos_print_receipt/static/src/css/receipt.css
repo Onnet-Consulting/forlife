@@ -184,7 +184,7 @@
     text-align: right;
 }
 
-.pos-receipt .payment_lines .payment-detail .promotion-code{
+.pos-receipt .payment_lines .payment-detail .promotion-code {
     font-weight: bold;
 }
 
@@ -223,4 +223,14 @@
 .pos-receipt .payment-line-detail td:nth-child(1) {
     width: 50%;
     padding-left: 5px;
+}
+
+.no_color_border {
+    border-color: #FFF;
+}
+
+.qr_code {
+    width: 90%;
+    margin: auto;
+    border: 1px solid;
 }

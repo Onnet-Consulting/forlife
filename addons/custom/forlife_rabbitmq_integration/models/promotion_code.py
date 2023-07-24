@@ -20,6 +20,7 @@ class PromotionCode(models.Model):
             'amount': line.amount,
             'consumed_amount': line.consumed_amount or 0,
             'limit_usage': line.limit_usage or False,
+            'max_usage': line.max_usage or 0,
             'expiration_date': line.expiration_date.strftime('%Y-%m-%d') if line.expiration_date else None,
             'remaining_amount': line.remaining_amount,
             'reward_program_id': line.reward_program_id.id or None,
@@ -30,10 +31,14 @@ class PromotionCode(models.Model):
             'referring_date_to': line.referring_date_to.strftime('%Y-%m-%d %H:%M:%S') if line.referring_date_to else None,
             'original_code_id': line.original_code_id.id or None,
             'referred_partner_id': line.referred_partner_id.id or None,
-            'partner_id': line.partner_id.id or None,
+            'partner': {
+                'id': line.partner_id.id or None,
+                'phone_number': line.partner_id.phone or None,
+            },
             'surprising_reward_line_id': line.surprising_reward_line_id.id or None,
         } for line in self]
 
+    @api.model
     def get_field_update(self):
         return [
             'program_id', 'name', 'amount', 'consumed_amount', 'limit_usage', 'expiration_date', 'reward_program_id',

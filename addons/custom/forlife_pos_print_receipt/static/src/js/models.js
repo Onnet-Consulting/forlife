@@ -77,7 +77,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 let price = line.original_price;
                 let qty = line.get_quantity();
                 let product_default_code = line.get_product().default_code || '';
-                let discount_amount = line.get_line_receipt_total_discount();
+                let discount_amount = line.get_line_receipt_total_discount() + (qty * price * line.get_discount() / 100);
                 let total_amount = line.get_display_price_after_discount();
                 let total_original_amount = price * qty;
                 if (!(product_id in merge_line_values)) {
@@ -184,6 +184,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 order_total, order_total_discount, total_applied_points, voucher_data];
         }
 
+        get_accumulated_point() {
+            return {
+                'sum_total_point': this.pos.sum_total_point,
+                'total_point': this.pos.total_point,
+            }
+        }
+
         export_for_printing() {
             let json = super.export_for_printing(...arguments);
             let total_qty = _.reduce(_.map(json.orderlines, line => line.quantity), (a, b) => a + b, 0);
@@ -203,6 +210,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.applied_code_value = applied_code_value;
             json.voucher_data = voucher_data;
             json.total_applied_points = total_applied_points;
+            json.accumulated_point = this.get_accumulated_point();
             return json;
         }
     }
@@ -256,7 +264,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 original_price: this.original_price,
                 discount_amount: this.get_line_receipt_total_discount(),
                 discount_percent: this.get_line_receipt_total_percent_discount(),
-                total_amount: this.get_display_price_after_discount()
+                total_amount: this.get_display_price_after_discount(),
             });
         }
     }
