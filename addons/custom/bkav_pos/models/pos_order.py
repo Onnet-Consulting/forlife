@@ -26,7 +26,7 @@ class PosOrderBKAV(models.Model):
                               default=lambda self: self.env['ir.sequence'].next_by_code('account.move.sequence'))
 
     ###trạng thái và số hdđt từ bkav trả về
-    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_get_values', store=1,
+    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status', store=1,
                                   copy=False)
     invoice_guid = fields.Char('GUID HDDT', copy=False)
     invoice_no = fields.Char('Số HDDT', copy=False)
@@ -61,7 +61,7 @@ class PosOrderBKAV(models.Model):
     
 
     @api.depends('data_compare_status')
-    def _compute_data_compare_status_get_values(self):
+    def _compute_data_compare_status(self):
         for rec in self:
             rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
