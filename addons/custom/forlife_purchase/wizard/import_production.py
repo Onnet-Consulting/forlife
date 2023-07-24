@@ -32,6 +32,7 @@ class ImportProductionFromExcel(models.TransientModel):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
         orders = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=0))[1:]
         material = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=1))[1:]
+        expense = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=2))[1:]
         list_account = []
         list_product = []
         uom = []
@@ -44,6 +45,8 @@ class ImportProductionFromExcel(models.TransientModel):
         for m in material:
             list_product.append(m[0])
             uom.append(m[4])
+        for ep in expense:
+            list_product.append(ep[0])
 
         account_aa = self.env['account.analytic.account'].search_read([
             ('company_id', '=', self.env.company.id),
@@ -93,6 +96,18 @@ class ImportProductionFromExcel(models.TransientModel):
                 'total': round(float(m[9]), 0),
             }))
 
+        create_list_expense = []
+        for e in expense:
+            if not product_dict.get(e[0], False):
+                raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', e[0]))
+            cost_norms = 0
+            if float(e[1]) > 0 and e[3]:
+                cost_norms = float(e[3]) / float(e[1])
+            create_list_expense.append((0, 0, {
+                'product_id': product_dict.get(e[0], False),
+                'rated_level': cost_norms
+            }))
+
         create_list_order = []
         for order in orders:
             master = {}
@@ -119,6 +134,8 @@ class ImportProductionFromExcel(models.TransientModel):
                     'produce_qty': int(order[12]),
                 }
 
+                product_variant = self.env['product.product'].browse(product_dict.get(order[9]))\
+                    .mapped('attribute_line_ids.value_ids.name')
                 list_material = []
                 for m in material:
                     if not product_dict.get(m[0], False):
@@ -126,7 +143,7 @@ class ImportProductionFromExcel(models.TransientModel):
                     if not uom_dict.get(m[4], False):
                         raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
 
-                    if m[1] == order[10] or m[2] == order[11] or (not m[1] and not m[2]):
+                    if m[1].strip() in product_variant or m[2].strip() in product_variant or (not m[1] and not m[2]):
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
                             'production_uom_id': uom_dict.get(m[4], False),
@@ -135,6 +152,7 @@ class ImportProductionFromExcel(models.TransientModel):
                             'loss': m[7],
                         }))
                 child_value['forlife_bom_material_ids'] = list_material
+                child_value['forlife_bom_service_cost_ids'] = create_list_expense
                 child = [(0, 0, child_value)]
                 if len(create_list_order) >= 1 and not order[0]:
                     create_list_order[len(create_list_order) - 1]['forlife_production_finished_product_ids'] += child
