@@ -3,16 +3,8 @@ from odoo.exceptions import ValidationError
 from datetime import datetime
 import json
 from .bkav_connector import connect_bkav
-
 import logging
 _logger = logging.getLogger(__name__)
-
-
-def get_invoice_identify(self):
-    invoice_form = self.invoice_form or ''
-    invoice_serial = self.invoice_serial or ''
-    invoice_no = self.invoice_no or ''
-    return f"[{invoice_form}]_[{invoice_serial}]_[{invoice_no}]"
 
 
 def get_bkav_config(self):
@@ -34,7 +26,17 @@ def get_bkav_config(self):
         'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
     }
 
+
+def get_invoice_identify(self):
+    invoice_form = self.invoice_form or ''
+    invoice_serial = self.invoice_serial or ''
+    invoice_no = self.invoice_no or ''
+    return f"[{invoice_form}]_[{invoice_serial}]_[{invoice_no}]"
+
+
 def get_invoice_status(self):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_getStatusInvoice')),
@@ -46,18 +48,19 @@ def get_invoice_status(self):
         self.message_post(body=(response.get('Object')))
     else:
         self.data_compare_status = str(response.get('Object'))
+        self._compute_data_compare_status()
 
 
-def create_invoice_bkav(self, data,is_publish=False, origin_id=False):
+def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_type=''):
     configs = get_bkav_config(self)
     _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
     CmdType = int(configs.get('cmd_addInvoice'))
-    if 'issue_invoice_type' in self:
-        if self.issue_invoice_type in ('adjust', 'replace') and not origin_id and not origin_id.invoice_no:
+    if issue_invoice_type:
+        if issue_invoice_type in ('adjust', 'replace') and (not origin_id or not origin_id.invoice_no):
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
-        if self.issue_invoice_type == 'adjust':
+        if issue_invoice_type == 'adjust':
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
-        elif self.issue_invoice_type == 'replace':
+        elif issue_invoice_type == 'replace':
             CmdType = int(configs.get('cmd_addInvoiceReplace'))
 
     data = {
@@ -88,13 +91,20 @@ def create_invoice_bkav(self, data,is_publish=False, origin_id=False):
                 self.message_post(body=result_data.get('MessLog'))
             if is_publish:
                 publish_invoice_bkav(self)
+                get_invoice_status(self)
             else: 
                 get_invoice_bkav(self)
+                get_invoice_status(self)
         except:
             get_invoice_bkav(self)
+            get_invoice_status(self)
 
 
 def publish_invoice_bkav(self):
+    if self.is_post_bkav:
+        return
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_publishInvoice')),
@@ -111,6 +121,7 @@ def publish_invoice_bkav(self):
     else:
         self.is_post_bkav = True
         get_invoice_bkav(self)
+        get_invoice_status(self)
 
 
 def update_invoice_bkav(self,data):
@@ -127,9 +138,12 @@ def update_invoice_bkav(self,data):
         raise ValidationError(response.get('Object'))
     else:
         get_invoice_bkav(self)
+        get_invoice_status(self)
 
 
 def get_invoice_bkav(self):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_getInvoice')),
@@ -154,6 +168,8 @@ def get_invoice_bkav(self):
 
 
 def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_cancelInvoice')),
@@ -178,6 +194,8 @@ def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
 
 
 def delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_deleteInvoice')),
@@ -199,6 +217,8 @@ def delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
 
 
 def download_invoice_bkav(self):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return
     if not self.eivoice_file:
         configs = get_bkav_config(self)
         data = {

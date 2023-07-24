@@ -212,7 +212,6 @@ class TransferNotExistsBkav(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
-            partner_id = company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -230,7 +229,9 @@ class TransferNotExistsBkav(models.Model):
                 location_get_tax_id = self.env['stock.location'].sudo().search([('code','=',check_lc_id.code),('company_id','!=', company_id.id)],limit=1).sudo()
                 uidefind.update({
                     "TaxCodeAgent": location_get_tax_id.sudo().company_id.vat if location_get_tax_id.sudo() and location_get_tax_id.sudo().company_id else '',
+                    "ReferenceNote": location_get_tax_id.sudo().company_id.name,
                 })
+                partner_id = location_get_tax_id.sudo().company_id.partner_id
             bkav_data.append({
                 "Invoice": {
                     "InvoiceTypeID": InvoiceTypeID,
@@ -287,9 +288,7 @@ class TransferNotExistsBkav(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        origin_id = False
-        is_publish = True
-        return bkav_action.create_invoice_bkav(self,data, is_publish, origin_id)
+        return bkav_action.create_invoice_bkav(self,data)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():

@@ -223,6 +223,7 @@ msgid "Default unit of measure used for all stock operations."
 msgstr ""
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_forlife_other_in_out_request__department_id
 #: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__department_id
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__department_id
 #: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
@@ -448,7 +449,7 @@ msgstr ""
 msgid ""
 "It is mandatory to enter all the commodity information before confirming the"
 " stock transfer request!"
-msgstr ""
+msgstr "Bạn cần nhập đầy đủ thông tin hàng hóa trước khi xác nhận yêu cầu điều chuyển"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__function
@@ -649,7 +650,7 @@ msgstr "Số lượng yêu cầu"
 #: code:addons/forlife_stock/models/stock_transfer_request.py:0
 #, python-format
 msgid "Plan quantity should not be less than or equal to 0 !!"
-msgstr ""
+msgstr "Số lượng yêu cầu phải lớn hơn 0"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__access_url
@@ -1333,6 +1334,7 @@ msgid "Reject/Cancel Transfer Stock Inventory"
 msgstr "Từ chối/Hủy phiếu kiểm kê cân tồn"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_forlife_other_in_out_request__create_date
 #: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__create_date
 msgid "Created on"
 msgstr "Ngày tạo"

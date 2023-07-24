@@ -16,7 +16,8 @@ class StockTransferRequest(models.Model):
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
     request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now(), required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
-    request_employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
+    request_employee_id = fields.Many2one('hr.employee', string="Employee")
+    user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
     department_id = fields.Many2one('hr.department', string="Department", required=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     state = fields.Selection(
@@ -40,18 +41,20 @@ class StockTransferRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['request_employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        res['user_id'] = self.env.user.id if self.env.user else False
+        res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         res['request_date'] = datetime.now()
         if "import_file" in self.env.context:
-            if not self.env.user.employee_id:
+            if not self.env.user:
                 raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
-            if not self.env.user.employee_id.department_id:
+            if not self.env.user.department_default_id:
                 raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
-    @api.onchange('request_employee_id')
-    def _onchange_request_employee_id(self):
-        self.department_id = self.request_employee_id.department_id.id
+    @api.onchange('user_id')
+    def _onchange_user_id(self):
+        if self.user_id.department_default_id:
+            self.department_id = self.user_id.department_default_id.id
 
     @api.constrains('request_date', 'date_planned')
     def constrains_request_planed_dated(self):
@@ -95,7 +98,7 @@ class StockTransferRequest(models.Model):
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
                     dic_data = {'state': 'approved',
-                                'employee_id': record.request_employee_id.id,
+                                'employee_id': record.user_id.id,
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
                                 'stock_transfer_line': [data_stock_transfer_line]
@@ -168,10 +171,10 @@ class StockTransferRequest(models.Model):
                 raise ValidationError("You only delete a record in draft and cancel status")
         return super(StockTransferRequest, self).unlink()
 
-    @api.onchange('request_employee_id')
-    def onchange_department_id(self):
-        if self.request_employee_id.department_id:
-            self.department_id = self.request_employee_id.department_id
+    # @api.onchange('request_employee_id')
+    # def onchange_department_id(self):
+    #     if self.request_employee_id.department_id:
+    #         self.department_id = self.request_employee_id.department_id
 
     def create_stock_transfer(self):
         if len(self.ids) > 1:

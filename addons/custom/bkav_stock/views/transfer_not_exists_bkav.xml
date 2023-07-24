@@ -25,16 +25,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="detail" string="DS sản phẩm">
-                            <field name="line_ids" readonly="1">
-                                <tree editable="bottom">
-                                    <field name="parent_id" invisible="1"/>
-                                    <field name="product_id"/>
-                                    <field name="uom_id"/>
-                                    <field name="quantity"/>
-                                </tree>
-                            </field>
-                        </page>
                         <page name="transfers" string="DS điều chuyển">
                             <field name="transfer_ids" readonly="1">
                                 <tree editable="bottom">
@@ -42,6 +32,16 @@
                                     <field name="location_id"/>
                                     <field name="location_dest_id"/>
                                     <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="detail" string="DS sản phẩm">
+                            <field name="line_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="parent_id" invisible="1"/>
+                                    <field name="product_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="quantity"/>
                                 </tree>
                             </field>
                         </page>
@@ -71,6 +71,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>

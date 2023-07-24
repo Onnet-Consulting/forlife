@@ -58,22 +58,16 @@ class ImportProductionFromExcel(models.TransientModel):
         uom_uom = self.env['uom.uom'].search_read([
             ('name', 'in', uom),
         ], ['id', 'name'])
-        production_exists = self.env['forlife.production'].search_read([
-            ('code', 'in', list_production),
-        ], ['version', 'code'])
 
         department = {}
         product_dict = {}
         uom_dict = {}
-        production_exists_dict = {}
         for a in account_aa:
             department.update({a['code']: a['id']})
         for p in product:
             product_dict.update({p['barcode']: p['id']})
         for u in uom_uom:
             uom_dict.update({u['name']: u['id']})
-        for pe in production_exists:
-            production_exists_dict.update({pe['code']: pe['version']})
 
         create_material_vals = []
         for m in material:
@@ -97,6 +91,7 @@ class ImportProductionFromExcel(models.TransientModel):
             }))
 
         create_list_expense = []
+        create_list_by_production_expense = []
         for e in expense:
             if not product_dict.get(e[0], False):
                 raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', e[0]))
@@ -108,17 +103,19 @@ class ImportProductionFromExcel(models.TransientModel):
                 'rated_level': cost_norms
             }))
 
+            create_list_by_production_expense.append((0, 0, {
+                'product_id': product_dict.get(e[0], False),
+                'quantity': e[1],
+                'cost_norms': cost_norms,
+                'total_cost_norms': e[3],
+            }))
+
         create_list_order = []
         for order in orders:
             master = {}
-            if not production_exists_dict.get(order[0], False):
-                production_exists_dict[order[0]] = 1
-            else:
-                production_exists_dict[order[0]] += 1
             if order[0]:
                 master = {
                     'code': order[0],
-                    'version': production_exists_dict.get(order[0], 1),
                     'name': order[1],
                     'user_id': order[2] or self.env.user.id,
                     'created_date': order[3] or datetime.today(),
@@ -163,6 +160,6 @@ class ImportProductionFromExcel(models.TransientModel):
 
         production = self.env['forlife.production'].create(create_list_order)
         for p in production:
-            p.write({'material_import_ids': create_material_vals})
+            p.write({'material_import_ids': create_material_vals, 'expense_import_ids': create_list_by_production_expense})
         action = self.env.ref('forlife_purchase.forlife_production_action').read()[0]
         return action

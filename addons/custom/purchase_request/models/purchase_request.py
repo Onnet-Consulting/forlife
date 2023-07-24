@@ -16,8 +16,8 @@ class PurchaseRequest(models.Model):
     _description = "Purchase Request"
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
-    user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
-    employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
+    user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
+    employee_id = fields.Many2one('hr.employee', string='User Request')
     department_id = fields.Many2one('hr.department', string='Department', required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
     request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True, options={'format': 'DD-MM-YYYY'})
@@ -86,18 +86,19 @@ class PurchaseRequest(models.Model):
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
         res['employee_id'] = self.env.user.employee_id.id if self.env.user.employee_id else False
-        res['department_id'] = self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False
+        res['user_id'] = self.env.user.id if self.env.user else False
+        res['department_id'] = self.env.user.department_default_id.id if self.env.user.department_default_id else False
         if "import_file" in self.env.context:
-            if not self.env.user.employee_id:
+            if not self.env.user:
                 raise ValidationError(_("Tài khoản chưa thiết lập nhân viên"))
-            if not self.env.user.employee_id.department_id:
+            if not self.env.user.department_default_id:
                 raise ValidationError(_("Tài khoản chưa thiết lập phòng ban"))
         return res
 
-    @api.onchange('employee_id')
-    def onchange_department_id(self):
-        if self.employee_id.department_id:
-            self.department_id = self.employee_id.department_id
+    @api.onchange('user_id')
+    def onchange_user_id(self):
+        if self.user_id.department_default_id:
+            self.department_id = self.user_id.department_default_id.id
 
     def submit_action(self):
         for record in self:
@@ -356,9 +357,9 @@ class PurchaseRequestLine(models.Model):
     def constrains_purchase_quantity(self):
         for item in self:
             if item.purchase_quantity <= 0:
-                raise ValidationError("Quantity purchase must be greater than 0!")
+                raise ValidationError(_("Quantity purchase must be greater than 0!"))
             if item.exchange_quantity <= 0:
-                raise ValidationError('Exchange quantity must be greater than 0!')
+                raise ValidationError(_('Exchange quantity must be greater than 0!'))
 
     is_all_line = fields.Boolean('', compute='_compute_is_all_line', store=1)
 
