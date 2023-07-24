@@ -4,7 +4,7 @@
         <field name="model">forlife.production</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Forlife Production" default_order="version desc,created_date desc">
+            <tree string="Forlife Production" default_order="id desc,version desc">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="implementation_id"/>
