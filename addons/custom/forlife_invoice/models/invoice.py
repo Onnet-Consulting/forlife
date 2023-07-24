@@ -318,18 +318,21 @@ class AccountMove(models.Model):
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
     def constrains_total_vnd_amount(self):
-        if self.purchase_type != 'product':
-            invoice_relationship = self.env['account.move'].search([('purchase_order_product_id', 'in', self.purchase_order_product_id.ids)])
-            reference = []
-            for item in self.purchase_order_product_id:
-                reference.append(item.name)
-                ref_join = ', '.join(reference)
-            if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(self.purchase_order_product_id.order_line.mapped(
-                    'total_vnd_amount')):
-                raise ValidationError(
-                    _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
-                    % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
-                       sum(self.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
+        invoice_relationship = self.search(
+            [('purchase_order_product_id', 'in', self.purchase_order_product_id.ids),
+             ('purchase_type', '=', 'service')])
+        for rec in self:
+            if rec.purchase_type == 'service':
+                reference = []
+                for item in rec.purchase_order_product_id:
+                    reference.append(item.name)
+                    ref_join = ', '.join(reference)
+                if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount')):
+                    raise ValidationError(
+                        _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
+                        % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
+                           sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
+                           
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
     def constrains_quantity_line(self):

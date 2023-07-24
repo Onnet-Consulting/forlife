@@ -39,6 +39,41 @@ class SaleOrder(models.Model):
             return index_list
         return []
 
+    def get_customer_promotion_nhanh(self, rec, ln):
+        if rec.source_record:
+            res_id = f'product.category,{ln.product_id.categ_id.id}'
+            ir_property = self.env['ir.property'].search([
+                ('name', 'in', ['property_account_expense_categ_id','product_gift_account_id','discount_account_id','promotion_account_id']),
+                ('res_id', '=', res_id),
+                ('company_id', '=', rec.company_id.id)
+            ])
+            property_account_expense_categ_id = None
+            property_promotion_account_id = None
+            property_discount_account_id = None
+            property_product_gift_account_id = None
+            for ir in ir_property:
+                if ir.name == 'property_account_expense_categ_id':
+                    property_account_expense_categ_id = str(ir.value_reference).replace("account.account,", "")
+
+                if ir.name == 'product_gift_account_id':
+                    property_product_gift_account_id = str(ir.value_reference).replace("account.account,", "")
+
+                if ir.name == 'discount_account_id':
+                    property_discount_account_id = str(ir.value_reference).replace("account.account,", "")
+
+                if ir.name == 'promotion_account_id':
+                    property_promotion_account_id = str(ir.value_reference).replace("account.account,", "")
+
+            gift_account_id = property_product_gift_account_id or property_account_expense_categ_id
+            discount_account_id = property_discount_account_id or property_account_expense_categ_id
+            promotion_account_id = property_promotion_account_id or property_account_expense_categ_id
+        else:
+            gift_account_id = ln.product_id.categ_id.product_gift_account_id.id or ln.product_id.categ_id.property_account_expense_categ_id.id
+            discount_account_id = ln.product_id.categ_id.discount_account_id.id or ln.product_id.categ_id.property_account_expense_categ_id.id
+            promotion_account_id = ln.product_id.categ_id.promotion_account_id.id or ln.product_id.categ_id.property_account_expense_categ_id.id
+
+        return gift_account_id, discount_account_id, promotion_account_id
+
     def check_sale_promotion(self):
         for rec in self:
             if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
@@ -133,17 +168,18 @@ class SaleOrder(models.Model):
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
-                        gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                        discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        # gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        # discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
 
-                        promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        # promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        gift_account_id, discount_account_id, promotion_account_id = self.get_customer_promotion_nhanh(rec, ln)
                         # Ưu tiên 4
                         if not has_vip and ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
                                 'promotion_type': 'discount',
-                                'account_id': discount_account_id and discount_account_id.id,
+                                'account_id': discount_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp"
                             })]
@@ -154,7 +190,7 @@ class SaleOrder(models.Model):
                                 'product_id': ln.product_id.id,
                                 'value': diff_price,
                                 'promotion_type': 'diff_price',
-                                'account_id': promotion_account_id and promotion_account_id.id,
+                                'account_id': promotion_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá"
                             })]
@@ -163,14 +199,30 @@ class SaleOrder(models.Model):
                     # Nhanh shipping fee
                     if rec.nhanh_shipping_fee and rec.nhanh_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_shipping_fee')
-                        account_id = product_id and product_id.property_account_income_id
+                        try:
+                            if rec.source_record:
+                                res_id = f'product.template,{product_id.product_tmpl_id.id}'
+                                ir_property = self.env['ir.property'].search([
+                                    ('name', '=', 'property_account_income_id'),
+                                    ('res_id', '=', res_id),
+                                    ('company_id', '=', rec.company_id.id)
+                                ], limit=1)
+                                if ir_property:
+                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                else:
+                                    account_id = None
+                            else:
+                                account_id = product_id.property_account_income_id.id
+                        except Exception as e:
+                            account_id = None
+                        
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
-                            'account_id': account_id and account_id.id,
+                            'account_id': account_id,
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển của nhà vận chuyển"
                         })]
@@ -178,14 +230,33 @@ class SaleOrder(models.Model):
                     # Customer shipping fee
                     if rec.nhanh_customer_shipping_fee and rec.nhanh_customer_shipping_fee > 0:
                         product_id = self.env.ref('forlife_sale_promotion.product_product_promotion_customer_shipping_fee')
-                        account_id = product_id and product_id.property_account_expense_id
+
+                        try:
+                            if rec.source_record:
+                                res_id = f'product.template,{product_id.product_tmpl_id.id}'
+                                ir_property = self.env['ir.property'].search([
+                                    ('name', '=', 'property_account_expense_id'),
+                                    ('res_id', '=', res_id),
+                                    ('company_id', '=', rec.company_id.id)
+                                ], limit=1)
+                                if ir_property:
+                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                else:
+                                    account_id = None
+                            else:
+                                account_id = product_id.property_account_expense_id
+                        except Exception as e:
+                            account_id = None
+
+
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
+
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
-                            'account_id': account_id and account_id.id,
+                            'account_id': account_id,
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển của nhà vận chuyển"
                         })]
