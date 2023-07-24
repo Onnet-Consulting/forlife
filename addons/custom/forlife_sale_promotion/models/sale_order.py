@@ -218,6 +218,7 @@ class SaleOrder(models.Model):
                         
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
+                            
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
@@ -250,6 +251,7 @@ class SaleOrder(models.Model):
 
                         if not account_id:
                             raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
+
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
