@@ -26,7 +26,19 @@ class StockPicking(models.Model):
         if not self:
             return
         invoice_line_ids = []
+        promotion_ids = []
         for line in self.move_ids:
+            if self.sale_id.x_origin and self.sale_id.x_origin.promotion_ids:
+                promotion_id = self.sale_id.x_origin.promotion_ids.filtered(lambda x: x.product_id.id == line.product_id.id)
+                if promotion_id and promotion_id.product_uom_qty:
+                    promotion_ids.append((0, 0, {
+                        "product_id": promotion_id.product_id.id,
+                        "value": - (promotion_id.value / promotion_id.product_uom_qty) * line.quantity_done,
+                        "promotion_type": promotion_id.promotion_type,
+                        "account_id": promotion_id.account_id.id,
+                        "analytic_account_id": promotion_id.analytic_account_id.id,
+                        "description": promotion_id.description,
+                    }))
             invoice_line = {
                 'product_id': line.product_id.id,
                 'name': line.product_id.name,
@@ -51,6 +63,7 @@ class StockPicking(models.Model):
             'partner_id': self[0].partner_id.id,
             'move_type': 'out_refund',
             'invoice_line_ids': invoice_line_ids,
+            'promotion_ids': promotion_ids,
             'invoice_origin': line.sale_line_id.order_id.name
         }
         invoice_id = self.env['account.move'].create(vals)
@@ -79,7 +92,13 @@ class StockPicking(models.Model):
                     lambda r: r.picking_type_id == self.sale_id.warehouse_id.out_type_id and r.state == "done"
                 )
                 if len(picking_out_done) == len(picking_out):
-                        self.sale_id._create_invoices().action_post()
+                    advance_payment = self.env['sale.advance.payment.inv'].create({
+                        'sale_order_ids': [(6, 0, self.sale_id.ids)],
+                        'advance_payment_method': 'delivered',
+                        'deduct_down_payments': True
+                    })
+                    invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
+                    invoice_id.action_post()
 
         except Exception as e:
             pass

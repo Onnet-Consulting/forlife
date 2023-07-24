@@ -5,7 +5,6 @@ class StockPicking(models.Model):
 
     sale_source_record = fields.Boolean(
         string="Đơn hàng từ nhanh", 
-        related='sale_id.source_record', 
-        store=True
+        related='sale_id.source_record'
     )
 

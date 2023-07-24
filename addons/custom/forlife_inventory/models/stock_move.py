@@ -2,7 +2,6 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
 
-
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
@@ -40,6 +39,9 @@ class StockMove(models.Model):
                     raise UserError(f'Chưa cấu hình tài khoản kí gửi cho địa điểm {self.location_id.name_get()[0][1]}')
                 rslt['debit_line_vals']['account_id'] = self.location_id.account_stock_give.id
                 rslt['credit_line_vals']['account_id'] = self.product_id.categ_id.property_stock_valuation_account_id.id
+        po = self.picking_id.purchase_id
+        if po and not po.is_inter_company and po.type_po_cost == 'cost' and po.location_id.id_deposit:
+            rslt['debit_line_vals']['account_id'] = po.location_id.account_stock_give.id
         return rslt
 
     @api.model

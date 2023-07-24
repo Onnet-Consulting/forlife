@@ -16,7 +16,7 @@ TRANSACTION_DETAIL_TITLE = ['STT', 'Mã vạch', 'Tên sản phẩm', 'Đơn v�
 
 class ReportNum17(models.TransientModel):
     _name = 'report.num17'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'export.excel.client']
     _description = 'Invoice sales and refund list'
 
     lock_date = fields.Date('Lock date')
@@ -91,18 +91,23 @@ with po_datas as (select po.id  as po_id,
                            greatest(pol.qty, 0)::float                                    as sl_mua,
                            abs(least(pol.qty, 0))::float                                  as sl_tra,
                            coalesce(pol.original_price, 0)::float                         as gia_ban,
-                           abs(case
-                                when disc.type = 'point' then disc.recipe * 1000
-                                when disc.type = 'ctkm' then coalesce(disc.discounted_amount, 0)
-                                else coalesce(disc.recipe, 0)
-                               end)::float                                                as tien_giam_gia,
-                           (pul.discount_amount * pol.qty)::float                         as tien_the_gg
+                           coalesce((select sum(
+                                                    case
+                                                        when type = 'point' then recipe * 1000
+                                                        when type = 'ctkm' then discounted_amount
+                                                        else recipe
+                                                        end
+                                                )
+                                     from pos_order_line_discount_details
+                                     where pos_order_line_id = pol.id), 0)::float           as tien_giam_gia,
+                           coalesce((select sum(pul.discount_amount * pol.qty)
+                                     from promotion_usage_line pul
+                                     where pul.order_line_id = pol.id
+                                       and pul.code_id notnull), 0)::float                  as tien_the_gg
                     from pos_order_line pol
                              join product_product pp on pp.id = pol.product_id
                              join product_template pt on pt.id = pp.product_tmpl_id
                              join uom_uom uom on uom.id = pt.uom_id
-                             left join pos_order_line_discount_details disc on disc.pos_order_line_id = pol.id
-                             left join promotion_usage_line pul on pul.order_line_id = pol.id and pul.code_id notnull
                     where pol.id in (select distinct pol_id from po_datas)
                     order by pol.id, num),
      chi_tiet_s as (select po_id                            as po_id,
