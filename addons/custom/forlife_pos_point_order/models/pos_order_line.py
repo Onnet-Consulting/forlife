@@ -94,7 +94,7 @@ class PosOrderLine(models.Model):
                 else:
                     if dict_products_points:
                         for key, val in dict_products_points.items():
-                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.product_id.is_product_auto is False:
+                            if rec.product_id in key and rec.subtotal_paid > 0 and rec.product_id.is_product_auto is False:
                                 if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
                                     rec.point_addition = int(dict_products_points[key]) * rec.qty
                                 elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
