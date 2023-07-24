@@ -16,7 +16,7 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
     user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
-    employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
+    employee_id = fields.Many2one('hr.employee', string='User Request')
     department_id = fields.Many2one('hr.department', string='Department', required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True)
