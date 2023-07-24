@@ -7,15 +7,15 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     stock_ids = fields.Many2many('stock.warehouse', string='Stock Warehouse')
-    stock_default_id = fields.Many2one('stock.warehouse', string='Stock Warehouse Default')
+    stock_default_id = fields.Many2one('stock.warehouse', string='Stock Warehouse Default', company_dependent=True)
     brand_ids = fields.Many2many('res.brand', string='Branch')
-    brand_default_id = fields.Many2one('res.brand', string='Branch Default')
+    brand_default_id = fields.Many2one('res.brand', string='Branch Default', company_dependent=True)
     department_ids = fields.Many2many('hr.department', string='Department')
-    department_default_id = fields.Many2one('hr.department', string='Department Default')
+    department_default_id = fields.Many2one('hr.department', string='Department Default', company_dependent=True)
     team_ids = fields.Many2many('hr.team', string='Team')
-    team_default_id = fields.Many2one('hr.team', string='Team Default')
+    team_default_id = fields.Many2one('hr.team', string='Team Default', company_dependent=True)
     store_ids = fields.Many2many('store', string='Store')
-    store_default_id = fields.Many2one('store', string='Store Default')
+    store_default_id = fields.Many2one('store', string='Store Default', company_dependent=True)
 
     @api.model
     def get_department(self):
