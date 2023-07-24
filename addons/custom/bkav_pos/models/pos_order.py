@@ -71,10 +71,10 @@ class PosOrderBKAV(models.Model):
             return
         return bkav_action.get_invoice_identify(self)
 
-    def getting_invoice_status(self):
+    def get_invoice_status(self):
         if not self._check_info_before_bkav():
             return
-        return bkav_action.getting_invoice_status(self)
+        return bkav_action.get_invoice_status(self)
     
     def _check_info_before_bkav(self):
         if not self.invoice_info_company_name or not self.invoice_info_address or not self.invoice_info_tax_number:
