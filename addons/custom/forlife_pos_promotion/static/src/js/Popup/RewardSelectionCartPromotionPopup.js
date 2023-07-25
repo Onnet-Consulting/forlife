@@ -10,7 +10,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     const core = require('web.core');
     const _t = core._t;
 
-    const { useState, onWillUnmount, onWillDestroy } = owl;
+    const { useState, onWillUnmount, onWillDestroy, onMounted, onRendered } = owl;
 
     class RewardSelectionCartPromotionPopup extends PosComponent {
 
@@ -40,7 +40,18 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                     this.state.program.isSelected = false;
                 }
             });
-
+//            Tính năng focus vào ô input, phải tìm đúng node input vừa hành động để focus
+//            onRendered(() => {
+//                let rewardLine = this.state.reward_line_vals
+//                                    .find(reward => this.getSelectedQtyOfLine(reward) < reward.line.quantity && reward.quantity > 0);
+//                if (rewardLine && this.state.program.executingPro && this.state.program.executingPro.str_id == this.state.program.program.str_id) {
+//                    let selectStr = `#quantity-${rewardLine.line.cid}p${this.state.program.program.str_id}`;
+//                    let qtyInput = $(selectStr);
+//                    if (qtyInput.length) {
+//                        qtyInput.focus();
+//                    };
+//                };
+            });
         }
 
         hasNoDisabledNoSelectedReward() {
@@ -255,10 +266,16 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             if (currentLine.isSelected) {
                 this.state.program.isSelected = true;
                 this._computeOnchangeQty(currentLine, 1);
+//                this.state.programOptions.forEach(op => {
+//                    op.executingPro = this.state.program.program;
+//                });
             } else {
                 if (this.selectedQtyOnProgram() == 0) {
                     this.state.program.isSelected = false;
                 };
+//                this.state.programOptions.forEach(op => {
+//                    op.executingPro = null;
+//                });
             };
 
         }
