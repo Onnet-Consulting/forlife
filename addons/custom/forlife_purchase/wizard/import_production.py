@@ -163,4 +163,15 @@ class ImportProductionFromExcel(models.TransientModel):
             p.write({'material_import_ids': create_material_vals, 'expense_import_ids': create_list_by_production_expense})
         action = self.env.ref('forlife_purchase.forlife_production_action').read()[0]
         action['target'] = 'main'
-        return action
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': 'Đã tạo thành công 1 bản ghi',
+                'type': 'success',
+                'sticky': False,
+                'next': action,
+            }
+        }
+
