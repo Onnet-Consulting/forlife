@@ -59,10 +59,10 @@ class PosOrder(models.Model):
         #         if l[2]['price_subtotal_incl_refund']:
         #             l[2]['price_unit'] = l[2]['price_unit_refund']
         for l in order['data']['lines']:
-            if l[2]['money_reduce_from_product_defective'] >0:
+            if l[2].get('money_reduce_from_product_defective', 0) > 0:
                 l[2]['price_subtotal'] = l[2]['price_subtotal'] - l[2]['money_reduce_from_product_defective']
                 l[2]['price_unit'] = l[2]['price_unit'] - l[2]['money_reduce_from_product_defective']
-            if l[2]['handle_change_refund_price'] > 0:
+            if l[2].get('handle_change_refund_price', 0) > 0:
                 l[2]['discount_details_lines'] = [(0, 0, {
                     'type': 'change_refund',
                     'recipe': -l[2]['handle_change_refund_price']
