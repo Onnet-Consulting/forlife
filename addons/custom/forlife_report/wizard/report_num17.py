@@ -64,6 +64,7 @@ with po_datas as (select po.id  as po_id,
                     and po.company_id = any (array {allowed_company})
                     and pt.detailed_type <> 'service'
                     and (pt.voucher = false or pt.voucher is null)
+                    and pol.qty <> 0
                     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
                     {order_filter_condition}
                     and po.session_id in (select id
@@ -91,7 +92,7 @@ with po_datas as (select po.id  as po_id,
                            greatest(pol.qty, 0)::float                                    as sl_mua,
                            abs(least(pol.qty, 0))::float                                  as sl_tra,
                            coalesce(pol.original_price, 0)::float                         as gia_ban,
-                           coalesce((select sum(
+                           coalesce(abs((select sum(
                                                     case
                                                         when type = 'point' then recipe * 1000
                                                         when type = 'ctkm' then discounted_amount
@@ -99,11 +100,15 @@ with po_datas as (select po.id  as po_id,
                                                         end
                                                 )
                                      from pos_order_line_discount_details
-                                     where pos_order_line_id = pol.id), 0)::float           as tien_giam_gia,
+                                     where pos_order_line_id = pol.id)), 0)::float          as tien_giam_gia,
                            coalesce((select sum(pul.discount_amount * pol.qty)
                                      from promotion_usage_line pul
+                                        join promotion_program prp on prp.id = pul.program_id and prp.promotion_type = 'code'
                                      where pul.order_line_id = pol.id
-                                       and pul.code_id notnull), 0)::float                  as tien_the_gg
+                                       and pul.code_id notnull), 0)::float                  as tien_the_gg,
+                           coalesce((select sum(detail.recipe * 1000)
+                                     from pos_order_line_discount_details detail
+                                     where detail.pos_order_line_id = pol.id and type = 'point'), 0)::float as tru_tich_luy
                     from pos_order_line pol
                              join product_product pp on pp.id = pol.product_id
                              join product_template pt on pt.id = pp.product_tmpl_id
@@ -120,7 +125,8 @@ with po_datas as (select po.id  as po_id,
                            sum(sl_mua * gia_ban - (sl_tra * gia_ban) + (
                                 case when sl_tra > 0 then tien_giam_gia else 0 end))::float            as cong,
                            sum(case when sl_mua > 0 then tien_giam_gia else 0 end)::float              as tien_giam_gia,
-                           sum(tien_the_gg)::float                                                     as tien_the_gg
+                           sum(tien_the_gg)::float                                                     as tien_the_gg,
+                           sum(tru_tich_luy)::float                                                     as tru_tich_luy
                     from chi_tiet_x
                     group by po_id)
 """
@@ -153,12 +159,7 @@ select row_number() over (order by po.id)                                       
        coalesce((select sum(points_fl_order)
                  from partner_history_point
                  where pos_order_id = po.id), 0) * 1000                                      as tich_luy_hd,
-       (select coalesce(sum(points_used), 0) * 1000
-        from (select points_used
-              from partner_history_point
-              where store = '{store_key}'
-                and date_order < po.date_order
-                and partner_id = po.partner_id) as xx)                                       as tru_tich_luy,
+       sl_x.tru_tich_luy                                                                     as tru_tich_luy,
        coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
        coalesce(po.amount_total, 0)::float                                                   as phai_thu,
        coalesce((select sum(amount)
