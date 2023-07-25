@@ -81,7 +81,7 @@ class ProductTemplate(models.Model):
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
                     "price": price,
-                    "shippingWeight": 200,
+                    "shippingWeight": res.weight if res.weight > 0 else 200,
                     "status": 'New'
                 }]
 
@@ -125,7 +125,8 @@ class ProductTemplate(models.Model):
             'barcode',
             'list_price',
             'brand_id',
-            'categ_id'
+            'categ_id',
+            'weight'
         ]
 
         last_fields = set(require_fields) - set(fields_up)
@@ -149,7 +150,7 @@ class ProductTemplate(models.Model):
                     "barcode": item.barcode if item.barcode else '',
                     "importPrice": item.list_price,
                     "price": price,
-                    "shippingWeight": 200,
+                    "shippingWeight": res.weight if res.weight > 0 else 200,
                     "status": 'New'
                 })
 
@@ -179,7 +180,7 @@ class ProductTemplate(models.Model):
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
                 "price": item.list_price,
-                "shippingWeight": 200,
+                "shippingWeight": res.weight if res.weight > 0 else 200,
                 "status": 'Inactive'
             })
         if not data:
@@ -234,7 +235,7 @@ class ProductTemplate(models.Model):
             "barcode": self.barcode if self.barcode else '',
             "importPrice": self.list_price,
             "price": price,
-            "shippingWeight": 200,
+            "shippingWeight": res.weight if res.weight > 0 else 200,
             "status": 'New'
         })
         self.sudo().with_delay(
