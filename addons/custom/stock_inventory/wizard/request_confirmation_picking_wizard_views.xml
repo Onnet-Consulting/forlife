@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="request_confirmation_picking_wizard_view_form" model="ir.ui.view">
+            <field name="name">request_confirmation_picking_wizard_view_form</field>
+            <field name="model">request.confirmation.picking.wizard</field>
+            <field name="arch" type="xml">
+                <form string="request_confirmation_picking_wizard_form">
+                    <sheet>
+                        <h2>Vui lòng xác nhận phiếu kho để tiếp tục thực hiện quá trình kiểm kê</h2>
+                        <separator string="Danh sách mã phiếu kho cần xác nhận"/>
+                        <field name="name"/>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Đồng ý" class="oe_highlight"/>
+                        <button name="btn_continue" type="object" string="Tiếp tục" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="request_confirmation_picking_wizard_action" model="ir.actions.act_window">
+            <field name="name">Cảnh báo</field>
+            <field name="res_model">request.confirmation.picking.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

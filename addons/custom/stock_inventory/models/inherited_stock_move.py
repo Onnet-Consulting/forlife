@@ -7,3 +7,4 @@ class StockMove(models.Model):
     _inherit = "stock.move"
 
     inventory_id = fields.Many2one('stock.inventory', 'Inventory', check_company=True)
+    inv_state = fields.Char('Inventory state')
