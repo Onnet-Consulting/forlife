@@ -7,3 +7,10 @@ class ForlifeReasonType(models.Model):
 
     name = fields.Char(string="Name")
     code = fields.Char(string="Code")
+    company_id = fields.Many2one('res.company',
+                                 string='Công ty',
+                                 default=lambda self: self.env.company)
+
+    _sql_constraints = [
+        ('code_company_uniq', 'unique(code, company_id)', 'The code of the reason type must be unique per company!')
+    ]
