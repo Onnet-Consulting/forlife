@@ -90,8 +90,9 @@ class ProductCombo(models.Model):
                         combo_ids = str(tuple(combo_ids)).replace(',', '')
                     else:
                         combo_ids = tuple(combo_ids)
-                sql_get_all_product_in_combo = f"SELECT pc.id as combo_id, pcl.product_id as product_tmpl_id, pcl.quantity  FROM product_combo pc " \
+                sql_get_all_product_in_combo = f"SELECT pc.id as combo_id, pcl.product_id as product_tmpl_id, pcl.quantity, pt.name as product_name  FROM product_combo pc " \
                                                f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
+                                               f" JOIN product_template pt on pt.id = pcl.product_id " \
                                                f" WHERE pc.id in {combo_ids}"
                 self._cr.execute(sql_get_all_product_in_combo)
                 product_ids_fetch = self._cr.dictfetchall()

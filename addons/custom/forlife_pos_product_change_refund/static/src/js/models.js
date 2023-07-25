@@ -83,6 +83,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             }
             if(options.sku_code){
                 orderline.sku_code = options.sku_code;
+            }
             if (options.original_price !== 0 && orderline.product.is_product_auto) {
                 orderline._set_original_price(options.original_price);
             }
