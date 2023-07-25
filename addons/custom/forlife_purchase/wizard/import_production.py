@@ -162,4 +162,5 @@ class ImportProductionFromExcel(models.TransientModel):
         for p in production:
             p.write({'material_import_ids': create_material_vals, 'expense_import_ids': create_list_by_production_expense})
         action = self.env.ref('forlife_purchase.forlife_production_action').read()[0]
+        action['target'] = 'main'
         return action

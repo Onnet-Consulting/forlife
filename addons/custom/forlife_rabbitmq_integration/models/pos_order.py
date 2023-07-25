@@ -22,7 +22,7 @@ class PosOrder(models.Model):
             'products': [
                 {
                     'product_id': order_line.product_id.id,
-                    'sku': order_line.product_id.default_code or None,
+                    'sku': order_line.product_id.barcode or None,
                     'name': order_line.product_id.name or None,
                     'quantity': order_line.qty,
                     'order_price': order_line.price_unit,

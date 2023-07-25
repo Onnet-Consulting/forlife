@@ -8,3 +8,5 @@ class StockPicking(models.Model):
         related='sale_id.source_record'
     )
 
+    nhanh_id = fields.Char(string='Id Nhanh.vn', related='sale_id.nhanh_id')
+
