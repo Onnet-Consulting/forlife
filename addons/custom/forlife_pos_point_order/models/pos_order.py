@@ -229,7 +229,7 @@ class PosOrder(models.Model):
                 if not rec.is_refund_order and not rec.is_change_order:
                     for pro in rec.lines:
                         if pro.product_id.id in valid_product_ids:
-                            valid_money_product += pro.price_subtotal_incl
+                            valid_money_product += pro.subtotal_paid
 
                     money_value = valid_money_payment_method - valid_money_product  # Z
                     if money_value < 0:
@@ -247,9 +247,9 @@ class PosOrder(models.Model):
                         rec.point_event_order = 0
                 else:
                     # rec.point_order = 999
-                    total_price_refund_product = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl < 0).mapped('price_subtotal_incl'))  # X1
-                    total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
-                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0 and x.product_id.id in valid_product_ids).mapped('price_subtotal_incl'))  # Y
+                    total_price_refund_product = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.subtotal_paid < 0 and not x.is_promotion).mapped('subtotal_paid'))  # X1
+                    total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True and not x.is_promotion).mapped('subtotal_paid'))  # X2
+                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.subtotal_paid > 0 and x.product_id.id in valid_product_ids and not x.is_promotion).mapped('subtotal_paid'))  # Y
                     money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
                     rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:

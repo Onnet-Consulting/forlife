@@ -2740,18 +2740,11 @@ class StockPicking(models.Model):
 
     def check_quant_goods_import(self, po):
         self.ensure_one()
+        material_line_ids = po.order_line_production_order.purchase_order_line_material_line_ids
+        material_product_ids = material_line_ids.filtered(lambda x: not x.product_id.x_type_cost_product and x.product_id.detailed_type == 'product').product_id.ids
+        if not material_product_ids:
+            return
         if self.state == 'done':
-            material_product_ids = [
-                polml.product_id.id
-                for polml in self.env['purchase.order.line.material.line'].sudo().search([
-                    ('purchase_order_line_id', 'in', po.order_line_production_order.ids),
-                    ('product_id.product_tmpl_id.x_type_cost_product', '=', False),
-                    ('product_id.product_tmpl_id.detailed_type', '=', 'product'),
-                    ('product_id.detailed_type', '=', 'product')
-                ])
-            ]
-            if not material_product_ids:
-                return
             product_ids = [
                 (quant['product_id'][0], quant['quantity'] or 0)
                 for quant in self.env['stock.quant'].read_group(

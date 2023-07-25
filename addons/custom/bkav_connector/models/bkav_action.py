@@ -7,13 +7,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def get_invoice_identify(self):
-    invoice_form = self.invoice_form or ''
-    invoice_serial = self.invoice_serial or ''
-    invoice_no = self.invoice_no or ''
-    return f"[{invoice_form}]_[{invoice_serial}]_[{invoice_no}]"
-
-
 def get_bkav_config(self):
     return {
         'bkav_url': self.env['ir.config_parameter'].sudo().get_param('bkav.url'),
@@ -34,6 +27,13 @@ def get_bkav_config(self):
     }
 
 
+def get_invoice_identify(self):
+    invoice_form = self.invoice_form or ''
+    invoice_serial = self.invoice_serial or ''
+    invoice_no = self.invoice_no or ''
+    return f"[{invoice_form}]_[{invoice_serial}]_[{invoice_no}]"
+
+
 def get_invoice_status(self):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
@@ -51,16 +51,16 @@ def get_invoice_status(self):
         self._compute_data_compare_status()
 
 
-def create_invoice_bkav(self,data,is_publish=False,origin_id=False):
+def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_type=''):
     configs = get_bkav_config(self)
     _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
     CmdType = int(configs.get('cmd_addInvoice'))
-    if 'issue_invoice_type' in self:
-        if self.issue_invoice_type in ('adjust', 'replace') and not origin_id and not origin_id.invoice_no:
+    if issue_invoice_type:
+        if issue_invoice_type in ('adjust', 'replace') and (not origin_id or not origin_id.invoice_no):
             raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
-        if self.issue_invoice_type == 'adjust':
+        if issue_invoice_type == 'adjust':
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
-        elif self.issue_invoice_type == 'replace':
+        elif issue_invoice_type == 'replace':
             CmdType = int(configs.get('cmd_addInvoiceReplace'))
 
     data = {

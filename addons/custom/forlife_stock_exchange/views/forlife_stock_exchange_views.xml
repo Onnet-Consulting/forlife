@@ -20,7 +20,7 @@
             </xpath>
 
             <xpath expr="//field[@id='source_reason']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)], 'readonly': ['|', ('state', '=', 'done'), ('exchange_code', '!=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)], 'readonly': [('state', '=', 'done')]}</attribute>
             </xpath>
 
             <xpath expr="//field[@id='source_location']" position="attributes">
@@ -41,6 +41,15 @@
 
             <xpath expr="//field[@name='amount_total']" position="before">
                 <field name="price_unit" id="exchange_price_unit" force_save="1" attrs="{'column_invisible': [('parent.exchange_code', '=', False)], 'readonly': [('parent.exchange_code', 'in', ('incoming', 'outgoing'))]}"/>
+            </xpath>
+
+            <xpath expr="//page[@name='operations']//field[@name='reason_type_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='operations']//field[@name='reason_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
 
         </field>
