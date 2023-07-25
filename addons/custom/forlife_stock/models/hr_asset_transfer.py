@@ -8,11 +8,10 @@ class HrAssetTransfer(models.Model):
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
 
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
-
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
-    user_id = fields.Many2one('res.users', string='Người tạo')
-    department_id = fields.Many2one('hr.department', string="Department", related='user_id.department_id')
+    user_id = fields.Many2one('res.users', string='Người tạo', default=lambda self: self.env.user.id)
+    department_id = fields.Many2one('hr.department', string="Department", related='user_id.department_default_id')
     note = fields.Text()
     asset_date = fields.Date(string="Create Date", default=fields.Date.context_today)
     state = fields.Selection(
