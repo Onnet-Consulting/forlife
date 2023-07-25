@@ -51,7 +51,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 //                        qtyInput.focus();
 //                    };
 //                };
-            });
+//            });
         }
 
         hasNoDisabledNoSelectedReward() {
