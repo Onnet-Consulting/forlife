@@ -85,8 +85,9 @@ class StockPicking(models.Model):
                     lines_npl.append(data)
         else:
             for move in self.move_ids:
-                for material_line_id in move.purchase_line_id.origin_po_line_id.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product):
-                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, move.purchase_line_id.origin_po_line_id)
+                purchase_line_id = move.purchase_line_id.origin_po_line_id if move.purchase_line_id.origin_po_line_id else move.purchase_line_id
+                for material_line_id in purchase_line_id.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product):
+                    data = self._prepare_material_lines(move, material_line_id, npl_location_id, purchase_line_id)
                     lines_npl.append(data)
 
         if lines_npl:
