@@ -36,7 +36,7 @@ class NhanhClient:
 
     def get_brand(self):
         config = self.cls.env['nhanh.brand.config'].sudo().search([('nhanh_business_id', '=', self.cls.business_id)], limit=1)
-        
+        # config = self.cls.env['nhanh.brand.config'].sudo().search([('id', '=', 6)], limit=1)
         return config.brand_id
 
     def get_partner_group(self):
@@ -145,6 +145,155 @@ class NhanhClient:
 
             self.cls.env['store.first.order'].sudo().create([vals_list])
 
+    def get_order_line(self, order, brand_id, location_id, is_create=False):
+        order_line = []
+        for item in order['products']:
+            product_id = self.cls.env['product.product'].sudo().search([
+                ('nhanh_id', '=', item.get('productId'))
+            ],limit=1)
+
+            if not product_id and not is_create:
+                raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
+            if not product_id and is_create: 
+                uom = self.cls.env.ref('uom.product_uom_unit').id
+                product = self.cls.env['product.template'].create({
+                    'detailed_type': 'asset',
+                    'nhanh_id': item.get('productId'),
+                    'check_data_odoo': False,
+                    'name': item.get('productName'),
+                    'barcode': item.get('productBarcode'),
+                    'list_price': item.get('price'),
+                    'uom_id': uom,
+                    'weight': item.get('shippingWeight', 0),
+                    'responsible_id': None
+                })
+                product_id = self.cls.env['product.product'].search([
+                    ('product_tmpl_id', '=', product.id)
+                ], limit=1)
+
+            product_id.product_tmpl_id.write({
+                'brand_id': brand_id.id
+            })
+
+            order_line.append((
+                0, 0, {
+                    'product_template_id': product_id.product_tmpl_id.id, 
+                    'product_id': product_id.id,
+                    'name': product_id.name,
+                    'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
+                    'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
+                    'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                    'x_location_id': location_id.id,
+                    # 'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
+                       #     'discount') else 0,
+                    'x_cart_discount_fixed_price': float(item.get('discount')) * float(
+                           item.get('quantity')) if item.get('discount') else 0}
+            ))
+        return order_line
+
+    def get_sales_staff(self, order):
+        
+        return self.cls.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
+
+    def get_sales_team(self, order):
+        return self.cls.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
+
+    def get_and_create_delivery_carrier(self, order):
+        delivery_carrier_id = self.cls.env['delivery.carrier'].sudo().search(
+            [('nhanh_id', '=', order['carrierId'])], limit=1)
+        if not delivery_carrier_id:
+            delivery_carrier_id = self.cls.env['delivery.carrier'].sudo().create({
+                'nhanh_id': order['carrierId'],
+                'name': order['carrierName'],
+                'code': order['carrierCode'],
+                'service_name': order['serviceName']
+            })
+        return delivery_carrier_id
+
+    def get_and_create_utm_source(self, order):
+        utm_source_id = self.cls.env['utm.source'].sudo().search([('x_nhanh_id', '=', order['trafficSourceId'])])
+        if not utm_source_id:
+            utm_source_id = self.cls.env['utm.source'].sudo().create({
+                'x_nhanh_id': order['trafficSourceId'],
+                'name': order['trafficSourceName'],
+            })
+
+    def get_order_data(self, order, nhanh_partner, partner, name_customer, default_company_id, location_id):
+        # sales staff
+        user_id = self.get_sales_staff(order)
+
+        # sales team
+        team_id = self.get_sales_team(order)
+        
+        
+        delivery_carrier_id = self.get_and_create_delivery_carrier(order)
+
+        # utm source
+        utm_source_id = self.get_and_create_utm_source(order)
+
+        order_data = {
+            'nhanh_id': order['id'],
+            'partner_id': nhanh_partner.id,
+            'order_partner_id': partner.id,
+            'nhanh_shipping_fee': order['shipFee'],
+            'nhanh_customer_shipping_fee': order['customerShipFee'],
+            'source_record': True,
+            'code_coupon': order['couponCode'],
+            'state': 'draft',
+            'nhanh_order_status': order['statusCode'].lower(),
+            'name_customer': name_customer,
+            'note': order["privateDescription"],
+            'note_customer': order['description'],
+            'x_sale_chanel': 'online',
+            'user_id': user_id.id if user_id else None,
+            'team_id': team_id.id if team_id else None,
+            'company_id': default_company_id.id if default_company_id else None,
+            'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+            'delivery_carrier_id': delivery_carrier_id.id,
+            'nhanh_customer_phone': order['customerMobile'],
+            'source_id': utm_source_id.id if utm_source_id else None,
+            'x_location_id': location_id.id,
+        }
+        return order_data
+
+    def order_paid_online(self, order):
+        # Check the order is paid online or not
+        private_description = order["privateDescription"]
+        if private_description.find("#VC") != -1:
+            x_voucher = order["moneyTransfer"]
+            x = private_description.split("#VC")
+            y = x[1].strip()
+            z = y.split()
+            x_code_voucher = z[0]
+        else:
+            x_voucher = 0
+            x_code_voucher = ""
+        return x_voucher, x_code_voucher
 
 
+    def order_return_and_changed(self, order):
+        private_description = order["privateDescription"]
+        #X270941175 #N270941350
+        return_changed = None
+        if private_description.find("#X") != -1 and private_description.find("#N") != -1:
+            x = private_description.split(), 
+            return_changed = {
+                "x_is_change": True,
+            }
+            for v in x:
+                if v.find("#X") != -1 or v.find("#N") != -1:
+                    y = v.strip()
+                    if y.find("#X") != -1:
+                        z = y.replace("#X", "")
+                        origin_order_id = self.cls.env['sale.order'].sudo().search(
+                            [('nhanh_id', '=', z)], limit=1)
+                        return_changed['x_origin'] = origin_order_id.id if origin_order_id else None
+                        return_changed['nhanh_origin_id'] = z
+
+                    if y.find("#N") != -1:
+                        z = y.replace("#N", "")
+                        return_changed['nhanh_return_id'] = z
+                else:
+                    continue
+        return return_changed
 

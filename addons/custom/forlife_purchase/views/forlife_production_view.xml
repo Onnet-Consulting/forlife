@@ -5,6 +5,7 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Forlife Production" default_order="id desc,version desc">
+                <field name="active" invisible="1"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="implementation_id"/>
@@ -13,7 +14,7 @@
                 <field name="user_id"/>
                 <field name="created_date"/>
                 <field name="company_id"/>
-                <button name="action_open_history" string="History" type="object" class="oe_title"/>
+                <button name="action_open_history" attrs="{'invisible': [('active', '=', False)]}" string="History" type="object" class="oe_title"/>
             </tree>
         </field>
     </record>

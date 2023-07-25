@@ -53,94 +53,21 @@ class ForlifeProduction(models.Model):
 
     def action_approved(self):
         for record in self:
-            old_record = self.env['forlife.production'].search([('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True), ('state', '=', 'approved')], limit=1)
-            if not old_record:
-                record.write({'state': 'approved',
-                              'version': 1})
-            else:
-                record.active = False
-                value = {
-                    'code': old_record.code,
-                    'name': old_record.name,
-                    'version': old_record.version,
-                    'user_id': old_record.user_id.id,
-                    'company_id': old_record.company_id.id,
-                    'created_date': old_record.created_date,
-                    'implementation_id': old_record.implementation_id.id,
-                    'management_id': old_record.management_id.id,
-                    'production_department': old_record.production_department,
-                    'state': old_record.state,
-                    'status': old_record.status,
-                    'to_date': old_record.to_date,
-                    'brand_id': old_record.brand_id.id,
-                    'relationship_forlife_production_id': old_record.id,
-                    'forlife_production_finished_product_ids': []
-                }
-                for rec in old_record.forlife_production_finished_product_ids:
-                    value['forlife_production_finished_product_ids'].append((
-                        0, 0, {'forlife_production_id': rec.forlife_production_id.id,
-                               'product_id': rec.product_id.id,
-                               'forlife_production_name': rec.forlife_production_name,
-                               'description': rec.description,
-                               'produce_qty': rec.produce_qty,
-                               'uom_id': rec.uom_id.id,
-                               'unit_price': rec.unit_price,
-                               'stock_qty': rec.stock_qty,
-                               'remaining_qty': rec.remaining_qty,
-                               'implementation_id': rec.implementation_id.id,
-                               'management_id': rec.management_id.id,
-                               'production_department': rec.production_department,
-                               'forlife_bom_material_ids': [(
-                                   0, 0, {'forlife_production_id': line.forlife_production_id.id,
-                                          'product_id': line.product_id.id,
-                                          'description': line.description,
-                                          'quantity': line.quantity,
-                                          'uom_id': line.uom_id.id,
-                                          'production_uom_id': line.production_uom_id.id,
-                                          'conversion_coefficient': line.conversion_coefficient,
-                                          'rated_level': line.rated_level,
-                                          'loss': line.loss,
-                                          'total': line.total,
-                                          }) for line in rec.forlife_bom_material_ids],
-                               'forlife_bom_service_cost_ids': [(
-                                   0, 0, {'forlife_production_id': line.forlife_bom_id.id,
-                                          'product_id': line.product_id.id,
-                                          'rated_level': line.rated_level
-                                          }) for line in rec.forlife_bom_service_cost_ids]
-                               }))
-                history = self.env['production.history'].create(value)
-                new_value = {
-                    'code': record.code,
-                    'name': record.name,
-                    'version': old_record.version + 1,
-                    'user_id': record.user_id.id,
-                    'company_id': record.company_id.id,
-                    'created_date': record.created_date,
-                    'implementation_id': record.implementation_id.id,
-                    'management_id': record.management_id.id,
-                    'production_department': record.production_department,
-                    'produced_from_date': record.produced_from_date,
-                    'state': old_record.state,
-                    'status': old_record.status,
-                    'to_date': record.to_date,
-                    'brand_id': record.brand_id.id,
-                    'forlife_production_finished_product_ids': [(6, 0, record.forlife_production_finished_product_ids.ids)]
-                }
-                new_record = old_record.write(new_value)
-                return {
-                    'name': _('Lệnh sản xuất'),
-                    'view_mode': 'form',
-                    'view_id': self.env.ref('forlife_purchase.forlife_production_form').id,
-                    'res_model': 'forlife.production',
-                    'type': 'ir.actions.act_window',
-                    'target': 'current',
-                    'res_id': old_record.id,
-                }
+            old_record= self.env['forlife.production'].with_context(active_test=False).search([('id', '!=', record.id), ('code', '=', record.code)])
+            record.write({
+                'state': 'approved',
+                'active': True,
+                'version': len(old_record) + 1 if len(old_record) else 1
+            })
+            for old in old_record:
+                old.write({'active': False})
 
     def action_done(self):
         for record in self:
-            record.write({'check_status': True,
-                          'status': 'done'})
+            record.write({
+                'check_status': True,
+                'status': 'done'
+            })
 
     @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty', 'forlife_production_finished_product_ids.stock_qty')
     def compute_check_status(self):
@@ -166,11 +93,9 @@ class ForlifeProduction(models.Model):
         return {
             'name': 'Version',
             'type': 'ir.actions.act_window',
-            'res_model': 'production.history',
-            'views': [(self.env.ref('forlife_purchase.production_history_tree').id, 'tree'),
-                      (self.env.ref('forlife_purchase.production_history_form').id, 'form')],
+            'res_model': 'forlife.production',
             'view_mode': 'tree,form',
-            'domain': [('relationship_forlife_production_id', '=', self.id)],
+            'domain': [('code', '=', self.code), ('active', '=', False)],
             'target': 'current',
         }
 
