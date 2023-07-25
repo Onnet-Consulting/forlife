@@ -81,6 +81,8 @@
         <field name="arch" type="xml">
             <filter name="activities_upcoming_all" position="after">
                 <separator/>
+                <filter string="Đơn hàng chưa hợp lệ" name="order_state_check_promotion" domain="[('state','=','check_promotion')]"/>
+                <separator/>
                 <filter string="Đơn mới" name="nhanh_order_status_new" domain="[('nhanh_order_status','=','new')]"/>
                 <filter string="Đang xác nhận" name="nhanh_order_status_confirming" domain="[('nhanh_order_status','=','confirming')]"/>
                 <filter string="Chờ khách xác nhận" name="nhanh_order_status_customerconfirming" domain="[('nhanh_order_status','=','customerconfirming')]"/>
@@ -96,6 +98,8 @@
                 <filter string="Hết hàng" name="nhanh_order_status_soldout" domain="[('nhanh_order_status','=','soldout')]"/>
                 <filter string="Đang chuyển hoàn" name="nhanh_order_status_returning" domain="[('nhanh_order_status','=','returning')]"/>
                 <filter string="Đã chuyển hoàn" name="nhanh_order_status_returned" domain="[('nhanh_order_status','=','returned')]"/>
+                <separator/>
+                <field name="nhanh_id" string="Id Nhanh.vn" filter_domain="[('nhanh_id', 'ilike', self)]"/>
                 <separator/>
             </filter>
         </field>
@@ -109,6 +113,8 @@
         <field name="arch" type="xml">
             <filter name="activities_upcoming_all" position="after">
                 <separator/>
+                <filter string="Đơn hàng chưa hợp lệ" name="order_state_check_promotion" domain="[('state','=','check_promotion')]"/>
+                <separator/>
                 <filter string="Đơn mới" name="nhanh_order_status_new" domain="[('nhanh_order_status','=','new')]"/>
                 <filter string="Đang xác nhận" name="nhanh_order_status_confirming" domain="[('nhanh_order_status','=','confirming')]"/>
                 <filter string="Chờ khách xác nhận" name="nhanh_order_status_customerconfirming" domain="[('nhanh_order_status','=','customerconfirming')]"/>
@@ -125,6 +131,7 @@
                 <filter string="Đang chuyển hoàn" name="nhanh_order_status_returning" domain="[('nhanh_order_status','=','returning')]"/>
                 <filter string="Đã chuyển hoàn" name="nhanh_order_status_returned" domain="[('nhanh_order_status','=','returned')]"/>
                 <separator/>
+                <field name="nhanh_id" string="Id Nhanh.vn" filter_domain="[('nhanh_id', 'ilike', self)]"/>
             </filter>
         </field>
     </record>
