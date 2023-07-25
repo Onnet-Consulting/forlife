@@ -72,6 +72,8 @@ class Inventory(models.Model):
 
     move_out_count = fields.Integer(string="Dịch chuyển đi", compute='_compute_stock_move_count')
     move_in_count = fields.Integer(string="Dịch chuyển đến", compute='_compute_stock_move_count')
+    move_out_count1 = fields.Integer(string="Dịch chuyển đi 1", compute='_compute_stock_move_count')
+    move_in_count1 = fields.Integer(string="Dịch chuyển đến 1", compute='_compute_stock_move_count')
 
     detail_ids = fields.One2many('inventory.detail', 'inventory_id', string='Chi tiết đếm kiểm', copy=False, readonly=True)
     x_status = fields.Integer('Trạng thái chi tiết', default=0,
@@ -98,14 +100,15 @@ class Inventory(models.Model):
 
     def _compute_stock_move_count(self):
         for r in self:
-            r.move_out_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == r.location_id.id))
-            r.move_in_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == r.location_id.id))
+            r.move_out_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == r.location_id.id and x.inv_state == 'second_inv'))
+            r.move_in_count = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == r.location_id.id and x.inv_state == 'second_inv'))
+            r.move_out_count1 = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == r.location_id.id and x.inv_state == 'first_inv'))
+            r.move_in_count1 = len(r.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == r.location_id.id and x.inv_state == 'first_inv'))
 
     def action_view_move_out(self):
         """ Display moves raw for subcontracted product self. """
         self.ensure_one()
-        self.ensure_one()
-        move_out_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == self.location_id.id)
+        move_out_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == self.location_id.id and x.inv_state == self._context.get('state'))
         return {
             'name': _('Xuất hàng'),
             'type': 'ir.actions.act_window',
@@ -119,7 +122,7 @@ class Inventory(models.Model):
     def action_view_move_in(self):
         """ Display moves raw for subcontracted product self. """
         self.ensure_one()
-        move_in_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == self.location_id.id)
+        move_in_ids = self.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == self.location_id.id and x.inv_state == self._context.get('state'))
         return {
             'name': _('Nhập hàng'),
             'type': 'ir.actions.act_window',
@@ -143,23 +146,29 @@ class Inventory(models.Model):
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
-        if self.state == 'confirm':
-            self.action_validate()
-        else:
-            self.state = 'second_inv'
+        if self.state == 'first_inv':
+            self.action_validate('second_inv')
+        elif self.state == 'second_inv':
+            self.action_validate('done')
 
-    def action_validate(self):
+    def action_validate(self, state):
         if not self.exists():
             return
         self.ensure_one()
         if not self.user_has_groups('stock.group_stock_manager'):
             raise UserError(_("Only a stock manager can validate an inventory adjustment."))
-        if self.state != 'second_inv':
+        if self.state not in ('second_inv', 'first_inv') or state not in ('second_inv', 'done'):
             raise UserError(_(
                 "You can't validate the inventory '%s', maybe this inventory "
                 "has been already validated or isn't ready.", self.name))
-        inventory_lines = self.line_ids.filtered(lambda l: l.product_id.tracking in ['lot', 'serial'] and not l.prod_lot_id and l.theoretical_qty != l.product_qty)
-        lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
+        if state == 'second_inv':
+            inventory_lines = self.line_ids.filtered(lambda l: l.product_id.tracking in ['lot', 'serial'] and not l.prod_lot_id and l.theoretical_qty != l.x_first_qty)
+            lines = self.line_ids.filtered(lambda l: float_compare(l.x_first_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
+        elif state == 'done':
+            inventory_lines = self.line_ids.filtered(lambda l: l.product_id.tracking in ['lot', 'serial'] and not l.prod_lot_id and l.x_first_qty != l.product_qty)
+            lines = self.line_ids.filtered(lambda l: float_compare(l.product_qty, 1, precision_rounding=l.product_uom_id.rounding) > 0 and l.product_id.tracking == 'serial' and l.prod_lot_id)
+        else:
+            return False
         if inventory_lines and not lines:
             wiz_lines = [(0, 0, {'product_id': product.id, 'tracking': product.tracking}) for product in inventory_lines.mapped('product_id')]
             wiz = self.env['stock.track.confirmation'].create({'tracking_line_ids': wiz_lines})
@@ -172,22 +181,33 @@ class Inventory(models.Model):
                 'target': 'new',
                 'res_id': wiz.id,
             }
-        self._action_done()
+        self._action_done(state)
         self.line_ids._check_company()
         self._check_company()
         return True
 
-    def _action_done(self):
-        negative = next((line for line in self.mapped('line_ids') if line.product_qty < 0 and line.product_qty != line.theoretical_qty), False)
-        if negative:
-            raise UserError(_(
-                'You cannot set a negative product quantity in an inventory line:\n\t%s - qty: %s',
-                negative.product_id.display_name,
-                negative.product_qty
-            ))
-        self.action_check()
-        self.write({'state': 'done'})
-        self.post_inventory()
+    def _action_done(self, state):
+        if state == 'second_inv':
+            current_state = 'first_inv'
+            negative = next((line for line in self.mapped('line_ids') if line.x_first_qty < 0 and line.x_first_qty != line.theoretical_qty), False)
+            if negative:
+                raise UserError(_(
+                    'You cannot set a negative product quantity in an inventory line:\n\t%s - qty: %s',
+                    negative.product_id.display_name,
+                    negative.x_first_qty
+                ))
+        else:
+            current_state = 'second_inv'
+            negative = next((line for line in self.mapped('line_ids') if line.product_qty < 0 and line.product_qty != line.x_first_qty), False)
+            if negative:
+                raise UserError(_(
+                    'You cannot set a negative product quantity in an inventory line:\n\t%s - qty: %s',
+                    negative.product_id.display_name,
+                    negative.product_qty
+                ))
+        self.action_check(current_state)
+        self.write({'state': state})
+        self.post_inventory(current_state)
         return True
 
     def get_ir_sequence_inventory(self, warehouse_code=None):
@@ -217,28 +237,31 @@ class Inventory(models.Model):
         res = super(Inventory, self).create(vals_list)
         return res
 
-    def post_inventory(self):
+    def post_inventory(self, state):
         # The inventory is posted as a single step which means quants cannot be moved from an internal location to another using an inventory
         # as they will be moved to inventory loss, and other quants will be created to the encoded quant location. This is a normal behavior
         # as quants cannot be reuse from inventory location (users can still manually move the products before/after the inventory if they want).
-        stock_move_ids = self.mapped('move_ids').filtered(lambda move: move.state != 'done')._action_done()
+        stock_move_ids = self.mapped('move_ids').filtered(lambda move: move.state != 'done' and move.inv_state == state)._action_done()
         stock_move_ids.move_line_ids.write({'date': self.date})
         stock_move_ids.write({'date': self.date})
         return True
 
-    def action_check(self):
+    def action_check(self, state):
         """ Checks the inventory and computes the stock move to do """
         # tde todo: clean after _generate_moves
-        for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
+        for inventory in self.filtered(lambda x: x.state == state):
             # first remove the existing stock moves linked to this inventory
-            inventory.with_context(prefetch_fields=False).mapped('move_ids').unlink()
-            inventory.line_ids._generate_moves()
+            inventory.with_context(prefetch_fields=False).mapped('move_ids').filtered(lambda s: s.inv_state == state).unlink()
+            inventory.line_ids._generate_moves(state)
 
     def action_cancel_draft(self):
         self.sudo().mapped('move_ids')._action_cancel()
         self.sudo().line_ids.unlink()
         self.sudo().detail_ids.unlink()
         self.sudo().write({'state': 'draft', 'x_status': 0})
+        inv_sessions = self.env['inventory.session'].search([('inv_id', 'in', self.ids)])
+        if inv_sessions:
+            inv_sessions.with_context(not_update_inv=True).sudo().action_inactive_session()
 
     def action_start(self):
         self.ensure_one()
@@ -881,7 +904,7 @@ class InventoryLine(models.Model):
                     product_id = self.env['product.product'].browse(product['id'])
                     raise ValidationError(_("You can only adjust storable products.") + '\n\n%s -> %s' % (product_id.display_name, product_id.type))
 
-    def _get_move_values(self, qty, location_id, location_dest_id, out):
+    def _get_move_values(self, qty, location_id, location_dest_id, out, inv_state):
         self.ensure_one()
         return {
             'name': _('INV:') + (self.inventory_id.name or ''),
@@ -892,6 +915,7 @@ class InventoryLine(models.Model):
             'company_id': self.inventory_id.company_id.id,
             'inventory_id': self.inventory_id.id,
             'state': 'confirmed',
+            'inv_state': inv_state,
             'restrict_partner_id': self.partner_id.id,
             'location_id': location_id,
             'location_dest_id': location_dest_id,
@@ -911,18 +935,24 @@ class InventoryLine(models.Model):
     def _get_virtual_location(self):
         return self.product_id.with_company(self.company_id).property_stock_inventory
 
-    def _generate_moves(self):
+    def _generate_moves(self, state):
         vals_list = []
         for line in self:
+            if state == 'first_inv':
+                difference_qty = line.difference_qty1
+            elif state == 'second_inv':
+                difference_qty = line.difference_qty
+            else:
+                continue
             virtual_location = line._get_virtual_location()
             rounding = line.product_id.uom_id.rounding
-            if float_is_zero(line.difference_qty, precision_rounding=rounding):
+            if float_is_zero(difference_qty, precision_rounding=rounding):
                 continue
-            if line.difference_qty > 0:  # found more than expected
-                vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
+            if difference_qty > 0:  # found more than expected
+                vals = line._get_move_values(difference_qty, virtual_location.id, line.location_id.id, False, state)
                 line.create_import_export_other(vals, type_picking='import')
             else:
-                vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
+                vals = line._get_move_values(abs(difference_qty), line.location_id.id, virtual_location.id, True, state)
                 line.create_import_export_other(vals, type_picking='export')
             vals_list.append(vals)
         return self.env['stock.move'].create(vals_list)

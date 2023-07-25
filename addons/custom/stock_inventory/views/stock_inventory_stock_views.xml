@@ -170,11 +170,9 @@
             <header>
                 <button name="action_start" states="draft" string="Bắt đầu kiểm kê" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
                 <button name="clone_detail_data" type="object" class="oe_highlight" string="Xác nhận chốt tồn" attrs="{'invisible': [('state', '!=', 'waiting')]}"/>
-                <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'first_inv'), ('x_status', '!=', 2)]}" class="oe_highlight"/>
-<!--                <button name="action_open_inventory_lines" string="Tiếp tục kiểm kê" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" type="object" class="oe_highlight" groups="stock.group_stock_user"/>-->
-                <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'progress'), ('line_ids', '!=', [])]}" class="oe_highlight"/>
-<!--                <button name="action_validate" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('line_ids', '!=', [])]}" groups="stock.group_stock_manager"/>-->
-                <button name="action_validate" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'second_inv'), ('x_status', '!=', 3)]}" class="oe_highlight" groups="stock.group_stock_manager"/>
+                <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'first_inv'), ('x_status', '!=', 2)]}" class="oe_highlight" groups="stock.group_stock_manager"/>
+                <button name="action_approved_first" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'second_inv'), ('x_status', '!=', 3)]}" class="oe_highlight" groups="stock.group_stock_manager"/>
+                <button name="action_validate" string="Xác nhận lần 2" type="object" invisible="1" class="oe_highlight"/>
                 <button name="action_cancel_draft" states="cancel" string="Đưa về nháp" type="object"/>
                 <button name="action_cancel_draft" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" string="Hủy kiểm kê" type="object"
                     confirm="Nếu bạn hủy phiếu kiểm kê này, tất cả chi tiết kiểm kê của phiếu này sẽ bị xóa. Bạn có chắc chắn muốn hủy phiếu??"/>
@@ -182,16 +180,27 @@
             </header>
             <sheet>
                 <div class="oe_button_box" name="button_box">
-                    <button type="object"
+                    <button type="object" context="{'state': 'first_inv'}"
                         name="action_view_move_out"
                         class="oe_stat_button"
                         icon="fa-arrows-v" attrs="{'invisible':[('move_out_count','=', 0)]}">
-                        <field name="move_out_count" widget="statinfo" string="Xuất hàng"/>
+                        <field name="move_out_count1" widget="statinfo" string="Xuất lần 1"/>
                     </button>
-                    <button type="object"
+                    <button type="object" context="{'state': 'first_inv'}"
                         name="action_view_move_in"
                         class="oe_stat_button" icon="fa-arrows-v" attrs="{'invisible':[('move_in_count','=', 0)]}">
-                        <field name="move_in_count" widget="statinfo" string="Nhập hàng"/>
+                        <field name="move_in_count1" widget="statinfo" string="Nhập lần 1"/>
+                    </button>
+                    <button type="object" context="{'state': 'second_inv'}"
+                        name="action_view_move_out"
+                        class="oe_stat_button"
+                        icon="fa-arrows-v" attrs="{'invisible':[('move_out_count','=', 0)]}">
+                        <field name="move_out_count" widget="statinfo" string="Xuất lần 2"/>
+                    </button>
+                    <button type="object" context="{'state': 'second_inv'}"
+                        name="action_view_move_in"
+                        class="oe_stat_button" icon="fa-arrows-v" attrs="{'invisible':[('move_in_count','=', 0)]}">
+                        <field name="move_in_count" widget="statinfo" string="Nhập lần 2"/>
                     </button>
                 </div>
                 <field name="view_location_id" invisible="1"/>
