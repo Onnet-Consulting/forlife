@@ -11,7 +11,8 @@ class HrAssetTransfer(models.Model):
 
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
-    department_id = fields.Many2one('hr.department', string="Department", related='employee_id.department_id')
+    user_id = fields.Many2one('res.users', string='Người tạo')
+    department_id = fields.Many2one('hr.department', string="Department", related='user_id.department_id')
     note = fields.Text()
     asset_date = fields.Date(string="Create Date", default=fields.Date.context_today)
     state = fields.Selection(
@@ -19,13 +20,26 @@ class HrAssetTransfer(models.Model):
         string="Status",
         selection=[('draft', 'Draft'),
                    ('wait_approve', 'Wait Approve'),
-                   ('approved', 'Approved'),
+                   ('approved_1', 'Phê duyệt lần 1'),
+                   ('approved_2', 'Phê duyệt lần 2'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft', copy=False)
     hr_asset_transfer_line_ids = fields.One2many('hr.asset.transfer.line', 'hr_asset_transfer_id', string="Hr Asset Transfer", copy=True)
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
+    approve_id_1 = fields.Many2one('res.users', string='Người duyệt lần 1')
+    approve_id_2 = fields.Many2one('res.users', string='Người duyệt lần 2')
+    check_permission_approved = fields.Boolean(compute='_check_permission_approved', default=False)
+
+    def _check_permission_approved(self):
+        for rec in self:
+            if rec.state == 'wait_approve' and rec.approve_id_1 == self.env.user:
+                rec.check_permission_approved = True
+            elif rec.state == 'approved_1' and rec.approve_id_2 == self.env.user:
+                rec.check_permission_approved = True
+            else:
+                rec.check_permission_approved = False
 
     @api.model
     def default_get(self, default_fields):
@@ -52,24 +66,34 @@ class HrAssetTransfer(models.Model):
 
     def action_approved(self):
         for record in self:
-            record.write({'state': 'approved',
-                          'validate_date': fields.Datetime.now()
-                          })
+            state = 'wait_approve'
+            if record.state == 'wait_approve':
+                state = 'approved_1'
+            if record.state == 'approved_1':
+                state = 'approved_2'
+            record.write({
+                'state': state,
+                'validate_date': fields.Datetime.now()
+            })
             for item in record.hr_asset_transfer_line_ids:
-                item.asset_code.write({'employee': item.employee_to_id.id,
-                                       'dept_code': item.account_analytic_to_id.id,
-                                       'location': item.asset_location_to_id.id
-                                       })
+                item.asset_code.write({
+                    'employee': item.employee_to_id.id,
+                    'dept_code': item.account_analytic_to_id.id,
+                    'location': item.asset_location_to_id.id
+                })
 
     def action_cancel(self):
         for record in self:
-            record.write({'state': 'cancel',
-                          'cancel_date': fields.Datetime.now()})
+            record.write({
+                'state': 'cancel',
+                'cancel_date': fields.Datetime.now()
+            })
             for item in record.hr_asset_transfer_line_ids:
-                item.asset_code.write({'employee': item.employee_from_id.id,
-                                       'dept_code': item.account_analytic_from_id.id,
-                                       'location': item.asset_location_from_id.id
-                                       })
+                item.asset_code.write({
+                    'employee': item.employee_from_id.id,
+                    'dept_code': item.account_analytic_from_id.id,
+                    'location': item.asset_location_from_id.id
+                })
 
 
 class HrAssetTransferLine(models.Model):
@@ -87,6 +111,9 @@ class HrAssetTransferLine(models.Model):
     asset_location_to_id = fields.Many2one('asset.location', string="Asset Location To")
     hr_asset_transfer_id = fields.Many2one('hr.asset.transfer', ondelete='cascade', required=True)
     check_required = fields.Boolean(compute='compute_check_required')
+    quantity = fields.Integer(related='asset_code.quantity', string='Số lượng')
+    redundant = fields.Integer(string='Số lượng thừa')
+    lack = fields.Integer(string='Số lượng thiếu')
 
     @api.depends('employee_to_id', 'account_analytic_to_id', 'asset_location_to_id')
     def compute_check_required(self):
