@@ -10,7 +10,7 @@
                     <table class="card-rank-border">
                     <thead>
                         <tr class="discount-detail-header">
-                            <th/>
+                            <th>Áp dụng hạng thẻ</th>
                             <th>Product</th>
                             <th>Original price</th>
                             <th>Promotions</th>
@@ -19,13 +19,9 @@
                     </thead>
                     <tbody>
                         <t t-foreach="props.order_lines" t-as="line" t-key="line.id">
-                            <tr>
-                                <t t-if="line.apply_cr_discount">
-                                    <input type="checkbox" checked="checked" onclick="return false;" class="discount-detail-checkbox"/>
-                                </t>
-                                <t t-else="">
-                                    <input type="checkbox" onclick="return false;" class="discount-detail-checkbox"/>
-                                </t>
+                            <tr t-att-id="line.id">
+                                <input type="checkbox" name="discount" class="discount-detail-checkbox"
+                                   t-att-id="line.id" t-att-checked="'checked' ? line.apply_cr_discount : ''"/>
                                 <td class="product_name"><t t-esc="line.product_name"/></td>
                                 <td class="price"><t t-esc="env.pos.format_currency(line.price)"/></td>
                                 <td class="price"><t t-esc="env.pos.format_currency(-line.total_discounted - line.extra_card_rank_disc)"/></td>
