@@ -183,12 +183,12 @@
                     <button type="object" context="{'state': 'first_inv'}"
                         name="action_view_move_out"
                         class="oe_stat_button"
-                        icon="fa-arrows-v" attrs="{'invisible':[('move_out_count','=', 0)]}">
+                        icon="fa-arrows-v" attrs="{'invisible':[('move_out_count1','=', 0)]}">
                         <field name="move_out_count1" widget="statinfo" string="Xuất lần 1"/>
                     </button>
                     <button type="object" context="{'state': 'first_inv'}"
                         name="action_view_move_in"
-                        class="oe_stat_button" icon="fa-arrows-v" attrs="{'invisible':[('move_in_count','=', 0)]}">
+                        class="oe_stat_button" icon="fa-arrows-v" attrs="{'invisible':[('move_in_count1','=', 0)]}">
                         <field name="move_in_count1" widget="statinfo" string="Nhập lần 1"/>
                     </button>
                     <button type="object" context="{'state': 'second_inv'}"
