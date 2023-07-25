@@ -49,11 +49,15 @@
                         <group>
 <!--                            <field name="carrier_name" readonly="1"/>-->
                             <field name="code_coupon" readonly="1"/>
-                            <field name="delivery_carrier_id" readonly="1"/>
+                            <field name="delivery_carrier_id" readonly="1" string="Đơn vị vận chuyển" />
                             <field name="nhanh_shipping_fee"
-                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"
+                                   string="Phí vận chuyển"
+                                   readonly="1"/>
                             <field name="nhanh_customer_shipping_fee"
-                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"
+                                   string="Phí ship báo khách hàng"
+                                   readonly="1"/>
                             <field name="x_voucher" readonly="1"/>
                             <field name="x_code_voucher" readonly="1"/>
                             <field name="x_is_change" readonly="1"/>
