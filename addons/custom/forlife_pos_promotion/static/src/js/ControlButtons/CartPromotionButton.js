@@ -96,7 +96,8 @@ export class CartPromotionButton extends PosComponent {
                         line: line,
                         quantity: 0,
                         isSelected: false,
-                        max_qty: line.quantity
+                        max_qty: line.quantity,
+                        program: programOption.program
                     }}
                 ) || [];
             }
