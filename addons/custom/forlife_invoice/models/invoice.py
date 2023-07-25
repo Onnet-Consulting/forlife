@@ -340,17 +340,13 @@ class AccountMove(models.Model):
                             raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
 
-    # @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
-    # def constrains_quantity_line_stock(self):
-    #     for rec in self:
-    #         if rec.receiving_warehouse_id.ids =
-    #         # for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
-    #         #     for item in nine.move_line_ids_without_package:
-    #         #         if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
-    #         #             raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
-    #         #         if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
-    #         #             if line.quantity > item.qty_done:
-    #         #                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+    @api.onchange('invoice_line_ids')
+    def onchange_order_line_compare_invoice_line_ids(self):
+        if self.is_check_select_type_inv:
+            old_count_record = len(self.purchase_order_product_id.order_line)
+            new_count_record = len(self.invoice_line_ids)
+            if new_count_record > old_count_record:
+                raise ValidationError(_('Bạn không thể thêm dòng !!, Vì số dòng sản phẩm của hóa đơn đã được khống chế theo số dòng của PO liên quan tương ứng!, /n Nhưng vẫn có thể xóa dòng'))
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
