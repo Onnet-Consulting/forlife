@@ -174,7 +174,7 @@ class ProductTemplate(models.Model):
             data.append({
                 "id": item._origin.id,
                 "idNhanh": item.nhanh_id,
-                "name": item.name,
+                "name": item.get_nhanh_name(),
                 "code": item.barcode if item.barcode else '',
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
@@ -229,7 +229,7 @@ class ProductTemplate(models.Model):
         data.append({
             "id": self._origin.id,
             "idNhanh": self.nhanh_id,
-            "name": self.name,
+            "name": self.get_nhanh_name(),
             "code": self.barcode if self.barcode else '',
             "barcode": self.barcode if self.barcode else '',
             "importPrice": self.list_price,

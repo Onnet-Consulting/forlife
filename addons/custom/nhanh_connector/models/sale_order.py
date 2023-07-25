@@ -562,14 +562,7 @@ class SaleOrderNhanh(models.Model):
                     item.write({"location_id": picking.location_id.id})
         self.state = 'sale'
 
-    def action_cancel_for_nhanh(self):
-        self._cr.commit()
-        sql = f"""
-                update {self.env["sale.order"]._table}
-                set state = 'cancel'
-                where id = {self.id}
-            """
-        self._cr.execute(sql)
+    
 
                 
 

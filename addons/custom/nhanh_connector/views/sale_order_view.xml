@@ -66,6 +66,110 @@
                 <field name="discount_price_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
                 <!--field name="discount_after_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/-->
             </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="replace">
+                <field name="name" attrs="{'column_invisible': [('parent.source_record', '=', True)]}"/>
+                <field name="categ_id" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+            </xpath>
         </field>
+    </record>
+
+    <record id="sale_order_view_search_inherit_quotation" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <filter name="activities_upcoming_all" position="after">
+                <separator/>
+                <filter string="Đơn mới" name="nhanh_order_status_new" domain="[('nhanh_order_status','=','new')]"/>
+                <filter string="Đang xác nhận" name="nhanh_order_status_confirming" domain="[('nhanh_order_status','=','confirming')]"/>
+                <filter string="Chờ khách xác nhận" name="nhanh_order_status_customerconfirming" domain="[('nhanh_order_status','=','customerconfirming')]"/>
+                <filter string="Đã xác nhận" name="nhanh_order_status_confirmed" domain="[('nhanh_order_status','=','confirmed')]"/>
+                <filter string="Đang đóng gói" name="nhanh_order_status_packing" domain="[('nhanh_order_status','=','packing')]"/>
+                <filter string="Đã đóng gói" name="nhanh_order_status_packed" domain="[('nhanh_order_status','=','packed')]"/>
+                <filter string="Đổi kho xuất hàng" name="nhanh_order_status_changedepot" domain="[('nhanh_order_status','=','changedepot')]"/>
+                <filter string="Chờ thu gom" name="nhanh_order_status_pickup" domain="[('nhanh_order_status','=','pickup')]"/>
+                <filter string="Đang chuyển" name="nhanh_order_status_shipping" domain="[('nhanh_order_status','=','shipping')]"/>
+                <filter string="Thành công" name="nhanh_order_status_success" domain="[('nhanh_order_status','=','success')]"/>
+                <filter string="Thất bại" name="nhanh_order_status_failed" domain="[('nhanh_order_status','=','failed')]"/>
+                <filter string="Hủy" name="nhanh_order_status_canceled" domain="[('nhanh_order_status','in',('canceled', 'aborted', 'carriercanceled'))]"/>
+                <filter string="Hết hàng" name="nhanh_order_status_soldout" domain="[('nhanh_order_status','=','soldout')]"/>
+                <filter string="Đang chuyển hoàn" name="nhanh_order_status_returning" domain="[('nhanh_order_status','=','returning')]"/>
+                <filter string="Đã chuyển hoàn" name="nhanh_order_status_returned" domain="[('nhanh_order_status','=','returned')]"/>
+                <separator/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="sale_order_view_search_inherit_sale" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.sale</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="arch" type="xml">
+            <filter name="activities_upcoming_all" position="after">
+                <separator/>
+                <filter string="Đơn mới" name="nhanh_order_status_new" domain="[('nhanh_order_status','=','new')]"/>
+                <filter string="Đang xác nhận" name="nhanh_order_status_confirming" domain="[('nhanh_order_status','=','confirming')]"/>
+                <filter string="Chờ khách xác nhận" name="nhanh_order_status_customerconfirming" domain="[('nhanh_order_status','=','customerconfirming')]"/>
+                <filter string="Đã xác nhận" name="nhanh_order_status_confirmed" domain="[('nhanh_order_status','=','confirmed')]"/>
+                <filter string="Đang đóng gói" name="nhanh_order_status_packing" domain="[('nhanh_order_status','=','packing')]"/>
+                <filter string="Đã đóng gói" name="nhanh_order_status_packed" domain="[('nhanh_order_status','=','packed')]"/>
+                <filter string="Đổi kho xuất hàng" name="nhanh_order_status_changedepot" domain="[('nhanh_order_status','=','changedepot')]"/>
+                <filter string="Chờ thu gom" name="nhanh_order_status_pickup" domain="[('nhanh_order_status','=','pickup')]"/>
+                <filter string="Đang chuyển" name="nhanh_order_status_shipping" domain="[('nhanh_order_status','=','shipping')]"/>
+                <filter string="Thành công" name="nhanh_order_status_success" domain="[('nhanh_order_status','=','success')]"/>
+                <filter string="Thất bại" name="nhanh_order_status_failed" domain="[('nhanh_order_status','=','failed')]"/>
+                <filter string="Hủy" name="nhanh_order_status_canceled" domain="[('nhanh_order_status','in',('canceled', 'aborted', 'carriercanceled'))]"/>
+                <filter string="Hết hàng" name="nhanh_order_status_soldout" domain="[('nhanh_order_status','=','soldout')]"/>
+                <filter string="Đang chuyển hoàn" name="nhanh_order_status_returning" domain="[('nhanh_order_status','=','returning')]"/>
+                <filter string="Đã chuyển hoàn" name="nhanh_order_status_returned" domain="[('nhanh_order_status','=','returned')]"/>
+                <separator/>
+            </filter>
+        </field>
+    </record>
+
+
+    <record id="action_quotations_nhanh_with_onboarding" model="ir.actions.act_window">
+        <field name="name">Quotations for nhanh.vn</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="search_view_id" ref="sale_order_view_search_inherit_quotation"/>
+        <field name="context">{'search_default_my_quotation': 1}</field>
+        <field name="domain">[('source_record', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Create a new quotation, the first step of a new sale!
+            </p><p>
+            Once the quotation is confirmed by the customer, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+            </p>
+        </field>
+    </record>
+
+    <!-- ACTIONS (WINDOW) -->
+
+    <record id="action_orders_nhanh" model="ir.actions.act_window">
+        <field name="name">Sales Orders for nhanh.vn</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="search_view_id" ref="sale_order_view_search_inherit_sale"/>
+        <field name="context">{}</field>
+        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('source_record', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new quotation, the first step of a new sale!
+            </p><p>
+                Once the quotation is confirmed, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+            </p>
+        </field>
+    </record>
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('source_record', '=', False)]</field>
+    </record>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('source_record', '=', False)]</field>
     </record>
 </odoo>

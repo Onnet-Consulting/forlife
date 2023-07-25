@@ -33,6 +33,7 @@
         'views/promotion_campaign.xml',
         'views/delivery_carrier.xml',
         'views/stock_picking.xml',
+        'views/sale_menus.xml',
     ],
     "application": True,
     "installable": True,
