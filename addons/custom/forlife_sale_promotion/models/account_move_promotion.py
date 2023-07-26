@@ -24,3 +24,4 @@ class AccountMovePromotion(models.Model):
     description = fields.Char(string="Description")
     move_id = fields.Many2one("account.move", string="Order")
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
+    partner_id = fields.Many2one('res.partner', required=False)

@@ -245,7 +245,7 @@ class SaleOrder(models.Model):
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                            'description': "Phí vận chuyển của nhà vận chuyển"
+                            'description': "Phí vận chuyển"
                         })]
 
                     # Customer shipping fee
@@ -278,7 +278,7 @@ class SaleOrder(models.Model):
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                            'description': "Phí vận chuyển của nhà vận chuyển"
+                            'description': "Phí ship báo khách hàng"
                         })]
                 # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
