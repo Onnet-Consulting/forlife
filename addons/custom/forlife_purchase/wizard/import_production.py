@@ -168,7 +168,7 @@ class ImportProductionFromExcel(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'message': 'Đã tạo thành công 1 bản ghi',
+                'message': 'Đã tạo thành công %s bản ghi' % len(production),
                 'type': 'success',
                 'sticky': False,
                 'next': action,

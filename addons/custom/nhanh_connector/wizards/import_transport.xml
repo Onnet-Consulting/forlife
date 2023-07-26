@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="import_transport_from_excel_view_form" model="ir.ui.view">
+            <field name="name">import_transport_from_excel_view_form</field>
+            <field name="model">import.transport.from.excel</field>
+            <field name="arch" type="xml">
+                <form string="import_transport_from_excel_view_form">
+                    <sheet>
+                        <group>
+                            <field name="file" widget="binary" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                        <footer>
+                            <button name="apply" type="object" string="Nạp dữ liệu" class="oe_highlight"/>
+                            <button string="Hủy" class="btn-secondary" special="cancel" />
+                            <button name="download_template" type="object" string=" Tải file mẫu" class="fa fa-download"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="import_transport_from_excel_action" model="ir.actions.act_window">
+            <field name="name">Nhập từ excel</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">import.transport.from.excel</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
