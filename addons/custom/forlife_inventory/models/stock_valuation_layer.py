@@ -4,15 +4,17 @@ from odoo.addons.stock_account.models.stock_valuation_layer import StockValuatio
 
 def _validate_accounting_entries(self):
     am_vals = []
-    location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202')], limit=1)
-    location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
-    location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701')], limit=1)
-    reason_type_check = self.env.ref('forlife_inventory.reason_type_import_return_product', raise_if_not_found=False).id
-    reason_type_5 = self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False) or self.env['forlife.reason.type'].search([('code','=', 'N02')])
-    reason_type_4 = self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False) or self.env['forlife.reason.type'].search([('code','=', 'X02')])
-    auto_import_check = self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id
-    auto_export_check = self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong').id
+    company_other_id = self.env['res.company'].sudo().search([('code', '=', '1400')])
+    reason_type_5 = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N02'), ('company_id', '=', company_other_id.id)])
+    reason_type_4 = self.env['forlife.reason.type'].sudo().search([('code', '=', 'X02'), ('company_id', '=', company_other_id.id)])
+    location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'), ('company_id', '=', company_other_id.id)])
+    location_dest_check_company = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', company_other_id.id)])
     for svl in self:
+        location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202'), ('company_id', '=', svl.company_id.id)])
+        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', svl.company_id.id)])
+        reason_type_check = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N05'), ('company_id', '=', svl.company_id.id)])
+        auto_import_check = self.env['forlife.reason.type'].sudo().search([('code','=','N0601'), ('company_id','=',svl.company_id.id)])
+        auto_export_check = self.env['forlife.reason.type'].sudo().search([('code','=','X1101'), ('company_id','=',svl.company_id.id)])
         if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
             continue
         if svl.currency_id.is_zero(svl.value):
@@ -26,11 +28,11 @@ def _validate_accounting_entries(self):
         if svl.stock_move_id.picking_id.from_po_give and company_code == '1400':
             continue
         if company_code == '1400' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
-                                                                                    reason_type_5.id] and svl.stock_move_id.picking_id.location_id.id == location_enter_inventory_balance_auto.id \
+                                                                                         reason_type_5.id] and svl.stock_move_id.picking_id.location_id.id == location_enter_inventory_balance_auto.id \
                 and svl.stock_move_id.picking_id.location_dest_id.id_deposit:
             continue
         if company_code == '1400' and svl.stock_move_id.picking_id.reason_type_id.id in [reason_type_4.id,
-                                                                                    reason_type_5.id] and svl.stock_move_id.picking_id.location_dest_id.id == location_dest_check_id.id and svl.stock_move_id.picking_id.location_id.id_deposit:
+                                                                                         reason_type_5.id] and svl.stock_move_id.picking_id.location_dest_id.id == location_dest_check_company.id and svl.stock_move_id.picking_id.location_id.id_deposit:
             continue
         move = svl.stock_move_id
         if not move:
