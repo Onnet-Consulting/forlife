@@ -252,7 +252,7 @@ msgstr "Danh mục sản phẩm"
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion"
-msgstr "Khuyến mãi"
+msgstr "Doanh thu/ Chi phí khác"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_move_id
@@ -281,7 +281,7 @@ msgstr "But toán khuyến mãi"
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion journal"
-msgstr "Bút toán khuyến mãi"
+msgstr "Bút toán Doanh thu/ Chi phí khác"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_count

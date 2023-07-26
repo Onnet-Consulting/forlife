@@ -15,7 +15,7 @@ class StockLocationMapping(models.Model):
     @api.constrains('location_id')
     def constrain_location_id(self):
         for r in self:
-            location_exits = self.env['stock.location.mapping'].sudo().search([('location_id','=',r.location_id.id),('id','!=', self.id)])
+            location_exits = self.env['stock.location.mapping'].sudo().search([('location_id','=',r.location_id.id),('id','!=', r.id)])
             if location_exits:
                 raise ValidationError(_('Đã tồn tại liên kết này !'))
 

@@ -88,6 +88,7 @@ class AccountMove(models.Model):
                         'product_id': pr.product_id.id,
                         'account_id': account_debit_id and account_debit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
+                        'partner_id': pr.partner_id.id if pr.promotion_type == 'customer_shipping_fee' else self.partner_id.id,
                         'debit': product_value_without_tax,
                         'credit': 0
                     })
@@ -96,6 +97,7 @@ class AccountMove(models.Model):
                         'product_id': pr.product_id.id,
                         'account_id': account_credit_id and account_credit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
+                        'partner_id': pr.partner_id.id if pr.promotion_type == 'customer_shipping_fee' else self.partner_id.id,
                         'debit': 0,
                         'credit': product_value_without_tax
                     })

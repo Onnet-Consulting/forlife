@@ -52,29 +52,32 @@ class StockTranfer(models.Model):
 
     def _create_orther_import_export(self, location_mapping, data, type, location):
         company = location_mapping.location_map_id.warehouse_id.company_id.id
+        ReasonType = self.env['forlife.reason.type'].sudo()
         if type == 'import':
+            locationId = self.env['stock.location'].sudo().search([('code','=','N0601'), ('company_id','=',company)])
             for data_line in data:
-                data_line[2].update({'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong', raise_if_not_found=False).id,
+                data_line[2].update({'location_id': locationId.id,
                                      'location_dest_id': location_mapping.location_map_id.id})
             stock_picking = self.env['stock.picking'].with_company(company).create({
                 'transfer_id': self.id,
-                'reason_type_id':self.env.ref('forlife_inventory.reason_type_import_auto').id,
+                'reason_type_id': ReasonType.search([('code','=', 'N06'), ('company_id','=', company)]).id,
                 'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
-                'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id,
+                'location_id': locationId.id,
                 'location_dest_id': location_mapping.location_map_id.id,
                 'move_ids_without_package': data,
                 'other_import': True
             })
         else:
+            location_dest_Id = self.env['stock.location'].sudo().search([('code','=','X1101'),('company_id','=',company)])
             for data_line in data:
                 data_line[2].update({'location_id': location_mapping.location_map_id.id,
-                                     'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id})
+                                     'location_dest_id': location_dest_Id.id})
             stock_picking = self.env['stock.picking'].with_company(company).create({
                 'transfer_id': self.id,
-                'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto').id,
+                'reason_type_id': ReasonType.search([('code','=', 'X11'), ('company_id','=', company)]).id,
                 'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
                 'location_id': location_mapping.location_map_id.id,
-                'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
+                'location_dest_id': location_dest_Id.id,
                 'move_ids_without_package': data,
                 'other_export': True
             })

@@ -170,7 +170,7 @@ class NhanhClient:
                     'barcode': item.get('productBarcode'),
                     'list_price': item.get('price'),
                     'uom_id': uom,
-                    'weight': item.get('weight', 0),
+                    'weight': float(item.get('weight', 0)/1000),
                     'responsible_id': None
                 })
                 product_id = self.cls.env['product.product'].sudo().search([
@@ -179,7 +179,8 @@ class NhanhClient:
 
             product_id.product_tmpl_id.write({
                 'brand_id': brand_id.id,
-                'nhanh_id': item.get('productId')
+                'nhanh_id': item.get('productId'),
+                'check_data_odoo': True,
             })
 
             order_line.append((
@@ -292,7 +293,7 @@ class NhanhClient:
         #X270941175 #N270941350
         return_changed = None
         if private_description.find("#X") != -1 and private_description.find("#N") != -1:
-            x = private_description.split(), 
+            x = private_description.split()
             return_changed = {
                 "x_is_change": True,
             }

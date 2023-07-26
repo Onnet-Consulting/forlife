@@ -118,6 +118,10 @@ class ProductTemplate(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
+
+        if vals.get("check_data_odoo"):
+            return res
+
         fields_up = vals.keys()
         require_fields = [
             'name',
