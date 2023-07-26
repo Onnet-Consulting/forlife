@@ -132,7 +132,7 @@ class SaleOrderNhanh(models.Model):
         if return_changed:
             order_data.update(return_changed)
 
-        new_order = self.sale_order_model().sudo().create(order_data)
+        new_order = self.env['sale.order'].sudo().create(order_data)
         try:
             new_order.check_sale_promotion()
             new_order.action_create_picking()

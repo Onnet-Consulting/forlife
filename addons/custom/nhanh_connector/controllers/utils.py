@@ -153,8 +153,9 @@ class NhanhClient:
     def get_order_line(self, order, brand_id, location_id, is_create=False):
         order_line = []
         for item in order['products']:
-            product_id = self.cls.env['product.product'].sudo().search([
-                ('nhanh_id', '=', item.get('productId'))
+            product_id = self.cls.env['product.product'].sudo().search(['|',
+                ('nhanh_id', '=', item.get('productId')),
+                ('barcode', '=', item.get('productBarcode'))
             ],limit=1)
 
             if not product_id and not is_create:
@@ -177,7 +178,8 @@ class NhanhClient:
                 ], limit=1)
 
             product_id.product_tmpl_id.write({
-                'brand_id': brand_id.id
+                'brand_id': brand_id.id,
+                'nhanh_id': item.get('productId')
             })
 
             order_line.append((
