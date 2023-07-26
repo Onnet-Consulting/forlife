@@ -34,9 +34,9 @@ class NhanhClient:
             })
         return nhanh_partner
 
-    # def get_sale_channel(self, order):
-    #     sale_channel = self.cls.env['sale.channel'].sudo().search([('nhanh_id', '=', int(order["saleChannel"]))], limit=1)
-    #     return sale_channel
+    def get_sale_channel(self, order):
+        sale_channel = self.cls.env['sale.channel'].sudo().search([('nhanh_id', '=', int(order["saleChannel"]))], limit=1)
+        return sale_channel
 
 
     def get_brand(self):
@@ -236,6 +236,13 @@ class NhanhClient:
         # utm source
         utm_source_id = self.get_and_create_utm_source(order)
 
+        # sale channel
+        sale_channel = self.get_sale_channel(order)
+
+        x_transfer_code = order['carrierCode']
+        if sale_channel and sale_channel.is_tmdt:
+            x_transfer_code = order['privateId']
+
         order_data = {
             'nhanh_id': order['id'],
             'partner_id': nhanh_partner.id,
@@ -258,6 +265,8 @@ class NhanhClient:
             'nhanh_customer_phone': order['customerMobile'],
             'source_id': utm_source_id.id if utm_source_id else None,
             'x_location_id': location_id.id,
+            'sale_channel_id': sale_channel.id if sale_channel else None,
+            'x_transfer_code': x_transfer_code if x_transfer_code else '',
         }
         return order_data
 
