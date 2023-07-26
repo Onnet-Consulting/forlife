@@ -404,6 +404,7 @@ class ImportSalaryRecord(models.TransientModel):
                     'year': year,
                     'month': month,
                     'note': value[3],
+                    'is_tc': (value[4] or '').strip() == 'TC',
                 })
             else:
                 res = []
