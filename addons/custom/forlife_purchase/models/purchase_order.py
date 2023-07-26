@@ -1390,12 +1390,12 @@ class PurchaseOrder(models.Model):
                                 material = material_lines.filtered(lambda m: m.purchase_order_line_id.id == line_id.id)
                                 if not order.is_return:
                                     wave = picking_labor_in.move_line_ids_without_package.filtered(
-                                        lambda w: w.purchase_order_line_id.id == line_id.id
+                                        lambda w: w.move_id.purchase_line_id.id == line_id.id
                                                   and w.product_id.id == line_id.product_id.id
                                                   and w.picking_type_id.code == 'incoming'
                                                   and w.picking_id.x_is_check_return == False)
                                 else:
-                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: w.purchase_order_line_id.id == line_id.id
+                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line_id.id
                                                                                                     and w.product_id.id == line_id.product_id.id
                                                                                                     and w.picking_id.x_is_check_return == False)
                                 for material_line in material:
