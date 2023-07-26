@@ -257,10 +257,10 @@ class MainController(http.Controller):
                     except Exception as e:
                         print(str(e))
 
-                elif data['status'] in ['Canceled', 'Aborted']:
+                elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
                             'state'):
-                        for picking_id in odoo_order.picking_ids:
+                        for picking_id in webhook_value_id.order_id.picking_ids:
                             picking_id.action_cancel()
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not webhook_value_id.order_id.picking_ids:

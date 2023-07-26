@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="filter_product_wizard_view_form" model="ir.ui.view">
+            <field name="name">filter_product_wizard_view_form</field>
+            <field name="model">filter.product.wizard</field>
+            <field name="arch" type="xml">
+                <form string="filter_product_wizard_form">
+                    <sheet>
+                        <group>
+                            <field name="category_level"/>
+                            <field name="category_type_id" options="{'no_create': True}" required="1"/>
+                            <field name="product_brand_id" required="1" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>
+                            <field name="product_group_ids" required="1" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                            <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                            <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                            <field name="category_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
+                            <field name="inventory_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Hủy"/>
+                        <button name="action_confirm" type="object" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="filter_product_wizard_action" model="ir.actions.act_window">
+            <field name="name">Lọc sản phẩm</field>
+            <field name="res_model">filter.product.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

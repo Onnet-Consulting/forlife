@@ -223,14 +223,21 @@ class AccountMoveBKAV(models.Model):
     def create_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        if self.move_type in ('out_invoice', 'out_refund'):
+        data = []
+        so_orders = self.invoice_line_ids.sale_line_ids.order_id
+        pr_orders = self.invoice_line_ids.purchase_line_id.order_id
+        pos_orders = self.pos_order_id
+        if self.move_type in ('out_invoice', 'out_refund') and so_orders:
             data = self.get_bkav_data()
-        elif self.move_type == 'in_refund':
-            data = self.get_bkav_data_po()
+        elif self.move_type == 'in_refund' and pr_orders:
+            data = self.get_bkav_data_pr()
+        elif self.move_type in ('out_invoice', 'out_refund') and pos_orders:
+            data = self.get_bkav_data_pos()
         origin_id = self.origin_move_id if self.origin_move_id else False
         is_publish = True
         issue_invoice_type = self.issue_invoice_type
-        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+        if data:
+            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():

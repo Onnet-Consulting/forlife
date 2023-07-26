@@ -45,6 +45,7 @@
                             <field name="name_customer" readonly="1"/>
                             <field name="nhanh_customer_phone" readonly="1"/>
                             <field name="note_customer" readonly="1"/>
+                            <field name="source_id" readonly="1"/>
                         </group>
                         <group>
 <!--                            <field name="carrier_name" readonly="1"/>-->
@@ -77,7 +78,7 @@
         </field>
     </record>
 
-    <record id="sale_order_view_search_inherit_quotation" model="ir.ui.view">
+    <!--record id="sale_order_view_search_inherit_quotation" model="ir.ui.view">
         <field name="name">sale.order.search.inherit.quotation</field>
         <field name="model">sale.order</field>
         <field name="mode">primary</field>
@@ -107,7 +108,7 @@
                 <separator/>
             </filter>
         </field>
-    </record>
+    </record-->
 
     <record id="sale_order_view_search_inherit_sale" model="ir.ui.view">
         <field name="name">sale.order.search.inherit.sale</field>
@@ -141,7 +142,7 @@
     </record>
 
 
-    <record id="action_quotations_nhanh_with_onboarding" model="ir.actions.act_window">
+    <!--record id="action_quotations_nhanh_with_onboarding" model="ir.actions.act_window">
         <field name="name">Quotations for nhanh.vn</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">sale.order</field>
@@ -157,18 +158,18 @@
             Once the quotation is confirmed by the customer, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
             </p>
         </field>
-    </record>
+    </record-->
 
     <!-- ACTIONS (WINDOW) -->
 
     <record id="action_orders_nhanh" model="ir.actions.act_window">
-        <field name="name">Sales Orders for nhanh.vn</field>
+        <field name="name">Đơn hàng nhanhvn</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">sale.order</field>
         <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
         <field name="search_view_id" ref="sale_order_view_search_inherit_sale"/>
         <field name="context">{}</field>
-        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('source_record', '=', True)]</field>
+        <field name="domain">[('source_record', '=', True)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new quotation, the first step of a new sale!

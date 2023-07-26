@@ -8,7 +8,7 @@ class AccountMovePurchaseReturn(models.Model):
     _inherit = 'account.move'
 
 
-    def get_bkav_data_po(self):
+    def get_bkav_data_pr(self):
         bkav_data = []
         for invoice in self:            
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
