@@ -17,25 +17,15 @@ class FilterProductWizard(models.Model):
     texture_ids = fields.Many2many('product.category', 'filter_product_wizard_texture_rel', string='Level 4')
     category_domain = fields.Char('Products', compute='_compute_category_domain')
 
-    @api.depends('category_level', 'category_type_id', 'product_brand_id',
-                 'product_group_ids', 'product_line_ids', 'texture_ids')
+    @api.depends('category_type_id', 'product_brand_id', 'product_group_ids', 'product_line_ids', 'texture_ids')
     def _compute_category_domain(self):
+        Utility = self.env['res.utility']
         for line in self:
-            category_domain = "[('type', '=', 'product')]"
-            if line.texture_ids:
-                category_domain = line.get_text_domain(line.texture_ids, line.category_level, 4)
-            elif line.product_line_ids:
-                category_domain = line.get_text_domain(line.product_line_ids, line.category_level, 3)
-            elif line.product_group_ids:
-                category_domain = line.get_text_domain(line.product_group_ids, line.category_level, 2)
-            elif line.product_brand_id:
-                category_domain = line.get_text_domain(line.product_brand_id, line.category_level, 1)
-            line.category_domain = category_domain
-
-    @api.model
-    def get_text_domain(self, categ_ids, category_level, current_level):
-        _mapped = ['child_id'] * (category_level - current_level)
-        return json.dumps([('categ_id', 'in', categ_ids.mapped('.'.join(_mapped)).ids if _mapped else categ_ids.ids), ('type', '=', 'product')])
+            category_domain = [('type', '=', 'product')]
+            categ_ids = line.texture_ids or line.product_line_ids or line.product_group_ids or line.product_brand_id
+            if categ_ids:
+                category_domain += [('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]
+            line.category_domain = json.dumps(category_domain)
 
     @api.onchange('product_brand_id')
     def onchange_product_brand(self):
@@ -51,6 +41,3 @@ class FilterProductWizard(models.Model):
 
     def action_confirm(self):
         self.inventory_id.product_ids = self.env['product.product'].search(safe_eval(self.category_domain or "[('id', '=', 0)]"))
-
-
-

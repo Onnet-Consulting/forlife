@@ -168,11 +168,6 @@ msgid "Bớt lần 2"
 msgstr ""
 
 #. module: stock_inventory
-#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_level
-msgid "Category level"
-msgstr "Cấp của danh mục"
-
-#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__line_ids
 #: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
 msgid "Chi tiết"
