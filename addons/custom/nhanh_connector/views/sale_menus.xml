@@ -13,5 +13,16 @@
                 groups="sales_team.group_sale_salesman"
                 parent="sale.sale_order_menu"
                 sequence="22"/>
+        <menuitem id="menu_sale_channel_nhanh"
+            name="Kênh/Sàn"
+            action="sale_channel_source_action"
+            parent="utm.marketing_utm"
+            sequence="11"
+            groups="base.group_no_one"/>
+
+        <menuitem id="delivery_carrier_menu" 
+            name="Đơn vị vận chuyển" 
+            parent="sale.menu_sales_config"
+            action="delivery_carrier_view_action"/>
     </data>
 </odoo>
