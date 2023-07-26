@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Forlife Other In Out Request">
                 <field name="name"/>
-                <field name="employee_id"/>
+                <field name="user_id"/>
                 <field name="department_id"/>
                 <field name="type_other_id"/>
                 <field name="location_id"/>
@@ -60,7 +60,7 @@
                     </h1>
                     <group>
                         <group>
-                            <field name="employee_id"/>
+                            <field name="user_id"/>
                             <field name="department_id" readonly="1" force_save="1"/>
                             <field name="type_other"/>
                             <field name="type_other_id" required="1"/>
@@ -86,7 +86,7 @@
                     <notebook>
                         <page string="Product" name="product">
                             <field name="other_in_out_request_line_ids" widget="section_and_note_one2many" mode="tree" context="{'default_whs_from_id': location_dest_id, 'default_reason_to_id': location_id, 'default_whs_to_id': location_dest_id, 'default_reason_from_id': location_id, 'default_type_other_id': type_other_id, 'default_date_expected': date_planned}">
-                                <tree editable="bottom">
+                                <tree editable="bottom" class="width-hh">
                                     <field name="product_id"/>
                                     <field name="description"/>
                                     <field name="asset_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')]}"/>

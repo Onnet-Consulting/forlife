@@ -10,6 +10,7 @@ class SaleOrderLineNhanh(models.Model):
 
     discount_price_unit = fields.Float('Đơn giá giảm', compute="_compute_discount_price_unit")
     odoo_price_unit = fields.Float('Đơn giá (Odoo)', compute="_compute_odoo_price_unit")
+    categ_id = fields.Many2one('product.category', string='Product Category', related="product_template_id.categ_id")
     # discount_after_unit = fields.Float('Giá trị sau giảm', compute="_compute_discount_after_unit")
 
 

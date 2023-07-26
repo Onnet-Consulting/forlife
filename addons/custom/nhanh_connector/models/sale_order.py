@@ -530,12 +530,10 @@ class SaleOrderNhanh(models.Model):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
         for picking in picking_ids:
-            print(picking)
             product_ids = {}
             for line in self.order_line:
                 product_ids[line.product_id.id] = line.product_uom_qty
             move_ids = picking.move_ids.filtered(lambda r: r.product_id.id in list(product_ids.keys()))
-            print('----------', move_ids)
             if len(move_ids):
                 stock_return_picking_form = Form(
                     self.env['stock.return.picking'].with_context(active_id=picking.id,
@@ -550,16 +548,23 @@ class SaleOrderNhanh(models.Model):
                         qty = product_ids[product_return_move.product_id.id]
                         if qty > 0:
                             if product_return_move.quantity >= qty:
-                                product_return_move.quantity = qty
+                                product_return_move.write({"quantity": qty})
                                 product_ids.pop(product_return_move.product_id.id)
                             else:
                                 product_ids[product_return_move.product_id.id] = qty - product_return_move.quantity
 
                         quantity += product_return_move.quantity
-
                 return_wiz.product_return_moves.quantity = quantity
                 return_wiz.product_return_moves.to_refund = True
-                new_picking_id, pick_type_id = return_wiz._create_returns()
-                print(new_picking_id, pick_type_id)
+                new_picking_id, pick_type_id = return_wiz.with_context(so_return=self.id)._create_returns()
+                new_picking = self.env['stock.picking'].browse([new_picking_id])
+                for item in new_picking:
+                    item.write({"location_id": picking.location_id.id})
+        self.state = 'sale'
+
+    
+
+                
+
 
                                 

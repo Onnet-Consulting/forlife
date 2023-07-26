@@ -134,15 +134,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         return result;
     }
 
-    set_discount(discount) {
-        let oldDiscount = this.get_discount();
-        let result = super.set_discount(...arguments);
-        if (oldDiscount !== this.discount) {
-            this.action_reset_card_rank();
-        }
-        return result;
-    }
-
     // Một số trường hợp quantity thay đổi nhưng giá trị 'card_rank_discount' chưa recompute theo quantity tương ứng,
     // do đó, recompute card_rank_discount trên orderline mỗi khi gọi method set_quantity
     _recompute_card_rank_disc() {
@@ -155,13 +146,14 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_apply_card_rank(line_data) {
-        if (line_data && line_data.card_rank_disc > (line_data.total_discounted + line_data.extra_card_rank_disc)) {
+        if (line_data && line_data.apply_cr_discount === true) {
             this.card_rank_discount = line_data.card_rank_disc;
             this.card_rank_applied = true;
             this.old_point = this.point;
             this.set_point(null);
             this.reset_unit_price();
             this.promotion_usage_ids = [];
+            this.set_discount(0);
 
         } else if (line_data && line_data.extra_card_rank_disc > 0) {
             this.card_rank_discount = line_data.extra_card_rank_disc;
@@ -187,7 +179,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     get_discount_detail(cr_program) {
-        let total_discounted = (this.get_total_discounted() || 0) - (this.get_point() || 0);
+        let total_discounted = this.original_price - this.get_base_price() - (this.get_point() || 0);
         let original_price = this.get_original_price();
         let card_rank_disc = 0;
         let extra_card_rank_disc = 0;

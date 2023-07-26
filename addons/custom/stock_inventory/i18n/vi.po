@@ -1,0 +1,1389 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_inventory
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-24 09:44+0000\n"
+"PO-Revision-Date: 2023-07-24 09:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "%s (copy)"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.report,print_report_name:stock_inventory.action_report_inventory
+msgid "'Inventory - %s' % (object.name)"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.report,print_report_name:stock_inventory.action_report_inventory_valorisation
+msgid "'Inventory valorisation - %s' % (object.name)"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__x_status
+msgid ""
+"1: Đã đồng bộ từ chi tiết kiểm kê\n"
+"2: Cửa hàng đã xác nhận lần 1\n"
+"3: Cửa hàng đã xác nhận lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Counted Quantity</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Date:</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Difference</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Location</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Lot/Serial Number</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>On Hand Quantity</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Package</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Product</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Total</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "<strong>Unit Price</strong>"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.actions.act_window,help:stock_inventory.action_inventory_form
+msgid ""
+"Barcode scanner can be activated via inventory settings.\n"
+"            Manual inventory adjustments can also be performed and pre-filled with\n"
+"            suggested counted quantity."
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid ""
+"Bạn chỉ có thể xóa bản ghi kiểm kê ở trạng thái nháp. Nếu việc kiểm kê không"
+" được thực hiện, bạn có thể hủy bỏ nó."
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Bắt đầu kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__bo_sung_hang_chua_cheat
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__bo_sung_hang_chua_cheat
+msgid "Bổ sung hàng chưa được cheat"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__bot1
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__bot1
+msgid "Bớt lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__bot2
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__bot2
+msgid "Bớt lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_level
+msgid "Category level"
+msgstr "Cấp của danh mục"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__line_ids
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
+msgid "Chi tiết"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.session_detail_by_product_action
+msgid "Chi tiết KK theo sản phẩm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Chi tiết kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Chi tiết phiên"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__line_ids
+msgid "Chi tiết tồn kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__detail_ids
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Chi tiết đếm kiểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__chenh_lech_kiem_ke
+msgid "Chênh lệch kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__difference_qty1
+msgid "Chênh lệch lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__difference_qty
+msgid "Chênh lệch lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__waiting
+msgid "Chờ chốt tồn"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__first_inv
+msgid "Chờ xác nhận lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__second_inv
+msgid "Chờ xác nhận lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.report,name:stock_inventory.action_report_inventory
+msgid "Count Sheet"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.report,name:stock_inventory.action_report_inventory_valorisation
+msgid "Count Sheet valorisation"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_ids
+msgid "Created Moves"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__create_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__create_date
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__cong_hang_ban_ntl_chua_kiem
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__cong_hang_ban_ntl_chua_kiem
+msgid "Công hàng bán / ntl chưa kiểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__company_id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__company_id
+msgid "Công ty"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.request_confirmation_picking_wizard_action
+msgid "Cảnh báo"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.request_confirmation_picking_wizard_view_form
+msgid "Danh sách mã phiếu kho cần xác nhận"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__data
+msgid "Data"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Difference different than zero"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__display_name
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Draft"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_out_count
+msgid "Dịch chuyển đi"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_in_count
+msgid "Dịch chuyển đến"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_import_inventory_session_wizard
+msgid "Dữ liệu kiểm đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory_line__product_tracking
+msgid "Ensure the traceability of a storable product in your warehouse."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__error_file_name
+msgid "Error File Name"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Filter product"
+msgstr "Lọc sản phẩm"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__ghi_chu
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__note
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__ghi_chu
+msgid "Ghi chú"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__gia
+msgid "Giá"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Group By"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Group by..."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__exhausted
+msgid "Gồm cả sản phẩm đã hết"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__active
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__active
+msgid "Hiệu lực"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__done
+msgid "Hoàn thành"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__hang_khong_cheat_duoc
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__hang_khong_cheat_duoc
+msgid "Hàng không cheat được mã vạch"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__hang_khong_kiem_dem
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__hang_khong_kiem_dem
+msgid "Hàng không kiểm đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__hang_khong_tem
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__hang_khong_tem
+msgid "Hàng không tem"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__hang_loi_chua_duyet
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__hang_loi_chua_duyet
+msgid "Hàng lỗi chưa được duyệt"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__hang_loi_da_duyet
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__hang_loi_da_duyet
+msgid "Hàng lỗi đã được duyệt"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__cancel
+#: model_terms:ir.ui.view,arch_db:stock_inventory.filter_product_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:stock_inventory.import_inventory_session_view_form
+msgid "Hủy"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Hủy kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__id
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__id
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__id
+msgid "ID"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "INV:"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_has_error
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__import_file_name
+msgid "Import File Name"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "In Progress"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory_line__barcode
+msgid "International Article Number used for product identification."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__inventory_id
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__inventory_id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_move__inventory_id
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Inventory"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Inventory Date"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_inventory_detail
+msgid "Inventory Detail"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_tree
+msgid "Inventory Details"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_stock_inventory_line
+msgid "Inventory Line"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_inventory_session
+msgid "Inventory Session"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_inventory_session_line
+msgid "Inventory Session Line"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__warehouse_id
+msgid "Kho hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__start_empty
+msgid "Kho trống"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_stock_inventory
+msgid "Kiểm kê kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__kiem_ke_thuc_te
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__kiem_ke_thuc_te
+msgid "Kiểm kê thực tế"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-javascript
+#: code:addons/stock_inventory/static/src/js/inventory_validate_button_controller.js:0
+#, python-format
+msgid "Kiểm kê đã được xác nhận"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory____last_update
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__write_uid
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__write_date
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_brand_id
+msgid "Level 1"
+msgstr "Danh mục cấp 1"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_group_ids
+msgid "Level 2"
+msgstr "Danh mục cấp 2"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_line_ids
+msgid "Level 3"
+msgstr "Danh mục cấp 3"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__texture_ids
+msgid "Level 4"
+msgstr "Danh mục cấp 4"
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Location"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__prod_lot_id
+msgid "Lot/Serial Number"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_tree
+msgid "Lot/Serial Number Inventory"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__type
+msgid "Loại"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.filter_product_wizard_action
+#: model:ir.model,name:stock_inventory.model_filter_product_wizard
+msgid "Lọc sản phẩm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.import_inventory_session_view_form
+msgid "Lỗi nhập  liệu"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__mau
+msgid "Màu"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__ma_hang
+msgid "Mã hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__name
+msgid "Mã phiếu"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__barcode
+msgid "Mã vạch"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__prefill_counted_quantity__zero
+msgid "Mặc định bằng 0"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__prefill_counted_quantity__counted
+msgid "Mặc định bằng số lượng tồn kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__name
+msgid "Name"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__date
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__inventory_date
+msgid "Ngày kiểm kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__accounting_date
+msgid "Ngày kế toán"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_tree
+msgid "Ngày tạo"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__draft
+msgid "Nháp"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__nhom_san_pham
+msgid "Nhóm sản phẩm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_filter
+msgid "Nhóm theo..."
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.import_inventory_session_view_form
+msgid "Nhập"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Nhập bố sung lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__inventory_session__type__add
+msgid "Nhập bổ sung lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__inventory_session__type__web
+msgid "Nhập bổ sung từ web"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__inventory_session__type__other
+msgid "Nhập dữ liệu khác"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+#, python-format
+msgid "Nhập hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.import_inventory_session_action
+msgid "Nhập liệu kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Nhập phiên bố sung"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Nhập số liệu KK khác"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid ""
+"Nếu bạn hủy phiếu kiểm kê này, tất cả chi tiết kiểm kê của phiếu này sẽ bị "
+"xóa. Bạn có chắc chắn muốn hủy phiếu??"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.filter_product_wizard_view_form
+msgid "OK"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "Only a stock manager can validate an inventory adjustment."
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Outdated Theoretical Quantities"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__partner_id
+msgid "Owner"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__package_id
+msgid "Pack"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Packaging"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_tree
+msgid "Phiên"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Phiên đã nhập"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__phien_dem
+msgid "Phiên đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__phien_dem_bo_sung
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__phien_dem_bo_sung
+msgid "Phiên đếm bổ sung"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.inventory_session_action
+#: model:ir.actions.act_window,name:stock_inventory.inventory_session_action_active_id
+#: model:ir.actions.act_window,name:stock_inventory.inventory_session_form_view_action
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__inv_session_id
+#: model:ir.ui.menu,name:stock_inventory.menu_inventory_session
+msgid "Phiên đếm kiểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__inv_id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__inventory_id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__inv_id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__inventory_id
+msgid "Phiếu kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.act_window,name:stock_inventory.action_inventory_form
+#: model:ir.ui.menu,name:stock_inventory.menu_action_inventory_form_inherit
+msgid "Phiếu kiểm kê kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Physical Inventories by Date"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Product"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__categ_id
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Product Category"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_domain
+msgid "Products"
+msgstr "Sản phẩm"
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__outdated
+msgid "Quantity outdated"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.server,name:stock_inventory.model_stock_inventory_line_action_recompute_quantity
+msgid "Recompute On Hand Quantity"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Reference"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "SL xác nhận lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "SL xác nhận lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_filter
+msgid "Search"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Search Inventory"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
+msgid "Search Inventory Lines"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.actions.server,name:stock_inventory.model_stock_inventory_line_action_reset_product_qty
+msgid "Set counted quantities to 0"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__size
+msgid "Size"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__state
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Status"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_stock_move
+msgid "Stock Move"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__product_id
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__product_id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__product_ids
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__product_id
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_filter
+msgid "Sản phẩm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__prefill_counted_quantity
+msgid "Số lượng đã đếm"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid ""
+"There is already one inventory adjustment line for this product, you should "
+"rather modify this one instead of creating a new one."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__them1
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__them1
+msgid "Thêm lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__them2
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__them2
+msgid "Thêm lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.request_confirmation_picking_wizard_view_form
+msgid "Tiếp tục"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.report_inventory_valorisation
+msgid "Total:"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "Tracked Products in Inventory Adjustment"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__product_tracking
+msgid "Tracking"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__state
+msgid "Trạng thái"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__x_status
+msgid "Trạng thái chi tiết"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tru_hang_ban_da_kiem
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__tru_hang_ban_da_kiem
+msgid "Trừ hàng bán đã kiểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_type_id
+msgid "Type of Product Category"
+msgstr "Loại nhóm sản phẩm"
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__ten_hang
+msgid "Tên hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tui_ban_hang
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__tui_ban_hang
+msgid "Túi bán hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__import_file
+msgid "Tải lên tệp"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.import_inventory_session_view_form
+msgid "Tải mẫu"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_import_inventory_session_wizard__error_file
+msgid "Tệp lỗi"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__theoretical_qty
+msgid "Tồn hiện có"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__ton_phan_mam
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Tồn phần mềm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_tree
+msgid "Tổng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tong_kiem_ke_thuc_te_1
+msgid "Tổng kiểm kê thực tế lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tong_kiem_dem_thuc_te
+msgid "Tổng kiểm đếm thực tế"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__inventory_session__type__app
+msgid "Từ app kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tru_hang_kiem_dup
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__tru_hang_kiem_dup
+msgid "Từ hàng kiểm đúp"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "Unsupported search on %s outside of an Inventory Adjustment"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_res_utility
+msgid "Utility Methods"
+msgstr "Hàm tiện ích"
+
+#. module: stock_inventory
+#. odoo-javascript
+#: code:addons/stock_inventory/static/src/xml/inventory_lines.xml:0
+#, python-format
+msgid "Validate Inventory"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_filter
+msgid "Validated"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__view_location_id
+msgid "View Location"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.request_confirmation_picking_wizard_view_form
+msgid "Vui lòng xác nhận phiếu kho để tiếp tục thực hiện quá trình kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.actions.act_window,help:stock_inventory.action_inventory_form
+msgid "Want to speed up your inventory counts? Try our Barcode app"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,help:stock_inventory.field_stock_inventory__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_detail_view_form
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_detail_view_tree
+msgid "Xem chi tiết"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xuất Excel"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+#, python-format
+msgid "Xuất hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields.selection,name:stock_inventory.selection__stock_inventory__state__confirm
+msgid "Xác nhận"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xác nhận chốt tồn"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xác nhận lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xác nhận lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid "You can only adjust storable products."
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid ""
+"You can't validate the inventory '%s', maybe this inventory has been already"
+" validated or isn't ready."
+msgstr ""
+
+#. module: stock_inventory
+#. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
+#, python-format
+msgid ""
+"You cannot set a negative product quantity in an inventory line:\n"
+"\t%s - qty: %s"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model,name:stock_inventory.model_request_confirmation_picking_wizard
+msgid "Yêu cầu xác nhận phiếu kho"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "e.g. Annual inventory"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.filter_product_wizard_view_form
+msgid "filter_product_wizard_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.import_inventory_session_view_form
+msgid "import_inventory_session_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_detail_view_form
+msgid "inventory_detail_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_detail_view_tree
+msgid "inventory_detail_tree"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
+msgid "inventory_session_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_form
+msgid "inventory_session_line_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_tree
+msgid "inventory_session_line_tree"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_tree
+msgid "inventory_session_tree"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.request_confirmation_picking_wizard_view_form
+msgid "request_confirmation_picking_wizard_form"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__x_first_qty
+msgid "Đã đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__don_vi
+msgid "Đơn vị"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__product_uom_id
+msgid "Đơn vị tính"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Đưa về nháp"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
+#: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_tree
+msgid "Được tạo bởi"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__product_qty
+msgid "Đếm được"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__location_id
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__location_id
+msgid "Địa điểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.request_confirmation_picking_wizard_view_form
+msgid "Đồng ý"
+msgstr ""

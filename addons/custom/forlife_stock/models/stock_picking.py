@@ -261,14 +261,14 @@ class StockPicking(models.Model):
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
         check_company=True, required=False,
-        domain=_domain_location_id,
+        # domain=_domain_location_id,
         states={'done': [('readonly', True)]})
 
     location_dest_id = fields.Many2one(
         'stock.location', "Destination Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
         check_company=True, required=False,
-        domain=_domain_location_dest_id,
+        # domain=_domain_location_dest_id,
         states={'done': [('readonly', True)]})
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
@@ -280,6 +280,23 @@ class StockPicking(models.Model):
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
     is_from_request = fields.Boolean('', default=False)
     stock_name = fields.Char(string='Mã phiếu')
+
+    @api.onchange('reason_type_id')
+    def _onchange_reason_location(self):
+        if self.reason_type_id:
+            if self._context.get('default_other_import'):
+                return {
+                    'domain': {
+                        'location_id': [('reason_type_id', '=', self.reason_type_id.id)]
+                    }
+            }
+            if self._context.get('default_other_export'):
+                return {
+                    'domain': {
+                        'location_dest_id': [('reason_type_id', '=', self.reason_type_id.id)]
+                    }
+                }
+
 
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
