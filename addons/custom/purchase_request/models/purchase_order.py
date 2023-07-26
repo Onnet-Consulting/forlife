@@ -190,9 +190,17 @@ class PurchaseOrderLineMaterialLine(models.Model):
                                readonly=False)
     is_from_po = fields.Boolean(default=False)
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
-    production_line_price_unit = fields.Float(digits='Product Unit of Measure')
-    price_unit = fields.Float(string='Giá')
+    production_line_price_unit = fields.Float(digits='Product Unit of Measure') # ghi lại price ở đính kèm sản phẩm ứng product
+    price_unit = fields.Float(string='Giá', compute='_compute_price_unit', store=1)
     compute_flag = fields.Boolean(default=True)
+
+    @api.depends('production_line_price_unit', 'product_qty')
+    def _compute_price_unit(self):
+        for rec in self:
+            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                rec.price_unit = rec.product_qty * rec.production_line_price_unit
+            else:
+                rec.price_unit = 0
 
     @api.depends('purchase_order_line_id.product_qty', 'purchase_order_line_id',
                  'compute_flag')
