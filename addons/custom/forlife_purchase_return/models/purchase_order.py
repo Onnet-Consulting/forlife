@@ -412,10 +412,10 @@ class PurchaseOrderLine(models.Model):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
         # if self.order_id.is_return:
         #     vals.update({'return_price_unit': -self.price_unit})
-        if self.qty_returned:
-            vals.update({
-                'qty_returned': self.qty_returned,
-            })
+        # if self.qty_returned:
+        #     vals.update({
+        #         'qty_returned': self.qty_returned,
+        #     })
         if self.order_id.is_return:
             vals.update({
                 'vat_tax': self.vat_tax,
