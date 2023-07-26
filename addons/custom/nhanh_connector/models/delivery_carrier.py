@@ -12,6 +12,7 @@ class DeliveryCarrier(models.Model):
     name = fields.Char('Name')
     code = fields.Char('Code')
     service_name = fields.Char('Service Name')
+    partner_id = fields.Many2one('res.partner', required=False)
 
     _sql_constraints = [
         ('name_uniq', 'unique (name)', "Delivery Carrier name already exists !"),
