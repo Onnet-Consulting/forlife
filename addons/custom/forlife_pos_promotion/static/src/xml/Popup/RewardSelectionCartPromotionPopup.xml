@@ -4,7 +4,7 @@
     <t t-name="RewardSelectionCartPromotionPopup" owl="1">
         <div style="border-left: outset; margin: 6px">
             <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.max_reward_quantity"/> sản phẩm</div>
-            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram(this.state.program)"/> sản phẩm</div>
             <div t-if="this.state.program.program.reward_type == 'cart_discount_amount'">
                 <span style="font-weight: normal">Số tiền giảm: </span>
                 <strong t-esc="this.env.pos.format_currency(this.state.program.program.disc_amount)"/>
