@@ -90,11 +90,11 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                     // Reset floor
                     option.max_reward_quantity = option.floor * option.program.reward_quantity;
                     option.required_order_amount_min = option.floor * option.program.order_amount_min;
-                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
-                        option.reward_line_vals.forEach(line => {line.isSelected = false;});
-                        option.selectedQty = 0;
-                        option.isSelected = false;
-                    });
+//                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
+                    option.reward_line_vals.forEach(line => {line.isSelected = false;});
+                    option.selectedQty = 0;
+                    option.isSelected = false;
+//                    });
                 };
 
             } else {
