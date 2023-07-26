@@ -133,7 +133,7 @@ class MainController(http.Controller):
                 #                #     'discount') else 0,
                 #                'x_cart_discount_fixed_price': float(item.get('discount')) * float(
                 #                    item.get('quantity')) if item.get('discount') else 0}))
-                order_line = n_client.get_order_line(order, brand_id, location_id)
+                order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
 
                 # nhân viên kinh doanh
                 # user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)

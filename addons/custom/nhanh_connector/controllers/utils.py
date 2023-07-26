@@ -34,6 +34,11 @@ class NhanhClient:
             })
         return nhanh_partner
 
+    def get_sale_channel(self, order):
+        sale_channel = self.cls.env['sale.channel'].sudo().search([('nhanh_id', '=', int(order["saleChannel"]))], limit=1)
+        return sale_channel
+
+
     def get_brand(self):
         config = self.cls.env['nhanh.brand.config'].sudo().search([('nhanh_business_id', '=', self.cls.business_id)], limit=1)
         # config = self.cls.env['nhanh.brand.config'].sudo().search([('id', '=', 6)], limit=1)
@@ -156,7 +161,7 @@ class NhanhClient:
                 raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
             if not product_id and is_create: 
                 uom = self.cls.env.ref('uom.product_uom_unit').id
-                product = self.cls.env['product.template'].create({
+                product = self.cls.env['product.template'].sudo().create({
                     'detailed_type': 'asset',
                     'nhanh_id': item.get('productId'),
                     'check_data_odoo': False,
@@ -164,10 +169,10 @@ class NhanhClient:
                     'barcode': item.get('productBarcode'),
                     'list_price': item.get('price'),
                     'uom_id': uom,
-                    'weight': item.get('shippingWeight', 0),
+                    'weight': item.get('weight', 0),
                     'responsible_id': None
                 })
-                product_id = self.cls.env['product.product'].search([
+                product_id = self.cls.env['product.product'].sudo().search([
                     ('product_tmpl_id', '=', product.id)
                 ], limit=1)
 
@@ -231,6 +236,13 @@ class NhanhClient:
         # utm source
         utm_source_id = self.get_and_create_utm_source(order)
 
+        # sale channel
+        sale_channel = self.get_sale_channel(order)
+
+        x_transfer_code = order['carrierCode']
+        if sale_channel and sale_channel.is_tmdt:
+            x_transfer_code = order['privateId']
+
         order_data = {
             'nhanh_id': order['id'],
             'partner_id': nhanh_partner.id,
@@ -253,6 +265,8 @@ class NhanhClient:
             'nhanh_customer_phone': order['customerMobile'],
             'source_id': utm_source_id.id if utm_source_id else None,
             'x_location_id': location_id.id,
+            'sale_channel_id': sale_channel.id if sale_channel else None,
+            'x_transfer_code': x_transfer_code if x_transfer_code else '',
         }
         return order_data
 

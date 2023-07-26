@@ -9,7 +9,6 @@
                 <form string="filter_product_wizard_form">
                     <sheet>
                         <group>
-                            <field name="category_level"/>
                             <field name="category_type_id" options="{'no_create': True}" required="1"/>
                             <field name="product_brand_id" required="1" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>
                             <field name="product_group_ids" required="1" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>

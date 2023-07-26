@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-03 10:14+0000\n"
-"PO-Revision-Date: 2023-06-03 10:14+0000\n"
+"POT-Creation-Date: 2023-07-26 03:05+0000\n"
+"PO-Revision-Date: 2023-07-26 03:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__account_id
 msgid "Account"
 msgstr "Tài khoản"
+
+#. module: forlife_sale_promotion
+#: model:ir.model,name:forlife_sale_promotion.model_account_move_promotion
+msgid "Account Move promotion"
+msgstr ""
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__analytic_account_id
@@ -55,6 +60,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 msgid "Check Promotion"
 msgstr "Kiểm tra khuyến mãi"
+
+#. module: forlife_sale_promotion
+#: model:ir.model,name:forlife_sale_promotion.model_check_promotion_wizard
+msgid "Check Promotion wizard"
+msgstr ""
 
 #. module: forlife_sale_promotion
 #: model:ir.actions.act_window,name:forlife_sale_promotion.action_check_promotion_wizard
@@ -144,7 +154,7 @@ msgstr "Sổ nhật ký"
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_account_move
 msgid "Journal Entry"
-msgstr "Bút toán sổ nhật ký"
+msgstr "Bút toán"
 
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_account_move_line
@@ -183,9 +193,11 @@ msgid "Message"
 msgstr "Tin nhắn"
 
 #. module: forlife_sale_promotion
-#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__move_id
-msgid "Move"
-msgstr ""
+#. odoo-python
+#: code:addons/forlife_sale_promotion/models/sale_order.py:0
+#, python-format
+msgid "Not found the Sale Order with #X[%s] and #N[%s]!"
+msgstr "Không tìm thấy đơn hàng tương ứng với #X[%s] và #N[%s]!"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__move_id
@@ -198,24 +210,26 @@ msgstr "Đơn hàng"
 #: code:addons/forlife_sale_promotion/models/sale_order.py:0
 #, python-format
 msgid "Order note '#MN' invalid!"
-msgstr "Ghi chú '#MN' trên đơn hàng không hợp lệ!"
+msgstr "Ghi chú đơn hàng '#MN' không hợp lệ!"
 
 #. module: forlife_sale_promotion
 #. odoo-python
 #: code:addons/forlife_sale_promotion/models/sale_order.py:0
 #, python-format
 msgid "Order note '#VIP' invalid!"
-msgstr "Ghi chú '#VIP' trên đơn hàng không hợp lệ!"
+msgstr "Ghi chú đơn hàng '#VIP' không hợp lệ!"
+
+#. module: forlife_sale_promotion
+#. odoo-python
+#: code:addons/forlife_sale_promotion/models/sale_order.py:0
+#, python-format
+msgid "Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!"
+msgstr "Ghi chú đơn hàng '#X[Đơn gốc Nhanh ID] #N[Đơn trả Nhanh ID]' không đúng định dạng!"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__prm_price_discount
 msgid "Price discount"
 msgstr "Giá trị giảm"
-
-#. module: forlife_sale_promotion
-#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__prm_price_total_discount
-msgid "Price total discount"
-msgstr "Giá trị sau giảm"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__product_id
@@ -241,9 +255,21 @@ msgid "Promotion"
 msgstr "Khuyến mãi"
 
 #. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_move_id
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_move_id
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_move_id
+msgid "Promotion Move"
+msgstr ""
+
+#. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__promotion_account_id
 msgid "Promotion account"
 msgstr "Tài khoản khuyến mãi"
+
+#. module: forlife_sale_promotion
+#: model:product.template,name:forlife_sale_promotion.product_product_promotion_customer_shipping_fee_product_template
+msgid "Promotion customer shipping fee"
+msgstr "Phí vận chuyển tạm ghi nhận"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_ids
@@ -265,6 +291,16 @@ msgid "Promotion journal count"
 msgstr "Số lượng bút toán khuyến mãi"
 
 #. module: forlife_sale_promotion
+#: model:product.template,name:forlife_sale_promotion.product_product_promotion_shipping_fee_product_template
+msgid "Promotion shipping fee"
+msgstr "Doanh thu tiền vận chuyển"
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__product_uom_qty
+msgid "Quantity"
+msgstr ""
+
+#. module: forlife_sale_promotion
 #: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__draft
 msgid "Quotation"
 msgstr "Báo giá"
@@ -278,6 +314,11 @@ msgstr "Báo giá đã gửi"
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.check_promotion_wizard_form
 msgid "Reason"
 msgstr "Lý do"
+
+#. module: forlife_sale_promotion
+#: model:ir.model,name:forlife_sale_promotion.model_sale_order_promotion
+msgid "SO promotion"
+msgstr ""
 
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_sale_loyalty_reward_wizard
@@ -298,7 +339,7 @@ msgstr "Đơn bán hàng"
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Mục đơn bán hàng"
+msgstr "Chi tiết đơn hàng"
 
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
@@ -345,13 +386,27 @@ msgid ""
 msgstr ""
 
 #. module: forlife_sale_promotion
-#: model:ir.model,name:forlife_sale_promotion.model_account_move_promotion
-msgid "account.move.promotion"
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__customer_shipping_fee
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__customer_shipping_fee
+msgid "customer_shipping_fee"
 msgstr ""
 
 #. module: forlife_sale_promotion
-#: model:ir.model,name:forlife_sale_promotion.model_check_promotion_wizard
-msgid "check.promotion.wizard"
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__diff_price
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__diff_price
+msgid "diff_price"
+msgstr ""
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__discount
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__discount
+msgid "discount"
+msgstr ""
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__nhanh_shipping_fee
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__nhanh_shipping_fee
+msgid "nhanh_shipping_fee"
 msgstr ""
 
 #. module: forlife_sale_promotion
@@ -360,6 +415,25 @@ msgid "ok"
 msgstr "Đồng ý"
 
 #. module: forlife_sale_promotion
-#: model:ir.model,name:forlife_sale_promotion.model_sale_order_promotion
-msgid "sale.order.promotion"
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__promotion_type
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__promotion_type
+msgid "promotion_type"
+msgstr ""
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__reward
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__reward
+msgid "reward"
+msgstr ""
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__vip_amount
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__vip_amount
+msgid "vip_amount"
+msgstr ""
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__account_move_promotion__promotion_type__vip_amount_remain
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__vip_amount_remain
+msgid "vip_amount_remain"
 msgstr ""

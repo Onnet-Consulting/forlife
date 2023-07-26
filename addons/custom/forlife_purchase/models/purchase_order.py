@@ -1049,36 +1049,34 @@ class PurchaseOrder(models.Model):
         return super().copy(default)
 
     def action_view_invoice_normal_new(self):
-        for rec in self:
-            data_search = self.env['account.move'].search(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]).ids
+        data_search = self.env['account.move'].search(
+            [('purchase_order_product_id', 'in', self.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
+            'domain': [('id', 'in', data_search)],
         }
 
     def action_view_invoice_labor_new(self):
-        for rec in self:
-            data_search = self.env['account.move'].search(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'),
-                 ('select_type_inv', '=', 'labor')]).ids
+        data_search = self.env['account.move'].search(
+            [('purchase_order_product_id', 'in', self.ids), ('move_type', '=', 'in_invoice'),
+             ('select_type_inv', '=', 'labor')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
+            'domain': [('id', 'in', data_search)],
         }
 
     def action_view_invoice_expense_new(self):
         for rec in self:
             data_search = self.env['account.move'].search(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'),
+                [('purchase_order_product_id', 'in', self.ids), ('move_type', '=', 'in_invoice'),
                  ('select_type_inv', '=', 'expense')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
@@ -1086,20 +1084,19 @@ class PurchaseOrder(models.Model):
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
+            'domain': [('id', 'in', data_search)],
         }
 
     def action_view_invoice_service_new(self):
-        for rec in self:
-            data_search = self.env['account.move'].search(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'service')]).ids
+        data_search = self.env['account.move'].search(
+            [('purchase_order_product_id', 'in', self.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'service')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
+            'domain': [('id', 'in', data_search)],
         }
 
     def create_invoice_normal_yes_return(self, order, line, wave_item, x_return):
@@ -1401,12 +1398,12 @@ class PurchaseOrder(models.Model):
                                 material = material_lines.filtered(lambda m: m.purchase_order_line_id.id == line_id.id)
                                 if not order.is_return:
                                     wave = picking_labor_in.move_line_ids_without_package.filtered(
-                                        lambda w: w.purchase_order_line_id.id == line_id.id
+                                        lambda w: w.move_id.purchase_line_id.id == line_id.id
                                                   and w.product_id.id == line_id.product_id.id
                                                   and w.picking_type_id.code == 'incoming'
                                                   and w.picking_id.x_is_check_return == False)
                                 else:
-                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: w.purchase_order_line_id.id == line_id.id
+                                    wave = picking_labor_in.move_line_ids_without_package.filtered(lambda w: w.move_id.purchase_line_id.id == line_id.id
                                                                                                     and w.product_id.id == line_id.product_id.id
                                                                                                     and w.picking_id.x_is_check_return == False)
                                 for material_line in material:
