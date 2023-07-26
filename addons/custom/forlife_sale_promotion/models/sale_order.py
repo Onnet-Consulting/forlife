@@ -85,6 +85,26 @@ class SaleOrder(models.Model):
                     # note = BeautifulSoup(rec.note, "lxml").text.replace('&nbsp;', '').strip()
                     # đơn hàng có tôn tại Lấy 3 ký tự đầu tiên của note thỏa với '#mn'
 
+                    # Check mã đơn gốc và mã đơn đổi trả trong trường note
+                    if rec.source_record and rec.x_is_change:
+                        pattern_re = re.compile('#X\d+([\r\n]|.)*?#N\d+')
+                        matched_str = pattern_re.search(rec.note)
+                        if matched_str:
+                            nhanh_origin_id = re.search(r'#X\d+', rec.note).group().split('#X', 1)[-1]
+                            nhanh_return_id = re.search(r'#N\d+', rec.note).group().split('#N', 1)[-1]
+                            orig_order = rec.search([('nhanh_id', '=', nhanh_origin_id)], limit=1)
+                            return_order = rec.search([('nhanh_id', '=', nhanh_return_id)], limit=1)
+                            if not orig_order or not return_order:
+                                action = self.env['ir.actions.actions']._for_xml_id(
+                                    'forlife_sale_promotion.action_check_promotion_wizard')
+                                action['context'] = {
+                                    'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)}
+                                return action
+                        else:
+                            action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action['context'] = {'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")}
+                            return action
+
                     has_vip = False
                     if len(self.find_mn_index(note)) >= 0:
                         for mn in self.find_mn_index(note):
