@@ -102,11 +102,11 @@ class HrAssetTransferLine(models.Model):
     company_id = fields.Many2one('res.company', related='hr_asset_transfer_id.company_id')
 
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
-    employee_from_id = fields.Many2one('hr.employee', string="Employee From")
+    employee_from_id = fields.Many2one('hr.employee', string="Employee From", related='asset_code.employee', store=True)
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
-    account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From")
+    account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From", related='asset_code.dept_code', store=True)
     account_analytic_to_id = fields.Many2one('account.analytic.account', string="Cost Center To")
-    asset_location_from_id = fields.Many2one('asset.location', string="Asset Location From")
+    asset_location_from_id = fields.Many2one('asset.location', string="Asset Location From", related='asset_code.location', store=True)
     asset_location_to_id = fields.Many2one('asset.location', string="Asset Location To")
     hr_asset_transfer_id = fields.Many2one('hr.asset.transfer', ondelete='cascade', required=True)
     check_required = fields.Boolean(compute='compute_check_required')
@@ -122,12 +122,12 @@ class HrAssetTransferLine(models.Model):
             else:
                 item.check_required = False
 
-    @api.onchange('asset_code')
-    def onchange_asset_code(self):
-        if self.asset_code:
-            self.employee_from_id = self.asset_code.employee.id
-            self.account_analytic_from_id = self.asset_code.dept_code.id
-            self.asset_location_from_id = self.asset_code.location.id
+    # @api.onchange('asset_code')
+    # def onchange_asset_code(self):
+    #     if self.asset_code:
+    #         self.employee_from_id = self.asset_code.employee.id
+    #         self.account_analytic_from_id = self.asset_code.dept_code.id
+    #         self.asset_location_from_id = self.asset_code.location.id
 
     def check_asset_code(self):
         for rec in self:
