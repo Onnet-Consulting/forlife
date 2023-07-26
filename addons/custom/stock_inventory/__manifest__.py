@@ -17,14 +17,16 @@
 
         'data/ir_attachment_data.xml',
 
+        'wizard/filter_product_wizard_views.xml',
+        'wizard/import_inventory_session_views.xml',
+        'wizard/request_confirmation_picking_wizard_views.xml',
+
         'views/stock_inventory_stock_views.xml',
         'views/inventory_detail_views.xml',
         'views/inventory_session_views.xml',
 
         'reports/report_stockinventory.xml',
         'reports/report_stock_valorization.xml',
-
-        'wizard/import_inventory_session_views.xml',
     ],
     'assets': {
 

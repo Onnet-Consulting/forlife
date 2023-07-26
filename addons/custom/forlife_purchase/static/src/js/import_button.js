@@ -9,7 +9,6 @@ odoo.define('module-name.tree_button', function (require) {
             'click .import_your_action': '_OpenWizard',
         }),
         _OpenWizard: function () {
-            console.log(this, 'this')
             return this.do_action('forlife_purchase.import_production_from_excel_action');
         }
     });

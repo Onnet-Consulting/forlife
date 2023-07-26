@@ -10,6 +10,7 @@
                 <field name="name"/>
                 <field name="service_name"/>
                 <field name="nhanh_id"/>
+                <field name="partner_id"/>
             </tree>
         </field>
     </record>
@@ -20,8 +21,4 @@
         <field name="res_model">delivery.carrier</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem id="delivery_carrier_menu" name="Delivery Carrier" parent="base.menu_ir_property"
-              action="delivery_carrier_view_action"/>
-
 </odoo>

@@ -192,8 +192,9 @@
             <field name="model">forlife.reason.type</field>
             <field name="arch" type="xml">
                 <tree editable="top">
-                    <field name="name"/>
-                    <field name="code"/>
+                    <field name="name" required="1"/>
+                    <field name="code" required="1"/>
+                    <field name="company_id" readonly="1" force_save="1"/>
                 </tree>
             </field>
         </record>

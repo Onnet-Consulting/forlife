@@ -22,11 +22,6 @@ class SelectTypeInvoice(models.TransientModel):
         for rec in self:
             if len(current_purchase) == 1:
                 for item in current_purchase:
-                    if item.purchase_type == 'product' and rec.select_type_inv == 'service':
-                        raise UserError(
-                            _('Không thể tạo %s với loại mua hàng là %s') %
-                            (dict(self._fields['select_type_inv'].selection).get(rec.select_type_inv),
-                            dict(item._fields['purchase_type'].selection).get(item.purchase_type)))
                     item.write({
                         'select_type_inv': rec.select_type_inv,
                     })
@@ -40,20 +35,10 @@ class SelectTypeInvoice(models.TransientModel):
                     'domain': [('id', 'in', moves.ids)],
                 }
             else:
-                has_invalid_item = False
                 for item in current_purchase:
-                    if item.purchase_type == 'product' and rec.select_type_inv == 'service':
-                        has_invalid_item = True
-                        break
-                    if (item.purchase_type == 'service' or item.purchase_type == 'asset') and rec.select_type_inv != 'service':
-                        has_invalid_item = True
-                        break
-                for item in current_purchase:
-                    if has_invalid_item:
-                        raise UserError(
-                            _('Không thể tạo %s với loại mua hàng là %s') %
-                           (dict(self._fields['select_type_inv'].selection).get(rec.select_type_inv),
-                            dict(item._fields['purchase_type'].selection).get(item.purchase_type)))
+                    exit_partner_id = current_purchase.filtered(lambda r: r.partner_id != item.partner_id)
+                    if exit_partner_id:
+                        raise UserError(_('Khổng thể tạo hóa đơn từ nhiều phiếu PO khác nhà cung cấp!'))
                     item.write({
                         'select_type_inv': rec.select_type_inv,
                     })
@@ -66,7 +51,6 @@ class SelectTypeInvoice(models.TransientModel):
                     'view_mode': 'tree,form',
                     'domain': [('move_type', '=', 'in_invoice'), ('id', 'in', moves.ids)],
                 }
-
 
     def cancel(self):
         pass
