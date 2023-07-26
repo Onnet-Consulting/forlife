@@ -1377,8 +1377,15 @@ class PurchaseOrder(models.Model):
                 pending_section = None
                 # Invoice values.
                 invoice_vals = order._prepare_invoice()
-                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
-                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
+                purchase_type = order.exchange_rate
+                if order.select_type_inv == 'expense':
+                    purchase_type = 'service'
+                invoice_vals.update({
+                    'purchase_type': purchase_type,
+                    'invoice_date': datetime.now(),
+                    'exchange_rate': order.exchange_rate,
+                    'currency_id': order.currency_id.id
+                })
                 # Invoice line values (keep only necessary sections).
 
                 if order.select_type_inv == 'labor':
@@ -1442,6 +1449,13 @@ class PurchaseOrder(models.Model):
                     picking_expense_in_return = self.env['stock.picking'].search(domain_expense + [('x_is_check_return', '=', True)])
                     if order.cost_line:
                         for nine in order.cost_line:
+                            # invoice_vals['invoice_line_ids'].append((0, 0, {
+                            #     'product_id': cost.product_id.id,
+                            #     'price_unit': cost.actual_cost,
+                            #     'tax_ids': []
+                            # }))
+                            # sequence += 1
+                            # invoice_vals_list.append(invoice_vals)
                             cp = 0
                             for line in order.order_line:
                                 if not order.is_return:
@@ -2135,7 +2149,6 @@ class PurchaseOrderLine(models.Model):
     qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
     received = fields.Integer(string='Đã nhận', compute='compute_received')
-    qty_returned = fields.Integer(string="Returned Qty", compute="_compute_qty_returned", store=True)
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char(related='product_id.name', store=True, required=False, string='Mô tả')
     # Phục vụ import

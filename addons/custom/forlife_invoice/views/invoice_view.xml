@@ -273,14 +273,13 @@
                             </group>
                         </div>
                     </page>
-                    <field name="is_check_vendor_page" force_save="1" invisible="1"/>
-                    <page string="NCC vãng lai" name="supplier_info"
-                          attrs="{'invisible':['|',('is_check_vendor_page', '=', False),('move_type', '=', 'entry')]}">
+                    <page string="Kê khai hóa đơn GTGT" name="supplier_info">
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
                                     <create name="add" string="Thêm mới" readonly="1"/>
                                 </control>
+                                <field name="vendor_back_id" invisible="1"/>
                                 <field name="vendor"/>
                                 <field name="code_tax"/>
                                 <field name="street_ven"/>
@@ -288,10 +287,10 @@
                                 <field name="invoice_reference"/>
                                 <field name="invoice_description"/>
                                 <field name="price_subtotal_back" force_save="1"/>
-                                <field name="tax_back" force_save="1"/>
-<!--                                <field name="tax_percent_back" force_save="1"/>-->
                                 <field name="tax_percent" force_save="1"/>
+                                <field name="tax_back" force_save="1"/>
                                 <field name="_x_invoice_date" force_save="1"/>
+                                <field name="date_due" force_save="1"/>
                                 <field name="totals_back" force_save="1"/>
                             </tree>
                         </field>
