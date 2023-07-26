@@ -150,7 +150,7 @@ class ProductTemplate(models.Model):
                     "barcode": item.barcode if item.barcode else '',
                     "importPrice": item.list_price,
                     "price": price,
-                    "shippingWeight": res.weight if res.weight > 0 else 200,
+                    "shippingWeight": item.weight if item.weight > 0 else 200,
                     "status": 'New'
                 })
 
@@ -180,7 +180,7 @@ class ProductTemplate(models.Model):
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
                 "price": item.list_price,
-                "shippingWeight": res.weight if res.weight > 0 else 200,
+                "shippingWeight": item.weight if item.weight > 0 else 200,
                 "status": 'Inactive'
             })
         if not data:
@@ -235,7 +235,7 @@ class ProductTemplate(models.Model):
             "barcode": self.barcode if self.barcode else '',
             "importPrice": self.list_price,
             "price": price,
-            "shippingWeight": res.weight if res.weight > 0 else 200,
+            "shippingWeight": self.weight if self.weight > 0 else 200,
             "status": 'New'
         })
         self.sudo().with_delay(
