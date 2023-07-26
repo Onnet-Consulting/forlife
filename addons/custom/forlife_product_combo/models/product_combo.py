@@ -68,21 +68,22 @@ class ProductCombo(models.Model):
     @api.model
     def get_combo(self, vals):
         now = datetime.now()
-        list_ids = []
+        list_sku_codes = []
         for rec in vals:
-            list_ids.append(rec['product_tmpl_id'])
-        if list_ids:
-            if len(list_ids) == 1:
-                list_ids = str(tuple(list_ids)).replace(',', '')
+            list_sku_codes.append(rec['sku_code'])
+        if list_sku_codes:
+            if len(list_sku_codes) == 1:
+                list_sku_codes = str(tuple(list_sku_codes)).replace(',', '')
             else:
-                list_ids = tuple(list_ids)
+                list_sku_codes = tuple(list_sku_codes)
             sql_get_combo_from_product_pos = f"SELECT pc.id FROM product_combo pc " \
                                        f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
                                        f" JOIN product_template ptl on ptl.id = pcl.product_id" \
                                        f" WHERE pc.from_date < '{now}' and pc.to_date > '{now}' " \
-                                       f" and ptl.id in {list_ids} and pc.state = 'in_progress' "
+                                       f" and ptl.sku_code in {list_sku_codes} and pc.state = 'in_progress' "
             self._cr.execute(sql_get_combo_from_product_pos)
             datafetch = set(self._cr.fetchall())
+            print(datafetch)
             if datafetch:
                 combo_ids = [x[0] for x in datafetch]
                 if combo_ids:
@@ -90,7 +91,7 @@ class ProductCombo(models.Model):
                         combo_ids = str(tuple(combo_ids)).replace(',', '')
                     else:
                         combo_ids = tuple(combo_ids)
-                sql_get_all_product_in_combo = f"SELECT pc.id as combo_id, pcl.product_id as product_tmpl_id, pcl.quantity, pt.name as product_name  FROM product_combo pc " \
+                sql_get_all_product_in_combo = f"SELECT pc.id as combo_id, pcl.sku as sku_code, pcl.quantity, pt.name as product_name  FROM product_combo pc " \
                                                f" JOIN product_combo_line pcl on pcl.combo_id = pc.id " \
                                                f" JOIN product_template pt on pt.id = pcl.product_id " \
                                                f" WHERE pc.id in {combo_ids}"

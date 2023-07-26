@@ -64,11 +64,11 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
             rslt.forEach(function(item){
                 let key = `combo_id_${item.combo_id}`
                 if(rsltObject[key]){
-                    rsltObject[key].push(item.product_tmpl_id)
+                    rsltObject[key].push(item.sku_code)
                 }else{
                     rsltObject[key]=[]
                     list_key.push(key)
-                    rsltObject[key].push(item.product_tmpl_id)
+                    rsltObject[key].push(item.sku_code)
                 }
                 if(merge_combo[key]){
                     merge_combo[key].push(item)
@@ -87,8 +87,8 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                 for(let i=0; i< list_key.length; i++){
                     let product_valid_combo_in_pos = []
                     for(let j =0;j <list_product_tmpl.length; j++){
-                        if(rsltObject[list_key[i]].includes(list_product_tmpl[j].product_tmpl_id)){
-                            product_valid_combo_in_pos.push(list_product_tmpl[j].product_tmpl_id)
+                        if(rsltObject[list_key[i]].includes(list_product_tmpl[j].sku_code)){
+                            product_valid_combo_in_pos.push(list_product_tmpl[j].sku_code)
                         }
                     }
                     if(product_valid_combo_in_pos.length != rsltObject[list_key[i]].length){
@@ -105,7 +105,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             let arr_qty = []
                             list_product_tmpl.forEach(function(item){
                                 for(let j=0; j<merge_combo[list_key[i]].length; j++){
-                                    if(item.product_tmpl_id == merge_combo[list_key[i]][j].product_tmpl_id){
+                                    if(item.sku_code == merge_combo[list_key[i]][j].sku_code){
                                        list_check.push(item.quantity/merge_combo[list_key[i]][j].quantity)
                                        arr_name.push(merge_combo[list_key[i]][j].product_name.vi_VN)
                                        arr_qty.push([merge_combo[list_key[i]][j].quantity, merge_combo[list_key[i]][j].product_name.vi_VN])
