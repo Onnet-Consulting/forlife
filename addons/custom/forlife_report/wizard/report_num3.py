@@ -227,16 +227,12 @@ order by num
         values = dict(super().get_data(allowed_company))
         collection_domain = [('collection', '=', self.collection)] if self.collection else []
         Product = self.env['product.product']
+        Utility = self.env['res.utility']
+        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
             product_ids = self.product_ids
-        elif self.texture_ids:
-            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)] + collection_domain)
-        elif self.product_line_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)] + collection_domain)
-        elif self.product_group_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)] + collection_domain)
-        elif self.product_brand_id:
-            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)] + collection_domain)
+        elif categ_ids:
+            product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))] + collection_domain)
         else:
             product_ids = Product.search(collection_domain) if collection_domain else Product
         wh_domain = [('company_id', 'in', allowed_company)]
@@ -251,7 +247,7 @@ order by num
             product_ids = product_ids.filtered(lambda f: any([attr_value.get('chat_luong') == x for x in f.mapped('attribute_line_ids.attribute_id.attrs_code')]))
         product_ids = product_ids.ids or [-1]
         query = self._get_query(product_ids, wh_ids, allowed_company)
-        data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
+        data = Utility.execute_postgresql(query=query, param=[], build_dict=True)
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data(warehouse_ids)
         values.update({

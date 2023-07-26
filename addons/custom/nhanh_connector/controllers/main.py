@@ -70,8 +70,10 @@ class MainController(http.Controller):
             odoo_order = n_client.get_sale_order(order_id)
             is_create_wh_in = False
             if odoo_order and data['status'] in ['Returned']:
+                origin_order_id = odoo_order
                 odoo_order = None
                 is_create_wh_in = True
+                nhanh_origin_id = order_id
 
             if not odoo_order:
                 order_returned = order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']
@@ -110,143 +112,155 @@ class MainController(http.Controller):
                             partner, int(order['depotId'])
                         )
 
-                order_line = []
+                # order_line = []
                 
-                for item in order['products']:
-                    product_id = self.product_product_model().sudo().search([('nhanh_id', '=', item.get('productId'))],
-                                                                            limit=1)
-                    if not product_id:
-                        raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
-                    product_id.product_tmpl_id.write({
-                        'brand_id': brand_id.id
-                    })
-                    order_line.append((
-                        0, 0, {'product_template_id': product_id.product_tmpl_id.id, 'product_id': product_id.id,
-                               'name': product_id.name,
-                               'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
-                               'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
-                               'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                               'x_location_id': location_id.id,
-                               # 'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
-                               #     'discount') else 0,
-                               'x_cart_discount_fixed_price': float(item.get('discount')) * float(
-                                   item.get('quantity')) if item.get('discount') else 0}))
+                # for item in order['products']:
+                #     product_id = self.product_product_model().sudo().search([('nhanh_id', '=', item.get('productId'))],
+                #                                                             limit=1)
+                #     if not product_id:
+                #         raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
+                #     product_id.product_tmpl_id.write({
+                #         'brand_id': brand_id.id
+                #     })
+                #     order_line.append((
+                #         0, 0, {'product_template_id': product_id.product_tmpl_id.id, 'product_id': product_id.id,
+                #                'name': product_id.name,
+                #                'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
+                #                'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
+                #                'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                #                'x_location_id': location_id.id,
+                #                # 'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
+                #                #     'discount') else 0,
+                #                'x_cart_discount_fixed_price': float(item.get('discount')) * float(
+                #                    item.get('quantity')) if item.get('discount') else 0}))
+                order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
 
                 # nhân viên kinh doanh
-                user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
+                # user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
 
                 # đội ngũ bán hàng
-                team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
+                # team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
                 
                 # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
                 # if not warehouse_id:
                 #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
                 # delivery carrier
-                delivery_carrier_id = request.env['delivery.carrier'].sudo().search(
-                    [('nhanh_id', '=', order['carrierId'])], limit=1)
-                if not delivery_carrier_id:
-                    delivery_carrier_id = request.env['delivery.carrier'].sudo().create({
-                        'nhanh_id': order['carrierId'],
-                        'name': order['carrierName'],
-                        'code': order['carrierCode'],
-                        'service_name': order['serviceName']
-                    })
+                # delivery_carrier_id = request.env['delivery.carrier'].sudo().search(
+                #     [('nhanh_id', '=', order['carrierId'])], limit=1)
+                # if not delivery_carrier_id:
+                #     delivery_carrier_id = request.env['delivery.carrier'].sudo().create({
+                #         'nhanh_id': order['carrierId'],
+                #         'name': order['carrierName'],
+                #         'code': order['carrierCode'],
+                #         'service_name': order['serviceName']
+                #     })
 
                 # nguồn đơn hàng
-                utm_source_id = request.env['utm.source'].sudo().search([('x_nhanh_id', '=', order['trafficSourceId'])])
-                if not utm_source_id:
-                    utm_source_id = request.env['utm.source'].sudo().create({
-                        'x_nhanh_id': order['trafficSourceId'],
-                        'name': order['trafficSourceName'],
-                    })
-                value = {
-                    'nhanh_id': order['id'],
-                    'partner_id': nhanh_partner.id,
-                    'order_partner_id': partner.id,
-                    'nhanh_shipping_fee': order['shipFee'],
-                    'nhanh_customer_shipping_fee': order['customerShipFee'],
-                    'source_record': True,
-                    'code_coupon': order['couponCode'],
-                    'state': 'draft',
-                    'nhanh_order_status': order['statusCode'].lower(),
-                    'name_customer': name_customer,
-                    'note': order["privateDescription"],
-                    'note_customer': order['description'],
-                    'x_sale_chanel': 'online',
-                    # 'carrier_name': order['carrierName'],
-                    'user_id': user_id.id if user_id else None,
-                    'team_id': team_id.id if team_id else None,
-                    'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
-                    'delivery_carrier_id': delivery_carrier_id.id,
-                    'order_line': order_line,
-                    'nhanh_customer_phone': order['customerMobile'],
-                    'source_id': utm_source_id.id if utm_source_id else None,
-                    'x_location_id': location_id.id,
-                }
+                # utm_source_id = request.env['utm.source'].sudo().search([('x_nhanh_id', '=', order['trafficSourceId'])])
+                # if not utm_source_id:
+                #     utm_source_id = request.env['utm.source'].sudo().create({
+                #         'x_nhanh_id': order['trafficSourceId'],
+                #         'name': order['trafficSourceName'],
+                #     })
+                # value = {
+                #     'nhanh_id': order['id'],
+                #     'partner_id': nhanh_partner.id,
+                #     'order_partner_id': partner.id,
+                #     'nhanh_shipping_fee': order['shipFee'],
+                #     'nhanh_customer_shipping_fee': order['customerShipFee'],
+                #     'source_record': True,
+                #     'code_coupon': order['couponCode'],
+                #     'state': 'draft',
+                #     'nhanh_order_status': order['statusCode'].lower(),
+                #     'name_customer': name_customer,
+                #     'note': order["privateDescription"],
+                #     'note_customer': order['description'],
+                #     'x_sale_chanel': 'online',
+                #     # 'carrier_name': order['carrierName'],
+                #     'user_id': user_id.id if user_id else None,
+                #     'team_id': team_id.id if team_id else None,
+                #     'company_id': default_company_id.id if default_company_id else None,
+                #     'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
+                #     'delivery_carrier_id': delivery_carrier_id.id,
+                #     'order_line': order_line,
+                #     'nhanh_customer_phone': order['customerMobile'],
+                #     'source_id': utm_source_id.id if utm_source_id else None,
+                #     'x_location_id': location_id.id,
+                # }
+                order_data = n_client.get_order_data(
+                    order, nhanh_partner, partner, name_customer, default_company_id, location_id
+                )
+                order_data["order_line"] = order_line
+                
                 # Check the order is paid online or not
-                private_description = order["privateDescription"]
-                if private_description.find("#VC") != -1:
-                    x_voucher = order["moneyTransfer"]
-                    x = private_description.split("#VC")
-                    y = x[1].strip()
-                    z = y.split()
-                    x_code_voucher = z[0]
-                else:
-                    x_voucher = 0
-                    x_code_voucher = ""
+                # private_description = order["privateDescription"]
+                # if private_description.find("#VC") != -1:
+                #     x_voucher = order["moneyTransfer"]
+                #     x = private_description.split("#VC")
+                #     y = x[1].strip()
+                #     z = y.split()
+                #     x_code_voucher = z[0]
+                # else:
+                #     x_voucher = 0
+                #     x_code_voucher = ""
+                x_voucher, x_code_voucher = n_client.order_paid_online(order)
 
-                #X270941175 #N270941350
-                if private_description.find("#X") != -1 and private_description.find("#N") != -1:
-                    x = private_description.split()
-                    return_changed = {
-                        "x_is_change": True,
-                    }
-                    for v in x:
-                        if v.find("#X") != -1 or v.find("#N") != -1:
-                            y = v.strip()
-                            if y.find("#X") != -1:
-                                z = y.replace("#X", "")
-                                origin_order_id = request.env['sale.order'].sudo().search(
-                                    [('nhanh_id', '=', z)], limit=1)
-                                return_changed['x_origin'] = origin_order_id.id if origin_order_id else None
-                                return_changed['nhanh_origin_id'] = z
-
-                            if y.find("#N") != -1:
-                                z = y.replace("#N", "")
-                                return_changed['nhanh_return_id'] = z
-                        else:
-                            continue
-                    value.update(return_changed)
-
-                value.update({
+                order_data.update({
                     "x_voucher": x_voucher,
                     "x_code_voucher": x_code_voucher
                 })
+
+                #X270941175 #N270941350
+                # if private_description.find("#X") != -1 and private_description.find("#N") != -1:
+                #     x = private_description.split(), 
+                #     return_changed = {
+                #         "x_is_change": True,
+                #     }
+                #     for v in x:
+                #         if v.find("#X") != -1 or v.find("#N") != -1:
+                #             y = v.strip()
+                #             if y.find("#X") != -1:
+                #                 z = y.replace("#X", "")
+                #                 origin_order_id = request.env['sale.order'].sudo().search(
+                #                     [('nhanh_id', '=', z)], limit=1)
+                #                 return_changed['x_origin'] = origin_order_id.id if origin_order_id else None
+                #                 return_changed['nhanh_origin_id'] = z
+
+                #             if y.find("#N") != -1:
+                #                 z = y.replace("#N", "")
+                #                 return_changed['nhanh_return_id'] = z
+                #         else:
+                #             continue
+                return_changed = n_client.order_return_and_changed(order)
+                if return_changed:
+                    order_data.update(return_changed)
+
                 
                 # đổi trả hàng
                 if order_returned or is_create_wh_in:
-                    origin_order_id = request.env['sale.order'].sudo().search(
-                        [('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))], limit=1)
-                    value.update({
+                    if not is_create_wh_in:
+                        origin_order_id = request.env['sale.order'].sudo().search([
+                            ('nhanh_id', '=', order.get('returnFromOrderId', order.get('id', 0)))
+                        ], limit=1)
+                        nhanh_origin_id = order.get('returnFromOrderId', 0)
+
+                    order_data.update({
                         'x_is_return': True,
                         'x_origin': origin_order_id.id if origin_order_id else None,
-                        'nhanh_origin_id': order.get('returnFromOrderId', 0)
+                        'nhanh_origin_id': nhanh_origin_id
                     })
-                webhook_value_id.order_id = self.sale_order_model().sudo().create(value)
+                webhook_value_id.order_id = self.sale_order_model().sudo().create(order_data)
 
                 if is_create_wh_in or order_returned:
                     try:
-                        # print('--------------- INTO ---------------------------')
                         webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
-                        # webhook_value_id.order_id.with_context({"wh_in":True}).action_create_picking()
-                    except:
-                        pass
+                    except Exception as e:
+                        print(str(e))
 
-                elif data['status'] in ['Canceled', 'Aborted']:
+                elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                     if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
                             'state'):
-                        for picking_id in odoo_order.picking_ids:
+                        for picking_id in webhook_value_id.order_id.picking_ids:
                             picking_id.action_cancel()
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not webhook_value_id.order_id.picking_ids:
@@ -270,10 +284,15 @@ class MainController(http.Controller):
                             pass
                         
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
+
                         if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                             for picking_id in odoo_order.picking_ids:
                                 picking_id.action_cancel()
-                        odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
+                        try:
+                            odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
+                        except Exception as e:
+                            pass
+
                     return self.result_request(200, 0, _('Update sale order success'))
                 else:
                     return self.result_request(404, 1, _('Update sale order false'))

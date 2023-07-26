@@ -11,6 +11,16 @@ class InheritStockPicking(models.Model):
         comodel_name='stock.location', string='Location Export', index=True, domain=[('usage', '=', 'internal')]
     )
 
+    @api.onchange('reason_type_id')
+    def _onchange_reason_location_product(self):
+        if self.reason_type_id:
+            if self._context.get('exchange_code') == 'incoming':
+                return {
+                    'domain': {
+                        'location_id': [('reason_type_id', '=', self.reason_type_id.id)]
+                    }
+                }
+
     def view_outgoing_picking(self):
         return {
             'name': _('Forlife Stock Exchange'),
@@ -22,12 +32,19 @@ class InheritStockPicking(models.Model):
             'view_id': self.env.ref('forlife_stock.inherit_stock_picking_for_other_export_form_view').id
         }
 
-    def _generate_outgoing_move(self, move_incoming_ids):
+    def _generate_outgoing_move(self, picking, move_incoming_ids):
         """
         Generate outgoing move for incoming picking
         """
         move_outgoing_values = []
-        reason_type_id = self.env.ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id
+        # reason_type_id = self.env.ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id
+
+        reason_export_id = picking.location_id.reason_export_material_id
+        if not reason_export_id:
+            raise ValidationError(_("Please configure reason export material of reason %s." % picking.location_id.name))
+        reason_type_id = self.env['forlife.reason.type'].browse(picking.location_id.reason_type_id.id)
+        if not reason_type_id:
+            raise ValidationError(_("Please configure reason type export material of reason %s." % picking.location_id.name))
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
             move_outgoing_value = [{
@@ -35,37 +52,37 @@ class InheritStockPicking(models.Model):
                 'name': material.product_id.name,
                 'product_id': material.product_id.id,
                 'location_id': self.location_id.id,
-                'location_dest_id': self.location_dest_id.id,
+                'location_dest_id': reason_export_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'price_unit': material.product_id.standard_price,
                 'amount_total': move.product_uom_qty * material.product_id.standard_price,
                 'bom_model': material._name,
                 'bom_id': material.id,
-                'reason_type_id': reason_type_id,
+                'reason_type_id': reason_type_id.id,
             } for material in bom.forlife_bom_material_ids if material.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': ingredients.product_id.name,
                 'product_id': ingredients.product_id.id,
                 'location_id': self.location_id.id,
-                'location_dest_id': self.location_dest_id.id,
+                'location_dest_id': reason_export_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'price_unit': ingredients.product_id.standard_price,
                 'amount_total': move.product_uom_qty * ingredients.product_id.standard_price,
                 'bom_model': ingredients._name,
                 'bom_id': ingredients.id,
-                'reason_type_id': reason_type_id,
+                'reason_type_id': reason_type_id.id,
             } for ingredients in bom.forlife_bom_ingredients_ids if ingredients.product_id.type == 'product'] + [{
                 'picking_id': self.id,
                 'name': expense.product_id.name,
                 'product_id': expense.product_id.id,
                 'location_id': self.location_id.id,
-                'location_dest_id': self.location_dest_id.id,
+                'location_dest_id': reason_export_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'price_unit': expense.product_id.standard_price,
                 'amount_total': move.product_uom_qty * expense.product_id.standard_price,
                 'bom_model': expense._name,
                 'bom_id': expense.id,
-                'reason_type_id': reason_type_id,
+                'reason_type_id': reason_type_id.id,
             } for expense in bom.forlife_bom_service_cost_ids if expense.product_id.type == 'product']
             if not move_outgoing_value:
                 raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
@@ -76,8 +93,9 @@ class InheritStockPicking(models.Model):
         """
         Generate and validate outgoing picking for incoming picking
         """
+        picking = self
         picking_outgoing_id = self.create({'location_id': self.location_export_id.id, 'origin': self.name})
-        picking_outgoing_id._generate_outgoing_move(self.move_ids)
+        picking_outgoing_id._generate_outgoing_move(picking, self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
         materials_not_enough = '\n\t- '.join([
@@ -146,6 +164,8 @@ class InheritStockPicking(models.Model):
     def default_get(self, fields):
         results = super(InheritStockPicking, self).default_get(fields)
         exchange_code = self._context.get('exchange_code')
+        StockLocation = self.env['stock.location']
+        ForlifeReasonType = self.env['forlife.reason.type']
         if exchange_code == 'incoming':
             company = self.env.company
             picking_type = self.env['stock.picking.type'].search(
@@ -154,12 +174,18 @@ class InheritStockPicking(models.Model):
             )
             if not picking_type:
                 raise ValidationError(_('Please configure the finished product import operation type for company %s!', company.name))
-            ref = self.env.ref
+            location_id = StockLocation.search([('code', '=', 'N0101'), ('company_id', '=', company.id)], limit=1)
+            if not location_id:
+                raise ValidationError(_('Please configure reason finished product import operation for company %s!' % company.name))
+            reason_type_id = ForlifeReasonType.search([('code', '=', 'N01'), ('company_id', '=', company.id)], limit=1)
+            if not reason_type_id:
+                raise ValidationError(_('Please configure reason type incoming for company %s.' % company.name))
+
             results.update({
                 'picking_type_id': picking_type.id,
-                'location_id': ref('forlife_stock_exchange.forlife_location_incoming_exchange').id,
+                'location_id': location_id.id,
                 'location_dest_id': None,
-                'reason_type_id': ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange').id,
+                'reason_type_id': reason_type_id.id,
                 'other_import': True
             })
         elif exchange_code == 'outgoing':
@@ -170,11 +196,17 @@ class InheritStockPicking(models.Model):
             )
             if not picking_type:
                 raise ValidationError(_('Please configure the materials export operation type for company %s!', company.name))
-            ref = self.env.ref
+            location_dest_id = StockLocation.search([('code', '=', 'X1001'), ('company_id', '=', company.id)], limit=1)
+            if not location_dest_id:
+                raise ValidationError(_('Please configure reason material product export operation for company %s!' % company.name))
+
+            reason_type_id = ForlifeReasonType.search([('code', '=', 'X10'), ('company_id', '=', company.id)], limit=1)
+            if not reason_type_id:
+                raise ValidationError(_('Please configure reason type outgoing for company %s.' % company.name))
             results.update({
                 'picking_type_id': picking_type.id,
-                'location_dest_id': ref('forlife_stock_exchange.forlife_location_outgoing_exchange').id,
-                'reason_type_id': ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id,
+                'location_dest_id': location_dest_id.id,
+                'reason_type_id': reason_type_id.id,
                 'other_export': True
             })
         return results

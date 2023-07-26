@@ -64,8 +64,8 @@ class TransportationSessionLine(models.Model):
     order_line = fields.One2many(related='order_id.order_line', string='Số SP')
     nhanh_status = fields.Selection(related='order_id.nhanh_order_status', string='Trạng thái NhanhVN')
     order_status = fields.Selection(related='order_id.state', string='Trạng thái đơn hàng')
-    channel = fields.Many2one(related='order_id.source_id', string='Kênh tạo đơn')
-    transport_code = fields.Char(string='Mã giao vận')
+    channel = fields.Many2one(related='order_id.sale_channel_id', string='Kênh/Sàn')
+    transport_code = fields.Char(related='order_id.x_transfer_code', string='Mã đơn vận')
     status = fields.Selection([
         ('out_success', 'Xuất kho thành công'),
         ('in_success', 'Nhập kho thành công'),

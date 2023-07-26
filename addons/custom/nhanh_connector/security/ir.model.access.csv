@@ -5,6 +5,7 @@ access_nhanh_webhook_value_system,nhanh webhook value system,model_nhanh_webhook
 access_nhanh_webhook_value_user,nhanh webhook value user,model_nhanh_webhook_value,base.group_user,1,0,0,0
 access_disable_nhanh_product,disable_nhanh_product_user,model_disable_nhanh_product,base.group_user,1,1,1,1
 access_delivery_carrier,access_delivery_carrier,model_delivery_carrier,base.group_user,1,1,1,1
+access_sale_channel,access_sale_channel,model_sale_channel,base.group_no_one,1,1,1,1
 access_transportation.session,access_transportation.session,model_transportation_session,base.group_user,1,1,1,1
 access_transportation.session.line,access_transportation.session.line,model_transportation_session_line,base.group_user,1,1,1,1
 access_import.transport.from.excel,access_import.transport.from.excel,model_import_transport_from_excel,base.group_user,1,1,1,1

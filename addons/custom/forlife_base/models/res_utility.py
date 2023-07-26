@@ -121,6 +121,15 @@ class ResUtility(models.AbstractModel):
         return self._cr.dictfetchone().get('attrs_data') or {}
 
     @api.model
+    def get_all_category_last_level(self, categ_ids):
+        _categ_ids = []
+        while categ_ids:
+            cate_not_child = categ_ids.filtered(lambda s: not s.child_id)
+            categ_ids = (categ_ids - cate_not_child).child_id
+            _categ_ids.extend(cate_not_child.ids)
+        return _categ_ids
+
+    @api.model
     def get_warehouse_type_info(self):
         return self.env['stock.warehouse.type'].search_read([], ['id', 'code', 'name'])
 

@@ -22,7 +22,7 @@ class PromotionCampaign(models.Model):
             'to_date': line.to_date.strftime('%Y-%m-%d %H:%M:%S') or None,
             'brand_id': line.brand_id.code or None,
             'company_id': line.company_id.name or None,
-            'customer_domain': safe_eval(line.customer_domain),
+            'customer_domain': safe_eval(line.customer_domain) if line.customer_domain else [],
             'store_ids': line.store_ids.mapped('warehouse_id').ids,
             'month_ids': line.month_ids.mapped('code'),
             'dayofmonth_ids': line.dayofmonth_ids.mapped('code'),

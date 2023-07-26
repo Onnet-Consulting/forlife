@@ -17,4 +17,5 @@ from . import stock_warehouse
 from . import stock_location
 from . import delivery_carrier
 from . import stock_picking
+from . import sale_channel
 from . import transportation_management

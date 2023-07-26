@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
             'products': [
                 {
                     'product_id': line.product_id.id,
-                    'sku': line.product_id.default_code or None,
+                    'sku': line.product_id.barcode or None,
                     'name': line.product_id.name or None,
                     'quantity': line.product_uom_qty,
                     'order_price': line.price_unit,

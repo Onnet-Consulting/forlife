@@ -17,6 +17,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
             res.write({
                 'promotion_ids': [(0, 0, {
                     "product_id": prm.product_id.id,
+                    "partner_id": sale_orders[0].delivery_carrier_id.partner_id.id if sale_orders.delivery_carrier_id.partner_id and prm.promotion_type == 'customer_shipping_fee' else False,
                     "value": prm.value,
                     "promotion_type": prm.promotion_type,
                     "account_id": prm.account_id.id,

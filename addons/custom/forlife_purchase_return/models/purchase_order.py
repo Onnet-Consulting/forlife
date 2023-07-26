@@ -412,8 +412,18 @@ class PurchaseOrderLine(models.Model):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
         # if self.order_id.is_return:
         #     vals.update({'return_price_unit': -self.price_unit})
-        if self.qty_returned:
-            vals.update({'qty_returned': self.qty_returned})
+        # if self.qty_returned:
+        #     vals.update({
+        #         'qty_returned': self.qty_returned,
+        #     })
+        if self.order_id.is_return:
+            vals.update({
+                'vat_tax': self.vat_tax,
+                'import_tax': self.import_tax,
+                'special_consumption_tax': self.special_consumption_tax,
+                'discount_percent': self.discount_percent,
+            })
+
         return vals
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
