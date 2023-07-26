@@ -98,7 +98,7 @@ class SaleOrder(models.Model):
                                 action = self.env['ir.actions.actions']._for_xml_id(
                                     'forlife_sale_promotion.action_check_promotion_wizard')
                                 action['context'] = {
-                                    'default_message': _(f"Not found the Sale Order with #X[{nhanh_origin_id}] and #N[{nhanh_return_id}]!")}
+                                    'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)}
                                 return action
                         else:
                             action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
