@@ -70,6 +70,7 @@ class SyntheticAccountMovePosLine(models.Model):
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
     quantity = fields.Float('Số lượng')
+    remaining_quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
     x_free_good = fields.Boolean('Hàng tặng')
@@ -83,6 +84,8 @@ class SyntheticAccountMovePosLine(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
     summary_line_id = fields.Many2one('summary.account.move.pos.line')
     return_line_id = fields.Many2one('summary.account.move.pos.return.line')
+    invoice_date = fields.Date(string='Date', related="synthetic_id.invoice_date")
+
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
