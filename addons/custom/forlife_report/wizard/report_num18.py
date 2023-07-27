@@ -5,8 +5,8 @@ from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
-    'Nhà cung cấp', 'Ghi chú', 'Sản phẩm', 'Mô tả', 'Loại hàng hóa', 'Số phiếu yêu cầu', 'Số dòng trên phiếu yêu cầu',
-    'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng đã nhận', 'Đơn vị mua', 'Tỷ lệ quy đổi',
+    'Nhà cung cấp', 'Chú ý', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Sản phẩm', 'Mô tả', 'Loại hàng hóa', 'Số phiếu yêu cầu',
+    'Số dòng trên phiếu yêu cầu', 'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng đã nhận', 'Đơn vị mua', 'Tỷ lệ quy đổi',
     'Số lượng tồn kho quy đổi', 'Đơn vị tính', 'Trung tâm chi phí', 'Lệnh sản xuất', 'Mã vụ việc', 'Ngày dự kiến nhận hàng', 'Trạng thái'
 ]
 
@@ -20,12 +20,30 @@ class ReportNum18(models.TransientModel):
     to_date = fields.Date('To date', required=True)
     pr_number = fields.Text('PR number')
     state = fields.Selection([('open', _('Open')), ('close', _('Close')), ('all', _('All'))], string='State', default='all', required=True)
+    request_user_ids = fields.Many2many('res.users', 'report_num18_request_users_rel', string='Request user')
+    receiver_ids = fields.Many2many('hr.employee', 'report_num18_receiver_rel', string='Receiver')
+    product_brand_ids = fields.Many2many('product.category', 'report_num18_brand_rel', string='Level 1')
+    product_group_ids = fields.Many2many('product.category', 'report_num18_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num18_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num18_texture_rel', string='Level 4')
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
         for record in self:
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
+
+    @api.onchange('product_brand_ids')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_ids.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
     def _get_query(self, allowed_company):
         self.ensure_one()
@@ -41,7 +59,20 @@ class ReportNum18(models.TransientModel):
         where_condition += state_condition.get(self.state, '')
 
         if self.pr_number:
-            where_condition += f"""and ({' or '.join("pr.name ilike '%s'" % i.strip() for i in self.pr_number.split(','))})"""
+            where_condition += f"""\nand ({' or '.join("pr.name ilike '%s'" % i.strip() for i in self.pr_number.split(','))})"""
+
+        if self.request_user_ids:
+            where_condition += f"""\nand pr.user_id = any( array{self.request_user_ids.ids})"""
+
+        if self.receiver_ids:
+            where_condition += f"""\nand pr.receiver_id = any( array{self.receiver_ids.ids})"""
+
+        Product = self.env['product.product']
+        Utility = self.env['res.utility']
+        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_ids
+        if categ_ids:
+            product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
+            where_condition += f"""\nand prl.product_id = any( array{product_ids})"""
 
         sql = f"""
 with prepare_data_tb as (
@@ -49,9 +80,14 @@ with prepare_data_tb as (
         '{{"product":"Hàng hóa","service":"Dịch vụ","asset":"Tài sản"}}'::json as product_type,
         '{{"true":"Đóng","false":"Mở"}}'::json as state
 ),
-purchase_requests as (
-    select id, name, occasion_code_id
+purchase_request_line_x as (
+    select pr.id, 
+            prl.id as req_line_id,
+            pr.name,
+            pr.attention,
+            pr.occasion_code_id
     from purchase_request pr
+        join purchase_request_line prl on pr.id = prl.request_id
     where pr.company_id = any( array{allowed_company})
   and {format_date_query("pr.request_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
   {where_condition}
@@ -59,19 +95,21 @@ purchase_requests as (
 po_line_qty as (
     select prl.id                             as req_line_id,
            coalesce(sum(pol.qty_received), 0) as qty
-    from purchase_requests pr
-             join purchase_request_line prl on pr.id = prl.request_id
-             left join purchase_order_line pol on prl.id = pol.purchase_request_line_id
+    from purchase_request_line_x prl
+             left join purchase_order_line pol on prl.req_line_id = pol.purchase_request_line_id
     group by prl.id
 )
 select 
     rp.name                                                                                 as nha_cung_cap,
-    ''                                                                                      as ghi_chu,
+    polx.attention                                                                          as chu_y,
+    split_part(cate.complete_name, ' / ', 2)                                                as nhom_hang,
+    split_part(cate.complete_name, ' / ', 3)                                                as dong_hang,
+    split_part(cate.complete_name, ' / ', 4)                                                as ket_cau,
     pp.barcode                                                                              as san_pham,
     coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US')               as mo_ta,
     (select product_type::json ->> pt.product_type from prepare_data_tb)                    as loai_hh,
-    pr.name                                                                                 as so_phieu_yc,
-    row_number() over (PARTITION BY pr.id ORDER BY pr.id, prl.id)                           as so_dong_tren_phieu_yc,
+    polx.name                                                                               as so_phieu_yc,
+    row_number() over (PARTITION BY polx.id ORDER BY polx.id, prl.id)                       as so_dong_tren_phieu_yc,
     prl.asset_description                                                                   as mo_ta_ts,
     prl.purchase_quantity                                                                   as sl_dat_mua,
     prl.order_quantity                                                                      as sl_da_dat,
@@ -88,15 +126,16 @@ select
 from purchase_request_line prl
     left join res_partner rp on rp.id = prl.vendor_code
     join product_product pp on pp.id = prl.product_id
-    join purchase_requests pr on pr.id = prl.request_id
+    join purchase_request_line_x polx on polx.req_line_id = prl.id
     left join product_template pt on pt.id = pp.product_tmpl_id
     left join uom_uom uom on uom.id = pt.uom_id
     left join uom_uom p_uom on p_uom.id = prl.purchase_uom
     left join account_analytic_account aaa on aaa.id = prl.account_analytic_id
     left join forlife_production fp on fp.id = prl.production_id
-    left join occasion_code oc on oc.id = pr.occasion_code_id
+    left join occasion_code oc on oc.id = polx.occasion_code_id
     left join po_line_qty plq on plq.req_line_id = prl.id
-  order by pr.id, prl.id
+    left join product_category cate on pt.categ_id = cate.id
+  order by polx.id, prl.id
 """
         return sql
 
@@ -133,23 +172,26 @@ from purchase_request_line prl
         row = 6
         for value in data['data']:
             sheet.write(row, 0, value.get('nha_cung_cap'), formats.get('normal_format'))
-            sheet.write(row, 1, value.get('ghi_chu'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('san_pham'), formats.get('normal_format'))
-            sheet.write(row, 3, value.get('mo_ta'), formats.get('normal_format'))
-            sheet.write(row, 4, value.get('loai_hh'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('so_phieu_yc'), formats.get('normal_format'))
-            sheet.write(row, 6, value.get('so_dong_tren_phieu_yc'), formats.get('int_number_format'))
-            sheet.write(row, 7, value.get('mo_ta_ts'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('sl_dat_mua'), formats.get('int_number_format'))
-            sheet.write(row, 9, value.get('sl_da_dat'), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('sl_da_nhan'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('don_vi_mua'), formats.get('normal_format'))
-            sheet.write(row, 12, value.get('ty_le_quy_doi'), formats.get('float_number_format'))
-            sheet.write(row, 13, value.get('sl_ton_kho_quy_doi'), formats.get('float_number_format'))
-            sheet.write(row, 14, value.get('don_vi_tinh'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('tt_chi_phi'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('lenh_sx'), formats.get('normal_format'))
-            sheet.write(row, 17, value.get('ma_vu_viec'), formats.get('normal_format'))
-            sheet.write(row, 18, value.get('ngay_du_kien'), formats.get('center_format'))
-            sheet.write(row, 19, value.get('trang_thai'), formats.get('normal_format'))
+            sheet.write(row, 1, value.get('chu_y'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('nhom_hang'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('dong_hang'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('ket_cau'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('san_pham'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('mo_ta'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('loai_hh'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('so_phieu_yc'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('so_dong_tren_phieu_yc'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('mo_ta_ts'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('sl_dat_mua'), formats.get('int_number_format'))
+            sheet.write(row, 12, value.get('sl_da_dat'), formats.get('int_number_format'))
+            sheet.write(row, 13, value.get('sl_da_nhan'), formats.get('int_number_format'))
+            sheet.write(row, 14, value.get('don_vi_mua'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('ty_le_quy_doi'), formats.get('float_number_format'))
+            sheet.write(row, 16, value.get('sl_ton_kho_quy_doi'), formats.get('float_number_format'))
+            sheet.write(row, 17, value.get('don_vi_tinh'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('tt_chi_phi'), formats.get('normal_format'))
+            sheet.write(row, 19, value.get('lenh_sx'), formats.get('normal_format'))
+            sheet.write(row, 20, value.get('ma_vu_viec'), formats.get('normal_format'))
+            sheet.write(row, 21, value.get('ngay_du_kien'), formats.get('center_format'))
+            sheet.write(row, 22, value.get('trang_thai'), formats.get('normal_format'))
             row += 1
