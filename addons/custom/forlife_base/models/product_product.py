@@ -37,6 +37,7 @@ class ProducProduct(models.Model):
     alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False)
     product_expiry_reminded = fields.Boolean(string="Expiry has been reminded", default=False)
     brand_id = fields.Many2one('res.brand', related='product_tmpl_id.brand_id', string='Brand', readonly=1)
+    is_need_scan_barcode = fields.Boolean(string='Cần quét Barcode')
 
     _sql_constraints = [(
         'barcode_required',
