@@ -123,7 +123,7 @@ class StockPicking(models.Model):
             }))
         # if self.sale_id.nhanh_id and self.company_id.code == '1300':
         other = self.env['stock.picking'].with_company(location_mapping.location_map_id.company_id).create({
-            'reason_type_id': reason_type_id,
+            'reason_type_id': reason_type_id.id,
             'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
             'location_id': location_id,
             'from_po_give': True if type_create == 'from_po' else False,
