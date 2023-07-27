@@ -42,6 +42,7 @@ class ForlifeProduction(models.Model):
         ('done', 'Hoàn thành'),
     ], compute='compute_check_status')
     check_status = fields.Boolean(default=False)
+    order_manager_id = fields.Many2one('res.partner', string='Quản lý đơn hàng')
 
     def action_draft(self):
         for record in self:
@@ -138,7 +139,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_production_id = fields.Many2one('forlife.production', ondelete='cascade', string='Forlife Production')
     forlife_production_name = fields.Char(related='forlife_production_id.name', string='Forlife Production Name')
     product_id = fields.Many2one('product.product', required=True, string='Product')
-    uom_id = fields.Many2one('uom.uom', string='Unit', related='product_id.uom_id')
+    uom_id = fields.Many2one('uom.uom', string='Đơn vị lưu kho', related='product_id.uom_id')
     produce_qty = fields.Float(string='Produce Quantity', required=True)
     unit_price = fields.Float(readonly=1, string='Unit Price')
     stock_qty = fields.Float(string='Stock Quantity', compute='_compute_remaining_qty', store=1)
@@ -154,12 +155,14 @@ class ForlifeProductionFinishedProduct(models.Model):
     is_check = fields.Boolean(default=False)
     color = fields.Many2one('product.attribute.value', string='Màu', compute='compute_attribute_value')
     size = fields.Many2one('product.attribute.value', string='Size', compute='compute_attribute_value')
+    quality = fields.Many2one('product.attribute.value', string='Chất lượng', compute='compute_attribute_value')
 
     @api.depends('product_id')
     def compute_attribute_value(self):
         for rec in self:
             rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT004').value_ids.id
             rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT006').value_ids.id
+            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT008').value_ids.id
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -242,7 +245,7 @@ class ForlifeProductionMaterial(models.Model):
     _description = 'Forlife Production Material'
 
     forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade')
-    product_id = fields.Many2one('product.product', required=True, string='Product')
+    product_id = fields.Many2one('product.product', required=True, string='Mã NPL')
     description = fields.Char(string='Description', related="product_id.name")
     quantity = fields.Integer()
     uom_id = fields.Many2one(related="product_id.uom_id", string='Unit')

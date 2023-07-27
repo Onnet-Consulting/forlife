@@ -48,12 +48,14 @@
                             <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="created_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="selected_product_ids" invisible="1"/>
+                            <field name="order_manager_id"/>
                         </group>
                         <group>
                             <field name="implementation_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="management_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="production_department" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="brand_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+
                             <field name="produced_from_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="to_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
@@ -84,6 +86,7 @@
                                 <tree editable="bottom">
                                     <field name="production_id" invisible="1"/>
                                     <field name="product_id"/>
+                                    <field name="product_backup_id"/>
                                     <field name="size"/>
                                     <field name="color"/>
                                     <field name="uom_id"/>
