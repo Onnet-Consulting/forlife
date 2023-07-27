@@ -175,7 +175,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             var payment_method = [];
             const partner = clickedOrder.get_partner();
             let orderlines = clickedOrder.orderlines;
-            if (this.props.listOrderLineRefundSelected.length > 0) {
+            if (this.props.listOrderLineRefundSelected && this.props.listOrderLineRefundSelected.length > 0) {
                 orderlines = orderlines.filter((line) => this.props.listOrderLineRefundSelected.includes(line.id))
             }
             if (orderlines.length <= 0) {
