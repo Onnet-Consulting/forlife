@@ -36,6 +36,7 @@ class StockTransferRequest(models.Model):
     created_stock_transfer = fields.Boolean(default=False)
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', copy=False)
 
     @api.model
     def default_get(self, default_fields):
@@ -61,6 +62,21 @@ class StockTransferRequest(models.Model):
         for item in self:
             if item.request_date > item.date_planned:
                 raise ValidationError('Hạn xử lý phải lớn hơn ngày tạo')
+
+    @api.onchange('production_id')
+    def _onchange_production_id(self):
+        request_lines = [(5, 0, 0)]
+        if self.production_id.material_import_ids:
+            for production_material_id in self.production_id.material_import_ids:
+                request_lines.append((0, 0, {
+                    'product_id': production_material_id.product_id.id,
+                    'plan_quantity': production_material_id.total,
+                    'uom_id': production_material_id.uom_id.id or production_material_id.product_id.uom_id.id,
+                    'production_to': self.production_id.id,
+                }))
+        self.write({
+            'request_lines': request_lines
+        })
 
     @api.model
     def get_import_templates(self):
@@ -154,7 +170,7 @@ class StockTransferRequest(models.Model):
 
     @api.constrains('request_lines')
     def constrains_request_lines(self):
-        if not self.request_lines:
+        if not self.request_lines and self.state != 'draft' and self.state:
             raise ValidationError(
                 _('It is mandatory to enter all the commodity information before confirming the stock transfer request!'))
 
