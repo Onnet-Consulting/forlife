@@ -115,9 +115,9 @@ class AccountMoveBKAV(models.Model):
                 })
                 if invoice.issue_invoice_type == 'adjust':
                     # kiểm tra hóa đơn gốc
-                    # gốc là out_invoice => điều chỉnh giảm
-                    # gốc là out_refund => điều chỉnh tăng
-                    item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
+                    # gốc là out_refund => điều chỉnh giảm
+                    # gốc là out_invoice => điều chỉnh tăng
+                    item['IsIncrease'] = (invoice.origin_move_id.move_type == 'out_invoice')
 
                 list_invoice_detail.append(item)
             reward_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='reward').mapped('value'))
@@ -295,7 +295,7 @@ class AccountMoveBKAV(models.Model):
         res = super(AccountMoveBKAV, self).action_post()
         if self.issue_invoice_type == 'adjust':
             if not self.origin_move_id or not self.origin_move_id.invoice_no:
-                raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh')
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
             if self.origin_move_id.amount_total == self.amount_total:
                 self.origin_move_id.cancel_invoice_bkav()
                 self.exists_bkav = True
