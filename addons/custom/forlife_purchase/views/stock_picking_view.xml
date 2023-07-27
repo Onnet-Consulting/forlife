@@ -49,7 +49,7 @@
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_purchase_done"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
-                            <field name="is_need_scan_barcode" invisible="1"/>
+<!--                            <field name="is_need_scan_barcode" invisible="1"/>-->
                             <field name="qty_done"
                                    decoration-warning="reserved_uom_qty &lt; qty_done"
                                    decoration-success="reserved_uom_qty == qty_done" force_save="1"
