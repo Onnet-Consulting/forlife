@@ -48,32 +48,40 @@ class ReportNum25(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        employee_conditions = 'and ' + ('pol.employee_id notnull' if not self.employee_id else f'pol.employee_id = {self.employee_id.id}')
+        employee_conditions = '' if not self.employee_id else f'and employee_id = {self.employee_id.id}'
         store_conditions = f'and pc.store_id = any(array{self.store_ids.ids})' if self.store_ids else ''
         sale_province_conditions = f"where rsp.id = {self.sale_province_id.id}" if self.sale_province_id else ''
 
         sql = f"""
 select (
-    with orders as (select po.id                                  as id,
-                           pc.store_id                            as store_id,
+    with orders as (select po.id                                            as id,
+                           pc.store_id                                      as store_id,
                            (po.date_order + interval '{tz_offset} h')::date as date_order
                     from pos_order po
                              left join pos_session ps on po.session_id = ps.id
                              left join pos_config pc on ps.config_id = pc.id
                     where po.brand_id = {self.brand_id.id} {store_conditions}
-                      and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'),
+                      and {format_date_query("po.date_order", tz_offset)}
+                        between '{self.from_date}' and '{self.to_date}'),
          order_lines as (select pol.id,
                                 pol.order_id,
                                 po.store_id,
                                 pol.employee_id,
-                                (pol.qty * pol.original_price)::float as total,
+                                (pol.qty * pol.original_price
+                                        - coalesce((select sum((case
+                                                        when disc.type = 'point' then disc.recipe * 1000
+                                                        when disc.type = 'ctkm' then disc.discounted_amount
+                                                        else disc.recipe end))::float
+                                        from pos_order_line_discount_details disc
+                                        where disc.pos_order_line_id = pol.id
+                                        group by disc.pos_order_line_id), 0))::float4 as total,
                                 to_char(po.date_order, 'DD/MM/YYYY')  as by_day,
                                 to_char(po.date_order, 'MM/YYYY')     as by_month
                          from pos_order_line pol
                                   join orders po on po.id = pol.order_id
                                   left join product_product pp on pp.id = pol.product_id
                                   left join product_template pt on pt.id = pp.product_tmpl_id
-                         where pt.detailed_type <> 'service' {employee_conditions}
+                         where pt.detailed_type <> 'service'
                            and (pt.voucher = false or pt.voucher is null)),
          employee_target as (select store_id,
                                     employee_id,
@@ -81,52 +89,43 @@ select (
                                     concurrent_position_id,
                                     revenue_target
                              from business_objective_employee
-                             where bo_plan_id = {self.bo_plan_id.id}),
+                             where bo_plan_id = {self.bo_plan_id.id}
+                             {employee_conditions}
+                             {f'and store_id = any(array{self.store_ids.ids})' if self.store_ids else ''}),
          store_target as (select store_id,
                                  revenue_target
                           from business_objective_store
                           where bo_plan_id = {self.bo_plan_id.id}),
-         discount_by_pol_id as (select disc.pos_order_line_id as pol_id,
-                                       sum((case
-                                                when disc.type = 'point' then disc.recipe * 1000
-                                                when disc.type = 'ctkm' then disc.discounted_amount
-                                                else disc.recipe
-                                           end))::float       as discount
-                                from pos_order_line_discount_details disc
-                                where disc.pos_order_line_id in (select id from order_lines)
-                                group by disc.pos_order_line_id),
          data_group_details as (select store_id,
                                       employee_id,
                                       json_object_agg({self.view_type}, total) as detail
                                from (select store_id,
                                             employee_id,
                                             {self.view_type},
-                                            sum(coalesce(pol.total, 0) - coalesce(disc.discount, 0)) total
-                                     from order_lines pol
-                                              left join discount_by_pol_id disc on pol.id = disc.pol_id
+                                            sum(coalesce(total, 0)) as total
+                                     from order_lines
                                      group by store_id, employee_id, {self.view_type}) as xx
                                group by store_id, employee_id),
-         data_groups as (select po.store_id                                              as store_id,
-                                pol.employee_id                                          as employee_id,
-                                eta.job_id                                               as job_id,
-                                eta.concurrent_position_id                               as concurrent_position_id,
-                                sta.revenue_target                                       as muc_tieu_cua_hang,
-                                eta.revenue_target                                       as muc_tieu_ca_nhan,
-                                array_agg(distinct pol.order_id)                         as count_order,
-                                sum(coalesce(pol.total, 0) - coalesce(disc.discount, 0)) as total
-                         from order_lines pol
-                                  join orders po on po.id = pol.order_id
-                                  left join store_target sta on sta.store_id = po.store_id
-                                  left join employee_target eta on eta.store_id = po.store_id and eta.employee_id = pol.employee_id
-                                  left join discount_by_pol_id disc on disc.pol_id = pol.id
-                         group by po.store_id,
-                                  pol.employee_id,
+         data_groups as (select eta.store_id                        as store_id,
+                                eta.employee_id                     as employee_id,
+                                eta.job_id                          as job_id,
+                                eta.concurrent_position_id          as concurrent_position_id,
+                                sta.revenue_target                  as muc_tieu_cua_hang,
+                                eta.revenue_target                  as muc_tieu_ca_nhan,
+                                array_agg(distinct pol.order_id)    as count_order,
+                                sum(coalesce(pol.total, 0))::float4 as total
+                         from employee_target eta
+                                  left join store_target sta on eta.store_id = sta.store_id
+                                  left join order_lines pol on eta.store_id = pol.store_id
+                             and eta.employee_id = pol.employee_id
+                         group by eta.store_id,
+                                  eta.employee_id,
                                   eta.job_id,
                                   eta.concurrent_position_id,
                                   sta.revenue_target,
                                   eta.revenue_target),
-        data_group_stores as (select dg.store_id,
-                                  sum(dg.total)  as total,
+        data_group_stores as (select dg.store_id                                  as store_id,
+                                  sum(dg.total)                                   as total,
                                   coalesce(sum(cr.fixed_coefficient_indirect), 0) as total_fixed_coefficient_indirect
                            from data_groups dg
                            left join coefficient_revenue cr on cr.job_id = coalesce(dg.concurrent_position_id, dg.job_id)
@@ -149,8 +148,14 @@ select (
                            dg.muc_tieu_cua_hang                                as muc_tieu_cua_hang,
                            dgd.detail                                          as detail,
                            coalesce(dg.concurrent_position_id, dg.job_id)      as job_id,
-                           case when coalesce(dg.muc_tieu_ca_nhan, 0) > 0 then (dg.total/dg.muc_tieu_ca_nhan*100)::float else 0 end as pt_ht_canhan,
-                           case when coalesce(dg.muc_tieu_cua_hang, 0) > 0 then (dgs.total/dg.muc_tieu_cua_hang*100)::float else 0 end as pt_ht_cuahang
+                           case
+                               when coalesce(dg.muc_tieu_ca_nhan, 0) > 0
+                                   then (dg.total / dg.muc_tieu_ca_nhan * 100)::float
+                               else 0 end                                      as pt_ht_canhan,
+                           case
+                               when coalesce(dg.muc_tieu_cua_hang, 0) > 0
+                                   then (dgs.total / dg.muc_tieu_cua_hang * 100)::float
+                               else 0 end                                      as pt_ht_cuahang
                     from data_groups dg
                              left join data_group_details dgd on dg.store_id = dgd.store_id and dg.employee_id = dgd.employee_id
                              left join data_group_stores dgs on dgs.store_id = dg.store_id
@@ -208,7 +213,7 @@ select (
         tile_giantiep = _data.get('tile_giantiep') or {}
         he_so_co_dinh = _data.get('he_so_co_dinh') or {}
         for value in (_data.get('data') or []):
-            qty_by_time = value.pop('detail')
+            qty_by_time = value.pop('detail') or {}
             for c in column_add:
                 value[c] = qty_by_time.get(c, 0) or 0
 
