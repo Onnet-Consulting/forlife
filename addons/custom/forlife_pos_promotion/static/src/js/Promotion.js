@@ -1863,6 +1863,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 to_discount_lines = orderLines.filter(l=> (discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0)
                                               .filter(l=>reward_products.has(l.product.id));
             };
+            // Tính lại hệ số lũy tiến khả dụng dựa trên số lượng phần thưởng đang có trong đơn
+            let reward_quantity_total = 0;
+            if (program.reward_type == 'cart_get_x_free') {
+                reward_quantity_total = to_reward_lines.reduce((sum, l)=> sum + l.quantity, 0);
+            } else if (program.reward_type != 'cart_get_voucher') {
+                reward_quantity_total = to_discount_lines.reduce((sum, l)=> sum + l.quantity, 0);
+            };
+            let realFloor = Math.ceil(reward_quantity_total / (program.reward_quantity || 1));
+            floor = realFloor || floor;
+
             if ((program.reward_type == 'cart_get_x_free' && to_reward_lines.length > 0)
                 || (program.reward_type != 'cart_get_x_free' &&  to_discount_lines.length > 0)) {
                 let reward_lines = program.reward_type == 'cart_get_x_free' ? to_reward_lines : to_discount_lines;
