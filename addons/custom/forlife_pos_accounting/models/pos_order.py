@@ -227,7 +227,7 @@ class InheritPosOrder(models.Model):
             if 'refunded_orderline_id' in line[-1] and line[-1]['refunded_orderline_id']:
                 line[-1].update(pol_object.browse(line[-1]['refunded_orderline_id']).generate_promotion_values(line[-1]['qty'], line[-1].get('discount_details_lines', [])))
 
-            price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
+            price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price']
             taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
             if not taxes:
                 price_subtotal = price * line[-1]['qty']
