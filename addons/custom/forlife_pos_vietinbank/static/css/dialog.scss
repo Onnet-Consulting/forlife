@@ -1,12 +1,12 @@
 .modal-body {
   table {
-    border: 1px solid;
+    border: 1px solid #C9CCD2;
 
     tr {
-      border-bottom: 1px solid;
+      border-bottom: 1px solid #C9CCD2;
 
       th {
-        border-right: 1px solid;
+        border-right: 1px solid #C9CCD2;
 
         div {
           display: flex;
@@ -18,13 +18,16 @@
 
       td {
         text-align: center;
-        border-right: 1px solid;
+        border-right: 1px solid #C9CCD2;
       }
     }
   }
 }
 
 .modal-dialog {
+
+  overflow-y: scroll;
+
   .o_select_button {
     background: #714B67;
     color: #FFFFFF;
@@ -35,13 +38,24 @@
     align-items: center;
     justify-content: center;
   }
+  th.o_list_record_selector, td.o_list_record_selector {
+    label {
+      padding: 0;
+    }
+  }
 
   .o_form_button_cancel {
     margin-left: 10px;
   }
 
-  .o_search_options, .btn-close, .o_cp_top {
+  .o_cp_bottom, .btn-close {
     display: none;
+  }
+  .o_searchview_autocomplete {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #C9CCD2;
   }
 
   .o_cp_pager {

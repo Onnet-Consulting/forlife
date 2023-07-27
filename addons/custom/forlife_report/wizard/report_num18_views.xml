@@ -24,6 +24,14 @@
                             <field name="pr_number" placeholder="PR001,PR002,..."/>
                         </group>
                     </group>
+                    <group>
+                        <field name="request_user_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="receiver_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="product_brand_ids" widget="many2many_tags" domain="[('parent_id', '=', False), ('category_type_id.code', '=', '1')]" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                    </group>
                 </sheet>
             </form>
         </field>

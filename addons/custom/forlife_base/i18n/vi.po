@@ -1203,3 +1203,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_base.field_account_analytic_account__address
 msgid "Địa chỉ"
 msgstr ""
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__is_need_scan_barcode
+msgid "Is Need Scan Barcode"
+msgstr "Yêu cầu quét mã vạch"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_product_product_barcode_required
+msgid "Product barcode is required when barcode scanning is requested!"
+msgstr "Sản phẩm yêu cầu quét nhưng chưa được thiết lập mã vạch!"

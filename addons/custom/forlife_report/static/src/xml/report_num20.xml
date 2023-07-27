@@ -35,8 +35,14 @@
                         <td class="right"><t t-esc="format_decimal(line.gia, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.gia * line.sl_ban - line.giam_gia, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.gia * line.sl_tra, 0)"/></td>
+                        <td class="right">
+                            <t t-if="line.sl_ban > 0"><t t-esc="format_decimal(line.gia * line.sl_ban - line.giam_gia, 0)"/></t>
+                            <t t-else="">0</t>
+                        </td>
+                        <td class="right">
+                            <t t-if="line.sl_tra > 0"><t t-esc="format_decimal(line.gia * line.sl_tra - line.giam_gia, 0)"/></t>
+                            <t t-else="">0</t>
+                        </td>
                         <td><t t-esc="line.mo_ta"/></td>
                         <td><t t-esc="line.hang"/></td>
                         <td><t t-esc="line.ctkm"/></td>

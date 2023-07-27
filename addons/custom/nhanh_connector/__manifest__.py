@@ -37,6 +37,7 @@
         'views/sale_channel_view.xml',
         'views/sale_menus.xml',
         'data/sale_channel_data.xml',
+        'data/queue_job_data.xml',
         'views/transportation_management.xml',
     ],
     "assets": {

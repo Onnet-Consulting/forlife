@@ -32,9 +32,9 @@ class ProductTemplate(models.Model):
         if color_name and not size_name:
             product_name = f"{product_name} ({color_name})"
         elif size_name and not color_name:
-            product_name = f"{product_name} (SIZE {size_name})"
+            product_name = f"{product_name} ({size_name})"
         elif size_name and color_name:
-            product_name = f"{product_name} ({color_name} / SIZE {size_name})"
+            product_name = f"{product_name} ({color_name} / {size_name})"
         return product_name
 
     @api.model_create_multi
@@ -160,12 +160,12 @@ class ProductTemplate(models.Model):
 
         if len(data):
             self.sudo().with_delay(
-                description="Update & Sync product to NhanhVn", channel="root.RabbitMQ"
+                description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
             ).synchronized_price_nhanh(data)
             # self.synchronized_price_nhanh(data)
         if is_create:
             self.sudo().with_delay(
-                description="Sync product to NhanhVn", channel="root.RabbitMQ"
+                description="Sync product to NhanhVn", channel="root.NhanhMQ"
             ).synchronized_create_product(self)
             # self.synchronized_create_product(self)
         
@@ -226,23 +226,24 @@ class ProductTemplate(models.Model):
 
 
     def synchronized_product_exists_nhanh(self, line, pl_list_price=False):
-        data = []
-        price = self.list_price
-        if pl_list_price:
-            price = line.fixed_price
+        if self.nhanh_id and self.brand_id.id and self.categ_id.category_type_id.x_sync_nhanh:
+            data = []
+            price = self.list_price
+            if pl_list_price:
+                price = line.fixed_price
 
-        data.append({
-            "id": self._origin.id,
-            "idNhanh": self.nhanh_id,
-            "name": self.get_nhanh_name(),
-            "code": self.barcode if self.barcode else '',
-            "barcode": self.barcode if self.barcode else '',
-            "importPrice": self.list_price,
-            "price": price,
-            "shippingWeight": self.weight if self.weight > 0 else 200,
-            "status": 'New'
-        })
-        self.sudo().with_delay(
-            description="Update & Sync product to NhanhVn", channel="root.RabbitMQ"
-        ).synchronized_price_nhanh(data)
+            data.append({
+                "id": self._origin.id,
+                "idNhanh": self.nhanh_id,
+                "name": self.get_nhanh_name(),
+                "code": self.barcode if self.barcode else '',
+                "barcode": self.barcode if self.barcode else '',
+                "importPrice": self.list_price,
+                "price": price,
+                "shippingWeight": self.weight if self.weight > 0 else 200,
+                "status": 'New'
+            })
+            self.sudo().with_delay(
+                description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
+            ).synchronized_price_nhanh(data)
 
