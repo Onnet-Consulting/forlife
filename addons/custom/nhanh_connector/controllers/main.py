@@ -263,12 +263,13 @@ class MainController(http.Controller):
                         for picking_id in webhook_value_id.order_id.picking_ids:
                             picking_id.action_cancel()
                 else:
-                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not webhook_value_id.order_id.picking_ids:
-                        try:
-                            webhook_value_id.order_id.check_sale_promotion()
-                            webhook_value_id.order_id.action_create_picking()
-                        except:
-                            return self.result_request(200, 0, _('Create sale order success'))
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"]:
+                        webhook_value_id.order_id.check_sale_promotion()
+                        if webhook_value_id.order_id.state != 'check_promotion' and not webhook_value_id.order_id.picking_ids:
+                            try:
+                                webhook_value_id.order_id.action_create_picking()
+                            except:
+                                return self.result_request(200, 0, _('Create sale order success'))
 
                 return self.result_request(200, 0, _('Create sale order success'))
             else:
@@ -276,12 +277,13 @@ class MainController(http.Controller):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"] and not odoo_order.picking_ids:
-                        try:
-                            odoo_order.check_sale_promotion()
-                            odoo_order.action_create_picking()
-                        except Exception as e:
-                            pass
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"]:
+                        odoo_order.check_sale_promotion()
+                        if odoo_order.state != 'check_promotion' and not odoo_order.picking_ids:
+                            try:
+                                odoo_order.action_create_picking()
+                            except Exception as e:
+                                return self.result_request(404, 1, _('Update sale order false'))
                         
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
 
