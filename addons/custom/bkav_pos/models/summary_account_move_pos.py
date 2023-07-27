@@ -750,7 +750,7 @@ class SummaryAccountMovePos(models.Model):
             'invoice_date': date.today(),
             'line_ids': line_ids
         }
-        print(items)
+
 
 
     def collect_invoice_difference(self, records, store_data, company_ids):

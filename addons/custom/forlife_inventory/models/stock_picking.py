@@ -13,13 +13,15 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701')], limit=1)
-        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         if 'endloop' in self._context and self._context.get('endloop'):
             return res
         if self.company_id.code == '1300':
-            reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', self.company_id.id)])
-            reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', self.company_id.id)])
+            companyId = self.company_id.id
+            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
+                                                                                             limit=1)
+            location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', companyId)], limit=1)
+            reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', companyId)])
+            reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', companyId)])
             ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
             if self.sale_id.source_record and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
                     and self.location_id.stock_location_type_id.id == ec_warehouse_id:
@@ -123,7 +125,7 @@ class StockPicking(models.Model):
             }))
         # if self.sale_id.nhanh_id and self.company_id.code == '1300':
         other = self.env['stock.picking'].with_company(location_mapping.location_map_id.company_id).create({
-            'reason_type_id': reason_type_id,
+            'reason_type_id': reason_type_id.id,
             'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
             'location_id': location_id,
             'from_po_give': True if type_create == 'from_po' else False,
