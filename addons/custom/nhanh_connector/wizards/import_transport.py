@@ -24,7 +24,7 @@ class ImportProductionFromExcel(models.TransientModel):
         export = {
             'type': 'ir.actions.act_url',
             'name': 'Export fee',
-            'url': '/web/content/%s/%s/file_template/template_lsx.xlsx?download=true' % (self._name, self.id),
+            'url': '/web/content/%s/%s/file_template/template_van_don.xlsx?download=true' % (self._name, self.id),
         }
         return export
 
@@ -53,7 +53,7 @@ class ImportProductionFromExcel(models.TransientModel):
         for code in order_code:
             list_code.append(code[0])
 
-        orders = self.env['sale.order'].search([('nhanh_id', 'in', list_code)])
+        orders = self.env['sale.order'].search([('nhanh_id', 'in', list_code), ('state', 'in', ('sale'))])
         list_code_exist = orders.mapped('nhanh_id')
         different_elements = set(list_code).symmetric_difference(set(list_code_exist))
         code_not_exists = list(different_elements)
