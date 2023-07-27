@@ -62,6 +62,37 @@ class StockTransfer(models.Model):
     note = fields.Text("Ghi chú")
     date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now(), copy=False)
     date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now(), copy=False)
+    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=False)
+
+    @api.depends(
+        'stock_transfer_line',
+        'stock_transfer_line.product_id',
+        'stock_transfer_line.product_id.is_need_scan_barcode'
+    )
+    def _compute_need_scan_barcode(self):
+        for rec in self:
+            rec.is_need_scan_barcode = any(sm.product_id.is_need_scan_barcode for sm in rec.stock_transfer_line)
+
+    def open_scan_barcode(self):
+        self.ensure_one()
+        stock_transfer_scan_line_ids = [(0, 0, {
+                'transfer_line_id': stl.id,
+                'product_qty_done': stl.qty_out if self.state == 'approved' else stl.qty_in
+            }) for stl in self.stock_transfer_line if stl.product_id.is_need_scan_barcode]
+        if stock_transfer_scan_line_ids:
+            scan_id = self.env['stock.transfer.scan'].create({
+                'transfer_id': self.id,
+                'stock_transfer_scan_line_ids': stock_transfer_scan_line_ids
+            })
+            return {
+                'name': self.name,
+                'view_mode': 'form',
+                'res_model': 'stock.transfer.scan',
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'res_id': scan_id.id
+            }
+
 
     def _check_qty_available(self):
         location_id = self.location_id
@@ -489,6 +520,18 @@ class StockTransfer(models.Model):
     def load(self, fields, data):
         if "import_file" in self.env.context:
             if 'name' in fields and 'stock_transfer_line/sequence' in fields:
+                product_codes = []
+                query = """ 
+                    SELECT pp.barcode 
+                    FROM product_product pp
+                        JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                    WHERE pp.is_need_scan_barcode = True
+                """
+                self._cr.execute(query)
+                results = self._cr.dictfetchall()
+                if results:
+                    product_codes = [x['barcode'] for x in results]
+                has_group_stock_transfer_can_be_scan = self.env.user.has_group('forlife_permission_management.group_stock_transfer_can_be_scan')
                 for record in data:
                     # if not record[fields.index('name')]:
                     #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
@@ -500,6 +543,8 @@ class StockTransfer(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng xuất"))
                     if 'stock_transfer_line/qty_in' in fields and not record[fields.index('stock_transfer_line/qty_in')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng nhập"))
+                    if record[fields.index('stock_transfer_line/product_id')] in product_codes and not has_group_stock_transfer_can_be_scan:
+                        raise ValidationError(_("Sản phẩm %s bắt buộc quét barcode" % record[fields.index('stock_transfer_line/product_id')]))
                     # if 'date_in_approve' in fields and not record[fields.index('date_in_approve')]:
                     #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày xác nhận nhập"))
                 fields[fields.index('name')] = 'id'
@@ -533,6 +578,7 @@ class StockTransfer(models.Model):
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
     _description = 'Stock Transfer Line'
+    _rec_name = 'product_id'
 
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
@@ -540,7 +586,7 @@ class StockTransferLine(models.Model):
     qty_out = fields.Integer(string='Quantity Out', copy=False)
     qty_in = fields.Integer(string='Quantity In', copy=False)
     qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
-    quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
+    quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining', copy=False)
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
     stock_transfer_id = fields.Many2one('stock.transfer', string="Stock Transfer")
@@ -554,6 +600,7 @@ class StockTransferLine(models.Model):
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
     check_id = fields.Integer(string="")
     sequence = fields.Integer(string="STT dòng")
+    is_readonly_qty = fields.Boolean(default=False, compute='_compute_readonly_qty_in_out')
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -587,6 +634,13 @@ class StockTransferLine(models.Model):
             if rec.is_from_button and (rec.qty_plan > rec.qty_plan_tsq):
                 raise ValidationError(
                     _('Quantity plan cannot be larger than the quantity plan of the ticket !!'))
+
+    def _compute_readonly_qty_in_out(self):
+        for r in self:
+            if not self.env.user.has_group('forlife_permission_management.group_stock_transfer_can_be_scan') and r.product_id.is_need_scan_barcode:
+                r.is_readonly_qty = True
+            else:
+                r.is_readonly_qty = False
 
     def validate_product_quantity(self, location=False, is_diff_transfer=False):
         self.ensure_one()

@@ -38,6 +38,12 @@ class ProducProduct(models.Model):
     brand_id = fields.Many2one('res.brand', related='product_tmpl_id.brand_id', string='Brand', readonly=1)
     is_need_scan_barcode = fields.Boolean(default=False, string='Is Need Scan Barcode')
 
+    _sql_constraints = [(
+        'barcode_required',
+         "CHECK(NOT (is_need_scan_barcode IS TRUE AND (barcode IS NULL OR barcode = '')))",
+         "Product barcode is required when barcode scanning is requested!"
+    )]
+
     @api.depends('expiration_date', 'days_before_alert')
     def _compute_dates(self):
         for product in self:
