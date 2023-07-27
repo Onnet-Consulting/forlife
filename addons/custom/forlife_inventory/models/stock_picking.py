@@ -13,11 +13,12 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701')], limit=1)
-        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         if 'endloop' in self._context and self._context.get('endloop'):
             return res
         if self.company_id.code == '1300':
+            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=', self.company_id.id)],
+                                                                                             limit=1)
+            location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', self.company_id.id)], limit=1)
             reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', self.company_id.id)])
             reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', self.company_id.id)])
             ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
