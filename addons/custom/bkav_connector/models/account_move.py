@@ -3,6 +3,8 @@
 from odoo import models, fields, api, _
 from datetime import datetime
 from . import bkav_action
+from odoo.exceptions import ValidationError
+
 
 class AccountMoveBKAV(models.Model):
     _inherit = 'account.move'
@@ -72,7 +74,7 @@ class AccountMoveBKAV(models.Model):
             sale_order_id = invoice.invoice_line_ids.sale_line_ids.order_id
             if not sale_order_id:
                 continue
-
+            
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
             for line in sale_order_id.order_line:
@@ -199,6 +201,10 @@ class AccountMoveBKAV(models.Model):
         so_orders = self.invoice_line_ids.sale_line_ids.order_id
         if self.move_type in ('out_invoice', 'out_refund') and so_orders:
             return True
+        #HD ban le
+        pos_orders = self.pos_order_id
+        if self.move_type in ('out_invoice', 'out_refund') and pos_orders:
+            return True
         #HD tra hang NCC
         po_orders = self.invoice_line_ids.purchase_line_id.order_id
         if self.move_type == 'in_refund' and po_orders:
@@ -284,3 +290,14 @@ class AccountMoveBKAV(models.Model):
             item.delete_invoice_bkav()
         return super(AccountMoveBKAV, self).unlink()
     
+
+    def action_post(self):
+        res = super(AccountMoveBKAV, self).action_post()
+        if self.issue_invoice_type == 'adjust':
+            if not self.origin_move_id or not self.origin_move_id.invoice_no:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh')
+            if self.origin_move_id.amount_total == self.amount_total:
+                self.origin_move_id.cancel_invoice_bkav()
+                self.exists_bkav = True
+        return res
+

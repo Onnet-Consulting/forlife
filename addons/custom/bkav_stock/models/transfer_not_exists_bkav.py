@@ -212,6 +212,7 @@ class TransferNotExistsBkav(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
+            partner_id = invoice.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
