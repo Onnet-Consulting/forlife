@@ -226,7 +226,7 @@ class ProductTemplate(models.Model):
 
 
     def synchronized_product_exists_nhanh(self, line, pl_list_price=False):
-        if self item.nhanh_id and self.brand_id.id and self.categ_id.category_type_id.x_sync_nhanh:
+        if self.nhanh_id and self.brand_id.id and self.categ_id.category_type_id.x_sync_nhanh:
             data = []
             price = self.list_price
             if pl_list_price:
