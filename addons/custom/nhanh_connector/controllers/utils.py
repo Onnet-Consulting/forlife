@@ -231,6 +231,7 @@ class NhanhClient:
                 'x_nhanh_id': order['trafficSourceId'],
                 'name': order['trafficSourceName'],
             })
+        return utm_source_id
 
     def get_order_data(self, order, nhanh_partner, partner, name_customer, default_company_id, location_id):
         # sales staff
