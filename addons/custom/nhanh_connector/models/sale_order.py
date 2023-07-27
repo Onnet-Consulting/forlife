@@ -114,7 +114,7 @@ class SaleOrderNhanh(models.Model):
                     partner, int(order['depotId'])
                 )
 
-        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=True)
+        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
 
         order_data = n_client.get_order_data(
             order, nhanh_partner, partner, name_customer, default_company_id, location_id
@@ -152,7 +152,11 @@ class SaleOrderNhanh(models.Model):
         today = datetime.datetime.today().strftime("%Y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
-        kwargs["toDate"] = today
+        if not kwargs.get("toDate"):
+            kwargs["toDate"] = today
+
+        if not kwargs.get("fromDate"):
+            kwargs["fromDate"] = previous_day
 
         order_model = self.env['sale.order']
         odoo_orders = order_model.sudo().search(
@@ -171,8 +175,6 @@ class SaleOrderNhanh(models.Model):
                     or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
                 _logger.info(f'Nhanh configuration does not set')
                 continue
-            if not kwargs.get("fromDate"):
-                kwargs["fromDate"] = previous_day
 
             url = f"{NHANH_BASE_URL}/order/index"
             data = {
@@ -213,7 +215,7 @@ class SaleOrderNhanh(models.Model):
 
             for oid, order in nhanh_orders.items():
                 self.sudo().with_delay(
-                    description="Sync order from NhanhVn to Odoo", channel="root.RabbitMQ"
+                    description="Sync order from NhanhVn to Odoo", channel="root.NhanhMQ"
                 ).create_an_order(order, brand_id)
         # # Get datetime today and previous day
         # today = datetime.datetime.today().strftime("%Y-%m-%d")

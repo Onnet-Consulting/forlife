@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <record model="stock.location" id="nhap_tra_lai_hang_ki_gui_tu_dong">
             <field name="name">Nhập trả lại hàng kí gửi</field>
             <field name="code">N0501</field>

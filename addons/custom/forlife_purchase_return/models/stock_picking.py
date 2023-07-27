@@ -23,7 +23,7 @@ class StockPicking(models.Model):
             if picking.state == 'done' and not picking.purchase_id.is_inter_company and \
                     ((picking.purchase_id and picking.purchase_id.is_return) or \
                      (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
-                purchase_origin_id = picking.purchase_id if picking.purchase_id else picking.move_ids.purchase_line_id.origin_po_line_id.purchase_id
+                purchase_origin_id = picking.purchase_id if picking.purchase_id else picking.move_ids.purchase_line_id.origin_po_line_id.order_id
                 order_line = purchase_origin_id.order_line.filtered(lambda x: x.product_id.id in picking.move_ids.product_id.ids)
                 material_line = order_line.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product)
                 if material_line:

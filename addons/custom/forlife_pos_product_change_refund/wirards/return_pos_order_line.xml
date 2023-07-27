@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="pos_order_line_view_tree" model="ir.ui.view">
+            <field name="name">pos_order_line_view_tree</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="pos_order_line_tree" create="false" edit="false" class="list_order_refund">
+                    <field name="product_barcode"/>
+                    <field name="product_name"/>
+                    <field name="qty"/>
+                    <field name="original_price"/>
+                    <field name="subtotal_paid"/>
+                    <field name="promotion_string_code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pos_order_line_action" model="ir.actions.act_window">
+            <field name="name">Chi tiết đơn hàng</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
