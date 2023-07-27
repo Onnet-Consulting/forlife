@@ -29,6 +29,7 @@
         'wizards/reject_in_out_request.xml',
         'wizards/stock_backorder_confirmation_views.xml',
         'wizards/stock_picking_scan.xml',
+        'wizards/stock_transfer_scan_view.xml',
         'security/ir.model.access.csv',
         'security/forlife_reason_type_security.xml',
         'data/base_automation.xml',
