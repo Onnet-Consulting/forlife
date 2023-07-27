@@ -146,9 +146,10 @@ class SaleOrder(models.Model):
                                     [('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
-                                gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                                discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                                promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                gift_account_id, discount_account_id, promotion_account_id = self.get_customer_promotion_nhanh(rec, ln)
                                 has_vip = True
                                 # Ưu tiên 3
                                 if not ln.x_free_good and not ln.is_reward_line and price_percent > 0:
@@ -156,7 +157,7 @@ class SaleOrder(models.Model):
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
                                         'promotion_type': 'vip_amount',
-                                        'account_id': promotion_account_id and promotion_account_id.id,
+                                        'account_id': promotion_account_i,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
@@ -168,7 +169,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
-                                        'account_id': discount_account_id and discount_account_id.id,
+                                        'account_id': discount_account_id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'promotion_type': 'vip_amount_remain',

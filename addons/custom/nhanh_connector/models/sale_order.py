@@ -114,7 +114,7 @@ class SaleOrderNhanh(models.Model):
                     partner, int(order['depotId'])
                 )
 
-        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=True)
+        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
 
         order_data = n_client.get_order_data(
             order, nhanh_partner, partner, name_customer, default_company_id, location_id
@@ -215,7 +215,7 @@ class SaleOrderNhanh(models.Model):
 
             for oid, order in nhanh_orders.items():
                 self.sudo().with_delay(
-                    description="Sync order from NhanhVn to Odoo", channel="root.RabbitMQ"
+                    description="Sync order from NhanhVn to Odoo", channel="root.NhanhMQ"
                 ).create_an_order(order, brand_id)
         # # Get datetime today and previous day
         # today = datetime.datetime.today().strftime("%Y-%m-%d")
