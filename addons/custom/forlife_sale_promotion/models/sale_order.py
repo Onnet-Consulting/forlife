@@ -157,7 +157,7 @@ class SaleOrder(models.Model):
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
                                         'promotion_type': 'vip_amount',
-                                        'account_id': promotion_account_i,
+                                        'account_id': promotion_account_id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
