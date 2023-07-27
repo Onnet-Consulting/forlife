@@ -1,4 +1,15 @@
 .modal-body {
+  .o_list_view {
+    overflow-y: scroll;
+    height: 20em;
+  }
+
+  .o_control_panel {
+    position: sticky;
+    right: 0;
+    top: 0;
+  }
+
   table {
     border: 1px solid #C9CCD2;
 
@@ -19,6 +30,11 @@
       td {
         text-align: center;
         border-right: 1px solid #C9CCD2;
+        padding: 10px;
+      }
+
+      td.o_list_many2one {
+        text-align: left;
       }
     }
   }
@@ -26,7 +42,9 @@
 
 .modal-dialog {
 
-  overflow-y: scroll;
+  width: 70em;
+  height: 30em;
+  overflow-y: visible;
 
   .o_select_button {
     background: #714B67;
@@ -38,6 +56,7 @@
     align-items: center;
     justify-content: center;
   }
+
   th.o_list_record_selector, td.o_list_record_selector {
     label {
       padding: 0;
@@ -51,6 +70,7 @@
   .o_cp_bottom, .btn-close {
     display: none;
   }
+
   .o_searchview_autocomplete {
     margin: 0;
     padding: 0;
@@ -69,11 +89,24 @@
     }
   }
 
-  footer {
-    margin: 10px 0;
-  }
 
   .o_list_selection_box {
     margin: 10px 0;
+  }
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+
+    footer {
+      margin: 10px 0;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding-left: 10px;
+      display: flex;
+      width: 200px;
+      justify-content: space-between;
+    }
   }
 }
