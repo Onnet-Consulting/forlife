@@ -10,6 +10,7 @@
                 <field name="name"/>
                 <field name="service_name"/>
                 <field name="nhanh_id"/>
+                <field name="partner_id"/>
             </tree>
         </field>
     </record>

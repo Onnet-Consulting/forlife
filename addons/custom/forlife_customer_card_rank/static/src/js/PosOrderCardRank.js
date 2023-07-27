@@ -179,7 +179,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     get_discount_detail(cr_program) {
-        let total_discounted = this.original_price - this.get_base_price() - (this.get_point() || 0);
+        let quantity = this.get_quantity() || 0;
+        let total_discounted = quantity * this.original_price - this.get_base_price() - (this.get_point() || 0);
         let original_price = this.get_original_price();
         let card_rank_disc = 0;
         let extra_card_rank_disc = 0;
@@ -193,7 +194,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             }
         }
         if (check_skip_cr === false) {
-            let quantity = this.get_quantity();
             card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
             let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
             if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id) && this.promotion_usage_ids.find(p => p.program_id === promotion_pricelist.program_id)) {

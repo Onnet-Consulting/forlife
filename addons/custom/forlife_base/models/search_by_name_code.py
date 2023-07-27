@@ -30,7 +30,6 @@ class ReportCategoryType(models.AbstractModel):
 
     category_type_id = fields.Many2one('product.category.type', string="Type of Product Category")
     product_brand_id = fields.Many2one('product.category', 'Level 1')
-    category_level = fields.Integer('Category level', default=5)
 
     @api.onchange('category_type_id')
     def onchange_category_type(self):

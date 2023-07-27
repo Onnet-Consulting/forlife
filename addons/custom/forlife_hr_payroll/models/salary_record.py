@@ -62,6 +62,7 @@ class SalaryRecord(models.Model):
     salary_backlog_ids = fields.One2many('salary.backlog', 'salary_record_id', 'Salary Backlog')
     move_ids = fields.One2many('account.move', 'salary_record_id', string='Account Moves', copy=False, readonly=False)
     move_count = fields.Integer(compute='_compute_move_count')
+    is_tc = fields.Boolean('TC', default=False)
 
     _sql_constraints = [
         ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
@@ -278,7 +279,7 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if is_tc_entry else 'QT',
+            'x_asset_fin': 'TC' if (is_tc_entry or self.is_tc) else 'QT',
             'journal_id': default_journal_id
         }
 
