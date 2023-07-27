@@ -7,6 +7,12 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
+    is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', compute_sudo=True, store=True)
+
+    @api.depends('product_id', 'product_id.is_need_scan_barcode')
+    def _compute_need_scan_barcode(self):
+        for rec in self:
+            rec.is_need_scan_barcode = rec.product_id.is_need_scan_barcode
 
     def _account_entry_move(self, qty, description, svl_id, cost):
         res = super(StockMove, self)._account_entry_move(qty, description, svl_id, cost)
