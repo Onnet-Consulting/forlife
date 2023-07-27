@@ -117,7 +117,7 @@ class AccountMoveBKAV(models.Model):
                     # kiểm tra hóa đơn gốc
                     # gốc là out_refund => điều chỉnh giảm
                     # gốc là out_invoice => điều chỉnh tăng
-                    item['IsIncrease'] = (invoice.origin_move_id.move_type == 'out_invoice')
+                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
 
                 list_invoice_detail.append(item)
             reward_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='reward').mapped('value'))
