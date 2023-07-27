@@ -84,6 +84,7 @@ class StockTransfer(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
+            partner_id = invoice.company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -138,6 +139,8 @@ class StockTransfer(models.Model):
         
     def _check_info_before_bkav(self):
         if self.is_general:
+            return False
+        if self.location_dest_id.id_deposit or self.location_id.id_deposit:
             return False
         return True
 
