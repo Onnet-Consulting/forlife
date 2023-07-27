@@ -24,8 +24,7 @@
                         <field name="price" class="oe_inline" widget='monetary'
                                options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                     </div>
-                    <field name="voucher" invisible="1"/>
-                    <field name="notification_id" attrs="{'invisible': [('voucher', '!=', True)]}"/>
+                    <field name="notification_id"/>
                 </xpath>
 
             </field>
