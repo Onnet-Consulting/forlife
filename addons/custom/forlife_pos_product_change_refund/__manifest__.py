@@ -30,7 +30,11 @@
             'forlife_pos_product_change_refund/static/src/scss/pos.scss',
             'forlife_pos_product_change_refund/static/src/xml/**/*.xml',
             'forlife_pos_product_change_refund/static/src/js/**/*.js',
-        ],
+            'web/static/src/search/search_panel/search_view.scss',
+            'web/static/src/search/control_panel/control_panel.scss',
+            'web/static/src/scss/bootstrap_overridden_frontend.scss',
+            'web/static/src/legacy/scss/modal.scss',
+        ]
     },
 
     'data': [
@@ -49,6 +53,8 @@
         'views/product_category_view.xml',
         'views/product_defective.xml',
         'views/defective_type.xml',
+        'views/templates.xml',
+        'wirards/return_pos_order_line.xml',
         # Menu
     ]
 }
