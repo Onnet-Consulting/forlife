@@ -152,7 +152,11 @@ class SaleOrderNhanh(models.Model):
         today = datetime.datetime.today().strftime("%Y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
-        kwargs["toDate"] = today
+        if not kwargs.get("toDate"):
+            kwargs["toDate"] = today
+
+        if not kwargs.get("fromDate"):
+            kwargs["fromDate"] = previous_day
 
         order_model = self.env['sale.order']
         odoo_orders = order_model.sudo().search(
@@ -171,8 +175,6 @@ class SaleOrderNhanh(models.Model):
                     or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
                 _logger.info(f'Nhanh configuration does not set')
                 continue
-            if not kwargs.get("fromDate"):
-                kwargs["fromDate"] = previous_day
 
             url = f"{NHANH_BASE_URL}/order/index"
             data = {

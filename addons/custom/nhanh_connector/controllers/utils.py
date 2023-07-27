@@ -153,35 +153,41 @@ class NhanhClient:
     def get_order_line(self, order, brand_id, location_id, is_create=False):
         order_line = []
         for item in order['products']:
-            product_id = self.cls.env['product.product'].sudo().search(['|',
-                ('nhanh_id', '=', item.get('productId')),
-                ('barcode', '=', item.get('productBarcode'))
+            product_id = self.cls.env['product.product'].sudo().search([
+                ('nhanh_id', '=', item.get('productId'))
             ],limit=1)
+            # product_id = self.cls.env['product.product'].sudo().search(['|',
+            #     ('nhanh_id', '=', item.get('productId')),
+            #     ('barcode', '=', item.get('productBarcode'))
+            # ],limit=1)
 
-            if not product_id and not is_create:
+            if not product_id:
                 raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
-            if not product_id and is_create: 
-                uom = self.cls.env.ref('uom.product_uom_unit').id
-                product = self.cls.env['product.template'].sudo().create({
-                    'detailed_type': 'asset',
-                    'nhanh_id': item.get('productId'),
-                    'check_data_odoo': False,
-                    'name': item.get('productName'),
-                    'barcode': item.get('productBarcode'),
-                    'list_price': item.get('price'),
-                    'uom_id': uom,
-                    'weight': float(item.get('weight', 0)/1000),
-                    'responsible_id': None
-                })
-                product_id = self.cls.env['product.product'].sudo().search([
-                    ('product_tmpl_id', '=', product.id)
-                ], limit=1)
 
-            product_id.product_tmpl_id.write({
-                'brand_id': brand_id.id,
-                'nhanh_id': item.get('productId'),
-                'check_data_odoo': True,
-            })
+            # if not product_id and not is_create:
+            #     raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('productId'))
+            # if not product_id and is_create: 
+            #     uom = self.cls.env.ref('uom.product_uom_unit').id
+            #     product = self.cls.env['product.template'].sudo().create({
+            #         'detailed_type': 'asset',
+            #         'nhanh_id': item.get('productId'),
+            #         'check_data_odoo': False,
+            #         'name': item.get('productName'),
+            #         'barcode': item.get('productBarcode'),
+            #         'list_price': item.get('price'),
+            #         'uom_id': uom,
+            #         'weight': float(item.get('weight', 0)/1000),
+            #         'responsible_id': None
+            #     })
+            #     product_id = self.cls.env['product.product'].sudo().search([
+            #         ('product_tmpl_id', '=', product.id)
+            #     ], limit=1)
+
+            # product_id.product_tmpl_id.write({
+            #     'brand_id': brand_id.id,
+            #     'nhanh_id': item.get('productId'),
+            #     'check_data_odoo': True,
+            # })
 
             order_line.append((
                 0, 0, {
