@@ -102,6 +102,7 @@ class HrAssetTransferLine(models.Model):
     company_id = fields.Many2one('res.company', related='hr_asset_transfer_id.company_id')
 
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
+    asset_code_code = fields.Char(related='asset_code.code', string='Mã tài sản')
     employee_from_id = fields.Many2one('hr.employee', string="Employee From")
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
     account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From")
