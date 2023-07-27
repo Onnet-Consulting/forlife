@@ -792,7 +792,7 @@ class InventoryLine(models.Model):
     def _compute_outdated(self):
         quants_by_inventory = {inventory: inventory._get_quantities() for inventory in self.inventory_id}
         for line in self:
-            quants = quants_by_inventory[line.inventory_id]
+            quants = quants_by_inventory[line.inventory_id] or {}
             if line.state == 'done' or not line.id:
                 line.outdated = False
                 continue
