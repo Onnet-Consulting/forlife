@@ -70,7 +70,7 @@ class PosConfig(models.Model):
                             "WHERE id IN %(promotion_programs)s AND active = true AND state = 'in_progress'",
                             {'promotion_programs': tuple(promotion_programs)})
         existed = self.env.cr.dictfetchall()
-        existed_customer_domain = {str(p['id']): p.get('customer_domain', '[]') for p in existed}
+        existed_customer_domain = {str(p['id']): p.get('customer_domain') or '[]' for p in existed}
         for program_id in promotion_programs:
             if program_id in existed_customer_domain.keys() and partner.filtered_domain(literal_eval(existed_customer_domain[program_id])):
                 result.append(program_id)
