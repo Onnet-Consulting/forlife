@@ -16,15 +16,13 @@
         <menuitem id="menu_utm_source_nhanh"
             action="utm.utm_source_action"
             parent="sale.menu_sales_config"
-            sequence="98"
-            groups="base.group_no_one"/>
+            sequence="98"/>
 
         <menuitem id="menu_sale_channel_nhanh"
             name="Kênh/Sàn"
             action="sale_channel_source_action"
             parent="sale.menu_sales_config"
-            sequence="99"
-            groups="base.group_no_one"/>
+            sequence="99"/>
 
         <menuitem id="delivery_carrier_menu" 
             name="Đơn vị vận chuyển" 
