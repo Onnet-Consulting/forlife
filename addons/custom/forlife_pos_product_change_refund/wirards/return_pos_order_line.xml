@@ -6,7 +6,7 @@
             <field name="name">pos_order_line_view_tree</field>
             <field name="model">pos.order.line</field>
             <field name="arch" type="xml">
-                <tree string="pos_order_line_tree" create="false" edit="false" class="list_order_refund">
+                <tree string="pos_order_line_tree" create="false" edit="false" class="list_table_custom" limit="200">
                     <field name="product_barcode"/>
                     <field name="product_name"/>
                     <field name="qty"/>

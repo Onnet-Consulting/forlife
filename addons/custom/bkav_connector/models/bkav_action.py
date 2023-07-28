@@ -167,7 +167,7 @@ def get_invoice_bkav(self):
         get_invoice_status(self)
 
 
-def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
+def cancel_invoice_bkav(self):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
     configs = get_bkav_config(self)
@@ -176,11 +176,11 @@ def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
         "CommandObject": [
             {
                 "Invoice": {
-                    "InvoiceGUID": self.invoice_guid,
+                    "InvoiceTypeID": 1,
                     "Reason": "Hủy vì sai sót"
                 },
-                "PartnerInvoiceID": PartnerInvoiceID,
-                "PartnerInvoiceStringID": PartnerInvoiceStringID,
+                "PartnerInvoiceID": 0,
+                "PartnerInvoiceStringID": self.invoice_guid
             }
         ]
     }
@@ -193,7 +193,7 @@ def cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
         get_invoice_status(self)
 
 
-def delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
+def delete_invoice_bkav(self,):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
     configs = get_bkav_config(self)
@@ -202,11 +202,11 @@ def delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID):
         "CommandObject": [
             {
                 "Invoice": {
-                    "InvoiceGUID": self.invoice_guid,
+                    "InvoiceTypeID": 1,
                     "Reason": "Xóa vì sai sót"
                 },
-                "PartnerInvoiceID": PartnerInvoiceID,
-                "PartnerInvoiceStringID": PartnerInvoiceStringID,
+                "PartnerInvoiceID": 0,
+                "PartnerInvoiceStringID": self.invoice_guid
             }
         ]
     }

@@ -49,14 +49,15 @@ class AccountMovePurchaseReturn(models.Model):
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
-                    item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
+                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
+
 
                 list_invoice_detail.append(item)
 
                 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            if invoice.invoice_info_company_name:
-                BuyerName = invoice.invoice_info_company_name
+            # if invoice.invoice_info_company_name:
+            #     BuyerName = invoice.invoice_info_company_name
 
             BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:

@@ -14,7 +14,10 @@
                 <t t-foreach="options.data" t-as="line">
                     <tr>
                         <td><t t-esc="line.nha_cung_cap"/></td>
-                        <td><t t-esc="line.ghi_chu"/></td>
+                        <td><t t-esc="line.chu_y"/></td>
+                        <td><t t-esc="line.nhom_hang"/></td>
+                        <td><t t-esc="line.dong_hang"/></td>
+                        <td><t t-esc="line.ket_cau"/></td>
                         <td><t t-esc="line.san_pham"/></td>
                         <td><t t-esc="line.mo_ta"/></td>
                         <td><t t-esc="line.loai_hh"/></td>
