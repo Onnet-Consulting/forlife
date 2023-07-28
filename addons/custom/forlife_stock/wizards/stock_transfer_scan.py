@@ -27,12 +27,12 @@ class StockTransferScan(models.TransientModel):
         # Khi trạng thái là 'Đã phê duyệt' => update số lượng quét vào Số lượng xuất
         if self.transfer_id.state == 'approved':
             for line in self.stock_transfer_scan_line_ids:
-                line.transfer_line_id.qty_out += line.product_qty_done
+                line.transfer_line_id.qty_out = line.product_qty_done
 
         # Khi trạng thái là 'Xác nhận xuất' => update số lượng quét vào Số lượng nhập
         if self.transfer_id.state == 'out_approve':
             for line in self.stock_transfer_scan_line_ids:
-                line.transfer_line_id.qty_in += line.product_qty_done
+                line.transfer_line_id.qty_in = line.product_qty_done
 
 
 class StockTransferScanLine(models.TransientModel):
