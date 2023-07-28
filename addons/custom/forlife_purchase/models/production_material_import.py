@@ -4,8 +4,8 @@ from odoo import fields, api, models
 class ForlifeProduction(models.Model):
     _inherit = 'forlife.production'
 
-    material_import_ids = fields.One2many('production.material.import', 'production_id')
-    expense_import_ids = fields.One2many('production.expense.import', 'production_id')
+    material_import_ids = fields.One2many('production.material.import', 'production_id', copy=True)
+    expense_import_ids = fields.One2many('production.expense.import', 'production_id', copy=True)
 
 
 class ProductionMaterialImport(models.Model):

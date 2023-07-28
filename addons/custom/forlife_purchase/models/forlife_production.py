@@ -16,18 +16,16 @@ class ForlifeProduction(models.Model):
     user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user, required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     created_date = fields.Date(string="Create Date", default=lambda self: fields.datetime.now(), required=True)
-    forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product',
-                                                              'forlife_production_id', string='Finished Products')
-    forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id',
-                                                      string='Materials')
-    forlife_production_service_cost_ids = fields.One2many('forlife.production.service.cost', 'forlife_production_id',
-                                                          string='Service costs')
+    forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product', 'forlife_production_id', string='Finished Products', copy=True)
+    forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
+    forlife_production_service_cost_ids = fields.One2many('forlife.production.service.cost', 'forlife_production_id', string='Service costs')
     implementation_id = fields.Many2one('account.analytic.account', string='Bộ phận thực hiện')
     management_id = fields.Many2one('account.analytic.account', string='Bộ phận quản lý')
-    production_department = fields.Selection([('tu_san_xuat', 'Hàng tự sản xuất'),
-                                              ('tp', 'Gia công TP'),
-                                              ('npl', 'Gia công NPL')
-                                              ], default='tu_san_xuat', string='Production Department')
+    production_department = fields.Selection([
+        ('tu_san_xuat', 'Hàng tự sản xuất'),
+        ('tp', 'Gia công TP'),
+        ('npl', 'Gia công NPL')
+    ], default='tu_san_xuat', string='Production Department')
     produced_from_date = fields.Date(string="Produced From Date", default=lambda self: fields.datetime.now(), required=True)
     to_date = fields.Date(string="To Date", required=True)
     brand_id = fields.Many2one('res.brand', string="Nhãn hàng")
@@ -151,7 +149,6 @@ class ForlifeProductionFinishedProduct(models.Model):
     production_department = fields.Selection(related='forlife_production_id.production_department')
     forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')
-    forlife_bom_ingredients_ids = fields.One2many('forlife.bom.ingredients', 'forlife_bom_id', string='Ingredients')
     is_check = fields.Boolean(default=False)
     color = fields.Many2one('product.attribute.value', string='Màu', compute='compute_attribute_value')
     size = fields.Many2one('product.attribute.value', string='Size', compute='compute_attribute_value')
@@ -201,11 +198,6 @@ class ForlifeProductionFinishedProduct(models.Model):
             'res_id': self.id,
         }
 
-    # @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
-    # def _onchange_forlife_bom_material_ids(self):
-    #     self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids)
-    #                       + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids)
-    #                       + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids))
 
     @api.model_create_multi
     def create(self, vals_list):

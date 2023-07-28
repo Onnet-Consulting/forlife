@@ -38,7 +38,6 @@ class ForlifeBOM(models.Model):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
                           'unit_prices': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids) / record.quantity
-                                         + sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_ingredients_ids) / record.quantity
                                          + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids) / record.quantity})
             current_bom.write({'unit_price': record.unit_prices})
 
