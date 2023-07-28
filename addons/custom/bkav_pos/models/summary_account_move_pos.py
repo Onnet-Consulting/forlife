@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-from .utils import collect_pos_to_bkav_end_day, genarate_code
+from .utils import collect_pos_to_bkav_end_day, genarate_code, genarate_pos_code
+
 
 class SummaryAccountMovePos(models.Model):
     _name = 'summary.account.move.pos'
@@ -474,7 +475,8 @@ class SummaryAccountMovePos(models.Model):
             "quantity": line.qty,
             "price_unit": line.price_bkav,
             "x_free_good": line.is_reward_line,
-            "invoice_ids": [line.order_id.id]
+            "invoice_ids": [line.order_id.id],
+            "tax_ids": line.tax_ids.ids,
         }
         return item
 
@@ -489,6 +491,8 @@ class SummaryAccountMovePos(models.Model):
                 row["quantity"] += item["quantity"]
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
+                row["tax_ids"].extend(item["tax_ids"])
+                row["tax_ids"] = list(set(row["tax_ids"]))
             else:
                 items[pk] = item
         return items
@@ -500,10 +504,9 @@ class SummaryAccountMovePos(models.Model):
         lines=[],
         store=None,
         page=0,
-        model_code="9820000000",
-        model=None,
         company_id=None
     ):
+        model_code = genarate_pos_code(store_id=store, index=page)
         first_n=0
         last_n=1000
         pk = f"{store.id}_{page}"
@@ -525,8 +528,6 @@ class SummaryAccountMovePos(models.Model):
                 lines=lines, 
                 store=store, 
                 page=page, 
-                model_code=genarate_code(self, model, default_code=model_code),
-                model=model,
                 company_id=company_id
             )
         else:
@@ -542,12 +543,11 @@ class SummaryAccountMovePos(models.Model):
     def get_items(self):
         model = self.env['summary.account.move.pos']
         model_line = self.env['summary.account.move.pos.line']
-        pos_code = genarate_code(self, model)
 
-        last_day = date.today() - timedelta(days=1)
+        last_day = date.today()
         domain = [
-            ('is_synthetic', '=', False),
-            ('invoice_date', '<=', last_day),
+            # ('is_synthetic', '=', False),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
@@ -572,8 +572,6 @@ class SummaryAccountMovePos(models.Model):
                 lines=list(line_items.values()),
                 store=store,
                 page=0,
-                model_code=pos_code,
-                model=model,
                 company_id=res[0].company_id
             )
             data[store.id] = line_items
@@ -589,11 +587,6 @@ class SummaryAccountMovePos(models.Model):
 
         return data, res, pos_order_synthetic
 
-
-    def collect_sales_invoice_to_bkav_end_day(self, lines):
-        model = self.env['summary.account.move.pos']
-        model_line = self.env['summary.account.move.pos.line']
-        return collect_pos_to_bkav_end_day(self, lines, model, model_line)
 
     def include_line_by_product(self, lines):
         pos_order = lines.mapped("order_id")
@@ -779,6 +772,13 @@ class SummaryAccountMovePos(models.Model):
         res = model.create(vals_list)
 
 
+    def create_an_invoice_bkav(self):
+        synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+        # synthetic_account_move.create_an_invoice()
+
+        adjusted_move = self.env['summary.adjusted.invoice.pos'].search([('exists_bkav', '=', False)])
+        # adjusted_move.create_an_invoice()
+
     def collect_invoice_to_bkav_end_day(self):
         synthetic_lines = self.env['synthetic.account.move.pos.line'].search([
             ('remaining_quantity', '>', 0)
@@ -911,7 +911,7 @@ class SummaryAccountMovePos(models.Model):
 
         sale_synthetic.write({"is_synthetic": True})
         refund_synthetic.write({"is_synthetic": True})
-
+        self.create_an_invoice_bkav()
         return True
 
 
