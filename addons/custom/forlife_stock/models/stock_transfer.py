@@ -283,8 +283,7 @@ class StockTransfer(models.Model):
     def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         for data_line in data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
-        company = self._check_location_mapping_with_comp(loc_id=location_id.id, loc_dest_id=location_dest_id.id,
-                                                         company=self.env.company)
+        company = self._check_location_mapping_with_comp(loc_id=location_id.id, loc_dest_id=location_dest_id.id, company=self.env.company)
         from_company = False
         to_company = False
         if company and not self._context.get('company_match', False):
@@ -347,8 +346,7 @@ class StockTransfer(models.Model):
             company_id = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_byside'))])
         else:
             company_id = self.env.company
-        pk_type = self.env['stock.picking.type'].sudo().search(
-            [('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
+        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
         origin = self.name
         date_done = self.date_in_approve
         location_id = self.location_id
@@ -444,15 +442,9 @@ class StockTransfer(models.Model):
         })
 
     def action_approve(self):
-        for record in self:
-            record.write({'state': 'approved',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Approved',
-                          #     'state': 'approved',
-                          # })],
-                          })
+        self.write({
+            'state': 'approved'
+        })
 
     def action_reject(self):
         for record in self:
@@ -463,15 +455,9 @@ class StockTransfer(models.Model):
             record.write({'state': 'cancel'})
 
     def action_done(self):
-        for record in self:
-            record.write({'state': 'done',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Done',
-                          #     'state': 'done',
-                          # })],
-                          })
+        self.write({
+            'state': 'done'
+        })
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -607,16 +593,6 @@ class StockTransferLine(models.Model):
         if self.product_id:
             self.uom_id = self.product_id.product_tmpl_id.uom_id.id
 
-    # @api.constrains('qty_in', 'qty_out')
-    # def constrains_qty_in(self):
-    #     for rec in self:
-    # if rec.qty_in == 0 or rec.qty_out == 0:
-    #     raise ValidationError(_('You have not re-entered the actual inventory quantity. If you continue, the system will automatically default to the approved quantity !!'))
-    # if rec.qty_in > rec.qty_plan:
-    #     raise ValidationError(_('The number of inputs is greater than or equal to the number of adjustments !!'))
-    # if rec.qty_out > rec.qty_plan:
-    #     raise ValidationError(_('Output quantity is greater than or equal to the number of adjustments !!'))
-
     @api.depends('qty_plan', 'qty_in')
     def compute_quantity_remaining(self):
         for item in self:
@@ -698,9 +674,7 @@ class StockTransferLine(models.Model):
                 qty_in_production = sum([x.quantity for x in qty_production_ids])
                 qty_free = qty_available - qty_in_production
                 if self.qty_out > qty_free:
-                    raise ValidationError(
-                        'Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % (
-                            product.name))
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % (product.name))
             if self.work_to:
                 if quantity_prodution_to:
                     quantity_prodution_to.update({
