@@ -37,6 +37,7 @@ class SummaryAdjustedInvoicePos(models.Model):
 
     total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
                                  help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+
     # @api.depends('invoice_ids')
     def _compute_total_point(self):
         for line in self:
