@@ -50,6 +50,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         ('adjust', 'Điều chỉnh'),
         ('replace', 'Thay thế')
     ], 'Loại phát hành', default='vat', required=True)
+    origin_move_id = fields.Many2one('invoice.not.exists.bkav', 'Hóa đơn gốc')
 
     code = fields.Char(string="Mã", default="New", copy=False)
     invoice_ids = fields.Many2many(comodel_name='account.move', copy=False, string='DS Hóa đơn')
@@ -318,16 +319,12 @@ class GeneralInvoiceNotExistsBkav(models.Model):
     def cancel_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
         if not self._check_info_before_bkav():
