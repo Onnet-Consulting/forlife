@@ -58,6 +58,7 @@
     'assets': {
         'web.assets_backend': [
             'forlife_base/static/src/css/**/*',
+            'forlife_base/static/src/js/**/*',
         ]
     },
 }

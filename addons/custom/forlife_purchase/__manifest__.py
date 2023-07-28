@@ -50,7 +50,6 @@
         "web.assets_backend": [
             '/forlife_purchase/static/src/css/common.scss',
             'forlife_purchase/static/src/xml/import_button.xml',
-            'forlife_purchase/static/src/js/import_button.js',
         ],
         'web.assets_qweb': [
         ],
