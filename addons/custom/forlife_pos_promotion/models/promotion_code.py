@@ -99,13 +99,18 @@ class PromotionCode(models.Model):
 
     def push_notification_to_app(self):
         app_api_link = {}
+        Utility = self.env['res.utility']
         for l in self.env['forlife.app.api.link'].search([]):
             app_api_link.update({l.key: l.value})
         for c in self:
             try:
                 link = app_api_link.get(c.program_id.brand_id.code)
                 if link:
-                    param = f'type=pushNotificationVIP&id={c.program_id.notification_id}&voucher={c.name}&gift=&customerId={c.partner_id.phone}'
-                    requests.get(link + param)
-            except:
-                pass
+                    param = f'type=pushNotificationbyId&customerId={c.partner_id.phone}&NotiId={c.program_id.notification_id}&param={c.name}'
+                    result = requests.get(link + param)
+                    Utility.create_ir_logging(self._name, result.text, line=str(c.id), func='push_notification_to_app', path=link + param)
+                else:
+                    message = f"Không tìm thấy api link với mã thương hiệu '{c.program_id.brand_id.code}'"
+                    Utility.create_ir_logging(self._name, message, line=str(c.id), func='push_notification_to_app')
+            except Exception as e:
+                Utility.create_ir_logging(self._name, str(e), line=str(c.id), func='push_notification_to_app')
