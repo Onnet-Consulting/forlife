@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record id="forlife_stock_transfer_form_view" model="ir.ui.view">
+        <field name="name">forlife_stock_transfer_form_view</field>
+        <field name="model">stock.transfer.scan</field>
+        <field name="arch" type="xml">
+            <form string="Lý do">
+                <div class="oe_title">
+                    <h3>
+                        <field name="barcode" default_focus="1" placeholder="Nhập barcode cần quét"/>
+                    </h3>
+                </div>
+                <notebook>
+                    <page string="Sản phẩm">
+                        <field name="stock_transfer_scan_line_ids" force_save="1">
+                            <tree options='{"no_open": True, "no_create": True}'>
+                                <field name="barcode"/>
+                                <field name="transfer_line_id"/>
+                                <field name="qty_plan"/>
+                                <field name="product_qty_done"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+                <div style="text-align: center">
+                    <h2>
+                        <field name="note" attrs="{'invisible': [('note', '=', False)]}" style="color: red"/>
+                    </h2>
+                </div>
+
+                <footer>
+                    <button name="action_update" string="Cập nhật sl quét" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -42,7 +42,7 @@ class SaleOrder(models.Model):
     def get_customer_promotion_nhanh(self, rec, ln):
         if rec.source_record:
             res_id = f'product.category,{ln.product_id.categ_id.id}'
-            ir_property = self.env['ir.property'].search([
+            ir_property = self.env['ir.property'].sudo().search([
                 ('name', 'in', ['property_account_expense_categ_id','product_gift_account_id','discount_account_id','promotion_account_id']),
                 ('res_id', '=', res_id),
                 ('company_id', '=', rec.company_id.id)
@@ -101,7 +101,7 @@ class SaleOrder(models.Model):
                                     'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)}
                                 return action
                         else:
-                            action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")}
                             return action
 
@@ -118,7 +118,7 @@ class SaleOrder(models.Model):
                                 line = self.get_oder_line_barcode(barcode)
                                 if not line or len(line) == 0:
                                     rec.write({"state": "check_promotion"})
-                                    action = self.env['ir.actions.actions']._for_xml_id(
+                                    action = self.env['ir.actions.actions'].sudo()._for_xml_id(
                                         'forlife_sale_promotion.action_check_promotion_wizard')
                                     action['context'] = {'default_message': _("Order note '#MN' invalid!")}
                                     return action
@@ -146,9 +146,10 @@ class SaleOrder(models.Model):
                                     [('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
-                                gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                                discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                                promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                # promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                gift_account_id, discount_account_id, promotion_account_id = self.get_customer_promotion_nhanh(rec, ln)
                                 has_vip = True
                                 # Ưu tiên 3
                                 if not ln.x_free_good and not ln.is_reward_line and price_percent > 0:
@@ -156,7 +157,7 @@ class SaleOrder(models.Model):
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
                                         'promotion_type': 'vip_amount',
-                                        'account_id': promotion_account_id and promotion_account_id.id,
+                                        'account_id': promotion_account_id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip"
@@ -168,7 +169,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
-                                        'account_id': discount_account_id and discount_account_id.id,
+                                        'account_id': discount_account_id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'promotion_type': 'vip_amount_remain',
@@ -178,13 +179,13 @@ class SaleOrder(models.Model):
                         else:
                             self.env.cr.rollback()
                             rec.write({"state": "check_promotion"})
-                            action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {'default_message': _("Order note '#VIP' invalid!")}
                             return action
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
-                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
+                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].sudo().search([('code', 'like', '%' + warehouse_code)], limit=1)
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
@@ -222,7 +223,7 @@ class SaleOrder(models.Model):
                         try:
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
-                                ir_property = self.env['ir.property'].search([
+                                ir_property = self.env['ir.property'].sudo().search([
                                     ('name', '=', 'property_account_income_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
@@ -254,7 +255,7 @@ class SaleOrder(models.Model):
                         try:
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
-                                ir_property = self.env['ir.property'].search([
+                                ir_property = self.env['ir.property'].sudo().search([
                                     ('name', '=', 'property_account_expense_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)

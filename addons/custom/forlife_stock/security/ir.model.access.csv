@@ -25,3 +25,6 @@ access_quantity_production_order,access_quantity_production_order,model_quantity
 
 access_stock_picking_scan,stock.picking.scan,model_stock_picking_scan,base.group_user,1,1,1,1
 access_stock_picking_scan_line,stock.picking.scan.line,model_stock_picking_scan_line,base.group_user,1,1,1,1
+
+access_stock_transfer_scan,stock.transfer.scan,model_stock_transfer_scan,base.group_user,1,1,1,1
+access_stock_transfer_scan_line,stock.transfer.scan.line,model_stock_transfer_scan_line,base.group_user,1,1,1,1

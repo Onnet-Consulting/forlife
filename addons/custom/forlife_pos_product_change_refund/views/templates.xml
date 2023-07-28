@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="add_css_common" inherit_id="point_of_sale.assets_common">
+        <xpath expr="." position="inside">
+            <t t-call-assets="web.assets_common" t-js="false"/>
+        </xpath>
+    </template>
+</odoo>
+

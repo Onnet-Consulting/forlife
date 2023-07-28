@@ -69,6 +69,7 @@
                             <field name="hr_asset_transfer_line_ids" widget="section_and_note_one2many" mode="tree"  required="1" attrs="{'readonly': [('state', 'in', ('reject', 'approved_2', 'cancel'))]}">
                                 <tree editable="bottom">
                                     <field name="company_id" invisible="True"/>
+                                    <field name="asset_code_code"/>
                                     <field name="asset_code" domain="['|', ('company_id','=',False),('company_id','=',company_id)]"/>
                                     <field name="employee_from_id" readonly="1" force_save="1"/>
                                     <field name="employee_to_id"/>

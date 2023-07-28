@@ -236,6 +236,32 @@ class PromotionProgram(models.Model):
         ('max_usage', 'CHECK (max_usage >= 0.0)', 'Max Usage must be positive.')
     ]
 
+    @api.model_create_single
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res.code = res.set_code()
+        return res
+
+    def write(self, vals):
+        res = super().write(vals)
+        for rec in self:
+            if 'promotion_type' in vals:
+                rec.code = rec.set_code()
+        return res
+
+    def set_code(self):
+        if self.promotion_type == 'combo':
+            code = 'COB%s' % (self.id)
+        elif self.promotion_type == 'code':
+            code = 'COD%s' % (self.id)
+        elif self.promotion_type == 'cart':
+            code = 'CKC%s' % (self.id)
+        elif self.promotion_type == 'pricelist':
+            code = 'CDG%s' % (self.id)
+        else:
+            code = ''
+        return code
+
     @api.depends('company_id')
     def _compute_currency_id(self):
         for program in self:

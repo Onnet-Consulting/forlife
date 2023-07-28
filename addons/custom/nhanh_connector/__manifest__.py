@@ -37,12 +37,12 @@
         'views/sale_channel_view.xml',
         'views/sale_menus.xml',
         'data/sale_channel_data.xml',
+        'data/queue_job_data.xml',
         'views/transportation_management.xml',
     ],
     "assets": {
         "web.assets_backend": [
-            'nhanh_connector/static/xml/import_button.xml',
-            'nhanh_connector/static/js/import_button.js',
+            'nhanh_connector/static/src/xml/import_button.xml',
         ],
         'web.assets_qweb': [
         ],

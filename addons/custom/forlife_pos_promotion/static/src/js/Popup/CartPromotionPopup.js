@@ -66,6 +66,15 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
             return option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
         }
 
+        getSelectedQtyOfLine(reward) {
+            let program = reward.program;
+            let selected_qty_of_line = 0; // một dòng có thể đang được chọn áp dụng cho nhiều CT Hóa đơn nếu SL > 1
+            this.state.programs.filter(p=> p.isSelected && p.id != program.id).forEach(option => {
+                selected_qty_of_line += option.reward_line_vals.filter(l => l.line.cid == reward.line.cid && l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0);
+            });
+            return selected_qty_of_line;
+        }
+
         fixProgram(option) {
             option.fixed = !option.fixed;
             if (option.isSelected) {
@@ -81,11 +90,11 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                     // Reset floor
                     option.max_reward_quantity = option.floor * option.program.reward_quantity;
                     option.required_order_amount_min = option.floor * option.program.order_amount_min;
-                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
-                        option.reward_line_vals.forEach(line => {line.isSelected = false;});
-                        option.selectedQty = 0;
-                        option.isSelected = false;
-                    });
+//                    this.state.programs.filter(l=>l.id != option.id).forEach(option => {
+                    option.reward_line_vals.forEach(line => {line.isSelected = false;});
+                    option.selectedQty = 0;
+                    option.isSelected = false;
+//                    });
                 };
 
             } else {
@@ -100,8 +109,26 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                     });
                 } else {
                     if (option.floor > 1) {
-                        option.max_reward_quantity = (option.floor - 1) * option.program.reward_quantity;
-                        option.required_order_amount_min = (option.floor - 1) * option.program.order_amount_min;
+                        let tryFloor = option.floor;
+                        let reward = option.reward_line_vals.find(reward => this.getSelectedQtyOfLine(reward) < reward.line.quantity);
+                        if (reward) {
+                            let success = false;
+                            while (tryFloor >= 1) {
+                                option.max_reward_quantity = (tryFloor - 1) * option.program.reward_quantity;
+                                option.required_order_amount_min = (tryFloor - 1) * option.program.order_amount_min;
+                                let selectStr = `${reward.line.cid}p${option.program.str_id}`;
+                                let inputJquery = $('#'+selectStr).click();
+                                if (reward.quantity > 0) {
+                                    success =true;
+                                    break;
+                                };
+                                tryFloor--;
+                            };
+                            if (!success) {
+                                option.max_reward_quantity = option.floor * option.program.reward_quantity;
+                                option.required_order_amount_min = option.floor * option.program.order_amount_min;
+                            };
+                        };
                     };
                 };
             };

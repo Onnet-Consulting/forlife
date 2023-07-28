@@ -10,7 +10,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     const core = require('web.core');
     const _t = core._t;
 
-    const { useState, onWillUnmount, onWillDestroy } = owl;
+    const { useState, onWillUnmount, onWillDestroy, onMounted, onRendered } = owl;
 
     class RewardSelectionCartPromotionPopup extends PosComponent {
 
@@ -34,13 +34,24 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                         line.isSelected = false;
                     };
                 });
-                if (this.selectedQtyOnProgram() > 0) {
+                if (this.selectedQtyOnProgram(this.props.program,) > 0) {
                     this.state.program.isSelected = true;
                 } else {
                     this.state.program.isSelected = false;
                 }
             });
-
+//            Tính năng focus vào ô input, phải tìm đúng node input vừa hành động để focus
+//            onRendered(() => {
+//                let rewardLine = this.state.reward_line_vals
+//                                    .find(reward => this.getSelectedQtyOfLine(reward) < reward.line.quantity && reward.quantity > 0);
+//                if (rewardLine && this.state.program.executingPro && this.state.program.executingPro.str_id == this.state.program.program.str_id) {
+//                    let selectStr = `#quantity-${rewardLine.line.cid}p${this.state.program.program.str_id}`;
+//                    let qtyInput = $(selectStr);
+//                    if (qtyInput.length) {
+//                        qtyInput.focus();
+//                    };
+//                };
+//            });
         }
 
         hasNoDisabledNoSelectedReward() {
@@ -56,8 +67,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             }
         }
 
-        selectedQtyOnProgram() {
-            let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+        selectedQtyOnProgram(option) {
+            let result = option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 //            if (this.state.program.additional_reward_product_id) {
 //                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
 //                if (qty > 0) {
@@ -255,9 +266,25 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             if (currentLine.isSelected) {
                 this.state.program.isSelected = true;
                 this._computeOnchangeQty(currentLine, 1);
+//                this.state.programOptions.forEach(op => {
+//                    op.executingPro = this.state.program.program;
+//                });
             } else {
-                if (this.selectedQtyOnProgram() == 0) {
+                if (this.selectedQtyOnProgram(this.state.program) == 0) {
                     this.state.program.isSelected = false;
+                };
+//                this.state.programOptions.forEach(op => {
+//                    op.executingPro = null;
+//                });
+            };
+            let otherOptions = this.state.programOptions.filter(p => p.fixed && p.isSelected && p.id != this.state.program.id);
+            for (let option of otherOptions) {
+                // Recompute floor
+                let selectedQty = this.selectedQtyOnProgram(option);
+                let realFloor = Math.ceil(selectedQty / option.program.reward_quantity);
+                if (realFloor < option.floor) {
+                    option.max_reward_quantity = realFloor * option.program.reward_quantity;
+                    option.required_order_amount_min = realFloor * option.program.order_amount_min;
                 };
             };
 

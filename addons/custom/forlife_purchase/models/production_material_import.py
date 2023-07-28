@@ -14,6 +14,7 @@ class ProductionMaterialImport(models.Model):
 
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Mã vật tư')
+    product_backup_id = fields.Many2one('product.product', string='Mã vật tư thay thế')
     size = fields.Char(string='Size')
     color = fields.Char(string='Màu')
     uom_id = fields.Many2one('uom.uom', string='ĐVT Lưu kho')
@@ -21,7 +22,7 @@ class ProductionMaterialImport(models.Model):
     conversion_coefficient = fields.Float(string='HSQĐ')
     rated_level = fields.Float(string='Định mức')
     loss = fields.Float(string='Hao hụt')
-    qty = fields.Float(string='Số lượng xuất')
+    qty = fields.Float(string='Số lượng sản xuất')
     total = fields.Float(string='Tổng nhu cầu')
 
 

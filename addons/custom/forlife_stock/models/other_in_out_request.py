@@ -116,40 +116,48 @@ class ForlifeOtherInOutRequest(models.Model):
         picking_type_out = self.env['stock.picking.type'].search(
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
+            if record.type_other_id.code in ['N0101', 'N0102']:
+                picking_type_in = self.env['stock.picking.type'].search([('company_id', '=', company_id), ('code', '=', 'incoming'), ('exchange_code', '=', 'incoming')], limit=1)
+                if not picking_type_in:
+                    raise ValidationError(_('Vui lòng cấu hình phương thức nhập kho thành phẩm cho công ty %s!', self.env.company.name))
+
             value = {}
             for item in record.other_in_out_request_line_ids:
                 key = str(item.reason_to_id.id) + '_and_' + str(item.whs_to_id.id) if record.type_other == 'other_import' else (str(item.whs_from_id.id) + '_and_' + str(item.reason_from_id.id))
                 data_other_line = (
-                    0, 0, {'product_id': item.product_id.id,
-                           'product_uom_qty': item.quantity,
-                           'product_uom': item.uom_id.id,
-                           'name': item.description,
-                           'reason_type_id': item.type_other_id.id,
-                           'reason_id': item.reason_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
-                           'is_amount_total': item.reason_to_id.is_price_unit,
-                           'is_production_order': item.reason_to_id.is_work_order,
-                           'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
-                           'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
-                           'amount_total': item.product_id.standard_price if not item.reason_to_id.is_price_unit else 0,
-                           'occasion_code_id': item.occasion_id.id,
-                           'work_production': item.production_id.id,
-                           'account_analytic_id': item.cost_center.id,
-                           'product_other_id': item.id,
-                           'picking_id': record.id})
-                dict_data = {'state': 'draft',
-                             'reason_type_id': item.type_other_id.id,
-                             'other_import': True if record.type_other == 'other_import' else False,
-                             'other_export': True if record.type_other == 'other_export' else False,
-                             'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
-                             'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
-                             'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
-                             'company_id': self.env.company.id,
-                             'scheduled_date': record.date_planned,
-                             'is_from_request': True,
-                             'origin': record.name,
-                             'other_import_export_request_id': record.id,
-                             'move_ids_without_package': [data_other_line]
-                             }
+                    0, 0, {
+                        'product_id': item.product_id.id,
+                        'product_uom_qty': item.quantity,
+                        'product_uom': item.uom_id.id,
+                        'name': item.description,
+                        'reason_type_id': item.type_other_id.id,
+                        'reason_id': item.reason_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
+                        'is_amount_total': item.reason_to_id.is_price_unit,
+                        'is_production_order': item.reason_to_id.is_work_order,
+                        'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
+                        'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
+                        'amount_total': item.product_id.standard_price if not item.reason_to_id.is_price_unit else 0,
+                        'occasion_code_id': item.occasion_id.id,
+                        'work_production': item.production_id.id,
+                        'account_analytic_id': item.cost_center.id,
+                        'product_other_id': item.id,
+                        'picking_id': record.id
+                    })
+                dict_data = {
+                    'state': 'draft',
+                    'reason_type_id': item.type_other_id.id,
+                    'other_import': True if record.type_other == 'other_import' else False,
+                    'other_export': True if record.type_other == 'other_export' else False,
+                    'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
+                    'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
+                    'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
+                    'company_id': self.env.company.id,
+                    'scheduled_date': record.date_planned,
+                    'is_from_request': True,
+                    'origin': record.name,
+                    'other_import_export_request_id': record.id,
+                    'move_ids_without_package': [data_other_line]
+                }
                 if value.get(key):
                     value[key]['move_ids_without_package'].append(data_other_line)
                 else:

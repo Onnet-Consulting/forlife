@@ -15,7 +15,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.approved = this.approved || false;
             this.is_refund_product = this.is_refund_product || false;
             this.is_change_product = this.is_change_product || false;
+            this.listOrderLineRefundSelected = []
         }
+
 
         init_from_JSON(json) {
             super.init_from_JSON(...arguments);

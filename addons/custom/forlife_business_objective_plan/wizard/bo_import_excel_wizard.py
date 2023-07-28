@@ -53,11 +53,11 @@ select (select json_object_agg(code, id) from res_sale_province)                
             sale_province_id = sale_provinces.get(val[0])
             store_id = stores.get(val[1])
             if not sale_province_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy khu vực có mã là '{val[0]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy khu vực có mã là '{val[0]}'")
             if not store_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
             if store_id in store_exist:
-                error.append(f"Dòng {index + 1}, cửa hàng có mã là '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
+                error.append(f"Dòng {index + 2}, cửa hàng có mã là '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
             if not error:
                 vals.append({
                     'bo_plan_id': self.bo_plan_id.id,
@@ -98,20 +98,20 @@ select (select json_object_agg(code, id) from res_sale_province)                
             job_id = jobs.get(val[3])
 
             if not sale_province_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy khu vực có mã là '{val[0]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy khu vực có mã là '{val[0]}'")
             if not store_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy cửa hàng thuộc thương hiệu '{brand_id.name}' có mã là '{val[1]}'")
             if not employee_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy nhân viên có mã là '{val[2]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy nhân viên có mã là '{val[2]}'")
             if employee_id and store_id:
                 if store_id in (employee_exist.get(str(employee_id)) or []):
-                    error.append(f"Dòng {index + 1}, mã nhân viên '{val[2]}' thuộc mã cửa hàng '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
+                    error.append(f"Dòng {index + 2}, mã nhân viên '{val[2]}' thuộc mã cửa hàng '{val[1]}' đã tồn tại trong phiếu '{self.bo_plan_id.name}'")
             if not job_id:
-                error.append(f"Dòng {index + 1}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
+                error.append(f"Dòng {index + 2}, không tìm thấy vị trí công việc có tên là '{val[3]}'")
             if val[4]:
                 concurrent_position_id = jobs.get(val[4])
                 if not concurrent_position_id:
-                    error.append(f"Dòng {index + 1}, không tìm thấy vị trí kiêm nhiệm có tên là '{val[4]}'")
+                    error.append(f"Dòng {index + 2}, không tìm thấy vị trí kiêm nhiệm có tên là '{val[4]}'")
             if not error:
                 vals.append({
                     'bo_plan_id': self.bo_plan_id.id,
