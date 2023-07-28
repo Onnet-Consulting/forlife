@@ -48,6 +48,11 @@ class NhanhClient:
         return self.cls.env['res.partner.group'].sudo().search([('code', '=', 'C')], limit=1)
 
     def get_res_partner(self, partner_group_id, order):
+        # sale channel
+        sale_channel = self.get_sale_channel(order)
+        if sale_channel and sale_channel.is_tmdt:
+            return sale_channel.partner_id
+
         return self.cls.env['res.partner'].sudo().search([
             '|', 
             ('mobile', '=', order['customerMobile']), 
@@ -225,6 +230,8 @@ class NhanhClient:
         return delivery_carrier_id
 
     def get_and_create_utm_source(self, order):
+        if not order['trafficSourceId']:
+            return None
         utm_source_id = self.cls.env['utm.source'].sudo().search([('x_nhanh_id', '=', order['trafficSourceId'])])
         if not utm_source_id:
             utm_source_id = self.cls.env['utm.source'].sudo().create({
