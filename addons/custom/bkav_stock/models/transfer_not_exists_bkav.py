@@ -102,7 +102,7 @@ class TransferNotExistsBkav(models.Model):
             JOIN stock_location kd ON s.location_dest_id = kd.id
             JOIN stock_location kdc ON kd.location_id = kdc.id
             WHERE s.exists_bkav = 'f' 
-            AND (s.date_transfer + interval '7 hours')::date < %s
+            AND (s.date_transfer + interval '7 hours')::date <= %s
             AND s.state in ('out_approve','in_approve','done')
             AND (kn.id_deposit != 't' or kd.id_deposit != 't')
             GROUP BY s.location_id,s.location_dest_id,s.company_id,knc.name,kn.name,kdc.name,kd.name; 
@@ -118,7 +118,7 @@ class TransferNotExistsBkav(models.Model):
                 FROM stock_transfer s, stock_transfer_line l
                 WHERE l.stock_transfer_id = s.id
                 AND s.exists_bkav = 'f' 
-                AND (s.date_transfer + interval '7 hours')::date < %s
+                AND (s.date_transfer + interval '7 hours')::date <= %s
                 AND s.state in ('out_approve','in_approve','done')
                 GROUP BY s.location_id, s.location_dest_id, l.product_id, l.uom_id) as b 
             ON a.location_id = b.location_id AND a.location_dest_id = b.location_dest_id
@@ -134,7 +134,7 @@ class TransferNotExistsBkav(models.Model):
                 (SELECT s.id, s.location_id, s.location_dest_id
                 FROM stock_transfer s
                 WHERE s.exists_bkav = 'f' 
-                AND (s.date_transfer + interval '7 hours')::date < %s
+                AND (s.date_transfer + interval '7 hours')::date <= %s
                 AND s.state in ('out_approve','in_approve','done')
                 ) as b 
             ON a.location_id = b.location_id AND a.location_dest_id = b.location_dest_id
@@ -212,7 +212,7 @@ class TransferNotExistsBkav(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
-            partner_id = invoice.partner_id
+            partner_id = invoice.company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -310,16 +310,12 @@ class TransferNotExistsBkav(models.Model):
     def cancel_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
         if not self._check_info_before_bkav():

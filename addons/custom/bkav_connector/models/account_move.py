@@ -85,13 +85,13 @@ class AccountMoveBKAV(models.Model):
                 vat = 0
                 if line.tax_id:
                     vat = line.tax_id[0].amount
-                Qty = round(line.price_total/ (line.product_uom_qty * (1 + vat/100)))
-                Amount = Qty * line.product_uom_qty
+                Price = round(line.price_total/ (line.product_uom_qty * (1 + vat/100)))
+                Amount = Price * line.product_uom_qty
                 item = {
                     "ItemName": item_name if not line.x_free_good else item_name + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom.name or '',
-                    "Qty": Qty,
-                    "Price": round(line.price_total/ (line.product_uom_qty * (1 + vat/100))),
+                    "Qty": line.product_uom_qty,
+                    "Price": Price,
                     "Amount": Amount,
                     "TaxAmount": (line.price_total-  Amount or 0.0),
                     "ItemTypeID": 0,
@@ -149,8 +149,8 @@ class AccountMoveBKAV(models.Model):
                 list_invoice_detail.append(item)
                 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            if invoice.invoice_info_company_name:
-                BuyerName = invoice.invoice_info_company_name
+            # if invoice.invoice_info_company_name:
+            #     BuyerName = invoice.invoice_info_company_name 
 
             BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
@@ -195,6 +195,8 @@ class AccountMoveBKAV(models.Model):
 
 
     def _check_info_before_bkav(self):
+        # if not self.invoice_info_tax_number and not self.partner_id.vat:
+        #     raise ValidationError('Không tìm thấy thông tin xuất hóa đơn')
         if not self.is_general:
             return True
         #HD ban hang thong thuong
@@ -264,25 +266,22 @@ class AccountMoveBKAV(models.Model):
     def cancel_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = self.id,
-        PartnerInvoiceStringID = ''
-        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = self.id,
-        PartnerInvoiceStringID = ''
-        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         return bkav_action.download_invoice_bkav(self)
 
-    def action_cancel(self):
-        res = super(AccountMoveBKAV, self).action_cancel()
-        self.cancel_invoice_bkav()
+    def button_cancel(self):
+        res = super(AccountMoveBKAV, self).button_cancel()
+        for item in self:
+            item.cancel_invoice_bkav()
         return res
     
     def unlink(self):
@@ -291,14 +290,15 @@ class AccountMoveBKAV(models.Model):
         return super(AccountMoveBKAV, self).unlink()
     
 
-    def action_post(self):
-        res = super(AccountMoveBKAV, self).action_post()
-        if self.issue_invoice_type == 'adjust':
-            if not self.origin_move_id or not self.origin_move_id.invoice_no:
-                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-            if self.origin_move_id.amount_total == self.amount_total:
-                self.origin_move_id.cancel_invoice_bkav()
-                self.exists_bkav = True
+    def _post(self, soft=True):
+        res = super(AccountMoveBKAV, self)._post()
+        for item in self:
+            if item.issue_invoice_type == 'adjust':
+                if not item.origin_move_id or not item.origin_move_id.invoice_no:
+                    raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
+                if item.origin_move_id.amount_total == item.amount_total:
+                    item.origin_move_id.cancel_invoice_bkav()
+                    item.exists_bkav = True
         return res
     
     

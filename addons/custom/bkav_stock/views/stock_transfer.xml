@@ -20,7 +20,7 @@
                 </xpath>
                 <xpath expr=".//notebook" position="inside">
                     <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible':['|',('state', 'not in', ('out_approve','in_approve','done')),('is_general','=',True)]}">
+                          attrs="{'invisible':['|',('state', 'not in', ('out_approve','in_approve','done','cancel')),('is_general','=',True)]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|','|',('exists_bkav', '!=', False),('invoice_guid', '!=', False),('state','not in', ('out_approve','in_approve','done'))]}"

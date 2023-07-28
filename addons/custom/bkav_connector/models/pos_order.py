@@ -4,32 +4,35 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from . import bkav_action
 
-class AccountMovePurchaseReturn(models.Model):
+class AccountMovePosOrder(models.Model):
     _inherit = 'account.move'
 
 
     def get_bkav_data_pos(self):
         bkav_data = []
-        for invoice in self:            
+        for invoice in self:
+            pos_order_id = invoice.pos_order_id
+            if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
+                continue           
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            for line in invoice.invoice_line_ids:
-                item_name = (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else ''
+            for line in pos_order_id.lines:
+                #SP Voucher k đẩy BKAV
+                # if line.product_id.voucher:continue
                 vat = 0
                 if line.tax_ids:
                     vat = line.tax_ids[0].amount
                 item = {
-                    "ItemName": item_name,
+                    "ItemName": line.product_id.name,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.quantity or 0.0,
-                    "Price": line.price_unit,
+                    "Qty": line.qty,
+                    "Price": line.price_subtotal/ line.qty,
                     "Amount": line.price_subtotal,
-                    "TaxAmount": (line.tax_amount or 0.0),
+                    "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
                     "DiscountAmount": line.price_subtotal * line.discount/100,
-                    "IsDiscount": 1 if line.discount != 0 else 0
+                    "IsDiscount": 1 if line.is_promotion else 0
                 }
                 if vat == 0:
                     tax_rate_id = 1
@@ -47,16 +50,14 @@ class AccountMovePurchaseReturn(models.Model):
                 })
                 if invoice.issue_invoice_type == 'adjust':
                     # kiểm tra hóa đơn gốc
-                    # gốc là out_invoice => điều chỉnh giảm
-                    # gốc là out_refund => điều chỉnh tăng
-                    item['IsIncrease'] = invoice.origin_move_id.move_type != 'out_invoice'
-
+                    # gốc là out_refund => điều chỉnh giảm
+                    # gốc là out_invoice => điều chỉnh tăng
+                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
                 list_invoice_detail.append(item)
 
-                
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            if invoice.invoice_info_company_name:
-                BuyerName = invoice.invoice_info_company_name
+            # if invoice.invoice_info_company_name:
+            #     BuyerName = invoice.invoice_info_company_name
 
             BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
@@ -98,3 +99,14 @@ class AccountMovePurchaseReturn(models.Model):
                 "ListInvoiceDetailsWS": list_invoice_detail
             })
         return bkav_data
+    
+    def _post(self, soft=True):
+        res = super(AccountMovePosOrder, self)._post()
+        for invoice in self:
+            pos_order_id = invoice.pos_order_id
+            if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
+                continue
+            if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
+                invoice.create_invoice_bkav()
+        return res
+    
