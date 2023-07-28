@@ -1,3 +1,4 @@
+
 .modal-body {
   .o_list_view {
     overflow-y: scroll;
@@ -10,31 +11,42 @@
     top: 0;
   }
 
-  table {
-    border: 1px solid #C9CCD2;
 
-    tr {
-      border-bottom: 1px solid #C9CCD2;
+  .list_table_custom {
 
-      th {
-        border-right: 1px solid #C9CCD2;
+    table {
+      border: 1px solid #C9CCD2;
 
-        div {
-          display: flex;
-          justify-content: space-between;
+      tr {
+        border-bottom: 1px solid #C9CCD2;
+
+        th {
+          border-right: 1px solid #C9CCD2;
+
+          div {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            white-space: nowrap;
+          }
+        }
+
+        td {
+          text-align: center;
+          border-right: 1px solid #C9CCD2;
           padding: 10px;
-          white-space: nowrap;
+        }
+
+        td.o_list_many2one, td.o_list_char {
+          text-align: left !important;
+        }
+
+        td.o_data_cell {
+          pointer-events: none
         }
       }
-
-      td {
-        text-align: center;
-        border-right: 1px solid #C9CCD2;
-        padding: 10px;
-      }
-
-      td.o_list_many2one {
-        text-align: left;
+      tfoot.o_list_footer {
+        display: none;
       }
     }
   }
