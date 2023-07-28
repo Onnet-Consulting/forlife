@@ -22,7 +22,7 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 			    }
 			    if(event.target.value > 0 &&  order_new.is_change_product){
 			        let user = this.env.pos.user;
-                    if (user.employee_id) {
+                    if (user.employee_id && !self.props.line.refunded_orderline_id) {
                         self.props.line.employee_id = user.employee_id[0];
                     }
 			    }else {
