@@ -35,6 +35,17 @@ class SummaryAdjustedInvoicePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
+                                 help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+    @api.depends('invoice_ids')
+    def _compute_total_point(self):
+        for line in self:
+            total_point = 0
+            for pos in line.invoice_ids:
+                total_point += pos.total_point
+
+            line.total_point = total_point
+
 
     def action_download_view_e_invoice(self):
         if not self.eivoice_file:

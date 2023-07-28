@@ -98,10 +98,10 @@ class SummaryAccountMovePosReturn(models.Model):
         model_line = self.env['summary.account.move.pos.return.line']
         pos_code = None
 
-        last_day = date.today() - timedelta(days=1)
+        last_day = date.today()
         domain = [
             ('invoice_exists_bkav', '=', False),
-            ('invoice_date', '<=', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             # ('is_synthetic', '=', False),

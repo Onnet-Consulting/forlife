@@ -544,10 +544,10 @@ class SummaryAccountMovePos(models.Model):
         model = self.env['summary.account.move.pos']
         model_line = self.env['summary.account.move.pos.line']
 
-        last_day = date.today() - timedelta(days=1)
+        last_day = date.today()
         domain = [
             # ('is_synthetic', '=', False),
-            ('invoice_date', '<=', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
@@ -774,10 +774,10 @@ class SummaryAccountMovePos(models.Model):
 
     def create_an_invoice_bkav(self):
         synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
-        synthetic_account_move.create_an_invoice()
+        # synthetic_account_move.create_an_invoice()
 
         adjusted_move = self.env['summary.adjusted.invoice.pos'].search([('exists_bkav', '=', False)])
-        adjusted_move.create_an_invoice()
+        # adjusted_move.create_an_invoice()
 
     def collect_invoice_to_bkav_end_day(self):
         synthetic_lines = self.env['synthetic.account.move.pos.line'].search([
