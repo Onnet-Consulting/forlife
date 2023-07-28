@@ -61,8 +61,8 @@ class ImportProductionFromExcel(models.TransientModel):
         if code_not_exists:
             raise ValidationError(_('Tồn tại code không có đơn hàng là %s' % code_not_exists))
 
-        location_out_ids = orders.filtered(lambda x: not x.x_is_change).mapped('x_location_id')
-        location_in_ids = orders.filtered(lambda x: x.x_is_change).mapped('x_location_id')
+        location_out_ids = orders.filtered(lambda x: not x.x_is_return).mapped('x_location_id')
+        location_in_ids = orders.filtered(lambda x: x.x_is_return).mapped('x_location_id')
         create_values = self.prepare_values(orders=orders, location_ids=location_in_ids, type='in')
         create_values += self.prepare_values(orders=orders, location_ids=location_out_ids, type='out')
         session = self.env['transportation.session'].create(create_values)
