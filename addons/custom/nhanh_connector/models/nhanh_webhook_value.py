@@ -22,6 +22,7 @@ class NhanhWebhookValue(models.Model):
     error = fields.Char('Error')
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
     order_id = fields.Many2one('sale.order', 'Order')
+    nhanh_id = fields.Char(string='Id Nhanh.vn', copy=False)
 
     def action_retry(self):
         data = safe_eval(self.event_value)
