@@ -270,7 +270,7 @@ class MainController(http.Controller):
                         for picking_id in webhook_value_id.order_id.picking_ids:
                             picking_id.action_cancel()
                 else:
-                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"]:
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
                         webhook_value_id.order_id.check_sale_promotion()
                         if webhook_value_id.order_id.state != 'check_promotion' and not webhook_value_id.order_id.picking_ids:
                             try:
@@ -284,7 +284,7 @@ class MainController(http.Controller):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success"]:
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
                         odoo_order.check_sale_promotion()
                         if odoo_order.state != 'check_promotion' and not odoo_order.picking_ids:
                             try:

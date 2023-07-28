@@ -692,7 +692,7 @@ class SaleOrderNhanh(models.Model):
                 new_picking_id, pick_type_id = return_wiz.with_context(so_return=self.id)._create_returns()
                 new_picking = self.env['stock.picking'].browse([new_picking_id])
                 for item in new_picking:
-                    item.write({"location_id": picking.location_id.id})
+                    item.write({"location_dest_id": picking.location_id.id})
         self.state = 'sale'
 
     
