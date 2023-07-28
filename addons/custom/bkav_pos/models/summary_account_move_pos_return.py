@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-from .utils import collect_pos_to_bkav_end_day, genarate_code
+from .utils import collect_pos_to_bkav_end_day, genarate_code, genarate_pos_code
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
@@ -28,7 +28,8 @@ class SummaryAccountMovePosReturn(models.Model):
             "quantity": line.qty,
             "price_unit": line.refunded_orderline_id.price_bkav,
             "x_free_good": line.is_reward_line,
-            "invoice_ids": [line.order_id.id]
+            "invoice_ids": [line.order_id.id],
+            "tax_ids": line.tax_ids.ids,
         }
         return item
 
@@ -43,6 +44,8 @@ class SummaryAccountMovePosReturn(models.Model):
                 row["quantity"] += item["quantity"]
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
+                row["tax_ids"].extend(item["tax_ids"])
+                row["tax_ids"] = list(set(row["tax_ids"]))
             else:
                 items[pk] = item
         return items
@@ -54,10 +57,9 @@ class SummaryAccountMovePosReturn(models.Model):
         lines=[],
         store=None,
         page=0,
-        model_code="9820000000",
-        model=None,
         company_id=None
     ):
+        model_code = genarate_pos_code(typ='T', store_id=store, index=page)
         first_n=0
         last_n=1000
         pk = f"{store.id}_{page}"
@@ -79,8 +81,6 @@ class SummaryAccountMovePosReturn(models.Model):
                 lines=lines, 
                 store=store, 
                 page=page, 
-                model_code=genarate_code(self, model, default_code=model_code),
-                model=model,
                 company_id=company_id
             )
         else:
@@ -96,7 +96,7 @@ class SummaryAccountMovePosReturn(models.Model):
     def get_items(self):
         model = self.env['summary.account.move.pos.return']
         model_line = self.env['summary.account.move.pos.return.line']
-        pos_code = genarate_code(self, model)
+        pos_code = None
 
         last_day = date.today() - timedelta(days=1)
         domain = [
@@ -104,7 +104,7 @@ class SummaryAccountMovePosReturn(models.Model):
             ('invoice_date', '<=', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
-            ('is_synthetic', '=', False),
+            # ('is_synthetic', '=', False),
         ]
 
         pos_order = self.env['pos.order'].search(domain)
@@ -119,6 +119,11 @@ class SummaryAccountMovePosReturn(models.Model):
         data = {}
         items = {}
         for store in stores:
+            if pos_code is None:
+                pos_code = genarate_code(self, model)
+            else:
+                pos_code = genarate_code(self, model, default_code=pos_code)
+
             res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
             line_items = self.include_line_by_product_and_price_bkav(res)
             self.recursive_move_line_items(
@@ -126,8 +131,6 @@ class SummaryAccountMovePosReturn(models.Model):
                 lines=list(line_items.values()),
                 store=store,
                 page=0,
-                model_code=pos_code,
-                model=model,
                 company_id=res[0].company_id
             )
             data[store.id] = line_items
