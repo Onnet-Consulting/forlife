@@ -16,8 +16,11 @@ class StockTransferScan(models.TransientModel):
         if self.barcode:
             line = self.stock_transfer_scan_line_ids.filtered(lambda r: r.barcode == self.barcode)
             if line:
-                self.note = None
-                line[0].update({'product_qty_done': (line[0].product_qty_done or 0) + 1})
+                if line[0].product_qty_done + 1 > line[0].max_qty:
+                    self.note = 'Số lượng quét "%s" đang vượt quá số lượng tối đa!' % self.barcode
+                else:
+                    self.note = None
+                    line[0].update({'product_qty_done': (line[0].product_qty_done or 0) + 1})
             else:
                 self.note = 'Barcode "%s" không hợp lệ!' % self.barcode
             self.barcode = None
@@ -43,8 +46,5 @@ class StockTransferScanLine(models.TransientModel):
     transfer_line_id = fields.Many2one(comodel_name='stock.transfer.line', required=True, string='Sản phẩm')
     barcode = fields.Char(related='transfer_line_id.product_id.barcode')
     qty_plan = fields.Integer(related='transfer_line_id.qty_plan', string='Số lượng điều chuyển')
+    max_qty = fields.Integer(string='Số lượng tối đa')
     product_qty_done = fields.Integer(string='Số lượng đã quét')
-
-
-
-

@@ -77,6 +77,7 @@ class StockTransfer(models.Model):
         self.ensure_one()
         stock_transfer_scan_line_ids = [(0, 0, {
                 'transfer_line_id': stl.id,
+                'max_qty': round((stl.qty_plan * (stl.product_id.tolerance + 100) / 100), 0),
                 'product_qty_done': stl.qty_out if self.state == 'approved' else stl.qty_in
             }) for stl in self.stock_transfer_line if stl.product_id.is_need_scan_barcode]
         if stock_transfer_scan_line_ids:
