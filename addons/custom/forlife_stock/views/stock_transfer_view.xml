@@ -108,7 +108,7 @@
                                     <field name="qty_plan" attrs="{'readonly': ['|', '|',('product_str_id', '!=', False), ('parent.state', 'not in', ('draft', 'wait_approve')), ('parent.is_diff_transfer', '=', True)]}"/>
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
                                     <field name="qty_out" attrs="{'readonly': ['|', ('parent.state', 'not in', ('in_approve', 'approved')), ('is_readonly_qty', '=', True)]}"/>
-                                    <field name="qty_in" attrs="{'readonly': [('parent.state', '!=', 'out_approve')]}"/>
+                                    <field name="qty_in" attrs="{'readonly': ['|', ('parent.state', '!=', 'out_approve'), ('is_readonly_qty', '=', True)]}"/>
                                     <field name="quantity_remaining" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
                                     <field name="work_from" required="0" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
                                     <field name="work_to" required="0" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>

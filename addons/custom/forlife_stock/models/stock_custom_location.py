@@ -52,8 +52,7 @@ class Location(models.Model):
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
     is_assets = fields.Boolean('Bắt buộc chọn thẻ tài sản')
-    reason_export_material_id = fields.Many2one('stock.location', string='Lý do xuất NVL tương ứng',
-                                                domain=[('type_other', '!=', False)])
+    reason_export_material_id = fields.Many2one('stock.location', string='Lý do xuất NVL tương ứng', check_company=True,)
 
     @api.constrains('code')
     def contrainst_code(self):

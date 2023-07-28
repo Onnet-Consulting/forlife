@@ -116,7 +116,7 @@ class ForlifeOtherInOutRequest(models.Model):
         picking_type_out = self.env['stock.picking.type'].search(
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
-            if record.type_other_id.code in ['N0101', 'N0102']:
+            if record.type_other_id.code == 'N01':
                 picking_type_in = self.env['stock.picking.type'].search([('company_id', '=', company_id), ('code', '=', 'incoming'), ('exchange_code', '=', 'incoming')], limit=1)
                 if not picking_type_in:
                     raise ValidationError(_('Vui lòng cấu hình phương thức nhập kho thành phẩm cho công ty %s!', self.env.company.name))

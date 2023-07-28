@@ -15,14 +15,28 @@ class PosOrder(models.Model):
             pos = self.env['pos.order'].browse(pos_id)
             if len(pos.pos_voucher_line_ids) > 0:
                 for v in pos.pos_voucher_line_ids:
-                    v.voucher_id.price_used = v.voucher_id.price_used + v.price_used
-                    v.voucher_id._compute_price_residual()
+                    # v.voucher_id.price_used = v.voucher_id.price_used + v.price_used
+                    # v.voucher_id._compute_price_residual()
+                    # if v.voucher_id.apply_many_times:
+                    #     if v.voucher_id.price_residual > 0:
+                    #         v.voucher_id.state = 'valid'
+                    #     if v.voucher_id.price_residual == 0:
+                    #         v.voucher_id.state = 'off value'
+                    # v.voucher_id.order_use_ids = [(4, pos.id)]
+
+                    # Daihv: sửa lại chỗ này chỉ để chạy vào hàm write 1 lần duy nhất.
+                    vals = {
+                        'price_used': v.voucher_id.price_used + v.price_used,
+                        'price_residual': v.voucher_id.price - (v.voucher_id.price_used + v.price_used),
+                        'order_use_ids': [(4, pos.id)],
+                        'state_app': False,
+                    }
                     if v.voucher_id.apply_many_times:
                         if v.voucher_id.price_residual > 0:
-                            v.voucher_id.state = 'valid'
+                            vals.update({'state': 'valid'})
                         if v.voucher_id.price_residual == 0:
-                            v.voucher_id.state = 'off value'
-                    v.voucher_id.order_use_ids = [(4, pos.id)]
+                            vals.update({'state': 'off value'})
+                    v.voucher_id.sudo().write(vals)
             pos.action_create_voucher()
         return pos_id
 

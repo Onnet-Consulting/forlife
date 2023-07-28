@@ -64,7 +64,7 @@
                             <field name="department_id" readonly="1" force_save="1"/>
                             <field name="type_other"/>
                             <field name="type_other_id" required="1"/>
-                            <label for="location_id" string="Lý do nhập khác" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                            <label for="location_id" string="Lý do nhập khác" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_dest_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
                                 <field name="location_id" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>

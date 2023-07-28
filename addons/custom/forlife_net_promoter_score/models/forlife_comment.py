@@ -44,12 +44,20 @@ class ForlifeComment(models.Model):
         self.ensure_one()
         if self.status != -1:
             return False
-        res = self.env['forlife.app.api.link'].search([('key', '=', brand)])
-        if res:
-            url = res[0].value + 'type=pushNotification&username=%s&notiId=9999' % phone
-            result = requests.get(url)
-            res = json.loads(result.text)
-            self.sudo().write({'status': 0}) if res.get('Result', 0) else self.sudo().unlink()
+        Utility = self.env['res.utility']
+        try:
+            link = self.env['forlife.app.api.link'].search([('key', '=', brand)], limit=1)
+            if link:
+                url = link.value + 'type=pushNotification&username=%s&notiId=9999' % phone
+                result = requests.get(url)
+                res = json.loads(result.text)
+                self.sudo().write({'status': 0}) if res.get('Result', 0) else self.sudo().unlink()
+                Utility.create_ir_logging(self._name, result.text, line=str(self.id), func='push_notification_to_app', path=url)
+            else:
+                message = f"Không tìm thấy api link với mã thương hiệu '{brand}'"
+                Utility.create_ir_logging(self._name, message, line=str(self.id), func='push_notification_to_app')
+        except Exception as e:
+            Utility.create_ir_logging(self._name, str(e), line=str(self.id), func='push_notification_to_app')
 
     def remove_forlife_comment(self):
         res = self.search([('status', '=', 0), ('invoice_date', '<=', fields.Datetime.now() - timedelta(hours=24))])

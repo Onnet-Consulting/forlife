@@ -130,6 +130,20 @@ class ResUtility(models.AbstractModel):
         return _categ_ids
 
     @api.model
+    def create_ir_logging(self, name, message, **kwargs):
+        IrLogging = self.env['ir.logging']
+        IrLogging.sudo().create({
+            'dbname': self._cr.dbname,
+            'type': kwargs.get('type') or 'server',
+            'name': name,
+            'level': kwargs.get('level') or 'info',
+            'path': kwargs.get('path') or 'path',
+            'line': kwargs.get('line') or 'line',
+            'func': kwargs.get('func') or 'func',
+            'message': message,
+        })
+
+    @api.model
     def get_warehouse_type_info(self):
         return self.env['stock.warehouse.type'].search_read([], ['id', 'code', 'name'])
 
@@ -417,3 +431,14 @@ from res_partner rp
 where rp.id in (select id from customers)    
 """
         return self.execute_postgresql(sql, [], True)
+
+    @api.model
+    def action_active_voucher(self, voucher_code):
+        if not voucher_code:
+            return {"message": f"Mã voucher không hợp lệ"}
+        voucher = self.env['voucher.voucher'].search([('name', '=', voucher_code)])
+        if voucher:
+            voucher.sudo().write({'state_app': True})
+            return {"message": f"Kích hoạt thành công mã voucher '{voucher_code}'"}
+        else:
+            return {"message": f"Kích hoạt không thành công, mã voucher '{voucher_code}' không được tìm thấy"}
