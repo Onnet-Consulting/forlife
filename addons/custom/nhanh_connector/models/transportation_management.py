@@ -92,10 +92,10 @@ class TransportationSession(models.Model):
                 if picking.state in ('cancel'):
                     continue
                 if picking.state in ('done') and self.type == 'in':
-                    self.status = 'in_success'
+                    order.status = 'in_success'
                     continue
                 if picking.state in ('done') and self.type == 'out':
-                    self.status = 'out_success'
+                    order.status = 'out_success'
                     continue
                 try:
                     picking.action_set_quantities_to_reservation()
@@ -114,7 +114,8 @@ class TransportationSession(models.Model):
         export = {
             'type': 'ir.actions.act_url',
             'name': 'Export fee',
-            'url': '/web/content/%s/%s/template_excel/danh_sach_don_hang_nhanhvn.xlsx?download=true' % (self._name, self.id),
+            'url': '/web/content/%s/%s/template_excel/danh_sach_don_hang_nhanhvn.xlsx?download=true' % (
+                self._name, self.id),
         }
         self.template_excel = False
         self.session_line.write({'select': False})
@@ -131,6 +132,7 @@ class TransportationSessionLine(models.Model):
     _description = 'Chi tiết phiên giao vận'
 
     session_id = fields.Many2one('transportation.session', string='Phiên')
+    picking_id = fields.Char(string='Phiếu kho', compute='compute_picking')
     select = fields.Boolean(string='  ')
     order_id = fields.Many2one('sale.order', string='Mã đơn hàng odoo')
     nhanh_id = fields.Char(string='Mã đơn hàng NhanhVN')
@@ -150,6 +152,11 @@ class TransportationSessionLine(models.Model):
         ('order_404', 'Không có đơn hàng'),
     ], string='Trạng thái')
 
+    @api.depends('order_id')
+    def compute_picking(self):
+        for rec in self:
+            rec.picking_id = ', '.join(x.name for x in rec.order_id.picking_ids)
+
     def update_state(self, is_done, picking=None):
         if is_done and self.session_id.type == 'in':
             self.status = 'in_success'
@@ -164,4 +171,6 @@ class TransportationSessionLine(models.Model):
         if picking.state == 'waiting':
             return 'error'
         if picking.state == 'assigned':
+            if picking.move_line_ids_without_package:
+                return 'not_enough'
             return 'error'
