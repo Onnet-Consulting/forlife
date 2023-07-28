@@ -9,3 +9,4 @@ class Salechannel(models.Model):
     name = fields.Char(string='Name')
     nhanh_id = fields.Char(string='Id Nhanh.vn')
     is_tmdt = fields.Boolean(string='Sàn TMĐT', default=False)
+    partner_id = fields.Many2one('res.partner', 'Khách Hàng')

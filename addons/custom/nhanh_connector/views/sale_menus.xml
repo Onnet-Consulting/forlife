@@ -13,16 +13,29 @@
                 groups="sales_team.group_sale_salesman"
                 parent="sale.sale_order_menu"
                 sequence="22"/>
+        <menuitem id="menu_utm_source_nhanh"
+            action="utm.utm_source_action"
+            parent="sale.menu_sales_config"
+            sequence="98"
+            groups="base.group_no_one"/>
+
         <menuitem id="menu_sale_channel_nhanh"
             name="Kênh/Sàn"
             action="sale_channel_source_action"
-            parent="utm.marketing_utm"
-            sequence="11"
+            parent="sale.menu_sales_config"
+            sequence="99"
             groups="base.group_no_one"/>
 
         <menuitem id="delivery_carrier_menu" 
             name="Đơn vị vận chuyển" 
             parent="sale.menu_sales_config"
+            sequence="100"
             action="delivery_carrier_view_action"/>
+
+        <menuitem id="nhanh_webhook_value_menu" 
+            name="Lịch sử đồng bộ Nhanh.vn"
+            parent="sale.menu_sales_config"
+            sequence="101"
+            action="nhanh_webhook_value_action"/>
     </data>
 </odoo>

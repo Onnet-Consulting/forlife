@@ -28,10 +28,22 @@
         <field name="arch" type="xml">
             <tree string="Nhanh Webhook Value" create="0" delete="0" edit="0" default_order="create_date desc">
                 <field name="event_type"/>
+                <field name="nhanh_id"/>
                 <field name="error"/>
                 <field name="state"/>
                 <field name="create_date" optional="hide"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="nhanh_webhook_view_search_inherit" model="ir.ui.view">
+        <field name="name">nhanh.webhook.search.inherit</field>
+        <field name="model">nhanh.webhook.value</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <search string="Search Nhanh Webhook">
+                <field name="nhanh_id" string="Id Nhanh.vn" filter_domain="[('nhanh_id', 'ilike', self)]"/>
+            </search>
         </field>
     </record>
 
@@ -40,9 +52,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">nhanh.webhook.value</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="nhanh_webhook_view_search_inherit"/>
     </record>
-
-    <menuitem id="nhanh_webhook_value_menu" name="Nhanh Webhook Value" parent="base.menu_ir_property"
-              action="nhanh_webhook_value_action"/>
 
 </odoo>

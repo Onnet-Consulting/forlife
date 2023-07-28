@@ -31,6 +31,7 @@ class MainController(http.Controller):
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
                 'event_type': event_type_mapping.get(event_type, ''),
                 'event_value': value,
+                'nhanh_id': value.get('data').get('orderId')
             })
             try:
                 data = value.get('data')
@@ -65,7 +66,13 @@ class MainController(http.Controller):
         if not order:
             return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
 
-
+        order_status_skip = [
+            'New', 
+            'Confirming', 
+            'CustomerConfirming',
+            'ChangeDepot',
+            'SoldOut'
+        ]
         if event_type == 'orderUpdate':
             odoo_order = n_client.get_sale_order(order_id)
             is_create_wh_in = False
@@ -82,7 +89,7 @@ class MainController(http.Controller):
                     if order_returned:
                         if order_returned_not_success:
                             return self.result_request(200, 0, _('Update sale order success'))
-                    elif data['status'].lower() != "confirmed":
+                    elif data['status'] in order_status_skip:
                         return self.result_request(404, 1, _('Order confirmation is required'))
 
                 default_company_id = n_client.get_company()
