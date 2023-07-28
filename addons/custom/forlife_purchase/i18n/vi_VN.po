@@ -609,7 +609,6 @@ msgstr "Đã có hóa đơn"
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_exchange_rate__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__product_id
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__product_id
 msgid "Product"
 msgstr "Mã sản phẩm"

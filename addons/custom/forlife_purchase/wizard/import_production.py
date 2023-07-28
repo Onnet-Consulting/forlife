@@ -149,6 +149,7 @@ class ImportProductionFromExcel(models.TransientModel):
                     if m[2].strip() in product_variant or m[3].strip() in product_variant or (not m[2] and not m[3]):
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
+                            'product_backup_id': product_dict.get(m[1], False),
                             'production_uom_id': uom_dict.get(m[5], False),
                             'conversion_coefficient': m[6],
                             'rated_level': m[7],

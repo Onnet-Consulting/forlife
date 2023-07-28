@@ -42,8 +42,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            'nhanh_connector/static/xml/import_button.xml',
-            'nhanh_connector/static/js/import_button.js',
+            'nhanh_connector/static/src/xml/import_button.xml',
         ],
         'web.assets_qweb': [
         ],
