@@ -197,20 +197,6 @@
                                     </tree>
                                 </field>
                             </page>
-<!--                            <page string="Ingredients" name="ingredients">-->
-<!--                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">-->
-<!--                                    <tree editable="bottom">-->
-<!--                                        <field name="product_id"/>-->
-<!--                                        <field name="description"/>-->
-<!--                                        <field name="uom_id"/>-->
-<!--                                        <field name="production_uom_id"/>-->
-<!--                                        <field name="conversion_coefficient"/>-->
-<!--                                        <field name="rated_level"/>-->
-<!--                                        <field name="loss"/>-->
-<!--                                        <field name="total"/>-->
-<!--                                    </tree>-->
-<!--                                </field>-->
-<!--                            </page>-->
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">
