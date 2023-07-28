@@ -22,6 +22,7 @@ class TransportationSession(models.Model):
     status = fields.Selection([('draft', 'Dự thảo'), ('done', 'Hoàn thành')], string='Trạng thái', default='draft')
     re_confirm = fields.Boolean(compute='reconfirm', default=False)
     template_excel = fields.Binary(string='Template', compute='_get_template')
+    company_id = fields.Many2one('res.company', string='Công ty', default=lambda self: self.env.company)
 
     def _get_template(self):
         temp_file = tempfile.NamedTemporaryFile(delete=False)
@@ -88,12 +89,21 @@ class TransportationSession(models.Model):
             if not pickings:
                 order.status = 'order_404'
             for picking in pickings:
-                if picking.state in ('done', 'cancel'):
+                if picking.state in ('cancel'):
+                    continue
+                if picking.state in ('done') and self.type == 'in':
+                    self.status = 'in_success'
+                    continue
+                if picking.state in ('done') and self.type == 'out':
+                    self.status = 'out_success'
                     continue
                 try:
                     picking.action_set_quantities_to_reservation()
-                    picking = picking.with_context(skip_immediate=True).button_validate()
-                    order.update_state(is_done=picking)
+                    picking_done = picking.with_context(skip_immediate=True).button_validate()
+                    if picking_done == True:
+                        order.update_state(is_done=picking)
+                    else:
+                        order.update_state(picking=picking, is_done=False)
                 except Exception:
                     picking = picking
                     order.update_state(picking=picking, is_done=False)
@@ -130,6 +140,7 @@ class TransportationSessionLine(models.Model):
     order_status = fields.Selection(related='order_id.state', string='Trạng thái đơn hàng')
     channel = fields.Many2one(related='order_id.sale_channel_id', string='Kênh/Sàn')
     transport_code = fields.Char(related='order_id.x_transfer_code', string='Mã vận đơn')
+    company_id = fields.Many2one(related='session_id.company_id')
     status = fields.Selection([
         ('out_success', 'Xuất kho thành công'),
         ('in_success', 'Nhập kho thành công'),
@@ -151,4 +162,6 @@ class TransportationSessionLine(models.Model):
         if picking.state == 'confirmed':
             return 'not_enough'
         if picking.state == 'waiting':
+            return 'error'
+        if picking.state == 'assigned':
             return 'error'
