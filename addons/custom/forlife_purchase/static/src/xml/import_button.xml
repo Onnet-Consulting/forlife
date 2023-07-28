@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
-    <t t-extend="ListView.buttons" t-name="import.production.buttons">
-        <t t-jquery="button.o_list_button_add" t-operation="after">
-            <button type="object" class="btn btn-primary import_your_action" style="margin-left:10px;">
+    <t t-name="import.production.buttons" t-inherit="web.ListView.Buttons" t-inherit-mode="extension" owl="1">
+        <xpath expr="//*[@class='btn btn-primary o_list_button_add']" position="after">
+            <button type="object" t-if="props.resModel == 'forlife.production'"
+                    class="btn btn-primary import_your_action"
+                    t-ref="action"
+                    action="forlife_purchase.import_production_from_excel_action"
+                    style="margin-left:10px;" t-on-click="buttonImport">
                 Nhập từ excel
             </button>
-        </t>
+        </xpath>
     </t>
 </templates>

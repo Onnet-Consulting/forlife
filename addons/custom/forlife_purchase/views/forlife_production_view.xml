@@ -186,6 +186,7 @@
                                 <field name="forlife_bom_material_ids" mode="tree" string="Nguyên vật liệu">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
+                                        <field name="product_backup_id"/>
                                         <field name="description"/>
                                         <field name="uom_id"/>
                                         <field name="production_uom_id"/>
