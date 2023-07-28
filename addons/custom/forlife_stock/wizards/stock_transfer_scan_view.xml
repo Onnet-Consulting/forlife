@@ -10,6 +10,11 @@
                         <field name="barcode" default_focus="1" placeholder="Nhập barcode cần quét"/>
                     </h3>
                 </div>
+                <div style="text-align: center">
+                    <h2>
+                        <field name="note" attrs="{'invisible': [('note', '=', False)]}" style="color: red"/>
+                    </h2>
+                </div>
                 <notebook>
                     <page string="Sản phẩm">
                         <field name="stock_transfer_scan_line_ids" force_save="1">
@@ -17,16 +22,12 @@
                                 <field name="barcode"/>
                                 <field name="transfer_line_id"/>
                                 <field name="qty_plan"/>
+                                <field name="max_qty" readonly="1" force_save="1"/>
                                 <field name="product_qty_done"/>
                             </tree>
                         </field>
                     </page>
                 </notebook>
-                <div style="text-align: center">
-                    <h2>
-                        <field name="note" attrs="{'invisible': [('note', '=', False)]}" style="color: red"/>
-                    </h2>
-                </div>
 
                 <footer>
                     <button name="action_update" string="Cập nhật sl quét" type="object" class="btn-primary"/>
