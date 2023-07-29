@@ -93,7 +93,7 @@ class SummaryAccountMovePosReturn(models.Model):
                 'line_ids': lines
             }
 
-    def get_items(self):
+    def get_items(self, *args, **kwargs):
         model = self.env['summary.account.move.pos.return']
         model_line = self.env['summary.account.move.pos.return.line']
         pos_code = None
@@ -101,11 +101,14 @@ class SummaryAccountMovePosReturn(models.Model):
         last_day = date.today()
         domain = [
             ('invoice_exists_bkav', '=', False),
-            # ('invoice_date', '<', last_day),
+            ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
-            # ('is_synthetic', '=', False),
+            ('is_synthetic', '=', False),
         ]
+
+        if kwargs.get("domain"):
+            domain = kwargs["domain"]
 
         pos_order = self.env['pos.order'].search(domain)
 
@@ -114,37 +117,36 @@ class SummaryAccountMovePosReturn(models.Model):
             ('refunded_orderline_id', '!=', False),
              ('qty', '!=', 0)
         ])
-        pos_order_synthetic = lines.mapped("order_id")
-        stores = pos_order_synthetic.mapped("store_id")
         data = {}
         items = {}
-        for store in stores:
-            if pos_code is None:
-                pos_code = genarate_code(self, model)
-            else:
-                pos_code = genarate_code(self, model, default_code=pos_code)
+        pos_order_synthetic = None
+        res_pos = None
 
-            res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
-            line_items = self.include_line_by_product_and_price_bkav(res)
-            self.recursive_move_line_items(
-                items=items,
-                lines=list(line_items.values()),
-                store=store,
-                page=0,
-                company_id=res[0].company_id
-            )
-            data[store.id] = line_items
+        if lines:
+            pos_order_synthetic = lines.mapped("order_id")
+            stores = pos_order_synthetic.mapped("store_id")
+            for store in stores:
+                res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
+                line_items = self.include_line_by_product_and_price_bkav(res)
+                self.recursive_move_line_items(
+                    items=items,
+                    lines=list(line_items.values()),
+                    store=store,
+                    page=0,
+                    company_id=res[0].company_id
+                )
+                data[store.id] = line_items
 
 
-        for k, v in items.items():
-            res_line = model_line.create(v["line_ids"])
-            v["line_ids"] = res_line.ids
+            for k, v in items.items():
+                res_line = model_line.create(v["line_ids"])
+                v["line_ids"] = res_line.ids
 
-        vals_list = list(items.values())
+            vals_list = list(items.values())
 
-        res = model.create(vals_list)
+            res_pos = model.create(vals_list)
 
-        return data, res, pos_order_synthetic
+        return data, res_pos, pos_order_synthetic
 
 
 

@@ -4,7 +4,7 @@
         <field name="name">summary.account.move.pos.tree</field>
         <field name="model">summary.account.move.pos</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="true" edit="false">
                 <field name="code"/>
                 <field name="store_id"/>
                 <field name="company_id"/>

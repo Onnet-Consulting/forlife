@@ -33,6 +33,67 @@ class SyntheticAccountMovePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
+    total_point = fields.Integer(
+        string='Total Point', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
+    )
+    focus_point = fields.Float(
+        string='Focus Point', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Tiêu điểm'
+    )
+    card_class = fields.Float(
+        string='Card class', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Hạng thẻ'
+    )
+
+    @api.depends('line_ids.invoice_ids')
+    def _compute_total_point(self):
+        for res in self:
+            total_point = 0
+            focus_point = 0
+            card_class = 0
+            exists_pos = {}
+            for pos in res.line_ids.invoice_ids:
+                if not exists_pos.get(pos.id):
+                    exists_pos[pos.id] = True
+                    total_point += pos.total_point
+                    subtotal_paid = pos.lines.filtered(
+                        lambda r: r.is_promotion == True and r.promotion_type == 'point'
+                    ).mapped("subtotal_paid")
+                    card_subtotal_paid = pos.lines.filtered(
+                        lambda r: r.is_promotion == True and r.promotion_type == 'card'
+                    ).mapped("subtotal_paid")
+                    focus_point += sum(subtotal_paid)
+                    card_class += sum(card_subtotal_paid)
+
+            res.total_point = abs(total_point)
+            res.focus_point = abs(focus_point)
+            res.card_class = abs(card_class)
+
+    def generate_invoices(self):
+        domain = [
+            # ('is_synthetic', '=', False),
+            ('is_post_bkav_store', '=', True),
+            ('is_invoiced', '=', True),
+            ('invoice_exists_bkav', '=', False),
+        ]
+        kwargs = {"domain": domain}
+        self.env['summary.account.move.pos'].collect_invoice_to_bkav_end_day(**kwargs)
+
+
+    def generate_invoices_bkav(self):
+        self.env['summary.account.move.pos'].create_an_invoice_bkav()
+
+
     def action_download_view_e_invoice(self):
         if not self.eivoice_file:
             configs = self.env['summary.account.move.pos'].get_bkav_config()
@@ -87,6 +148,48 @@ class SyntheticAccountMovePos(models.Model):
             item_type = 15
         return item_type
 
+    def get_promotion(self, ln):
+        list_invoice_details_ws = []
+        if ln.total_point > 0:
+            line_invoice = {
+                "ItemName": "Tích điểm",
+                "UnitName": 'Điểm',
+                "Qty": ln.total_point,
+                "Price": 0,
+                "Amount": 0,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+        if ln.focus_point > 0:
+            line_invoice = {
+                "ItemName": "Tiêu điểm",
+                "UnitName": 'Điểm',
+                "Qty": ln.total_point/1000,
+                "Price": 1000,
+                "Amount": ln.total_point,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+
+        if ln.card_class > 0:
+            line_invoice = {
+                "ItemName": "Chiết khấu hạng thẻ",
+                "UnitName": '',
+                "Qty": 1,
+                "Price": ln.card_class,
+                "Amount": ln.card_class,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+
+        return list_invoice_details_ws
+
     def get_bkav_data_pos(self):
         bkav_invoices = []
         for ln in self:
@@ -117,7 +220,7 @@ class SyntheticAccountMovePos(models.Model):
                 "PartnerInvoiceStringID": ln.code,
             }
             for line in ln.line_ids:
-                if line.product_id.is_voucher:
+                if line.product_id.voucher or line.product_id.is_voucher_auto:
                     continue
                     
                 line_invoice = {
@@ -138,6 +241,9 @@ class SyntheticAccountMovePos(models.Model):
                     "TaxRate": vat
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
+
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+
             bkav_invoices.append({
                 "Invoice": ln_invoice
             })
@@ -147,7 +253,8 @@ class SyntheticAccountMovePos(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+                line.message_post(body=f"{bkav_invoice_data}")
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=False)
             except Exception as e:
                 line.message_post(body=str(e))
             
@@ -176,21 +283,6 @@ class SyntheticAccountMovePosLine(models.Model):
     summary_line_id = fields.Many2one('summary.account.move.pos.line')
     return_line_id = fields.Many2one('summary.account.move.pos.return.line')
     invoice_date = fields.Date(string='Date', related="synthetic_id.invoice_date")
-
-    # total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
-    #                              help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
-    # focus_point = fields.Integer('Focus Point', readonly=True, compute='_compute_total_point', store=True,
-    #                              help='Tiêu điểm')
-
-    # @api.depends('invoice_ids')
-    # def _compute_total_point(self):
-    #     for line in self:
-    #         total_point = 0
-    #         for pos in line.invoice_ids:
-    #             total_point += pos.total_point
-    #             # pos.lines.filtered(lambda r: r.)
-
-    #         line.total_point = total_point
 
 
     @api.depends('price_unit', 'quantity', 'discount_amount')

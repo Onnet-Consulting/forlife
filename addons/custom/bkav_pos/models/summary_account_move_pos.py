@@ -540,18 +540,20 @@ class SummaryAccountMovePos(models.Model):
                 'line_ids': lines
             }
 
-    def get_items(self):
+    def get_items(self, *args, **kwargs):
         model = self.env['summary.account.move.pos']
         model_line = self.env['summary.account.move.pos.line']
 
         last_day = date.today()
         domain = [
-            # ('is_synthetic', '=', False),
-            # ('invoice_date', '<', last_day),
+            ('is_synthetic', '=', False),
+            ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
         ]
+        if kwargs.get("domain"):
+            domain = kwargs["domain"]
 
         pos_order = self.env['pos.order'].search(domain)
 
@@ -560,32 +562,37 @@ class SummaryAccountMovePos(models.Model):
             ('refunded_orderline_id', '=', False),
             ('qty', '>', 0)
         ])
-        pos_order_synthetic = lines.mapped("order_id")
-        stores = pos_order_synthetic.mapped("store_id")
         data = {}
         items = {}
-        for store in stores:
-            res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
-            line_items = self.include_line_by_product_and_price_bkav(res)
-            self.recursive_move_line_items(
-                items=items,
-                lines=list(line_items.values()),
-                store=store,
-                page=0,
-                company_id=res[0].company_id
-            )
-            data[store.id] = line_items
+        pos_order_synthetic = None
+        res_pos = None
+
+        if lines:
+            pos_order_synthetic = lines.mapped("order_id")
+            stores = pos_order_synthetic.mapped("store_id")
+            
+            for store in stores:
+                res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
+                line_items = self.include_line_by_product_and_price_bkav(res)
+                self.recursive_move_line_items(
+                    items=items,
+                    lines=list(line_items.values()),
+                    store=store,
+                    page=0,
+                    company_id=res[0].company_id
+                )
+                data[store.id] = line_items
 
 
-        for k, v in items.items():
-            res_line = model_line.create(v["line_ids"])
-            v["line_ids"] = res_line.ids
+            for k, v in items.items():
+                res_line = model_line.create(v["line_ids"])
+                v["line_ids"] = res_line.ids
 
-        vals_list = list(items.values())
+            vals_list = list(items.values())
 
-        res = model.create(vals_list)
+            res_pos = model.create(vals_list)
 
-        return data, res, pos_order_synthetic
+        return data, res_pos, pos_order_synthetic
 
 
     def include_line_by_product(self, lines):
@@ -774,144 +781,263 @@ class SummaryAccountMovePos(models.Model):
 
     def create_an_invoice_bkav(self):
         synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
-        # synthetic_account_move.create_an_invoice()
+        synthetic_account_move.create_an_invoice()
 
         adjusted_move = self.env['summary.adjusted.invoice.pos'].search([('exists_bkav', '=', False)])
-        # adjusted_move.create_an_invoice()
+        adjusted_move.create_an_invoice()
 
-    def collect_invoice_to_bkav_end_day(self):
+    def handle_invoice_balance_clearing(
+        self, 
+        matching_records,
+        move_pos_line, 
+        move_refund_pos_line, 
+        v,
+        sale_data,
+        store_id
+        ):
+        summary_line_id = move_pos_line.filtered(
+            lambda r: r.summary_id.store_id.id == store_id \
+            and r.product_id.id == sale_data["product_id"]\
+            and float(r.price_unit) == float(sale_data["price_unit"])
+        )
+        return_line_id = move_refund_pos_line.filtered(
+            lambda r: r.return_id.store_id.id == store_id \
+            and r.product_id.id == sale_data["product_id"]\
+            and float(r.price_unit) == float(sale_data["price_unit"])
+        )
+        sale_data["quantity"] += v["quantity"]
+        sale_data["remaining_quantity"] = sale_data["quantity"]
+        sale_data["summary_line_id"] = summary_line_id[0].id
+        sale_data["return_line_id"] = return_line_id[0].id
+        if matching_records.get(store_id):
+            matching_records[store_id].append(sale_data)
+        else:
+            matching_records[store_id] = [sale_data]
+
+    def handle_invoice_difference(
+        self, 
+        remaining_records,
+        synthetic_lines,
+        v,
+        store_id
+        ):
+        lines = synthetic_lines.filtered(
+            lambda r: r.product_id == v["product_id"] and \
+            r.synthetic_id.store_id.id == store_id and \
+            float(r.price_unit) == float(v["price_unit"])
+        )
+        
+        for line in lines:
+            row = v
+            row["source_invoice"] = line.synthetic_id.id
+            if abs(line.remaining_quantity) > abs(v["quantity"]):
+                row["quantity"] = abs(row["quantity"])
+                remaining_quantity = line.remaining_quantity + v["quantity"]
+                if remaining_records.get(store_id):
+                    rows = remaining_records[store_id]
+                    if rows.get(line.synthetic_id.id):
+                        rows[line.synthetic_id.id].append(row)
+                    else:
+                        rows[line.synthetic_id.id] = [row]
+                else:
+                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                line.sudo().with_delay(
+                    description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                ).write({"remaining_quantity": remaining_quantity})
+                break
+            else:
+                row["quantity"] = abs(line.remaining_quantity)
+                v["quantity"] += line.remaining_quantity
+
+                if remaining_records.get(store_id):
+                    rows = remaining_records[store_id]
+                    if rows.get(line.synthetic_id.id):
+                        rows[line.synthetic_id.id].append(row)
+                    else:
+                        rows[line.synthetic_id.id] = [row]
+                else:
+                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                line.sudo().with_delay(
+                    description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                ).write({"remaining_quantity": 0})
+
+    def cronjob_collect_invoice_to_bkav_end_day(self):
+        self.collect_invoice_to_bkav_end_day()
+        self.create_an_invoice_bkav()
+
+
+    def collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         synthetic_lines = self.env['synthetic.account.move.pos.line'].search([
             ('remaining_quantity', '>', 0)
         ], order="invoice_date desc")
-        sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items()
-        refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items()
-
-        move_pos_line = sale_res.line_ids
-        move_refund_pos_line = refund_res.line_ids
+        sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
+        refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items(*args, **kwargs)
 
         matching_records = {}
         remaining_records = {}
 
         store_data = {}
         company_ids = {}
-        for store_id, refund in refunds.items():
-            res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
-            store_data[store_id] = res_store[0].store_id
-            company_ids[store_id] = res_store[0].company_id
+        if len(refunds.keys()):
+            move_pos_line = sale_res.line_ids
+            move_refund_pos_line = refund_res.line_ids
+            for store_id, refund in refunds.items():
+                res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                store_data[store_id] = res_store[0].store_id
+                company_ids[store_id] = res_store[0].company_id
 
-            if sales.get(store_id):
-                sale = sales[store_id]
-                for k, v in refund.items():
-                    if sale.get(k):
-                        sale_data = sale[k]
-                        if abs(sale_data["quantity"]) > abs(v["quantity"]):
-                            summary_line_id = move_pos_line.filtered(
-                                lambda r: r.summary_id.store_id.id == store_id \
-                                and r.product_id.id == sale_data["product_id"]\
-                                and float(r.price_unit) == float(sale_data["price_unit"])
+                if sales.get(store_id):
+                    sale = sales[store_id]
+                    for k, v in refund.items():
+                        if sale.get(k):
+                            sale_data = sale[k]
+                            if abs(sale_data["quantity"]) > abs(v["quantity"]):
+                                self.handle_invoice_balance_clearing(
+                                    matching_records,
+                                    move_pos_line,
+                                    move_refund_pos_line,
+                                    v,
+                                    sale_data,
+                                    store_id
+                                )
+                                # summary_line_id = move_pos_line.filtered(
+                                #     lambda r: r.summary_id.store_id.id == store_id \
+                                #     and r.product_id.id == sale_data["product_id"]\
+                                #     and float(r.price_unit) == float(sale_data["price_unit"])
+                                # )
+                                # return_line_id = move_refund_pos_line.filtered(
+                                #     lambda r: r.return_id.store_id.id == store_id \
+                                #     and r.product_id.id == sale_data["product_id"]\
+                                #     and float(r.price_unit) == float(sale_data["price_unit"])
+                                # )
+                                # sale_data["quantity"] += v["quantity"]
+                                # sale_data["remaining_quantity"] = sale_data["quantity"]
+                                # sale_data["summary_line_id"] = summary_line_id[0].id
+                                # sale_data["return_line_id"] = return_line_id[0].id
+                                # if matching_records.get(store_id):
+                                #     matching_records[store_id].append(sale_data)
+                                # else:
+                                #     matching_records[store_id] = [sale_data]
+                            elif abs(sale_data["quantity"]) < abs(v["quantity"]):
+                                self.handle_invoice_difference(
+                                    remaining_records,
+                                    synthetic_lines,
+                                    v,
+                                    store_id
+                                )
+                                # lines = synthetic_lines.filtered(
+                                #     lambda r: r.product_id == v["product_id"] and \
+                                #     r.synthetic_id.store_id.id == store_id and \
+                                #     float(r.price_unit) == float(v["price_unit"])
+                                # )
+                                
+                                # for line in lines:
+                                #     row = v
+                                #     row["source_invoice"] = line.synthetic_id.id
+                                #     if abs(line.remaining_quantity) > abs(v["quantity"]):
+                                #         row["quantity"] = abs(row["quantity"])
+                                #         remaining_quantity = line.remaining_quantity + v["quantity"]
+                                #         if remaining_records.get(store_id):
+                                #             rows = remaining_records[store_id]
+                                #             if rows.get(line.synthetic_id.id):
+                                #                 rows[line.synthetic_id.id].append(row)
+                                #             else:
+                                #                 rows[line.synthetic_id.id] = [row]
+                                #         else:
+                                #             remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                                #         line.sudo().with_delay(
+                                #             description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                                #         ).write({"remaining_quantity": remaining_quantity})
+                                #         break
+                                #     else:
+                                #         row["quantity"] = abs(line.remaining_quantity)
+                                #         v["quantity"] += line.remaining_quantity
+
+                                #         if remaining_records.get(store_id):
+                                #             rows = remaining_records[store_id]
+                                #             if rows.get(line.synthetic_id.id):
+                                #                 rows[line.synthetic_id.id].append(row)
+                                #             else:
+                                #                 rows[line.synthetic_id.id] = [row]
+                                #         else:
+                                #             remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                                #         line.sudo().with_delay(
+                                #             description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                                #         ).write({"remaining_quantity": 0})
+                        else:
+                            self.handle_invoice_difference(
+                                remaining_records,
+                                synthetic_lines,
+                                v,
+                                store_id
                             )
-                            return_line_id = move_refund_pos_line.filtered(
-                                lambda r: r.return_id.store_id.id == store_id \
-                                and r.product_id.id == sale_data["product_id"]\
-                                and float(r.price_unit) == float(sale_data["price_unit"])
-                            )
-                            sale_data["quantity"] += v["quantity"]
-                            sale_data["remaining_quantity"] = sale_data["quantity"]
-                            sale_data["summary_line_id"] = summary_line_id[0].id
-                            sale_data["return_line_id"] = return_line_id[0].id
-                            if matching_records.get(store_id):
-                                matching_records[store_id].append(sale_data)
-                            else:
-                                matching_records[store_id] = [sale_data]
-                        elif abs(sale_data["quantity"]) < abs(v["quantity"]):
-                            lines = synthetic_lines.filtered(
-                                lambda r: r.product_id == v["product_id"] and \
-                                r.synthetic_id.store_id.id == store_id and \
-                                float(r.price_unit) == float(v["price_unit"])
-                            )
+                            # lines = synthetic_lines.filtered(
+                            #     lambda r: r.product_id == v["product_id"] and \
+                            #     r.synthetic_id.store_id.id == store_id and \
+                            #     float(r.price_unit) == float(v["price_unit"])
+                            # )
                             
-                            for line in lines:
-                                row = v
-                                row["source_invoice"] = line.synthetic_id.id
-                                if abs(line.remaining_quantity) > abs(v["quantity"]):
-                                    row["quantity"] = abs(row["quantity"])
-                                    remaining_quantity = line.remaining_quantity + v["quantity"]
-                                    if remaining_records.get(store_id):
-                                        rows = remaining_records[store_id]
-                                        if rows.get(line.synthetic_id.id):
-                                            rows[line.synthetic_id.id].append(row)
-                                        else:
-                                            rows[line.synthetic_id.id] = [row]
-                                    else:
-                                        remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                                    line.sudo().with_delay(
-                                        description="Adjusted invoice for POS", channel="root.RabbitMQ"
-                                    ).write({"remaining_quantity": remaining_quantity})
-                                    break
-                                else:
-                                    row["quantity"] = abs(line.remaining_quantity)
-                                    v["quantity"] += line.remaining_quantity
+                            # for line in lines:
+                            #     row = v
+                            #     row["source_invoice"] = line.synthetic_id.id
+                            #     if abs(line.remaining_quantity) > abs(v["quantity"]):
+                            #         row["quantity"] = abs(row["quantity"])
+                            #         remaining_quantity = line.remaining_quantity + v["quantity"]
+                            #         if remaining_records.get(store_id):
+                            #             rows = remaining_records[store_id]
+                            #             if rows.get(line.synthetic_id.id):
+                            #                 rows[line.synthetic_id.id].append(row)
+                            #             else:
+                            #                 rows[line.synthetic_id.id] = [row]
+                            #         else:
+                            #             remaining_records[store_id] = {line.synthetic_id.id: [row]}
 
-                                    if remaining_records.get(store_id):
-                                        rows = remaining_records[store_id]
-                                        if rows.get(line.synthetic_id.id):
-                                            rows[line.synthetic_id.id].append(row)
-                                        else:
-                                            rows[line.synthetic_id.id] = [row]
-                                    else:
-                                        remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                                    line.sudo().with_delay(
-                                        description="Adjusted invoice for POS", channel="root.RabbitMQ"
-                                    ).write({"remaining_quantity": 0})
+                            #         line.sudo().with_delay(
+                            #             description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                            #         ).write({"remaining_quantity": remaining_quantity})
+                            #         break
+                            #     else:
+                            #         row["quantity"] = abs(line.remaining_quantity)
+                            #         v["quantity"] += line.remaining_quantity
+
+                            #         if remaining_records.get(store_id):
+                            #             rows = remaining_records[store_id]
+                            #             if rows.get(line.synthetic_id.id):
+                            #                 rows[line.synthetic_id.id].append(row)
+                            #             else:
+                            #                 rows[line.synthetic_id.id] = [row]
+                            #         else:
+                            #             remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                            #         line.sudo().with_delay(
+                            #             description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                            #         ).write({"remaining_quantity": 0})
+
+        elif len(sales.keys()):
+            move_pos_line = sale_res.line_ids
+            move_refund_pos_line = refund_res.line_ids
+            for store_id, sale in sales.items():
+                for k, v in sale.items():
+                    summary_line_id = move_pos_line.filtered(
+                        lambda r: r.summary_id.store_id.id == store_id \
+                        and r.product_id.id == v["product_id"]\
+                        and float(r.price_unit) == float(v["price_unit"])
+                    )
+                    v["remaining_quantity"] = v["quantity"]
+                    v["summary_line_id"] = summary_line_id[0].id
+                    v["return_line_id"] = None
+
+                    if matching_records.get(store_id):
+                        matching_records[store_id].append(v)
                     else:
-                        lines = synthetic_lines.filtered(
-                            lambda r: r.product_id == v["product_id"] and \
-                            r.synthetic_id.store_id.id == store_id and \
-                            float(r.price_unit) == float(v["price_unit"])
-                        )
-                        
-                        for line in lines:
-                            row = v
-                            row["source_invoice"] = line.synthetic_id.id
-                            if abs(line.remaining_quantity) > abs(v["quantity"]):
-                                row["quantity"] = abs(row["quantity"])
-                                remaining_quantity = line.remaining_quantity + v["quantity"]
-                                if remaining_records.get(store_id):
-                                    rows = remaining_records[store_id]
-                                    if rows.get(line.synthetic_id.id):
-                                        rows[line.synthetic_id.id].append(row)
-                                    else:
-                                        rows[line.synthetic_id.id] = [row]
-                                else:
-                                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
-
-                                line.sudo().with_delay(
-                                    description="Adjusted invoice for POS", channel="root.RabbitMQ"
-                                ).write({"remaining_quantity": remaining_quantity})
-                                break
-                            else:
-                                row["quantity"] = abs(line.remaining_quantity)
-                                v["quantity"] += line.remaining_quantity
-
-                                if remaining_records.get(store_id):
-                                    rows = remaining_records[store_id]
-                                    if rows.get(line.synthetic_id.id):
-                                        rows[line.synthetic_id.id].append(row)
-                                    else:
-                                        rows[line.synthetic_id.id] = [row]
-                                else:
-                                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                                line.sudo().with_delay(
-                                    description="Adjusted invoice for POS", channel="root.RabbitMQ"
-                                ).write({"remaining_quantity": 0})
-
+                        matching_records[store_id] = [v]
 
         self.collect_invoice_balance_clearing(matching_records, store_data, company_ids)
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
-
-        sale_synthetic.write({"is_synthetic": True})
-        refund_synthetic.write({"is_synthetic": True})
-        self.create_an_invoice_bkav()
+        if sale_synthetic:
+            sale_synthetic.write({"is_synthetic": True})
+        if refund_synthetic:
+            refund_synthetic.write({"is_synthetic": True})
+        
         return True
 
 

@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 import json
 import logging
 from ...bkav_connector.models.bkav_connector import connect_bkav
+from ...bkav_connector.models import bkav_action
 _logger = logging.getLogger(__name__)
 
 
@@ -35,16 +36,51 @@ class SummaryAdjustedInvoicePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
-    # total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
-    #                              help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
-    # @api.depends('invoice_ids')
-    # def _compute_total_point(self):
-    #     for line in self:
-    #         total_point = 0
-    #         for pos in line.invoice_ids:
-    #             total_point += pos.total_point
+    total_point = fields.Integer(
+        string='Total Point', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
+    )
+    focus_point = fields.Float(
+        string='Focus Point', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Tiêu điểm'
+    )
+    card_class = fields.Float(
+        string='Card class', 
+        readonly=True, 
+        compute='_compute_total_point', 
+        store=True,
+        help='Hạng thẻ'
+    )
 
-    #         line.total_point = total_point
+    @api.depends('line_ids.invoice_ids')
+    def _compute_total_point(self):
+        for res in self:
+            total_point = 0
+            focus_point = 0
+            card_class = 0
+            exists_pos = {}
+            for pos in res.line_ids.invoice_ids:
+                if not exists_pos.get(pos.id):
+                    exists_pos[pos.id] = True
+                    total_point += pos.total_point
+                    subtotal_paid = pos.lines.filtered(
+                        lambda r: r.is_promotion == True and r.promotion_type == 'point'
+                    ).mapped("subtotal_paid")
+                    card_subtotal_paid = pos.lines.filtered(
+                        lambda r: r.is_promotion == True and r.promotion_type == 'card'
+                    ).mapped("subtotal_paid")
+                    focus_point += sum(subtotal_paid)
+                    card_class += sum(card_subtotal_paid)
+
+            res.total_point = abs(total_point)
+            res.focus_point = abs(focus_point)
+            res.card_class = abs(card_class)
 
 
     def action_download_view_e_invoice(self):
@@ -102,6 +138,49 @@ class SummaryAdjustedInvoicePos(models.Model):
             item_type = 15
         return item_type
 
+
+    def get_promotion(self, ln):
+        list_invoice_details_ws = []
+        if ln.total_point > 0:
+            line_invoice = {
+                "ItemName": "Tích điểm",
+                "UnitName": 'Điểm',
+                "Qty": ln.total_point,
+                "Price": 0,
+                "Amount": 0,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+        if ln.focus_point > 0:
+            line_invoice = {
+                "ItemName": "Tiêu điểm",
+                "UnitName": 'Điểm',
+                "Qty": ln.total_point/1000,
+                "Price": 1000,
+                "Amount": ln.total_point,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+
+        if ln.card_class > 0:
+            line_invoice = {
+                "ItemName": "Chiết khấu hạng thẻ",
+                "UnitName": '',
+                "Qty": 1,
+                "Price": ln.card_class,
+                "Amount": ln.card_class,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice_details_ws.append(line_invoice)
+
+        return list_invoice_details_ws
+
     def get_bkav_data_pos(self):
         bkav_invoices = []
         for ln in self:
@@ -132,6 +211,9 @@ class SummaryAdjustedInvoicePos(models.Model):
                 "PartnerInvoiceStringID": ln.code,
             }
             for line in ln.line_ids:
+                if line.product_id.voucher or line.product_id.is_voucher_auto:
+                    continue
+
                 line_invoice = {
                     "ItemName": line.product_id.name if line.product_id.name else '',
                     "UnitName": line.product_uom_id.name or '',
@@ -151,19 +233,8 @@ class SummaryAdjustedInvoicePos(models.Model):
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
-            # if ln.total_point > 0:
-            #     line_invoice = {
-            #         "ItemName": "Tích điểm",
-            #         "UnitName": 'Điểm',
-            #         "Qty": ln.total_point,
-            #         "Price": 0,
-            #         "Amount": 0,
-            #         "TaxAmount": 0,
-            #         "DiscountRate": 0.0,
-            #         "DiscountAmount":0.0,
-            #         "IsDiscount": 0,
-            #         "ItemTypeID": 4,
-            #     }
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+
             bkav_invoices.append({
                 "Invoice": ln_invoice
             })
@@ -176,6 +247,14 @@ class SummaryAdjustedInvoicePos(models.Model):
     #             bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
     #         except Exception as e:
     #             line.message_post(body=str(e))
+    def create_an_invoice(self):
+        for line in self:
+            try:
+                bkav_invoice_data = line.get_bkav_data_pos()
+                line.message_post(body=f"{bkav_invoice_data}")
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=False)
+            except Exception as e:
+                line.message_post(body=str(e))
             
 class SummaryAdjustedInvoicePosLine(models.Model):
     _name = 'summary.adjusted.invoice.pos.line'
