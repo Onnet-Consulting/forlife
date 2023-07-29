@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="voucher_voucher_form_view_inherit" model="ir.ui.view">
+            <field name="name">voucher_voucher_form_view</field>
+            <field name="model">voucher.voucher</field>
+            <field name="inherit_id" ref="forlife_voucher.voucher_voucher_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="open_logging_view" type="object" string="Xem log" class="oe_highlight" groups="base.group_system"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="promotion_code_view_form_inherit" model="ir.ui.view">
+            <field name="name">promotion_code_view_form</field>
+            <field name="model">promotion.code</field>
+            <field name="inherit_id" ref="forlife_pos_promotion.promotion_code_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="open_logging_view" type="object" string="Xem log" class="oe_highlight" groups="base.group_system"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

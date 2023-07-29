@@ -5,6 +5,9 @@
         <field name="model">promotion.code</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="id" invisible="1"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_open_promotion_codes" icon="fa-ticket"
