@@ -6,7 +6,7 @@ import requests
 
 class VoucherVoucher(models.Model):
     _name = 'voucher.voucher'
-    _inherit = ['voucher.voucher', 'sync.info.rabbitmq.create']
+    _inherit = ['voucher.voucher', 'sync.info.rabbitmq.create', 'odoo.app.logging']
     _create_action = 'update'
     _exchange = 'notification_plan_exchange'
     _routing_key = 'notification_plan_routing_key'

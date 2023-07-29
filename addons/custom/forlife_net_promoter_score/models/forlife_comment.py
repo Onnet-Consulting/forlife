@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 
 class ForlifeComment(models.Model):
     _name = 'forlife.comment'
-    _inherit = 'action.send.message.telegram'
+    _inherit = ['action.send.message.telegram', 'odoo.app.logging']
     _description = 'Comment'
     _order = 'invoice_date desc, id desc'
     _rec_name = 'customer_code'

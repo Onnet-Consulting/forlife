@@ -5,7 +5,7 @@ from odoo import api, fields, models, _
 
 class PromotionCode(models.Model):
     _name = 'promotion.code'
-    _inherit = ['promotion.code', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _inherit = ['promotion.code', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete', 'odoo.app.logging']
     _create_action = 'create'
     _update_action = 'update'
     _delete_action = 'delete'
