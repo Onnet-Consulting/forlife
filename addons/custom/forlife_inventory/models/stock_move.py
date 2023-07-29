@@ -68,6 +68,7 @@ class StockMove(models.Model):
         res = self.env['stock.move.line']
         warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
         warehouse_type_id_ec = warehouse_type_id_ec.id if warehouse_type_id_ec else 0
+        s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
         for move_line in self.move_line_ids:
             warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
             if move_line.owner_id and move_line.owner_id != move_line.company_id.partner_id:
@@ -78,8 +79,8 @@ class StockMove(models.Model):
                         or (move_line.picking_id.location_id.id_deposit
                             and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_master]):
                     res |= move_line
-                if (move_line.picking_id.location_id.id_deposit and move_line.picking_id.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_ec]) \
-                        or (move_line.picking_id.location_dest_id.id_deposit and move_line.picking_id.location_id.warehouse_id.whs_type.id in [warehouse_type_id_ec]):
+                if (move_line.picking_id.location_id.id_deposit and move_line.picking_id.location_dest_id.stock_location_type_id.id in [s_location_sell_ecommerce]) \
+                        or (move_line.picking_id.location_dest_id.id_deposit and move_line.picking_id.location_id.stock_location_type_id.id in [s_location_sell_ecommerce]):
                     res |= move_line
         return res
 

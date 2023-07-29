@@ -46,18 +46,18 @@ class StockPicking(models.Model):
         if type_create == 'import':
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
-            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id','=',company_id)])
+            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id','=',company_id)], limit=1).id
             if not location_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_id.name_get()[0][1]} ở công ty bán lẻ"))
             location_dest_id = location_mapping.location_map_id.id
-            reason_type_id = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N02'), ('company_id', '=', company_id)])
+            reason_type_id = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N02'), ('company_id', '=', company_id)], limit=1)
             if not location_mapping:
                 raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
         else:
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
             location_id = location_mapping.location_map_id.id
-            location_dest_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id','=', company_id)])
+            location_dest_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id','=', company_id)], limit=1).id
             if not location_dest_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_dest_id.name_get()[0][1]} ở công ty bán lẻ"))
             reason_type_id = self.env['forlife.reason.type'].sudo().search([('code', '=', 'X02'), ('company_id', '=', company_id)])
@@ -68,8 +68,8 @@ class StockPicking(models.Model):
             product = line.product_id
             data.append((0, 0, {
                 'product_id': product.id,
-                'location_id': location_id.id,
-                'location_dest_id': location_dest_id.id,
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
                 'name': product.display_name,
                 'date': datetime.now(),
                 'product_uom': line.product_uom_id.id,

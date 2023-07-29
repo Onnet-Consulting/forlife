@@ -10,11 +10,12 @@ def _validate_accounting_entries(self):
     location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'), ('company_id', '=', company_other_id.id)])
     location_dest_check_company = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', company_other_id.id)])
     for svl in self:
-        location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202'), ('company_id', '=', svl.company_id.id)])
-        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', svl.company_id.id)])
-        reason_type_check = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N05'), ('company_id', '=', svl.company_id.id)])
-        auto_import_check = self.env['forlife.reason.type'].sudo().search([('code','=','N0601'), ('company_id','=',svl.company_id.id)])
-        auto_export_check = self.env['forlife.reason.type'].sudo().search([('code','=','X1101'), ('company_id','=',svl.company_id.id)])
+        company_id = svl.company_id.id
+        location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202'), ('company_id', '=', company_id)])
+        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', company_id)])
+        reason_type_check = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N05'), ('company_id', '=', company_id)])
+        auto_import_check = self.env['forlife.reason.type'].sudo().search([('code','=','N0601'), ('company_id','=',company_id)])
+        auto_export_check = self.env['forlife.reason.type'].sudo().search([('code','=','X1101'), ('company_id','=',company_id)])
         if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
             continue
         if svl.currency_id.is_zero(svl.value):
