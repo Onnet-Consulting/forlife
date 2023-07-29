@@ -268,7 +268,7 @@ class SummaryAdjustedInvoicePos(models.Model):
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
                 line.message_post(body=f"{bkav_invoice_data}")
-                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=False)
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
             except Exception as e:
                 line.message_post(body=str(e))
             
