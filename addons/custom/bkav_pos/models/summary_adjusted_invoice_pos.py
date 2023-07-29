@@ -35,16 +35,16 @@ class SummaryAdjustedInvoicePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
-                                 help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
-    @api.depends('invoice_ids')
-    def _compute_total_point(self):
-        for line in self:
-            total_point = 0
-            for pos in line.invoice_ids:
-                total_point += pos.total_point
+    # total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
+    #                              help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+    # @api.depends('invoice_ids')
+    # def _compute_total_point(self):
+    #     for line in self:
+    #         total_point = 0
+    #         for pos in line.invoice_ids:
+    #             total_point += pos.total_point
 
-            line.total_point = total_point
+    #         line.total_point = total_point
 
 
     def action_download_view_e_invoice(self):
@@ -150,6 +150,20 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "TaxRate": vat
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
+
+            # if ln.total_point > 0:
+            #     line_invoice = {
+            #         "ItemName": "Tích điểm",
+            #         "UnitName": 'Điểm',
+            #         "Qty": ln.total_point,
+            #         "Price": 0,
+            #         "Amount": 0,
+            #         "TaxAmount": 0,
+            #         "DiscountRate": 0.0,
+            #         "DiscountAmount":0.0,
+            #         "IsDiscount": 0,
+            #         "ItemTypeID": 4,
+            #     }
             bkav_invoices.append({
                 "Invoice": ln_invoice
             })

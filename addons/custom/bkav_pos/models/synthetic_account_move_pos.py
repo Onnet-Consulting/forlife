@@ -177,20 +177,20 @@ class SyntheticAccountMovePosLine(models.Model):
     return_line_id = fields.Many2one('summary.account.move.pos.return.line')
     invoice_date = fields.Date(string='Date', related="synthetic_id.invoice_date")
 
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
-                                 help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
-    focus_point = fields.Integer('Focus Point', readonly=True, compute='_compute_total_point', store=True,
-                                 help='Tiêu điểm')
+    # total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
+    #                              help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+    # focus_point = fields.Integer('Focus Point', readonly=True, compute='_compute_total_point', store=True,
+    #                              help='Tiêu điểm')
 
-    @api.depends('invoice_ids')
-    def _compute_total_point(self):
-        for line in self:
-            total_point = 0
-            for pos in line.invoice_ids:
-                total_point += pos.total_point
-                # pos.lines.filtered(lambda r: r.)
+    # @api.depends('invoice_ids')
+    # def _compute_total_point(self):
+    #     for line in self:
+    #         total_point = 0
+    #         for pos in line.invoice_ids:
+    #             total_point += pos.total_point
+    #             # pos.lines.filtered(lambda r: r.)
 
-            line.total_point = total_point
+    #         line.total_point = total_point
 
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
