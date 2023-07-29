@@ -25,24 +25,22 @@ class StockTranfer(models.Model):
             if warehouse_dest_id in [warehouse_type_id_tl, warehouse_type_id_fm] and warehouse_id in [
                 warehouse_type_master, warehouse_type_id_ec] \
                     and (s_location_dest_type_id == s_location_pos or s_location_dest_type_id == s_location_sell_ecommerce):
-                if location_dest_id.id_deposit:
-                    location_mapping = self.env['stock.location.mapping'].sudo().search(
-                        [('location_id', '=', location_dest_id.id)])
-                    if not location_mapping:
-                        raise UserError(
-                            _(f"Vui lòng cấu hình liên kết cho địa điểm {location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
-                    self._create_orther_import_export(location_mapping, data, type='import', location=location_dest_id)
+                location_mapping = self.env['stock.location.mapping'].sudo().search(
+                    [('location_id', '=', location_dest_id.id)])
+                if not location_mapping:
+                    raise UserError(
+                        _(f"Vui lòng cấu hình liên kết cho địa điểm {location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                self._create_orther_import_export(location_mapping, data, type='import', location=location_dest_id)
 
             elif warehouse_dest_id in [warehouse_type_master, warehouse_type_id_ec] and warehouse_id in [
                 warehouse_type_id_tl, warehouse_type_id_fm] \
                     and (s_location_type_id == s_location_pos or s_location_type_id == s_location_sell_ecommerce):
-                if location_id.id_deposit:
-                    location_mapping = self.env['stock.location.mapping'].sudo().search(
-                        [('location_id', '=', location_id.id)])
-                    if not location_mapping:
-                        raise UserError(
-                            _(f"Vui lòng cấu hình liên kết cho địa điểm {location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
-                    self._create_orther_import_export(location_mapping, data, type='export', location=location_id)
+                location_mapping = self.env['stock.location.mapping'].sudo().search(
+                    [('location_id', '=', location_id.id)])
+                if not location_mapping:
+                    raise UserError(
+                        _(f"Vui lòng cấu hình liên kết cho địa điểm {location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                self._create_orther_import_export(location_mapping, data, type='export', location=location_id)
 
             else:
                 return False
@@ -109,6 +107,14 @@ class StockTranfer(models.Model):
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)])
                 if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
                     raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
+
+                if self.location_id.id_deposit:
+                    if not location_dest_mapping:
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
+                if self.location_dest_id.id_deposit:
+                    if not location_mapping:
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0[1]]}: Cấu hình -> Location Mapping!"))
+
                 location = location_mapping.with_company(company_match).location_map_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_map_id.id
             else:
@@ -117,6 +123,14 @@ class StockTranfer(models.Model):
                 location_dest_mapping = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)])
                 if (not location_mapping and self.location_id.id_deposit) or (not location_dest_mapping and self.location_dest_id.id_deposit):
                     raise UserError(_(f"Vui lòng cấu hình liên kết cho 2 địa điểm này: Cấu hình -> Location Mapping!"))
+
+                if self.location_id.id_deposit:
+                    if not location_dest_mapping:
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
+                if self.location_dest_id.id_deposit:
+                    if not location_mapping:
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0[1]]}: Cấu hình -> Location Mapping!"))
+
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id
             if location_mapping and location_dest_mapping:
