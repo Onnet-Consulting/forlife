@@ -23,6 +23,7 @@
         'forlife_pos_app_member',
         'forlife_voucher',
         'nhanh_connector',
+        'forlife_pos_promotion',
     ],
     'auto_install': True,
 
@@ -33,6 +34,7 @@
         'data/queue_job_data.xml',
         'views/rabbitmq_connection_views.xml',
         'views/rabbitmq_queue_views.xml',
+        'views/odoo_app_logging_views.xml',
         'views/menuitem.xml',
     ],
     'external_dependencies': {
