@@ -32,7 +32,24 @@ class SummaryAdjustedInvoicePos(models.Model):
     invoice_form = fields.Char('Mẫu số HDDT')
     invoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
     invoice_e_date = fields.Date(string="Ngày phát hành")
-    einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT', readonly=1)
+    ###trạng thái và số hdđt từ bkav trả về
+    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status', store=True,
+                                  copy=False)
+    data_compare_status = fields.Selection([('1', 'Mới tạo'),
+                                            ('2', 'Đã phát hành'),
+                                            ('3', 'Đã hủy'),
+                                            ('4', 'Đã xóa'),
+                                            ('5', 'Chờ thay thế'),
+                                            ('6', 'Thay thế'),
+                                            ('7', 'Chờ điều chỉnh'),
+                                            ('8', 'Điều chỉnh'),
+                                            ('9', 'Bị thay thế'),
+                                            ('10', 'Bị điều chỉnh'),
+                                            ('11', 'Trống (Đã cấp số, Chờ ký)'),
+                                            ('12', 'Không sử dụng'),
+                                            ('13', 'Chờ huỷ'),
+                                            ('14', 'Chờ điều chỉnh chiết khấu'),
+                                            ('15', 'Điều chỉnh chiết khấu')], copy=False)
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
@@ -57,6 +74,12 @@ class SummaryAdjustedInvoicePos(models.Model):
         store=True,
         help='Hạng thẻ'
     )
+
+
+    @api.depends('data_compare_status')
+    def _compute_data_compare_status(self):
+        for rec in self:
+            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
     @api.depends('line_ids.invoice_ids')
     def _compute_total_point(self):
@@ -186,26 +209,28 @@ class SummaryAdjustedInvoicePos(models.Model):
         for ln in self:
             invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(datetime.now(), datetime.now().time()))
             ln_invoice = {
-                "InvoiceTypeID": 1,
-                "InvoiceDate": str(invoice_date).replace(' ', 'T'),
-                "BuyerName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
-                "BuyerTaxCode": str(ln.partner_id.vat).strip() if ln.partner_id.vat else '',
-                "BuyerUnitName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
-                "BuyerAddress": str(ln.partner_id.country_id.name).strip() if ln.partner_id.country_id.name else '',
-                "BuyerBankAccount": "",
-                "PayMethodID": 7,
-                "ReceiveTypeID": 3,
-                "ReceiverEmail": str(ln.company_id.email).strip() if ln.company_id.email else '', 
-                "ReceiverMobile": str(ln.company_id.mobile).strip() if ln.company_id.mobile else '', 
-                "ReceiverAddress": str(ln.company_id.street).strip() if ln.company_id.street else '', 
-                "ReceiverName": str(ln.company_id.name).strip() if ln.company_id.name else '', 
-                "Note": "Hóa đơn mới tạo",
-                "BillCode": "",
-                "CurrencyID": str(ln.company_id.currency_id.name).strip() if ln.company_id.currency_id.name else '',
-                "ExchangeRate": 1.0,
-                "InvoiceForm": "",
-                "InvoiceSerial": "",
-                "InvoiceNo": 0,
+                "Invoice": {
+                    "InvoiceTypeID": 1,
+                    "InvoiceDate": str(invoice_date).replace(' ', 'T'),
+                    "BuyerName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
+                    "BuyerTaxCode": str(ln.partner_id.vat).strip() if ln.partner_id.vat else '',
+                    "BuyerUnitName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
+                    "BuyerAddress": str(ln.partner_id.country_id.name).strip() if ln.partner_id.country_id.name else '',
+                    "BuyerBankAccount": "",
+                    "PayMethodID": 7,
+                    "ReceiveTypeID": 3,
+                    "ReceiverEmail": str(ln.company_id.email).strip() if ln.company_id.email else '', 
+                    "ReceiverMobile": str(ln.company_id.mobile).strip() if ln.company_id.mobile else '', 
+                    "ReceiverAddress": str(ln.company_id.street).strip() if ln.company_id.street else '', 
+                    "ReceiverName": str(ln.company_id.name).strip() if ln.company_id.name else '', 
+                    "Note": "Hóa đơn mới tạo",
+                    "BillCode": "",
+                    "CurrencyID": str(ln.company_id.currency_id.name).strip() if ln.company_id.currency_id.name else '',
+                    "ExchangeRate": 1.0,
+                    "InvoiceForm": "",
+                    "InvoiceSerial": "",
+                    "InvoiceNo": 0,
+                },
                 "ListInvoiceDetailsWS": [],
                 "PartnerInvoiceID": 0,
                 "PartnerInvoiceStringID": ln.code,
@@ -235,9 +260,7 @@ class SummaryAdjustedInvoicePos(models.Model):
 
             ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
-            bkav_invoices.append({
-                "Invoice": ln_invoice
-            })
+            bkav_invoices.append(ln_invoice)
         return bkav_invoices
 
     def create_an_invoice(self):

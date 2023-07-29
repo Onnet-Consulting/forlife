@@ -67,7 +67,7 @@
                                     string="Download eInvoice"/>
                             <group>
                                 <field name="invoice_no"/>
-                                <field name="einvoice_status"/>
+                                <field name="invoice_state_e"/>
                                 <field name="invoice_e_date"/>
                                 <field name="invoice_serial"/>
                                 <field name="invoice_guid"/>
