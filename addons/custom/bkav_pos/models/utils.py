@@ -3,7 +3,7 @@ import string
 from datetime import date, datetime, timedelta
 
 def genarate_code(self, model, default_code=None):
-    code = '982' 
+    code = '981'
     if not default_code:
         param_code = code+'%'
         query = """ 
@@ -32,6 +32,13 @@ def genarate_code(self, model, default_code=None):
         code_int = int(list_code)
         code +='0'*(7-len(str(code_int+1)))+str(code_int+1)
         return code
+
+def genarate_pos_code(typ='B', store_id=None, index=0):
+    today = datetime.strftime(datetime.now(), '%d%m%Y')
+    code = f"{typ}P{store_id.warehouse_id.code}{today}"
+    code += '0'*(3-len(str(index+1)))+str(index+1)
+    return code
+
 
 def create_move_line(self, line, lines_store={}, product_info={}):
     product_id = line.product_id.id

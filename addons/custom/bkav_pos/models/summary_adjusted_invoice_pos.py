@@ -24,15 +24,28 @@ class SummaryAdjustedInvoicePos(models.Model):
                               ('posted', 'Đã vào sổ')], string="State", default='draft')
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'adjusted_invoice_id')
     company_id = fields.Many2one('res.company')
-    number_bill = fields.Char('Số hóa đơn')
-    einvoice_date = fields.Date(string="Ngày phát hành")
-    account_einvoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
+
+    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
     invoice_guid = fields.Char('GUID HDDT')
+    invoice_no = fields.Char('Số hóa đơn')
     invoice_form = fields.Char('Mẫu số HDDT')
-    einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT',
-                                       readonly=1)
+    invoice_serial = fields.Char('Mẫu số - Ký hiệu hóa đơn')
+    invoice_e_date = fields.Date(string="Ngày phát hành")
+    einvoice_status = fields.Selection([('draft', 'Nháp'), ('sign', 'Đã phát hành')], string=' Trạng thái HDDT', readonly=1)
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+
+    # total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
+    #                              help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+    # @api.depends('invoice_ids')
+    # def _compute_total_point(self):
+    #     for line in self:
+    #         total_point = 0
+    #         for pos in line.invoice_ids:
+    #             total_point += pos.total_point
+
+    #         line.total_point = total_point
+
 
     def action_download_view_e_invoice(self):
         if not self.eivoice_file:
@@ -66,6 +79,104 @@ class SummaryAdjustedInvoicePos(models.Model):
             }
 
 
+    def get_vat(self, line):
+        vat = 0
+        if line.tax_ids:
+            vat = line.tax_ids[0].amount
+
+        if vat == 0:
+            tax_rate_id = 1
+        elif vat == 5:
+            tax_rate_id = 2
+        elif vat == 8:
+            tax_rate_id = 9
+        elif vat == 10:
+            tax_rate_id = 3
+        else:
+            tax_rate_id = 4
+        return vat, tax_rate_id
+
+    def get_item_type_bkav(self, line):
+        item_type = 0
+        if line.x_free_good:
+            item_type = 15
+        return item_type
+
+    def get_bkav_data_pos(self):
+        bkav_invoices = []
+        for ln in self:
+            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(datetime.now(), datetime.now().time()))
+            ln_invoice = {
+                "InvoiceTypeID": 1,
+                "InvoiceDate": str(invoice_date).replace(' ', 'T'),
+                "BuyerName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
+                "BuyerTaxCode": str(ln.partner_id.vat).strip() if ln.partner_id.vat else '',
+                "BuyerUnitName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
+                "BuyerAddress": str(ln.partner_id.country_id.name).strip() if ln.partner_id.country_id.name else '',
+                "BuyerBankAccount": "",
+                "PayMethodID": 7,
+                "ReceiveTypeID": 3,
+                "ReceiverEmail": str(ln.company_id.email).strip() if ln.company_id.email else '', 
+                "ReceiverMobile": str(ln.company_id.mobile).strip() if ln.company_id.mobile else '', 
+                "ReceiverAddress": str(ln.company_id.street).strip() if ln.company_id.street else '', 
+                "ReceiverName": str(ln.company_id.name).strip() if ln.company_id.name else '', 
+                "Note": "Hóa đơn mới tạo",
+                "BillCode": "",
+                "CurrencyID": str(ln.company_id.currency_id.name).strip() if ln.company_id.currency_id.name else '',
+                "ExchangeRate": 1.0,
+                "InvoiceForm": "",
+                "InvoiceSerial": "",
+                "InvoiceNo": 0,
+                "ListInvoiceDetailsWS": [],
+                "PartnerInvoiceID": 0,
+                "PartnerInvoiceStringID": ln.code,
+            }
+            for line in ln.line_ids:
+                line_invoice = {
+                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "UnitName": line.product_uom_id.name or '',
+                    "Qty": line.quantity or 0.0,
+                    "Price": line.price_unit,
+                    "Amount": line.price_subtotal,
+                    "TaxAmount": (line.tax_amount or 0.0),
+                    "DiscountRate": 0.0,
+                    "DiscountAmount":0.0,
+                    "IsDiscount": 0,
+                    "ItemTypeID": self.get_item_type_bkav(line),
+                }
+                vat, tax_rate_id = self.get_vat(line)
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
+                ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
+
+            # if ln.total_point > 0:
+            #     line_invoice = {
+            #         "ItemName": "Tích điểm",
+            #         "UnitName": 'Điểm',
+            #         "Qty": ln.total_point,
+            #         "Price": 0,
+            #         "Amount": 0,
+            #         "TaxAmount": 0,
+            #         "DiscountRate": 0.0,
+            #         "DiscountAmount":0.0,
+            #         "IsDiscount": 0,
+            #         "ItemTypeID": 4,
+            #     }
+            bkav_invoices.append({
+                "Invoice": ln_invoice
+            })
+        return bkav_invoices
+
+    def create_an_invoice(self):
+        for line in self:
+            try:
+                bkav_invoice_data = line.get_bkav_data_pos()
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+            except Exception as e:
+                line.message_post(body=str(e))
+            
 class SummaryAdjustedInvoicePosLine(models.Model):
     _name = 'summary.adjusted.invoice.pos.line'
 

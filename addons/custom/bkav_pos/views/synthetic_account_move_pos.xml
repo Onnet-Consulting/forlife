@@ -58,15 +58,15 @@
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>
-                                <field name="number_bill"/>
+                                <field name="invoice_no"/>
                                 <field name="einvoice_status"/>
-                                <field name="einvoice_date"/>
-                                <field name="account_einvoice_serial"/>
+                                <field name="invoice_e_date"/>
+                                <field name="invoice_serial"/>
                                 <field name="invoice_guid"/>
                                 <field name="invoice_form"/>
                             </group>
                             <group>
-                                <field name="eivoice_file" widget="binary" filename="number_bill"/>
+                                <field name="eivoice_file" widget="binary" filename="invoice_no"/>
                             </group>
                         </page>
                     </notebook>
