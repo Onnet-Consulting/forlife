@@ -35,16 +35,7 @@ class StockTransferRequest(models.Model):
     created_stock_transfer = fields.Boolean(default=False)
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
-
-    @api.model
-    def _get_max_version_production(self):
-        production_id = self.env['forlife.production'].search([('company_id', '=', self.env.company.id)], order='version desc', limit=1)
-        if production_id:
-            return [('version', '=', production_id.version)]
-        else:
-            return [('version', '=', 0)]
-
-    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=_get_max_version_production, copy=False)
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
 
     @api.model
     def default_get(self, default_fields):
