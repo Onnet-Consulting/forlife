@@ -155,14 +155,14 @@ class ImportProductionFromExcel(models.TransientModel):
                             'rated_level': m[7],
                             'loss': m[8],
                         }))
-                        if m[1] and m[1] != '':
-                            list_material.append((0, 0, {
-                                'product_id': product_dict.get(m[1], False),
-                                'production_uom_id': uom_dict.get(m[5], False),
-                                'conversion_coefficient': m[6],
-                                'rated_level': m[7],
-                                'loss': m[8],
-                            }))
+                        # if m[1] and m[1] != '':
+                        #     list_material.append((0, 0, {
+                        #         'product_id': product_dict.get(m[1], False),
+                        #         'production_uom_id': uom_dict.get(m[5], False),
+                        #         'conversion_coefficient': m[6],
+                        #         'rated_level': m[7],
+                        #         'loss': m[8],
+                        #     }))
                 child_value['forlife_bom_material_ids'] = list_material
                 child_value['forlife_bom_service_cost_ids'] = create_list_expense
                 child = [(0, 0, child_value)]
