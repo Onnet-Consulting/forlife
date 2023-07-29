@@ -4,12 +4,15 @@
         <field name="name">summary.adjusted.invoice.pos.tree</field>
         <field name="model">summary.adjusted.invoice.pos</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="true" edit="false">
                 <field name="code"/>
                 <field name="company_id"/>
                 <field name="store_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
+                <field name="total_point" string="Tổng tích điểm"/>
+                <field name="focus_point" string="Tổng tiêu điểm"/>
+                <field name="card_class" string="Tổng hạng thẻ"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -30,6 +33,9 @@
                             <field name="store_id"/>
                             <field name="partner_id"/>
                             <field name="invoice_date"/>
+                            <field name="total_point" string="Tổng tích điểm"/>
+                            <field name="focus_point" string="Tổng tiêu điểm"/>
+                            <field name="card_class" string="Tổng hạng thẻ"/>
                         </group>
                     </group>
                     <notebook>

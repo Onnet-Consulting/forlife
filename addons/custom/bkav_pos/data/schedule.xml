@@ -4,7 +4,7 @@
         <field name="name">Schedule: General POS invoice for BKAV at the end of the day</field>
         <field name="model_id" ref="model_summary_account_move_pos"/>
         <field name="state">code</field>
-        <field name="code">model.collect_invoice_to_bkav_end_day()</field>
+        <field name="code">model.cronjob_collect_invoice_to_bkav_end_day()</field>
         <field name="active" eval="True"/>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
