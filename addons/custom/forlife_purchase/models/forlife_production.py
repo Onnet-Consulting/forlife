@@ -218,11 +218,11 @@ class ForlifeProductionFinishedProduct(models.Model):
             elif rec.produce_qty < rec.stock_qty:
                 raise ValidationError('Số lượng sản xuất phải lớn hơn số lượng nhập kho!!')
 
-    @api.constrains('forlife_bom_material_ids')
-    def constrains_forlife_bom_material_ids(self):
-        for item in self:
-            if not item.forlife_bom_material_ids:
-                raise ValidationError("Bạn chưa nhập nguyên phụ liệu!")
+    # @api.constrains('forlife_bom_material_ids')
+    # def constrains_forlife_bom_material_ids(self):
+    #     for item in self:
+    #         if not item.forlife_bom_material_ids:
+    #             raise ValidationError("Bạn chưa nhập nguyên phụ liệu!")
 
     @api.model
     def get_import_templates(self):
