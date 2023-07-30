@@ -216,6 +216,15 @@ class InheritPosOrder(models.Model):
                     with_purchase_condition = p.product_count > 0 or p.order_amount_min > 0
         return is_reward_line, with_purchase_condition
 
+    # Thêm đối tượng cửa hàng vào dòng Debit của bút toán Invoice Payment
+    def _apply_invoice_payments(self):
+        results = super(InheritPosOrder, self)._apply_invoice_payments()
+        for move in results:
+            receivable_store_partner = self.session_id.config_id.store_id.contact_id
+            if receivable_store_partner:
+                move.line_ids.filtered(lambda line: not line.partner_id).partner_id = receivable_store_partner
+        return results
+
     @api.model
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
