@@ -191,16 +191,16 @@ class PurchaseRequest(models.Model):
             else:
                 groups[key] = [line]
         purchase_order = self.env['purchase.order']
-        occasion_code_id = []
+        # occasion_code_id = []
         account_analytic_id = []
         production_id = []
         for rec in self:
             if rec.state != 'approved':
                 raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
-            if rec.occasion_code_id:
-                occasion_code_id.append(rec.occasion_code_id.id)
-            if rec.account_analytic_id:
-                account_analytic_id.append(rec.account_analytic_id.id)
+            # if rec.occasion_code_id:
+            #     occasion_code_id.append(rec.occasion_code_id.id)
+            # if rec.account_analytic_id:
+            #     account_analytic_id.append(rec.account_analytic_id.id)
             if rec.production_id:
                 production_id.append(rec.production_id.id)
         for group in groups:
@@ -237,7 +237,7 @@ class PurchaseRequest(models.Model):
                 source_document = ', '.join(name_pr)
                 po_data = {
                     'is_inter_company': False,
-                    'type_po_cost': rec.type_po,
+                    'type_po_cost': self.type_po,
                     'is_check_readonly_partner_id': True if vendor_id else False,
                     'is_check_readonly_purchase_type': True if product_type else False,
                     'is_purchase_request': True,
@@ -245,8 +245,8 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, lines[0].request_id.ids)],
                     'order_line': po_line_data,
-                    'occasion_code_ids': occasion_code_id,
-                    'account_analytic_ids': account_analytic_id,
+                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
+                    'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'source_document': source_document,
                     'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
