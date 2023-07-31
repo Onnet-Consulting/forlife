@@ -52,106 +52,55 @@ class AccountMoveBKAV(models.Model):
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
 
-    def write(self, vals):
-        res = super(AccountMoveBKAV, self).write(vals)
-        if vals.get('po_source_id') and self.state == 'posted':
-            if self.po_source_id.is_inter_company:
-                self.create_an_invoice_and_publish_invoice_bkav()
-        return res
-
-
-    def create_an_invoice_and_publish_invoice_bkav(self):
-        for invoice in self:
-            try:
-                invoice.create_invoice_bkav()
-            except Exception as e:
-                pass
+    def _get_vat_line_bkav(self, line):
+        vat = 0
+        if line.tax_ids:
+            vat = line.tax_ids[0].amount
+        if vat == 0:
+            tax_rate_id = 1
+        elif vat == 5:
+            tax_rate_id = 2
+        elif vat == 8:
+            tax_rate_id = 9
+        elif vat == 10:
+            tax_rate_id = 3
+        else:
+            tax_rate_id = 4
+        return vat, tax_rate_id
 
 
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:
-            sale_order_id = invoice.invoice_line_ids.sale_line_ids.order_id
-            if not sale_order_id:
-                continue
-            
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            for line in sale_order_id.order_line:
-                #SP Voucher k đẩy BKAV
-                if line.product_id.voucher:continue
+            exchange_rate = invoice.exchange_rate or 1.0
+            for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
-                vat = 0
-                if line.tax_id:
-                    vat = line.tax_id[0].amount
-                Price = abs(round(line.price_total/ (line.product_uom_qty * (1 + vat/100))))
-                Amount = abs(Price * line.product_uom_qty)
                 item = {
-                    "ItemName": item_name if not line.x_free_good else item_name + " (Hàng tặng không thu tiền)",
-                    "UnitName": line.product_uom.name or '',
-                    "Qty": abs(line.product_uom_qty),
-                    "Price": Price,
-                    "Amount": Amount,
-                    "TaxAmount": (abs(line.price_total) -  Amount or 0.0),
+                    "ItemName": item_name,
+                    "UnitName": line.product_uom_id.name or '',
+                    "Qty": abs(line.quantity) or 0.0,
+                    "Price": abs(line.price_unit) * exchange_rate,
+                    "Amount": abs(line.price_subtotal) * exchange_rate,
+                    "TaxAmount": abs((line.tax_amount or 0.0)) * exchange_rate,
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": abs(line.price_total * line.discount/100),
-                    "IsDiscount": 1 if line.x_free_good else 0
+                    "DiscountAmount": abs(line.price_subtotal * line.discount/100) * exchange_rate,
+                    "IsDiscount": 0
                 }
-                if vat == 0:
-                    tax_rate_id = 1
-                elif vat == 5:
-                    tax_rate_id = 2
-                elif vat == 8:
-                    tax_rate_id = 9
-                elif vat == 10:
-                    tax_rate_id = 3
-                else:
-                    tax_rate_id = 4
+                vat, tax_rate_id = self._get_vat_line_bkav()
                 item.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
                 })
                 if invoice.issue_invoice_type == 'adjust':
-                    # kiểm tra hóa đơn gốc
-                    # gốc là out_refund => điều chỉnh giảm
-                    # gốc là out_invoice => điều chỉnh tăng
                     item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
+                list_invoice_detail.append(item)
 
-                list_invoice_detail.append(item)
-            reward_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='reward').mapped('value'))
-            if reward_amount != 0:
-                item = {
-                    "ItemName": 'Chiết khấu tổng đơn',
-                    "UnitName": '',
-                    "Qty": 1.0,
-                    "Price": abs(reward_amount),
-                    "Amount": abs(reward_amount),
-                    "TaxAmount": 0,
-                    "ItemTypeID": 0,
-                    "IsDiscount": 1
-                }
-
-                list_invoice_detail.append(item)
-            vip_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='vip_amount').mapped('value'))
-            if vip_amount != 0:
-                item = {
-                    "ItemName": 'Chiết khấu hạng thẻ',
-                    "UnitName": '',
-                    "Qty": 1.0,
-                    "Price": abs(vip_amount),
-                    "Amount": abs(vip_amount),
-                    "TaxAmount": 0,
-                    "ItemTypeID": 0,
-                    "IsDiscount": 1
-                }
-                list_invoice_detail.append(item)
                 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            # if invoice.invoice_info_company_name:
-            #     BuyerName = invoice.invoice_info_company_name 
-
             BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
                 BuyerTaxCode = invoice.invoice_info_tax_number
@@ -181,11 +130,11 @@ class AccountMoveBKAV(models.Model):
                     "ReceiverName": invoice.company_id.name if invoice.company_id.name else '',
                     "Note": "Hóa đơn mới tạo",
                     "BillCode": "",
-                    "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
-                    "ExchangeRate": 1.0,
-                    "InvoiceForm": "",
-                    "InvoiceSerial": "",
-                    "InvoiceNo": 0,
+                    "CurrencyID": invoice.currency_id.name if invoice.currency_id.name else invoice.company_id.currency_id.name,
+                    "ExchangeRate": exchange_rate,
+                    "InvoiceForm": "1",
+                    "InvoiceSerial": invoice.invoice_serial if invoice.invoice_serial else "",
+                    "InvoiceNo": invoice.invoice_no if invoice.invoice_no else 0,
                     "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": invoice.id,
@@ -210,6 +159,10 @@ class AccountMoveBKAV(models.Model):
         #HD tra hang NCC
         po_orders = self.invoice_line_ids.purchase_line_id.order_id
         if self.move_type == 'in_refund' and po_orders:
+            return True
+        if self.issue_invoice_type != 'vat':
+            if not self.origin_move_id:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
             return True
         return False
 
@@ -236,11 +189,13 @@ class AccountMoveBKAV(models.Model):
         pr_orders = self.invoice_line_ids.purchase_line_id.order_id
         pos_orders = self.pos_order_id
         if self.move_type in ('out_invoice', 'out_refund') and so_orders:
-            data = self.get_bkav_data()
+            data = self.get_bkav_data_so()
         elif self.move_type == 'in_refund' and pr_orders:
             data = self.get_bkav_data_pr()
         elif self.move_type in ('out_invoice', 'out_refund') and pos_orders:
-            return self.create_invoice_bkav_pos()
+            data = self.get_bkav_data_pos()
+        else:
+            data = self.get_bkav_data()
         origin_id = self.origin_move_id if self.origin_move_id else False
         is_publish = True
         issue_invoice_type = self.issue_invoice_type
@@ -289,15 +244,3 @@ class AccountMoveBKAV(models.Model):
             item.delete_invoice_bkav()
         return super(AccountMoveBKAV, self).unlink()
     
-
-    def _post(self, soft=True):
-        res = super(AccountMoveBKAV, self)._post(soft)
-        for item in self:
-            if item.issue_invoice_type == 'adjust':
-                if not item.origin_move_id or not item.origin_move_id.invoice_no:
-                    raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-                if item.origin_move_id.amount_total == item.amount_total:
-                    item.origin_move_id.cancel_invoice_bkav()
-                    item.exists_bkav = True
-        return res
-
