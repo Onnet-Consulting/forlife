@@ -165,14 +165,15 @@ class AccountMovePosOrder(models.Model):
     def _post(self, soft=True):
         for invoice in self:
             pos_order_id = invoice.pos_order_id
-            pos_order_origin_id = pos_order_id.refunded_order_ids[0]
-                
             if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
                 continue
             if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
                 if invoice.move_type == 'out_invoice':
                     invoice.create_invoice_bkav_pos()
             if invoice.move_type == 'out_refund':
+                if pos_order_id.refunded_order_ids:
+                    pos_order_origin_id = pos_order_id.refunded_order_ids[0]
+                else: continue
                 invoice_origin_id = pos_order_origin_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice')[0]
                 if not invoice.origin_move_id:
                     invoice.origin_move_id = invoice_origin_id.id
