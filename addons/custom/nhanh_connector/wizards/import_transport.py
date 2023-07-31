@@ -28,21 +28,38 @@ class ImportProductionFromExcel(models.TransientModel):
         }
         return export
 
+    def get_status_by_picking(self, order=None):
+        if not order:
+            return 'order_404'
+        pickings = order.picking_ids
+        if not pickings:
+            return 'no_picking'
+        elif pickings[0].state == 'done':
+            return 'done'
+        if order.state == 'cancel':
+            return 'order_cancel'
+
     def prepare_values(self, orders, location_ids, type):
         create_values = []
+        lines = []
         for location in location_ids:
-            order = orders.filtered(lambda x: not x.x_is_change and x.x_location_id == location)
+            if type == 'in':
+                order = orders.filtered(lambda x: x.x_location_id == location and x.x_is_return)
+            else:
+                order = orders.filtered(lambda x: x.x_location_id == location and not x.x_is_return)
             value = {
-                'stock_id': location.location_id.id,
+                'warehouse_id': location.warehouse_id.id,
                 'location_id': location.id,
                 'date': datetime.now(),
                 'type': type,
-                'company_id': self.env.company.id,
-                'session_line': [(0, 0, {
-                    'order_id': o.id,
-                    'nhanh_id': o.nhanh_id,
-                }) for o in order]
+                'company_id': self.env.company.id
             }
+            lines += [(0, 0, {
+                'order_id': o.id,
+                'nhanh_id': o.nhanh_id,
+                'status': self.get_status_by_picking(o)
+            }) for o in order]
+            value['session_line'] = lines
             create_values.append(value)
         return create_values
 
@@ -54,12 +71,12 @@ class ImportProductionFromExcel(models.TransientModel):
         for code in order_code:
             list_code.append(code[0])
 
-        orders = self.env['sale.order'].search([('nhanh_id', 'in', list_code), ('state', 'in', ['sale'])])
+        orders = self.env['sale.order'].search([('nhanh_id', 'in', list_code), ('company_id', '=', self.env.company.id)])
         list_code_exist = orders.mapped('nhanh_id')
         different_elements = set(list_code).symmetric_difference(set(list_code_exist))
         code_not_exists = list(different_elements)
         if code_not_exists:
-            raise ValidationError(_('Tồn tại code không có đơn hàng là %s' % code_not_exists))
+            raise ValidationError(_('Các mã %s này không tồn tại đơn hàng trong hệ thống.' % code_not_exists))
 
         location_out_ids = orders.filtered(lambda x: not x.x_is_return).mapped('x_location_id')
         location_in_ids = orders.filtered(lambda x: x.x_is_return).mapped('x_location_id')

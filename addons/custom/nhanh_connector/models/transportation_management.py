@@ -11,8 +11,8 @@ class TransportationSession(models.Model):
     _description = 'Phiên giao vận'
 
     name = fields.Char(compute='compute_name', store=1)
-    stock_id = fields.Many2one('stock.location', string='Tên kho')
-    stock_code = fields.Char(related='stock_id.code', string='Mã kho')
+    warehouse_id = fields.Many2one('stock.warehouse', string='Tên kho')
+    warehouse_code = fields.Char(related='warehouse_id.code', string='Mã kho')
     location_id = fields.Many2one('stock.location', string='Địa điểm')
     date = fields.Datetime(string='Ngày thực hiện', default=datetime.today())
     user_id = fields.Many2one('res.users', string='Người thực hiện', default=lambda self: self.env.user)
@@ -63,6 +63,7 @@ class TransportationSession(models.Model):
         # Đóng file
         temp_file.close()
         self.template_excel = base64.b64encode(open(temp_file_path, "rb").read())
+        self.session_line.write({'select': False})
 
     @api.depends('session_line.select')
     def reconfirm(self):
@@ -87,15 +88,9 @@ class TransportationSession(models.Model):
         for order in orders:
             pickings = order.order_id.picking_ids
             if not pickings:
-                order.status = 'order_404'
+                continue
             for picking in pickings:
-                if picking.state in ('cancel'):
-                    continue
-                if picking.state in ('done') and self.type == 'in':
-                    order.status = 'in_success'
-                    continue
-                if picking.state in ('done') and self.type == 'out':
-                    order.status = 'out_success'
+                if picking.state in ('cancel', 'done'):
                     continue
                 try:
                     picking.action_set_quantities_to_reservation()
@@ -118,12 +113,15 @@ class TransportationSession(models.Model):
                 self._name, self.id),
         }
         self.template_excel = False
-        self.session_line.write({'select': False})
         return export
 
+    def action_print(self):
+        return self.env.ref('nhanh_connector.action_report_transport').report_action(self)
+
     def unlink(self):
-        if self.status == 'done':
-            raise ValidationError('Không thể xóa phiên đã hoàn thành!.')
+        for rec in self:
+            if rec.status == 'done':
+                raise ValidationError('Không thể xóa phiên đã hoàn thành!.')
         return super().unlink()
 
 
@@ -146,10 +144,12 @@ class TransportationSessionLine(models.Model):
     status = fields.Selection([
         ('out_success', 'Xuất kho thành công'),
         ('in_success', 'Nhập kho thành công'),
-        ('no_picking', 'Chưa tạo phiếu kho'),
         ('not_enough', 'Không đủ tồn'),
         ('error', 'Không thành công'),
         ('order_404', 'Không có đơn hàng'),
+        ('no_picking', 'Chưa tạo phiếu kho'),
+        ('done', 'Phiếu kho đã hoàn thành'),
+        ('order_cancel', 'Đơn hàng đã hủy'),
     ], string='Trạng thái')
 
     @api.depends('order_id')
