@@ -59,10 +59,10 @@ class AccountMovePosOrder(models.Model):
                 continue           
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            total_point = invoice.total_point
-            subuse_point = invoice.lines.filtered(
+            total_point = pos_order_id.total_point
+            subuse_point = pos_order_id.lines.filtered(
                 lambda l: l.is_promotion == True and l.promotion_type == 'point').mapped("subtotal_paid")
-            subrank_total = invoice.lines.filtered(
+            subrank_total = pos_order_id.lines.filtered(
                 lambda l: l.is_promotion == True and l.promotion_type == 'card').mapped("subtotal_paid")
             use_point += sum(subuse_point)
             rank_total += sum(subrank_total)
@@ -151,15 +151,6 @@ class AccountMovePosOrder(models.Model):
                 "ListInvoiceDetailsWS": list_invoice_detail
             })
         return bkav_data
-    
-
-    def create_invoice_bkav_pos(self):
-        origin_id = self.origin_move_id if self.origin_move_id else False
-        is_publish = True
-        issue_invoice_type = self.issue_invoice_type
-        data = self.get_bkav_data_pos()
-        if data:
-            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
 
     def _post(self, soft=True):
@@ -169,7 +160,7 @@ class AccountMovePosOrder(models.Model):
                 continue
             if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
                 if invoice.move_type == 'out_invoice':
-                    invoice.create_invoice_bkav_pos()
+                    invoice.create_invoice_bkav()
             if invoice.move_type == 'out_refund':
                 if pos_order_id.refunded_order_ids:
                     pos_order_origin_id = pos_order_id.refunded_order_ids[0]
@@ -184,6 +175,6 @@ class AccountMovePosOrder(models.Model):
                     invoice_origin_id.exists_bkav = True
                 else:
                     invoice.issue_invoice_type = 'adjust'
-                    invoice.create_invoice_bkav_pos()
+                    invoice.create_invoice_bkav()
         return super(AccountMovePosOrder, self)._post(soft)
     
