@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="view_move_form_pos_accounting_inherit">
+        <field name="name">account.move.form.pos.accounting.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@id='aml_tab']/field[@name='line_ids']/tree/field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{'column_invisible': [('1', '=', '1')]}</attribute>
+                <attribute name="invisible">0</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
