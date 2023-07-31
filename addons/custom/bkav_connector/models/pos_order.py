@@ -132,7 +132,7 @@ class AccountMovePosOrder(models.Model):
                     "BuyerUnitName": BuyerUnitName,
                     "BuyerAddress": BuyerAddress,
                     "BuyerBankAccount": invoice.partner_bank_id.id if invoice.partner_bank_id.id else '',
-                    "PayMethodID": 7,
+                    "PayMethodID": 3,
                     "ReceiveTypeID": 3,
                     "ReceiverEmail": invoice.company_id.email if invoice.company_id.email else '',
                     "ReceiverMobile": invoice.company_id.mobile if invoice.company_id.mobile else '',
