@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="account_move_reversal_import_view_tree" model="ir.ui.view">
+            <field name="name">account_move_reversal_import_view_tree</field>
+            <field name="model">account.move.reversal.import</field>
+            <field name="arch" type="xml">
+                <tree string="account_move_reversal_import_tree">
+                    <field name="name"/>
+                    <field name="create_date"/>
+                    <field name="create_uid"/>
+                    <field name="company_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="account_move_reversal_import_view_form" model="ir.ui.view">
+            <field name="name">account_move_reversal_import_view_form</field>
+            <field name="model">account.move.reversal.import</field>
+            <field name="arch" type="xml">
+                <form string="account_move_reversal_import_form">
+                    <header>
+                        <button name="download_template_file" type="object" string="Download Template" class="oe_highlight" states="draft"/>
+                        <button name="action_import" type="object" string="Action import" class="oe_highlight" states="draft"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="create_uid"/>
+                                <field name="create_date"/>
+                                <field name="company_id"/>
+                            </group>
+                            <group>
+                                <field name="import_file" filename="import_file_name" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                                <field name="import_file_name" invisible="1"/>
+                                <field name="error_file" filename="error_file_name" readonly="1" force_save="1" attrs="{'invisible': [('error_file', '=', False)]}"/>
+                                <field name="error_file_name" invisible="1"/>
+                            </group>
+                        </group>
+                        <separator string="Credit notes" states="done"/>
+                        <field name="invoice_ids" readonly="1" states="done"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="account_move_reversal_import_filter" model="ir.ui.view">
+            <field name="name">account_move_reversal_import_filter</field>
+            <field name="model">account.move.reversal.import</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name"/>
+                    <field name="create_uid"/>
+                    <field name="state"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="account_move_reversal_import_action" model="ir.actions.act_window">
+            <field name="name">Credit Notes Import</field>
+            <field name="res_model">account.move.reversal.import</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_account_move_reversal_import" parent="account.menu_finance_receivables" action="account_move_reversal_import_action" sequence="150"/>
+
+    </data>
+</odoo>
