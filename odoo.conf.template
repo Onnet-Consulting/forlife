@@ -54,7 +54,7 @@ test_report_directory = False
 translate_modules = ['all']
 unaccent = False
 without_demo = False
-workers = 32
+workers = 16
 
 ;[session_redis]
 ;active=true
