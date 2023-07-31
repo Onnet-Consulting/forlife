@@ -22,13 +22,13 @@ class AccountMovePurchaseReturn(models.Model):
                 item = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.quantity or 0.0,
-                    "Price": line.price_unit,
-                    "Amount": line.price_subtotal,
-                    "TaxAmount": (line.tax_amount or 0.0),
+                    "Qty": abs(line.quantity) or 0.0,
+                    "Price": abs(line.price_unit),
+                    "Amount": abs(line.price_subtotal),
+                    "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal * line.discount/100,
+                    "DiscountAmount": abs(line.price_subtotal * line.discount/100),
                     "IsDiscount": 1 if line.discount != 0 else 0
                 }
                 if vat == 0:
@@ -80,7 +80,7 @@ class AccountMovePurchaseReturn(models.Model):
                     "BuyerUnitName": BuyerUnitName,
                     "BuyerAddress": BuyerAddress,
                     "BuyerBankAccount": invoice.partner_bank_id.id if invoice.partner_bank_id.id else '',
-                    "PayMethodID": 7,
+                    "PayMethodID": 3,
                     "ReceiveTypeID": 3,
                     "ReceiverEmail": invoice.company_id.email if invoice.company_id.email else '',
                     "ReceiverMobile": invoice.company_id.mobile if invoice.company_id.mobile else '',

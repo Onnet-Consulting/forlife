@@ -24,7 +24,7 @@ class AccountMoveBKAV(models.Model):
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_form = fields.Char('Mẫu số HDDT', copy=False)
     invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Datetime('Ngày HDDT', copy=False)
+    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
 
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
@@ -85,18 +85,18 @@ class AccountMoveBKAV(models.Model):
                 vat = 0
                 if line.tax_id:
                     vat = line.tax_id[0].amount
-                Price = round(line.price_total/ (line.product_uom_qty * (1 + vat/100)))
-                Amount = Price * line.product_uom_qty
+                Price = abs(round(line.price_total/ (line.product_uom_qty * (1 + vat/100))))
+                Amount = abs(Price * line.product_uom_qty)
                 item = {
                     "ItemName": item_name if not line.x_free_good else item_name + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom.name or '',
-                    "Qty": line.product_uom_qty,
+                    "Qty": abs(line.product_uom_qty),
                     "Price": Price,
                     "Amount": Amount,
-                    "TaxAmount": (line.price_total-  Amount or 0.0),
+                    "TaxAmount": (abs(line.price_total) -  Amount or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_total * line.discount/100,
+                    "DiscountAmount": abs(line.price_total * line.discount/100),
                     "IsDiscount": 1 if line.x_free_good else 0
                 }
                 if vat == 0:
@@ -173,7 +173,7 @@ class AccountMoveBKAV(models.Model):
                     "BuyerUnitName": BuyerUnitName,
                     "BuyerAddress": BuyerAddress,
                     "BuyerBankAccount": invoice.partner_bank_id.id if invoice.partner_bank_id.id else '',
-                    "PayMethodID": 1,
+                    "PayMethodID": 3,
                     "ReceiveTypeID": 3,
                     "ReceiverEmail": invoice.company_id.email if invoice.company_id.email else '',
                     "ReceiverMobile": invoice.company_id.mobile if invoice.company_id.mobile else '',
