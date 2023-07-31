@@ -8,6 +8,49 @@ class AccountMovePosOrder(models.Model):
     _inherit = 'account.move'
 
 
+    def _get_promotion_in_pos(self, total_point,use_point,rank_total):
+        list_invoice = []
+        if total_point > 0:
+            line_invoice = {
+                "ItemName": "Tích điểm",
+                "UnitName": 'Đơn vị',
+                "Qty": total_point,
+                "Price": 0,
+                "Amount": 0,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice.append(line_invoice)
+        if use_point > 0:
+            line_invoice = {
+                "ItemName": "Tiêu điểm",
+                "UnitName": 'Đơn vị',
+                "Qty": use_point/1000,
+                "Price": 1000,
+                "Amount": use_point,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice.append(line_invoice)
+
+        if rank_total > 0:
+            line_invoice = {
+                "ItemName": "Chiết khấu hạng thẻ",
+                "UnitName": 'Đơn vị',
+                "Qty": 1,
+                "Price": rank_total,
+                "Amount": rank_total,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 0,
+            }
+            list_invoice.append(line_invoice)
+
+        return list_invoice
+
+
     def get_bkav_data_pos(self):
         bkav_data = []
         for invoice in self:
@@ -16,9 +59,16 @@ class AccountMovePosOrder(models.Model):
                 continue           
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
+            total_point = invoice.total_point
+            subuse_point = invoice.lines.filtered(
+                lambda l: l.is_promotion == True and l.promotion_type == 'point').mapped("subtotal_paid")
+            subrank_total = invoice.lines.filtered(
+                lambda l: l.is_promotion == True and l.promotion_type == 'card').mapped("subtotal_paid")
+            use_point += sum(subuse_point)
+            rank_total += sum(subrank_total)
             for line in pos_order_id.lines:
-                #SP Voucher k đẩy BKAV
-                # if line.product_id.voucher:continue
+                #SP KM k đẩy BKAV
+                if line.is_promotion:continue
                 vat = 0
                 if line.tax_ids:
                     vat = line.tax_ids[0].amount
@@ -52,8 +102,10 @@ class AccountMovePosOrder(models.Model):
                     # kiểm tra hóa đơn gốc
                     # gốc là out_refund => điều chỉnh giảm
                     # gốc là out_invoice => điều chỉnh tăng
-                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
+                    item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
                 list_invoice_detail.append(item)
+            #Them cac SP khuyen mai
+            list_invoice_detail.extend(self._get_promotion_in_pos(total_point,use_point,rank_total))
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
             # if invoice.invoice_info_company_name:
@@ -100,13 +152,37 @@ class AccountMovePosOrder(models.Model):
             })
         return bkav_data
     
+
+    def create_invoice_bkav_pos(self):
+        origin_id = self.origin_move_id if self.origin_move_id else False
+        is_publish = True
+        issue_invoice_type = self.issue_invoice_type
+        data = self.get_bkav_data_pos()
+        if data:
+            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+
+
     def _post(self, soft=True):
-        res = super(AccountMovePosOrder, self)._post()
         for invoice in self:
             pos_order_id = invoice.pos_order_id
+            pos_order_origin_id = pos_order_id.refunded_order_ids[0]
+                
             if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
                 continue
             if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
-                invoice.create_invoice_bkav()
-        return res
+                if invoice.move_type == 'out_invoice':
+                    invoice.create_invoice_bkav_pos()
+            if invoice.move_type == 'out_refund':
+                invoice_origin_id = pos_order_origin_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice')[0]
+                if not invoice.origin_move_id:
+                    invoice.origin_move_id = invoice_origin_id.id
+                if not invoice_origin_id.exists_bkav:
+                    continue
+                if invoice_origin_id.amount_total == invoice.amount_total:
+                    invoice_origin_id.cancel_invoice_bkav()
+                    invoice_origin_id.exists_bkav = True
+                else:
+                    invoice.issue_invoice_type = 'adjust'
+                    invoice.create_invoice_bkav_pos()
+        return super(AccountMovePosOrder, self)._post(soft)
     

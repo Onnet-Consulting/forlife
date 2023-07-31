@@ -117,7 +117,7 @@ class AccountMoveBKAV(models.Model):
                     # kiểm tra hóa đơn gốc
                     # gốc là out_refund => điều chỉnh giảm
                     # gốc là out_invoice => điều chỉnh tăng
-                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
+                    item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
 
                 list_invoice_detail.append(item)
             reward_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='reward').mapped('value'))
@@ -240,7 +240,7 @@ class AccountMoveBKAV(models.Model):
         elif self.move_type == 'in_refund' and pr_orders:
             data = self.get_bkav_data_pr()
         elif self.move_type in ('out_invoice', 'out_refund') and pos_orders:
-            data = self.get_bkav_data_pos()
+            return self.create_invoice_bkav_pos()
         origin_id = self.origin_move_id if self.origin_move_id else False
         is_publish = True
         issue_invoice_type = self.issue_invoice_type
@@ -291,7 +291,7 @@ class AccountMoveBKAV(models.Model):
     
 
     def _post(self, soft=True):
-        res = super(AccountMoveBKAV, self)._post()
+        res = super(AccountMoveBKAV, self)._post(soft)
         for item in self:
             if item.issue_invoice_type == 'adjust':
                 if not item.origin_move_id or not item.origin_move_id.invoice_no:

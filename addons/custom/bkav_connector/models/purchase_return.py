@@ -49,7 +49,7 @@ class AccountMovePurchaseReturn(models.Model):
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
-                    item['IsIncrease'] = 1 if (invoice.origin_move_id.move_type == 'out_invoice') else 0
+                    item['IsIncrease'] = 1 if (invoice.move_type == 'in_refund') else 0
 
 
                 list_invoice_detail.append(item)
