@@ -83,8 +83,8 @@ class TransferNotExistsBkav(models.Model):
             if list_code[0] == '000000':
                 code+='000001'
             else:
-                code_int = int(list_code[0])
-                code+='0'*len(6-len(code_int+1))+str(code_int+1)
+                code_int = int(list_code[0])+1
+                code+='0'*len(6-len(str(code_int)))+str(code_int)
         self.code = code
 
     def general_transfer_not_exists_bkav(self):
