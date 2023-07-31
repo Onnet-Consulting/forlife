@@ -51,11 +51,11 @@ class StockPickingOverPopupConfirm(models.TransientModel):
         list_line_over = []
         list_line_less = []
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            # tolerance = pk.product_id.tolerance
-            tolerance = pk.product_id.tolerance_ids.filtered(
-                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
-                                                                                               reverse=False)[
-                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
+            tolerance_id = pk.product_id.tolerance_ids.filtered(lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id)
+            if tolerance_id:
+                tolerance = tolerance_id.sorted(key=lambda x: x.id, reverse=False)[-1].mapped('tolerance')[0]
+            else:
+                tolerance = 0
             if pk.qty_done != pk_od.product_uom_qty:
                 if pk.qty_done > pk_od.product_uom_qty:
                     list_line_over.append((0, 0, {
@@ -77,6 +77,15 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                         'reason_id': pk_od.reason_id.id,
                         'purchase_line_id': pk_od.purchase_line_id.id,
                     }))
+
+            if pk.qty_done > pk_od.product_uom_qty:
+                pk.write({
+                    'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+                })
+                pk_od.write({
+                    'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+                })
+
         if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
                zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package)):
             master_data_over = {
@@ -94,19 +103,21 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                 'move_ids_without_package': list_line_over,
             }
             xk_picking = self.env['stock.picking'].create(master_data_over)
-        for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-            # tolerance = pk.product_id.tolerance
-            tolerance = pk.product_id.tolerance_ids.filtered(
-                lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
-                                                                                               reverse=False)[
-                -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
-            if pk.qty_done > pk_od.product_uom_qty:
-                pk.write({
-                    'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
-                })
-                pk_od.write({
-                    'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
-                })
+
+        # Comment code cho phần if lên vòng for trên
+        # for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
+        #     # tolerance = pk.product_id.tolerance
+        #     tolerance = pk.product_id.tolerance_ids.filtered(
+        #         lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
+        #                                                                                        reverse=False)[
+        #         -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
+        #     if pk.qty_done > pk_od.product_uom_qty:
+        #         pk.write({
+        #             'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+        #         })
+        #         pk_od.write({
+        #             'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
+        #         })
         data_pk_over = self.env['stock.picking'].search([('leftovers_id', '=', self.picking_id.id)])
         for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
             pk.write({
