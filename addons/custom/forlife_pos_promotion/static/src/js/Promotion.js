@@ -387,7 +387,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             return false;
         } else if (this.get_discount() > 0) {
             return false;
-        } else if (!utils.float_is_zero(price - order_line_price - orderline.get_price_extra(), this.pos.currency.decimal_places) && !this.is_applied_promotion() && !order_line.is_applied_promotion()) {
+        } else if (!utils.float_is_zero(price - order_line_price - orderline.get_price_extra(), this.pos.currency.decimal_places) && !this.is_applied_promotion() && !orderline.is_applied_promotion()) {
             return false;
         } else if (this.product.tracking == 'lot' && (this.pos.picking_type.use_create_lots || this.pos.picking_type.use_existing_lots)) {
             return false;
