@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api, _
 from datetime import datetime
-from . import bkav_action
+from odoo.exceptions import ValidationError
+
 
 class AccountMovePurchaseReturn(models.Model):
     _inherit = 'account.move'
@@ -13,22 +14,23 @@ class AccountMovePurchaseReturn(models.Model):
         for invoice in self:            
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
+            exchange_rate = invoice.exchange_rate or 1.0
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
                 vat = 0
                 if line.tax_ids:
-                    vat = line.tax_ids[0].amount
+                    vat = line.tax_ids[0].amount                                                                                                                                                                                
                 item = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.quantity) or 0.0,
-                    "Price": abs(line.price_unit),
-                    "Amount": abs(line.price_subtotal),
-                    "TaxAmount": abs((line.tax_amount or 0.0)),
+                    "Price": abs(line.price_unit) * exchange_rate,
+                    "Amount": abs(line.price_subtotal) * exchange_rate,
+                    "TaxAmount": abs((line.tax_amount or 0.0)) * exchange_rate,
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": abs(line.price_subtotal * line.discount/100),
+                    "DiscountAmount": abs(line.price_subtotal * line.discount/100) * exchange_rate,
                     "IsDiscount": 1 if line.discount != 0 else 0
                 }
                 if vat == 0:
@@ -46,10 +48,11 @@ class AccountMovePurchaseReturn(models.Model):
                     "TaxRate": vat
                 })
                 if invoice.issue_invoice_type == 'adjust':
+                    raise ValidationError('Không có tác vụ điều chỉnh hóa đơn NCC. Vui lòng liên hệ quản trị viên!')
                     # kiểm tra hóa đơn gốc
                     # gốc là out_invoice => điều chỉnh giảm
                     # gốc là out_refund => điều chỉnh tăng
-                    item['IsIncrease'] = 1 if (invoice.move_type == 'in_refund') else 0
+                    # item['IsIncrease'] = 1 if (invoice.move_type == 'in_refund') else 0
 
 
                 list_invoice_detail.append(item)
@@ -88,8 +91,8 @@ class AccountMovePurchaseReturn(models.Model):
                     "ReceiverName": invoice.company_id.name if invoice.company_id.name else '',
                     "Note": "Hóa đơn mới tạo",
                     "BillCode": "",
-                    "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
-                    "ExchangeRate": 1.0,
+                    "CurrencyID": invoice.currency_id.name if invoice.currency_id.name else invoice.company_id.currency_id.name,
+                    "ExchangeRate": exchange_rate,
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
                     "InvoiceNo": 0,
