@@ -308,7 +308,7 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
-                                    line_promotion.x_account_analytic_id = discount_account_id and discount_account_id.id
+                                    line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
                 rec.write({"state": "done_sale"})
