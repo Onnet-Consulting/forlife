@@ -114,7 +114,7 @@ class SaleOrderNhanh(models.Model):
                     partner, int(order['depotId'])
                 )
 
-        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
+        order_line = n_client.get_order_line(order, brand_id, location_id, nhanh_partner, is_create=False)
 
         order_data = n_client.get_order_data(
             order, nhanh_partner, partner, name_customer, default_company_id, location_id
@@ -693,6 +693,11 @@ class SaleOrderNhanh(models.Model):
                 new_picking = self.env['stock.picking'].browse([new_picking_id])
                 for item in new_picking:
                     item.write({"location_dest_id": picking.location_id.id})
+                try:
+                    new_picking.create_invoice_out_refund()
+                except Exception as e:
+                    new_picking.message_post(body=str(e))
+                
         self.state = 'sale'
 
     
