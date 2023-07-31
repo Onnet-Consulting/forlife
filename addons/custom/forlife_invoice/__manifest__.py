@@ -15,6 +15,7 @@
         'bkav_connector',
     ],
     "data": [
+        'data/ir_attachment_data.xml',
         'security/ir.model.access.csv',
         'views/invoice_view.xml',
         'views/account_tax_view.xml',
@@ -23,6 +24,7 @@
         'views/expense_category_views.xml',
         'views/expense_item_views.xml',
         'views/stock_location.xml',
+        'views/account_move_reversal_import_views.xml',
     ],
     "assets": {
         "web.assets_backend": [

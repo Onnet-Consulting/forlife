@@ -6,9 +6,12 @@ class InheritForlifeOtherInOutRequest(models.Model):
 
     def action_approve(self):
         result = super(InheritForlifeOtherInOutRequest, self).action_approve()
-        forlife_reason_type_incoming_exchange = self.env.ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange')
+        ForlifeReasonType = self.env['forlife.reason.type']
+        company = self.env.company
+        reason_type_incoming_exchange_id = ForlifeReasonType.search([('code', '=', 'N01'), ('company_id', '=', company.id)], limit=1)
+        # forlife_reason_type_incoming_exchange = self.env.ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange')
         pickings = self.env['stock.picking'].sudo().search(
-            [('other_import_export_request_id', 'in', [rec.id for rec in self if rec.type_other_id == forlife_reason_type_incoming_exchange])],
+            [('other_import_export_request_id', 'in', [rec.id for rec in self if rec.type_other_id == reason_type_incoming_exchange_id])],
         )
         if pickings:
             picking_type_id = self.env['stock.picking.type'].sudo().search([('exchange_code', '=', 'incoming')], limit=1)
@@ -18,7 +21,11 @@ class InheritForlifeOtherInOutRequest(models.Model):
 
     def action_other_import_export(self):
         ref = self.env.ref
-        if self.type_other_id == ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange'):
+        ForlifeReasonType = self.env['forlife.reason.type']
+        company = self.env.company
+        reason_type_incoming_exchange_id = ForlifeReasonType.search(
+            [('code', '=', 'N01'), ('company_id', '=', company.id)], limit=1)
+        if self.type_other_id == reason_type_incoming_exchange_id:
             picking_id = self.env['stock.picking'].sudo().search(
                 [('other_import_export_request_id', '=', self.id), ('picking_type_id.exchange_code', '=', 'incoming')],
                 limit=1

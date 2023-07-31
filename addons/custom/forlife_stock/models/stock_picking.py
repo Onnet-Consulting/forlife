@@ -133,21 +133,25 @@ class StockPicking(models.Model):
 
     def open_scan_barcode(self):
         self.ensure_one()
-        scan_id = self.env['stock.picking.scan'].create({
-            'picking_id': self.id,
-            'stock_picking_scan_line_ids': [(0, 0, {
-                'move_line_id': sml.id,
-                'product_qty_done': sml.qty_done
-            }) for sml in self.move_line_ids_without_package if sml.product_id.is_need_scan_barcode]
-        })
-        return {
-            'name': self.name,
-            'view_mode': 'form',
-            'res_model': 'stock.picking.scan',
-            'type': 'ir.actions.act_window',
-            'target': 'new',
-            'res_id': scan_id.id
-        }
+        stock_picking_scan_line_ids = [(0, 0, {
+            'move_line_id': sml.id,
+            'max_qty': round((sml.move_id.product_uom_qty * (sml.product_id.tolerance + 100) / 100), 0),
+            'product_qty_done': sml.qty_done
+        }) for sml in self.move_line_ids_without_package if sml.product_id.is_need_scan_barcode]
+
+        if stock_picking_scan_line_ids:
+            scan_id = self.env['stock.picking.scan'].create({
+                'picking_id': self.id,
+                'stock_picking_scan_line_ids': stock_picking_scan_line_ids
+            })
+            return {
+                'name': self.name,
+                'view_mode': 'form',
+                'res_model': 'stock.picking.scan',
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+                'res_id': scan_id.id
+            }
 
     def button_forlife_validate(self):
         self.ensure_one()
