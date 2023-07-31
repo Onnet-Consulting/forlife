@@ -690,13 +690,26 @@ class SaleOrderNhanh(models.Model):
                 return_wiz.product_return_moves.quantity = quantity
                 return_wiz.product_return_moves.to_refund = True
                 new_picking_id, pick_type_id = return_wiz.with_context(so_return=self.id)._create_returns()
-                new_picking = self.env['stock.picking'].browse([new_picking_id])
+                new_picking = self.env['stock.picking'].sudo().browse([new_picking_id])
                 for item in new_picking:
+                    if item.company_id.id == self.company_id.id:
+                        is_create_invoice_out_refund = True
+                        for line in item.move_line_ids:
+                            res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
+                            ir_property = self.env['ir.property'].sudo().search([
+                                ('name', '=', 'x_property_account_return_id'),
+                                ('res_id', '=', res_id),
+                                ('company_id', '=', self.company_id.id)
+                            ],limit=1)
+                            if not ir_property:
+                                is_create_invoice_out_refund = False
+                                break
+                        if is_create_invoice_out_refund:
+                            try:
+                                item.create_invoice_out_refund()
+                            except Exception as e:
+                                pass
                     item.write({"location_dest_id": picking.location_id.id})
-                try:
-                    new_picking.create_invoice_out_refund()
-                except Exception as e:
-                    new_picking.message_post(body=str(e))
                 
         self.state = 'sale'
 
