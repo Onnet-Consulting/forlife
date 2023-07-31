@@ -140,7 +140,7 @@ class MainController(http.Controller):
                 #                #     'discount') else 0,
                 #                'x_cart_discount_fixed_price': float(item.get('discount')) * float(
                 #                    item.get('quantity')) if item.get('discount') else 0}))
-                order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
+                order_line = n_client.get_order_line(order, brand_id, location_id, nhanh_partner, is_create=False)
 
                 # nhân viên kinh doanh
                 # user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
@@ -265,10 +265,16 @@ class MainController(http.Controller):
                         print(str(e))
 
                 elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
-                    if webhook_value_id.order_id.picking_ids and 'done' not in webhook_value_id.order_id.picking_ids.mapped(
-                            'state'):
+                    if webhook_value_id.order_id.picking_ids:
                         for picking_id in webhook_value_id.order_id.picking_ids:
-                            picking_id.action_cancel()
+                            if picking_id.state != 'done':
+                                picking_id.action_cancel()
+                            else:
+                                try:
+                                    picking_id.create_invoice_out_refund()
+                                except Exception as e:
+                                    picking_id.message_post(body=str(e))
+
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
                         webhook_value_id.order_id.check_sale_promotion()
@@ -293,10 +299,19 @@ class MainController(http.Controller):
                                 return self.result_request(404, 1, _('Update sale order false'))
                         
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
-
-                        if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
+                        if odoo_order.picking_ids:
                             for picking_id in odoo_order.picking_ids:
-                                picking_id.action_cancel()
+                                if picking_id.state != 'done':
+                                    picking_id.action_cancel()
+                                else:
+                                    try:
+                                        picking_id.create_invoice_out_refund()
+                                    except Exception as e:
+                                        picking_id.message_post(body=str(e))
+
+                        # if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
+                        #     for picking_id in odoo_order.picking_ids:
+                        #         picking_id.action_cancel()
                         try:
                             odoo_order.with_context({'disable_cancel_warning': True}).action_cancel()
                         except Exception as e:
