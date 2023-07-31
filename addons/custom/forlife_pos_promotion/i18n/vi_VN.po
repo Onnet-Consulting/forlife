@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-07 10:03+0000\n"
-"PO-Revision-Date: 2023-07-07 10:03+0000\n"
+"POT-Creation-Date: 2023-07-20 15:24+0000\n"
+"PO-Revision-Date: 2023-07-20 15:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -404,6 +404,11 @@ msgstr "(Cart) Tặng Voucher"
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__cart_get_x_free
 msgid "Cart Get X Free"
 msgstr "(Cart) Tặng X miễn phí"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__cart_pricelist
+msgid "Cart Pricelist Sale"
+msgstr "(Cart) Bảng giá"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__cart_program_ids
@@ -1857,6 +1862,7 @@ msgid "Reward Quantity"
 msgstr "Số lượng thưởng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__reward_type
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__reward_type
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__reward_type
 msgid "Reward Type"

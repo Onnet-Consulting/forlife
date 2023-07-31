@@ -24,7 +24,7 @@ class TransferNotExistsBkav(models.Model):
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_form = fields.Char('Mẫu số HDDT', copy=False)
     invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Datetime('Ngày HDDT', copy=False)
+    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -68,7 +68,7 @@ class TransferNotExistsBkav(models.Model):
         query = """ 
             SELECT code
             FROM (
-                (SELECT '000001' as code)
+                (SELECT '000000' as code)
                 UNION ALL
                 (SELECT RIGHT(code,6) as code
                 FROM transfer_not_exists_bkav
@@ -80,7 +80,7 @@ class TransferNotExistsBkav(models.Model):
         self._cr.execute(query, (param_code,))
         result = self._cr.fetchall()
         for list_code in result:
-            if list_code[0] == '000001':
+            if list_code[0] == '000000':
                 code+='000001'
             else:
                 code_int = int(list_code[0])

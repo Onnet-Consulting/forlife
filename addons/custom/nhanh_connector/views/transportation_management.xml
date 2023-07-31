@@ -15,7 +15,7 @@
                     <sheet>
                         <group col="2">
                             <group>
-                                <field name="stock_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="warehouse_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                                 <field name="date" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                                 <field name="type" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                             </group>
@@ -29,8 +29,15 @@
                         <notebook>
                             <page string="Đơn giao hàng">
                                 <field name="re_confirm" invisible="1"/>
-                                <button name="action_done" attrs="{'invisible': [('re_confirm', '=', False)]}" string="Xác nhận hoàn thành" class="oe_highlight" type="object"/>
-                                <button name="action_export" string="Xuất Excel" class="oe_highlight" type="object"/>
+                                <div class="d-flex" style="justify-content: space-between;">
+                                    <div class="left">
+                                        <button name="action_done" attrs="{'invisible': [('re_confirm', '=', False)]}" string="Xác nhận hoàn thành" class="oe_highlight" type="object"/>
+                                    </div>
+                                    <div class="right">
+                                        <button name="action_print" string="In giao vận" class="" type="object"/>
+                                        <button name="action_export" string="Xuất Excel" type="object"/>
+                                    </div>
+                                </div>
                                 <field name="session_line" readonly="0">
                                     <tree editable="bottom" create="false" delete="false" default_order="id desc">
                                         <field name="select"/>
@@ -71,8 +78,8 @@
             <field name="model">transportation.session</field>
             <field name="arch" type="xml">
                 <tree string="transportation_management_tree" js_class="button_import_nhanh_connector" default_order="id desc">
-                    <field name="stock_code"/>
-                    <field name="stock_id"/>
+                    <field name="warehouse_code"/>
+                    <field name="warehouse_id"/>
                     <field name="date"/>
                     <field name="type"/>
                     <field name="location_id"/>

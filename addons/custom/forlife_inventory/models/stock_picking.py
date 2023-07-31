@@ -16,6 +16,12 @@ class StockPicking(models.Model):
         if 'endloop' in self._context and self._context.get('endloop'):
             return res
         if self.company_id.code == '1300':
+            warehouse_type_id_tl = self.env.ref('forlife_base.stock_warehouse_type_03', raise_if_not_found=False).id
+            warehouse_type_id_fm = self.env.ref('forlife_base.stock_warehouse_type_04', raise_if_not_found=False).id
+            if self.location_id.warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
+                raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            if self.location_dest_id.warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
+                raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             companyId = self.company_id.id
             location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
                                                                                              limit=1)

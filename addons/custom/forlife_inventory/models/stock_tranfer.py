@@ -79,7 +79,7 @@ class StockTranfer(models.Model):
                 'move_ids_without_package': data,
                 'other_export': True
             })
-        stock_picking.button_validate()
+        stock_picking.with_context(endloop=True).button_validate()
         return stock_picking
 
     def create_tranfer_with_type_kigui(self):
