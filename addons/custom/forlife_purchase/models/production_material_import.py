@@ -70,6 +70,10 @@ class ProductionMaterialImport(models.Model):
     qty = fields.Float(string='Số lượng sản xuất')
     total = fields.Float(string='Tổng nhu cầu')
 
+    @api.onchange('conversion_coefficient', 'rated_level', 'loss', 'qty')
+    def _onchange_update_total(self):
+        self.total = self.conversion_coefficient * self.rated_level * self.loss * self.qty
+
 
 class ProductionExpenseImport(models.Model):
     _name = 'production.expense.import'
@@ -82,3 +86,12 @@ class ProductionExpenseImport(models.Model):
     quantity = fields.Float(string='Số lượng')
     cost_norms = fields.Float(string='Định mức')
     total_cost_norms = fields.Float(string='Tổng định mức')
+
+    @api.onchange('quantity', 'total_cost_norms')
+    def _onchange_update_cost_norms(self):
+        if self.quantity > 0:
+            self.cost_norms = self.total_cost_norms / self.quantity
+
+    @api.onchange('quantity', 'cost_norms')
+    def _onchange_update_total_cost_norms(self):
+        self.total_cost_norms = self.quantity * self.cost_norms
