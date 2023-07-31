@@ -64,8 +64,8 @@ class AccountMovePosOrder(models.Model):
                 lambda l: l.is_promotion == True and l.promotion_type == 'point').mapped("subtotal_paid")
             subrank_total = pos_order_id.lines.filtered(
                 lambda l: l.is_promotion == True and l.promotion_type == 'card').mapped("subtotal_paid")
-            use_point += sum(subuse_point)
-            rank_total += sum(subrank_total)
+            use_point = sum(subuse_point)
+            rank_total = sum(subrank_total)
             for line in pos_order_id.lines:
                 #SP KM k đẩy BKAV
                 if line.is_promotion:continue
