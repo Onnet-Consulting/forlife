@@ -14,3 +14,7 @@ class CustomerNhanh(models.Model):
         ('agents', 'Agents')
     ], tracking=True)
     code_current_customers = fields.Char()
+
+    property_account_cost_center_id = fields.Many2one('account.analytic.account', 
+        string="Trung tâm chi phí"
+    )
