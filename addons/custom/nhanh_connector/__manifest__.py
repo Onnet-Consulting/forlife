@@ -39,6 +39,7 @@
         'data/sale_channel_data.xml',
         'data/queue_job_data.xml',
         'views/transportation_management.xml',
+        'report/print_transport.xml',
     ],
     "assets": {
         "web.assets_backend": [
