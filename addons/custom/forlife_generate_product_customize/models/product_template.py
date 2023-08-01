@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.Model):
@@ -6,11 +6,8 @@ class ProductTemplate(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if 'brand_id' in vals_list and 'attribute_line_ids' in vals_list:
-            list_error_no_rule = []
-            list_error_no_reuired_field = []
-            list_error_no_required_attribute = []
-            if vals_list['brand_id'] and vals_list['attribute_line_ids']:
+        if not vals_list.get('barcode', False):
+            if 'brand_id' in vals_list and 'attribute_line_ids' in vals_list and vals_list['brand_id'] and vals_list['attribute_line_ids']:
                 attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
                 rule = False
                 for rec in vals_list['attribute_line_ids']:
@@ -19,20 +16,25 @@ class ProductTemplate(models.Model):
                         if rule:
                             break
                 if not rule:
-                    list_error_no_rule.append(f"Không tìm thấy cấu hình sinh mã nào cho sản phẩm {vals_list['name']}")
+                    raise ValidationError(f"Không tìm thấy cấu hình sinh mã nào cho sản phẩm {vals_list['name']}")
                 required_field_ids = rule.required_field_ids.mapped('name')
                 for field in required_field_ids:
-                    if field not in vals_list:
-                        list_error_no_reuired_field.append(f"Thiếu trường bắt buộc {field} cho sản phẩm {vals_list['name']}!")
+                    if field not in vals_list or vals_list[field] is False:
+                        raise ValidationError(f"Thiếu trường bắt buộc {field} cho sản phẩm {vals_list['name']}!")
                 attribute_required_ids = rule.attribute_required_ids.ids
                 attrs_dict = self.convert_diff_attribute_line_to_dict(vals_list)
+                if len(attribute_required_ids) > len(attrs_dict['attribute_id']):
+                    raise ValidationError(f"Thiếu giá trị cho thuộc tính bắt buộc ở sản phẩm {vals_list['name']}")
 
-            # attribute_line = vals_list['attribute_line_ids'][0][2]
-            # attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
-            # if attribute_line['attribute_id'] == attribute_id.id:
-            #     rule = self.env['generate.rule'].search([('type_product_id','=',attribute_line['value_ids'][0][2][0])])
-            #     if rule:
-
+                # if list_error_no_rule:
+                #     raise ValidationError(_(f"Không tìm thấy cấu hình sinh mã nào cho sản phẩm {', '.join(list_error_no_rule)}"))
+                # if list_error_no_reuired_field:
+                #     raise ValidationError(_(f"Thiếu trường bắt buộc {field} cho sản phẩm {vals_list['name']}!"))
+                # attribute_line = vals_list['attribute_line_ids'][0][2]
+                # attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+                # if attribute_line['attribute_id'] == attribute_id.id:
+                #     rule = self.env['generate.rule'].search([('type_product_id','=',attribute_line['value_ids'][0][2][0])])
+                #     if rule:
         res = super(ProductTemplate, self).create(vals_list)
         return res
 
