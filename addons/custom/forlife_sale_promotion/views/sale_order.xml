@@ -23,7 +23,7 @@
 
                 <!--Them tam thoi đê test đơn hang nhanh-->
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
-                    <field name="source_record"/>
+                    <field name="source_record" attrs="{'invisible': [('x_sale_chanel', '=', 'wholesale')]}"/>
                 </xpath>
 
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
