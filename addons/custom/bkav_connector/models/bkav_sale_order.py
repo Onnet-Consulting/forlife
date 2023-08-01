@@ -8,28 +8,105 @@ from odoo.exceptions import ValidationError
 class AccountMoveSaleOrder(models.Model):
     _inherit = 'account.move'
 
+    def _get_promotion_in_sale(self):
+        list_invoice_detail = []
+        vip_amount = {}
+        reward_amount = {}
+        for promotion_id in self.promotion_ids:
+            if promotion_id.promotion_type == 'vip_amount':
+                vat = 0
+                if promotion_id.product_id.taxes_id:
+                    vat = promotion_id.product_id.taxes_id[0].amount
+                if vat not in list(vip_amount.keys()):
+                    vip_amount.update({
+                        vat:promotion_id.value,
+                    })
+                else:
+                    vip_amount[vat] += promotion_id.value
+            if promotion_id.promotion_type == 'reward':
+                vat = 0
+                if promotion_id.product_id.taxes_id:
+                    vat = promotion_id.product_id.taxes_id[0].amount
+                if vat not in list(reward_amount.keys()):
+                    reward_amount.update({
+                        vat:promotion_id.value,
+                    })
+                else:
+                    reward_amount[vat] += promotion_id.value
+                reward_amount += promotion_id.value
+        for vat, value in vip_amount.items():
+            value_not_tax = abs(value)/(1+vat/100)
+            item = {
+                "ItemName": 'Chiết khấu hạng thẻ',
+                "UnitName": '',
+                "Qty": 1.0,
+                "Price": value_not_tax,
+                "Amount": value_not_tax,
+                "TaxAmount": value - value_not_tax,
+                "ItemTypeID": 0,
+                "IsDiscount": 1,
+            }
+            if vat == 0:
+                tax_rate_id = 1
+            elif vat == 5:
+                tax_rate_id = 2
+            elif vat == 8:
+                tax_rate_id = 9
+            elif vat == 10:
+                tax_rate_id = 3
+            else:
+                tax_rate_id = 4
+            item.update({
+                "TaxRateID": tax_rate_id,
+                "TaxRate": vat
+            })
+            list_invoice_detail.append(item)
+        
+        for vat, value in reward_amount.items():
+            value_not_tax = abs(value)/(1+vat/100)
+            item = {
+                "ItemName": 'Chiết khấu tổng đơn',
+                "UnitName": '',
+                "Qty": 1.0,
+                "Price": value_not_tax,
+                "Amount": value_not_tax,
+                "TaxAmount": value - value_not_tax,
+                "ItemTypeID": 0,
+                "IsDiscount": 1,
+            }
+            if vat == 0:
+                tax_rate_id = 1
+            elif vat == 5:
+                tax_rate_id = 2
+            elif vat == 8:
+                tax_rate_id = 9
+            elif vat == 10:
+                tax_rate_id = 3
+            else:
+                tax_rate_id = 4
+            item.update({
+                "TaxRateID": tax_rate_id,
+                "TaxRate": vat
+            })
+            list_invoice_detail.append(item)
+        return list_invoice_detail
+
 
     def get_bkav_data_so(self):
         bkav_data = []
         for invoice in self:
-            sale_order_id = invoice.invoice_line_ids.sale_line_ids.order_id
-            if not sale_order_id:
-                continue
             
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
-            for line in sale_order_id.order_line:
+            for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
                 if line.product_id.voucher:continue
-                item_name = (line.product_id.name or line.name) if (
+                ItemName = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
-                vat = 0
-                if line.tax_id:
-                    vat = line.tax_id[0].amount
-                Price = abs(round(line.price_total/ (line.product_uom_qty * (1 + vat/100))))
+                Price = abs(round(line.price_total/ (line.product_uom_qty * (1 + vat/100)))) if line.product_uom_qty != 0 else 0
                 Amount = abs(Price * line.product_uom_qty)
                 item = {
-                    "ItemName": item_name if not line.x_free_good else item_name + " (Hàng tặng không thu tiền)",
+                    "ItemName": ItemName if not line.x_free_good else ItemName + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom.name or '',
                     "Qty": abs(line.product_uom_qty),
                     "Price": Price,
@@ -38,64 +115,21 @@ class AccountMoveSaleOrder(models.Model):
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
                     "DiscountAmount": abs(line.price_total * line.discount/100),
-                    "IsDiscount": 1 if line.x_free_good else 0
+                    "IsDiscount": 0
                 }
-                if vat == 0:
-                    tax_rate_id = 1
-                elif vat == 5:
-                    tax_rate_id = 2
-                elif vat == 8:
-                    tax_rate_id = 9
-                elif vat == 10:
-                    tax_rate_id = 3
-                else:
-                    tax_rate_id = 4
+                vat, tax_rate_id = self._get_vat_line_bkav()
                 item.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
                 })
                 if invoice.issue_invoice_type == 'adjust':
-                    # kiểm tra hóa đơn gốc
-                    # gốc là out_refund => điều chỉnh giảm
-                    # gốc là out_invoice => điều chỉnh tăng
                     item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
 
                 list_invoice_detail.append(item)
-            reward_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='reward').mapped('value'))
-            if reward_amount != 0:
-                item = {
-                    "ItemName": 'Chiết khấu tổng đơn',
-                    "UnitName": '',
-                    "Qty": 1.0,
-                    "Price": abs(reward_amount),
-                    "Amount": abs(reward_amount),
-                    "TaxAmount": 0,
-                    "ItemTypeID": 0,
-                    "IsDiscount": 1,
-                    "TaxRateID": 1,
-                    "TaxRate": 0,
-                }
 
-                list_invoice_detail.append(item)
-            vip_amount = sum(sale_order_id.promotion_ids.filtered(lambda x:x.promotion_type =='vip_amount').mapped('value'))
-            if vip_amount != 0:
-                item = {
-                    "ItemName": 'Chiết khấu hạng thẻ',
-                    "UnitName": '',
-                    "Qty": 1.0,
-                    "Price": abs(vip_amount),
-                    "Amount": abs(vip_amount),
-                    "TaxAmount": 0,
-                    "ItemTypeID": 0,
-                    "IsDiscount": 1,
-                    "TaxRateID": 1,
-                    "TaxRate": 0,
-                }
-                list_invoice_detail.append(item)
-                
+            list_invoice_detail.extend(self._get_promotion_in_sale())
+
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            # if invoice.invoice_info_company_name:
-            #     BuyerName = invoice.invoice_info_company_name 
 
             BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
@@ -129,8 +163,8 @@ class AccountMoveSaleOrder(models.Model):
                     "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
                     "ExchangeRate": 1.0,
                     "InvoiceForm": "",
-                    "InvoiceSerial": "",
-                    "InvoiceNo": 0,
+                    "InvoiceSerial": invoice.invoice_serial if invoice.invoice_serial else "",
+                    "InvoiceNo": invoice.invoice_no if invoice.invoice_no else 0,
                     "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": invoice.id,
