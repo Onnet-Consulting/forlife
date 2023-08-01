@@ -212,10 +212,16 @@ class StockTransfer(models.Model):
 
     def _out_approve_with_confirm(self):
         self.ensure_one()
-        for line in self.stock_transfer_line.filtered(lambda r: r.qty_out == 0 and r.product_id.is_need_scan_barcode):
-            line.write({
-                'qty_out': line.qty_plan
-            })
+        if not self.env.user.has_group('forlife_permission_management.group_stock_transfer_can_be_scan'):
+            for line in self.stock_transfer_line.filtered(lambda r: r.qty_out == 0 and not r.product_id.is_need_scan_barcode):
+                line.write({
+                    'qty_out': line.qty_plan
+                })
+        else:
+            for line in self.stock_transfer_line.filtered(lambda r: r.qty_out == 0):
+                line.write({
+                    'qty_out': line.qty_plan
+                })
         self._action_out_approve()
 
     def _out_approve_less_quantity(self, stock_transfer_line_less):
@@ -253,10 +259,16 @@ class StockTransfer(models.Model):
 
     def _in_approve_with_confirm(self):
         self.ensure_one()
-        for line in self.stock_transfer_line.filtered(lambda r: r.qty_in == 0 and r.product_id.is_need_scan_barcode):
-            line.write({
-                'qty_in': line.qty_out
-            })
+        if not self.env.user.has_group('forlife_permission_management.group_stock_transfer_can_be_scan'):
+            for line in self.stock_transfer_line.filtered(lambda r: r.qty_in == 0 and not r.product_id.is_need_scan_barcode):
+                line.write({
+                    'qty_in': line.qty_out
+                })
+        else:
+            for line in self.stock_transfer_line.filtered(lambda r: r.qty_in == 0):
+                line.write({
+                    'qty_in': line.qty_out
+                })
         self._action_in_approve()
 
     def action_in_approve(self):

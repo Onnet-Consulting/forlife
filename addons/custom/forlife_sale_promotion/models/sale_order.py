@@ -92,14 +92,17 @@ class SaleOrder(models.Model):
                         if matched_str:
                             nhanh_origin_id = re.search(r'#X\d+', rec.note).group().split('#X', 1)[-1]
                             nhanh_return_id = re.search(r'#N\d+', rec.note).group().split('#N', 1)[-1]
-                            orig_order = rec.search([('nhanh_id', '=', nhanh_origin_id)], limit=1)
-                            return_order = rec.search([('nhanh_id', '=', nhanh_return_id)], limit=1)
+                            orig_order = rec.search([('nhanh_id', '=', nhanh_origin_id), ('x_is_return', '=', False)], limit=1)
+                            return_order = rec.search([('nhanh_id', '=', nhanh_return_id), ('x_is_return', '=', True)], limit=1)
                             if not orig_order or not return_order:
                                 action = self.env['ir.actions.actions']._for_xml_id(
                                     'forlife_sale_promotion.action_check_promotion_wizard')
                                 action['context'] = {
                                     'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)}
                                 return action
+                            else:
+                                rec.nhanh_origin_id = nhanh_origin_id
+                                rec.nhanh_return_id = nhanh_return_id
                         else:
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")}
@@ -305,7 +308,7 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
-                                    line_promotion.x_account_analytic_id = discount_account_id and discount_account_id.id
+                                    line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
                 rec.write({"state": "done_sale"})

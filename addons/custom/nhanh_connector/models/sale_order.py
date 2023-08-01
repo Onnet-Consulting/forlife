@@ -114,7 +114,7 @@ class SaleOrderNhanh(models.Model):
                     partner, int(order['depotId'])
                 )
 
-        order_line = n_client.get_order_line(order, brand_id, location_id, is_create=False)
+        order_line = n_client.get_order_line(order, brand_id, location_id, nhanh_partner, is_create=False)
 
         order_data = n_client.get_order_data(
             order, nhanh_partner, partner, name_customer, default_company_id, location_id
@@ -690,10 +690,30 @@ class SaleOrderNhanh(models.Model):
                 return_wiz.product_return_moves.quantity = quantity
                 return_wiz.product_return_moves.to_refund = True
                 new_picking_id, pick_type_id = return_wiz.with_context(so_return=self.id)._create_returns()
-                new_picking = self.env['stock.picking'].browse([new_picking_id])
+                new_picking = self.env['stock.picking'].sudo().browse([new_picking_id])
                 for item in new_picking:
+                    
                     item.write({"location_dest_id": picking.location_id.id})
         self.state = 'sale'
+        new_picking_ids = self.picking_ids.filtered(lambda r: r.company_id.id == self.company_id.id)
+        for item in new_picking_ids:
+            is_create_invoice_out_refund = True
+            for line in item.move_line_ids:
+                res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
+                ir_property = self.env['ir.property'].sudo().search([
+                    ('name', '=', 'x_property_account_return_id'),
+                    ('res_id', '=', res_id),
+                    ('company_id', '=', self.company_id.id)
+                ],limit=1)
+                if not ir_property:
+                    is_create_invoice_out_refund = False
+                    break
+
+            if is_create_invoice_out_refund:
+                try:
+                    item.create_invoice_out_refund()
+                except Exception as e:
+                    pass
 
     
 

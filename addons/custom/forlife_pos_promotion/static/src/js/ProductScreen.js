@@ -60,6 +60,26 @@ export const PosPromotionProductScreen = (ProductScreen) =>
                 return super._onClickPay(...arguments);
             };
         }
+
+        _setNumpadMode(event) {
+            const {mode} = event.detail;
+            if (mode == 'discount') {
+                let selected_orderline = this.currentOrder.get_selected_orderline();
+                if (selected_orderline &&
+                    (  selected_orderline.is_applied_promotion()
+                    || selected_orderline.card_rank_applied
+                    || selected_orderline.is_product_defective
+                    || selected_orderline.point
+                    || selected_orderline.handle_change_refund_price)) {
+                    this.showPopup('ErrorPopup', {
+                        title: this.env._t('Lỗi thao tác'),
+                        body: this.env._t('Bạn cần loại bỏ CTKM trước khi áp dụng chiết khấu tay!'),
+                    });
+                    return false;
+                };
+            };
+            return super._setNumpadMode(...arguments);
+        }
     };
 
 Registries.Component.extend(ProductScreen, PosPromotionProductScreen);

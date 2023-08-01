@@ -69,7 +69,7 @@ class PosSession(models.Model):
             limit=params['search_params']['limit'],
             order='create_date DESC').sorted(key='fixed_price', reverse=False)
         for item in result:
-            if item.with_code:
+            if (item.with_code or item.reward_type == 'cart_pricelist') and item.product_id.lst_price > item.fixed_price:
                 pricelist_items |= item
             elif item.product_id.id not in product_set and item.product_id.lst_price > item.fixed_price and item.product_id.id in product_ids:
                 pricelist_items |= item
@@ -126,7 +126,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_program(self):
         return {
             'search_params': {
-                'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
+                'domain': [],
                 'fields': [
                     'active',
                     'state',
@@ -212,3 +212,9 @@ class PosSession(models.Model):
 
     def _get_pos_ui_hour_data(self, params):
         return self.env['hour.data'].search_read(**params['search_params'])
+
+    # TODO: cache the promotion program if needed
+    # def _process_pos_ui_promotion_program(self, promotions):
+    #     pos_promotions = self.config_id._get_promotion_program_ids().ids
+    #     allowed_promotions = filter(lambda x: x.get('id') in pos_promotions, promotions)
+    #     promotions[:] = allowed_promotions

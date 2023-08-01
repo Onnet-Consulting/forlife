@@ -32,6 +32,7 @@ class NhanhClient:
                 'name': 'Nhanh.Vn',
                 'customer_rank': 1
             })
+
         return nhanh_partner
 
     def get_sale_channel(self, order):
@@ -155,7 +156,7 @@ class NhanhClient:
 
             self.cls.env['store.first.order'].sudo().create([vals_list])
 
-    def get_order_line(self, order, brand_id, location_id, is_create=False):
+    def get_order_line(self, order, brand_id, location_id, nhanh_partner, is_create=False):
         order_line = []
         for item in order['products']:
             product_id = self.cls.env['product.product'].sudo().search([
@@ -206,7 +207,8 @@ class NhanhClient:
                     # 'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
                        #     'discount') else 0,
                     'x_cart_discount_fixed_price': float(item.get('discount')) * float(
-                           item.get('quantity')) if item.get('discount') else 0}
+                           item.get('quantity')) if item.get('discount') else 0,
+                    'x_account_analytic_id': nhanh_partner.property_account_cost_center_id.id if nhanh_partner.property_account_cost_center_id else None}
             ))
         return order_line
 

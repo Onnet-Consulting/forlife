@@ -16,8 +16,11 @@ class StockPickingScan(models.TransientModel):
         if self.barcode:
             line = self.stock_picking_scan_line_ids.filtered(lambda r: r.barcode == self.barcode)
             if line:
-                self.note = None
-                line[0].update({'product_qty_done': (line[0].product_qty_done or 0) + 1})
+                if line[0].product_qty_done + 1 > line[0].max_qty:
+                    self.note = 'Số lượng quét "%s" đang vượt quá số lượng tối đa!' % self.barcode
+                else:
+                    self.note = None
+                    line[0].update({'product_qty_done': (line[0].product_qty_done or 0) + 1})
             else:
                 self.note = 'Barcode "%s" không hợp lệ!' % self.barcode
             self.barcode = None
@@ -35,6 +38,7 @@ class StockPickingScanLine(models.TransientModel):
     stock_picking_scan_id = fields.Many2one(comodel_name='stock.picking.scan', ondelete='cascade')
     move_line_id = fields.Many2one(comodel_name='stock.move.line', required=True, string='Sản phẩm')
     barcode = fields.Char(related='move_line_id.product_id.barcode')
+    max_qty = fields.Integer(string='Số lượng tối đa')
     product_uom_qty = fields.Float(related='move_line_id.move_id.product_uom_qty', string='Số lượng yêu cầu')
     product_qty_done = fields.Float(string='Số lượng đã quét')
 

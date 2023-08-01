@@ -24,7 +24,7 @@ class TransferNotExistsBkav(models.Model):
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_form = fields.Char('Mẫu số HDDT', copy=False)
     invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Datetime('Ngày HDDT', copy=False)
+    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -68,7 +68,7 @@ class TransferNotExistsBkav(models.Model):
         query = """ 
             SELECT code
             FROM (
-                (SELECT '000001' as code)
+                (SELECT '000000' as code)
                 UNION ALL
                 (SELECT RIGHT(code,6) as code
                 FROM transfer_not_exists_bkav
@@ -80,11 +80,11 @@ class TransferNotExistsBkav(models.Model):
         self._cr.execute(query, (param_code,))
         result = self._cr.fetchall()
         for list_code in result:
-            if list_code[0] == '000001':
+            if list_code[0] == '000000':
                 code+='000001'
             else:
-                code_int = int(list_code[0])
-                code+='0'*len(6-len(code_int+1))+str(code_int+1)
+                code_int = int(list_code[0])+1
+                code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
 
     def general_transfer_not_exists_bkav(self):
@@ -195,7 +195,7 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, invoice.date_transfer)
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:

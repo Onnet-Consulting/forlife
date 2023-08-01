@@ -1014,7 +1014,6 @@ class SummaryAccountMovePos(models.Model):
 
         elif len(sales.keys()):
             move_pos_line = sale_res.line_ids
-            move_refund_pos_line = refund_res.line_ids
             for store_id, sale in sales.items():
                 for k, v in sale.items():
                     summary_line_id = move_pos_line.filtered(

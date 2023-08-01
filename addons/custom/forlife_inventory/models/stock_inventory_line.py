@@ -8,15 +8,21 @@ class StockInventoryLine(models.Model):
 
     def create_import_export_other(self, vals, type_picking):
         company = self.env['res.company'].sudo().search([('code', '=', '1300')])
-        if type_picking == 'import':
-            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', vals['location_dest_id'])])
-        else:
-            location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', vals['location_id'])])
-        if location_mapping:
-            location_id = location_mapping.location_id
-            type_id = location_id.with_company(company).warehouse_id.int_type_id.id
-            product = self.env['product.product'].search([('id', '=', vals['product_id'])])
-            if self.inventory_id.company_id.code == '1400':
+        if self.inventory_id.company_id.code == '1400':
+            if type_picking == 'import':
+                l_id = self.env['stock.location'].sudo().search([('id','=',vals['location_dest_id'])])
+                location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', l_id.id)])
+                if not location_mapping:
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            else:
+                l_id = self.env['stock.location'].sudo().search([('id', '=', vals['location_id'])])
+                location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', vals['location_id'])])
+                if not location_mapping:
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            if location_mapping:
+                location_id = location_mapping.location_id
+                type_id = location_id.with_company(company).warehouse_id.int_type_id.id
+                product = self.env['product.product'].search([('id', '=', vals['product_id'])])
                 ReasonType = self.env['forlife.reason.type'].sudo()
                 if type_picking == 'import':
                     loc = self.env['stock.location'].sudo().search([('code', '=', 'N0202'), ('company_id', '=', company.id)], limit=1)
@@ -28,6 +34,7 @@ class StockInventoryLine(models.Model):
                         'location_id': loc.id,
                         'location_dest_id': location_id.id,
                         'other_import': True,
+                        'is_generate_auto_company':True,
                         'move_ids_without_package': [(0, 0, {
                             'product_id': product.id,
                             'location_id': loc.id,
@@ -51,6 +58,7 @@ class StockInventoryLine(models.Model):
                         'location_id': location_id.id,
                         'location_dest_id': loc_dest.id,
                         'other_export': True,
+                        'is_generate_auto_company':True,
                         'move_ids_without_package': [(0, 0, {
                             'product_id': product.id,
                             'location_id': location_id.id,
@@ -64,6 +72,6 @@ class StockInventoryLine(models.Model):
                             'company_id': company.id
                         })],
                     })
-                picking.button_validate()
-            return True
+                picking.with_context(endloop=True).button_validate()
+                return picking
         return True

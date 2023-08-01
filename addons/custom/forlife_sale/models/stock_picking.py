@@ -27,6 +27,8 @@ class StockPicking(models.Model):
             return
         invoice_line_ids = []
         promotion_ids = []
+        sale_order = self.sale_id
+
         for line in self.move_ids:
             if self.sale_id.x_origin and self.sale_id.x_origin.promotion_ids:
                 promotion_id = self.sale_id.x_origin.promotion_ids.filtered(lambda x: x.product_id.id == line.product_id.id)
@@ -64,12 +66,28 @@ class StockPicking(models.Model):
             'move_type': 'out_refund',
             'invoice_line_ids': invoice_line_ids,
             'promotion_ids': promotion_ids,
-            'invoice_origin': line.sale_line_id.order_id.name
+            'invoice_origin': line.sale_line_id.order_id.name,
         }
-        invoice_id = self.env['account.move'].create(vals)
+        if line.sale_line_id.order_id.source_record:
+            vals['company_id'] = line.sale_line_id.order_id.company_id.id
+
+        invoice_id = self.env['account.move'].sudo().create(vals)
         for line in invoice_id.invoice_line_ids:
             if line.product_id:
-                line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
+                if self.sale_source_record:
+                    res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
+                    ir_property = self.env['ir.property'].sudo().search([
+                        ('name', '=', 'x_property_account_return_id'),
+                        ('res_id', '=', res_id),
+                        ('company_id', '=', sale_order.company_id.id)
+                    ],limit=1)
+                    if ir_property:
+                        account_id = str(ir_property.value_reference).replace("account.account,", "")
+                        line.account_id = self.env['account.account'].sudo().search([('id', '=', account_id)], limit=1)
+                    else:
+                        line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
+                else:
+                    line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id
 
     def button_validate(self):

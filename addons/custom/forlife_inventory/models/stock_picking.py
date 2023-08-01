@@ -10,12 +10,23 @@ class StockPicking(models.Model):
     from_company = fields.Many2one('res.company')
     to_company = fields.Many2one('res.company')
     from_po_give = fields.Boolean(default=False)
+    is_generate_auto_company = fields.Boolean(default=False)
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         if 'endloop' in self._context and self._context.get('endloop'):
             return res
         if self.company_id.code == '1300':
+            warehouse_type_id_tl = self.env.ref('forlife_base.stock_warehouse_type_03', raise_if_not_found=False).id
+            warehouse_type_id_fm = self.env.ref('forlife_base.stock_warehouse_type_04', raise_if_not_found=False).id
+            if self.location_id.warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
+                location_map = self.env['stock.location.mapping'].sudo().search([('location_id','=',self.location_id.id)], limit=1)
+                if not location_map:
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            if self.location_dest_id.warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
+                location_dest_map = self.env['stock.location.mapping'].sudo().search([('location_id','=',self.location_dest_id.id)], limit=1)
+                if not location_dest_map:
+                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             companyId = self.company_id.id
             location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
                                                                                              limit=1)
@@ -86,6 +97,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         other = self.validate_picking_give_voucher(other=other, company_id=company_id)
         return other
@@ -133,6 +145,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         if type_create == 'from_po':
             other = self.validate_picking_give_voucher(other=other, company_id=company_id)
@@ -192,12 +205,13 @@ class StockPicking(models.Model):
                                 'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
                             }))
                         pickking_ortherimport = Picking.with_company(company).create({
-                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]),
+                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]).id,
                             'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
                             'location_id': location_id.id,
                             'location_dest_id': location_mapping.location_id.id,
                             'other_import': True,
                             'move_ids_without_package': data,
+                            'is_generate_auto_company': True
                         })
-                        pickking_ortherimport.button_validate()
+                        pickking_ortherimport.with_context(endloop=True).button_validate()
         return pickings

@@ -128,7 +128,7 @@ class StockTransferRequest(models.Model):
                     'stock_request_id': record.id,
                     'location_id': item.location_id.id,
                     'location_dest_id': item.location_dest_id.id,
-                    'work_to': record.prodution_id.id or False,
+                    'work_to': record.production_id.id or False,
                     'stock_transfer_line': [data_stock_transfer_line]
                 }
                 if value.get(key):

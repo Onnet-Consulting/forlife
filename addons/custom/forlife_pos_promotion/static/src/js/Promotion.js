@@ -69,7 +69,6 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
-//        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
         var self = this;
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
@@ -172,10 +171,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
     }
 
     _loadPromotionPriceListItem(promotionItems) {
+        if (!promotionItems) {
+            return
+        }
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
-//            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
@@ -389,7 +390,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             return false;
         } else if (this.get_discount() > 0) {
             return false;
-        } else if (!utils.float_is_zero(price - order_line_price - orderline.get_price_extra(), this.pos.currency.decimal_places) && !this.is_applied_promotion() && !order_line.is_applied_promotion()) {
+        } else if (!utils.float_is_zero(price - order_line_price - orderline.get_price_extra(), this.pos.currency.decimal_places) && !this.is_applied_promotion() && !orderline.is_applied_promotion()) {
             return false;
         } else if (this.product.tracking == 'lot' && (this.pos.picking_type.use_create_lots || this.pos.picking_type.use_existing_lots)) {
             return false;
@@ -1697,6 +1698,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 line.is_cart_discounted = true;
             }
         }
+        else if (program.reward_type == 'cart_pricelist') {
+            for (let line of to_discount_lines) {
+                let pricelistItem = program.pricelistItems.find(pl => pl.product_id == line.product.id);
+                let originalPrice = line.price;
+                let newPrice = pricelistItem.fixed_price;
+                let discAmount = originalPrice - newPrice;
+                line.price = newPrice;
+                line.promotion_usage_ids.push(new PromotionUsageLine(
+                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                line.is_cart_discounted = true;
+            }
+        }
         if (diff_amount_new_line) {
             to_discount_lines.push(diff_amount_new_line);
         }
@@ -1751,7 +1764,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let required_order_amount_min = program.order_amount_min;
             let required_min_quantity = program.min_quantity;
             let floor = 1;
-            let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids : program.discount_product_ids;
+            let reward_products = program.reward_type == 'cart_get_x_free' ? program.reward_product_ids
+                                : program.reward_type == 'cart_pricelist' ? program.productPricelistItems
+                                : program.discount_product_ids;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1784,12 +1799,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let no_incl_ols;
                 if (program.reward_type == 'cart_get_x_free') {
                     no_incl_ols = orderLines.filter(l=>!l.get_total_discounted() && l.quantity > 0)
-                                            .filter(l=>program.reward_product_ids.has(l.product.id)
+                                            .filter(l=>reward_products.has(l.product.id)
                                                     // Nếu "Không bao gồm" SPKM và "Chỉ xét SPĐK", trừ SPKM có trong điều kiện
                                                     &&(program.only_condition_product ? program.valid_product_ids.has(l.product.id) : true));
                 } else {
                     no_incl_ols = orderLines.filter(l=>!l.get_total_discounted() && l.quantity > 0)
-                                            .filter(l=>program.discount_product_ids.has(l.product.id)
+                                            .filter(l=>reward_products.has(l.product.id)
                                                     // Nếu "Không bao gồm" SPKM và "Chỉ xét SPĐK", trừ SPKM có trong điều kiện
                                                     &&(program.only_condition_product ? program.valid_product_ids.has(l.product.id) : true));
                 };
@@ -1853,6 +1868,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 to_discount_lines = orderLines.filter(l=> (discount_based_on_unit_price ? !l.get_total_discounted() : true) && l.quantity > 0)
                                               .filter(l=>reward_products.has(l.product.id));
             };
+            if (program.progressive_reward_compute) {
+                // Tính lại hệ số lũy tiến khả dụng dựa trên số lượng phần thưởng đang có trong đơn
+                let reward_quantity_total = 0;
+                if (program.reward_type == 'cart_get_x_free') {
+                    reward_quantity_total = to_reward_lines.reduce((sum, l)=> sum + l.quantity, 0);
+                } else if (program.reward_type != 'cart_get_voucher') {
+                    reward_quantity_total = to_discount_lines.reduce((sum, l)=> sum + l.quantity, 0);
+                };
+                let realFloor = Math.ceil(reward_quantity_total / (program.reward_quantity || 1));
+                floor = realFloor > 0 && realFloor < floor ? realFloor : floor;
+            };
+
             if ((program.reward_type == 'cart_get_x_free' && to_reward_lines.length > 0)
                 || (program.reward_type != 'cart_get_x_free' &&  to_discount_lines.length > 0)) {
                 let reward_lines = program.reward_type == 'cart_get_x_free' ? to_reward_lines : to_discount_lines;

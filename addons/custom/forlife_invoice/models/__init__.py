@@ -5,3 +5,4 @@ from . import expense_category
 from . import expense_item
 from . import stock_location
 from . import contract_type
+from . import account_move_reversal_import

@@ -37,7 +37,6 @@ class PosModelCache(models.Model):
             domain = [('write_date', '>', cache.last_update)]
             cache.refresh_model_cache(domain)
 
-
     @api.model
     def refresh_all_model_caches(self):
         self.env['pos.model.cache'].search([]).refresh_cache()
@@ -60,17 +59,40 @@ class PosModelCache(models.Model):
         changed_records = changed_records.filtered_domain(self.get_model_domain())
         changed_records = changed_records.read(self.get_model_fields())
         record_by_id = {x.get('id'): x for x in changed_records}
+
         if changed_records:
+            # Lock table for update
+            model_table_name = self.model.replace(".", "_")
+            self.lock_table_for_cache_refresh(model_table_name, changed_records)
+
             cached_records = self.cache2json()
+            # Update records
             for idx, cached_record in enumerate(cached_records):
                 if cached_record.get('id') in record_by_id:
                     cached_records[idx] = record_by_id[cached_record.get('id')]
                     del record_by_id[cached_record.get('id')]
+            # Add new record
             cached_records.extend([record_by_id[x] for x in record_by_id])
             self.write({
                 'cache': base64.encodebytes(json.dumps(cached_records, default=date_utils.json_default).encode('utf-8')),
                 'last_update': datetime.now()
             })
+
+    def lock_table_for_cache_refresh(self, table_name, records):
+        """
+        Lock the records while updating to avoid missing cache data
+        """
+        record_ids = [x.get('id') for x in records]
+        self.env.cr.execute(
+            f"SELECT 1 FROM {table_name} WHERE id IN %(record_ids)s FOR UPDATE NOWAIT",
+            {'record_ids': tuple(record_ids)}
+        )
+
+        # FIXME: cleaner way to apply extra lock ?
+        if table_name == 'product_product':
+            product_tmpl_ids = [{'id': x.get('product_tmpl_id')[0]} for x in records]
+            self.lock_table_for_cache_refresh('product_template', product_tmpl_ids)
+
 
     def refresh_cache(self):
         for cache in self:
