@@ -126,7 +126,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_program(self):
         return {
             'search_params': {
-                'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
+                'domain': [],
                 'fields': [
                     'active',
                     'state',
@@ -212,3 +212,9 @@ class PosSession(models.Model):
 
     def _get_pos_ui_hour_data(self, params):
         return self.env['hour.data'].search_read(**params['search_params'])
+
+    # TODO: cache the promotion program if needed
+    # def _process_pos_ui_promotion_program(self, promotions):
+    #     pos_promotions = self.config_id._get_promotion_program_ids().ids
+    #     allowed_promotions = filter(lambda x: x.get('id') in pos_promotions, promotions)
+    #     promotions[:] = allowed_promotions
