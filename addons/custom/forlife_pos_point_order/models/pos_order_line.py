@@ -36,7 +36,7 @@ class PosOrderLine(models.Model):
                         'listed_price': line['original_price']
                     })
                 ]
-            if 'discount' in line and line['discount']:
+            if 'discount' in line and line['discount'] and ('discount_cash_amount' not in line or line['discount_cash_amount'] <= 0):
                 vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
                     (0, 0, {
                         'type': 'handle',
@@ -44,6 +44,16 @@ class PosOrderLine(models.Model):
                         'listed_price': line['original_price']
                     })
                 ]
+                line['discount'] = 0.0
+            elif 'discount_cash_amount' in line and line['discount_cash_amount'] > 0:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'handle',
+                        'recipe': line['discount_cash_amount'],
+                        'listed_price': line['original_price']
+                    })
+                ]
+                del line['discount_cash_amount']
                 line['discount'] = 0.0
         return super(PosOrderLine, self).create(vals_list)
 
