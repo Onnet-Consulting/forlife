@@ -10,6 +10,7 @@ class StockPicking(models.Model):
     from_company = fields.Many2one('res.company')
     to_company = fields.Many2one('res.company')
     from_po_give = fields.Boolean(default=False)
+    is_generate_auto_company = fields.Boolean(default=False)
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
@@ -96,6 +97,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         other = self.validate_picking_give_voucher(other=other, company_id=company_id)
         return other
@@ -143,6 +145,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         if type_create == 'from_po':
             other = self.validate_picking_give_voucher(other=other, company_id=company_id)
@@ -208,6 +211,7 @@ class StockPicking(models.Model):
                             'location_dest_id': location_mapping.location_id.id,
                             'other_import': True,
                             'move_ids_without_package': data,
+                            'is_generate_auto_company': True
                         })
-                        pickking_ortherimport.button_validate()
+                        pickking_ortherimport.with_context(endloop=True).button_validate()
         return pickings
