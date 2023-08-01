@@ -101,7 +101,7 @@ class SplitProduct(models.Model):
             'default_split_product_id': self.id,
         })
         return {
-            'name': _('Phiếp nhập/xuất khác'),
+            'name': _('Phiếu nhập/xuất khác'),
             'domain': [('split_product_id', '=', self.id)],
             'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',

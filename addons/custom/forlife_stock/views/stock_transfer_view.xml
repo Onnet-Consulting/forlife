@@ -62,6 +62,16 @@
                                 <span class="o_stat_text">Quét Barcode</span>
                             </div>
                         </button>
+
+                        <field name="backorder_count" invisible="1"/>
+                        <button type="object" name="action_view_backorder" class="oe_stat_button" icon="fa-file" attrs="{'invisible':[('backorder_count','=', 0)]}" groups="stock.group_stock_user">
+                            <field name="backorder_count" widget="statinfo" string="Dở dang"/>
+                        </button>
+
+                        <field name="picking_count" invisible="1"/>
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_count','=', 0)]}" groups="stock.group_stock_user">
+                            <field name="picking_count" widget="statinfo" string="Điều chuyển hàng"/>
+                        </button>
                     </div>
                     <h1>
                         <field name="name" readonly="1"/>
