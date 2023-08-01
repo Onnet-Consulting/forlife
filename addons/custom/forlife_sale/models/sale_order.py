@@ -386,14 +386,13 @@ class SaleOrder(models.Model):
         return res
 
     def action_return(self):
-        so_return = self.copy()
+        so_return = self.copy({'state': 'draft'})
         picking_location_list = {}
         for picking in self.picking_ids:
             picking_location_list[picking.location_id.id] = picking.name
         so_return.update({
             'x_is_return': True,
             'x_origin': self.id,
-            'state': 'sale'
         })
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
