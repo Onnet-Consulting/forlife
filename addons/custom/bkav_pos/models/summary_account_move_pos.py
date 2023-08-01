@@ -773,7 +773,8 @@ class SummaryAccountMovePos(models.Model):
                     'store_id': store.id,
                     'partner_id': store.contact_id.id,
                     'invoice_date': date.today(),
-                    'line_ids': separate_lines
+                    'line_ids': res_line.ids,
+                    'source_invoice': k,
                 })
                 i += 1
         res = model.create(vals_list)
