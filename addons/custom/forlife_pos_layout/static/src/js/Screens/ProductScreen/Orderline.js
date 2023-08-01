@@ -17,11 +17,17 @@ odoo.define('forlife_pos_layout.CustomOrderline', function(require) {
         }
         getTotalDiscountManual() {
             var rounding = this.props.line.pos.currency.rounding;
+            if (this.props.line.use_discount_cash) {
+                return round_pr(this.props.line.get_discount_cash_amount(), rounding);
+            }
             return round_pr(this.props.line.get_unit_price() * this.props.line.get_quantity() * (this.props.line.get_discount()/100), rounding);
         }
 
         getTotalDiscountSingleManual() {
             var rounding = this.props.line.pos.currency.rounding;
+            if (this.props.line.use_discount_cash) {
+                return this.props.line.get_discount_cash_amount();
+            }
             return round_pr(this.props.line.get_unit_price() * (this.props.line.get_discount()/100), rounding);
         }
 

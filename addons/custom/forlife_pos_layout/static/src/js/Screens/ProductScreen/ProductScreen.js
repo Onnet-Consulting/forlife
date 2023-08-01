@@ -39,6 +39,23 @@ odoo.define('forlife_pos_layout.ProductScreen', function (require) {
             this.currentOrder.add_product(product,  options);
             NumberBuffer.reset();
         }
+
+        _setValue(val) {
+            if (this.currentOrder.get_selected_orderline()) {
+                if (this.env.pos.numpadMode === 'quantity') {
+                    const result = this.currentOrder.get_selected_orderline().set_quantity(val);
+                    if (!result) NumberBuffer.reset();
+                } else if (this.env.pos.numpadMode === 'discount') {
+                    this.currentOrder.get_selected_orderline().set_discount_cash_manual(0);
+                    this.currentOrder.get_selected_orderline().set_discount(val);
+                } else if (this.env.pos.numpadMode === 'price') {
+                    var selected_orderline = this.currentOrder.get_selected_orderline();
+                    // selected_orderline.price_manually_set = true;
+                    // selected_orderline.set_unit_price(val);
+                    selected_orderline.set_discount_cash_manual(val);
+                }
+            }
+        }
     }
 
     Registries.Component.extend(ProductScreen, CustomProductScreen);
