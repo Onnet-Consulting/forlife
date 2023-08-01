@@ -55,6 +55,14 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,wait_approve,approved,out_approve,done,reject,cancel"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box" >
+                        <field name="is_need_scan_barcode" invisible="1"/>
+                        <button name="open_scan_barcode" type="object" icon="fa-barcode" attrs="{'invisible':['|', ('is_need_scan_barcode', '=', False), ('state', 'not in', ('approved', 'out_approve'))]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Quét Barcode</span>
+                            </div>
+                        </button>
+                    </div>
                     <h1>
                         <field name="name" readonly="1"/>
                     </h1>
@@ -95,11 +103,12 @@
                                     <field name="is_from_button" invisible="1"/>
                                     <field name="product_str_id" invisible="1"/>
                                     <field name="qty_start" invisible="1"/>
+                                    <field name="is_readonly_qty" invisible="1"/>
                                     <field name="product_id"  domain="[('product_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
                                     <field name="qty_plan" attrs="{'readonly': ['|', '|',('product_str_id', '!=', False), ('parent.state', 'not in', ('draft', 'wait_approve')), ('parent.is_diff_transfer', '=', True)]}"/>
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
-                                    <field name="qty_out" attrs="{'readonly': [('parent.state', 'not in', ('in_approve', 'approved'))]}"/>
-                                    <field name="qty_in" attrs="{'readonly': [('parent.state', '!=', 'out_approve')]}"/>
+                                    <field name="qty_out" attrs="{'readonly': ['|', ('parent.state', 'not in', ('in_approve', 'approved')), ('is_readonly_qty', '=', True)]}"/>
+                                    <field name="qty_in" attrs="{'readonly': ['|', ('parent.state', '!=', 'out_approve'), ('is_readonly_qty', '=', True)]}"/>
                                     <field name="quantity_remaining" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
                                     <field name="work_from" required="0" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>
                                     <field name="work_to" required="0" attrs="{'readonly': [('parent.state', '!=', 'draft')]}"/>

@@ -37,57 +37,87 @@ class InheritStockPicking(models.Model):
         Generate outgoing move for incoming picking
         """
         move_outgoing_values = []
-        # reason_type_id = self.env.ref('forlife_stock_exchange.forlife_reason_type_outgoing_exchange').id
-
         reason_export_id = picking.location_id.reason_export_material_id
         if not reason_export_id:
             raise ValidationError(_("Please configure reason export material of reason %s." % picking.location_id.name))
         reason_type_id = self.env['forlife.reason.type'].browse(picking.location_id.reason_type_id.id)
         if not reason_type_id:
             raise ValidationError(_("Please configure reason type export material of reason %s." % picking.location_id.name))
+
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
-            move_outgoing_value = [{
-                'picking_id': self.id,
-                'name': material.product_id.name,
-                'product_id': material.product_id.id,
-                'location_id': self.location_id.id,
-                'location_dest_id': reason_export_id.id,
-                'product_uom_qty': move.product_uom_qty,
-                'price_unit': material.product_id.standard_price,
-                'amount_total': move.product_uom_qty * material.product_id.standard_price,
-                'bom_model': material._name,
-                'bom_id': material.id,
-                'reason_type_id': reason_type_id.id,
-            } for material in bom.forlife_bom_material_ids if material.product_id.type == 'product'] + [{
-                'picking_id': self.id,
-                'name': ingredients.product_id.name,
-                'product_id': ingredients.product_id.id,
-                'location_id': self.location_id.id,
-                'location_dest_id': reason_export_id.id,
-                'product_uom_qty': move.product_uom_qty,
-                'price_unit': ingredients.product_id.standard_price,
-                'amount_total': move.product_uom_qty * ingredients.product_id.standard_price,
-                'bom_model': ingredients._name,
-                'bom_id': ingredients.id,
-                'reason_type_id': reason_type_id.id,
-            } for ingredients in bom.forlife_bom_ingredients_ids if ingredients.product_id.type == 'product'] + [{
-                'picking_id': self.id,
-                'name': expense.product_id.name,
-                'product_id': expense.product_id.id,
-                'location_id': self.location_id.id,
-                'location_dest_id': reason_export_id.id,
-                'product_uom_qty': move.product_uom_qty,
-                'price_unit': expense.product_id.standard_price,
-                'amount_total': move.product_uom_qty * expense.product_id.standard_price,
-                'bom_model': expense._name,
-                'bom_id': expense.id,
-                'reason_type_id': reason_type_id.id,
-            } for expense in bom.forlife_bom_service_cost_ids if expense.product_id.type == 'product']
-            if not move_outgoing_value:
-                raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
-            move_outgoing_values += move_outgoing_value
+            product_qty_prodution_remaining = self.env['quantity.production.order'].search([('location_id', '=', self.location_id.id), ('production_id', '=', move.work_production.id)])
+            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
+            for material in material_ids:
+                move_outgoing_value = self.validate_product_backup(move, material, material_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id)
+                # # if
+                # move_outgoing_value = [{
+                #     'picking_id': self.id,
+                #     'name': material.product_id.name,
+                #     'product_id': material.product_id.id,
+                #     'location_id': self.location_id.id,
+                #     'location_dest_id': reason_export_id.id,
+                #     'product_uom_qty': move.product_uom_qty * material.total,
+                #     'price_unit': material.product_id.standard_price,
+                #     'amount_total': move.product_uom_qty * material.total * material.product_id.standard_price,
+                #     'bom_model': material._name,
+                #     'bom_id': material.id,
+                #     'reason_type_id': reason_type_id.id,
+                # }]
+                if not move_outgoing_value:
+                    raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
+                move_outgoing_values += move_outgoing_value
         return self.env['stock.move'].create(move_outgoing_values)
+
+    def validate_product_backup(self, move, material, material_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
+        product_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id).mapped('quantity'))
+        product_uom_qty = move.product_uom_qty * material.total
+        move_outgoing_value = []
+        if product_qty >= product_uom_qty:
+            val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_uom_qty, material, reason_type_id)
+            move_outgoing_value.append(val)
+        else:
+            # Check sản phẩm thay thế Level 1
+            qty_remain = product_uom_qty - product_qty
+            material_backup_01 = material_ids.filtered(lambda x: x.product_id.id == material.product_id.id)
+            if not material_backup_01:
+                raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+            else:
+                material_backup_01_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id).mapped('quantity'))
+                if material_backup_01_qty >= qty_remain:
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_remain, material_backup_01, reason_type_id)
+                    move_outgoing_value.append(val)
+                else:
+                    # Check sản phẩm thay thế Level 2
+                    qty_remain -= material_backup_01_qty
+                    material_backup_02 = material_ids.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
+                    if not material_backup_02:
+                        raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+                    else:
+                        material_backup_02_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_02.product_id.id).mapped('quantity'))
+                        if material_backup_02_qty >= qty_remain:
+                            val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
+                            move_outgoing_value.append(val)
+                        else:
+                            raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+
+        return move_outgoing_value
+
+    def prepare_data_stock_move_material(self, product_id, reason_export_id, product_uom_qty, material, reason_type_id):
+        return {
+            'picking_id': self.id,
+            'name': product_id.name,
+            'product_id': product_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': reason_export_id.id,
+            'product_uom_qty': product_uom_qty,
+            'price_unit': product_id.standard_price,
+            'amount_total': product_uom_qty * product_id.standard_price,
+            'bom_model': material._name,
+            'bom_id': material.id,
+            'reason_type_id': reason_type_id.id,
+        }
+
 
     def _generate_outgoing_picking(self):
         """
@@ -112,7 +142,8 @@ class InheritStockPicking(models.Model):
         return picking_outgoing_id
 
     def button_validate(self):
-        if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
+        res = super(InheritStockPicking, self).button_validate()
+        if self.picking_type_id.exchange_code == 'incoming' and self.state == 'done':
             self._update_forlife_production()
             for move_in in self.move_ids:
                 bom = move_in.work_production.forlife_production_finished_product_ids.filtered(lambda b: b.product_id.id == move_in.product_id.id)
@@ -132,7 +163,7 @@ class InheritStockPicking(models.Model):
             picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
             self = self.with_context(exchange_code='incoming')
             self.write({'picking_outgoing_id': picking_outgoing_id.id})
-        return super(InheritStockPicking, self).button_validate()
+        return res
 
     def _update_forlife_production(self):
         for line in self.move_ids_without_package:
@@ -166,12 +197,9 @@ class InheritStockPicking(models.Model):
         exchange_code = self._context.get('exchange_code')
         StockLocation = self.env['stock.location']
         ForlifeReasonType = self.env['forlife.reason.type']
+        company = self.env.company
         if exchange_code == 'incoming':
-            company = self.env.company
-            picking_type = self.env['stock.picking.type'].search(
-                [('code', '=', 'incoming'), ('exchange_code', '=', 'incoming'), ('company_id', '=', company.id)],
-                limit=1
-            )
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('exchange_code', '=', 'incoming'), ('company_id', '=', company.id)], limit=1)
             if not picking_type:
                 raise ValidationError(_('Please configure the finished product import operation type for company %s!', company.name))
             location_id = StockLocation.search([('code', '=', 'N0101'), ('company_id', '=', company.id)], limit=1)
@@ -189,24 +217,26 @@ class InheritStockPicking(models.Model):
                 'other_import': True
             })
         elif exchange_code == 'outgoing':
-            company = self.env.company
-            picking_type = self.env['stock.picking.type'].search(
-                [('code', '=', 'outgoing'), ('exchange_code', '=', 'outgoing'), ('company_id', '=', company.id)],
-                limit=1
-            )
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('exchange_code', '=', 'outgoing'), ('company_id', '=', company.id)], limit=1)
             if not picking_type:
                 raise ValidationError(_('Please configure the materials export operation type for company %s!', company.name))
-            location_dest_id = StockLocation.search([('code', '=', 'X1001'), ('company_id', '=', company.id)], limit=1)
-            if not location_dest_id:
-                raise ValidationError(_('Please configure reason material product export operation for company %s!' % company.name))
 
-            reason_type_id = ForlifeReasonType.search([('code', '=', 'X10'), ('company_id', '=', company.id)], limit=1)
+            location_dest_id = self.location_id.reason_export_material_id
+            if not location_dest_id:
+                location_dest_id = StockLocation.search([('code', '=', 'X1001'), ('company_id', '=', company.id)], limit=1)
+                if not location_dest_id:
+                    raise ValidationError(_('Vui lòng cấu hình "Lý do xuất NVL tương ứng" cho "%s"!' % self.location_id.name))
+
+            reason_type_id = location_dest_id.reason_type_id
             if not reason_type_id:
-                raise ValidationError(_('Please configure reason type outgoing for company %s.' % company.name))
+                reason_type_id = ForlifeReasonType.search([('code', '=', 'X10'), ('company_id', '=', company.id)], limit=1)
+                if not reason_type_id:
+                    raise ValidationError(_('Vui lòng cấu hình "Loại lý do" cho "%s"!' % location_dest_id.name))
+
             results.update({
                 'picking_type_id': picking_type.id,
                 'location_dest_id': location_dest_id.id,
-                'reason_type_id': reason_type_id.id,
+                'reason_type_id': reason_type_id.id or False,
                 'other_export': True
             })
         return results

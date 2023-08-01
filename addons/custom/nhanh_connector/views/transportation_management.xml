@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="transportation_management_view_form" model="ir.ui.view">
+            <field name="name">transportation_management_view_form</field>
+            <field name="model">transportation.session</field>
+            <field name="arch" type="xml">
+                <form string="transportation_management_form">
+                    <header>
+                        <button name="action_done" attrs="{'invisible': [('status', '=', 'done')]}"
+                                string="Xác nhận hoàn thành" class="oe_highlight" type="object"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="2">
+                            <group>
+                                <field name="warehouse_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="date" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="type" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="location_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="user_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="order_count" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Đơn giao hàng">
+                                <field name="re_confirm" invisible="1"/>
+                                <div class="d-flex" style="justify-content: space-between;">
+                                    <div class="left">
+                                        <button name="action_done" attrs="{'invisible': [('re_confirm', '=', False)]}" string="Xác nhận hoàn thành" class="oe_highlight" type="object"/>
+                                    </div>
+                                    <div class="right">
+                                        <button name="action_print" string="In giao vận" class="" type="object"/>
+                                        <button name="action_export" string="Xuất Excel" type="object"/>
+                                    </div>
+                                </div>
+                                <field name="session_line" readonly="0">
+                                    <tree editable="bottom" create="false" delete="false" default_order="id desc">
+                                        <field name="select"/>
+                                        <field name="nhanh_id" readonly="1" force_save="1"/>
+                                        <field name="order_id" readonly="1" force_save="1"/>
+                                        <field name="picking_id" readonly="1" force_save="1"/>
+                                        <field name="delivery_carrier_id"/>
+                                        <field name="order_line"/>
+                                        <field name="nhanh_status"
+                                               decoration-success="nhanh_status == 'success'"
+                                               decoration-info="nhanh_status == 'new'"
+                                               widget="badge" optional="show"
+                                        />
+                                        <field name="order_status"
+                                               decoration-success="order_status == 'sale' or order_status == 'done'"
+                                               decoration-info="order_status == 'draft' or order_status == 'sent'"
+                                               widget="badge" optional="show"
+                                        />
+                                        <field name="channel"/>
+                                        <field name="transport_code"/>
+                                        <field name="status"
+                                               readonly="1" force_save="1"
+                                               decoration-success="status in ('out_success', 'in_success')"
+                                               decoration-warning="status in ('not_enough', 'error')"
+                                               widget="badge" optional="show"
+                                        />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="transportation_management_view_tree" model="ir.ui.view">
+            <field name="name">transportation_management_view_tree</field>
+            <field name="model">transportation.session</field>
+            <field name="arch" type="xml">
+                <tree string="transportation_management_tree" js_class="button_import_nhanh_connector" default_order="id desc">
+                    <field name="warehouse_code"/>
+                    <field name="warehouse_id"/>
+                    <field name="date"/>
+                    <field name="type"/>
+                    <field name="location_id"/>
+                    <field name="user_id"/>
+                    <field name="order_count"/>
+                    <field name="status"
+                           decoration-success="status == 'done'"
+                           widget="badge" optional="show"
+                    />
+                </tree>
+            </field>
+        </record>
+
+        <record id="transport_session_line_view_form" model="ir.ui.view">
+            <field name="name">transport_session_line_view_form</field>
+            <field name="model">transportation.session.line</field>
+            <field name="arch" type="xml">
+                <form string="transport_session_line_form">
+                    <header>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="2">
+                            <group>
+                                <field name="session_id"/>
+                                <field name="nhanh_id"/>
+                                <field name="transport_code"/>
+                                <field name="nhanh_status"/>
+                            </group>
+                            <group>
+                                <field name="channel"/>
+                                <field name="order_id"/>
+                                <field name="delivery_carrier_id"/>
+                                <field name="order_status"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Đơn hàng">
+                                <field name="order_line">
+                                    <tree>
+                                        <field name="product_id"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="transportation_management_action" model="ir.actions.act_window">
+            <field name="name">Quản lý giao vận</field>
+            <field name="res_model">transportation.session</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem parent="stock.menu_stock_warehouse_mgmt" id="transportation_management_menu" action="transportation_management_action" sequence="1"/>
+    </data>
+</odoo>

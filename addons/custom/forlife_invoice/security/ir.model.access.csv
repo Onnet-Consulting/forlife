@@ -6,3 +6,6 @@ access_expense_category_user,expense.category.user,model_expense_category,base.g
 access_expense_category_accounting_user,expense.category.accounting.user,model_expense_category,account.group_account_user,1,1,1,1
 access_expense_item_user,expense.item.user,model_expense_item,base.group_user,1,0,0,0
 access_expense_item_accounting_user,expense.item.accounting.user,model_expense_item,account.group_account_user,1,1,1,1
+access_contract.type,contract.type,model_contract_type,base.group_user,1,1,1,1
+access_account_move_reversal_import_user,account.move.reversal.import.user,model_account_move_reversal_import,base.group_user,1,0,0,0
+access_account_move_reversal_import_manager,account.move.reversal.import.manager,model_account_move_reversal_import,base.group_system,1,1,1,1

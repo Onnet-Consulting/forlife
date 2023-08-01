@@ -39,7 +39,7 @@ class StockTransfer(models.Model):
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_form = fields.Char('Mẫu số HDDT', copy=False)
     invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Datetime('Ngày HDDT', copy=False)
+    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -76,14 +76,15 @@ class StockTransfer(models.Model):
                     "ItemName": line.product_id.name or '',
                     "UnitName": line.uom_id.name or '',
                     "Qty": line.qty_out or 0.0,
-                    "Price": 0,
-                    "Amount": 0,
-                    "TaxAmount": 0,
-                    "ItemTypeID": 0,
+                    "Price": 0.0,
+                    "Amount": 0.0,
+                    "TaxAmount": 0.0,
+                    "ItemTypeID": 0.0,
                     "IsDiscount": 0
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
+            partner_id = invoice.company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -139,6 +140,8 @@ class StockTransfer(models.Model):
     def _check_info_before_bkav(self):
         if self.is_general:
             return False
+        if self.location_dest_id.id_deposit and self.location_id.id_deposit:
+            return False
         return True
 
     @api.depends('data_compare_status')
@@ -181,16 +184,12 @@ class StockTransfer(models.Model):
     def cancel_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.name
-        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.name
-        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
         if not self._check_info_before_bkav():

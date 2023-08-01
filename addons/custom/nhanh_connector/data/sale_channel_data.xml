@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+    	<!-- Supplier Group -->
+    	<record id="sale_channel_admin" model="sale.channel">
+            <field name="name">Admin</field>
+            <field name="nhanh_id">1</field>
+        </record>
+        <record id="sale_channel_website" model="sale.channel">
+            <field name="name">Website</field>
+            <field name="nhanh_id">2</field>
+        </record>
+        <record id="sale_channel_api" model="sale.channel">
+            <field name="name">API</field>
+            <field name="nhanh_id">10</field>
+        </record>
+        <record id="sale_channel_facebook" model="sale.channel">
+            <field name="name">Facebook</field>
+            <field name="nhanh_id">20</field>
+        </record>
+        <record id="sale_channel_instagram" model="sale.channel">
+            <field name="name">Instagram</field>
+            <field name="nhanh_id">21</field>
+        </record>
+        <record id="sale_channel_vg" model="sale.channel">
+            <field name="name">Vật Giá</field>
+            <field name="nhanh_id">40</field>
+        </record>
+        <record id="sale_channel_lazada" model="sale.channel">
+            <field name="name">Lazada</field>
+            <field name="nhanh_id">41</field>
+        </record>
+        <record id="sale_channel_shopee" model="sale.channel">
+            <field name="name">Shopee</field>
+            <field name="nhanh_id">42</field>
+        </record>
+        <record id="sale_channel_sendo" model="sale.channel">
+            <field name="name">Sendo</field>
+            <field name="nhanh_id">43</field>
+        </record>
+        <record id="sale_channel_adayroi" model="sale.channel">
+            <field name="name">Adayroi</field>
+            <field name="nhanh_id">44</field>
+        </record>
+        <record id="sale_channel_tiki" model="sale.channel">
+            <field name="name">Tiki</field>
+            <field name="nhanh_id">45</field>
+        </record>
+        <record id="sale_channel_zalo" model="sale.channel">
+            <field name="name">Zalo</field>
+            <field name="nhanh_id">46</field>
+        </record>
+        <record id="sale_channel_1Landing_vn" model="sale.channel">
+            <field name="name">1Landing.vn</field>
+            <field name="nhanh_id">47</field>
+        </record>
+        <record id="sale_channel_tiktok" model="sale.channel">
+            <field name="name">TIKTOK</field>
+            <field name="nhanh_id">48</field>
+        </record>
+    </data>
+</odoo>

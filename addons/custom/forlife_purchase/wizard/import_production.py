@@ -44,7 +44,8 @@ class ImportProductionFromExcel(models.TransientModel):
                 list_production += [o[0]]
         for m in material:
             list_product.append(m[0])
-            uom.append(m[4])
+            list_product.append(m[1])
+            uom.append(m[5])
         for ep in expense:
             list_product.append(ep[0])
 
@@ -72,22 +73,25 @@ class ImportProductionFromExcel(models.TransientModel):
         create_material_vals = []
         for m in material:
             if not product_dict.get(m[0], False):
-                raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
-            if not uom_dict.get(m[3], False):
-                raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[3]))
+                raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.', m[0]))
+            if not product_dict.get(m[1], False) and m[1] != '':
+                raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[1]))
             if not uom_dict.get(m[4], False):
-                raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
+                raise ValidationError(_('Không có Đvt lưu kho %s trong danh mục đơn vị tính.', m[3]))
+            if not uom_dict.get(m[5], False):
+                raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[4]))
             create_material_vals.append((0, 0, {
                 'product_id': product_dict.get(m[0], False),
-                'size': m[1],
-                'color': m[2],
-                'uom_id': uom_dict.get(m[3], False),
-                'production_uom_id': uom_dict.get(m[4], False),
-                'conversion_coefficient': m[5],
-                'rated_level': m[6],
-                'loss': m[7],
-                'qty': m[8],
-                'total': round(float(m[9]), 0),
+                'product_backup_id': product_dict.get(m[1], False),
+                'size': m[2],
+                'color': m[3],
+                'uom_id': uom_dict.get(m[4], False),
+                'production_uom_id': uom_dict.get(m[5], False),
+                'conversion_coefficient': m[6],
+                'rated_level': m[7],
+                'loss': m[8],
+                'qty': m[9],
+                'total': round(float(m[10]), 0),
             }))
 
         create_list_expense = []
@@ -136,18 +140,29 @@ class ImportProductionFromExcel(models.TransientModel):
                 list_material = []
                 for m in material:
                     if not product_dict.get(m[0], False):
-                        raise ValidationError(_('Không có sản phẩm với mã %s trong danh mục sản phẩm.', m[0]))
-                    if not uom_dict.get(m[4], False):
-                        raise ValidationError(_('Không có đơn vị tính %s trong danh mục đơn vị tính.', m[4]))
+                        raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.', m[0]))
+                    if not product_dict.get(m[1], False) and m[1] != '':
+                        raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[1]))
+                    if not uom_dict.get(m[5], False):
+                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[5]))
 
-                    if m[1].strip() in product_variant or m[2].strip() in product_variant or (not m[1] and not m[2]):
+                    if m[2].strip() in product_variant or m[3].strip() in product_variant or (not m[2] and not m[3]):
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
-                            'production_uom_id': uom_dict.get(m[4], False),
-                            'conversion_coefficient': m[5],
-                            'rated_level': m[6],
-                            'loss': m[7],
+                            'product_backup_id': product_dict.get(m[1], False),
+                            'production_uom_id': uom_dict.get(m[5], False),
+                            'conversion_coefficient': m[6],
+                            'rated_level': m[7],
+                            'loss': m[8],
                         }))
+                        # if m[1] and m[1] != '':
+                        #     list_material.append((0, 0, {
+                        #         'product_id': product_dict.get(m[1], False),
+                        #         'production_uom_id': uom_dict.get(m[5], False),
+                        #         'conversion_coefficient': m[6],
+                        #         'rated_level': m[7],
+                        #         'loss': m[8],
+                        #     }))
                 child_value['forlife_bom_material_ids'] = list_material
                 child_value['forlife_bom_service_cost_ids'] = create_list_expense
                 child = [(0, 0, child_value)]
@@ -162,4 +177,16 @@ class ImportProductionFromExcel(models.TransientModel):
         for p in production:
             p.write({'material_import_ids': create_material_vals, 'expense_import_ids': create_list_by_production_expense})
         action = self.env.ref('forlife_purchase.forlife_production_action').read()[0]
-        return action
+        action['target'] = 'main'
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': 'Đã tạo thành công %s bản ghi' % len(production),
+                'type': 'success',
+                'sticky': False,
+                'next': action,
+            }
+        }
+

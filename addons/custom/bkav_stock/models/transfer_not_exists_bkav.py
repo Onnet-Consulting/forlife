@@ -24,7 +24,7 @@ class TransferNotExistsBkav(models.Model):
     invoice_no = fields.Char('Số HDDT', copy=False)
     invoice_form = fields.Char('Mẫu số HDDT', copy=False)
     invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Datetime('Ngày HDDT', copy=False)
+    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -68,7 +68,7 @@ class TransferNotExistsBkav(models.Model):
         query = """ 
             SELECT code
             FROM (
-                (SELECT '000001' as code)
+                (SELECT '000000' as code)
                 UNION ALL
                 (SELECT RIGHT(code,6) as code
                 FROM transfer_not_exists_bkav
@@ -80,11 +80,11 @@ class TransferNotExistsBkav(models.Model):
         self._cr.execute(query, (param_code,))
         result = self._cr.fetchall()
         for list_code in result:
-            if list_code[0] == '000001':
+            if list_code[0] == '000000':
                 code+='000001'
             else:
-                code_int = int(list_code[0])
-                code+='0'*len(6-len(code_int+1))+str(code_int+1)
+                code_int = int(list_code[0])+1
+                code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
 
     def general_transfer_not_exists_bkav(self):
@@ -102,7 +102,7 @@ class TransferNotExistsBkav(models.Model):
             JOIN stock_location kd ON s.location_dest_id = kd.id
             JOIN stock_location kdc ON kd.location_id = kdc.id
             WHERE s.exists_bkav = 'f' 
-            AND (s.date_transfer + interval '7 hours')::date < %s
+            AND (s.date_transfer + interval '7 hours')::date <= %s
             AND s.state in ('out_approve','in_approve','done')
             AND (kn.id_deposit != 't' or kd.id_deposit != 't')
             GROUP BY s.location_id,s.location_dest_id,s.company_id,knc.name,kn.name,kdc.name,kd.name; 
@@ -118,7 +118,7 @@ class TransferNotExistsBkav(models.Model):
                 FROM stock_transfer s, stock_transfer_line l
                 WHERE l.stock_transfer_id = s.id
                 AND s.exists_bkav = 'f' 
-                AND (s.date_transfer + interval '7 hours')::date < %s
+                AND (s.date_transfer + interval '7 hours')::date <= %s
                 AND s.state in ('out_approve','in_approve','done')
                 GROUP BY s.location_id, s.location_dest_id, l.product_id, l.uom_id) as b 
             ON a.location_id = b.location_id AND a.location_dest_id = b.location_dest_id
@@ -134,7 +134,7 @@ class TransferNotExistsBkav(models.Model):
                 (SELECT s.id, s.location_id, s.location_dest_id
                 FROM stock_transfer s
                 WHERE s.exists_bkav = 'f' 
-                AND (s.date_transfer + interval '7 hours')::date < %s
+                AND (s.date_transfer + interval '7 hours')::date <= %s
                 AND s.state in ('out_approve','in_approve','done')
                 ) as b 
             ON a.location_id = b.location_id AND a.location_dest_id = b.location_dest_id
@@ -212,6 +212,7 @@ class TransferNotExistsBkav(models.Model):
                 }
                 list_invoice_detail.append(item)
             company_id = invoice.company_id
+            partner_id = invoice.company_id.partner_id
             uidefind = {
                         "ShiftCommandNo": ShiftCommandNo,
                         "ShiftCommandDate": invoice.date_transfer.strftime('%Y-%m-%d'),
@@ -309,16 +310,12 @@ class TransferNotExistsBkav(models.Model):
     def cancel_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.cancel_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        PartnerInvoiceID = 0,
-        PartnerInvoiceStringID = self.code
-        return bkav_action.delete_invoice_bkav(self,PartnerInvoiceID,PartnerInvoiceStringID)
+        return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
         if not self._check_info_before_bkav():

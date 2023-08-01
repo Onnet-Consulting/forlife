@@ -3,6 +3,7 @@ from odoo.exceptions import UserError
 from contextlib import contextmanager
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, time
+from odoo import Command
 import re
 import json
 
@@ -54,7 +55,7 @@ class AccountMove(models.Model):
     x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1,
                                 readonly=False)
-    x_entry_types = fields.Selection(copy=True, 
+    x_entry_types = fields.Selection(copy=True,
                                      string="Chi tiết loại bút toán custom",
                                      default='entry_normal',
                                      selection=[('entry_import_tax', 'Bút toán thuế nhập khẩu'),
@@ -108,15 +109,12 @@ class AccountMove(models.Model):
                                 store=1)
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id',
                                       string='Vendor Back',
-                                      compute='_compute_is_check_vendor_page',
                                       store=1,
                                       readonly=False)
 
     # Field check k cho tạo addline khi hóa đơn đã có PO
     is_check = fields.Boolean()
     # Field check page ncc vãng lại
-    is_check_vendor_page = fields.Boolean(compute='_compute_is_check_vendor_page',
-                                          store=1)
 
     # tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
@@ -332,7 +330,7 @@ class AccountMove(models.Model):
                         _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
                         % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
                            sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
-                           
+
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
     def constrains_quantity_line(self):
@@ -346,17 +344,13 @@ class AccountMove(models.Model):
                             raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
 
-    # @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
-    # def constrains_quantity_line_stock(self):
-    #     for rec in self:
-    #         if rec.receiving_warehouse_id.ids =
-    #         # for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
-    #         #     for item in nine.move_line_ids_without_package:
-    #         #         if line.ware_name == nine.name and (line.quantity < 0 or item.qty_done < 0):
-    #         #             raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
-    #         #         if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
-    #         #             if line.quantity > item.qty_done:
-    #         #                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+    @api.onchange('invoice_line_ids')
+    def onchange_order_line_compare_invoice_line_ids(self):
+        if self.is_check_select_type_inv:
+            old_count_record = len(self.purchase_order_product_id.order_line)
+            new_count_record = len(self.invoice_line_ids)
+            if new_count_record > old_count_record:
+                raise ValidationError(_('Bạn không thể thêm dòng !!, Vì số dòng sản phẩm của hóa đơn đã được khống chế theo số dòng của PO liên quan tương ứng!, /n Nhưng vẫn có thể xóa dòng'))
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
@@ -1022,19 +1016,56 @@ class RespartnerVendor(models.Model):
     ]
 
     vendor_back_id = fields.Many2one('account.move', ondelete='cascade')
-
     vendor = fields.Char(string='Tên nhà cung cấp')
     code_tax = fields.Char(string='Mã số thuế')
     street_ven = fields.Char(string='Địa chỉ')
     company_id = fields.Many2one('res.company', string='Công ty')
     invoice_reference = fields.Char(string='Số hóa đơn')
-    invoice_description = fields.Char(string="Diễn giải hóa đơn")
+    invoice_description = fields.Many2one('product.product', string="Diễn giải hóa đơn",
+                                          inverse='inverse_account_move_line')
     price_subtotal_back = fields.Float(string='Thành tiền')
-    tax_back = fields.Float(string='Tiền thuế')
+    tax_back = fields.Float(string='Tiền thuế', compute='compute_tax')
     # tax_percent_back = fields.Float(string='% Thuế')
-    totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+    totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back',
+                               inverse='inverse_account_move_line')
     _x_invoice_date = fields.Date(string='Ngày hóa đơn')
-    tax_percent = fields.Many2one('account.tax', string='% Thuế')
+    tax_percent = fields.Many2one('account.tax', string='% Thuế', inverse='inverse_account_move_line')
+    date_due = fields.Date(string='Hạn xử lý')
+
+    def inverse_account_move_line(self):
+        for rec in self:
+            if rec.vendor_back_id.select_type_inv == 'expense' and rec.invoice_description:
+                invoice_line = rec.vendor_back_id.invoice_line_ids.filtered(
+                    lambda x: x.product_id == rec.invoice_description)
+                if rec.invoice_description and invoice_line:
+                    invoice_line.write({
+                        'price_unit': rec.price_subtotal_back,
+                        'tax_ids': [(6, 0, rec.tax_percent.ids)],
+                    })
+                else:
+                    new_line = self.env['account.move.line'].new({
+                        'move_id': rec.vendor_back_id.id,
+                        'product_id': rec.invoice_description.id,
+                        'price_unit': rec.price_subtotal_back,
+                        'price_subtotal': rec.price_subtotal_back,
+                        'tax_ids': [Command.set(rec.tax_percent.ids)],
+                    })
+                    rec.vendor_back_id['invoice_line_ids'] += new_line
+
+    def unlink(self):
+        for rec in self:
+            if rec.vendor_back_id.select_type_inv != 'expense':
+                continue
+            invoice_line = rec.vendor_back_id.invoice_line_ids.filtered(
+                lambda x: x.product_id == rec.invoice_description)
+            if invoice_line:
+                invoice_line.unlink()
+        return super().unlink()
+
+    @api.depends('tax_percent', 'price_subtotal_back')
+    def compute_tax(self):
+        for rec in self:
+            rec.tax_back = rec.price_subtotal_back * rec.tax_percent.amount * 0.01
 
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):
@@ -1054,16 +1085,16 @@ class RespartnerVendor(models.Model):
         for rec in self:
             rec.totals_back = rec.price_subtotal_back + rec.tax_back
 
-    @api.constrains('totals_back', 'vendor_back_id.total_tax')
-    def constrains_vendor_back_by_invocie(self):
-        for rec in self:
-            sum_subtotal = sum(rec.vendor_back_id.invoice_line_ids.mapped('price_subtotal'))
-            sum_tax = sum(rec.vendor_back_id.invoice_line_ids.mapped('tax_amount'))
-            if rec.totals_back:
-                if sum_subtotal + sum_tax == rec.totals_back:
-                    pass
-                else:
-                    raise ValidationError(_('Bạn không thể lưu hóa đơn khi thành tiền sau thuế của ncc vãng lai không bằng bên tồng tiền sau thuế chi tiết hóa đơn'))
+    # @api.constrains('totals_back', 'vendor_back_id.total_tax')
+    # def constrains_vendor_back_by_invocie(self):
+    #     for rec in self:
+    #         sum_subtotal = sum(rec.vendor_back_id.invoice_line_ids.mapped('price_subtotal'))
+    #         sum_tax = sum(rec.vendor_back_id.invoice_line_ids.mapped('tax_amount'))
+    #         if rec.totals_back:
+    #             if sum_subtotal + sum_tax == rec.totals_back:
+    #                 pass
+    #             else:
+    #                 raise ValidationError(_('Bạn không thể lưu hóa đơn khi thành tiền sau thuế của ncc vãng lai không bằng bên tồng tiền sau thuế chi tiết hóa đơn'))
 
 
 class InvoiceCostLine(models.Model):

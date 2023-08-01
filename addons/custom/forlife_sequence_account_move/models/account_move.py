@@ -20,7 +20,7 @@ class AccountMove(models.Model):
             return warehouse_code + '/' + res
         return res
 
-    def _get_last_sequence(self, relaxed=False, with_prefix=None, lock=True):
+    def _get_last_sequence(self, relaxed=False, with_prefix=None, lock=False):
         self.ensure_one()
         if self.pos_order_id or self.pos_order_ids or (self.stock_valuation_layer_ids and self.stock_valuation_layer_ids[0].stock_move_id.picking_id and self.stock_valuation_layer_ids[0].stock_move_id.picking_id.picking_type_id.warehouse_id):
             if self.pos_order_ids:

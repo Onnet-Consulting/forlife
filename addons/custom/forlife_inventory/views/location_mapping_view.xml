@@ -29,6 +29,15 @@
                 </form>
             </field>
         </record>
+        <record model="ir.ui.view" id="stock_location_mapping_search_view">
+            <field name="name"></field>
+            <field name="model">stock.location.mapping</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="location_id"/>
+                </search>
+            </field>
+        </record>
         <record model="ir.actions.act_window" id="forlife_stock_location_mapping_action">
             <field name="name">Location Mapping</field>
             <field name="res_model">stock.location.mapping</field>

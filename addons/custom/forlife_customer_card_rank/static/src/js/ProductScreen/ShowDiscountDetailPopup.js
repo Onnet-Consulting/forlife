@@ -18,6 +18,10 @@ odoo.define('forlife_customer_card_rank.ShowDiscountDetailPopup', function (requ
         }
 
         confirm() {
+            let self = this;
+            for (let line of self.props.order_lines){
+                line.apply_cr_discount = [...$('.discount-detail-checkbox')].find(item => item.id == line.id).checked;
+            }
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
                 response: {confirmed: true, payload: null},

@@ -32,10 +32,10 @@ class StockTransferRequest(models.Model):
     request_lines = fields.One2many('transfer.request.line', 'request_id', string='Chi tiết', copy=True)
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
-    # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
     created_stock_transfer = fields.Boolean(default=False)
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
 
     @api.model
     def default_get(self, default_fields):
@@ -62,6 +62,21 @@ class StockTransferRequest(models.Model):
             if item.request_date > item.date_planned:
                 raise ValidationError('Hạn xử lý phải lớn hơn ngày tạo')
 
+    @api.onchange('production_id')
+    def _onchange_production_id(self):
+        request_lines = [(5, 0, 0)]
+        if self.production_id.material_import_ids:
+            for production_material_id in self.production_id.material_import_ids:
+                request_lines.append((0, 0, {
+                    'product_id': production_material_id.product_id.id,
+                    'plan_quantity': production_material_id.total,
+                    'uom_id': production_material_id.uom_id.id or production_material_id.product_id.uom_id.id,
+                    'production_to': self.production_id.id,
+                }))
+        self.write({
+            'request_lines': request_lines
+        })
+
     @api.model
     def get_import_templates(self):
         return [{
@@ -70,49 +85,64 @@ class StockTransferRequest(models.Model):
         }]
 
     def action_wait_confirm(self):
-        for record in self:
-            record.write({'state': 'wait_confirm',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Wait Confirm',
-                          #     'state_request': 'wait_confirm',
-                          # })],
-                          })
+        self.write({
+            'state': 'wait_confirm',
+        })
 
     def action_draft(self):
-        for record in self:
-            record.write({'state': 'draft'})
+        self.write({
+            'state': 'draft'
+        })
+
+    def action_done(self):
+        self.write({
+            'state': 'done'
+        })
+
+    def action_cancel(self):
+        self.write({
+            'state': 'cancel',
+        })
 
     def action_approve(self):
         for record in self:
             value = {}
-            for item in record.request_lines:
-                if item.quantity_remaining > 0:
-                    key = str(item.location_id.id) + '_and_' + str(item.location_dest_id.id)
-                    data_stock_transfer_line = (
-                        0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
-                               'qty_plan': item.quantity_remaining,
-                               'work_from': item.production_from.id,
-                               'work_to': item.production_to.id,
-                               'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
-                               'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
-                    dic_data = {'state': 'approved',
-                                'employee_id': record.user_id.id,
-                                'stock_request_id': record.id, 'location_id': item.location_id.id,
-                                'location_dest_id': item.location_dest_id.id,
-                                'stock_transfer_line': [data_stock_transfer_line]
-                                }
-                    if value.get(key):
-                        value[key]['stock_transfer_line'].append(data_stock_transfer_line)
-                    else:
-                        value.update({
-                            key: dic_data
-                        })
+            for item in record.request_lines.filtered(lambda x: x.quantity_remaining > 0):
+                key = str(item.location_id.id) + '_and_' + str(item.location_dest_id.id)
+                data_stock_transfer_line = (0, 0, {
+                    'product_id': item.product_id.id,
+                    'uom_id': item.uom_id.id,
+                    'qty_plan': item.quantity_remaining,
+                    'work_from': item.production_from.id,
+                    'work_to': item.production_to.id,
+                    'product_str_id': item.id,
+                    'qty_out': 0,
+                    'qty_in': 0,
+                    'is_from_button': True,
+                    'qty_plan_tsq': item.quantity_remaining,
+                    'stock_request_id': record.id
+                })
+                dic_data = {
+                    'state': 'approved',
+                    'employee_id': record.user_id.id,
+                    'stock_request_id': record.id,
+                    'location_id': item.location_id.id,
+                    'location_dest_id': item.location_dest_id.id,
+                    'work_to': record.production_id.id or False,
+                    'stock_transfer_line': [data_stock_transfer_line]
+                }
+                if value.get(key):
+                    value[key]['stock_transfer_line'].append(data_stock_transfer_line)
+                else:
+                    value.update({
+                        key: dic_data
+                    })
             for item in value:
-                data_stock_transfer = self.env['stock.transfer'].create(value.get(item))
-            record.write({'created_stock_transfer': True, 'state': 'approved'})
-            context = {'stock_request_id': self.id, 'create': True, 'delete': True, 'edit': True}
+                stock_transfer_id = self.env['stock.transfer'].create(value.get(item))
+            record.write({
+                'created_stock_transfer': True,
+                'state': 'approved'
+            })
             return {
                 'name': _('List Stock Transfer'),
                 'view_mode': 'tree,form',
@@ -120,41 +150,18 @@ class StockTransferRequest(models.Model):
                 'type': 'ir.actions.act_window',
                 'target': 'current',
                 'domain': [('stock_request_id', '=', record.id)],
-                'context': context
+                'context': {
+                    'stock_request_id': self.id,
+                    'create': True,
+                    'delete': True,
+                    'edit': True
+                }
             }
 
-    def action_done(self):
-        for record in self:
-            record.write({'state': 'done',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Done',
-                          #     'state_request': 'done',
-                          # })],
-                          })
-
-    def action_cancel(self):
-        for record in self:
-            record.write({'state': 'cancel',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Cancel',
-                          #     'state_request': 'cancel',
-                          # })],
-                          })
-
-    # @api.onchange('request_lines')
-    # def onchange_request_lines(self):
-    #     for record in self.request_lines:
-    #         if record.location_id and record.location_dest_id:
-    #             if record.location_id.id == record.location_dest_id.id:
-    #                 raise ValidationError(_("Source Warehouse And Destination Warehouse must not overlap"))
 
     @api.constrains('request_lines')
     def constrains_request_lines(self):
-        if not self.request_lines:
+        if not self.request_lines and self.state != 'draft' and self.state:
             raise ValidationError(
                 _('It is mandatory to enter all the commodity information before confirming the stock transfer request!'))
 
@@ -171,55 +178,7 @@ class StockTransferRequest(models.Model):
                 raise ValidationError("You only delete a record in draft and cancel status")
         return super(StockTransferRequest, self).unlink()
 
-    # @api.onchange('request_employee_id')
-    # def onchange_department_id(self):
-    #     if self.request_employee_id.department_id:
-    #         self.department_id = self.request_employee_id.department_id
-
-    def create_stock_transfer(self):
-        if len(self.ids) > 1:
-            raise ValidationError(_('You can only select 1 record'))
-        else:
-            for record in self:
-                if record.state == 'approved':
-                    value = {}
-                    for item in record.request_lines:
-                        if item.quantity_remaining > 0:
-                            key = str(item.location_id.id) + '_and_' + str(item.location_dest_id.id)
-                            data_stock_transfer_line = (
-                                0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
-                                       'qty_plan': item.plan_quantity, 'product_str_id': item.id, 'qty_out': 0,
-                                       'qty_in': 0,
-                                       'is_from_button': True, 'qty_plan_tsq': item.quantity_remaining})
-                            dic_data = {'state': 'approved',
-                                        'stock_request_id': record.id, 'location_id': item.location_id.id,
-                                        'location_dest_id': item.location_dest_id.id,
-                                        'stock_transfer_line': [data_stock_transfer_line]
-                                        }
-                            if value.get(key):
-                                value[key]['stock_transfer_line'].append(data_stock_transfer_line)
-                            else:
-                                value.update({
-                                    key: dic_data
-                                })
-                    for item in value:
-                        data_stock_transfer = self.env['stock.transfer'].create(value.get(item))
-                    record.write({'created_stock_transfer': True})
-                    context = {'stock_request_id': self.id, 'create': True, 'delete': True, 'edit': True}
-                    return {
-                        'name': _('List Stock Transfer'),
-                        'view_mode': 'tree,form',
-                        'res_model': 'stock.transfer',
-                        'type': 'ir.actions.act_window',
-                        'target': 'current',
-                        'domain': [('stock_request_id', '=', record.id)],
-                        'context': context
-                    }
-                else:
-                    raise ValidationError(_('The record is not in approved state'))
-
     def action_stock_transfer(self):
-        context = {'stock_request_id': self.id, 'create': True, 'delete': True, 'edit': True}
         return {
             'name': _('List Stock Transfer'),
             'view_mode': 'tree,form',
@@ -227,15 +186,19 @@ class StockTransferRequest(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'current',
             'domain': [('stock_request_id', '=', self.id)],
-            'context': context
+            'context': {
+                'stock_request_id': self.id,
+                'create': True,
+                'delete': True,
+                'edit': True
+            }
         }
 
     def compute_count_stock_transfer(self):
         for item in self:
             item.count_stock_transfer = len(item.stock_transfer_ids)
 
-    @api.depends('request_lines', 'request_lines.quantity_remaining',
-                 'stock_transfer_ids', 'stock_transfer_ids.state')
+    @api.depends('request_lines', 'request_lines.quantity_remaining', 'stock_transfer_ids', 'stock_transfer_ids.state')
     def compute_is_no_more_quantity(self):
         for item in self:
             all_equal_remaining = all(x == 0 for x in item.request_lines.mapped('quantity_remaining'))
@@ -254,14 +217,11 @@ class TransferRequestLine(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True)
     location_id = fields.Many2one('stock.location', string="Whs From", required=True)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
-    request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True,
-                                 ondelete='cascade')
+    request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True, ondelete='cascade')
     quantity = fields.Float(default=1, string='Quantity', required=True)
     plan_quantity = fields.Integer(string="Plan Quantity")
-    quantity_reality_transfer = fields.Integer(string="Quantity reality transfer",
-                                               compute='compute_quantity_reality_transfer', )
-    quantity_reality_receive = fields.Integer(string="Quantity reality receive",
-                                              compute='compute_quantity_reality_receive', )
+    quantity_reality_transfer = fields.Integer(string="Quantity reality transfer", compute='compute_quantity_reality_transfer', )
+    quantity_reality_receive = fields.Integer(string="Quantity reality receive", compute='compute_quantity_reality_receive', )
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_transfer_line_ids = fields.One2many('stock.transfer.line', 'product_str_id')
     production_from = fields.Many2one('forlife.production', string="Từ LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
-from .utils import collect_pos_to_bkav_end_day
+from .utils import collect_pos_to_bkav_end_day, genarate_code, genarate_pos_code
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
@@ -22,21 +22,132 @@ class SummaryAccountMovePosReturn(models.Model):
     einvoice_date = fields.Date(string="Ngày phát hành")
 
 
-    def get_items(self):
-        last_day = date.today() - timedelta(days=1)
+    def get_move_line(self, line):
+        item = {
+            "product_id": line.product_id.id,
+            "quantity": line.qty,
+            "price_unit": line.refunded_orderline_id.price_bkav,
+            "x_free_good": line.is_reward_line,
+            "invoice_ids": [line.order_id.id],
+            "tax_ids": line.tax_ids.ids,
+        }
+        return item
+
+
+    def include_line_by_product_and_price_bkav(self, lines):
+        items = {}
+        for line in lines:
+            pk = f"{line.product_id.barcode}_{float(line.refunded_orderline_id.price_bkav)}"
+            item = self.get_move_line(line)
+            if items.get(pk):
+                row = items[pk]
+                row["quantity"] += item["quantity"]
+                row["invoice_ids"].extend(item["invoice_ids"])
+                row["invoice_ids"] = list(set(row["invoice_ids"]))
+                row["tax_ids"].extend(item["tax_ids"])
+                row["tax_ids"] = list(set(row["tax_ids"]))
+            else:
+                items[pk] = item
+        return items
+
+
+    def recursive_move_line_items(
+        self,
+        items={},
+        lines=[],
+        store=None,
+        page=0,
+        company_id=None
+    ):
+        model_code = genarate_pos_code(typ='T', store_id=store, index=page)
+        first_n=0
+        last_n=1000
+        pk = f"{store.id}_{page}"
+        if len(lines) > last_n:
+            separate_lines = lines[first_n:last_n]
+            del lines[first_n:last_n]
+
+            items[pk] = {
+                'code': model_code,
+                'company_id': company_id.id,
+                'store_id': store.id,
+                'partner_id': store.contact_id.id,
+                'invoice_date': date.today(),
+                'line_ids': separate_lines
+            }
+            page += 1
+            self.recursive_move_line_items(
+                items=items, 
+                lines=lines, 
+                store=store, 
+                page=page, 
+                company_id=company_id
+            )
+        else:
+            items[pk] = {
+                'code': model_code,
+                'company_id': company_id.id,
+                'store_id': store.id,
+                'partner_id': store.contact_id.id,
+                'invoice_date': date.today(),
+                'line_ids': lines
+            }
+
+    def get_items(self, *args, **kwargs):
+        model = self.env['summary.account.move.pos.return']
+        model_line = self.env['summary.account.move.pos.return.line']
+        pos_code = None
+
+        last_day = date.today()
         domain = [
-            ('exists_bkav', '=', False),
-            #('date_order', '>=', last_day),
+            ('invoice_exists_bkav', '=', False),
+            ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
+            ('is_invoiced', '=', True),
+            ('is_synthetic', '=', False),
         ]
+
+        if kwargs.get("domain"):
+            domain = kwargs["domain"]
 
         pos_order = self.env['pos.order'].search(domain)
 
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', pos_order.ids),
-            ('refunded_orderline_id', '!=', False)
+            ('refunded_orderline_id', '!=', False),
+             ('qty', '!=', 0)
         ])
-        return lines
+        data = {}
+        items = {}
+        pos_order_synthetic = None
+        res_pos = None
+
+        if lines:
+            pos_order_synthetic = lines.mapped("order_id")
+            stores = pos_order_synthetic.mapped("store_id")
+            for store in stores:
+                res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
+                line_items = self.include_line_by_product_and_price_bkav(res)
+                self.recursive_move_line_items(
+                    items=items,
+                    lines=list(line_items.values()),
+                    store=store,
+                    page=0,
+                    company_id=res[0].company_id
+                )
+                data[store.id] = line_items
+
+
+            for k, v in items.items():
+                res_line = model_line.create(v["line_ids"])
+                v["line_ids"] = res_line.ids
+
+            vals_list = list(items.values())
+
+            res_pos = model.create(vals_list)
+
+        return data, res_pos, pos_order_synthetic
+
 
 
     def collect_return_invoice_to_bkav_end_day(self, lines):

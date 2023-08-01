@@ -98,12 +98,12 @@ select
     greatest(pol.qty, 0)                                                        as sl_ban,
     abs(least(pol.qty, 0))                                                      as sl_tra,
     coalesce(pol.original_price, 0)                                             as gia,
-    coalesce((select sum(
+    abs(coalesce((select sum(
             case when type = 'point' then recipe * 1000
                 when type = 'ctkm' then discounted_amount
                 else recipe
             end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0) as giam_gia,
+        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)) as giam_gia,
     0                                                                           as giam_tren_hd,
     po.note                                                                     as mo_ta,
     cr.name                                                                     as hang,
@@ -125,7 +125,7 @@ select
          where id = pol.refunded_orderline_id
     ))                                                                          as don_hang_goc,
     acc.account_code                                                            as ma_loai,
-    ''                                                                          as kenh_ban
+    'Cửa hàng'                                                                  as kenh_ban
 from pos_order po
     join pos_order_line pol on pol.order_id = po.id
     join product_product pp on pp.id = pol.product_id
@@ -144,6 +144,7 @@ from pos_order po
 where  po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and sto.id = any(array{store_ids})
+    and pol.qty <> 0
     {customer_condition}
     {order_filter_condition}
 order by num
@@ -198,8 +199,8 @@ order by num
             sheet.write(row, 19, value.get('gia', 0), formats.get('int_number_format'))
             sheet.write(row, 20, value.get('giam_gia', 0), formats.get('int_number_format'))
             sheet.write(row, 21, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
-            sheet.write(row, 22, value.get('gia', 0) * value.get('sl_ban', 0) - value.get('giam_gia', 0), formats.get('int_number_format'))
-            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_tra', 0), formats.get('int_number_format'))
+            sheet.write(row, 22, value.get('gia', 0) * value.get('sl_ban', 0) - (value.get('giam_gia', 0) if value.get('sl_ban', 0) else 0), formats.get('int_number_format'))
+            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_tra', 0) - (value.get('giam_gia', 0) if value.get('sl_tra', 0) else 0), formats.get('int_number_format'))
             sheet.write(row, 24, value.get('mo_ta'), formats.get('normal_format'))
             sheet.write(row, 25, value.get('hang'), formats.get('normal_format'))
             sheet.write(row, 26, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_channel_source_view_tree" model="ir.ui.view">
+        <field name="name">sale.channel.view.tree</field>
+        <field name="model">sale.channel</field>
+        <field name="arch" type="xml">
+            <tree string="Sale channel" editable="bottom" sample="1">
+                <field name="name"/>
+                <field name="nhanh_id"/>
+                <field name="partner_id"/>
+                <field name="is_tmdt"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_channel_source_view_form" model="ir.ui.view">
+        <field name="name">sale.channel.view.form</field>
+        <field name="model">sale.channel</field>
+        <field name="arch" type="xml">
+            <form string="Sale channel">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="nhanh_id"/>
+                        <field name="partner_id"/>
+                        <field name="is_tmdt"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_channel_source_action" model="ir.actions.act_window">
+        <field name="name">Kênh/Sàn</field>
+        <field name="res_model">sale.channel</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Sources yet!
+            </p><p>
+                UTM Sources track where traffic comes from  (e.g. "May Newsletter", "", ...).
+            </p>
+        </field>
+    </record>
+</odoo>

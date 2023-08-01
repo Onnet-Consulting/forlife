@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="account11.ListView.Buttons" t-inherit="web.ListView.Buttons" t-inherit-mode="extension" owl="1">
+        <xpath expr="//*[@class='btn btn-primary o_list_button_add']" position="after">
+           <button type="object" t-if="props.resModel == 'transportation.session'"
+                   class="btn btn-primary import_your_action"
+                   t-ref="action"
+                   action="nhanh_connector.import_transport_from_excel_action"
+                   style="margin-left:10px;" t-on-click="buttonImport">
+                Nhập từ excel
+            </button>
+        </xpath>
+    </t>
+</templates>
+

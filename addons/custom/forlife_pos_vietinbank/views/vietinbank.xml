@@ -5,7 +5,7 @@
             <field name="name">vietinbank_transaction_view_tree</field>
             <field name="model">vietinbank.transaction.model</field>
             <field name="arch" type="xml">
-                <tree string="vietinbank_transaction_tree" limit="10">
+                <tree string="vietinbank_transaction_tree" limit="10" class="list_table_custom">
                     <field name="debit_account"/>
                     <field name="amount"/>
                     <field name="benefi_account"/>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_report_transport" model="ir.actions.report">
+            <field name="name">In giao vận</field>
+            <field name="model">transportation.session</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">nhanh_connector.print_report_transport</field>
+            <field name="report_file">nhanh_connector.print_report_transport</field>
+            <field name="print_report_name">'In giao vận'</field>
+            <field name="binding_model_id" ref="model_transportation_session"/>
+            <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="print_report_transport">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div t-if="o.warehouse_id.brand_id.code == 'TKL'" class="logo text-center">
+                        <img class="pos-receipt-logo tokyolife"
+                             src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" width="40%"/>
+                    </div>
+                    <div t-if="o.warehouse_id.brand_id.code == 'FMT'" class="logo text-center">
+                        <img class="pos-receipt-logo tokyolife"
+                             src="/forlife_pos_print_receipt/static/src/img/logo-format.png" width="40%"/>
+                    </div>
+                    <div class="text-center" t-if="o.type == 'in'">
+                        PHIẾU NHẬP GIAO VẬN
+                    </div>
+                    <div class="text-center" t-if="o.type == 'out'">
+                        PHIẾU XUẤT GIAO VẬN
+                    </div>
+                    <div>Tổng đơn: <t t-esc="o.order_count"/></div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>MÃ ĐƠN HÀNG</th>
+                                <th>HÃNG VẬN CHUYỂN</th>
+                                <th>SÀN TMĐT</th>
+                                <th>MÃ ĐƠN SÀN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="index" t-value="0"/>
+                            <t t-foreach="o.session_line" t-as="line">
+                                <t t-set="index" t-value="index + 1"/>
+                                <tr>
+                                    <td class="text-center"><t t-esc="index"/></td>
+                                    <td><t t-esc="line.order_id.name"/></td>
+                                    <td><t t-esc="line.delivery_carrier_id.name"/></td>
+                                    <td><t t-esc="line.channel.name"/></td>
+                                    <td><t t-esc="line.transport_code"/></td>
+                                </tr>
+                            </t>
+
+                        </tbody>
+                    </table>
+                    <div style="text-align: right;"><t t-esc="o.date.strftime('Ngày %d tháng %m năm %Y')"/></div>
+                    <div>
+                        <table class="table" style="width: 100%">
+                            <tbody>
+                                <tr style="border-color: #fff">
+                                    <td class="text-center">
+                                        <div><strong>Nhận hàng</strong></div>
+                                        <div><i>(Ký, họ tên)</i></div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div><strong>Thủ kho</strong></div>
+                                        <div><i>(Ký, họ tên)</i></div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div><strong>Vận chuyển</strong></div>
+                                        <div><i>(Ký, họ tên)</i></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

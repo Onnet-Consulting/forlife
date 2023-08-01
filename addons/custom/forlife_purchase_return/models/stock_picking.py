@@ -23,7 +23,11 @@ class StockPicking(models.Model):
             if picking.state == 'done' and not picking.purchase_id.is_inter_company and \
                     ((picking.purchase_id and picking.purchase_id.is_return) or \
                      (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
-                picking.create_return_valuation_npl()
+                purchase_origin_id = picking.purchase_id if picking.purchase_id else picking.move_ids.purchase_line_id.origin_po_line_id.order_id
+                order_line = purchase_origin_id.order_line.filtered(lambda x: x.product_id.id in picking.move_ids.product_id.ids)
+                material_line = order_line.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product)
+                if material_line:
+                    picking.create_return_valuation_npl()
             if picking.x_is_check_return and picking.state == 'done':
                 self.tax_return_by_return_goods()
         return res
@@ -169,29 +173,19 @@ class StockPicking(models.Model):
         return move_values
 
     def _get_picking_info_return(self, po):
-        incoming_type_id = self.env['stock.picking.type'].search([
-            ('code', '=', 'incoming'),
-            ('company_id', '=', self.env.company.id)], limit=1)
-        picking_type_id = incoming_type_id
         if po and po.picking_type_id:
-            # if not po.picking_type_id.other_picking_type_id:
-            #     raise ValidationError("Vui lòng thiết lập 'Kiểu giao nhận xuất/nhập khác' tại Kiểu giao nhận tương ứng.")
             if po.picking_type_id.other_picking_type_id:
                 picking_type_id = po.picking_type_id.other_picking_type_id
             elif po.picking_type_id.return_picking_type_id:
                 picking_type_id = po.picking_type_id.return_picking_type_id
-
-        production_order = self.env['production.order'].search([('product_id', 'in', self.move_ids.product_id.ids), ('type', '=', 'normal')], limit=1)
-        if (po and po.is_return and po.order_line_production_order) or (po and production_order):
-            location_id = self.env['stock.location'].search([('code', '=', 'N0701'), ('company_id', '=', self.env.company.id)], limit=1)
-            if not location_id:
-                raise ValidationError("Hiện tại sản phẩm xuất trả có sản phẩm đính kèm NPL. Nhưng trong cấu hình Lý Do Nhập Khác chưa định nghĩa loại lý do có mã: N0701. Yêu cầu liên hệ admin để xử lý")
-            if not location_id.reason_type_id:
-                raise ValidationError("Bạn chưa có loại lý do Nhập trả nguyên phụ liệu \n Gợi ý: Cấu hình trong lý do Nhập Khác có mã: N0701")
-        elif picking_type_id.other_location_id:
-            location_id = picking_type_id.other_location_id
         else:
-            location_id = self.env.ref('forlife_stock.import_production_order')
+            picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('company_id', '=', self.env.company.id)], limit=1)
+
+        location_id = self.env['stock.location'].search([('code', '=', 'N0701'), ('company_id', '=', self.env.company.id)], limit=1)
+        if not location_id:
+            raise ValidationError("Hiện tại sản phẩm xuất trả có sản phẩm đính kèm NPL. Nhưng trong cấu hình Lý Do Nhập Khác chưa định nghĩa loại lý do có mã: N0701. Yêu cầu liên hệ admin để xử lý")
+        if not location_id.reason_type_id:
+            raise ValidationError("Bạn chưa có loại lý do Nhập trả nguyên phụ liệu \n Gợi ý: Cấu hình trong lý do Nhập Khác có mã: N0701")
 
         return picking_type_id, location_id
 

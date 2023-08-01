@@ -4,12 +4,15 @@
         <field name="name">synthetic.account.move.pos.tree</field>
         <field name="model">synthetic.account.move.pos</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="true" edit="false">
                 <field name="code"/>
                 <field name="store_id"/>
                 <field name="company_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
+                <field name="total_point" string="Tổng tích điểm"/>
+                <field name="focus_point" string="Tổng tiêu điểm"/>
+                <field name="card_class" string="Tổng hạng thẻ"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -21,6 +24,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="generate_invoices" type="object" string="Tạo hóa đơn tổng hợp"/>
+                    <button name="generate_invoices_bkav" type="object" string="Tạo hóa đơn tổng hợp đến BKAV"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -30,6 +35,9 @@
                             <field name="store_id"/>
                             <field name="partner_id"/>
                             <field name="invoice_date"/>
+                            <field name="total_point" string="Tổng tích điểm"/>
+                            <field name="focus_point" string="Tổng tiêu điểm"/>
+                            <field name="card_class" string="Tổng hạng thẻ"/>
                         </group>
                     </group>
                     <notebook>
@@ -58,15 +66,15 @@
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>
-                                <field name="number_bill"/>
-                                <field name="einvoice_status"/>
-                                <field name="einvoice_date"/>
-                                <field name="account_einvoice_serial"/>
+                                <field name="invoice_no"/>
+                                <field name="invoice_state_e"/>
+                                <field name="invoice_e_date"/>
+                                <field name="invoice_serial"/>
                                 <field name="invoice_guid"/>
                                 <field name="invoice_form"/>
                             </group>
                             <group>
-                                <field name="eivoice_file" widget="binary" filename="number_bill"/>
+                                <field name="eivoice_file" widget="binary" filename="invoice_no"/>
                             </group>
                         </page>
                     </notebook>

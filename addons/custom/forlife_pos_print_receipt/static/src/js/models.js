@@ -73,11 +73,11 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         receipt_merge_line_same_product_and_price(lines) {
             let merge_line_values = {};
             for (const line of lines) {
-                let product_id = line.get_product().id;
+                let product_id = line.get_product().id * (line.get_quantity() < 0 ? -1 : 1);
                 let price = line.original_price;
                 let qty = line.get_quantity();
                 let product_default_code = line.get_product().default_code || '';
-                let discount_amount = line.get_line_receipt_total_discount() + (qty * price * line.get_discount() / 100);
+                let discount_amount = line.get_line_receipt_total_discount();
                 let total_amount = line.get_display_price_after_discount();
                 let total_original_amount = price * qty;
                 if (!(product_id in merge_line_values)) {
@@ -234,6 +234,9 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 if (applied_promotion) {
                     total += applied_promotion.discount_amount;
                 }
+            }
+            if (this.get_discount() !== 0) {
+                total += this.get_quantity() * this.get_unit_price() * this.get_discount() / 100
             }
 
             return total;

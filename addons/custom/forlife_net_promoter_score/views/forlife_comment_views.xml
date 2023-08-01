@@ -15,6 +15,7 @@
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
+                    <button name="open_logging_view" type="object" string="Xem log" class="oe_highlight" groups="base.group_system"/>
                 </tree>
             </field>
         </record>
@@ -24,6 +25,9 @@
             <field name="model">forlife.comment</field>
             <field name="arch" type="xml">
                 <form string="forlife_comment_form">
+                    <header>
+                        <button name="open_logging_view" type="object" string="Xem log" class="oe_highlight" groups="base.group_system"/>
+                    </header>
                     <sheet>
                         <group>
                             <group>

@@ -10,6 +10,9 @@
                 <field name="invoice_info_address"/>
                 <field name="invoice_info_tax_number"/>
             </xpath>
+            <xpath expr="//field[@name='lines']/form/group/field[@name='full_product_name']" position="before">
+                <field name="product_id" groups="base.group_no_one"/>
+            </xpath>
         </field>
     </record>
 </odoo>

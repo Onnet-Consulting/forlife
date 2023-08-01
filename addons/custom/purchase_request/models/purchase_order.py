@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
+    # production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
@@ -179,7 +179,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
     _description = 'Purchase Order Line Material Line'
 
     purchase_order_line_id = fields.Many2one('purchase.order.line', ondelete='cascade')
-
     product_id = fields.Many2one('product.product')
     name = fields.Char(related='product_id.name')
     uom = fields.Many2one('uom.uom', string='UOM')
@@ -191,9 +190,17 @@ class PurchaseOrderLineMaterialLine(models.Model):
                                readonly=False)
     is_from_po = fields.Boolean(default=False)
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
-    production_line_price_unit = fields.Float(digits='Product Unit of Measure')
-    price_unit = fields.Float(string='Giá')
+    production_line_price_unit = fields.Float(digits='Product Unit of Measure') # ghi lại price ở đính kèm sản phẩm ứng product
+    price_unit = fields.Float(string='Giá', compute='_compute_price_unit', store=1)
     compute_flag = fields.Boolean(default=True)
+
+    @api.depends('production_line_price_unit', 'product_qty')
+    def _compute_price_unit(self):
+        for rec in self:
+            if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                rec.price_unit = rec.product_qty * rec.production_line_price_unit
+            else:
+                rec.price_unit = 0
 
     @api.depends('purchase_order_line_id.product_qty', 'purchase_order_line_id',
                  'compute_flag')

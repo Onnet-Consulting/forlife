@@ -52,7 +52,7 @@
                             </div>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_pricelist_items" icon="fa-list"
-                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}" String="Open Pricelist"
+                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist'), ('reward_type', '!=', 'cart_pricelist')]}"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -73,6 +73,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="code" readonly="1" force_save="1"/>
                             <field name="active" widget="boolean_toggle"/>
                             <label for="promotion_type"/>
                             <div>
@@ -171,14 +172,15 @@
                             <field name="discount_based_on"
                                    attrs="{'invisible': ['&amp;', ('reward_type', 'not in',
                                             ('code_amount', 'code_percent', 'cart_discount_amount', 'cart_discount_percent',
-                                            'cart_discount_fixed_price', 'cart_get_x_free')),
+                                            'cart_discount_fixed_price', 'cart_get_x_free', 'cart_pricelist')),
                                             ('promotion_type', '!=', 'pricelist')],
-                                            'readonly': [('promotion_type', '=', 'pricelist')]}" force_save="1"/>
+                                            'readonly': ['|', ('promotion_type', '=', 'pricelist'), ('reward_type', '=', 'cart_pricelist')]}"
+                                   force_save="1"/>
                             <field name="discount_apply_on"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
                             <field name="reward_type" attrs="{'invisible': [('promotion_type', '=', 'pricelist')]}"/>
                             <field name="progressive_reward_compute"
-                                attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_get_x_free'))]}"/>
+                                attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'cart_get_x_free', 'cart_pricelist'))]}"/>
                             <field name="disc_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_amount', 'code_amount', 'cart_discount_amount'))]}"/>
 
@@ -247,13 +249,13 @@
                                     attrs="{'invisible': [('reward_type', 'not in',
                                                         ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
                             <label for="reward_quantity" string="Maximum Discounted Quantity"
-                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent', 'code_fixed_price', 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount')),
+                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent', 'code_fixed_price', 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount', 'cart_pricelist')),
                                                             '|', ('with_code', '=', False), ('promotion_type', '!=', 'pricelist')]}"/>
                             <div>
                                 <field name="reward_quantity" class="oe_inline"
                                         attrs="{'invisible': [('reward_type', 'not in',
                                                 ('code_amount', 'code_percent','code_buy_x_get_y','code_fixed_price','cart_get_x_free', 'code_buy_x_get_cheapest',
-                                                'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount')),
+                                                'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x', 'cart_discount_amount', 'cart_pricelist')),
                                                 '|', ('with_code', '=', False), ('promotion_type', '!=', 'pricelist')
                                                 ]}"/>
                             </div>

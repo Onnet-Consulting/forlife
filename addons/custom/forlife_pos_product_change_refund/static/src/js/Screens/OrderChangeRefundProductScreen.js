@@ -2,12 +2,14 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
     'use strict';
 
     const { Order } = require('point_of_sale.models');
+    const { OrderWidget } = require('point_of_sale.OrderWidget');
     const Registries = require('point_of_sale.Registries');
     const IndependentToOrderScreen = require('point_of_sale.IndependentToOrderScreen');
     const NumberBuffer = require('point_of_sale.NumberBuffer');
-    const { useListener } = require("@web/core/utils/hooks");
+    const { useListener, useOwnedDialogs } = require("@web/core/utils/hooks");
     const { parse } = require('web.field_utils');
     const PosComponent = require('point_of_sale.PosComponent');
+    const {SelectCreateDialog} = require("@web/views/view_dialogs/select_create_dialog");
 
     const { onMounted, onWillUnmount, useState } = owl;
 
@@ -45,6 +47,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                       selectedOrderlineIds: {},
                   };
             Object.assign(this._state.ui, defaultUIState, this.props.ui || {});
+            this.addDialog = useOwnedDialogs();
+            this.select_lines = [];
 
             onMounted(this.onMounted);
             onWillUnmount(this.onWillUnmount);
@@ -79,7 +83,31 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
 
         _onShowOrderDetail({ detail: order }) {
             const order_lines = order.orderlines.filter((line) => !line.is_promotion && (line.quantity - line.refunded_qty ) > 0);
-            this.showPopup('PosOrderRefundDetailPopup', { orderline: order_lines});
+            let line_ids = []
+            _.each(order_lines, function (item) {
+                line_ids.push(item.id)
+            })
+            const self = this
+            this.addDialog(SelectCreateDialog, {
+                title: 'Chi tiết đơn hàng',
+                noCreate: true,
+                multiSelect: true,
+                resModel: 'pos.order.line',
+                context: {'tree_view_ref': 'forlife_pos_product_change_refund.pos_order_line_view_tree'},
+                domain: [
+                    ['id', 'in', line_ids]
+                ],
+                onSelected: async (resIds) => {
+                    self.props.listOrderLineRefundSelected = resIds
+                    return await this._onClickOrder({detail: order})
+                }
+            });
+            // this.showPopup('PosOrderRefundDetailPopup', { orderline: order_lines});
+        }
+
+        get orderlinesArrayRefund() {
+            console.log(this, 'thissssss')
+            return []
         }
 
         async _fetchSyncedOrders() {
@@ -146,7 +174,10 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         async _onClickOrder({ detail: clickedOrder }) {
             var payment_method = [];
             const partner = clickedOrder.get_partner();
-            const orderlines = clickedOrder.orderlines;
+            let orderlines = clickedOrder.orderlines;
+            if (this.props.listOrderLineRefundSelected && this.props.listOrderLineRefundSelected.length > 0) {
+                orderlines = orderlines.filter((line) => this.props.listOrderLineRefundSelected.includes(line.id))
+            }
             if (orderlines.length <= 0) {
                 return;
             }

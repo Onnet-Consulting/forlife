@@ -24,14 +24,14 @@ class StockMove(models.Model):
         acc_src = self._get_src_account(accounts_data)
         acc_dest = self._get_dest_account(accounts_data)
 
-        order_line = self.sale_line_id.order_id.order_line
+        # order_line = self.sale_line_id.order_id.order_line
 
         # begin inherit
         # kiểm tra đơn hàng nếu tất cả sp đều check là hàng tặng thì lấy tk hàng tặng trong sp ngược lại phụ thuộc vào
         # đơn online hay bán buôn để lấy tk chi phí bán buôn hoặc chi online
-        if order_line and all(line.x_free_good for line in order_line):
-            if self.product_id.categ_id.product_gift_account_id:
-                acc_dest = self.product_id.categ_id.product_gift_account_id.id
+        # if order_line and all(line.x_free_good for line in order_line):
+        if self.product_id.categ_id.product_gift_account_id and self.sale_line_id.x_free_good:
+            acc_dest = self.product_id.categ_id.product_gift_account_id.id
         elif self.picking_id.sale_id.x_sale_chanel == "online":
             if self.product_id.categ_id.expense_online_account_id:
                 acc_dest = self.product_id.categ_id.expense_online_account_id.id
