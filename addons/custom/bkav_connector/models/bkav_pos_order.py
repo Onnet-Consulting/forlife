@@ -68,16 +68,20 @@ class AccountMovePosOrder(models.Model):
             rank_total = sum(subrank_total)
             for line in pos_order_id.lines:
                 #SP KM k đẩy BKAV
-                if line.is_promotion:continue
+                if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
+                    continue
                 vat = 0
                 if line.tax_ids:
                     vat = line.tax_ids[0].amount
+                itemname = line.product_id.name
+                if line.is_reward_line:
+                    itemname += '(Hàng tặng khuyến mại không thu tiền)'
                 item = {
-                    "ItemName": line.product_id.name,
+                    "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.qty,
-                    "Price": line.price_subtotal/ line.qty,
-                    "Amount": line.price_subtotal,
+                    "Price": line.price_bkav,
+                    "Amount": line.qty * line.price_bkav,
                     "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
@@ -143,8 +147,8 @@ class AccountMovePosOrder(models.Model):
                     "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
                     "ExchangeRate": 1.0,
                     "InvoiceForm": "",
-                    "InvoiceSerial": "",
-                    "InvoiceNo": 0,
+                    "InvoiceSerial": invoice.invoice_serial if invoice.invoice_serial else "",
+                    "InvoiceNo": invoice.invoice_no if invoice.invoice_no else 0,
                     "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": invoice.id,

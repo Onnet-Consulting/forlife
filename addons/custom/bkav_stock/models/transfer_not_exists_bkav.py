@@ -195,7 +195,7 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, invoice.date_transfer)
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:
