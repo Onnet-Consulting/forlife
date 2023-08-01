@@ -85,7 +85,7 @@ class AccountMovePosOrder(models.Model):
                     "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal * line.discount/100,
+                    "DiscountAmount": line.price_total * line.discount/100,
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 if vat == 0:

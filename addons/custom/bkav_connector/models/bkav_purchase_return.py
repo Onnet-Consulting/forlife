@@ -30,7 +30,7 @@ class AccountMovePurchaseReturn(models.Model):
                     "TaxAmount": abs((line.tax_amount or 0.0)) * exchange_rate,
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": abs(line.price_subtotal * line.discount/100) * exchange_rate,
+                    "DiscountAmount": abs(line.price_total * line.discount/100) * exchange_rate,
                     "IsDiscount": 1 if line.discount != 0 else 0
                 }
                 if vat == 0:

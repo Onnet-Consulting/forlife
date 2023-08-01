@@ -103,15 +103,15 @@ class AccountMoveSaleOrder(models.Model):
                 if line.product_id.voucher:continue
                 ItemName = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
-                Price = abs(round(line.price_total/ (line.product_uom_qty * (1 + vat/100)))) if line.product_uom_qty != 0 else 0
-                Amount = abs(Price * line.product_uom_qty)
+                Price = abs(round(line.price_total/ (line.quantity * (1 + vat/100)))) if line.quantity != 0 else 0
+                Amount = abs(Price * line.quantity)
                 item = {
                     "ItemName": ItemName if not line.x_free_good else ItemName + " (Hàng tặng không thu tiền)",
-                    "UnitName": line.product_uom.name or '',
-                    "Qty": abs(line.product_uom_qty),
+                    "UnitName": line.product_uom_id.name or '',
+                    "Qty": abs(line.quantity),
                     "Price": Price,
                     "Amount": Amount,
-                    "TaxAmount": (abs(line.price_total) -  Amount or 0.0),
+                    "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
                     "DiscountAmount": abs(line.price_total * line.discount/100),
