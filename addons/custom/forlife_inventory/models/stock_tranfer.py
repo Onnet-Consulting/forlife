@@ -63,7 +63,8 @@ class StockTranfer(models.Model):
                 'location_id': locationId.id,
                 'location_dest_id': location_mapping.location_map_id.id,
                 'move_ids_without_package': data,
-                'other_import': True
+                'other_import': True,
+                'is_generate_auto_company':True
             })
         else:
             location_dest_Id = self.env['stock.location'].sudo().search([('code','=','X1101'),('company_id','=',company)])
@@ -77,7 +78,8 @@ class StockTranfer(models.Model):
                 'location_id': location_mapping.location_map_id.id,
                 'location_dest_id': location_dest_Id.id,
                 'move_ids_without_package': data,
-                'other_export': True
+                'other_export': True,
+                'is_generate_auto_company':True
             })
         stock_picking.with_context(endloop=True).button_validate()
         return stock_picking
@@ -148,7 +150,8 @@ class StockTranfer(models.Model):
                     'location_id': location,
                     'location_dest_id': location_dst,
                     'stock_transfer_line': line,
-                    'company_id': company_match.id
+                    'company_id': company_match.id,
+                    'is_generate_auto_company': True
                 }
                 res = self.env['stock.transfer'].with_company(company_match).sudo().create(vals)
                 res.with_context(company_byside=company_match.id)._action_in_approve()
@@ -156,3 +159,4 @@ class StockTranfer(models.Model):
         return False
     from_company = fields.Many2one('res.company')
     to_company = fields.Many2one('res.company')
+    is_generate_auto_company = fields.Boolean(default=False)

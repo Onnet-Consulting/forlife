@@ -66,9 +66,12 @@ class StockPicking(models.Model):
             'move_type': 'out_refund',
             'invoice_line_ids': invoice_line_ids,
             'promotion_ids': promotion_ids,
-            'invoice_origin': line.sale_line_id.order_id.name
+            'invoice_origin': line.sale_line_id.order_id.name,
         }
-        invoice_id = self.env['account.move'].create(vals)
+        if line.sale_line_id.order_id.source_record:
+            vals['company_id'] = line.sale_line_id.order_id.company_id.id
+
+        invoice_id = self.env['account.move'].sudo().create(vals)
         for line in invoice_id.invoice_line_ids:
             if line.product_id:
                 if self.sale_source_record:
@@ -82,7 +85,7 @@ class StockPicking(models.Model):
                         account_id = str(ir_property.value_reference).replace("account.account,", "")
                         line.account_id = self.env['account.account'].sudo().search([('id', '=', account_id)], limit=1)
                     else:
-                        line.account_id = None
+                        line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
                 else:
                     line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id

@@ -34,6 +34,7 @@ class StockInventoryLine(models.Model):
                         'location_id': loc.id,
                         'location_dest_id': location_id.id,
                         'other_import': True,
+                        'is_generate_auto_company':True,
                         'move_ids_without_package': [(0, 0, {
                             'product_id': product.id,
                             'location_id': loc.id,
@@ -57,6 +58,7 @@ class StockInventoryLine(models.Model):
                         'location_id': location_id.id,
                         'location_dest_id': loc_dest.id,
                         'other_export': True,
+                        'is_generate_auto_company':True,
                         'move_ids_without_package': [(0, 0, {
                             'product_id': product.id,
                             'location_id': location_id.id,
