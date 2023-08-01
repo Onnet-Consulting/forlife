@@ -147,8 +147,8 @@ class AccountMovePosOrder(models.Model):
                     "CurrencyID": invoice.company_id.currency_id.name if invoice.company_id.currency_id.name else '',
                     "ExchangeRate": 1.0,
                     "InvoiceForm": "",
-                    "InvoiceSerial": invoice.invoice_serial if invoice.invoice_serial else "",
-                    "InvoiceNo": invoice.invoice_no if invoice.invoice_no else 0,
+                    "InvoiceSerial": "",
+                    "InvoiceNo": 0,
                     "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": invoice.id,
