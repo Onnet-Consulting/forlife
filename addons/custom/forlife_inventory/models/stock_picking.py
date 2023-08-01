@@ -202,7 +202,7 @@ class StockPicking(models.Model):
                                 'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
                             }))
                         pickking_ortherimport = Picking.with_company(company).create({
-                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]),
+                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]).id,
                             'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
                             'location_id': location_id.id,
                             'location_dest_id': location_mapping.location_id.id,
