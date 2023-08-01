@@ -176,6 +176,8 @@ class SaleOrder(models.Model):
         return res
     def write(self, vals_list):
         res = super().write(vals_list)
+        if self._context.get("skip_check_debt_balance"):
+            return res
         self.check_debtBalance()
         return res
 
