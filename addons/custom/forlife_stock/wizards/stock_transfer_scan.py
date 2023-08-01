@@ -45,6 +45,6 @@ class StockTransferScanLine(models.TransientModel):
     stock_transfer_scan_id = fields.Many2one(comodel_name='stock.transfer.scan', ondelete='cascade')
     transfer_line_id = fields.Many2one(comodel_name='stock.transfer.line', required=True, string='Sản phẩm')
     barcode = fields.Char(related='transfer_line_id.product_id.barcode')
-    qty_plan = fields.Integer(related='transfer_line_id.qty_plan', string='Số lượng điều chuyển')
+    qty_plan = fields.Float(related='transfer_line_id.qty_plan', string='Số lượng điều chuyển')
     max_qty = fields.Integer(string='Số lượng tối đa')
     product_qty_done = fields.Integer(string='Số lượng đã quét')
