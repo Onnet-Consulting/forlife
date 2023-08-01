@@ -33,7 +33,6 @@ class AccountMoveSaleOrder(models.Model):
                     })
                 else:
                     reward_amount[vat] += promotion_id.value
-                reward_amount += promotion_id.value
         for vat, value in vip_amount.items():
             value_not_tax = abs(value)/(1+vat/100)
             item = {
