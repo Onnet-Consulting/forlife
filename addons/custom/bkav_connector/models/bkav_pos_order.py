@@ -13,7 +13,7 @@ class AccountMovePosOrder(models.Model):
         if total_point > 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
-                "UnitName": 'Đơn vị',
+                "UnitName": 'Điểm',
                 "Qty": total_point,
                 "Price": 0,
                 "Amount": 0,
@@ -25,7 +25,7 @@ class AccountMovePosOrder(models.Model):
         if use_point > 0:
             line_invoice = {
                 "ItemName": "Tiêu điểm",
-                "UnitName": 'Đơn vị',
+                "UnitName": 'Điểm',
                 "Qty": use_point/1000,
                 "Price": 1000,
                 "Amount": use_point,
