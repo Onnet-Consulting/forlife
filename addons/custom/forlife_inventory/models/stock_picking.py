@@ -28,7 +28,7 @@ class StockPicking(models.Model):
                 if not location_dest_map:
                     raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             companyId = self.company_id.id
-            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
+            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'N0202'),('company_id', '=',companyId)],
                                                                                              limit=1)
             location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', companyId)], limit=1)
             reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', companyId)])

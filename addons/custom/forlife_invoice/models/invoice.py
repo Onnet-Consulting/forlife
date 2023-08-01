@@ -346,7 +346,7 @@ class AccountMove(models.Model):
 
     @api.onchange('invoice_line_ids')
     def onchange_order_line_compare_invoice_line_ids(self):
-        if self.is_check_select_type_inv:
+        if self.is_check_select_type_inv and not self.invoice_type:
             old_count_record = len(self.purchase_order_product_id.order_line)
             new_count_record = len(self.invoice_line_ids)
             if new_count_record > old_count_record:

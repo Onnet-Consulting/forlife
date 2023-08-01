@@ -10,7 +10,7 @@ import math
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    brand_id = fields.Many2one('res.brand', string='Brand')
+    brand_id = fields.Many2one('res.brand', string='Brand', related='store_id.brand_id', store=True)
     approved = fields.Boolean('Approved', default=False, copy=False)
     is_refund_order = fields.Boolean('Is Refund Order', copy=False, default=False)
     is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
@@ -71,17 +71,10 @@ class PosOrder(models.Model):
         HistoryPoint = self.env['partner.history.point']
         Voucher = self.env['voucher.voucher']
         if pos_id:
-            order = order['data']
-            pos_session = self.env['pos.session'].browse(order['pos_session_id'])
-            brand_id = pos_session.config_id.store_id.brand_id
-            pos = False
             if not existing_order:
                 pos = self.env['pos.order'].browse(pos_id)
             else:
                 pos = existing_order
-            for pos_order_id in pos:
-                if pos_order_id.brand_id.id != brand_id.id:
-                    pos_order_id.brand_id = brand_id
             for p in pos.lines:
                 if p.product_defective_id:
                     p.product_defective_id.is_already_in_use = True
