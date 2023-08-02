@@ -86,6 +86,7 @@ class TransferNotExistsBkav(models.Model):
                 code_int = int(list_code[0])+1
                 code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
+        self._cr.commit()
 
     def genarate_transporter(self):
         if self.transporter_id: return
@@ -107,7 +108,7 @@ class TransferNotExistsBkav(models.Model):
                             location_name, location_dest_name, date_transfer, state)
             SELECT s.location_id, s.location_dest_id, s.company_id, 
                 knc.name||'/'||kn.name, kdc.name||'/'||kd.name, 
-                (SELECT CURRENT_DATE), 'new'
+                (SELECT CURRENT_DATE - INTERVAL '1 days'), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
