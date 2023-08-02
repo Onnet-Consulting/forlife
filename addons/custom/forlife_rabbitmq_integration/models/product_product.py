@@ -11,7 +11,7 @@ class ProductProduct(models.Model):
     _delete_action = 'delete'
 
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.detailed_type == 'product')
+        return self.filtered(lambda f: f.detailed_type == 'product' and not f.voucher)
 
     def get_sync_info_value(self):
         return [{
