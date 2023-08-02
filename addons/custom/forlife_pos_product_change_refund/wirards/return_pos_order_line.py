@@ -18,6 +18,6 @@ class InheritPosOrderLine(models.Model):
     def get_code_promotion_code(self):
         for rec in self:
             rec.promotion_string_code = ''
-            program = rec.promotion_usage_ids.mapped('program_id.code')
+            program = rec.promotion_usage_ids.mapped('program_id.name')
             if program:
                 rec.promotion_string_code = ','.join(x if x else '' for x in program)

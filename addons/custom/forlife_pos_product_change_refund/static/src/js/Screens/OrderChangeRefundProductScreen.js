@@ -93,7 +93,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 noCreate: true,
                 multiSelect: true,
                 resModel: 'pos.order.line',
-                context: {'tree_view_ref': 'forlife_pos_product_change_refund.pos_order_line_view_tree'},
+                context: {'tree_view_ref': 'forlife_pos_product_change_refund.pos_order_line_view_tree', debug: false},
                 domain: [
                     ['id', 'in', line_ids]
                 ],

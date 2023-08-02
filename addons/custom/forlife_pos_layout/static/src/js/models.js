@@ -11,7 +11,6 @@ odoo.define('forlife_pos_layout.models', function (require) {
             super(...arguments);
             this.use_discount_cash = this.use_discount_cash || false
             this.discount_cash_amount = this.discount_cash_amount || 0
-            console.log(options, 'options')
         }
 
         export_as_JSON() {
