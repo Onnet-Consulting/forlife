@@ -40,7 +40,6 @@ class StockInventoryLine(models.Model):
                             'location_id': loc.id,
                             'location_dest_id': location_id.id,
                             'name': vals['name'],
-                            'date': datetime.now(),
                             'product_uom': vals['product_uom'],
                             'product_uom_qty': vals['product_uom_qty'],
                             'quantity_done': vals['product_uom_qty'],
@@ -64,7 +63,6 @@ class StockInventoryLine(models.Model):
                             'location_id': location_id.id,
                             'location_dest_id': loc_dest.id,
                             'name': vals['name'],
-                            'date': datetime.now(),
                             'product_uom': vals['product_uom'],
                             'product_uom_qty': vals['product_uom_qty'],
                             'quantity_done': vals['product_uom_qty'],
@@ -73,5 +71,6 @@ class StockInventoryLine(models.Model):
                         })],
                     })
                 picking.with_context(endloop=True).button_validate()
+                picking.date_done = self.inventory_id.date
                 return picking
         return True
