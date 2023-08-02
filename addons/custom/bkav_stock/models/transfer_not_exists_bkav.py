@@ -86,6 +86,7 @@ class TransferNotExistsBkav(models.Model):
                 code_int = int(list_code[0])+1
                 code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
+        self._cr.commit()
 
     def genarate_transporter(self):
         if self.transporter_id: return
