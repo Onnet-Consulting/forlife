@@ -98,7 +98,7 @@ class AccountMoveBKAV(models.Model):
                     "DiscountAmount": abs(line.price_total * line.discount/100) * exchange_rate,
                     "IsDiscount": 0
                 }
-                vat, tax_rate_id = self._get_vat_line_bkav()
+                vat, tax_rate_id = self._get_vat_line_bkav(line)
                 item.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat

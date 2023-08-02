@@ -16,10 +16,9 @@ class SummaryAdjustedInvoicePos(models.Model):
     code = fields.Char('Code')
     store_id = fields.Many2one('store')
     partner_id = fields.Many2one('res.partner')
+    source_einvoice = fields.Char(string='Hóa đơn điện tử gốc')
     source_invoice = fields.Many2one('synthetic.account.move.pos',
                                      string='Hóa đơn gốc')
-    source_einvoice = fields.Char(string='Hóa đơn điện tử gốc')
-
     invoice_date = fields.Date('Date')
     state = fields.Selection([('draft', 'Nháp'),
                               ('posted', 'Đã vào sổ')], string="State", default='draft')
@@ -289,15 +288,17 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_origin = fields.Float('Đơn giá gốc')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
-    tax_ids = fields.Many2many('account.tax', string='Thuế', related="product_id.taxes_id")
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+    
 
     @api.depends('price_subtotal', 'tax_amount')
     def compute_amount_total(self):
