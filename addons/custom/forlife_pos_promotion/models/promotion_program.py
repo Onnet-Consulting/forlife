@@ -191,9 +191,13 @@ class PromotionProgram(models.Model):
     discount_product_ids = fields.Many2many(
         'product.product', 'promotion_program_discount_product_rel', domain="[('available_in_pos', '=', True)]")
     discount_product_count = fields.Integer(compute='_compute_discount_product_count')
+    json_discount_product_ids = fields.Binary(
+        compute='_compute_json_discount_product_ids', string='Json Discount Products', store=True)
     reward_product_count = fields.Integer(compute='_compute_reward_product_count')
     reward_product_ids = fields.Many2many(
         'product.product', 'promotion_program_reward_product_rel', domain="[('available_in_pos', '=', True)]")
+    json_reward_product_ids = fields.Binary(
+        compute='_compute_json_reward_product_ids', string='Json Reward Products', store=True)
     reward_quantity = fields.Float()
 
     disc_amount = fields.Float('Discount Amount')
@@ -336,6 +340,20 @@ class PromotionProgram(models.Model):
             product_ids_json_encode = base64.b64encode(json.dumps(product_ids_list).encode('utf-8'))
             pro.json_valid_product_ids = product_ids_json_encode
 
+    @api.depends('reward_product_ids')
+    def _compute_json_reward_product_ids(self):
+        for pro in self:
+            product_ids_list = pro._get_reward_product_ids()
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids_list).encode('utf-8'))
+            pro.json_reward_product_ids = product_ids_json_encode
+
+    @api.depends('discount_product_ids')
+    def _compute_json_discount_product_ids(self):
+        for pro in self:
+            product_ids_list = pro._get_discount_product_ids()
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids_list).encode('utf-8'))
+            pro.json_discount_product_ids = product_ids_json_encode
+
     @api.depends('incl_reward_in_order')
     def _compute_incl_reward_in_order_type(self):
         for pro in self:
@@ -365,6 +383,22 @@ class PromotionProgram(models.Model):
     def _get_valid_product_ids(self):
         self.ensure_one()
         sql = "SELECT product_product_id FROM product_product_promotion_program_rel " \
+              "WHERE promotion_program_id = %s;" % self.id
+        self.env.cr.execute(sql)
+        data = self.env.cr.fetchall()
+        return list(itertools.chain(*data)) or []
+
+    def _get_reward_product_ids(self):
+        self.ensure_one()
+        sql = "SELECT product_product_id FROM promotion_program_reward_product_rel " \
+              "WHERE promotion_program_id = %s;" % self.id
+        self.env.cr.execute(sql)
+        data = self.env.cr.fetchall()
+        return list(itertools.chain(*data)) or []
+
+    def _get_discount_product_ids(self):
+        self.ensure_one()
+        sql = "SELECT product_product_id FROM promotion_program_discount_product_rel " \
               "WHERE promotion_program_id = %s;" % self.id
         self.env.cr.execute(sql)
         data = self.env.cr.fetchall()
@@ -429,7 +463,9 @@ class PromotionProgram(models.Model):
 
     def action_recompute_new_field_binary(self):
         self.search([])._compute_json_valid_product_ids()
-        self.search([]).combo_line_ids._compute_json_valid_product_ids()
+        self.search([])._compute_json_reward_product_ids()
+        self.search([])._compute_json_discount_product_ids()
+        self.combo_line_ids._compute_json_valid_product_ids()
         return True
 
     def open_products(self):
@@ -544,6 +580,23 @@ class PromotionDiscountProduct(models.Model):
         self.env.cr.execute("""
             ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        program = self.promotion_program_id
+        res = super(PromotionDiscountProduct, self).unlink()
+        if program:
+            program._compute_json_discount_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        programs = self.env['promotion.program'].search([('id', 'in', self.promotion_program_id.ids)])
+        programs._compute_json_discount_product_ids()
+
 
 class PromotionRewardProduct(models.Model):
     _name = 'promotion.reward.product'
@@ -557,3 +610,20 @@ class PromotionRewardProduct(models.Model):
     def init(self):
         self.env.cr.execute("""
             ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res._recompute_json_binary_fields()
+        return res
+
+    def unlink(self):
+        program = self.promotion_program_id
+        res = super(PromotionRewardProduct, self).unlink()
+        if program:
+            program._compute_json_reward_product_ids()
+        return res
+
+    def _recompute_json_binary_fields(self):
+        programs = self.env['promotion.program'].search([('id', 'in', self.promotion_program_id.ids)])
+        programs._compute_json_reward_product_ids()
