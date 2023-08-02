@@ -23,7 +23,8 @@
         'forlife_voucher',
         'forlife_pos_assign_employee',
         'forlife_pos_layout',
-        'forlife_pos_accounting'
+        'forlife_pos_accounting',
+        'web'
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -34,6 +35,10 @@
             'web/static/src/search/control_panel/control_panel.scss',
             'web/static/src/scss/bootstrap_overridden_frontend.scss',
             'web/static/src/legacy/scss/modal.scss',
+            ('remove', 'forlife_pos_product_change_refund/static/src/js/debug_context.js')
+        ],
+        'point_of_sale.pos_assets_backend': [
+            'forlife_pos_product_change_refund/static/src/js/debug_context.js'
         ]
     },
 
