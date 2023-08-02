@@ -81,17 +81,18 @@ class MainController(http.Controller):
                 odoo_order = None
                 is_create_wh_in = True
                 nhanh_origin_id = order_id
+            partial_order_returned = order.get('returnFromOrderId', 0)
+            order_returned = order.get('returnFromOrderId', 0) and data['status'] == 'Success'
+
+            if not is_create_wh_in:
+                if partial_order_returned:
+                    if not order_returned:
+                        return self.result_request(200, 0, _('Update sale order success'))
+
+                elif data['status'] in order_status_skip:
+                    return self.result_request(404, 1, _('Order confirmation is required'))
 
             if not odoo_order:
-                order_returned = order.get('returnFromOrderId', 0) and data['status'] in ['Returned', 'Success']
-                order_returned_not_success = order.get('returnFromOrderId', 0) and data['status'] in ['Returned']
-                if not is_create_wh_in:
-                    if order_returned:
-                        if order_returned_not_success:
-                            return self.result_request(200, 0, _('Update sale order success'))
-                    elif data['status'] in order_status_skip:
-                        return self.result_request(404, 1, _('Order confirmation is required'))
-
                 default_company_id = n_client.get_company()
                 location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
@@ -165,10 +166,11 @@ class MainController(http.Controller):
                             if picking_id.state != 'done':
                                 picking_id.action_cancel()
                             else:
-                                try:
-                                    picking_id.create_invoice_out_refund()
-                                except Exception as e:
-                                    picking_id.message_post(body=str(e))
+                                if picking_id.company_id.id == webhook_value_id.order_id.company_id.id:
+                                    try:
+                                        picking_id.create_invoice_out_refund()
+                                    except Exception as e:
+                                        picking_id.message_post(body=str(e))
 
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
@@ -199,10 +201,11 @@ class MainController(http.Controller):
                                 if picking_id.state != 'done':
                                     picking_id.action_cancel()
                                 else:
-                                    try:
-                                        picking_id.create_invoice_out_refund()
-                                    except Exception as e:
-                                        picking_id.message_post(body=str(e))
+                                    if picking_id.company_id.id == odoo_order.company_id.id:
+                                        try:
+                                            picking_id.create_invoice_out_refund()
+                                        except Exception as e:
+                                            picking_id.message_post(body=str(e))
 
                         # if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                         #     for picking_id in odoo_order.picking_ids:
