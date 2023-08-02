@@ -172,11 +172,11 @@ class SaleOrder(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        res.check_debtBalance()
+        # res.check_debtBalance()
         return res
     def write(self, vals_list):
         res = super().write(vals_list)
-        self.check_debtBalance()
+        # self.check_debtBalance()
         return res
 
     def check_debtBalance(self):
@@ -253,6 +253,8 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
+        if self.state in ('draft', 'sent'):
+            self.check_sale_promotion()
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
