@@ -35,9 +35,9 @@ class StockPicking(models.Model):
             reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', companyId)])
             ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
             if self.sale_id.source_record and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
-                    and self.location_id.stock_location_type_id.id == ec_warehouse_id:
+                    and self.location_id.stock_location_type_id.id == ec_warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='export')
-            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
+            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='import')
             po = self.purchase_id
             product_is_voucher = self.move_line_ids_without_package.filtered(lambda x: x.product_id.voucher)
