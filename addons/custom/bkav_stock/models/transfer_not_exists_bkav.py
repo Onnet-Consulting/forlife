@@ -87,6 +87,18 @@ class TransferNotExistsBkav(models.Model):
                 code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
 
+    def genarate_transporter(self):
+        if self.transporter_id: return
+        if self.delivery_contract_id:
+            self.transporter_id = self.delivery_contract_id.vendor_id.id
+        else:
+            transporter_id = self.env['vendor.contract'].search([('contract_type','=','transport')],limit=1)
+            if not transporter_id:
+                self.transporter_id = self.location_id.company_id.partner_id.id
+            else:
+                self.transporter_id = transporter_id.id
+
+
     def general_transfer_not_exists_bkav(self):
         date_now = datetime.utcnow().date()
         # tổng hợp điều chuyển chưa xuat hd
@@ -175,6 +187,7 @@ class TransferNotExistsBkav(models.Model):
         for transfer_id in transfer_ids:
             transfer_id = transfer_id.sudo().with_company(transfer_id.location_id.company_id)
             transfer_id.genarate_code()
+            transfer_id.genarate_transporter()
             transfer_id.create_invoice_bkav()
             transfer_id._update_stock_transfer()
 
@@ -195,7 +208,7 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, invoice.date_transfer)
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:

@@ -32,7 +32,7 @@ class AccountMovePurchaseReturn(models.Model):
                     "IsDiscount": 1 if line.discount != 0 else 0
                 }
 
-                vat, tax_rate_id = self._get_vat_line_bkav()
+                vat, tax_rate_id = self._get_vat_line_bkav(line)
                 item.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
