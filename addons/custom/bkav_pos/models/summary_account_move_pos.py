@@ -400,7 +400,7 @@ class SummaryAccountMovePos(models.Model):
                     else:
                         remaining_records[store_id] = {line.synthetic_id.id: [row]}
                     line.sudo().with_delay(
-                        description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
                     ).write({
                         "remaining_quantity": remaining_quantity,
                         "adjusted_quantity": adjusted_quantity
@@ -420,7 +420,7 @@ class SummaryAccountMovePos(models.Model):
                     else:
                         remaining_records[store_id] = {line.synthetic_id.id: [row]}
                     line.sudo().with_delay(
-                        description="Adjusted invoice for POS", channel="root.RabbitMQ"
+                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
                     ).write({
                         "remaining_quantity": 0,
                         "adjusted_quantity": adjusted_quantity
