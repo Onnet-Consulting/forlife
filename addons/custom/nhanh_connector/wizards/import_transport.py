@@ -52,14 +52,13 @@ class ImportProductionFromExcel(models.TransientModel):
                 'location_id': location.id,
                 'date': datetime.now(),
                 'type': type,
-                'company_id': self.env.company.id
+                'company_id': self.env.company.id,
+                'session_line': [(0, 0, {
+                    'order_id': o.id,
+                    'nhanh_id': o.nhanh_id,
+                    'status': self.get_status_by_picking(o)
+                }) for o in order]
             }
-            lines += [(0, 0, {
-                'order_id': o.id,
-                'nhanh_id': o.nhanh_id,
-                'status': self.get_status_by_picking(o)
-            }) for o in order]
-            value['session_line'] = lines
             create_values.append(value)
         return create_values
 

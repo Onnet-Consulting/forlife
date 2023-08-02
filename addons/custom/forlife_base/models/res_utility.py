@@ -161,30 +161,31 @@ class ResUtility(models.AbstractModel):
 
     @api.model
     def get_question_info(self, customer_phone, brand):
-        question_id = self.env['forlife.comment'].search([("customer_code", "=", customer_phone), ("brand", "=", brand), ("status", "=", 0)], limit=1).question_id or 0
+        comment_id = self.env['forlife.comment'].search([("customer_code", "=", customer_phone), ("brand", "=", brand), ("status", "=", 0)], limit=1)
         question_data = self.env['forlife.question'].search_read(
-            [('id', '=', question_id)],
+            [('id', '=', comment_id.question_id or 0)],
             ["header", "question1", "sub_quest1", "sub_quest2", "question2", "success1", "success2", "success3", "banner_question", "banner_success", "icon", "rate"]
         )
-        return question_data[0] if question_data else {}
+        res = dict(question_data[0]) if question_data else {}
+        if res:
+            res.update({'comment_id': comment_id.id})
+        return res
 
     @api.model
-    def update_net_promoter_score(self, customer_phone, brand, point, comment):
-        comment_id = self.env['forlife.comment'].search([("customer_code", "=", customer_phone), ("brand", "=", brand), ("status", "=", 0)], limit=1)
-        if comment_id:
-            comment_id.with_context(update_comment=True).sudo().write({
-                'point': point,
-                'comment': comment,
-                'status': 1,
-                'comment_date': fields.Datetime.now(),
-            })
-            return {
-                'id': comment_id.id,
-                'phone': comment_id.customer_code,
-                'point': comment_id.point,
-                'comment': comment_id.comment,
-            }
-        return False
+    def update_net_promoter_score(self, comment_id, point, comment):
+        comment_id = self.env['forlife.comment'].browse(comment_id)
+        comment_id.with_context(update_comment=True).sudo().write({
+            'point': point,
+            'comment': comment,
+            'status': 1,
+            'comment_date': fields.Datetime.now(),
+        })
+        return {
+            'id': comment_id.id,
+            'phone': comment_id.customer_code,
+            'point': comment_id.point,
+            'comment': comment_id.comment,
+        }
 
     @api.model
     def get_stock_quant_in_warehouse_by_barcode(self, wh_id, barcode):

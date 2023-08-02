@@ -10,6 +10,7 @@
         'base', 
         'account', 
         'product', 
+        'account_debit_note',
         'forlife_purchase', 
         'point_of_sale', 
         'nhanh_connector',

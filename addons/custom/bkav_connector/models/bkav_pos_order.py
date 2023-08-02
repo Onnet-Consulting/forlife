@@ -13,7 +13,7 @@ class AccountMovePosOrder(models.Model):
         if total_point > 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
-                "UnitName": 'Đơn vị',
+                "UnitName": 'Điểm',
                 "Qty": total_point,
                 "Price": 0,
                 "Amount": 0,
@@ -25,7 +25,7 @@ class AccountMovePosOrder(models.Model):
         if use_point > 0:
             line_invoice = {
                 "ItemName": "Tiêu điểm",
-                "UnitName": 'Đơn vị',
+                "UnitName": 'Điểm',
                 "Qty": use_point/1000,
                 "Price": 1000,
                 "Amount": use_point,
@@ -103,10 +103,7 @@ class AccountMovePosOrder(models.Model):
                     "TaxRate": vat
                 })
                 if invoice.issue_invoice_type == 'adjust':
-                    # kiểm tra hóa đơn gốc
-                    # gốc là out_refund => điều chỉnh giảm
-                    # gốc là out_invoice => điều chỉnh tăng
-                    item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
+                    item['IsIncrease'] = 1 if (invoice.move_type == invoice.origin_move_id.move_type) else 0
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos(total_point,use_point,rank_total))

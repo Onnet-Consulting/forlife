@@ -28,16 +28,16 @@ class StockPicking(models.Model):
                 if not location_dest_map:
                     raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             companyId = self.company_id.id
-            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
+            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'N0202'),('company_id', '=',companyId)],
                                                                                              limit=1)
             location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', companyId)], limit=1)
             reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', companyId)])
             reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', companyId)])
             ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
             if self.sale_id.source_record and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
-                    and self.location_id.stock_location_type_id.id == ec_warehouse_id:
+                    and self.location_id.stock_location_type_id.id == ec_warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='export')
-            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
+            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='import')
             po = self.purchase_id
             product_is_voucher = self.move_line_ids_without_package.filtered(lambda x: x.product_id.voucher)

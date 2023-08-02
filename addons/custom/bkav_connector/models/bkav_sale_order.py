@@ -33,7 +33,6 @@ class AccountMoveSaleOrder(models.Model):
                     })
                 else:
                     reward_amount[vat] += promotion_id.value
-                reward_amount += promotion_id.value
         for vat, value in vip_amount.items():
             value_not_tax = abs(value)/(1+vat/100)
             item = {
@@ -103,12 +102,13 @@ class AccountMoveSaleOrder(models.Model):
                 if line.product_id.voucher:continue
                 ItemName = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
+                if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
+                    ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
-                Price = round(line.price_total/ (line.quantity * (1 + vat/100))) if line.quantity != 0 else 0
+                Price = round(line.price_unit/ ((1 + vat/100)))
                 Amount = Price * line.quantity
                 item = {
                     "ItemName": ItemName,
-                    # "ItemName": ItemName if not line.x_free_good else ItemName + " (Hàng tặng không thu tiền)",
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity,
                     "Price": Price,
@@ -174,13 +174,24 @@ class AccountMoveSaleOrder(models.Model):
         return bkav_data
     
 
-    def _post(self, soft=True):
-        res = super(AccountMoveSaleOrder, self)._post(soft)
-        for item in self:
-            if item.issue_invoice_type == 'adjust':
-                if not item.origin_move_id or not item.origin_move_id.invoice_no:
-                    raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-                if item.origin_move_id.amount_total == item.amount_total:
-                    item.origin_move_id.cancel_invoice_bkav()
-                    item.exists_bkav = True
-        return res
+    # def _post(self, soft=True):
+    #     res = super(AccountMoveSaleOrder, self)._post(soft)
+    #     for item in self:
+    #         if item.issue_invoice_type == 'adjust':
+    #             if not item.origin_move_id or not item.origin_move_id.invoice_no:
+    #                 raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
+    #             if item.origin_move_id.amount_total == item.amount_total:
+    #                 item.origin_move_id.cancel_invoice_bkav()
+    #                 item.exists_bkav = True
+    #     return res
+
+# class StockPicking(models.Model):
+#     _inherit = 'stock.picking'
+
+#     def create_invoice_out_refund(self):
+#         invoice_id = super(StockPicking, self).create_invoice_out_refund()
+#         move_id = self.env['account.move'].browse(invoice_id)
+#         move_id.update({
+#             'origin_move_id': move_id.id,
+#             'issue_invoice_type': 'adjust',
+#         })
