@@ -105,7 +105,7 @@ class AccountMoveSaleOrder(models.Model):
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
-                Price = round(line.price_total/ (line.quantity * (1 + vat/100))) if line.quantity != 0 else 0
+                Price = round(line.price_unit/ ((1 + vat/100)))
                 Amount = Price * line.quantity
                 item = {
                     "ItemName": ItemName,
