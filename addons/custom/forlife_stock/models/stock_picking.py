@@ -156,15 +156,7 @@ class StockPicking(models.Model):
     def button_forlife_validate(self):
         self.ensure_one()
         if self.is_pk_purchase:
-            # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
-            #     self._update_forlife_production()
             view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
-            view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
-            # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
-            #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
-            #         tolerance = pk.product_id.tolerance
-            #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
-            #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
             if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
                    zip(self.move_line_ids_without_package, self.move_ids_without_package)):
                 return {
@@ -177,20 +169,6 @@ class StockPicking(models.Model):
                     'target': 'new',
                     'context': dict(self.env.context, default_picking_id=self.id),
                 }
-            # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-            #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
-            #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
-            #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-            #     return {
-            #         'name': 'Tạo phần dở dang thừa/thiếu?',
-            #         'type': 'ir.actions.act_window',
-            #         'view_mode': 'form',
-            #         'res_model': 'stock.picking.over.popup.confirm',
-            #         'views': [(view_over_less.id, 'form')],
-            #         'view_id': view_over_less.id,
-            #         'target': 'new',
-            #         'context': dict(self.env.context, default_picking_id=self.id),
-            #     }
         return self.button_validate()
 
     def action_confirm(self):
@@ -428,7 +406,7 @@ class StockPicking(models.Model):
                 self.update_quantity_production_order_in_other_picking(record)
 
             # Nhập thành phẩm SX
-            if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done':
+            if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done' and record.location_id.code != 'N0103':
                 self.validate_quantity_remain_finished_picking(record)
 
             # Điều chuyển từ stock.transfer có gắn lệnh sản xuất
@@ -480,7 +458,7 @@ class StockPicking(models.Model):
         for rec in picking_id.move_ids_without_package:
             remaining_qty = rec.work_production.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id).remaining_qty or 0
             if rec.work_production and rec.quantity_done > remaining_qty:
-                raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name))
+                raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại (%s) trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name, str(remaining_qty)))
 
     # Điều chuyển từ stock.transfer k qua HO
     def update_quantity_production_order_from_stock_transfer(self, picking_id):

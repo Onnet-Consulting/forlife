@@ -9,5 +9,5 @@ class HrDepartment(models.Model):
     code = fields.Char(string='Code', copy=False)
 
     _sql_constraints = [
-        ('unique_code', 'UNIQUE(code)', 'Department code must be unique!')
+        ('unique_code', 'UNIQUE(code,company_id)', 'Department code must be unique!')
     ]
