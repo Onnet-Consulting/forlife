@@ -697,25 +697,25 @@ class SaleOrderNhanh(models.Model):
                     
                     item.write({"location_dest_id": picking.location_id.id})
         self.state = 'sale'
-        new_picking_ids = self.picking_ids.filtered(lambda r: r.company_id.id == self.company_id.id)
-        for item in new_picking_ids:
-            is_create_invoice_out_refund = True
-            for line in item.move_line_ids:
-                res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
-                ir_property = self.env['ir.property'].sudo().search([
-                    ('name', '=', 'x_property_account_return_id'),
-                    ('res_id', '=', res_id),
-                    ('company_id', '=', self.company_id.id)
-                ],limit=1)
-                if not ir_property:
-                    is_create_invoice_out_refund = False
-                    break
+        # new_picking_ids = self.picking_ids.filtered(lambda r: r.company_id.id == self.company_id.id)
+        # for item in new_picking_ids:
+        #     is_create_invoice_out_refund = True
+        #     for line in item.move_line_ids:
+        #         res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
+        #         ir_property = self.env['ir.property'].sudo().search([
+        #             ('name', '=', 'x_property_account_return_id'),
+        #             ('res_id', '=', res_id),
+        #             ('company_id', '=', self.company_id.id)
+        #         ],limit=1)
+        #         if not ir_property:
+        #             is_create_invoice_out_refund = False
+        #             break
 
-            if is_create_invoice_out_refund:
-                try:
-                    item.create_invoice_out_refund()
-                except Exception as e:
-                    pass
+        #     if is_create_invoice_out_refund:
+        #         try:
+        #             item.create_invoice_out_refund()
+        #         except Exception as e:
+        #             pass
 
     
 

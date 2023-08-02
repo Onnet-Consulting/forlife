@@ -255,6 +255,8 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
+        if self.state in ('draft', 'sent'):
+            self.check_sale_promotion()
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
