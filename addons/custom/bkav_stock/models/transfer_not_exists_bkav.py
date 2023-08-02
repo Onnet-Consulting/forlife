@@ -108,7 +108,7 @@ class TransferNotExistsBkav(models.Model):
                             location_name, location_dest_name, date_transfer, state)
             SELECT s.location_id, s.location_dest_id, s.company_id, 
                 knc.name||'/'||kn.name, kdc.name||'/'||kd.name, 
-                (SELECT CURRENT_DATE), 'new'
+                (SELECT CURRENT_DATE - INTERVAL '1 days'), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
