@@ -66,8 +66,6 @@ class StockMove(models.Model):
 
     def _get_give_move_lines(self):
         res = self.env['stock.move.line']
-        warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
-        warehouse_type_id_ec = warehouse_type_id_ec.id if warehouse_type_id_ec else 0
         s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
         for move_line in self.move_line_ids:
             warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id

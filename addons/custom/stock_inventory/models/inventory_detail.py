@@ -47,7 +47,7 @@ class InventoryDetail(models.Model):
                                      line.cong_hang_ban_ntl_chua_kiem - line.tru_hang_ban_da_kiem + line.bo_sung_hang_chua_cheat - line.tru_hang_kiem_dup
             line.tong_kiem_ke_thuc_te_1 = tong_kiem_ke_thuc_te_1
             line.tong_kiem_dem_thuc_te = tong_kiem_ke_thuc_te_1 + line.them2 - line.bot2
-            line.chenh_lech_kiem_ke = line.ton_phan_mam - line.them2
+            line.chenh_lech_kiem_ke = line.ton_phan_mam - (tong_kiem_ke_thuc_te_1 + line.them2 - line.bot2)
 
     def open_detail(self):
         self.ensure_one()
