@@ -294,7 +294,6 @@ class StockPicking(models.Model):
                     }
                 }
 
-
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
         for r in self:
@@ -302,6 +301,32 @@ class StockPicking(models.Model):
                 r.display_asset = 'show'
             else:
                 r.display_asset = 'hide'
+
+    @api.depends('picking_type_id', 'partner_id')
+    def _compute_location_id(self):
+        """
+            K update lại location với các phiếu nhập xuất khác
+        """
+        for picking in self:
+            picking = picking.with_company(picking.company_id)
+            if not picking.other_import and not picking.other_export:
+                if picking.picking_type_id and picking.state == 'draft':
+                    if picking.picking_type_id.default_location_src_id:
+                        location_id = picking.picking_type_id.default_location_src_id.id
+                    elif picking.partner_id:
+                        location_id = picking.partner_id.property_stock_supplier.id
+                    else:
+                        _customerloc, location_id = self.env['stock.warehouse']._get_partner_locations()
+
+                    if picking.picking_type_id.default_location_dest_id:
+                        location_dest_id = picking.picking_type_id.default_location_dest_id.id
+                    elif picking.partner_id:
+                        location_dest_id = picking.partner_id.property_stock_customer.id
+                    else:
+                        location_dest_id, _supplierloc = self.env['stock.warehouse']._get_partner_locations()
+
+                    picking.location_id = location_id
+                    picking.location_dest_id = location_dest_id
 
     def _action_done(self):
         old_date_done = {
@@ -323,9 +348,6 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
-        # if 'date_done' in vals:
-        #     self.move_ids.write({'date': self.date_done})
-        #     self.move_line_ids.write({'date': self.date_done})
         return res
 
     def action_back_to_draft(self):
