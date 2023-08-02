@@ -339,7 +339,10 @@ class SummaryAccountMovePos(models.Model):
         synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
         synthetic_account_move.create_an_invoice()
 
-        adjusted_move = self.env['summary.adjusted.invoice.pos'].search([('exists_bkav', '=', False)])
+        adjusted_move = self.env['summary.adjusted.invoice.pos'].search([
+            ('exists_bkav', '=', False),
+            ('source_invoice', '!=', False)
+        ])
         adjusted_move.create_an_invoice()
 
     def handle_invoice_balance_clearing(
@@ -384,47 +387,58 @@ class SummaryAccountMovePos(models.Model):
                 r.synthetic_id.store_id.id == store_id and \
                 float(r.price_unit) == float(v["price_unit"])
             )
-            
-            for line in lines:
-                row = v
-                if abs(line.remaining_quantity) > abs(v["quantity"]):
-                    row["quantity"] = abs(row["quantity"])
-                    adjusted_quantity += abs(v["quantity"])
-                    remaining_quantity = line.remaining_quantity + v["quantity"]
-                    if remaining_records.get(store_id):
-                        rows = remaining_records[store_id]
-                        if rows.get(line.synthetic_id.id):
-                            rows[line.synthetic_id.id].append(row)
+            if lines:
+                for line in lines:
+                    row = v
+                    if abs(line.remaining_quantity) > abs(v["quantity"]):
+                        row["quantity"] = abs(row["quantity"])
+                        adjusted_quantity += abs(v["quantity"])
+                        remaining_quantity = line.remaining_quantity + v["quantity"]
+                        if remaining_records.get(store_id):
+                            rows = remaining_records[store_id]
+                            if rows.get(line.synthetic_id.id):
+                                rows[line.synthetic_id.id].append(row)
+                            else:
+                                rows[line.synthetic_id.id] = [row]
                         else:
-                            rows[line.synthetic_id.id] = [row]
+                            remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                        line.sudo().with_delay(
+                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                        ).write({
+                            "remaining_quantity": remaining_quantity,
+                            "adjusted_quantity": adjusted_quantity
+                        })
+                        break
                     else:
-                        remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                    line.sudo().with_delay(
-                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                    ).write({
-                        "remaining_quantity": remaining_quantity,
-                        "adjusted_quantity": adjusted_quantity
-                    })
-                    break
-                else:
-                    row["quantity"] = abs(line.remaining_quantity)
-                    v["quantity"] += line.remaining_quantity
-                    adjusted_quantity += abs(line.remaining_quantity)
+                        row["quantity"] = abs(line.remaining_quantity)
+                        v["quantity"] += line.remaining_quantity
+                        adjusted_quantity += abs(line.remaining_quantity)
 
-                    if remaining_records.get(store_id):
-                        rows = remaining_records[store_id]
-                        if rows.get(line.synthetic_id.id):
-                            rows[line.synthetic_id.id].append(row)
+                        if remaining_records.get(store_id):
+                            rows = remaining_records[store_id]
+                            if rows.get(line.synthetic_id.id):
+                                rows[line.synthetic_id.id].append(row)
+                            else:
+                                rows[line.synthetic_id.id] = [row]
                         else:
-                            rows[line.synthetic_id.id] = [row]
+                            remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                        line.sudo().with_delay(
+                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                        ).write({
+                            "remaining_quantity": 0,
+                            "adjusted_quantity": adjusted_quantity
+                        })
+            else:
+                row = v
+                row["quantity"] = abs(row["quantity"])
+                if remaining_records.get(store_id):
+                    rows = remaining_records[store_id]
+                    if rows.get('adjusted'):
+                        rows['adjusted'].append(row)
                     else:
-                        remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                    line.sudo().with_delay(
-                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                    ).write({
-                        "remaining_quantity": 0,
-                        "adjusted_quantity": adjusted_quantity
-                    })
+                        rows['adjusted'] = [row]
+                else:
+                    remaining_records[store_id] = {'adjusted': [row]}
         else:
             row = v
             row["quantity"] = abs(row["quantity"])
@@ -436,6 +450,7 @@ class SummaryAccountMovePos(models.Model):
                     rows['adjusted'] = [row]
             else:
                 remaining_records[store_id] = {'adjusted': [row]}
+
 
     def cronjob_collect_invoice_to_bkav_end_day(self):
         self.collect_invoice_to_bkav_end_day()

@@ -22,8 +22,10 @@ class SaleOrderLineNhanh(models.Model):
     @api.depends('price_subtotal')
     def _compute_price_bkav(self):
         for r in self:
-            tax = sum(r.tax_id.mapped('amount')) / 100
-            r.price_bkav = (r.price_subtotal/r.product_uom_qty) / (1 + tax)
+            price_bkav = 0
+            if r.product_uom_qty:
+                r.price_bkav = (r.price_subtotal/r.product_uom_qty)
+
 
 
     # def _compute_discount_after_unit(self):
