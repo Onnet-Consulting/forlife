@@ -160,9 +160,12 @@ class InheritStockPicking(models.Model):
                     'price_unit': price_unit,
                     'amount_total': price_unit * move_in.product_uom_qty
                 })
-            picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
-            self = self.with_context(exchange_code='incoming')
-            self.write({'picking_outgoing_id': picking_outgoing_id.id})
+
+            # K tạo phiếu xuất NVL với trường hợp xuất thừa
+            if self.location_id.code != 'N0103':
+                picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
+                self = self.with_context(exchange_code='incoming')
+                self.write({'picking_outgoing_id': picking_outgoing_id.id})
         return res
 
     def _update_forlife_production(self):
