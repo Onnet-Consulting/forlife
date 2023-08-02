@@ -146,10 +146,12 @@ class Inventory(models.Model):
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
-        if self.state == 'first_inv':
+        if self.state == 'first_inv' and self.x_status == 2:
             self.action_validate('second_inv')
-        elif self.state == 'second_inv':
+        elif self.state == 'second_inv' and self.x_status == 3:
             self.action_validate('done')
+        else:
+            return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_validate(self, state):
         if not self.exists():
