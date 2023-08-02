@@ -3,6 +3,8 @@
 from odoo import models, fields, api, _
 from datetime import datetime
 import json
+from odoo.exceptions import ValidationError
+
 from ...bkav_connector.models import bkav_action
 
 
@@ -142,6 +144,8 @@ class StockTransfer(models.Model):
             return False
         if self.location_dest_id.id_deposit and self.location_id.id_deposit:
             return False
+        if not self.transporter_id:
+            raise ValidationError('Vui lòng thêm thông tin người vận chuyển để tạo HDDT BKAV!')
         return True
 
     @api.depends('data_compare_status')
