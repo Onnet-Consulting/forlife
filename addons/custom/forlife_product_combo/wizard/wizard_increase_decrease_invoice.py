@@ -48,21 +48,23 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
 
     def action_confirm(self):
         if self.line_ids.filtered(lambda x: x.is_selected):
+            move_type = 'in_invoice' if (self.origin_invoice_id.move_type == 'in_invoice' and self.invoice_type == 'increase') or (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else 'in_refund'
             move_copy_id = self.origin_invoice_id.copy({
                 'invoice_type': self.invoice_type,
                 'origin_invoice_id': self.origin_invoice_id.id,
+                'move_type': move_type,
                 'reference': self.origin_invoice_id.name,
                 'purchase_order_product_id': False,
                 'receiving_warehouse_id': False,
                 'invoice_date': fields.Date.today(),
-                'line_ids': [],
+                # 'line_ids': [],
             })
-            check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
-                    (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
-            move_copy_id.write({
-                'line_ids': self.prepare_move_line(),
-                'direction_sign': 1 if check_move_type else -1,
-            })
+            # check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
+            #         (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
+            # move_copy_id.write({
+            #     'line_ids': self.prepare_move_line(),
+            #     'direction_sign': 1 if check_move_type else -1,
+            # })
             return {
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
