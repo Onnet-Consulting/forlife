@@ -229,7 +229,7 @@ class InheritPosOrder(models.Model):
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
         to_invoice = order['data']['to_invoice']
-        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
+        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': True})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
             line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
