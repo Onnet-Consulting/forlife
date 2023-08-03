@@ -124,10 +124,13 @@ class StockTransferRequest(models.Model):
                 })
                 dic_data = {
                     'state': 'approved',
-                    'employee_id': record.user_id.id,
+                    'employee_id': record.user_id.employee_id.id or False,
+                    'department_id': record.department_id.id,
                     'stock_request_id': record.id,
                     'location_id': item.location_id.id,
+                    'location_name': item.location_id.location_id.name+'/'+item.location_id.name,
                     'location_dest_id': item.location_dest_id.id,
+                    'location_dest_name': item.location_dest_id.location_id.name+'/'+item.location_dest_id.name,
                     'work_to': record.production_id.id or False,
                     'stock_transfer_line': [data_stock_transfer_line]
                 }
