@@ -64,7 +64,7 @@ class AccountMoveSaleOrder(models.Model):
         for vat, value in reward_amount.items():
             value_not_tax = round(abs(value)/(1+vat/100))
             item = {
-                "ItemName": 'Chiết khấu tổng đơn',
+                "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
                 "Qty": 1.0,
                 "Price": value_not_tax,
