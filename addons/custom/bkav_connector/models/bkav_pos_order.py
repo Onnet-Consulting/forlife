@@ -10,7 +10,7 @@ class AccountMovePosOrder(models.Model):
 
     def _get_promotion_in_pos(self, total_point,use_point,rank_total):
         list_invoice = []
-        if total_point > 0:
+        if total_point != 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
                 "UnitName": 'Điểm',
@@ -22,7 +22,7 @@ class AccountMovePosOrder(models.Model):
                 "ItemTypeID": 0,
             }
             list_invoice.append(line_invoice)
-        if use_point > 0:
+        if use_point != 0:
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
@@ -35,7 +35,7 @@ class AccountMovePosOrder(models.Model):
             }
             list_invoice.append(line_invoice)
 
-        if rank_total > 0:
+        if rank_total != 0:
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": 'Đơn vị',
@@ -57,7 +57,8 @@ class AccountMovePosOrder(models.Model):
             pos_order_id = invoice.pos_order_id
             if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
                 continue           
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
+                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             total_point = pos_order_id.total_point
             subuse_point = pos_order_id.lines.filtered(
@@ -81,11 +82,11 @@ class AccountMovePosOrder(models.Model):
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.qty,
                     "Price": line.price_bkav,
-                    "Amount": line.qty * line.price_bkav,
+                    "Amount": line.price_subtotal,
                     "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal * line.discount/100,
+                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 if vat == 0:
@@ -112,7 +113,7 @@ class AccountMovePosOrder(models.Model):
             # if invoice.invoice_info_company_name:
             #     BuyerName = invoice.invoice_info_company_name
 
-            BuyerTaxCode =invoice.partner_id.vat if invoice.partner_id.vat else ''
+            BuyerTaxCode =invoice.partner_id.vat or '' if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
                 BuyerTaxCode = invoice.invoice_info_tax_number
 
@@ -120,7 +121,7 @@ class AccountMovePosOrder(models.Model):
             if invoice.invoice_info_company_name:
                 BuyerUnitName = invoice.invoice_info_company_name
 
-            BuyerAddress = invoice.partner_id.country_id.name if invoice.partner_id.country_id.name else ''
+            BuyerAddress = invoice.partner_id.contact_address_complete if invoice.partner_id.contact_address_complete else ''
             if invoice.invoice_info_address:
                 BuyerAddress = invoice.invoice_info_address
 

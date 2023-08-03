@@ -10,7 +10,7 @@
                 <xpath expr="//field[@name='stock_request_id']" position="before">
                     <field name="vendor_contract_id" domain="[('state','=','effective'),('contract_type','=','economic')]"/>
                     <field name="delivery_contract_id" domain="[('state','=','effective'),('contract_type','=','transport')]"/>
-                    <field name="transporter_id"/>
+                    <field name="transporter_id" required="1"/>
                 </xpath>
                 <xpath expr="//field[@name='location_id']" position="after">
                     <field name="location_name"/>
