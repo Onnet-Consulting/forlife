@@ -205,10 +205,10 @@ class StockTransfer(models.Model):
         return bkav_action.download_invoice_bkav(self)
 
 
-    def action_cancel(self):
-        res = super(StockTransfer, self).action_cancel()
-        self.cancel_invoice_bkav()
-        return res
+    # def action_cancel(self):
+    #     res = super(StockTransfer, self).action_cancel()
+    #     self.cancel_invoice_bkav()
+    #     return res
     
     def unlink(self):
         for item in self:
