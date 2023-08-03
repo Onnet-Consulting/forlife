@@ -2607,8 +2607,7 @@ class PurchaseOrderLine(models.Model):
             })
         return vals
 
-    @api.depends('order_id.cost_line.is_check_pre_tax_costs',
-                 'order_id.order_line')
+    @api.depends('order_id.cost_line.is_check_pre_tax_costs', 'order_id.order_line')
     def _compute_before_tax(self):
         for rec in self:
             cost_line_true = rec.order_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
@@ -2627,8 +2626,7 @@ class PurchaseOrderLine(models.Model):
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
-    @api.depends('order_id.cost_line.is_check_pre_tax_costs',
-                 'order_id.exchange_rate_line_ids')
+    @api.depends('order_id.cost_line.is_check_pre_tax_costs', 'order_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
             cost_line_false = rec.order_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
