@@ -23,7 +23,7 @@ class PosOlDiscountDetails(models.Model):
     money_reduced = fields.Monetary('Money Reduced', compute='_compute_money_reduced', store=False)  # compute_field
     currency_id = fields.Many2one('res.currency', related='pos_order_line_id.currency_id')
 
-    @api.depends('recipe')
+    @api.depends('recipe', 'type')
     def _compute_money_reduced(self):
         for rec in self:
             rec.money_reduced = rec.get_money_reduced()

@@ -91,5 +91,5 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="invoice_not_exists_bkav_menu" parent="account.account_invoicing_menu" action="invoice_not_exists_bkav_action" sequence="10"/>
+    <!--menuitem id="invoice_not_exists_bkav_menu" parent="account.account_invoicing_menu" action="invoice_not_exists_bkav_action" sequence="10"/-->
 </odoo>

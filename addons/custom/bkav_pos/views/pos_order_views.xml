@@ -1,29 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-        <record id="stock_transfer_form_inherit_bkav" model="ir.ui.view">
-            <field name="name">stock_transfer_form_bkav</field>
-            <field name="model">stock.transfer</field>
-            <field name="inherit_id" ref="forlife_stock.stock_transfer_form"/>
+        <record id="bkav_invoice_pos_form_view" model="ir.ui.view">
+            <field name="name">view.pos.form.voucher.inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='stock_request_id']" position="before">
-                    <field name="vendor_contract_id" domain="[('state','=','effective'),('contract_type','=','economic')]"/>
-                    <field name="delivery_contract_id" domain="[('state','=','effective'),('contract_type','=','transport')]"/>
-                    <field name="transporter_id"/>
-                </xpath>
-                <xpath expr="//field[@name='location_id']" position="after">
-                    <field name="location_name"/>
-                </xpath>
-                <xpath expr="//field[@name='location_dest_id']" position="after">
-                    <field name="location_dest_name"/>
-                </xpath>
-                <xpath expr=".//notebook" position="inside">
-                    <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible':['|',('state', 'not in', ('out_approve','in_approve','done','cancel')),('is_general','=',True)]}">
+                <xpath expr="//page[@name='notes']" position="after">
+                    <page id="bkav_invoice" string="BKAV Invoice">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|','|',('exists_bkav', '!=', False),('invoice_guid', '!=', False),('state','not in', ('out_approve','in_approve','done'))]}"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
@@ -39,21 +26,22 @@
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
-                                string="Download eInvoice"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
-                                groups="account.group_account_invoice"/>
-                        <br/>
+                                string="Download eInvoice" groups="account.group_account_invoice"/>
                         <br/>
                         <group>
                             <group>
                                 <field name="exists_bkav" readonly="1"/>
-                                <field name="is_post_bkav" readonly="1"/>
                                 <field name="is_general" readonly="1"/>
+                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
+                                <field name="origin_move_id"
+                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
                                 <field name="invoice_no" readonly="1"/>
                                 <field name="invoice_form" readonly="1"/>
-                                <field name="invoice_serial" readonly="1"/>
                             </group>
                             <group>
+                                <field name="is_post_bkav" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
                                 <field name="invoice_state_e" readonly="1"/>
                                 <field name="invoice_guid" readonly="1"/>
                                 <field name="invoice_e_date" readonly="1"/>
@@ -61,7 +49,6 @@
                         </group>
                     </page>
                 </xpath>
-                
             </field>
         </record>
     </data>

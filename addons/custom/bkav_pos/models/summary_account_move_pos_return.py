@@ -26,10 +26,11 @@ class SummaryAccountMovePosReturn(models.Model):
         item = {
             "product_id": line.product_id.id,
             "quantity": line.qty,
-            "price_unit": line.refunded_orderline_id.price_bkav,
+            "price_unit": line.price_unit_excl,
+            "price_unit_origin": line.refunded_orderline_id.price_unit_excl,
             "x_free_good": line.is_reward_line,
             "invoice_ids": [line.order_id.id],
-            "tax_ids": line.tax_ids.ids,
+            "tax_ids": line.tax_ids_after_fiscal_position.ids,
         }
         return item
 
@@ -37,15 +38,15 @@ class SummaryAccountMovePosReturn(models.Model):
     def include_line_by_product_and_price_bkav(self, lines):
         items = {}
         for line in lines:
-            pk = f"{line.product_id.barcode}_{float(line.refunded_orderline_id.price_bkav)}"
+            pk = f"{line.product_id.barcode}_{float(line.price_unit_excl)}"
             item = self.get_move_line(line)
             if items.get(pk):
                 row = items[pk]
                 row["quantity"] += item["quantity"]
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
-                row["tax_ids"].extend(item["tax_ids"])
-                row["tax_ids"] = list(set(row["tax_ids"]))
+                # row["tax_ids"].extend(item["tax_ids"])
+                # row["tax_ids"] = list(set(row["tax_ids"]))
             else:
                 items[pk] = item
         return items
@@ -115,7 +116,8 @@ class SummaryAccountMovePosReturn(models.Model):
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', pos_order.ids),
             ('refunded_orderline_id', '!=', False),
-             ('qty', '!=', 0)
+            ('qty', '<', 0),
+            ('is_promotion', '=', False)
         ])
         data = {}
         items = {}
@@ -168,15 +170,19 @@ class SummaryAccountMovePosReturnLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_origin = fields.Float('Đơn giá gốc')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
-    tax_ids = fields.Many2many('account.tax', string='Thuế', related="product_id.taxes_id")
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
+    def __str__(self):
+        return f"{self.summary_id.code} - {self.barcode}"
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):

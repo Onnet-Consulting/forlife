@@ -10,7 +10,7 @@
                     <button name="button_popup_increase_decrease_invoice"
                             type="object"
                             string="Increase/ Decrease Invoice"
-                            attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('move_type', '!=', 'in_invoice')]}"
+                            attrs="{'invisible': ['|', ('state', '!=', 'posted'), '|', ('move_type', 'not in', ['in_invoice', 'in_refund']), ('origin_invoice_id', '!=', False)]}"
                             groups="account.group_account_invoice"/>
                 </xpath>
                 <xpath expr="//div[@name='button_box']" position="inside">

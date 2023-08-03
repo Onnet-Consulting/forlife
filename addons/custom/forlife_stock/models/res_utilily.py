@@ -62,6 +62,7 @@ class ApiStockTransfer(models.AbstractModel):
             }
         data = {}
         for rec in stock_transfer:
+            brand_id = rec.location_id.warehouse_id.brand_id
             data = {
                 "bill_code": rec.name or '',
                 "export_date": rec.create_date.strftime('%Y-%m-%dT%H:%M:%S'),
@@ -71,6 +72,7 @@ class ApiStockTransfer(models.AbstractModel):
                 "branch_from": rec.location_id.code or '',
                 "branch_to": rec.location_dest_id.code or '',
                 "partner_id": rec.transporter_id.code or '',
+                "brand_code": brand_id.code or ''
             }
         response = {
             "status": 200,
