@@ -50,7 +50,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
         if self.line_ids.filtered(lambda x: x.is_selected):
             move_copy_id = self.origin_invoice_id.copy({
                 'invoice_type': self.invoice_type,
-                'move_type': 'in_invoice',
                 'origin_invoice_id': self.origin_invoice_id.id,
                 'reference': self.origin_invoice_id.name,
                 'purchase_order_product_id': False,
@@ -58,9 +57,11 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'invoice_date': fields.Date.today(),
                 'line_ids': [],
             })
+            check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
+                    (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
             move_copy_id.write({
                 'line_ids': self.prepare_move_line(),
-                'direction_sign': 1 if self.invoice_type == 'increase' else -1,
+                'direction_sign': 1 if check_move_type else -1,
             })
             return {
                 'type': 'ir.actions.act_window',
@@ -94,7 +95,8 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                     partner=self.origin_invoice_id.partner_id,
                     is_refund=line.is_refund,
                 )
-            if self.invoice_type == 'increase':
+            if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
+                    (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund'):
                 tax_mount = 0
                 if taxes_res:
                     for tax in taxes_res['taxes']:

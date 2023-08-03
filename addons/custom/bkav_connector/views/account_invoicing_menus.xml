@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_summary_invoice_nhanh_config" 
+        parent="account.account_invoicing_menu" 
+        name="Tổng hợp hóa đơn Nhanh.vn"
+        sequence="20">
+        <menuitem id="menu_summary_invoice_so_sell_nhanh"
+                name="Tổng hợp hóa đơn bán"
+                action="summary_invoice_so_sell_nhanh_action"
+                sequence="10"/>
+        <menuitem id="menu_summary_invoice_so_return_nhanh"
+                name="Tổng hợp hóa đơn trả"
+                action="summary_invoice_so_return_nhanh_action"
+                sequence="20"/>
+        <menuitem id="menu_synthetic_account_move_so_nhanh"
+                name="Tổng hợp hóa đơn bù trừ"
+                action="synthetic_account_move_so_nhanh_action"
+                sequence="30"/>
+        <menuitem id="menu_summary_adjusted_invoice_so_nhanh"
+                name="Tổng hợp hóa đơn điều chỉnh"
+                action="summary_adjusted_invoice_so_nhanh_action"
+                sequence="30"/>
+    </menuitem>
+</odoo>

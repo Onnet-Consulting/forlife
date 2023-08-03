@@ -30,7 +30,12 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
                 if(orderline.money_reduce_from_product_defective >0){
                     total += orderline.money_reduce_from_product_defective;
                 }
-                totalDiscount += round_pr(orderline.get_unit_price() * orderline.get_quantity() * (orderline.get_discount()/100), rounding);
+                if (orderline.use_discount_cash) {
+                    totalDiscount += orderline.get_discount_cash_amount();
+                }
+                else {
+                    totalDiscount += round_pr(orderline.get_unit_price() * orderline.get_quantity() * (orderline.get_discount()/100), rounding);
+                }
             }
             return total + totalDiscount;
         }

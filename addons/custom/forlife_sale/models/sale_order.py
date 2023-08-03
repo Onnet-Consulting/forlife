@@ -176,6 +176,8 @@ class SaleOrder(models.Model):
         return res
     def write(self, vals_list):
         res = super().write(vals_list)
+        if self._context.get("skip_check_debt_balance"):
+            return res
         self.check_debtBalance()
         return res
 
@@ -253,6 +255,8 @@ class SaleOrder(models.Model):
             return res
 
     def action_create_picking(self):
+        if self.state in ('draft', 'sent'):
+            self.check_sale_promotion()
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
@@ -446,16 +450,18 @@ class SaleOrderLine(models.Model):
 
     def get_product_code(self):
         account = self.x_product_code_id.asset_account.id
-        product_categ_id = self.env['product.category'].search(
-            [('property_stock_valuation_account_id', '=', account)])
+        product_categ_id = self.env['product.category'].search([('property_stock_valuation_account_id', '=', account)])
+        if not product_categ_id:
+            raise UserError(_('Không có nhóm sản phẩm nào cấu hình Tài khoản định giá tồn kho là %s' % self.x_product_code_id.asset_account.code))
         product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
         if not product_id:
-            return False
+            raise UserError(_('Không có sản phẩm nào cấu hình nhóm sản phẩm là %s' % product_categ_id.name))
         if len(product_id) == 1:
             self.product_id = product_id
             return True
         else:
-            raise UserError(_('Không có sản phẩm nào phù hợp với mã tài sản!'))
+            product_names = ','.join(product_id.mapped('display_name'))
+            raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
 
     @api.onchange('x_product_code_id')
     def x_product_code_id_get_domain(self):

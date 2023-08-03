@@ -16,6 +16,14 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+            <!--            <xpath expr="//div[@name='button_box']" position="inside">-->
+            <!--                <field name="is_need_scan_barcode" invisible="1"/>-->
+            <!--                <button name="open_scan_barcode" type="object" icon="fa-barcode" attrs="{'invisible':['|', ('state', '!=', 'assigned'), ('is_need_scan_barcode', '=', False)]}">-->
+            <!--                    <div class="o_field_widget o_stat_info">-->
+            <!--                        <span class="o_stat_text">Quét Barcode</span>-->
+            <!--                    </div>-->
+            <!--                </button>-->
+            <!--            </xpath>-->
             <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '=', True)]}</attribute>
             </xpath>

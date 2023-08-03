@@ -93,7 +93,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 noCreate: true,
                 multiSelect: true,
                 resModel: 'pos.order.line',
-                context: {'tree_view_ref': 'forlife_pos_product_change_refund.pos_order_line_view_tree'},
+                context: {'tree_view_ref': 'forlife_pos_product_change_refund.pos_order_line_view_tree', debug: false},
                 domain: [
                     ['id', 'in', line_ids]
                 ],
@@ -618,7 +618,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                         check_button: check_button,
                         tax_ids: orderline.get_taxes().map(tax => tax.id),
                         discount: orderline.discount,
-                        pos_order_line_discount_details: pos_order_line_discount_details
+                        pos_order_line_discount_details: pos_order_line_discount_details,
+                        handle_change_refund_price: orderline.handle_change_refund_price
                     },
                     destinationOrderUid: false,
                 };
@@ -674,6 +675,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 refunded_orderline_id: orderline.id,
                 tax_ids: orderline.tax_ids,
                 discount: orderline.discount,
+                handle_change_refund_price: orderline.handle_change_refund_price,
                 pos_order_line_discount_details: pos_order_line_discount_details
             }
         }

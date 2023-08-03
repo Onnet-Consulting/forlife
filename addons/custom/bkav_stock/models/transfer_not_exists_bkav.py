@@ -86,6 +86,20 @@ class TransferNotExistsBkav(models.Model):
                 code_int = int(list_code[0])+1
                 code+='0'*(6-len(str(code_int)))+str(code_int)
         self.code = code
+        self._cr.commit()
+
+    def genarate_transporter(self):
+        if self.transporter_id: return
+        if self.delivery_contract_id:
+            self.transporter_id = self.delivery_contract_id.vendor_id.id
+        else:
+            company_id = self.location_id.company_id
+            transporter_id = self.env['vendor.contract'].search([('contract_type','=','transport'),('company_id','=',company_id.id),('state','=','effective')],limit=1)
+            if not transporter_id:
+                self.transporter_id = company_id.partner_id.id
+            else:
+                self.transporter_id = transporter_id.id
+
 
     def general_transfer_not_exists_bkav(self):
         date_now = datetime.utcnow().date()
@@ -95,7 +109,7 @@ class TransferNotExistsBkav(models.Model):
                             location_name, location_dest_name, date_transfer, state)
             SELECT s.location_id, s.location_dest_id, s.company_id, 
                 knc.name||'/'||kn.name, kdc.name||'/'||kd.name, 
-                (SELECT CURRENT_DATE), 'new'
+                (SELECT CURRENT_DATE - INTERVAL '1 days'), 'new'
             FROM stock_transfer s
             JOIN stock_location kn ON s.location_id = kn.id
             JOIN stock_location knc ON kn.location_id = knc.id
@@ -175,6 +189,7 @@ class TransferNotExistsBkav(models.Model):
         for transfer_id in transfer_ids:
             transfer_id = transfer_id.sudo().with_company(transfer_id.location_id.company_id)
             transfer_id.genarate_code()
+            transfer_id.genarate_transporter()
             transfer_id.create_invoice_bkav()
             transfer_id._update_stock_transfer()
 
@@ -195,7 +210,8 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, invoice.date_transfer)
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer,
+                                                                                       datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:

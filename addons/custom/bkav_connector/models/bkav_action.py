@@ -57,7 +57,7 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
     CmdType = int(configs.get('cmd_addInvoice'))
     if issue_invoice_type:
         if issue_invoice_type in ('adjust', 'replace') and (not origin_id or not origin_id.invoice_no):
-            raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
+            raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh hoặc thay thế')
         if issue_invoice_type == 'adjust':
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
         elif issue_invoice_type == 'replace':
@@ -91,10 +91,8 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
                 self.message_post(body=result_data.get('MessLog'))
             if is_publish:
                 publish_invoice_bkav(self)
-                get_invoice_status(self)
-            else: 
-                get_invoice_bkav(self)
-                get_invoice_status(self)
+            get_invoice_bkav(self)
+            get_invoice_status(self)
         except:
             get_invoice_bkav(self)
             get_invoice_status(self)

@@ -37,13 +37,14 @@
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
-                                    <field name="description"/>
+                                    <!--field name="description"/-->
                                     <field name="barcode"/>
-                                    <field name="account_id"/>
+                                    <!--field name="account_id"/-->
                                     <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
+                                    <field name="price_unit_origin"/>
                                     <field name="x_free_good"/>
 <!--                                    <field name="discount"/>-->
 <!--                                    <field name="discount_amount"/>-->

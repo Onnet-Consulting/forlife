@@ -146,10 +146,12 @@ class Inventory(models.Model):
         return super(Inventory, self).unlink()
 
     def action_approved_first(self):
-        if self.state == 'first_inv':
+        if self.state == 'first_inv' and self.x_status == 2:
             self.action_validate('second_inv')
-        elif self.state == 'second_inv':
+        elif self.state == 'second_inv' and self.x_status == 3:
             self.action_validate('done')
+        else:
+            return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_validate(self, state):
         if not self.exists():
@@ -657,6 +659,9 @@ from (select isl.product_id                       as product_id,
                         detail_vals.append(inv._get_update_value(vals=inv_data.get(str(product.id)), field_add=field_add))
                     if detail_vals:
                         self.env['inventory.detail'].sudo().create(detail_vals)
+            if inv.x_status in (2, 3):
+                inv.write({'x_status': 0})
+                inv.message_post(body='Phiên kiểm đếm đã được cập nhật thêm. Bộ phận cửa hàng cần xác nhận lại để cập nhật Chi tiết kiểm kê')
 
     @api.model
     def _get_update_value(self, vals, **kwargs):

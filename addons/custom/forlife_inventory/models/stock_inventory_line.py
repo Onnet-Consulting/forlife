@@ -29,7 +29,7 @@ class StockInventoryLine(models.Model):
                     if not loc:
                         raise ValidationError(_('Không tìm thấy lí do "Nhập cân đối tồn kho - kiểm kê định kì mã N0202 ở công ty sản xuất"'))
                     picking = self.env['stock.picking'].with_company(company).sudo().create({
-                        'reason_type_id': ReasonType.search([('code', '=', 'N02'), ('company_id', '=', company.id)]).id,
+                        'reason_type_id': ReasonType.search([('code', '=', 'N02'), ('company_id', '=', company.id)], limit=1).id,
                         'picking_type_id': type_id,
                         'location_id': loc.id,
                         'location_dest_id': location_id.id,
@@ -40,7 +40,6 @@ class StockInventoryLine(models.Model):
                             'location_id': loc.id,
                             'location_dest_id': location_id.id,
                             'name': vals['name'],
-                            'date': datetime.now(),
                             'product_uom': vals['product_uom'],
                             'product_uom_qty': vals['product_uom_qty'],
                             'quantity_done': vals['product_uom_qty'],
@@ -53,7 +52,7 @@ class StockInventoryLine(models.Model):
                     if not loc_dest:
                         raise ValidationError(_('Không tìm thấy lí do "Xuất cân đối tồn kho - kiểm kê định kì mã X0202 ở công ty sản xuất"'))
                     picking = self.env['stock.picking'].with_company(company).sudo().create({
-                        'reason_type_id': ReasonType.search[('code', '=', 'X02'), ('company_id', '=', company.id)],
+                        'reason_type_id': ReasonType.search([('code', '=', 'X02'), ('company_id', '=', company.id)], limit=1).id,
                         'picking_type_id': type_id,
                         'location_id': location_id.id,
                         'location_dest_id': loc_dest.id,
@@ -64,7 +63,6 @@ class StockInventoryLine(models.Model):
                             'location_id': location_id.id,
                             'location_dest_id': loc_dest.id,
                             'name': vals['name'],
-                            'date': datetime.now(),
                             'product_uom': vals['product_uom'],
                             'product_uom_qty': vals['product_uom_qty'],
                             'quantity_done': vals['product_uom_qty'],
@@ -73,5 +71,6 @@ class StockInventoryLine(models.Model):
                         })],
                     })
                 picking.with_context(endloop=True).button_validate()
+                picking.date_done = self.inventory_id.date
                 return picking
         return True

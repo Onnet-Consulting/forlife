@@ -28,7 +28,7 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                         noCreate: true,
                         multiSelect: true,
                         resModel: 'vietinbank.transaction.model',
-                        context: {},
+                        context: {debug: false},
                         domain: [
                             ['pos_order_id', '=', line.pos.config.id],
                             ['payment_method_id', '=', line.payment_method.id],

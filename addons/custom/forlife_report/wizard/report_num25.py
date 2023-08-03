@@ -260,7 +260,7 @@ select (
                         if _phantram_hoanthanh <= pt_ht_cuahang and _phantram_hoanthanh >= phantram_hoanthanh:
                             phantram_hoanthanh = _phantram_hoanthanh
                             heso_giantiep = v
-                    thu_nhap_du_tinh_gian_tiep = value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * heso_giantiep * _heso_codinh_giantiep
+                    thu_nhap_du_tinh_gian_tiep = value.get('tong_cong_cua_hang', 0) / value.get('tong_hs_vt_gt') * heso_giantiep * _heso_codinh_giantiep / 100
 
                 # Thu nhập dự tính
                 value['thu_nhap_du_tinh'] = thu_nhap_du_tinh_truc_tiep + thu_nhap_du_tinh_gian_tiep

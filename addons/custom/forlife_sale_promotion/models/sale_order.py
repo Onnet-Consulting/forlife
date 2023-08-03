@@ -286,16 +286,17 @@ class SaleOrder(models.Model):
                         })]
                 # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
+                    product_domain = []
                     for line in rec.order_line:
                         # check khuyên mãi để tạo promotion
                         if line.reward_id.reward_type == "discount":
-                            product_domain = line.reward_id._get_discount_product_domain()
+                            product_domain += line.reward_id._get_discount_product_domain()
                             for line_promotion in rec.order_line:
                                 warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
 
                                 if line_promotion.product_id.filtered_domain(
-                                        product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line:
+                                        product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line and not (line_promotion.product_id.detailed_type == 'service' and line_promotion.product_id.x_negative_value):
                                     discount_amount = line_promotion.price_unit * \
                                                       line_promotion.product_uom_qty * \
                                                       (line.reward_id.discount or 100) / 100
@@ -311,6 +312,36 @@ class SaleOrder(models.Model):
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             line.write({'state': 'draft'})
                             line.unlink()
+                        else:
+                            sub_total = 0
+                            for line_pri in rec.order_line:
+                                if line_pri.product_id.filtered_domain(
+                                        product_domain) and not line_pri.x_free_good and not line_pri.is_reward_line and not (
+                                        line_pri.product_id.detailed_type == 'service' and line_pri.product_id.x_negative_value):
+                                    sub_total += line_pri.price_subtotal
+                            if line.product_id.detailed_type == 'service' and line.product_id.x_negative_value:
+                                for line_promotion in rec.order_line:
+                                    warehouse_code = line_promotion.x_location_id.warehouse_id.code
+                                    analytic_account_id = warehouse_code and self.env[
+                                        'account.analytic.account'].search([('code', 'like', '%' + warehouse_code)],
+                                                                           limit=1)
+
+                                    if line_promotion.product_id.filtered_domain(
+                                            product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line and not (
+                                            line_promotion.product_id.detailed_type == 'service' and line_promotion.product_id.x_negative_value):
+                                        discount_amount = line_promotion.price_subtotal * -line.price_subtotal / sub_total
+                                        discount_account_id = line_promotion.product_id.categ_id.discount_account_id or line_promotion.product_id.categ_id.property_account_expense_categ_id
+                                        rec.promotion_ids = [(0, 0, {
+                                            'product_id': line_promotion.product_id.id,
+                                            'value': discount_amount,
+                                            'promotion_type': 'reward',
+                                            'account_id': discount_account_id and discount_account_id.id,
+                                            'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                                            'description': "Chiết khấu khuyến mãi"
+                                        })]
+                                        line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
+                                line.write({'state': 'draft'})
+                                line.unlink()
                 rec.write({"state": "done_sale"})
 
     def action_open_reward_wizard(self):

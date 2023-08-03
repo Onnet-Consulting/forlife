@@ -156,15 +156,7 @@ class StockPicking(models.Model):
     def button_forlife_validate(self):
         self.ensure_one()
         if self.is_pk_purchase:
-            # if self.picking_type_id.exchange_code == 'incoming' and self.state != 'done':
-            #     self._update_forlife_production()
             view_over = self.env.ref('forlife_stock.stock_picking_over_popup_view_form')
-            view_over_less = self.env.ref('forlife_stock.stock_picking_over_less_popup_view_form')
-            # for pk, pk_od in zip(self.move_line_ids_without_package, self.move_ids_without_package):
-            #     if str(pk.po_id) == str(pk_od.po_l_id) and pk.qty_done > pk_od.product_uom_qty:
-            #         tolerance = pk.product_id.tolerance
-            #         if pk.qty_done > pk_od.product_uom_qty * (1 + (tolerance / 100)):
-            #             raise ValidationError('Sản phẩm %s không được nhập quá dung sai %s %%' % (pk.product_id.name, tolerance))
             if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
                    zip(self.move_line_ids_without_package, self.move_ids_without_package)):
                 return {
@@ -177,20 +169,6 @@ class StockPicking(models.Model):
                     'target': 'new',
                     'context': dict(self.env.context, default_picking_id=self.id),
                 }
-            # if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-            #        zip(self.move_line_ids_without_package, self.move_ids_without_package)) and any(
-            #     pk.qty_done < pk_od.product_uom_qty for pk, pk_od in
-            #     zip(self.move_line_ids_without_package, self.move_ids_without_package)):
-            #     return {
-            #         'name': 'Tạo phần dở dang thừa/thiếu?',
-            #         'type': 'ir.actions.act_window',
-            #         'view_mode': 'form',
-            #         'res_model': 'stock.picking.over.popup.confirm',
-            #         'views': [(view_over_less.id, 'form')],
-            #         'view_id': view_over_less.id,
-            #         'target': 'new',
-            #         'context': dict(self.env.context, default_picking_id=self.id),
-            #     }
         return self.button_validate()
 
     def action_confirm(self):
@@ -296,6 +274,10 @@ class StockPicking(models.Model):
     is_from_request = fields.Boolean('', default=False)
     stock_name = fields.Char(string='Mã phiếu')
 
+    # Lệnh sản xuất, xử lý khi tạo điều chuyển cho LSX A sang LSX B
+    work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
+    work_to = fields.Many2one('forlife.production', string="LSX To", ondelete='restrict')
+
     @api.onchange('reason_type_id')
     def _onchange_reason_location(self):
         if self.reason_type_id:
@@ -312,7 +294,6 @@ class StockPicking(models.Model):
                     }
                 }
 
-
     @api.depends('location_id', 'location_dest_id')
     def compute_display_asset(self):
         for r in self:
@@ -320,6 +301,32 @@ class StockPicking(models.Model):
                 r.display_asset = 'show'
             else:
                 r.display_asset = 'hide'
+
+    @api.depends('picking_type_id', 'partner_id')
+    def _compute_location_id(self):
+        """
+            K update lại location với các phiếu nhập xuất khác
+        """
+        for picking in self:
+            picking = picking.with_company(picking.company_id)
+            if not picking.other_import and not picking.other_export:
+                if picking.picking_type_id and picking.state == 'draft':
+                    if picking.picking_type_id.default_location_src_id:
+                        location_id = picking.picking_type_id.default_location_src_id.id
+                    elif picking.partner_id:
+                        location_id = picking.partner_id.property_stock_supplier.id
+                    else:
+                        _customerloc, location_id = self.env['stock.warehouse']._get_partner_locations()
+
+                    if picking.picking_type_id.default_location_dest_id:
+                        location_dest_id = picking.picking_type_id.default_location_dest_id.id
+                    elif picking.partner_id:
+                        location_dest_id = picking.partner_id.property_stock_customer.id
+                    else:
+                        location_dest_id, _supplierloc = self.env['stock.warehouse']._get_partner_locations()
+
+                    picking.location_id = location_id
+                    picking.location_dest_id = location_dest_id
 
     def _action_done(self):
         old_date_done = {
@@ -341,9 +348,6 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
-        # if 'date_done' in vals:
-        #     self.move_ids.write({'date': self.date_done})
-        #     self.move_line_ids.write({'date': self.date_done})
         return res
 
     def action_back_to_draft(self):
@@ -418,47 +422,106 @@ class StockPicking(models.Model):
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         for record in self:
-            for rec in record.move_ids_without_package:
-                if record.other_import:
-                    if rec.work_production:
-                        quantity = self.env['quantity.production.order'].search(
-                            [('product_id', '=', rec.product_id.id),
-                             ('location_id', '=', rec.picking_id.location_dest_id.id),
-                             ('production_id', '=', rec.work_production.id)])
-                        if quantity:
-                            quantity.write({
-                                'quantity': quantity.quantity + rec.quantity_done
-                            })
-                        else:
-                            self.env['quantity.production.order'].create({
-                                'product_id': rec.product_id.id,
-                                'location_id': rec.picking_id.location_dest_id.id,
-                                'production_id': rec.work_production.id,
-                                'quantity': rec.quantity_done
-                            })
-                if record.other_export:
-                    quantity_prodution = self.env['quantity.production.order'].search(
-                        [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id),
-                         ('production_id', '=', rec.work_production.id)])
-                    if rec.work_production:
-                        if quantity_prodution:
-                            if rec.quantity_done > quantity_prodution.quantity:
-                                raise ValidationError(
-                                    'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
-                                    rec.product_id.code, rec.product_id.name, rec.work_production.code))
-                            else:
-                                quantity_prodution.update({
-                                    'quantity': quantity_prodution.quantity - rec.quantity_done
-                                })
-                        else:
-                            raise ValidationError(
-                                'Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
-                if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done':
-                    if rec.work_production and rec.quantity_done > rec.work_production.forlife_production_finished_product_ids.filtered(
-                            lambda r: r.product_id.id == rec.product_id.id).remaining_qty:
-                        raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name))
+
+            # Nhâp/ xuất khác
+            if record.other_export or record.other_import:
+                self.update_quantity_production_order_in_other_picking(record)
+
+            # Nhập thành phẩm SX
+            if record.picking_type_id.exchange_code == 'incoming' and record.state == 'done' and record.location_id.code != 'N0103':
+                self.validate_quantity_remain_finished_picking(record)
+
+            # Điều chuyển từ stock.transfer có gắn lệnh sản xuất
+            if record.transfer_id and (record.work_from or record.work_to):
+                self.update_quantity_production_order_from_stock_transfer(record)
 
         return res
+
+    # Nhập/ xuất khác
+    def update_quantity_production_order_in_other_picking(self, picking_id):
+        """
+            Update lại số lượng tồn kho theo LSX ở phiếu nhập xuất khác
+        """
+
+        for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            # Nhập khác
+            if picking_id.other_import:
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                quantity = self.env['quantity.production.order'].search(domain)
+                if quantity:
+                    quantity.write({
+                        'quantity': quantity.quantity + rec.quantity_done
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': rec.product_id.id,
+                        'location_id': rec.picking_id.location_dest_id.id,
+                        'production_id': rec.work_production.id,
+                        'quantity': rec.quantity_done
+                    })
+
+            # Xuất khác
+            if picking_id.other_export:
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                quantity_prodution = self.env['quantity.production.order'].search(domain)
+                if quantity_prodution:
+                    if rec.quantity_done > quantity_prodution.quantity:
+                        raise ValidationError(
+                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                    else:
+                        quantity_prodution.update({
+                            'quantity': quantity_prodution.quantity - rec.quantity_done
+                        })
+                else:
+                    raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+
+    # Check tồn thành phẩm
+    def validate_quantity_remain_finished_picking(self, picking_id):
+        for rec in picking_id.move_ids_without_package:
+            remaining_qty = rec.work_production.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id).remaining_qty or 0
+            if rec.work_production and rec.quantity_done > remaining_qty:
+                raise ValidationError('Số lượng sản phẩm [%s] %s lớn hơn số lượng còn lại (%s) trong lệnh sản xuất!' % (rec.product_id.code, rec.product_id.name, str(remaining_qty)))
+
+    # Điều chuyển từ stock.transfer k qua HO
+    def update_quantity_production_order_from_stock_transfer(self, picking_id):
+        """
+            Update lại số lượng tồn kho theo LSX ở phiếu điều chuyển, trường hợp điều chuyển có LSX
+            1. Trừ tồn ở LSX work_from
+            2. Update tồn ở LSX work_to
+        """
+
+        for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            if picking_id.location_id.id == picking_id.transfer_id.location_id.id and picking_id.work_from:
+                # Trừ tồn ở lệnh work_from
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                quantity_prodution = self.env['quantity.production.order'].search(domain)
+                if quantity_prodution:
+                    if rec.quantity_done > quantity_prodution.quantity:
+                        raise ValidationError(
+                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                                rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                    else:
+                        quantity_prodution.update({
+                            'quantity': quantity_prodution.quantity - rec.quantity_done
+                        })
+                else:
+                    raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+
+            if picking_id.location_dest_id.id == picking_id.transfer_id.location_dest_id.id and picking_id.work_to:
+                # Thêm tồn ở lệnh work_to
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                quantity = self.env['quantity.production.order'].search(domain)
+                if quantity:
+                    quantity.write({
+                        'quantity': quantity.quantity + rec.quantity_done
+                    })
+                else:
+                    self.env['quantity.production.order'].create({
+                        'product_id': rec.product_id.id,
+                        'location_id': rec.picking_id.location_dest_id.id,
+                        'production_id': rec.work_production.id,
+                        'quantity': rec.quantity_done
+                    })
 
     @api.model
     def get_import_templates(self):
@@ -597,6 +660,10 @@ class StockMove(models.Model):
         help="Scheduled date until move is done, then date of actual move processing")
     product_other_id = fields.Many2one('forlife.other.in.out.request.line')
     previous_qty = fields.Float(compute='compute_previous_qty', store=1)
+
+    # Lệnh sản xuất, xử lý khi tạo điều chuyển cho LSX A sang LSX B
+    work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
+    work_to = fields.Many2one('forlife.production', string="LSX To", ondelete='restrict')
 
     @api.depends('reason_id')
     def compute_production_order(self):

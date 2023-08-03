@@ -13,6 +13,20 @@ class SaleOrderLineNhanh(models.Model):
     categ_id = fields.Many2one('product.category', string='Product Category', related="product_template_id.categ_id")
     # discount_after_unit = fields.Float('Giá trị sau giảm', compute="_compute_discount_after_unit")
 
+    sale_source_record = fields.Boolean(string="Đơn hàng từ nhanh", related="order_id.source_record")
+    sale_x_is_return = fields.Boolean(string='Đơn trả hàng', related="order_id.x_is_return")
+    sale_is_synthetic = fields.Boolean(string='Synthetic', related="order_id.is_synthetic")
+
+    price_bkav = fields.Monetary(compute="_compute_price_bkav")
+
+    @api.depends('price_subtotal')
+    def _compute_price_bkav(self):
+        for r in self:
+            price_bkav = 0
+            if r.product_uom_qty:
+                price_bkav = (r.price_subtotal/r.product_uom_qty)
+
+            r.price_bkav = price_bkav
 
     # def _compute_discount_after_unit(self):
     #     for line in self:

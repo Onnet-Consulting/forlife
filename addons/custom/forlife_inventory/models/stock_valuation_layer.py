@@ -7,7 +7,7 @@ def _validate_accounting_entries(self):
     company_other_id = self.env['res.company'].sudo().search([('code', '=', '1400')])
     reason_type_5 = self.env['forlife.reason.type'].sudo().search([('code', '=', 'N02'), ('company_id', '=', company_other_id.id)])
     reason_type_4 = self.env['forlife.reason.type'].sudo().search([('code', '=', 'X02'), ('company_id', '=', company_other_id.id)])
-    location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'), ('company_id', '=', company_other_id.id)])
+    location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'N0701'), ('company_id', '=', company_other_id.id)])
     location_dest_check_company = self.env['stock.location'].sudo().search([('code', '=', 'X0202'), ('company_id', '=', company_other_id.id)])
     for svl in self:
         company_id = svl.company_id.id

@@ -44,7 +44,7 @@ class ProductTemplate(models.Model):
             return res
 
         self.sudo().with_delay(
-            description="Sync product to NhanhVn", channel="root.RabbitMQ"
+            description="Sync product to NhanhVn", channel="root.NhanhMQ"
         ).synchronized_create_product(res)
             # self.synchronized_create_product(res)
         return res
