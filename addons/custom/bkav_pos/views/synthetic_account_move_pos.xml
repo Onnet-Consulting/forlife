@@ -67,6 +67,9 @@
                             </field>
                         </page>
                         <page name="HĐĐT" string="Invoices">
+                            <button name="get_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Get eInvoice" groups="account.group_account_invoice"/>
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>

@@ -453,7 +453,7 @@ class SummaryAccountMovePos(models.Model):
 
 
     def cronjob_collect_invoice_to_bkav_end_day(self):
-        self.collect_invoice_to_bkav_end_day()
+        self.collect_invoice_to_bkav_end_day({'is_synthetic': True})
         self.create_an_invoice_bkav()
 
 
@@ -515,6 +515,10 @@ class SummaryAccountMovePos(models.Model):
         if len(sales.keys()):
             move_pos_line = sale_res.line_ids
             for store_id, sale in sales.items():
+                res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                store_data[store_id] = res_store[0].store_id
+                company_ids[store_id] = res_store[0].company_id
+
                 if len(sale.keys()):
                     for k, v in sale.items():
                         summary_line_id = move_pos_line.filtered(
@@ -534,10 +538,11 @@ class SummaryAccountMovePos(models.Model):
         self.collect_invoice_balance_clearing(matching_records, store_data, company_ids)
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
-        if sale_synthetic:
-            sale_synthetic.write({"is_synthetic": True})
-        if refund_synthetic:
-            refund_synthetic.write({"is_synthetic": True})
+        if kwargs.get("is_synthetic"):
+            if sale_synthetic:
+                sale_synthetic.write({"is_synthetic": True})
+            if refund_synthetic:
+                refund_synthetic.write({"is_synthetic": True})
         
         return True
 

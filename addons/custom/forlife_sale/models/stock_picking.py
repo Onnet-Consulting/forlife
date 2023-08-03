@@ -117,7 +117,9 @@ class StockPicking(models.Model):
                     })
                     invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
                     invoice_id.action_post()
-
+            if self.state == "done" and sale_from_nhanh and self.sale_id.x_is_return:
+                if self.company_id.id == self.sale_id.company_id.id:
+                    self.create_invoice_out_refund()
         except Exception as e:
             pass
         

@@ -376,29 +376,29 @@ class AccountMove(models.Model):
                     })
         return res
 
-    @api.depends('partner_id.is_passersby', 'partner_id')
-    def _compute_is_check_vendor_page(self):
-        for rec in self:
-            if rec.partner_id:
-                if rec.partner_id.is_passersby:
-                    vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
-                                                                  ('vendor_back_id', '=', rec.id),
-                                                                  ('company_id', '=', rec.company_id.id),
-                                                                  ('code_tax', '=', rec.partner_id.vat),
-                                                                  ('street_ven', '=', rec.partner_id.street),
-                                                                  ], limit=1)
-                    if not vendor_back:
-                        self.env['vendor.back'].create({'vendor': rec.partner_id.name,
-                                                        'vendor_back_id': rec.id,
-                                                        'company_id': rec.company_id.id,
-                                                        'code_tax': rec.partner_id.vat,
-                                                        'street_ven': rec.partner_id.street,
-                                                        })
-                    else:
-                        rec.vendor_back_ids = [(6, 0, vendor_back.id)]
-                    rec.is_check_vendor_page = True
-                else:
-                    rec.is_check_vendor_page = False
+    # @api.depends('partner_id.is_passersby', 'partner_id')
+    # def _compute_is_check_vendor_page(self):
+    #     for rec in self:
+    #         if rec.partner_id:
+    #             if rec.partner_id.is_passersby:
+    #                 vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
+    #                                                               ('vendor_back_id', '=', rec.id),
+    #                                                               ('company_id', '=', rec.company_id.id),
+    #                                                               ('code_tax', '=', rec.partner_id.vat),
+    #                                                               ('street_ven', '=', rec.partner_id.street),
+    #                                                               ], limit=1)
+    #                 if not vendor_back:
+    #                     self.env['vendor.back'].create({'vendor': rec.partner_id.name,
+    #                                                     'vendor_back_id': rec.id,
+    #                                                     'company_id': rec.company_id.id,
+    #                                                     'code_tax': rec.partner_id.vat,
+    #                                                     'street_ven': rec.partner_id.street,
+    #                                                     })
+    #                 else:
+    #                     rec.vendor_back_ids = [(6, 0, vendor_back.id)]
+    #                 rec.is_check_vendor_page = True
+    #             else:
+    #                 rec.is_check_vendor_page = False
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
@@ -796,8 +796,7 @@ class AccountMoveLine(models.Model):
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.exchange_rate_line_ids')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'move_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
             rec.after_tax = 0
