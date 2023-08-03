@@ -57,7 +57,7 @@ class StockPicking(models.Model):
         if type_create == 'import':
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
-            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id','=',company_id)], limit=1).id
+            location_id = self.env['stock.location'].sudo().search([('code', '=', 'N0701'),('company_id','=',company_id)], limit=1).id
             if not location_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_id.name_get()[0][1]} ở công ty bán lẻ"))
             location_dest_id = location_mapping.location_map_id.id

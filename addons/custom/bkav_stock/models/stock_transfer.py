@@ -69,7 +69,8 @@ class StockTransfer(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer,
+                                                                                       datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             sequence = 0
             for line in invoice.stock_transfer_line:
@@ -146,6 +147,9 @@ class StockTransfer(models.Model):
             return False
         if not self.transporter_id:
             raise ValidationError('Vui lòng thêm thông tin người vận chuyển để tạo HDDT BKAV!')
+        if self.location_dest_id.id_deposit or self.location_id.id_deposit:
+            if not self.delivery_contract_id:
+                raise ValidationError('Vui lòng thêm thông tin HĐ vận chuyển để tạo HDDT BKAV!')
         return True
 
     @api.depends('data_compare_status')

@@ -163,7 +163,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit"/>
+                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}" force_save="1"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount"
                                    force_save="1"
@@ -238,7 +238,7 @@
                                 <field name="product_id" force_save="1" readonly="1"/>
                                 <field name="description" force_save="1" readonly="1"/>
                                 <field name="total_vnd_exchange" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="quantity" readonly="1" force_save="1" string="Số lượng"/>
+                                <field name="quantity" readonly="0" force_save="1" string="Số lượng"/>
                                 <field name="import_tax"/>
                                 <field name="amount_tax" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="special_consumption_tax"/>

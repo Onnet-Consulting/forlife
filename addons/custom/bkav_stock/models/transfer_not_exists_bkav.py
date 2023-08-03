@@ -93,9 +93,10 @@ class TransferNotExistsBkav(models.Model):
         if self.delivery_contract_id:
             self.transporter_id = self.delivery_contract_id.vendor_id.id
         else:
-            transporter_id = self.env['vendor.contract'].search([('contract_type','=','transport')],limit=1)
+            company_id = self.location_id.company_id
+            transporter_id = self.env['vendor.contract'].search([('contract_type','=','transport'),('company_id','=',company_id.id),('state','=','effective')],limit=1)
             if not transporter_id:
-                self.transporter_id = self.location_id.company_id.partner_id.id
+                self.transporter_id = company_id.partner_id.id
             else:
                 self.transporter_id = transporter_id.id
 
@@ -209,7 +210,8 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer,
+                                                                                       datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:
