@@ -158,7 +158,7 @@
                             <field name="exchange_quantity"
                                    readonly="1"/>
                             <field name="quantity"
-                                   readonly="1"
+                                   readonly="0"
                                    force_save="1"/>
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
