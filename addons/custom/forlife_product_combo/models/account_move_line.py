@@ -21,7 +21,7 @@ class AccountMoveLine(models.Model):
         """
         self.ensure_one()
         if self.filtered(lambda r: r.move_id.origin_invoice_id):
-            sign = 1 if self.move_id.invoice_type == 'increase' else -1
+            sign = 1 if (self.move_id.invoice_type == 'increase' and self.move_id.move_type == 'in_invoice') or (self.move_id.invoice_type == 'decrease' and self.move_id.move_type == 'in_refund') else -1
             return self.env['account.tax']._convert_to_tax_line_dict(
                 self,
                 partner=self.partner_id,
