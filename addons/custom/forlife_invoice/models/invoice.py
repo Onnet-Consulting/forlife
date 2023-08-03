@@ -372,29 +372,29 @@ class AccountMove(models.Model):
                     })
         return res
 
-    # @api.depends('partner_id.is_passersby', 'partner_id')
-    # def _compute_is_check_vendor_page(self):
-    #     for rec in self:
-    #         if rec.partner_id:
-    #             if rec.partner_id.is_passersby:
-    #                 vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
-    #                                                               ('vendor_back_id', '=', rec.id),
-    #                                                               ('company_id', '=', rec.company_id.id),
-    #                                                               ('code_tax', '=', rec.partner_id.vat),
-    #                                                               ('street_ven', '=', rec.partner_id.street),
-    #                                                               ], limit=1)
-    #                 if not vendor_back:
-    #                     self.env['vendor.back'].create({'vendor': rec.partner_id.name,
-    #                                                     'vendor_back_id': rec.id,
-    #                                                     'company_id': rec.company_id.id,
-    #                                                     'code_tax': rec.partner_id.vat,
-    #                                                     'street_ven': rec.partner_id.street,
-    #                                                     })
-    #                 else:
-    #                     rec.vendor_back_ids = [(6, 0, vendor_back.id)]
-    #                 rec.is_check_vendor_page = True
-    #             else:
-    #                 rec.is_check_vendor_page = False
+    @api.depends('partner_id.is_passersby', 'partner_id')
+    def _compute_is_check_vendor_page(self):
+        for rec in self:
+            if rec.partner_id:
+                if rec.partner_id.is_passersby:
+                    vendor_back = self.env['vendor.back'].search([('vendor', '=', rec.partner_id.name),
+                                                                  ('vendor_back_id', '=', rec.id),
+                                                                  ('company_id', '=', rec.company_id.id),
+                                                                  ('code_tax', '=', rec.partner_id.vat),
+                                                                  ('street_ven', '=', rec.partner_id.street),
+                                                                  ], limit=1)
+                    if not vendor_back:
+                        self.env['vendor.back'].create({'vendor': rec.partner_id.name,
+                                                        'vendor_back_id': rec.id,
+                                                        'company_id': rec.company_id.id,
+                                                        'code_tax': rec.partner_id.vat,
+                                                        'street_ven': rec.partner_id.street,
+                                                        })
+                    else:
+                        rec.vendor_back_ids = [(6, 0, vendor_back.id)]
+                    rec.is_check_vendor_page = True
+                else:
+                    rec.is_check_vendor_page = False
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
@@ -751,32 +751,32 @@ class AccountMoveLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = rec.total_vnd_exchange = (rec.price_subtotal / rec.move_id.exchange_rate)
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.invoice_line_ids')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'total_vnd_amount')
     def _compute_before_tax(self):
         for rec in self:
+            rec.before_tax = 0
             cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+            for line in rec.move_id.invoice_line_ids:
                 total_cost_true = 0
                 if cost_line_true and line.total_vnd_amount > 0:
                     for item in cost_line_true:
                         before_tax = line.total_vnd_amount / sum(rec.move_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                         total_cost_true += before_tax
-                        nine.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                        line.before_tax = total_cost_true
+                    line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                 else:
-                    nine.before_tax = 0
-                    if nine.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + nine.before_tax
+                    # line.before_tax = 0
+                    if line.before_tax != 0:
+                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.exchange_rate_line_ids')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'move_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
+            rec.after_tax = 0
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line, nine in zip(rec.move_id.invoice_line_ids, rec.move_id.invoice_synthetic_ids):
+            for line in rec.move_id.invoice_line_ids:
                 total_cost = 0
                 sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
                 sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
@@ -784,9 +784,9 @@ class AccountMoveLine(models.Model):
                 if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
                         total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        nine.after_tax = total_cost
+                        line.after_tax = total_cost
                 else:
-                    nine.after_tax = 0
+                    line.after_tax = 0
 
     @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
     def _compute_total_product(self):
