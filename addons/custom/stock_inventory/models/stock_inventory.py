@@ -579,10 +579,10 @@ class Inventory(models.Model):
         self.ensure_one()
         if self.state not in ('first_inv', 'second_inv'):
             return {'type': 'ir.actions.client', 'tag': 'reload'}
-        self.detail_ids.sudo().unlink()
         new_sessions = self.env['inventory.session'].search([('inv_id', '=', self.id), ('updated', '=', False)])
         if not new_sessions:
             raise ValidationError('Không thành công, không tìm thấy phiên kiêm kê mới, vui lòng kiểm tra lại')
+        self.detail_ids = [(5, 0, 0)]
         new_sessions.sudo().write({'updated': True})
         session_lines = self.env['inventory.session'].search([('inv_id', '=', self.id)]).line_ids
         if session_lines:
@@ -603,7 +603,13 @@ with concat_name as (select product_id, array_agg(concat(inv_id, '-', session_id
                         from inventory_session_line isl
                                  join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
                         where ise.inv_id = {self.id} and ise.type = 'other') as data2
-                  where num = 1)
+                  where num = 1),
+    ton_phan_mems as (select product_id          as product_id,
+                            sum(theoretical_qty) as ton_phan_mem
+                    from stock_inventory_line
+                    where inventory_id = {self.id}
+                    group by product_id    
+    )
 select json_object_agg(product_id, data.*) as inv_data
 from (select isl.product_id                       as product_id,
              sum(isl.kiem_ke_thuc_te)             as kiem_ke_thuc_te,
@@ -623,13 +629,15 @@ from (select isl.product_id                       as product_id,
              sum(isl.them2)                       as them2,
              sum(isl.bot2)                        as bot2,
              cn.phien_dem                         as phien_dem,
-             coalesce(gn.ghi_chu, '')             as ghi_chu
+             coalesce(gn.ghi_chu, '')             as ghi_chu,
+             coalesce(tpm.ton_phan_mem, 0)        as ton_phan_mam
       from inventory_session_line isl
                join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
                left join concat_name cn on cn.product_id = isl.product_id
                left join get_note gn on gn.product_id = isl.product_id
+               left join ton_phan_mems tpm on tpm.product_id = isl.product_id
       where ise.inv_id = {self.id}
-      group by isl.product_id, cn.phien_dem, gn.ghi_chu) as data
+      group by isl.product_id, cn.phien_dem, gn.ghi_chu, tpm.ton_phan_mem) as data
                 """
             self._cr.execute(sql)
             inv_data = self._cr.dictfetchone().get('inv_data') or {}
@@ -650,7 +658,6 @@ from (select isl.product_id                       as product_id,
                     'nhom_san_pham': product.categ_id.complete_name,
                     'don_vi': product.uom_id.name,
                     'gia': product.lst_price,
-                    'ton_phan_mam': 0,
                 }
                 detail_vals.append(self._get_update_value(vals=inv_data.get(str(product.id)), field_add=field_add))
             if detail_vals:
@@ -662,7 +669,7 @@ from (select isl.product_id                       as product_id,
     @api.model
     def _get_update_value(self, vals, **kwargs):
         field_list = {
-            'kiem_ke_thuc_te': 0, 'phien_dem_bo_sung': 0, 'hang_khong_kiem_dem': 0, 'tui_ban_hang': 0,
+            'kiem_ke_thuc_te': 0, 'phien_dem_bo_sung': 0, 'hang_khong_kiem_dem': 0, 'tui_ban_hang': 0, 'ton_phan_mam': 0,
             'hang_khong_tem': 0, 'hang_khong_cheat_duoc': 0, 'hang_loi_chua_duyet': 0, 'hang_loi_da_duyet': 0,
             'them1': 0, 'bot1': 0, 'cong_hang_ban_ntl_chua_kiem': 0, 'tru_hang_ban_da_kiem': 0, 'phien_dem': [],
             'bo_sung_hang_chua_cheat': 0, 'tru_hang_kiem_dup': 0, 'them2': 0, 'bot2': 0, 'ghi_chu': False,
