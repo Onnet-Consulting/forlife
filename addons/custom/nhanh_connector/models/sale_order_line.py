@@ -24,9 +24,9 @@ class SaleOrderLineNhanh(models.Model):
         for r in self:
             price_bkav = 0
             if r.product_uom_qty:
-                r.price_bkav = (r.price_subtotal/r.product_uom_qty)
+                price_bkav = (r.price_subtotal/r.product_uom_qty)
 
-
+            r.price_bkav = price_bkav
 
     # def _compute_discount_after_unit(self):
     #     for line in self:
