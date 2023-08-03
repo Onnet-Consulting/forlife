@@ -436,10 +436,10 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
         so_line_sell, so_line_return = self.get_sale_order_nhanh_not_exists_bkav()
 
-        sell_items, order = self.include_line_by_product_and_price_bkav(so_line_sell)
-        res = self.create_summary_account_move_so_nhanh(sell_items, order)
-        return_items, order = self.include_line_by_product_and_price_bkav(so_line_return)
-        res_return = self.create_summary_account_move_so_nhanh_return(return_items, order)
+        sell_items, order_sell = self.include_line_by_product_and_price_bkav(so_line_sell)
+        res = self.create_summary_account_move_so_nhanh(sell_items, order_sell)
+        return_items, order_return = self.include_line_by_product_and_price_bkav(so_line_return)
+        res_return = self.create_summary_account_move_so_nhanh_return(return_items, order_return)
         matching_records = []
         remaining_records = {}
 
@@ -477,6 +477,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     res,
                     None
                 )
+        order = order_sell or order_return
         self.collect_invoice_balance_clearing(matching_records, order)
         self.collect_invoice_difference(remaining_records, order)
 
