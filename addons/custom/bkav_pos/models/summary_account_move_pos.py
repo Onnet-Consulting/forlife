@@ -472,14 +472,13 @@ class SummaryAccountMovePos(models.Model):
         store_data = {}
         company_ids = {}
         if len(refunds.keys()):
-            move_pos_line = sale_res.line_ids
             move_refund_pos_line = refund_res.line_ids
             for store_id, refund in refunds.items():
-                res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                res_store = refund_res.filtered(lambda r: r.store_id.id == store_id)
                 store_data[store_id] = res_store[0].store_id
                 company_ids[store_id] = res_store[0].company_id
-
                 if sales.get(store_id):
+                    move_pos_line = sale_res.line_ids
                     sale = sales[store_id]
                     for k, v in refund.items():
                         if sale.get(k):
