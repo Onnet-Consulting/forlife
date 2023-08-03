@@ -80,7 +80,8 @@ class AccountMoveBKAV(models.Model):
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:            
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
+                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             exchange_rate = invoice.exchange_rate or 1.0
             for line in invoice.invoice_line_ids:
@@ -90,12 +91,12 @@ class AccountMoveBKAV(models.Model):
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.quantity) or 0.0,
-                    "Price": abs(line.price_unit) * exchange_rate,
-                    "Amount": abs(line.price_subtotal) * exchange_rate,
-                    "TaxAmount": abs((line.tax_amount or 0.0)) * exchange_rate,
+                    "Price": abs(line.price_unit),
+                    "Amount": abs(line.price_subtotal),
+                    "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": abs(line.price_total * line.discount/100) * exchange_rate,
+                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
                     "IsDiscount": 0
                 }
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
@@ -117,7 +118,7 @@ class AccountMoveBKAV(models.Model):
             if invoice.invoice_info_company_name:
                 BuyerUnitName = invoice.invoice_info_company_name
 
-            BuyerAddress = invoice.partner_id.country_id.name if invoice.partner_id.country_id.name else ''
+            BuyerAddress = invoice.partner_id.contact_address_complete if invoice.partner_id.contact_address_complete else ''
             if invoice.invoice_info_address:
                 BuyerAddress = invoice.invoice_info_address
 

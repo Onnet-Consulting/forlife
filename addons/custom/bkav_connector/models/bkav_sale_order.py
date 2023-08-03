@@ -34,7 +34,7 @@ class AccountMoveSaleOrder(models.Model):
                 else:
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
-            value_not_tax = abs(value)/(1+vat/100)
+            value_not_tax = round(abs(value)/(1+vat/100))
             item = {
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
@@ -62,7 +62,7 @@ class AccountMoveSaleOrder(models.Model):
             list_invoice_detail.append(item)
         
         for vat, value in reward_amount.items():
-            value_not_tax = abs(value)/(1+vat/100)
+            value_not_tax = round(abs(value)/(1+vat/100))
             item = {
                 "ItemName": 'Chiết khấu tổng đơn',
                 "UnitName": '',
@@ -94,8 +94,8 @@ class AccountMoveSaleOrder(models.Model):
     def get_bkav_data_so(self):
         bkav_data = []
         for invoice in self:
-            
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
+                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
             list_invoice_detail = []
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
@@ -106,17 +106,16 @@ class AccountMoveSaleOrder(models.Model):
                     ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 Price = round(line.price_unit/ ((1 + vat/100)))
-                Amount = Price * line.quantity
                 item = {
                     "ItemName": ItemName,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity,
                     "Price": Price,
-                    "Amount": Amount,
+                    "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_total * line.discount/100,
+                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
                     "IsDiscount": 0
                 }
                 item.update({
@@ -140,7 +139,7 @@ class AccountMoveSaleOrder(models.Model):
             if invoice.invoice_info_company_name:
                 BuyerUnitName = invoice.invoice_info_company_name
 
-            BuyerAddress = invoice.partner_id.country_id.name if invoice.partner_id.country_id.name else ''
+            BuyerAddress = invoice.partner_id.contact_address_complete if invoice.partner_id.contact_address_complete else ''
             if invoice.invoice_info_address:
                 BuyerAddress = invoice.invoice_info_address
 
