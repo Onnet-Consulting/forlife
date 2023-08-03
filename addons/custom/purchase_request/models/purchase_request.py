@@ -165,8 +165,11 @@ class PurchaseRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
+        if not isinstance(vals, list):
+            vals = [vals]
+        for val in vals:
+            if val.get('name', 'New') == 'New':
+                val['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
         return super(PurchaseRequest, self).create(vals)
 
     @api.constrains('order_lines')
