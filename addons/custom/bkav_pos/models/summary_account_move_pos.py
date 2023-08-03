@@ -510,7 +510,14 @@ class SummaryAccountMovePos(models.Model):
                         sales[store_id] = sale
                     else:
                         sales.pop(store_id)
-
+                else:
+                    for k, v in refund.items():
+                        self.handle_invoice_difference(
+                            remaining_records,
+                            synthetic_lines,
+                            v,
+                            store_id
+                        )
         if len(sales.keys()):
             move_pos_line = sale_res.line_ids
             for store_id, sale in sales.items():
