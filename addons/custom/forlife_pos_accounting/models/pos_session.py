@@ -11,6 +11,25 @@ class PosSession(models.Model):
             data['combine_cash_statement_lines'].filtered(lambda line: not line.partner_id).partner_id = store_partner
         if data['split_cash_statement_lines'] and store_partner:
             data['split_cash_statement_lines'].filtered(lambda line: not line.partner_id).partner_id = store_partner
+        split_receivables_cash = data.get('split_receivables_cash')
+        combine_receivables_cash = data.get('combine_receivables_cash')
+        for payment, amounts in split_receivables_cash.items():
+            journal_id = payment.payment_method_id.journal_id.id
+            payment_ref = payment.name
+            self.env['account.move'].search([
+                ('pos_session_id', '=',  self.id),
+                ('journal_id', '=', journal_id),
+                ('payment_ref', '=', payment_ref),
+            ]).filtered(lambda line: not line.partner_id).partner_id = store_partner
+        for payment_method, amounts in combine_receivables_cash.items():
+            journal_id = payment_method.journal_id.id
+            payment_ref = self.name
+            payment_line = self.env['account.bank.statement.line'].search([
+                ('pos_session_id', '=',  self.id),
+                ('journal_id', '=', journal_id),
+                ('payment_ref', '=', payment_ref),
+            ])
+            payment_line.mapped('move_id.line_ids').filtered(lambda line: not line.partner_id).partner_id = store_partner
         return new_data
 
     # Thiết lập đối tượng cửa hàng vào chi tiết bút toán PTTT có partner_id = False
