@@ -9,22 +9,22 @@ class GenerateRule(models.Model):
     name = fields.Char('Đầu mã')
 
     def domain_for_type_product(self):
-        value = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
-        if value:
-            attr_ids = value.value_ids.ids
-            return f"[('id','in', {attr_ids})]"
-        return "[]"
+        attribute = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+        if attribute:
+            value_ids = attribute.value_ids.ids
+            return [('id','in', value_ids)]
+        return []
 
     def domain_for_attribute_required(self):
         value = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
         if value:
-            return f"[('id','!=', {value.id})]"
-        return "[]"
+            return [('id','!=', value.id)]
+        return []
     type_product_id = fields.Many2one('product.attribute.value', 'Loại hàng hóa', domain=domain_for_type_product)
 
     brand_id = fields.Many2one('res.brand', 'Thương hiệu')
 
-    attribute_required_ids = fields.Many2many('product.attribute', 'attribute_required_rel', 'generate_rule_1_id', 'attribute_id', string='Thuộc tính bắt buộc', domain=domain_for_attribute_required)
+    attribute_required_ids = fields.Many2many('product.attribute', 'attribute_required_rel', 'generate_rule_1_id', 'attribute_id', string='Thuộc tính bắt buộc', domain=domain_for_attribute_required, required=True)
 
     attribute_check_sku_ids = fields.Many2many('product.attribute', 'attribute_check_sku_rel', 'generate_rule_2_id', 'attribute_check_sku_id',
                                                string='Thuộc tính check SKU')

@@ -45,12 +45,15 @@ class ProductTemplate(models.Model):
         if not vals_list.get('sku_code', False):
             attribute_check_sku_ids = rule.attribute_check_sku_ids.ids
             sku_field_check_ids = rule.sku_field_check_ids.ids
+            p_exits = self.env['product.template.attribute.line'].sudo().search([('attribute_id','in', attribute_check_sku_ids)], limit=1)
+            if not p_exits:
+                pass
+
 
 
 
     def convert_diff_attribute_line_to_dict(self, vals_list):
-        list_attribute_id = []
-        list_value_id = []
+        list_attribute_id, list_value_id = [], []
         rslt = {}
         attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
         for rec in vals_list['attribute_line_ids']:
