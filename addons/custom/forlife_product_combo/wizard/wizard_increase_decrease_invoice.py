@@ -57,8 +57,28 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'purchase_order_product_id': False,
                 'receiving_warehouse_id': False,
                 'invoice_date': fields.Date.today(),
-                # 'line_ids': [],
+                'pos_order_id': False,
+                'direction_sign': 1 if move_type == 'in_invoice' else -1,
             })
+            product_ids = self.line_ids.filtered(lambda x: not x.is_selected).mapped('product_id')
+            if product_ids:
+                line_remove = move_copy_id.line_ids.filtered(lambda x: x.product_id.id in product_ids.ids)
+                line_remove.unlink()
+            for line_id in move_copy_id.line_ids:
+                if line_id.display_type == 'tax' and move_copy_id.move_type == 'in_invoice' and line_id.credit > 0:
+                    line_id.update({
+                        'debit': line_id.credit,
+                        'credit': 0,
+                        'amount_tax': line_id.credit,
+                        'balance': line_id.credit,
+                        'amount_currency': abs(line_id.amount_currency),
+                    })
+
+                if line_id.product_id:
+                    line_id.write({
+                        'account_id': line_id.product_id.categ_id.property_stock_account_input_categ_id.id,
+                        'purchase_line_id': False
+                    })
             # check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
             #         (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
             # move_copy_id.write({

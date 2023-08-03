@@ -52,7 +52,7 @@ class InventoryDetail(models.Model):
     def open_detail(self):
         self.ensure_one()
         action = self.env.ref('stock_inventory.session_detail_by_product_action').read()[0]
-        action['domain'] = [('product_id', '=', self.product_id.id), ('inv_session_id.inv_id', '=', self.inventory_id.id)]
+        action['domain'] = [('product_id', '=', self.product_id.id), ('inv_session_id.inv_id', '=', self.inventory_id.id), ('updated', '=', True)]
         action['context'] = '{}'
         action.update({'target': 'new'})
         return action

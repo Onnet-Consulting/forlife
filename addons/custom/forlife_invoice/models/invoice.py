@@ -796,8 +796,7 @@ class AccountMoveLine(models.Model):
                     else:
                         line.total_vnd_exchange = line.total_vnd_amount
 
-    @api.depends('move_id.cost_line.is_check_pre_tax_costs',
-                 'move_id.exchange_rate_line_ids')
+    @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'move_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
             rec.after_tax = 0
