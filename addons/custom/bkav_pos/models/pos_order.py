@@ -195,6 +195,13 @@ class PosOrder(models.Model):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
+                price_subtotal = line.price_subtotal
+                price_subtotal_incl = line.price_subtotal_incl
+                sublines = invoice.lines.filtered(lambda l: l.is_promotion == True and l.promotion_type not in ('point','card') and l.product_src_id.id == line.product_id.id)
+                for l in sublines:
+                    price_subtotal += l.price_subtotal
+                    price_subtotal_incl += l.price_subtotal_incl
+                price_bkav = round(price_subtotal/line.qty)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
                 if line.is_reward_line:
@@ -203,9 +210,9 @@ class PosOrder(models.Model):
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.qty,
-                    "Price": line.price_bkav,
-                    "Amount": line.price_subtotal,
-                    "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
+                    "Price": price_bkav,
+                    "Amount": price_subtotal,
+                    "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
                     "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
