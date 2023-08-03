@@ -103,7 +103,7 @@ class SyntheticAccountMovePos(models.Model):
 
     def generate_invoices(self):
         domain = [
-            # ('is_synthetic', '=', False),
+            ('is_synthetic', '=', False),
             ('is_post_bkav_store', '=', True),
             # ('is_invoiced', '=', True),
             # ('invoice_exists_bkav', '=', False),

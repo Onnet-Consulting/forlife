@@ -33,7 +33,7 @@ class SummaryAccountMoveSONhanhLine(models.Model):
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
-    tax_ids = fields.Many2many('account.tax', string='Thuế', related="product_id.taxes_id")
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
