@@ -110,7 +110,7 @@ class AccountMove(models.Model):
                         line_ids.append({
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': pr.account_id and pr.account_id.id,
+                            'account_id': self.partner_id.property_account_receivable_id.id,
                             'analytic_account_id': pr.analytic_account_id.id,
                             'debit': 0,
                             'credit': product_tax_value
