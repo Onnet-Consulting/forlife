@@ -15,18 +15,19 @@ class InventorySession(models.Model):
     data = fields.Binary('Data')
     line_ids = fields.One2many('inventory.session.line', 'inv_session_id', string='Chi tiết')
     type = fields.Selection([('app', 'Từ app kiểm kê'), ('web', 'Nhập bổ sung từ web'), ('other', 'Nhập dữ liệu khác'), ('add', 'Nhập bổ sung lần 2')], 'Loại', default='app')
+    updated = fields.Boolean('Đã đồng bộ', default=False)
 
     @api.model
     def action_inactive_session(self):
         self.sudo().write({'active': False})
-        if not self._context.get('not_update_inv'):
-            self.inv_id.update_inventory_detail()
+        # if not self._context.get('not_update_inv'):
+        #     self.inv_id.update_inventory_detail()
 
-    @api.model_create_multi
-    def create(self, values):
-        res = super().create(values)
-        res.inv_id.update_inventory_detail()
-        return res
+    # @api.model_create_multi
+    # def create(self, values):
+    #     res = super().create(values)
+    #     res.inv_id.update_inventory_detail()
+    #     return res
 
 
 class InventorySessionLine(models.Model):
@@ -54,3 +55,4 @@ class InventorySessionLine(models.Model):
     bot2 = fields.Integer('Bớt lần 2', default=0)
     ghi_chu = fields.Char('Ghi chú')
     active = fields.Boolean('Hiệu lực', related='inv_session_id.active')
+    updated = fields.Boolean('Đã đồng bộ', related='inv_session_id.updated')
