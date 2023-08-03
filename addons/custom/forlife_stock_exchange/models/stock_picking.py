@@ -72,34 +72,49 @@ class InheritStockPicking(models.Model):
         return self.env['stock.move'].create(move_outgoing_values)
 
     def validate_product_backup(self, move, material, material_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
-        product_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id).mapped('quantity'))
+        product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
+        product_qty = sum(product_prodution_quantity.mapped('quantity'))
         product_uom_qty = move.product_uom_qty * material.total
         move_outgoing_value = []
         if product_qty >= product_uom_qty:
             val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_uom_qty, material, reason_type_id)
+            product_prodution_quantity.update({
+                'quantity': product_prodution_quantity.quantity - product_uom_qty
+            })
             move_outgoing_value.append(val)
         else:
             # Check sản phẩm thay thế Level 1
             qty_remain = product_uom_qty - product_qty
-            material_backup_01 = material_ids.filtered(lambda x: x.product_id.id == material.product_id.id)
+            material_backup_01 = material_ids.filtered(lambda x: x.product_backup_id.id == material.product_id.id)
             if not material_backup_01:
                 raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
             else:
-                material_backup_01_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id).mapped('quantity'))
+                product_backup_01_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
+                material_backup_01_qty = sum(product_backup_01_prodution_quantity.mapped('quantity'))
                 if material_backup_01_qty >= qty_remain:
                     val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_remain, material_backup_01, reason_type_id)
+                    move_outgoing_value.append(val)
+                    product_backup_01_prodution_quantity.update({
+                        'quantity': product_backup_01_prodution_quantity.quantity - qty_remain
+                    })
+                elif material_backup_01_qty:
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, material_backup_01_qty, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
                 else:
                     # Check sản phẩm thay thế Level 2
                     qty_remain -= material_backup_01_qty
-                    material_backup_02 = material_ids.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
+                    material_backup_02 = material_ids.filtered(lambda x: x.product_backup_id.id == material_backup_01.product_id.id)
                     if not material_backup_02:
                         raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
                     else:
-                        material_backup_02_qty = sum(product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_02.product_id.id).mapped('quantity'))
+                        product_backup_02_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_02.product_id.id)
+                        material_backup_02_qty = sum(product_backup_02_prodution_quantity.mapped('quantity'))
                         if material_backup_02_qty >= qty_remain:
                             val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
                             move_outgoing_value.append(val)
+                            product_backup_02_prodution_quantity.update({
+                                'quantity': product_backup_02_prodution_quantity.quantity - qty_remain
+                            })
                         else:
                             raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
 
