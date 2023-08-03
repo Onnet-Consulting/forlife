@@ -88,14 +88,14 @@ class SyntheticAccountMovePos(models.Model):
                 if not exists_pos.get(pos.id):
                     exists_pos[pos.id] = True
                     total_point += pos.total_point
-                    subtotal_paid = pos.lines.filtered(
+                    price_subtotal = pos.lines.filtered(
                         lambda r: r.is_promotion == True and r.promotion_type == 'point'
-                    ).mapped("subtotal_paid")
-                    card_subtotal_paid = pos.lines.filtered(
+                    ).mapped("price_subtotal")
+                    card_price_subtotal = pos.lines.filtered(
                         lambda r: r.is_promotion == True and r.promotion_type == 'card'
-                    ).mapped("subtotal_paid")
-                    focus_point += sum(subtotal_paid)
-                    card_class += sum(card_subtotal_paid)
+                    ).mapped("price_subtotal")
+                    focus_point += sum(price_subtotal)
+                    card_class += sum(card_price_subtotal)
 
             res.total_point = abs(total_point)
             res.focus_point = abs(focus_point)
@@ -191,7 +191,7 @@ class SyntheticAccountMovePos(models.Model):
                 "Qty": ln.total_point/1000,
                 "Price": 1000,
                 "Amount": ln.total_point,
-                "TaxAmount": 0,
+                "TaxAmount": 0.1 * ln.total_point,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -204,7 +204,7 @@ class SyntheticAccountMovePos(models.Model):
                 "Qty": 1,
                 "Price": ln.card_class,
                 "Amount": ln.card_class,
-                "TaxAmount": 0,
+                "TaxAmount": 0.1 * ln.card_class,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -220,12 +220,12 @@ class SyntheticAccountMovePos(models.Model):
                 "Invoice": {
                     "InvoiceTypeID": 1,
                     "InvoiceDate": str(invoice_date).replace(' ', 'T'),
-                    "BuyerName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
-                    "BuyerTaxCode": str(ln.partner_id.vat).strip() if ln.partner_id.vat else '',
-                    "BuyerUnitName": str(ln.partner_id.name).strip() if ln.partner_id.name else '',
-                    "BuyerAddress": str(ln.partner_id.country_id.name).strip() if ln.partner_id.country_id.name else '',
+                    "BuyerName": 'Khách lẻ',
+                    "BuyerTaxCode": '',
+                    "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
+                    "BuyerAddress":  '',
                     "BuyerBankAccount": "",
-                    "PayMethodID": 7,
+                    "PayMethodID": 3,
                     "ReceiveTypeID": 3,
                     "ReceiverEmail": str(ln.company_id.email).strip() if ln.company_id.email else '', 
                     "ReceiverMobile": str(ln.company_id.mobile).strip() if ln.company_id.mobile else '', 
@@ -275,12 +275,15 @@ class SyntheticAccountMovePos(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                line.message_post(body=f"{bkav_invoice_data}")
+                # line.message_post(body=f"{bkav_invoice_data}")
                 bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
             except Exception as e:
                 line.message_post(body=str(e))
             
 
+    def get_invoice_bkav(self):
+        bkav_action.get_invoice_bkav(self)
+        
 class SyntheticAccountMovePosLine(models.Model):
     _name = 'synthetic.account.move.pos.line'
 

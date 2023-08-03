@@ -515,6 +515,10 @@ class SummaryAccountMovePos(models.Model):
         if len(sales.keys()):
             move_pos_line = sale_res.line_ids
             for store_id, sale in sales.items():
+                res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                store_data[store_id] = res_store[0].store_id
+                company_ids[store_id] = res_store[0].company_id
+
                 if len(sale.keys()):
                     for k, v in sale.items():
                         summary_line_id = move_pos_line.filtered(
