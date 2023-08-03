@@ -236,7 +236,11 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 }
             }
             if (this.get_discount() !== 0) {
-                total += this.get_quantity() * this.get_unit_price() * this.get_discount() / 100
+                if (this.use_discount_cash) {
+                    total += this.get_discount_cash_amount()
+                } else {
+                    total += this.get_quantity() * this.get_unit_price() * this.get_discount() / 100
+                }
             }
 
             return total;
