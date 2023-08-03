@@ -125,7 +125,6 @@ class SummaryAccountMovePosReturn(models.Model):
         res_pos = None
 
         if lines:
-            print('----------- INTO -------------------')
             pos_order_synthetic = lines.mapped("order_id")
             stores = pos_order_synthetic.mapped("store_id")
             for store in stores:
