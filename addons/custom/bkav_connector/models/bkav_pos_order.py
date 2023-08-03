@@ -81,12 +81,12 @@ class AccountMovePosOrder(models.Model):
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.qty,
-                    "Price": line.price_bkav,
-                    "Amount": line.price_subtotal,
-                    "TaxAmount": (line.price_subtotal_incl - line.price_subtotal or 0.0),
+                    "Price": abs(line.price_bkav),
+                    "Amount": abs(line.price_subtotal),
+                    "TaxAmount": abs(line.price_subtotal_incl - line.price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    "DiscountAmount": abs(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 if vat == 0:
@@ -155,28 +155,28 @@ class AccountMovePosOrder(models.Model):
         return bkav_data
 
 
-    def _post(self, soft=True):
-        for invoice in self:
-            pos_order_id = invoice.pos_order_id
-            if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
-                continue
-            if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
-                if invoice.move_type == 'out_invoice':
-                    invoice.create_invoice_bkav()
-            if invoice.move_type == 'out_refund':
-                if pos_order_id.refunded_order_ids:
-                    pos_order_origin_id = pos_order_id.refunded_order_ids[0]
-                else: continue
-                invoice_origin_id = pos_order_origin_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice')[0]
-                if not invoice.origin_move_id:
-                    invoice.origin_move_id = invoice_origin_id.id
-                if not invoice_origin_id.exists_bkav:
-                    continue
-                if invoice_origin_id.amount_total == invoice.amount_total:
-                    invoice_origin_id.cancel_invoice_bkav()
-                    invoice_origin_id.exists_bkav = True
-                else:
-                    invoice.issue_invoice_type = 'adjust'
-                    invoice.create_invoice_bkav()
-        return super(AccountMovePosOrder, self)._post(soft)
+    # def _post(self, soft=True):
+    #     for invoice in self:
+    #         pos_order_id = invoice.pos_order_id
+    #         if not pos_order_id or invoice.move_type not in ('out_invoice', 'out_refund'):
+    #             continue
+    #         if pos_order_id.invoice_info_company_name and pos_order_id.invoice_info_address and pos_order_id.invoice_info_tax_number:
+    #             if invoice.move_type == 'out_invoice':
+    #                 invoice.create_invoice_bkav()
+    #         if invoice.move_type == 'out_refund':
+    #             if pos_order_id.refunded_order_ids:
+    #                 pos_order_origin_id = pos_order_id.refunded_order_ids[0]
+    #             else: continue
+    #             invoice_origin_id = pos_order_origin_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice')[0]
+    #             if not invoice.origin_move_id:
+    #                 invoice.origin_move_id = invoice_origin_id.id
+    #             if not invoice_origin_id.exists_bkav:
+    #                 continue
+    #             if invoice_origin_id.amount_total == invoice.amount_total:
+    #                 invoice_origin_id.cancel_invoice_bkav()
+    #                 invoice_origin_id.exists_bkav = True
+    #             else:
+    #                 invoice.issue_invoice_type = 'adjust'
+    #                 invoice.create_invoice_bkav()
+    #     return super(AccountMovePosOrder, self)._post(soft)
     
