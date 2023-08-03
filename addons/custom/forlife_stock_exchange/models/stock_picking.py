@@ -170,6 +170,7 @@ class InheritStockPicking(models.Model):
                         or _('There are too many BOM for product "%s"!', move_in.product_id.name)
                     )
                 bom.update_price()
+                move_in.product_id.standard_price = bom.unit_price
                 price_unit = bom.unit_price or move_in.price_unit
                 move_in.write({
                     'bom_model': bom._name,
