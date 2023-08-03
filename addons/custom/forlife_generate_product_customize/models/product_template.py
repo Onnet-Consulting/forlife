@@ -30,10 +30,10 @@ class ProductTemplate(models.Model):
                     raise ValidationError(f"""Thiếu trường bắt buộc "{', '.join(list_field_invalid)}" cho sản phẩm {vals_list['name']}!""")
 
                 attribute_required_ids = rule.attribute_required_ids.ids
-                attrs_dict = self.convert_diff_attribute_line_to_dict(vals_list)
-                if len(attribute_required_ids) > len(attrs_dict['attribute_id']):
+                attrs_dict_invals = self.convert_diff_attribute_line_to_dict(vals_list, check_sku=False)
+                if len(attribute_required_ids) > len(attrs_dict_invals['attribute_id']):
                     # Find Difference between two lists
-                    set_diff = set(attribute_required_ids).symmetric_difference(set(attrs_dict['attribute_id']))
+                    set_diff = set(attribute_required_ids).symmetric_difference(set(attrs_dict_invals['attribute_id']))
                     name_of_attrs = rule.attribute_required_ids.filtered(lambda x: x.id in list(set_diff)).mapped('name')
                     raise ValidationError(f"Thiếu giá trị cho thuộc tính bắt buộc {', '.join(name_of_attrs)} cho sản phẩm {vals_list['name']}")
                 self.generate_new_sku(vals_list, rule)
@@ -45,19 +45,24 @@ class ProductTemplate(models.Model):
         if not vals_list.get('sku_code', False):
             attribute_check_sku_ids = rule.attribute_check_sku_ids.ids
             sku_field_check_ids = rule.sku_field_check_ids.ids
-            p_exits = self.env['product.template.attribute.line'].sudo().search([('attribute_id','in', attribute_check_sku_ids)], limit=1)
-            if not p_exits:
-                pass
+            print(attribute_check_sku_ids)
+            attrs_dict_invals = self.convert_diff_attribute_line_to_dict(vals_list, check_sku=True)
+            # p_check_sku = self.env['product.template.attribute.line'].sudo().search([('attribute_id','in', attribute_check_sku_ids)], limit=1)
+            # if not p_exits:
+            #     pass
 
 
 
 
-    def convert_diff_attribute_line_to_dict(self, vals_list):
+    def convert_diff_attribute_line_to_dict(self, vals_list, check_sku):
         list_attribute_id, list_value_id = [], []
         rslt = {}
         attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
         for rec in vals_list['attribute_line_ids']:
-            if rec[2]['attribute_id'] != attribute_id.id:
+            if rec[2]['attribute_id'] != attribute_id.id and not check_sku:
+                list_attribute_id.append(rec[2]['attribute_id'])
+                list_value_id.append(rec[2]['value_ids'][0][2][0])
+            else:
                 list_attribute_id.append(rec[2]['attribute_id'])
                 list_value_id.append(rec[2]['value_ids'][0][2][0])
         rslt['attribute_id'] = list_attribute_id
