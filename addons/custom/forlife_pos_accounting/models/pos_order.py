@@ -317,7 +317,7 @@ class InheritPosOrderLine(models.Model):
             'price_subtotal_incl': price,
             'discount': 0,
             'product_id': product_id.id,
-            'tax_ids': [[6, False, product_id.taxes_id.ids]] if is_state_registration else [[6, False, self.product_id.taxes_id.ids]],
+            'tax_ids': [[6, False, self.product_id.taxes_id.ids]] if is_state_registration else [[6, False, product_id.taxes_id.ids]],
             'pack_lot_ids': [],
             'full_product_name': product_id.name,
             'price_extra': 0,
