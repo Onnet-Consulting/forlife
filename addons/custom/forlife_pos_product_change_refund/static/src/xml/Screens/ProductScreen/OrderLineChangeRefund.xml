@@ -126,7 +126,7 @@
                     </t>
                 </t>
                 <t t-else="">
-                    <t t-if="props.line.get_discount_str() !== '0'">
+                    <t t-if="props.line.get_discount_str() !== '0' or props.line.use_discount_cash">
                         <t t-esc="env.pos.format_currency(_totalDiscountmanual)"/>
                     </t>
                     <t t-else="">
