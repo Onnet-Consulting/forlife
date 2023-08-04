@@ -102,6 +102,8 @@ class AccountMoveSaleOrder(models.Model):
                 if line.product_id.voucher:continue
                 ItemName = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
+                if line.sale_line_ids and line.sale_line_ids[0].order_id.x_sale_type == 'asset':
+                    ItemName = line.name if line.name else line.product_id.name
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
@@ -114,8 +116,8 @@ class AccountMoveSaleOrder(models.Model):
                     "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
                 item.update({
