@@ -618,6 +618,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                         check_button: check_button,
                         tax_ids: orderline.get_taxes().map(tax => tax.id),
                         discount: orderline.discount,
+                        employee_id: orderline.employee_id,
+                        assigned_employee: orderline.assigned_employee,
                         pos_order_line_discount_details: pos_order_line_discount_details,
                         handle_change_refund_price: orderline.handle_change_refund_price
                     },
