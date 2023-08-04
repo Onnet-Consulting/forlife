@@ -100,10 +100,10 @@ class AccountMoveSaleOrder(models.Model):
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
                 if line.product_id.voucher:continue
-                ItemName = (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else ''
+                ItemName = (line.product_id.name or line.description) if (
+                            line.product_id.name or line.description) else ''
                 if line.sale_line_ids and line.sale_line_ids[0].order_id.x_sale_type == 'asset':
-                    ItemName = line.name if line.name else line.product_id.name
+                    ItemName = line.sale_line_ids[0].x_product_code_id.name if line.sale_line_ids[0].x_product_code_id else line.sale_line_ids[0].product_id.name
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)

@@ -223,29 +223,21 @@ def delete_invoice_bkav(self,):
 def download_invoice_bkav(self):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
-    if not self.eivoice_file:
-        configs = get_bkav_config(self)
-        data = {
-            "CmdType": int(configs.get('cmd_downloadPDF')),
-            "CommandObject": self.invoice_guid,
-        }
-        _logger.info(f'BKAV - data download invoice to BKAV: {data}')
-        response_action = connect_bkav(data, configs)
-        if response_action.get('Status') == '1':
-            self.message_post(body=(response_action.get('Object')))
-        else:
-            attachment_id = self.env['ir.attachment'].sudo().create({
-                'name': f"{self.invoice_no}.pdf",
-                'datas': json.loads(response_action.get('Object')).get('PDF', ''),
-            })
-            self.eivoice_file = attachment_id
-            return {
-                'type': 'ir.actions.act_url',
-                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                        % (self.eivoice_file.id, self.eivoice_file.name),
-                'target': 'self',
-            }
+    configs = get_bkav_config(self)
+    data = {
+        "CmdType": int(configs.get('cmd_downloadPDF')),
+        "CommandObject": self.invoice_guid,
+    }
+    _logger.info(f'BKAV - data download invoice to BKAV: {data}')
+    response_action = connect_bkav(data, configs)
+    if response_action.get('Status') == '1':
+        self.message_post(body=(response_action.get('Object')))
     else:
+        attachment_id = self.env['ir.attachment'].sudo().create({
+            'name': f"{self.invoice_no}.pdf",
+            'datas': json.loads(response_action.get('Object')).get('PDF', ''),
+        })
+        self.eivoice_file = attachment_id
         return {
             'type': 'ir.actions.act_url',
             'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
