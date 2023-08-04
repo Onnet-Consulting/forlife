@@ -27,7 +27,8 @@
         'views/member_card_views.xml',
         'views/points_promotion_views.xml',
         'views/promotion_program_views.xml',
-        'views/pos_order_views.xml'
+        'views/pos_order_views.xml',
+        'views/account_move_views.xml',
     ],
     'installable': True,
     'application': True,
