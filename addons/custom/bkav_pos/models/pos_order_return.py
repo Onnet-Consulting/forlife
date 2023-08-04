@@ -250,6 +250,12 @@ class PosOrderReturn(models.Model):
     def create_invoice_bkav_return(self):
         if not self._check_info_before_bkav_return():
             return
+        if self.origin_move_id.date_order.date() == self.date_order.date():
+            if self.origin_move_id.invoice_guid and self.origin_move_id.is_post_bkav:
+                self.origin_move_id.cancel_invoice_bkav()
+                self.exists_bkav_return = True
+                self.is_post_bkav_return = True
+                return
         data = self.get_bkav_data_pos_return()
         origin_id = self.origin_move_id
         is_publish = False
@@ -282,5 +288,18 @@ class PosOrderReturn(models.Model):
         for item in self:
             item.delete_invoice_bkav_return()
         return super(PosOrderReturn, self).unlink()
+    
+
+    @api.model
+    def _process_order(self, order, draft, existing_order):
+        pos_id = super(PosOrderReturn, self)._process_order(order, draft, existing_order)
+        if not existing_order:
+            pos = self.env['pos.order'].browse(pos_id)
+            if pos.is_refunded:
+                pos.update({
+                    'issue_invoice_type': 'adjust',
+                    'origin_move_id': pos_id
+                })
+        return pos_id
     
     
