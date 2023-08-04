@@ -229,7 +229,7 @@ class InheritPosOrder(models.Model):
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
         to_invoice = order['data']['to_invoice']
-        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
+        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': True})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
             line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
@@ -246,7 +246,36 @@ class InheritPosOrder(models.Model):
                 line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
+        # update account.move.line of tax type
+        invoices = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
+                                            .filtered(lambda m: m.move_type in ('out_invoice', 'out_refund'))
+        for invoice in invoices:
+            if invoice.journal_id.company_consignment_id:
+                tax_lines = invoice.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_lines.partner_id = invoice.journal_id.company_consignment_id
+        # recompute tax_amount
+        self.browse(result).recompute_amount_tax()
         return result
+
+    def recompute_amount_tax(self):
+        self.ensure_one()
+        self.amount_tax = self.get_recompute_amount_tax()
+
+    def get_recompute_amount_tax(self):
+        self.ensure_one()
+        amount_tax = 0.0
+        for line in self.lines:
+            taxes = line.tax_ids_after_fiscal_position.filtered(lambda t: t.company_id.id == line.order_id.company_id.id)
+            if taxes:
+                detail_taxes = taxes.compute_all(
+                    price_unit=line.original_price,
+                    currency=line.order_id.pricelist_id.currency_id,
+                    quantity=line.qty,
+                    product=line.product_id,
+                    partner=line.order_id.partner_id or False
+                )
+                amount_tax += sum(tax.get('amount', 0.0) for tax in detail_taxes['taxes'])
+        return amount_tax
 
     def action_view_invoice(self):
         action = super(InheritPosOrder, self).action_view_invoice()
