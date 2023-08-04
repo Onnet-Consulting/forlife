@@ -26,6 +26,7 @@ class PosOrderLine(models.Model):
             if not r.is_promotion:
                 line_km = self.env['pos.order.line'].search([
                     ('is_promotion', '=', True),
+                    ('order_id', '=', r.order_id.id),
                     ('product_src_id', '=', r.product_id.id),
                     ('promotion_type', 'in', ['ctkm', 'make_price', 'product_defective', 'handle'])
                 ]).mapped('price_subtotal')

@@ -100,9 +100,9 @@ class SummaryAdjustedInvoicePos(models.Model):
                     focus_point += sum(price_subtotal)
                     card_class += sum(card_price_subtotal)
 
-            res.total_point = abs(total_point)
-            res.focus_point = abs(focus_point)
-            res.card_class = abs(card_class)
+            res.total_point = total_point
+            res.focus_point = focus_point
+            res.card_class = card_class
 
 
     def action_download_view_e_invoice(self):
@@ -311,6 +311,6 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal / 100
             else:
                 r.tax_amount = 0
