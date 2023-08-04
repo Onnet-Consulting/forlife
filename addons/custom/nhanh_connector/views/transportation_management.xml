@@ -18,11 +18,12 @@
                                 <field name="warehouse_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                                 <field name="date" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                                 <field name="type" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="note" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                             </group>
                             <group>
                                 <field name="location_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                                 <field name="user_id" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
-                                <field name="order_count" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="order_count"/>
                             </group>
                         </group>
 
@@ -38,10 +39,10 @@
                                         <button name="action_export" string="Xuất Excel" type="object"/>
                                     </div>
                                 </div>
-                                <field name="session_line" readonly="0">
-                                    <tree editable="bottom" create="false" delete="false" default_order="id desc">
+                                <field name="session_line">
+                                    <tree editable="bottom" default_order="id desc">
                                         <field name="select"/>
-                                        <field name="nhanh_id" readonly="1" force_save="1"/>
+                                        <field name="nhanh_id" attrs="{'readonly': [('parent.status', '!=', 'draft')]}"/>
                                         <field name="order_id" readonly="1" force_save="1"/>
                                         <field name="picking_id" readonly="1" force_save="1"/>
                                         <field name="delivery_carrier_id"/>
