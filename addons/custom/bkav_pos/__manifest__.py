@@ -10,6 +10,7 @@
     "data": [
         'security/ir.model.access.csv',
         'data/schedule.xml',
+        'data/ir_sequence_data.xml',
         'views/store.xml',
         'views/summary_account_move_pos.xml',
         'views/summary_account_move_pos_return.xml',
