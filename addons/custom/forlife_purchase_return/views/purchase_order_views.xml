@@ -14,7 +14,7 @@
             </field>
         </record>
 
-    	<record id="inherit_purchase_order_form_view" model="ir.ui.view">
+    	<record id="inherit_purchase_order_return_form_view" model="ir.ui.view">
             <field name="name">purchase.order.form</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="forlife_purchase.inherit_purchase_order_form_view"/>
