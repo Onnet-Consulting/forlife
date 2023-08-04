@@ -2358,18 +2358,34 @@ class PurchaseOrderLine(models.Model):
         supplier_info = self.env['product.supplierinfo'].search(domain)
         return supplier_info
 
-    @api.constrains('asset_code')
-    def constrains_asset_code(self):
-        for item in self:
-            if item.order_id.purchase_type == 'asset':
-                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.with_company(item.company_id).property_valuation == 'real_time' and item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id:
-                    if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(item.company_id).property_account_expense_categ_id.code:
-                        raise ValidationError(
-                            'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
-                else:
-                    raise ValidationError(
-                        'Bạn chưa cấu hình nhóm sản phẩm hay tài khoản định giá tồn kho cho sản phẩm %s' % (
-                            item.product_id.name))
+    @api.onchange('asset_code')
+    def onchange_asset_code(self):
+        if self.asset_code:
+            if not self.get_product_code():
+                self.product_id = None
+                self.name = None
+                return {'domain': {'product_id': [('id', '=', 0)],
+                                   'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                         ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
+        else:
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                     ('company_id', '=', self.order_id.company_id.id)]}}
+
+    def get_product_code(self):
+        account = self.asset_code.asset_account.id
+        product_categ_id = self.env['product.category'].search([('property_account_expense_categ_id', '=', account)])
+        if not product_categ_id:
+            raise UserError(_('Không có nhóm sản phẩm nào cấu hình Tài khoản chi phí là %s' % self.asset_code.asset_account.code))
+        product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+        if not product_id:
+            raise UserError(_('Không có sản phẩm nào cấu hình nhóm sản phẩm là %s' % product_categ_id.name))
+        if len(product_id) == 1:
+            self.product_id = product_id
+            return True
+        else:
+            product_names = ','.join(product_id.mapped('display_name'))
+            raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
 
     @api.constrains('taxes_id')
     def constrains_taxes_id(self):
