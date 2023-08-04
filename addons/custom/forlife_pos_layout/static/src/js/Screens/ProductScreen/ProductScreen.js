@@ -50,6 +50,7 @@ odoo.define('forlife_pos_layout.ProductScreen', function (require) {
                     this.currentOrder.get_selected_orderline().set_discount(val);
                 } else if (this.env.pos.numpadMode === 'price') {
                     var selected_orderline = this.currentOrder.get_selected_orderline();
+                    console.log(11111)
                     // selected_orderline.price_manually_set = true;
                     // selected_orderline.set_unit_price(val);
                     selected_orderline.set_discount_cash_manual(val);
