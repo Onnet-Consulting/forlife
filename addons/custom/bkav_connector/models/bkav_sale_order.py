@@ -38,7 +38,7 @@ class AccountMoveSaleOrder(models.Model):
             item = {
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
-                "Qty": 1.0,
+                "Qty": 0,
                 "Price": value_not_tax,
                 "Amount": value_not_tax,
                 "TaxAmount": value - value_not_tax,
@@ -66,7 +66,7 @@ class AccountMoveSaleOrder(models.Model):
             item = {
                 "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
-                "Qty": 1.0,
+                "Qty": 0,
                 "Price": value_not_tax,
                 "Amount": value_not_tax,
                 "TaxAmount": value - value_not_tax,
@@ -109,7 +109,7 @@ class AccountMoveSaleOrder(models.Model):
                 item = {
                     "ItemName": ItemName,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.quantity,
+                    "Qty": abs(line.quantity),
                     "Price": Price,
                     "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
