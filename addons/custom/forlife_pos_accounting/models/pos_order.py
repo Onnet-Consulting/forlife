@@ -36,6 +36,7 @@ class InheritPosOrder(models.Model):
 
     @staticmethod
     def _create_promotion_account_move(order_line, partner_id, credit_account_id):
+        customer_id = order_line.order_id.partner_id
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
         if order_line.refunded_orderline_id:
@@ -65,7 +66,7 @@ class InheritPosOrder(models.Model):
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
-                'partner_id': partner_id,
+                'partner_id': customer_id.id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
@@ -246,13 +247,23 @@ class InheritPosOrder(models.Model):
                 line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
-        # update account.move.line of tax type
+        # update account.move.line of tax type for out_invoice: bút toán hóa đơn công nợ
         invoices = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
                                             .filtered(lambda m: m.move_type in ('out_invoice', 'out_refund'))
         for invoice in invoices:
             if invoice.journal_id.company_consignment_id:
                 tax_lines = invoice.line_ids.filtered(lambda x: x.display_type == 'tax')
                 tax_lines.partner_id = invoice.journal_id.company_consignment_id
+
+        # update account.move.line of tax type for entry: bút toán hạch toán khuyến mãi
+        promotion_moves = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
+                                            .filtered(lambda m: m.move_type == 'entry')
+        for move in promotion_moves:
+            if move.journal_id.company_consignment_id:
+                tax_lines = move.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_lines.partner_id = move.journal_id.company_consignment_id
+
+
         # recompute tax_amount
         self.browse(result).recompute_amount_tax()
         return result
@@ -334,7 +345,8 @@ class InheritPosOrderLine(models.Model):
     def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
-        price_unit = product_id.taxes_id.compute_all(price)['total_excluded']
+        taxes = self.product_id.taxes_id if is_state_registration else product_id.taxes_id
+        price_unit = taxes.compute_all(price)['total_excluded']
         return {
             'order_id': self.order_id.id,
             'product_src_id': self.id,
@@ -346,7 +358,7 @@ class InheritPosOrderLine(models.Model):
             'price_subtotal_incl': price,
             'discount': 0,
             'product_id': product_id.id,
-            'tax_ids': [[6, False, self.product_id.taxes_id.ids]] if is_state_registration else [[6, False, product_id.taxes_id.ids]],
+            'tax_ids': [[6, False, taxes.ids]],
             'pack_lot_ids': [],
             'full_product_name': product_id.name,
             'price_extra': 0,
