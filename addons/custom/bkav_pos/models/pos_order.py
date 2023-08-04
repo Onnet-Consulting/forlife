@@ -98,8 +98,8 @@ class PosOrder(models.Model):
         for promotion_id in self.lines:
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
                     use_point.update({
                         vat:promotion_id.subtotal_paid,
@@ -108,8 +108,8 @@ class PosOrder(models.Model):
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
                     rank_total.update({
                         vat:promotion_id.subtotal_paid,

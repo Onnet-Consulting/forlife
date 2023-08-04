@@ -15,8 +15,8 @@ class AccountMoveSaleOrder(models.Model):
         for promotion_id in self.promotion_ids:
             if promotion_id.promotion_type == 'vip_amount':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0].amount
                 if vat not in list(vip_amount.keys()):
                     vip_amount.update({
                         vat:promotion_id.value,
@@ -25,8 +25,8 @@ class AccountMoveSaleOrder(models.Model):
                     vip_amount[vat] += promotion_id.value
             if promotion_id.promotion_type == 'reward':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0].amount
                 if vat not in list(reward_amount.keys()):
                     reward_amount.update({
                         vat:promotion_id.value,
