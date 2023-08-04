@@ -251,7 +251,6 @@ class PurchaseRequest(models.Model):
                     'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'source_document': source_document,
-                    'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
                 }
