@@ -262,7 +262,29 @@ class InheritPosOrder(models.Model):
             if move.journal_id.company_consignment_id:
                 tax_lines = move.line_ids.filtered(lambda x: x.display_type == 'tax')
                 tax_lines.partner_id = move.journal_id.company_consignment_id
+        # recompute tax_amount
+        self.browse(result).recompute_amount_tax()
         return result
+
+    def recompute_amount_tax(self):
+        self.ensure_one()
+        self.amount_tax = self.get_recompute_amount_tax()
+
+    def get_recompute_amount_tax(self):
+        self.ensure_one()
+        amount_tax = 0.0
+        for line in self.lines:
+            taxes = line.tax_ids_after_fiscal_position.filtered(lambda t: t.company_id.id == line.order_id.company_id.id)
+            if taxes:
+                detail_taxes = taxes.compute_all(
+                    price_unit=line.original_price,
+                    currency=line.order_id.pricelist_id.currency_id,
+                    quantity=line.qty,
+                    product=line.product_id,
+                    partner=line.order_id.partner_id or False
+                )
+                amount_tax += sum(tax.get('amount', 0.0) for tax in detail_taxes['taxes'])
+        return amount_tax
 
     def action_view_invoice(self):
         action = super(InheritPosOrder, self).action_view_invoice()
