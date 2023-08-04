@@ -79,9 +79,8 @@
                     <group>
                         <group>
                             <field name="is_diff_transfer" invisible="1"/>
-                            <field name="employee_id" invisible="1"/>
                             <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_id"/>
+                            <field name="department_id" force_save="1" readonly="1"/>
                             <field name="document_type" invisible="1"/>
                             <field name="method_transfer" invisible="1"/>
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>

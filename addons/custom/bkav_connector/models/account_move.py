@@ -95,8 +95,8 @@ class AccountMoveBKAV(models.Model):
                     "Amount": abs(line.price_subtotal),
                     "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
@@ -153,10 +153,8 @@ class AccountMoveBKAV(models.Model):
 
 
     def _check_info_before_bkav(self):
-        # if not self.invoice_info_tax_number and not self.partner_id.vat:
-        #     raise ValidationError('Không tìm thấy thông tin xuất hóa đơn')
-        if not self.is_general:
-            return True
+        if self.is_general:
+            return False
         #HD ban hang thong thuong
         so_orders = self.invoice_line_ids.sale_line_ids.order_id
         origin_so_orders = False
@@ -170,7 +168,7 @@ class AccountMoveBKAV(models.Model):
         if self.origin_move_id:
             origin_pos_orders = self.origin_move_id.pos_order_id
         if self.move_type in ('out_invoice', 'out_refund') and (pos_orders or origin_pos_orders):
-            return True
+            return False
         #HD tra hang NCC
         pr_orders = self.invoice_line_ids.purchase_line_id.order_id
         origin_pr_orders = False
@@ -184,7 +182,7 @@ class AccountMoveBKAV(models.Model):
             if not self.origin_move_id.exists_bkav:
                 raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
             return True
-        return False
+        return True
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status(self):
@@ -192,16 +190,58 @@ class AccountMoveBKAV(models.Model):
             rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
     def get_invoice_identify(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.get_invoice_identify(self)
 
     def get_invoice_status(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.get_invoice_status(self)
     
     def create_invoice_bkav(self):
+        if not self._check_info_before_bkav():
+            return
+        # if self.issue_invoice_type == 'adjust':
+        #     if not self.origin_move_id or not self.origin_move_id.invoice_no:
+        #         raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
+        #     if self.origin_move_id.amount_total == self.amount_total:
+        #         self.origin_move_id.cancel_invoice_bkav()
+        #         self.exists_bkav = True
+        #         return
+        data = []
+        so_orders = self.invoice_line_ids.sale_line_ids.order_id
+        origin_so_orders = False
+        if self.origin_move_id:
+            origin_so_orders = self.origin_move_id.invoice_line_ids.sale_line_ids.order_id
+        pr_orders = self.invoice_line_ids.purchase_line_id.order_id
+        origin_pr_orders = False
+        if self.origin_move_id:
+            origin_pr_orders = self.origin_move_id.invoice_line_ids.purchase_line_id.order_id
+        pos_orders = self.pos_order_id
+        origin_pos_orders = False
+        if self.origin_move_id:
+            origin_pos_orders = self.origin_move_id.pos_order_id
+        if self.move_type in ('out_invoice', 'out_refund') and (so_orders or origin_so_orders):
+            data = self.get_bkav_data_so()
+        elif self.move_type == 'in_refund' and (pr_orders or origin_pr_orders):
+            data = self.get_bkav_data_pr()
+        elif self.move_type in ('out_invoice', 'out_refund') and (pos_orders or origin_pos_orders):
+            return
+            # data = self.get_bkav_data_pos()
+        else:
+            data = self.get_bkav_data()
+        if self.issue_invoice_type != 'vat':
+            if not self.origin_move_id:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
+            if not self.origin_move_id.exists_bkav:
+                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
+        origin_id = self.origin_move_id if self.origin_move_id else False
+        is_publish = False
+        issue_invoice_type = self.issue_invoice_type
+        if data:
+            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+
+    def publish_invoice_bkav(self):
+        return bkav_action.publish_invoice_bkav(self)
+
+    def update_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         data = []
@@ -222,7 +262,8 @@ class AccountMoveBKAV(models.Model):
         elif self.move_type == 'in_refund' and (pr_orders or origin_pr_orders):
             data = self.get_bkav_data_pr()
         elif self.move_type in ('out_invoice', 'out_refund') and (pos_orders or origin_pos_orders):
-            data = self.get_bkav_data_pos()
+            return
+            # data = self.get_bkav_data_pos()
         else:
             data = self.get_bkav_data()
         if self.issue_invoice_type != 'vat':
@@ -230,41 +271,19 @@ class AccountMoveBKAV(models.Model):
                 raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
             if not self.origin_move_id.exists_bkav:
                 raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
-        origin_id = self.origin_move_id if self.origin_move_id else False
-        is_publish = True
-        issue_invoice_type = self.issue_invoice_type
         if data:
-            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
-
-    def publish_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
-        return bkav_action.publish_invoice_bkav(self)
-
-    def update_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
-        data = self.get_bkav_data()
-        return bkav_action.create_invoice_bkav(self,data)
+            return bkav_action.update_invoice_bkav(self,data)
 
     def get_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.get_invoice_bkav(self)
 
     def cancel_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.cancel_invoice_bkav(self)
 
     def delete_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.delete_invoice_bkav(self)
 
     def download_invoice_bkav(self):
-        if not self._check_info_before_bkav():
-            return
         return bkav_action.download_invoice_bkav(self)
 
     # def button_cancel(self):

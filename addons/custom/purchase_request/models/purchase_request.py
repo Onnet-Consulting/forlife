@@ -165,8 +165,11 @@ class PurchaseRequest(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
+        if not isinstance(vals, list):
+            vals = [vals]
+        for val in vals:
+            if val.get('name', 'New') == 'New':
+                val['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
         return super(PurchaseRequest, self).create(vals)
 
     @api.constrains('order_lines')
@@ -223,7 +226,7 @@ class PurchaseRequest(models.Model):
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    'purchase_uom': line.purchase_uom.id,
+                    'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
@@ -248,7 +251,6 @@ class PurchaseRequest(models.Model):
                     'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'source_document': source_document,
-                    'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
                 }

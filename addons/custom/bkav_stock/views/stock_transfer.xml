@@ -10,7 +10,7 @@
                 <xpath expr="//field[@name='stock_request_id']" position="before">
                     <field name="vendor_contract_id" domain="[('state','=','effective'),('contract_type','=','economic')]"/>
                     <field name="delivery_contract_id" domain="[('state','=','effective'),('contract_type','=','transport')]"/>
-                    <field name="transporter_id" required="1"/>
+                    <field name="transporter_id"/>
                 </xpath>
                 <xpath expr="//field[@name='location_id']" position="after">
                     <field name="location_name"/>
@@ -34,6 +34,10 @@
                         <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
                                 string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="cancel_invoice_bkav" type="object" class="btn btn-primary"
+                                string="Cancel eInvoice"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 string="Download eInvoice"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"

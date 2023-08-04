@@ -16,5 +16,6 @@
         'views/summary_account_move_pos_return.xml',
         'views/synthetic_account_move_pos.xml',
         'views/summary_adjusted_invoice_pos_view.xml',
+        'views/pos_order_views.xml',
     ],
 }

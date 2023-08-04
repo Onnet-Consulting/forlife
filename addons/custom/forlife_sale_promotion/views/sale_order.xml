@@ -42,6 +42,7 @@
                                 <field name="value"/>
                                 <field name="account_id"/>
                                 <field name="description"/>
+                                <field name="tax_id" widget="many2many_tags"/>
                             </tree>
                         </field>
                      </page>

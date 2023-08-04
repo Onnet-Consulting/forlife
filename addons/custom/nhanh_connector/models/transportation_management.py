@@ -11,18 +11,20 @@ class TransportationSession(models.Model):
     _description = 'Phiên giao vận'
 
     name = fields.Char(compute='compute_name', store=1)
-    warehouse_id = fields.Many2one('stock.warehouse', string='Tên kho')
+    warehouse_id = fields.Many2one('stock.warehouse', string='Tên kho', required=1)
     warehouse_code = fields.Char(related='warehouse_id.code', string='Mã kho')
-    location_id = fields.Many2one('stock.location', string='Địa điểm')
+    location_id = fields.Many2one('stock.location', string='Địa điểm', required=1,
+                                  domain="[('warehouse_id', '=', warehouse_id)]")
     date = fields.Datetime(string='Ngày thực hiện', default=datetime.today())
     user_id = fields.Many2one('res.users', string='Người thực hiện', default=lambda self: self.env.user)
     type = fields.Selection([('in', 'Nhập kho'), ('out', 'Xuất kho')], string='Loại giao vận')
     order_count = fields.Integer(string='Tổng số đơn', compute='compute_count')
     session_line = fields.One2many('transportation.session.line', 'session_id', string='Đơn hàng')
-    status = fields.Selection([('draft', 'Dự thảo'), ('done', 'Hoàn thành')], string='Trạng thái', default='draft')
+    status = fields.Selection([('draft', 'Dự thảo'), ('done', 'Hoàn thành')], string='Trạng thái', default='draft', copy=False)
     re_confirm = fields.Boolean(compute='reconfirm', default=False)
     template_excel = fields.Binary(string='Template', compute='_get_template')
     company_id = fields.Many2one('res.company', string='Công ty', default=lambda self: self.env.company)
+    note = fields.Text(string='Ghi chú')
 
     def _get_template(self):
         temp_file = tempfile.NamedTemporaryFile(delete=False)
@@ -31,13 +33,39 @@ class TransportationSession(models.Model):
         workbook = xlsxwriter.Workbook(temp_file_path)
         worksheet = workbook.add_worksheet(u'Sheet0')
 
-        header = ['Mã đơn hàng NhanhVN']
+        header = [
+            'Mã đơn hàng NhanhVN',
+            'Mã đơn hàng odoo',
+            'Phiếu kho',
+            'Đơn vị vận chuyển',
+            'Số SP',
+            'Trạng thái NhanhVN',
+            'Trạng thái đơn hàng',
+            'Kênh/Sàn',
+            'Mã vận đơn',
+            'Trạng thái'
+        ]
         lines = [header]
-
+        session_line = self.session_line
         if self.re_confirm:
-            data = [[line.nhanh_id] for line in self.session_line.filtered(lambda x: x.select)]
-        else:
-            data = [[line.nhanh_id] for line in self.session_line]
+            session_line = session_line.filtered(lambda x: x.select)
+        data = [
+            [
+                line.nhanh_id or '',
+                line.order_id.name or '',
+                line.picking_id or '',
+                line.delivery_carrier_id.name or '',
+                len(line.order_line),
+                dict(self.env['sale.order']._fields['nhanh_order_status']._description_selection(self.env)).get(
+                    line.nhanh_status) or '',
+                dict(self.env['sale.order']._fields['state']._description_selection(self.env)).get(
+                    line.order_status) or '',
+                line.channel.name or '',
+                line.transport_code or '',
+                dict(self.env['transportation.session.line']._fields['status']._description_selection(self.env)).get(line.status) or '',
+            ] for line in session_line
+        ]
+
         lines += data
         header_format = workbook.add_format({
             'align': 'center',
@@ -151,6 +179,23 @@ class TransportationSessionLine(models.Model):
         ('done', 'Phiếu kho đã hoàn thành'),
         ('order_cancel', 'Đơn hàng đã hủy'),
     ], string='Trạng thái')
+
+    def unlink(self):
+        for rec in self:
+            if rec.session_id.status == 'done' and rec.nhanh_id:
+                raise ValidationError('Phiếu đã hoàn thành không thể xóa dòng chi tiết!.')
+        return super().unlink()
+
+    @api.onchange('nhanh_id')
+    def _onchange_nhanh_id(self):
+        if not self.nhanh_id:
+            return {}
+        order = self.env['sale.order'].search([('nhanh_id', '=', self.nhanh_id)], limit=1)
+        vals = {'status': 'order_404'}
+        if order:
+            status = self.env['import.transport.from.excel'].get_status_by_picking(order)
+            vals.update({'order_id': order.id, 'status': status})
+            self.update(vals)
 
     @api.depends('order_id')
     def compute_picking(self):

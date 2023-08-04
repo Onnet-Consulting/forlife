@@ -10,5 +10,5 @@ class QuantityProductionOrder(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     location_id = fields.Many2one('stock.location', "Source Location",)
     production_id = fields.Many2one('forlife.production', string='Forlife Production')
-    quantity = fields.Integer(string='Quantity')
+    quantity = fields.Float(string='Quantity')
     quantity_order_line = fields.Many2many('purchase.order.line')

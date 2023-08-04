@@ -488,31 +488,31 @@ class Inventory(models.Model):
 
     def clone_detail_data(self):
         self.ensure_one()
-        if self.detail_ids or not self.line_ids:
-            return False
-        val = []
-        attr_codes = self.env['res.utility'].get_attribute_code_config()
-        attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=self.line_ids.product_id.ids)
-        for line in self.line_ids:
-            product_attr_value = attr_values.get(str(line.product_id.id)) or {}
-            mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
-            size = product_attr_value.get(attr_codes.get('size')) or []
-            val.append({
-                'inventory_id': self.id,
-                'product_id': line.product_id.id,
-                'ma_hang': line.product_id.barcode,
-                'ten_hang': line.product_id.name,
-                'mau': ','.join(mau),
-                'size': ','.join(size),
-                'nhom_san_pham': line.product_id.categ_id.complete_name,
-                'don_vi': line.product_id.uom_id.name,
-                'gia': line.product_id.lst_price,
-                'ton_phan_mam': line.theoretical_qty,
-            })
-        if val:
-            self.env['inventory.detail'].create(val)
-            self.write({'state': 'first_inv', 'x_status': 1})
-            self.message_post(body='Đã đồng bộ danh sách sản phẩm Chi tiết kiểm kê sang Chi tiết kiểm đếm')
+        # if self.detail_ids or not self.line_ids:
+        #     return False
+        # val = []
+        # attr_codes = self.env['res.utility'].get_attribute_code_config()
+        # attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=self.line_ids.product_id.ids)
+        # for line in self.line_ids:
+        #     product_attr_value = attr_values.get(str(line.product_id.id)) or {}
+        #     mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
+        #     size = product_attr_value.get(attr_codes.get('size')) or []
+        #     val.append({
+        #         'inventory_id': self.id,
+        #         'product_id': line.product_id.id,
+        #         'ma_hang': line.product_id.barcode,
+        #         'ten_hang': line.product_id.name,
+        #         'mau': ','.join(mau),
+        #         'size': ','.join(size),
+        #         'nhom_san_pham': line.product_id.categ_id.complete_name,
+        #         'don_vi': line.product_id.uom_id.name,
+        #         'gia': line.product_id.lst_price,
+        #         'ton_phan_mam': line.theoretical_qty,
+        #     })
+        # if val:
+        #     self.env['inventory.detail'].create(val)
+        self.write({'state': 'first_inv', 'x_status': 1})
+            # self.message_post(body='Đã đồng bộ danh sách sản phẩm Chi tiết kiểm kê sang Chi tiết kiểm đếm')
 
     def btn_import_excel(self):
         self.ensure_one()
@@ -575,26 +575,25 @@ class Inventory(models.Model):
         self.ensure_one()
         return self.env['import.inventory.session.wizard'].create({'inv_id': self.id}).print_xlsx()
 
-    @api.model
     def update_inventory_detail(self):
-        if not self:
-            return False
-        for inv in self:
-            session_lines = self.env['inventory.session'].search([('inv_id', '=', inv.id)]).line_ids
-            line_product_miss = inv.detail_ids.product_id - session_lines.product_id
-            line_product_not_exist = session_lines.product_id - inv.detail_ids.product_id
-            line_product_update = session_lines.product_id - line_product_not_exist
-            if line_product_miss:
-                inv.detail_ids.filtered(lambda i: i.product_id.id in line_product_miss.ids).write(inv._get_update_value(vals={}))
-            if session_lines:
-                sql = f"""
+        self.ensure_one()
+        if self.state not in ('first_inv', 'second_inv'):
+            return {'type': 'ir.actions.client', 'tag': 'reload'}
+        new_sessions = self.env['inventory.session'].search([('inv_id', '=', self.id), ('updated', '=', False)])
+        if not new_sessions:
+            raise ValidationError('Không thành công, không tìm thấy phiên kiêm kê mới, vui lòng kiểm tra lại')
+        self.detail_ids = [(5, 0, 0)]
+        new_sessions.sudo().write({'updated': True})
+        session_lines = self.env['inventory.session'].search([('inv_id', '=', self.id)]).line_ids
+        if session_lines:
+            sql = f"""
 with concat_name as (select product_id, array_agg(concat(inv_id, '-', session_id)) as phien_dem
                      from (select distinct isl.product_id as product_id,
                                            ise.inv_id     as inv_id,
                                            ise.id         as session_id
                            from inventory_session_line isl
                                     join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
-                           where ise.inv_id = {inv.id}
+                           where ise.inv_id = {self.id}
                            order by isl.product_id, ise.inv_id, ise.id) as data1
                      group by product_id),
      get_note as (select distinct product_id, ghi_chu
@@ -603,8 +602,14 @@ with concat_name as (select product_id, array_agg(concat(inv_id, '-', session_id
                                row_number() over (partition by isl.product_id order by isl.id desc) as num
                         from inventory_session_line isl
                                  join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
-                        where ise.inv_id = {inv.id} and ise.type = 'other') as data2
-                  where num = 1)
+                        where ise.inv_id = {self.id} and ise.type = 'other') as data2
+                  where num = 1),
+    ton_phan_mems as (select product_id          as product_id,
+                            sum(theoretical_qty) as ton_phan_mem
+                    from stock_inventory_line
+                    where inventory_id = {self.id}
+                    group by product_id    
+    )
 select json_object_agg(product_id, data.*) as inv_data
 from (select isl.product_id                       as product_id,
              sum(isl.kiem_ke_thuc_te)             as kiem_ke_thuc_te,
@@ -624,49 +629,47 @@ from (select isl.product_id                       as product_id,
              sum(isl.them2)                       as them2,
              sum(isl.bot2)                        as bot2,
              cn.phien_dem                         as phien_dem,
-             coalesce(gn.ghi_chu, '')             as ghi_chu
+             coalesce(gn.ghi_chu, '')             as ghi_chu,
+             coalesce(tpm.ton_phan_mem, 0)        as ton_phan_mam
       from inventory_session_line isl
                join inventory_session ise on ise.id = isl.inv_session_id and ise.active is true
                left join concat_name cn on cn.product_id = isl.product_id
                left join get_note gn on gn.product_id = isl.product_id
-      where ise.inv_id = {inv.id}
-      group by isl.product_id, cn.phien_dem, gn.ghi_chu) as data
+               left join ton_phan_mems tpm on tpm.product_id = isl.product_id
+      where ise.inv_id = {self.id}
+      group by isl.product_id, cn.phien_dem, gn.ghi_chu, tpm.ton_phan_mem) as data
                 """
-                self._cr.execute(sql)
-                inv_data = self._cr.dictfetchone().get('inv_data') or {}
-                for product in line_product_update:
-                    inv.detail_ids.filtered(lambda i: i.product_id.id == product.id).write(inv._get_update_value(vals=inv_data.get(str(product.id))))
-                if line_product_not_exist:
-                    attr_codes = self.env['res.utility'].get_attribute_code_config()
-                    attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=line_product_not_exist.ids)
-                    detail_vals = []
-                    for product in line_product_not_exist:
-                        product_attr_value = attr_values.get(str(product.id)) or {}
-                        mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
-                        size = product_attr_value.get(attr_codes.get('size')) or []
-                        field_add = {
-                            'inventory_id': inv.id,
-                            'product_id': product.id,
-                            'ma_hang': product.barcode,
-                            'ten_hang': product.name,
-                            'mau': ','.join(mau),
-                            'size': ','.join(size),
-                            'nhom_san_pham': product.categ_id.complete_name,
-                            'don_vi': product.uom_id.name,
-                            'gia': product.lst_price,
-                            'ton_phan_mam': 0,
-                        }
-                        detail_vals.append(inv._get_update_value(vals=inv_data.get(str(product.id)), field_add=field_add))
-                    if detail_vals:
-                        self.env['inventory.detail'].sudo().create(detail_vals)
-            if inv.x_status in (2, 3):
-                inv.write({'x_status': 0})
-                inv.message_post(body='Phiên kiểm đếm đã được cập nhật thêm. Bộ phận cửa hàng cần xác nhận lại để cập nhật Chi tiết kiểm kê')
+            self._cr.execute(sql)
+            inv_data = self._cr.dictfetchone().get('inv_data') or {}
+            attr_codes = self.env['res.utility'].get_attribute_code_config()
+            attr_values = self.env['res.utility'].get_attribute_value_by_product_id(product_ids=session_lines.product_id.ids)
+            detail_vals = []
+            for product in session_lines.product_id:
+                product_attr_value = attr_values.get(str(product.id)) or {}
+                mau = product_attr_value.get(attr_codes.get('mau_sac')) or []
+                size = product_attr_value.get(attr_codes.get('size')) or []
+                field_add = {
+                    'inventory_id': self.id,
+                    'product_id': product.id,
+                    'ma_hang': product.barcode,
+                    'ten_hang': product.name,
+                    'mau': ','.join(mau),
+                    'size': ','.join(size),
+                    'nhom_san_pham': product.categ_id.complete_name,
+                    'don_vi': product.uom_id.name,
+                    'gia': product.lst_price,
+                }
+                detail_vals.append(self._get_update_value(vals=inv_data.get(str(product.id)), field_add=field_add))
+            if detail_vals:
+                self.env['inventory.detail'].sudo().create(detail_vals)
+        if self.x_status in (2, 3):
+            self.write({'x_status': 0})
+            self.message_post(body='Phiên kiểm đếm đã được cập nhật thêm. Bộ phận cửa hàng cần xác nhận lại để cập nhật Chi tiết kiểm kê')
 
     @api.model
     def _get_update_value(self, vals, **kwargs):
         field_list = {
-            'kiem_ke_thuc_te': 0, 'phien_dem_bo_sung': 0, 'hang_khong_kiem_dem': 0, 'tui_ban_hang': 0,
+            'kiem_ke_thuc_te': 0, 'phien_dem_bo_sung': 0, 'hang_khong_kiem_dem': 0, 'tui_ban_hang': 0, 'ton_phan_mam': 0,
             'hang_khong_tem': 0, 'hang_khong_cheat_duoc': 0, 'hang_loi_chua_duyet': 0, 'hang_loi_da_duyet': 0,
             'them1': 0, 'bot1': 0, 'cong_hang_ban_ntl_chua_kiem': 0, 'tru_hang_ban_da_kiem': 0, 'phien_dem': [],
             'bo_sung_hang_chua_cheat': 0, 'tru_hang_kiem_dup': 0, 'them2': 0, 'bot2': 0, 'ghi_chu': False,

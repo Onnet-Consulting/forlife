@@ -15,8 +15,8 @@ class AccountMoveSaleOrder(models.Model):
         for promotion_id in self.promotion_ids:
             if promotion_id.promotion_type == 'vip_amount':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0].amount
                 if vat not in list(vip_amount.keys()):
                     vip_amount.update({
                         vat:promotion_id.value,
@@ -25,8 +25,8 @@ class AccountMoveSaleOrder(models.Model):
                     vip_amount[vat] += promotion_id.value
             if promotion_id.promotion_type == 'reward':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0].amount
                 if vat not in list(reward_amount.keys()):
                     reward_amount.update({
                         vat:promotion_id.value,
@@ -34,14 +34,14 @@ class AccountMoveSaleOrder(models.Model):
                 else:
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = round(value/(1+vat/100))
             item = {
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
-                "Qty": 1.0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Qty": 0,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
@@ -62,14 +62,14 @@ class AccountMoveSaleOrder(models.Model):
             list_invoice_detail.append(item)
         
         for vat, value in reward_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = round(value/(1+vat/100))
             item = {
-                "ItemName": 'Chiết khấu tổng đơn',
+                "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
-                "Qty": 1.0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Qty": 0,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
@@ -100,8 +100,10 @@ class AccountMoveSaleOrder(models.Model):
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
                 if line.product_id.voucher:continue
-                ItemName = (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else ''
+                ItemName = (line.product_id.name or line.description) if (
+                            line.product_id.name or line.description) else ''
+                if line.sale_line_ids and line.sale_line_ids[0].order_id.x_sale_type == 'asset':
+                    ItemName = line.sale_line_ids[0].x_product_code_id.name if line.sale_line_ids[0].x_product_code_id else line.sale_line_ids[0].product_id.name
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
@@ -109,13 +111,13 @@ class AccountMoveSaleOrder(models.Model):
                 item = {
                     "ItemName": ItemName,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.quantity,
+                    "Qty": abs(line.quantity),
                     "Price": Price,
                     "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
                 item.update({

@@ -36,8 +36,8 @@ class AccountMove(models.Model):
             'target': 'new',
         }
 
-    def _get_unbalanced_moves(self, container):
-        if self.origin_invoice_id:
-            return []
-        else:
-            return super(AccountMove, self)._get_unbalanced_moves(container)
+    # def _get_unbalanced_moves(self, container):
+    #     if self.origin_invoice_id:
+    #         return []
+    #     else:
+    #         return super(AccountMove, self)._get_unbalanced_moves(container)
