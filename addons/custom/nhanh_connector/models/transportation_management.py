@@ -62,7 +62,7 @@ class TransportationSession(models.Model):
                     line.order_status) or '',
                 line.channel.name or '',
                 line.transport_code or '',
-                dict(self._fields['status'].selection).get(line.status) or '',
+                dict(self.env['transportation.session.line']._fields['status']._description_selection(self.env)).get(line.status) or '',
             ] for line in session_line
         ]
 
