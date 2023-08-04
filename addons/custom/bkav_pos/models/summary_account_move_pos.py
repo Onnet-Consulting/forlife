@@ -134,7 +134,7 @@ class SummaryAccountMovePos(models.Model):
         last_day = date.today()
         domain = [
             ('is_synthetic', '=', False),
-            ('invoice_date', '<', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
@@ -526,9 +526,11 @@ class SummaryAccountMovePos(models.Model):
 
         if kwargs.get("is_synthetic"):
             if sale_synthetic:
-                sale_synthetic.write({"is_synthetic": True})
+                for line in sale_synthetic:
+                    line.write({"is_synthetic": True})
             if refund_synthetic:
-                refund_synthetic.write({"is_synthetic": True})
+                for line in refund_synthetic:
+                    line.write({"is_synthetic": True})
         
         return True
 
