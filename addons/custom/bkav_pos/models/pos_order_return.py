@@ -140,7 +140,7 @@ class PosOrderReturn(models.Model):
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id != False):
+            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -178,8 +178,6 @@ class PosOrderReturn(models.Model):
             list_invoice_detail.extend(self._get_promotion_in_pos())
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            # if invoice.invoice_info_company_name:
-            #     BuyerName = invoice.invoice_info_company_name
 
             BuyerTaxCode =invoice.partner_id.vat or '' if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:

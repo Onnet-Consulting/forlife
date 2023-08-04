@@ -49,7 +49,7 @@
                             </group>
                         </group>
                     </page>
-                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '=', False)]}">
+                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '!=', False)]}">
                         <field name="eivoice_file_return" attrs="{'invisible':[('eivoice_file_return', '=', False)]}"/>
                         <button name="create_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav_return', '!=', False),('invoice_guid_return', '!=', False)]}"
