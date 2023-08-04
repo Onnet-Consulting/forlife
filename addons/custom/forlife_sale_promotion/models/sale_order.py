@@ -163,7 +163,8 @@ class SaleOrder(models.Model):
                                         'account_id': promotion_account_id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
-                                        'description': "Chiết khấu theo chính sách vip"
+                                        'description': "Chiết khấu theo chính sách vip",
+                                        'tax_id': ln.tax_id
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
@@ -176,7 +177,8 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'promotion_type': 'vip_amount_remain',
-                                        'description': "Chiết khấu giảm giá trực tiếp"
+                                        'description': "Chiết khấu giảm giá trực tiếp",
+                                        'tax_id': ln.tax_id
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
@@ -205,7 +207,8 @@ class SaleOrder(models.Model):
                                 'promotion_type': 'discount',
                                 'account_id': discount_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                'description': "Chiết khấu giảm giá trực tiếp"
+                                'description': "Chiết khấu giảm giá trực tiếp",
+                                'tax_id': ln.tax_id
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
@@ -216,7 +219,8 @@ class SaleOrder(models.Model):
                                 'promotion_type': 'diff_price',
                                 'account_id': promotion_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                'description': "Chiết khấu khuyến mãi theo CT giá"
+                                'description': "Chiết khấu khuyến mãi theo CT giá",
+                                'tax_id': ln.tax_id
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
@@ -307,7 +311,8 @@ class SaleOrder(models.Model):
                                         'promotion_type': 'reward',
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                        'description': "Chiết khấu khuyến mãi"
+                                        'description': "Chiết khấu khuyến mãi",
+                                        'tax_id': line.tax_id
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             line.write({'state': 'draft'})
@@ -337,7 +342,8 @@ class SaleOrder(models.Model):
                                             'promotion_type': 'reward',
                                             'account_id': discount_account_id and discount_account_id.id,
                                             'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                            'description': "Chiết khấu khuyến mãi"
+                                            'description': "Chiết khấu khuyến mãi",
+                                            'tax_id': line.tax_id
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 line.write({'state': 'draft'})
