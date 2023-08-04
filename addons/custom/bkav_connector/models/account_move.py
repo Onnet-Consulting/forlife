@@ -95,8 +95,8 @@ class AccountMoveBKAV(models.Model):
                     "Amount": abs(line.price_subtotal),
                     "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
                 vat, tax_rate_id = self._get_vat_line_bkav(line)

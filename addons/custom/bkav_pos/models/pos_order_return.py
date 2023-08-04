@@ -163,8 +163,8 @@ class PosOrderReturn(models.Model):
                     "Amount": price_subtotal,
                     "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 item.update({
