@@ -307,7 +307,7 @@ class SyntheticAccountMovePos(models.Model):
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
-            # ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
