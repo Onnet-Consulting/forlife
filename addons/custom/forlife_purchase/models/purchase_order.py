@@ -2336,6 +2336,8 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
+        if self.product_id and self.product_id.uom_po_id:
+            self.purchase_uom = self.product_id.uom_po_id.id
         if self.product_id and self.currency_id:
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.now().date()
