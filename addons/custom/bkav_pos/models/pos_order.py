@@ -122,7 +122,7 @@ class PosOrder(models.Model):
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": 1000/(1+vat/100),
+                "Price": round(1000/(1+vat/100)),
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,

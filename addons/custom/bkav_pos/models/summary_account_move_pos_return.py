@@ -134,7 +134,7 @@ class SummaryAccountMovePosReturn(models.Model):
         last_day = date.today()
         domain = [
             ('invoice_exists_bkav', '=', False),
-            ('invoice_date', '<', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('is_synthetic', '=', False),
