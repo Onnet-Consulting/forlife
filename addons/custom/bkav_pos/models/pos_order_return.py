@@ -223,16 +223,16 @@ class PosOrderReturn(models.Model):
 
 
     def _check_info_before_bkav_return(self):
-        if self.is_post_bkav_store:
+        if not self.is_post_bkav_store:
             return True
-        if not self.is_general:
+        if self.is_general:
             return True
         if self.issue_invoice_type != 'vat':
             if not self.origin_move_id:
                 raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
-            if not self.origin_move_id.exists_bkav:
-                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
-            return True
+            if not self.origin_move_id.is_post_bkav:
+                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV, hoặc chưa được ký phát hành! Vui lòng về đơn gốc kiểm tra!')
+            return False
         return False
     
     @api.depends('data_compare_status_return')
@@ -248,7 +248,7 @@ class PosOrderReturn(models.Model):
         return bkav_action_return.get_invoice_status(self)
     
     def create_invoice_bkav_return(self):
-        if not self._check_info_before_bkav_return():
+        if self._check_info_before_bkav_return():
             return
         if self.origin_move_id.date_order.date() == self.date_order.date():
             if self.origin_move_id.invoice_guid and self.origin_move_id.is_post_bkav:
@@ -264,7 +264,7 @@ class PosOrderReturn(models.Model):
 
 
     def update_invoice_bkav_return(self):
-        if not self._check_info_before_bkav_return():
+        if self._check_info_before_bkav_return():
             return
         data = self.get_bkav_data_pos_return()
         return bkav_action_return.update_invoice_bkav(self,data)
