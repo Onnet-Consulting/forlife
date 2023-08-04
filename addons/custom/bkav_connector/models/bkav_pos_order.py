@@ -80,7 +80,7 @@ class AccountMovePosOrder(models.Model):
                 item = {
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.qty,
+                    "Qty": abs(line.qty),
                     "Price": abs(line.price_bkav),
                     "Amount": abs(line.price_subtotal),
                     "TaxAmount": abs(line.price_subtotal_incl - line.price_subtotal or 0.0),

@@ -136,7 +136,6 @@ class PosOrder(models.Model):
                 "Qty": abs(value/1000),
                 "Price": 1000/(1+vat/100),
                 "TaxAmount": abs(value - value_not_tax),
-                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -164,7 +163,6 @@ class PosOrder(models.Model):
                 "Qty": 1,
                 "Price": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
-                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -209,7 +207,7 @@ class PosOrder(models.Model):
                 item = {
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.qty,
+                    "Qty": abs(line.qty),
                     "Price": price_bkav,
                     "Amount": price_subtotal,
                     "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
