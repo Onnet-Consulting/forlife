@@ -96,7 +96,7 @@ class AccountMoveBKAV(models.Model):
                     "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
@@ -182,7 +182,7 @@ class AccountMoveBKAV(models.Model):
             if not self.origin_move_id.exists_bkav:
                 raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
             return True
-        return False
+        return True
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status(self):
