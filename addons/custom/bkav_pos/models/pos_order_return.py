@@ -289,17 +289,11 @@ class PosOrderReturn(models.Model):
             item.delete_invoice_bkav_return()
         return super(PosOrderReturn, self).unlink()
     
-
-    @api.model
-    def _process_order(self, order, draft, existing_order):
-        pos_id = super(PosOrderReturn, self)._process_order(order, draft, existing_order)
-        if not existing_order:
-            pos = self.env['pos.order'].browse(pos_id)
-            if pos.is_refunded:
-                pos.update({
-                    'issue_invoice_type': 'adjust',
-                    'origin_move_id': pos_id
-                })
-        return pos_id
+    @api.model_create_multi
+    def create(self, vals_list):
+        res =  super(PosOrderReturn, self).create(vals_list)
+        if res.refunded_order_ids:
+            res.origin_move_id = res.refunded_order_ids[0].id
+        return res
     
     

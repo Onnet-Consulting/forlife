@@ -198,13 +198,13 @@ class AccountMoveBKAV(models.Model):
     def create_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        # if self.issue_invoice_type == 'adjust':
-        #     if not self.origin_move_id or not self.origin_move_id.invoice_no:
-        #         raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-        #     if self.origin_move_id.amount_total == self.amount_total:
-        #         self.origin_move_id.cancel_invoice_bkav()
-        #         self.exists_bkav = True
-        #         return
+        if self.issue_invoice_type == 'adjust':
+            if not self.origin_move_id or not self.origin_move_id.invoice_no:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
+            if self.origin_move_id.amount_total == self.amount_total:
+                self.origin_move_id.cancel_invoice_bkav()
+                self.exists_bkav = True
+                return
         data = []
         so_orders = self.invoice_line_ids.sale_line_ids.order_id
         origin_so_orders = False

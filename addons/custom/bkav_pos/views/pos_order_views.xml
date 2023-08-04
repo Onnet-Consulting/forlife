@@ -34,9 +34,6 @@
                             <group>
                                 <field name="exists_bkav" readonly="1"/>
                                 <field name="is_general" readonly="1"/>
-                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
-                                <field name="origin_move_id"
-                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
                                 <field name="invoice_no" readonly="1"/>
                                 <field name="invoice_form" readonly="1"/>
                             </group>
