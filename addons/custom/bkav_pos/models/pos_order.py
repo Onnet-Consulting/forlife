@@ -96,7 +96,7 @@ class PosOrder(models.Model):
             line_invoice = {
                 "ItemName": "Tích điểm",
                 "UnitName": 'Điểm',
-                "Qty": self.total_point,
+                "Qty": abs(self.total_point),
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
@@ -133,9 +133,9 @@ class PosOrder(models.Model):
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
-                "Qty": value/1000,
+                "Qty": abs(value/1000),
                 "Price": 1000/(1+vat/100),
-                "TaxAmount": value - value_not_tax,
+                "TaxAmount": abs(value - value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -162,8 +162,8 @@ class PosOrder(models.Model):
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": 'Đơn vị',
                 "Qty": 1,
-                "Price": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Price": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -197,7 +197,7 @@ class PosOrder(models.Model):
                     continue
                 price_subtotal = line.price_subtotal
                 price_subtotal_incl = line.price_subtotal_incl
-                sublines = invoice.lines.filtered(lambda l: l.is_promotion == True and l.promotion_type not in ('point','card') and l.product_src_id.id == line.product_id.id)
+                sublines = invoice.lines.filtered(lambda l: l.is_promotion == True and l.promotion_type not in ('point','card') and l.product_src_id.id == line.id)
                 for l in sublines:
                     price_subtotal += l.price_subtotal
                     price_subtotal_incl += l.price_subtotal_incl
