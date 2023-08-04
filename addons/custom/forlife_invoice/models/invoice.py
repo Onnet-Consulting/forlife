@@ -196,19 +196,24 @@ class AccountMove(models.Model):
     @api.onchange('purchase_order_product_id')
     def onchange_purchase_order_product_id(self):
         location_ids = []
-        self.receiving_warehouse_id = [(5, 0)]
+        # self.receiving_warehouse_id = [(5, 0)]
         if self.purchase_order_product_id:
-            receiving_warehouse = []
-            product_cost = self.env['purchase.order'].search([('id', 'in', self.purchase_order_product_id.ids)])
-            for po in product_cost:
-                location_ids.append(po.location_id)
-                receiving_warehouse_id = self.env['stock.picking'].search(
-                    [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
-                     ('state', '=', 'done')])
-                if receiving_warehouse_id.picking_type_id.code == 'incoming':
-                    for item in receiving_warehouse_id:
-                        receiving_warehouse.append(item.id)
-                        self.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+            picking_ids = self.purchase_order_product_id.mapped('picking_ids').filtered(lambda x: x.state == 'done')
+            if picking_ids:
+                self.receiving_warehouse_id = [(6, 0, picking_ids.ids)]
+        else:
+            self.receiving_warehouse_id = False
+            # receiving_warehouse = []
+            # product_cost = self.env['purchase.order'].search([('id', 'in', self.purchase_order_product_id.ids)])
+            # for po in product_cost:
+            #     location_ids.append(po.location_id)
+            #     receiving_warehouse_id = self.env['stock.picking'].search(
+            #         [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
+            #          ('state', '=', 'done')])
+            #     if receiving_warehouse_id.picking_type_id.code == 'incoming':
+            #         for item in receiving_warehouse_id:
+            #             receiving_warehouse.append(item.id)
+            #             self.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
 
     @api.depends('select_type_inv')
     def _compute_check_type_inv(self):
@@ -231,17 +236,17 @@ class AccountMove(models.Model):
                 if rec.select_type_inv == 'expense':
                     if rec.receiving_warehouse_id:
                         rec.purchase_type = 'product'
-                        product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
-                        for cost in product_cost.cost_line:
+                        purchase_order_ids = rec.purchase_order_product_id
+                        for cost in purchase_order_ids.cost_line:
                             if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
                                 raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % cost.product_id.name)
-                            for item in product_cost.order_line:
+                            for item in purchase_order_ids.order_line:
                                 for pk_l in rec.receiving_warehouse_id.move_ids_without_package:
                                     if item.id == pk_l.purchase_line_id.id:
                                         if cost.is_check_pre_tax_costs:
-                                            cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
+                                            cost_total = (item.total_vnd_amount / sum(purchase_order_ids.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
                                         else:
-                                            cost_total = (item.total_vnd_amount / sum(product_cost.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
+                                            cost_total = (item.total_vnd_amount / sum(purchase_order_ids.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
                                         existing_line = invoice_line_ids.filtered(
                                             lambda line: line.product_id.id == cost.product_id.id)
                                         if not existing_line:
@@ -1033,23 +1038,25 @@ class RespartnerVendor(models.Model):
 
     def inverse_account_move_line(self):
         for rec in self:
-            if rec.vendor_back_id.select_type_inv == 'expense' and rec.invoice_description:
-                invoice_line = rec.vendor_back_id.invoice_line_ids.filtered(
-                    lambda x: x.product_id == rec.invoice_description)
-                if rec.invoice_description and invoice_line:
-                    invoice_line.write({
-                        'price_unit': rec.price_subtotal_back,
-                        'tax_ids': [(6, 0, rec.tax_percent.ids)],
-                    })
-                else:
-                    new_line = self.env['account.move.line'].new({
-                        'move_id': rec.vendor_back_id.id,
-                        'product_id': rec.invoice_description.id,
-                        'price_unit': rec.price_subtotal_back,
-                        'price_subtotal': rec.price_subtotal_back,
-                        'tax_ids': [Command.set(rec.tax_percent.ids)],
-                    })
-                    rec.vendor_back_id['invoice_line_ids'] += new_line
+            if rec.vendor_back_id.select_type_inv in ('expense', 'labor') and rec.invoice_description:
+                invoice_lines = rec.vendor_back_id.invoice_line_ids.filtered(
+                    lambda x: x.product_expense_origin_id == rec.invoice_description)
+                sum_price = sum(invoice_lines.mapped('price_unit'))
+                for invoice_line in invoice_lines:
+                    if rec.invoice_description and invoice_line:
+                        invoice_line.write({
+                            'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price,
+                            'tax_ids': [(6, 0, rec.tax_percent.ids)],
+                        })
+                    else:
+                        new_line = self.env['account.move.line'].new({
+                            'move_id': rec.vendor_back_id.id,
+                            'product_id': rec.invoice_description.id,
+                            'price_unit': rec.price_subtotal_back,
+                            'price_subtotal': rec.price_subtotal_back,
+                            'tax_ids': [Command.set(rec.tax_percent.ids)],
+                        })
+                        rec.vendor_back_id['invoice_line_ids'] += new_line
 
     def unlink(self):
         for rec in self:
@@ -1104,12 +1111,12 @@ class InvoiceCostLine(models.Model):
     name = fields.Char(string='Mô tả', related='product_id.name')
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá', default=1)
-    foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
-    vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', inverse="_inverse_cost", store=1, readonly=False)
-    is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế', default=False)
+    foreign_amount = fields.Float(string='Tổng tiền ngoại tệ')
+    vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', inverse="_inverse_cost", store=1, readonly=False)
+    is_check_pre_tax_costs = fields.Boolean('Chi phí trước thuế', default=False)
     cost_line_origin = fields.Many2one('purchase.order.cost.line', string='Chi phí gốc')
-    invoice_cost_id = fields.Many2one('account.move', string='Invoice Cost Line')
-    company_currency = fields.Many2one('res.currency', string='Tiền tệ',
+    invoice_cost_id = fields.Many2one('account.move', string='Invoice Cost Line', ondelete='cascade')
+    company_currency = fields.Many2one('res.currency', string='Tiền tệ',
                                        default=lambda self: self.env.company.currency_id.id)
 
     @api.model
