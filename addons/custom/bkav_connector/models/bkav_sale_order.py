@@ -34,14 +34,14 @@ class AccountMoveSaleOrder(models.Model):
                 else:
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = round(value/(1+vat/100))
             item = {
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
@@ -62,14 +62,14 @@ class AccountMoveSaleOrder(models.Model):
             list_invoice_detail.append(item)
         
         for vat, value in reward_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = round(value/(1+vat/100))
             item = {
                 "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }

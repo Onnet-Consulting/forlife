@@ -316,7 +316,7 @@ class TransferNotExistsBkav(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        return bkav_action.create_invoice_bkav(self,data)
+        return bkav_action.update_invoice_bkav(self,data)
 
     def get_invoice_bkav(self):
         if not self._check_info_before_bkav():
