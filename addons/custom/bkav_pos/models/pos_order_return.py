@@ -7,7 +7,6 @@ from odoo.exceptions import ValidationError
 class PosOrderReturn(models.Model):
     _inherit = "pos.order"
 
-
     exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
     is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     ###trạng thái và số hdđt từ bkav trả về
@@ -38,7 +37,7 @@ class PosOrderReturn(models.Model):
         ('vat', 'GTGT'),
         ('adjust', 'Điều chỉnh'),
         ('replace', 'Thay thế')
-    ], 'Loại phát hành', default='vat', required=True)
+    ], 'Loại phát hành', default='adjust', required=True)
     origin_move_id = fields.Many2one('pos.order', 'Hóa đơn gốc')
     
     
@@ -62,8 +61,8 @@ class PosOrderReturn(models.Model):
         for promotion_id in self.lines:
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
                     use_point.update({
                         vat:promotion_id.subtotal_paid,
@@ -72,8 +71,8 @@ class PosOrderReturn(models.Model):
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
                     rank_total.update({
                         vat:promotion_id.subtotal_paid,
@@ -141,7 +140,7 @@ class PosOrderReturn(models.Model):
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines:
+            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id != False):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -165,7 +164,7 @@ class PosOrderReturn(models.Model):
                     "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 item.update({
@@ -254,7 +253,7 @@ class PosOrderReturn(models.Model):
         if not self._check_info_before_bkav_return():
             return
         data = self.get_bkav_data_pos_return()
-        origin_id = self.origin_move_id if self.origin_move_id else False
+        origin_id = self.origin_move_id
         is_publish = False
         issue_invoice_type = self.issue_invoice_type
         return bkav_action_return.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)

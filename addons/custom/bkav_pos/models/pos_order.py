@@ -98,8 +98,8 @@ class PosOrder(models.Model):
         for promotion_id in self.lines:
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
                     use_point.update({
                         vat:promotion_id.subtotal_paid,
@@ -108,8 +108,8 @@ class PosOrder(models.Model):
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_ids:
+                    vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
                     rank_total.update({
                         vat:promotion_id.subtotal_paid,
@@ -179,7 +179,7 @@ class PosOrder(models.Model):
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines:
+            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id == False):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -203,7 +203,7 @@ class PosOrder(models.Model):
                     "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
                     "ItemTypeID": 0,
                     "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
                 item.update({
@@ -282,11 +282,7 @@ class PosOrder(models.Model):
     def create_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        if not self.is_refunded:
-            data = self.get_bkav_data_pos()
-        else:
-            return
-            # data = self.get_bkav_data_pos_exchange()
+        data = self.get_bkav_data_pos()
         origin_id = False
         is_publish = False
         issue_invoice_type = 'vat'
