@@ -95,7 +95,7 @@
                     <field name="purchase_order_product_id"
                            widget="many2many_tags"
                            options="{'no_open': False}"
-                           domain="[('partner_id','=', partner_id), ('type_po_cost','=', type_inv), ('purchase_type','=', purchase_type),('custom_state','=', 'approved')]"
+                           domain="[('type_po_cost','=', type_inv),('custom_state','=', 'approved')]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="receiving_warehouse_id"
                            widget="many2many_tags"
@@ -109,6 +109,7 @@
                 </xpath>
                 <xpath expr="//field[@name='line_ids']//tree//field[@name='account_id']" position="after">
                     <field name="product_id"/>
+                    <field name="product_expense_origin_id" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
@@ -215,6 +216,24 @@
                 <xpath expr="//notebook/page[@name='other_info']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//notebook/page[@id='aml_tab']" position="before">
+                    <page string="Chi tiết hóa đơn" attrs="{'invisible': [('select_type_inv', '=', 'normal')]}">
+                        <field name="account_expense_labor_detail_ids">
+                            <tree editable="bottom">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="product_id"/>
+                                <field name="description"/>
+                                <field name="uom_id"/>
+                                <field name="qty"/>
+                                <field name="price_subtotal_back"/>
+                                <field name="tax_percent"/>
+                                <field name="tax_back"/>
+                                <field name="totals_back"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
                     <page string="Thuế nhập khẩu"
                           attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
@@ -281,7 +300,7 @@
                             </tree>
                         </field>
                     </page>
-                    <page string="Tổng hợp" invisible="context.get('default_move_type', False) == 'out_invoice'" name="synthetic">
+                    <page string="Tổng hợp" attrs="{'invisible': ['|', ('move_type', '=', 'out_invoice'), ('select_type_inv', 'in', ('expense', 'labor'))]}" name="synthetic">
                         <field name="invoice_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
                                 <field name="product_id"/>
@@ -296,6 +315,29 @@
                                 <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="after_tax"/>
                                 <field name="total_product"/>
+                            </tree>
+                        </field>
+                    </page>
+
+                    <page string="Tổng hợp"
+                          attrs="{'invisible': [('select_type_inv', '=', 'normal')]}">
+                        <field name="sum_expense_labor_ids" readonly="1" force_save="1">
+                            <tree editable="bottom" class="width-hh">
+                                <field name="product_id"/>
+                                <field name="description"/>
+                                <field name="uom_id"/>
+<!--                                <field name="price_unit"/>-->
+<!--                                <field name="product_po_qty"/>-->
+<!--                                <field name="product_qty"/>-->
+<!--                                <field name="total_vnd_amount"/>-->
+<!--                                <field name="discount_percent"/>-->
+                                <field name="currency_id" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="before_tax" sum="Sum Before Tax"/>
+                                <field name="after_tax" sum="Sum After Tax"/>
+<!--                                <field name="amount_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
+<!--                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
+<!--                                <field name="total_product"/>-->
                             </tree>
                         </field>
                     </page>
