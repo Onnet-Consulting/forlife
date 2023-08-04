@@ -1,5 +1,6 @@
 from odoo import fields, api, models
 from datetime import datetime
+import math
 
 
 class ApiStockTransfer(models.AbstractModel):
@@ -22,7 +23,7 @@ class ApiStockTransfer(models.AbstractModel):
         domain = [
             ('create_date', '>=', date_from),
             ('create_date', '<=', date_to),
-            ('state', '=', 'approved'),
+            ('state', '=', 'approved')
         ]
         stock_transfer = self.env['stock.transfer'].search(domain, limit=limit, offset=offset)
         total = self.env['stock.transfer'].search_count(domain)
@@ -33,7 +34,7 @@ class ApiStockTransfer(models.AbstractModel):
             "pagination": {
                 "page": page,
                 "limit": limit,
-                "total_page": total
+                "total_page": math.ceil(total/limit)
             },
         }
         data = []
