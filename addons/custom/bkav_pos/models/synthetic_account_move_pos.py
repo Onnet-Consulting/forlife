@@ -314,13 +314,11 @@ class SyntheticAccountMovePos(models.Model):
 
     def create_an_invoice(self):
         for line in self:
-            bkav_invoice_data = line.get_bkav_data_pos()
-            bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=False)
-            # try:
-            #     bkav_invoice_data = line.get_bkav_data_pos()
-            #     bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
-            # except Exception as e:
-            #     line.message_post(body=str(e))
+            try:
+                bkav_invoice_data = line.get_bkav_data_pos()
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+            except Exception as e:
+                line.message_post(body=str(e))
             
 
     def get_invoice_bkav(self):
