@@ -278,7 +278,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     if abs(line.remaining_quantity) > abs(v["quantity"]):
                         row["quantity"] = abs(row["quantity"])
                         remaining_quantity = line.remaining_quantity - v["quantity"]
-                        adjusted_quantity += abs(v["quantity"])
+                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
 
                         if remaining_records.get(line.synthetic_id.id):
                             remaining_records[line.synthetic_id.id].append(row)
@@ -294,7 +294,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     else:
                         row["quantity"] = abs(line.remaining_quantity)
                         v["quantity"] -= line.remaining_quantity
-                        adjusted_quantity += abs(line.remaining_quantity)
+                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
 
                         if remaining_records.get(line.synthetic_id.id):
                             remaining_records[line.synthetic_id.id].append(row)
