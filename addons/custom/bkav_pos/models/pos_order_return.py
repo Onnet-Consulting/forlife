@@ -1,40 +1,23 @@
 from odoo import api, fields, models
 from datetime import date, datetime, timedelta
-from ...bkav_connector.models import bkav_action
+from ...bkav_connector.models import bkav_action_return
 from odoo.exceptions import ValidationError
 
 
-class PosOrder(models.Model):
+class PosOrderReturn(models.Model):
     _inherit = "pos.order"
 
 
-    is_post_bkav_store = fields.Boolean(
-        string='Có phát hành hóa đơn bkav', 
-        related="store_id.is_post_bkav"
-    )
-    invoice_date = fields.Date(
-        string='Invoice/Bill Date',
-        related="account_move.invoice_date"
-    )
-    invoice_exists_bkav = fields.Boolean(
-        string="Đã tồn tại trên BKAV", 
-        related="account_move.exists_bkav"
-    )
-    is_synthetic = fields.Boolean(string='Synthetic', default=False)
-
-
-    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
-    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
-    is_check_cancel = fields.Boolean(default=False, copy=False, string="Đã hủy")
-    is_general = fields.Boolean(default=False, copy=False, string="Đã chạy tổng hợp cuối ngày")
+    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     ###trạng thái và số hdđt từ bkav trả về
-    invoice_state_e = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status', store=True, copy=False)
-    invoice_guid = fields.Char('GUID HDDT', copy=False)
-    invoice_no = fields.Char('Số HDDT', copy=False)
-    invoice_form = fields.Char('Mẫu số HDDT', copy=False)
-    invoice_serial = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date = fields.Date('Ngày HDDT', copy=False)
-    data_compare_status = fields.Selection([('1', 'Mới tạo'),
+    invoice_state_e_return = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_return', store=True,copy=False)
+    invoice_guid_return = fields.Char('GUID HDDT', copy=False)
+    invoice_no_return = fields.Char('Số HDDT', copy=False)
+    invoice_form_return = fields.Char('Mẫu số HDDT', copy=False)
+    invoice_serial_return = fields.Char('Ký hiệu HDDT', copy=False)
+    invoice_e_date_return = fields.Date('Ngày HDDT', copy=False)
+    data_compare_status_return = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
                                             ('4', 'Đã xóa'),
@@ -50,35 +33,16 @@ class PosOrder(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
-    eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
-
-
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        self.ensure_one()
-        default = dict(default or {})
-        default['issue_invoice_type'] = 'adjust'
-        default['origin_move_id'] = self.id
-        return super().copy(default)
-
-    def _get_vat_line_bkav(self, line):
-        vat = 0
-        if line.tax_ids:
-            vat = line.tax_ids[0].amount  
-        if vat == 0:
-            tax_rate_id = 1
-        elif vat == 5:
-            tax_rate_id = 2
-        elif vat == 8:
-            tax_rate_id = 9
-        elif vat == 10:
-            tax_rate_id = 3
-        else:
-            tax_rate_id = 4
-        return vat, tax_rate_id
+    eivoice_file_return = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+    issue_invoice_type = fields.Selection([
+        ('vat', 'GTGT'),
+        ('adjust', 'Điều chỉnh'),
+        ('replace', 'Thay thế')
+    ], 'Loại phát hành', default='vat', required=True)
+    origin_move_id = fields.Many2one('pos.order', 'Hóa đơn gốc')
     
     
-    def _get_promotion_in_pos(self):
+    def _get_promotion_in_pos_return(self):
         list_invoice_detail = []
         if self.total_point != 0:
             line_invoice = {
@@ -117,13 +81,12 @@ class PosOrder(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            value_not_tax = round(value/(1+vat/100))
+            value_not_tax = round(abs(value)/(1+vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
                 "Price": 1000/(1+vat/100),
-                "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -145,13 +108,12 @@ class PosOrder(models.Model):
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            value_not_tax = round(value/(1+vat/100))
+            value_not_tax = round(abs(value)/(1+vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": 'Đơn vị',
-                "Qty": 0,
+                "Qty": 1,
                 "Price": abs(value_not_tax),
-                "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -174,7 +136,7 @@ class PosOrder(models.Model):
         return list_invoice_detail
 
 
-    def get_bkav_data_pos(self):
+    def get_bkav_data_pos_return(self):
         bkav_data = []
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
@@ -210,6 +172,8 @@ class PosOrder(models.Model):
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
                 })
+                if invoice.issue_invoice_type == 'adjust':
+                    item['IsIncrease'] = 0 if (invoice.refunded_order_ids.ids) else 1
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos())
@@ -252,7 +216,7 @@ class PosOrder(models.Model):
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
                     "InvoiceNo": 0,
-                    "OriginalInvoiceIdentify": '',  # dùng cho hóa đơn điều chỉnh
+                    "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": 0,
                 "PartnerInvoiceStringID": invoice.pos_reference,
@@ -261,62 +225,65 @@ class PosOrder(models.Model):
         return bkav_data
 
 
-    def _check_info_before_bkav(self):
-        if not self.is_post_bkav_store:
-            return False
-        if self.is_general:
-            return False
+    def _check_info_before_bkav_return(self):
+        if self.is_post_bkav_store:
+            return True
+        if not self.is_general:
+            return True
+        if self.issue_invoice_type != 'vat':
+            if not self.origin_move_id:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
+            if not self.origin_move_id.exists_bkav:
+                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
+            return True
         return False
-
-    @api.depends('data_compare_status')
-    def _compute_data_compare_status(self):
+    
+    @api.depends('data_compare_status_return')
+    def _compute_data_compare_status_return(self):
         for rec in self:
-            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
+            rec.invoice_state_e_return = dict(self._fields['data_compare_status_return'].selection).get(rec.data_compare_status_return)
 
-    def get_invoice_identify(self):
-        return bkav_action.get_invoice_identify(self)
 
-    def get_invoice_status(self):
-        return bkav_action.get_invoice_status(self)
+    def get_invoice_identify_return(self):
+        return bkav_action_return.get_invoice_identify(self)
+
+    def get_invoice_status_return(self):
+        return bkav_action_return.get_invoice_status(self)
     
-    def create_invoice_bkav(self):
-        if not self._check_info_before_bkav():
+    def create_invoice_bkav_return(self):
+        if not self._check_info_before_bkav_return():
             return
-        if not self.is_refunded:
-            data = self.get_bkav_data_pos()
-        else:
-            return
-            # data = self.get_bkav_data_pos_exchange()
-        origin_id = False
+        data = self.get_bkav_data_pos_return()
+        origin_id = self.origin_move_id if self.origin_move_id else False
         is_publish = False
-        issue_invoice_type = 'vat'
-        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+        issue_invoice_type = self.issue_invoice_type
+        return bkav_action_return.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
 
-    def update_invoice_bkav(self):
-        if not self._check_info_before_bkav():
+    def update_invoice_bkav_return(self):
+        if not self._check_info_before_bkav_return():
             return
-        data = self.get_bkav_data_pos()
-        return bkav_action.update_invoice_bkav(self,data)
+        data = self.get_bkav_data_pos_return()
+        return bkav_action_return.update_invoice_bkav(self,data)
     
-    def publish_invoice_bkav(self):
-        return bkav_action.publish_invoice_bkav(self)
+    def publish_invoice_bkav_return(self):
+        return bkav_action_return.publish_invoice_bkav(self)
 
-    def get_invoice_bkav(self):
-        return bkav_action.get_invoice_bkav(self)
+    def get_invoice_bkav_return(self):
+        return bkav_action_return.get_invoice_bkav(self)
 
-    def cancel_invoice_bkav(self):
-        return bkav_action.cancel_invoice_bkav(self)
+    def cancel_invoice_bkav_return(self):
+        return bkav_action_return.cancel_invoice_bkav(self)
 
-    def delete_invoice_bkav(self):
-        return bkav_action.delete_invoice_bkav(self)
+    def delete_invoice_bkav_return(self):
+        return bkav_action_return.delete_invoice_bkav(self)
 
-    def download_invoice_bkav(self):
-        return bkav_action.download_invoice_bkav(self)
+    def download_invoice_bkav_return(self):
+        return bkav_action_return.download_invoice_bkav(self)
 
     def unlink(self):
         for item in self:
-            item.delete_invoice_bkav()
-        return super(PosOrder, self).unlink()
+            item.delete_invoice_bkav_return()
+        return super(PosOrderReturn, self).unlink()
     
     

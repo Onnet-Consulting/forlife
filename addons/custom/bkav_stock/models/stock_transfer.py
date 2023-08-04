@@ -171,6 +171,12 @@ class StockTransfer(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
+        origin_id = False
+        is_publish = False
+        issue_invoice_type = self.issue_invoice_type
+        if data:
+            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+
         return bkav_action.create_invoice_bkav(self,data)
 
     def publish_invoice_bkav(self):
@@ -182,7 +188,7 @@ class StockTransfer(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        return bkav_action.create_invoice_bkav(self,data)
+        return bkav_action.update_invoice_bkav(self,data)
 
     def get_invoice_bkav(self):
         if not self._check_info_before_bkav():
