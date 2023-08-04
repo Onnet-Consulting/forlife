@@ -20,7 +20,7 @@ class PosOlDiscountDetails(models.Model):
     program_name = fields.Many2one('points.promotion', related='pos_order_line_id.order_id.program_store_point_id')
     listed_price = fields.Monetary('Listed price')
     recipe = fields.Float('Recipe')
-    money_reduced = fields.Monetary('Money Reduced', compute='_compute_money_reduced', store=True)  # compute_field
+    money_reduced = fields.Monetary('Money Reduced', compute='_compute_money_reduced', store=False)  # compute_field
     currency_id = fields.Many2one('res.currency', related='pos_order_line_id.currency_id')
 
     @api.depends('recipe', 'type')
