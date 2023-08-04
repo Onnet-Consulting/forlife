@@ -198,6 +198,6 @@ class SummaryAccountMovePosReturnLine(models.Model):
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal / 100
             else:
                 r.tax_amount = 0
