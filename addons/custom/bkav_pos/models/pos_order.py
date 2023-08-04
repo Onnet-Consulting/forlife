@@ -266,7 +266,7 @@ class PosOrder(models.Model):
             return False
         if self.is_general:
             return False
-        return False
+        return True
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status(self):
