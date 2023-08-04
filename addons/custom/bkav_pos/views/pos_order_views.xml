@@ -76,7 +76,7 @@
                                 <field name="exists_bkav_return" readonly="1"/>
                                 <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
                                 <field name="origin_move_id"
-                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'required': [('issue_invoice_type','!=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
+                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
                                 <field name="invoice_no_return" readonly="1"/>
                                 <field name="invoice_form_return" readonly="1"/>
                             </group>

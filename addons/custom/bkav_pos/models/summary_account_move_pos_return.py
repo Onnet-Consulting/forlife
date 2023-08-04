@@ -21,8 +21,37 @@ class SummaryAccountMovePosReturn(models.Model):
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
 
+    line_discount_ids = fields.One2many('summary.account.move.pos.return.line.discount', compute="_compute_line_discount")
+
+    def _compute_line_discount(self):
+        for r in self:
+            r.line_discount_ids = self.env["summary.account.move.pos.return.line.discount"].search([
+                ('return_id', '=', r.id)
+            ])
+
+    def get_line_discount_detail(self, line):
+        item = {
+            "price_unit": line.price_subtotal,
+            "price_unit_incl": line.price_subtotal_incl,
+            "tax_ids": line.tax_ids_after_fiscal_position.ids,
+            "promotion_type": line.promotion_type
+        }
+        return item
+
+    def get_line_discount(self, line):
+        line_discount_details = line.order_id.lines.filtered(
+            lambda r: r.is_promotion == True and r.promotion_type in ['card','point']
+        )
+        items = []
+        if line_discount_details:
+            for line_discount_detail in line_discount_details:
+                item = self.get_line_discount_detail(line_discount_detail)
+                items.append((0,0,item))
+        return items
+
 
     def get_move_line(self, line):
+        line_discount_item = self.get_line_discount(line)
         item = {
             "product_id": line.product_id.id,
             "quantity": line.qty,
@@ -31,6 +60,7 @@ class SummaryAccountMovePosReturn(models.Model):
             "x_free_good": line.is_reward_line,
             "invoice_ids": [line.order_id.id],
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
+            "line_ids": line_discount_item,
         }
         return item
 
@@ -45,8 +75,10 @@ class SummaryAccountMovePosReturn(models.Model):
                 row["quantity"] += item["quantity"]
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
+                row["line_ids"].extend(item["line_ids"])
                 # row["tax_ids"].extend(item["tax_ids"])
                 # row["tax_ids"] = list(set(row["tax_ids"]))
+                items[pk] = row
             else:
                 items[pk] = item
         return items
@@ -180,6 +212,8 @@ class SummaryAccountMovePosReturnLine(models.Model):
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+    line_ids = fields.One2many('summary.account.move.pos.return.line.discount', 'summary_line_id')
+
 
     def __str__(self):
         return f"{self.summary_id.code} - {self.barcode}"
@@ -201,3 +235,38 @@ class SummaryAccountMovePosReturnLine(models.Model):
                 r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal / 100
             else:
                 r.tax_amount = 0
+
+class SummaryAccountMovePosReturnLineDiscount(models.Model):
+    _name = 'summary.account.move.pos.return.line.discount'
+
+    summary_line_id = fields.Many2one('summary.account.move.pos.return.line')
+    return_id = fields.Many2one('summary.account.move.pos.return', related="summary_line_id.return_id")
+    price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+    promotion_type = fields.Selection(
+        selection=[
+            ('point', 'Point'),
+            ('card', 'Card'),
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+
+    @api.depends('tax_ids', 'price_unit')
+    def compute_tax_amount(self):
+        for r in self:
+            if r.tax_ids:
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_unit * tax.amount) / 100
+                r.tax_amount = tax_amount
+            else:
+                r.tax_amount = 0
+
+    @api.depends('price_unit', 'tax_amount')
+    def compute_amount_total(self):
+        for r in self:
+            r.amount_total = r.price_unit + r.tax_amount

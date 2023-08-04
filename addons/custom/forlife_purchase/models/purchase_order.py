@@ -463,6 +463,13 @@ class PurchaseOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
+            if record.purchase_type == 'asset':
+                for item in record.order_line:
+                    if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(
+                            item.company_id).property_account_expense_categ_id.code:
+                        raise ValidationError(
+                            'Tài khoản trong Mã tài sản của bạn khác với tài khoản chi phí trong nhóm sản phẩm')
+
             if not record.partner_id:
                 raise UserError("Bạn chưa chọn nhà cung cấp!!")
             list_line_invalid = []
