@@ -3,6 +3,10 @@ from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
 import json
 import logging
+
+from ...bkav_connector.models.bkav_connector import connect_bkav
+from ...bkav_connector.models import bkav_action
+
 _logger = logging.getLogger(__name__)
 
 
@@ -52,6 +56,95 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
 
     def action_download_view_e_invoice(self):
         pass
+
+    def get_vat(self, line):
+        vat = 0
+        if line.tax_ids:
+            vat = line.tax_ids[0].amount
+
+        if vat == 0:
+            tax_rate_id = 1
+        elif vat == 5:
+            tax_rate_id = 2
+        elif vat == 8:
+            tax_rate_id = 9
+        elif vat == 10:
+            tax_rate_id = 3
+        else:
+            tax_rate_id = 4
+        return vat, tax_rate_id
+
+    def get_item_type_bkav(self, line):
+        item_type = 0
+        if line.x_free_good:
+            item_type = 15
+        return item_type
+
+    def get_bkav_data_pos(self):
+        bkav_invoices = []
+        for ln in self:
+            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(datetime.now(), datetime.now().time()))
+            ln_invoice = {
+                "Invoice": {
+                    "InvoiceTypeID": 1,
+                    "InvoiceDate": str(invoice_date).replace(' ', 'T'),
+                    "BuyerName": 'Khách lẻ',
+                    "BuyerTaxCode": '',
+                    "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
+                    "BuyerAddress":  '',
+                    "BuyerBankAccount": "",
+                    "PayMethodID": 3,
+                    "ReceiveTypeID": 3,
+                    "ReceiverEmail": str(ln.company_id.email).strip() if ln.company_id.email else '', 
+                    "ReceiverMobile": str(ln.company_id.mobile).strip() if ln.company_id.mobile else '', 
+                    "ReceiverAddress": str(ln.company_id.street).strip() if ln.company_id.street else '', 
+                    "ReceiverName": str(ln.company_id.name).strip() if ln.company_id.name else '', 
+                    "Note": "Hóa đơn mới tạo",
+                    "BillCode": "",
+                    "CurrencyID": str(ln.company_id.currency_id.name).strip() if ln.company_id.currency_id.name else '',
+                    "ExchangeRate": 1.0,
+                    "InvoiceForm": "",
+                    "InvoiceSerial": "",
+                    "InvoiceNo": 0,
+                },
+                "ListInvoiceDetailsWS": [],
+                "PartnerInvoiceID": 0,
+                "PartnerInvoiceStringID": ln.code,
+            }
+            for line in ln.line_ids:
+                if line.product_id.voucher or line.product_id.is_voucher_auto:
+                    continue
+                    
+                line_invoice = {
+                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "UnitName": line.product_uom_id.name or '',
+                    "Qty": line.quantity or 0.0,
+                    "Price": line.price_unit,
+                    "Amount": line.price_subtotal,
+                    "TaxAmount": (line.tax_amount or 0.0),
+                    "DiscountRate": 0.0,
+                    "DiscountAmount":0.0,
+                    "IsDiscount": 0,
+                    "ItemTypeID": self.get_item_type_bkav(line),
+                }
+                vat, tax_rate_id = self.get_vat(line)
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
+                ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
+
+            bkav_invoices.append(ln_invoice)
+        return bkav_invoices
+
+    def create_an_invoice(self):
+        for line in self:
+            try:
+                bkav_invoice_data = line.get_bkav_data_pos()
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+            except Exception as e:
+                line.message_post(body=str(e))
+
 
 class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     _name = 'summary.adjusted.invoice.so.nhanh.line'

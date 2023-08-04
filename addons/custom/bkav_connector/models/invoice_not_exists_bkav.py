@@ -120,7 +120,10 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         if order_lines:
             order = order_lines[0].order_id
             for line in order_lines:
-                sale_order = line.order_id
+                if line.product_id.product_tmpl_id.product_type == 'service':
+                    continue
+
+                # sale_order = line.order_id
 
                 pk = f"{line.product_id.barcode}_{float(line.price_bkav)}"
                 price_bkav = line.price_bkav
@@ -422,6 +425,18 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             ('synthetic_id', '!=', False)
         ], order="invoice_date desc")
 
+
+    def create_an_invoice_bkav(self):
+        synthetic_account_move = self.env['synthetic.account.move.so.nhanh'].search([('exists_bkav', '=', False)])
+        synthetic_account_move.create_an_invoice()
+
+        adjusted_move = self.env['summary.adjusted.invoice.so.nhanh'].search([
+            ('exists_bkav', '=', False),
+            ('source_invoice', '!=', False)
+        ])
+        adjusted_move.create_an_invoice()
+
+
     def general_invoice_not_exists_bkav(self):
         synthetic_lines = self.get_last_synthetics()
 
@@ -505,6 +520,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         # #     # invoice_bkav_id.genarate_code()
         # #     invoice_bkav_id.create_invoice_bkav()
         # #     invoice_bkav_id.update_invoice_status()
+
+
+    def cronjob_collect_invoice_to_bkav_end_day(self):
+        self.general_invoice_not_exists_bkav()
+        self.create_an_invoice_bkav()
 
 
     def create_general_invoice(self, invoices, move_date):
