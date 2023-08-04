@@ -116,7 +116,7 @@ class SyntheticAccountMovePos(models.Model):
             # ('is_invoiced', '=', True),
             # ('invoice_exists_bkav', '=', False),
         ]
-        kwargs = {"domain": domain}
+        kwargs = {"domain": domain, 'is_synthetic': True}
         self.env['summary.account.move.pos'].collect_invoice_to_bkav_end_day(**kwargs)
 
 
