@@ -137,8 +137,12 @@ class PosOrderReturn(models.Model):
 
     def get_bkav_data_pos_return(self):
         bkav_data = []
-        for invoice in self:       
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
+        for invoice in self:
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.date_order, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.date_order, (datetime.now() + timedelta(hours=7)).time())  
+            # invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
             for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id):
                 #SP KM k đẩy BKAV
@@ -252,10 +256,11 @@ class PosOrderReturn(models.Model):
             return
         if self.origin_move_id.date_order.date() == self.date_order.date():
             if self.origin_move_id.invoice_guid and self.origin_move_id.is_post_bkav:
-                self.origin_move_id.cancel_invoice_bkav()
-                self.exists_bkav_return = True
-                self.is_post_bkav_return = True
-                return
+                if self.origin_move_id.amount_total == self.amount_total:
+                    self.origin_move_id.cancel_invoice_bkav()
+                    self.exists_bkav_return = True
+                    self.is_post_bkav_return = True
+                    return
         data = self.get_bkav_data_pos_return()
         origin_id = self.origin_move_id
         is_publish = False
