@@ -28,7 +28,7 @@ class InheritAccountMoveLine(models.Model):
 
     def _compute_partner_id(self):
         for line in self:
-            if line.display_type in ('product', 'tax') and line.journal_id.company_consignment_id and line.pos_order_line_id:
+            if line.display_type == 'product' and line.journal_id.company_consignment_id and line.pos_order_line_id:
                 line.partner_id = line.journal_id.company_consignment_id
             else:
                 line.partner_id = line.move_id.partner_id.commercial_partner_id

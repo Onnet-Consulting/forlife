@@ -246,6 +246,13 @@ class InheritPosOrder(models.Model):
                 line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
+        # update account.move.line of tax type
+        invoices = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
+                                            .filtered(lambda m: m.move_type in ('out_invoice', 'out_refund'))
+        for invoice in invoices:
+            if invoice.journal_id.company_consignment_id:
+                tax_lines = invoice.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_lines.partner_id = invoice.journal_id.company_consignment_id
         return result
 
     def action_view_invoice(self):
