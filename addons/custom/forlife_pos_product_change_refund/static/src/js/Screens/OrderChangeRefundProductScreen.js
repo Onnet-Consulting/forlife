@@ -382,12 +382,13 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             const destOrderLines = destinationOrder.orderlines;
             var old_id_employee = []
             for (let i =0;i<destOrderLines.length;i++) {
-                if (!destOrderLines[i].employee_id){
-                    destOrderLines[i].set_employee(clickedOrder.orderlines[i].employee_id);
+                 const orderline = clickedOrder.orderlines.find((line) => line.id == destOrderLines[i].refunded_orderline_id);
+                if (orderline.employee_id){
+                    destOrderLines[i].set_employee(orderline.employee_id);
+                    old_id_employee.push({id:destOrderLines[i].id,
+                        employee_id: orderline.employee_id
+                    })
                 }
-                old_id_employee.push({id:destOrderLines[i].id,
-                    employee_id: clickedOrder.orderlines[i].employee_id
-                })
             }
             order.old_id_employee = old_id_employee
 
