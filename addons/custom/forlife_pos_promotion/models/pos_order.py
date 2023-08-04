@@ -33,6 +33,7 @@ class PosOrder(models.Model):
                 line[2]['discount_details_lines'] = [(0, 0, {
                     'type': 'ctkm',
                     'listed_price': lst_price,
+                    'recipe': discounted_amount,
                     'discounted_amount': discounted_amount
                 })]
 
