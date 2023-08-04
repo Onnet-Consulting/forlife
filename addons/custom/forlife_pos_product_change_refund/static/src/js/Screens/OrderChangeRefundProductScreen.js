@@ -351,7 +351,9 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             const destOrderLines = destinationOrder.orderlines;
             var old_id_employee = []
             for (let i =0;i<destOrderLines.length;i++) {
-                destOrderLines[i].set_employee(clickedOrder.orderlines[i].employee_id);
+                if (!destOrderLines[i].employee_id){
+                    destOrderLines[i].set_employee(clickedOrder.orderlines[i].employee_id);
+                }
                 old_id_employee.push({id:destOrderLines[i].id,
                     employee_id: clickedOrder.orderlines[i].employee_id
                 })
@@ -626,10 +628,10 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             var pos_order_line_discount_details = []
             orderline.pos_order_line_discount_details.forEach(function(item){
                 pos_order_line_discount_details.push({
-                        'id': item.id,
-                        'pos_order_line_id': item.pos_order_line_id,
-                        'money_reduced': item.money_reduced,
-                        'type': item.type,
+                    'id': item.id,
+                    'pos_order_line_id': item.pos_order_line_id,
+                    'money_reduced': item.money_reduced,
+                    'type': item.type,
                 })
             })
             return {
@@ -645,6 +647,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 refunded_orderline_id: orderline.id,
                 tax_ids: orderline.tax_ids,
                 discount: orderline.discount,
+                employee_id: orderline.employee_id,
+                assigned_employee: orderline.assigned_employee,
                 pos_order_line_discount_details: pos_order_line_discount_details
             }
         }
