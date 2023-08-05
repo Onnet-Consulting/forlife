@@ -1123,10 +1123,9 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': wave_item.quantity_purchase_done,
-            'discount_percent': line.discount,
+            'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
-            'tax_amount': line.price_tax * (
-                    wave_item.qty_done / line.product_qty),
+            'tax_amount': line.price_tax * (wave_item.qty_done / line.product_qty),
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
@@ -1156,7 +1155,7 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_percent': line.discount,
+            'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax * (line.qty_received / line.product_qty),
             'product_uom_id': line.product_uom.id,
@@ -1280,7 +1279,7 @@ class PurchaseOrder(models.Model):
             # 'event_id': line.event_id.id,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_percent': line.discount,
+            'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
@@ -1308,7 +1307,7 @@ class PurchaseOrder(models.Model):
             # 'event_id': line.event_id.id,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_percent': line.discount,
+            'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
@@ -1320,8 +1319,7 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def create_invoice_normal_control_len(self, order, line,
-                                          matching_item, quantity):
+    def create_invoice_normal_control_len(self, order, line, matching_item, quantity):
         data_line = {
             'ware_id': matching_item.id,
             'ware_name': matching_item.picking_id.name,
@@ -1336,7 +1334,7 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': 0,
-            'discount_percent': line.discount,
+            'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': matching_item.product_uom_id.id,
@@ -2199,7 +2197,6 @@ class PurchaseOrderLine(models.Model):
             if rec.discount_percent < 0 or rec.discount_percent > 100:
                 raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
 
-
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
@@ -2490,15 +2487,17 @@ class PurchaseOrderLine(models.Model):
     def _compute_free_good(self):
         for rec in self:
             if rec.free_good:
-                rec.write({'discount': 0,
-                           'discount_percent': 0,
-                           'readonly_discount_percent': True,
-                           'readonly_discount': True,
-                           })
+                rec.write({
+                    'discount': 0,
+                    'discount_percent': 0,
+                    'readonly_discount_percent': True,
+                    'readonly_discount': True,
+                })
             else:
-                rec.write({'readonly_discount_percent': False,
-                           'readonly_discount': False,
-                           })
+                rec.write({
+                    'readonly_discount_percent': False,
+                    'readonly_discount': False,
+                })
 
 
     @api.onchange("discount_percent", 'vendor_price')
