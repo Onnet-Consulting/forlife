@@ -78,6 +78,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.reportTitle = data.reportTitle;
             this.reportTemplate = data.reportTemplate;
             this.reportPager = data.reportPager;
+            this.clientExportExcel = data.clientExportExcel;
             this.report_filename = data.reportTitle + '.xlsx';
             this.report_type_id = 'all_data';
             this.titles = data.titles;

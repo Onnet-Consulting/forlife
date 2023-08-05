@@ -48,7 +48,7 @@
                 </t>
                 <t t-else="">Không có bản ghi nào</t>
             </span>
-            <t t-if="widget.total_records > 0">
+            <t t-if="widget.total_records > 0 and widget.clientExportExcel == true">
                 <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
                         t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel
                 </button>
