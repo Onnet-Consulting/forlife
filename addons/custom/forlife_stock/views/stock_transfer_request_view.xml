@@ -64,6 +64,8 @@
                         <group>
                             <field name="request_date"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
                             <field name="date_planned"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
+                            <field name="location_id" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_dest_id" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>
