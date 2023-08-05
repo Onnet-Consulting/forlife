@@ -52,7 +52,7 @@ class AccountExpenseLaborDetail(models.Model):
     description = fields.Char('Mô tả')
     uom_id = fields.Many2one('uom.uom', string='Đơn vị')
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', store=True, related='move_id.currency_id')
-    company_id = fields.Many2one(related='move_id.company_id', stirng='Công ty', store=True)
+    company_id = fields.Many2one(related='move_id.company_id', string='Công ty', store=True)
     qty = fields.Float('Số lượng')
     price_subtotal_back = fields.Float(string='Thành tiền')
     tax_back = fields.Float(string='Tiền thuế', compute='compute_tax')
@@ -82,7 +82,7 @@ class SummaryExpenseLaborAccount(models.Model):
     product_qty = fields.Float('Quantity', compute='_compute_quantity')
     # total_vnd_amount = fields.Monetary('Total VND Amount', compute='_compute_total_vnd_amount')
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, related='move_id.currency_id')
-    company_id = fields.Many2one(related='move_id.company_id', stirng='Company', store=True)
+    company_id = fields.Many2one(related='move_id.company_id', string='Company', store=True)
 
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax')
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax')

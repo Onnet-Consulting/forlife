@@ -306,7 +306,7 @@ class AccountMove(models.Model):
                                         'tax_ids': product.taxes_id.ids,
                                         'tax_amount': product.price_tax,
                                         'price_subtotal': product.price_subtotal,
-                                        'discount_percent': product.discount,
+                                        'discount_value': product.discount,
                                         'discount': product.discount_percent,
                                         'event_id': product.free_good,
                                         'work_order': product.production_id.id,
@@ -646,7 +646,7 @@ class AccountMoveLine(models.Model):
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
     warehouse = fields.Many2one('stock.location', string='Whs')
-    discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
+    discount_value = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
     tax_amount = fields.Monetary(string='Thuế', compute='_compute_tax_amount', store=1)
 
     # fields common !!
@@ -665,7 +665,7 @@ class AccountMoveLine(models.Model):
 
     # field check readonly discount and discount_percent:
     readonly_discount = fields.Boolean(default=False)
-    readonly_discount_percent = fields.Boolean(default=False)
+    readonly_discount_value = fields.Boolean(default=False)
 
     # field check exchange_quantity khi ncc vãng lại:
     is_check_exchange_quantity = fields.Boolean(default=False)
@@ -719,7 +719,7 @@ class AccountMoveLine(models.Model):
     @api.onchange('price_unit')
     def onchange_price_unit_set_discount(self):
         if self.price_unit and self.discount > 0:
-            self.discount_percent = (self.price_unit * self.quantity) * (self.discount / 100)
+            self.discount_value = (self.price_unit * self.quantity) * (self.discount / 100)
 
     def _get_stock_valuation_layers_price_unit(self, layers):
         price_unit_by_layer = {}
@@ -973,22 +973,22 @@ class AccountMoveLine(models.Model):
                     rec.tax_amount = (item.amount / 100) * rec.price_subtotal
 
     @api.onchange("discount")
-    def _onchange_discount_percent(self):
+    def _onchange_discount_value(self):
         if self.discount:
-            self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
-            self.readonly_discount_percent = True
+            self.discount_value = self.price_unit * self.quantity * (self.discount / 100)
+            self.readonly_discount_value = True
         elif self.discount == 0:
-            self.discount_percent = 0
-            self.readonly_discount_percent = False
+            self.discount_value = 0
+            self.readonly_discount_value = False
         else:
-            self.readonly_discount_percent = False
+            self.readonly_discount_value = False
 
-    @api.onchange("discount_percent")
+    @api.onchange("discount_value")
     def _onchange_discount(self):
-        if self.discount_percent and self.price_unit > 0 and self.quantity > 0:
-            self.discount = (self.discount_percent / (self.price_unit * self.quantity * 0.01))
+        if self.discount_value and self.price_unit > 0 and self.quantity > 0:
+            self.discount = (self.discount_value / (self.price_unit * self.quantity))
             self.readonly_discount = True
-        elif self.discount_percent == 0:
+        elif self.discount_value == 0:
             self.discount = 0
             self.readonly_discount = False
         else:
@@ -999,7 +999,7 @@ class AccountMoveLine(models.Model):
     @api.onchange('promotions')
     def onchange_vendor_prices(self):
         if self.promotions and (self.partner_id.is_passersby or not self.partner_id.is_passersby):
-            self.vendor_price = self.price_unit = self.discount = self.discount_percent = self.tax_amount = self.total_vnd_amount = False
+            self.vendor_price = self.price_unit = self.discount = self.discount_value = self.tax_amount = self.total_vnd_amount = False
             self.tax_ids = False
             self.is_check_promotions = True
         else:

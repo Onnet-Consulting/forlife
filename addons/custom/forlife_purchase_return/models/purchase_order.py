@@ -33,7 +33,6 @@ class PurchaseOrder(models.Model):
     @api.onchange('partner_id')
     def _onchange_partner_id_return(self):
         if self.partner_id and self.is_return:
-            # self.location_id = self.partner_id.property_stock_supplier.id
             self.dest_address_id = self.partner_id.id
 
     @api.model
@@ -261,18 +260,19 @@ class PurchaseOrder(models.Model):
             'product_id': line.product_id.id,
             'sequence': sequence,
             'price_subtotal': line.price_subtotal,
+            'price_total': line.price_subtotal + line.price_tax,
             'promotions': line.free_good,
             'exchange_quantity': exchange_quantity,
             'quantity': qty,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
-            'discount': line.discount,
+            'discount': line.discount_percent,
             'event_id': line.event_id.id,
             'work_order': line.production_id.id,
             'account_analytic_id': line.account_analytic_id.id,
             'request_code': line.request_purchases,
             'quantity_purchased': quantity_purchased,
-            'discount_percent': line.discount_percent,
+            'discount_value': line.discount,
             'tax_ids': [(6, 0, line.taxes_id.ids)],
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
@@ -304,36 +304,6 @@ class PurchaseOrderLine(models.Model):
 
     origin_po_line_id = fields.Many2one('purchase.order.line')
     return_line_ids = fields.One2many('purchase.order.line', 'origin_po_line_id', string="Return Lines")
-
-
-    # FIX received: not add return picking
-    # def compute_received(self):
-    #     for item in self:
-    #         if item.order_id:
-    #             st_picking = self.env['stock.picking'].search(
-    #                 [('origin', '=', item.order_id.name), ('state', '=', 'done'), ('is_return_po', '=', False)])
-    #             if st_picking:
-    #                 acc_move_line = self.env['stock.move'].search(
-    #                     [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-    #                     'quantity_done')
-    #                 if item.qty_returned:
-    #                     item.received = sum(acc_move_line) - item.qty_returned
-    #                 else:
-    #                     item.received = sum(acc_move_line)
-    #             else:
-    #                 item.received = False
-    #         else:
-    #             item.received = False
-
-    # TODO: to using tracking msg
-    # def _track_qty_returned(self, new_qty):
-    #     self.ensure_one()
-    #     if new_qty != self.qty_returned and self.order_id.state == 'purchase':
-    #         self.order_id.message_post_with_view(
-    #             'purchase.track_po_line_qty_returned_template',
-    #             values={'line': self, 'qty_returned': new_qty},
-    #             subtype_id=self.env.ref('mail.mt_note').id
-    #         )
 
     @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom',
         'return_line_ids.order_id', 'return_line_ids.order_id.custom_state', 'return_line_ids.move_ids.state')
@@ -386,44 +356,16 @@ class PurchaseOrderLine(models.Model):
                 line._track_qty_received(total)
                 line.qty_received = total
 
-    # @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty', 'order_id.state')
-    # def _compute_qty_invoiced(self):
-    #     for line in self:
-    #         # compute qty_invoiced
-    #         qty = 0.0
-    #         for inv_line in line._get_invoice_lines():
-    #             if inv_line.move_id.state not in ['cancel'] or inv_line.move_id.payment_state == 'invoicing_legacy':
-    #                 if inv_line.move_id.move_type == 'in_invoice':
-    #                     qty += inv_line.product_uom_id._compute_quantity(inv_line.quantity, line.product_uom)
-    #                 elif inv_line.move_id.move_type == 'in_refund':
-    #                     qty -= inv_line.product_uom_id._compute_quantity(inv_line.quantity, line.product_uom)
-    #         line.qty_invoiced = qty
-
-    #         # compute qty_to_invoice
-    #         if line.order_id.state in ['purchase', 'done']:
-    #             if line.product_id.purchase_method == 'purchase':
-    #                 line.qty_to_invoice = line.product_qty - line.qty_invoiced
-    #             else:
-    #                 line.qty_to_invoice = line.qty_received - line.qty_invoiced
-    #         else:
-    #             line.qty_to_invoice = 0
-
     def _prepare_account_move_line(self):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line()
-        # if self.order_id.is_return:
-        #     vals.update({'return_price_unit': -self.price_unit})
-        # if self.qty_returned:
-        #     vals.update({
-        #         'qty_returned': self.qty_returned,
-        #     })
         if self.order_id.is_return:
             vals.update({
                 'vat_tax': self.vat_tax,
                 'import_tax': self.import_tax,
                 'special_consumption_tax': self.special_consumption_tax,
-                'discount_percent': self.discount_percent,
+                'discount': self.discount_percent,
+                'discount_value': self.discount,
             })
-
         return vals
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
