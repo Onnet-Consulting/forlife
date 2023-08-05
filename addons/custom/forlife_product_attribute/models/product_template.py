@@ -13,3 +13,10 @@ class ProductTemplateAttrLine(models.Model):
 
 
 
+class ProductAttribute(models.Model):
+    _inherit = 'product.attribute'
+
+    number_related_products = fields.Integer(compute='_compute_number_related_products', store=True)
+
+    def action_open_related_products(self):
+        pass
