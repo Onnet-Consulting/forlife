@@ -490,14 +490,12 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
         if so_line_sell:
             sale_order = so_line_sell.mapped("order_id")
-            sale_order.update({"is_synthetic": True})
-            # for line in sale_order:
-            #     line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
+            for line in sale_order:
+                line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
         if so_line_return:
             sale_order = so_line_return.mapped("order_id")
-            sale_order.update({"is_synthetic": True})
-            # for line in sale_order:
-            #     line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
+            for line in sale_order:
+                line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
         
 
         # move_date = datetime.utcnow().date()

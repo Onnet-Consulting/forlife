@@ -177,18 +177,3 @@ table.available-report-list {
 .open_view {
     cursor: pointer;
 }
-
-.month_row {
-    background: #98cfe1 !important;
-    font-weight: bold;
-    font-size: 16px;
-    text-align: center;
-    color: #f54242;
-}
-
-.type_product_row {
-    background: #b3dfac !important;
-    font-weight: bold;
-    font-size: 14px;
-    color: #255dec;
-}

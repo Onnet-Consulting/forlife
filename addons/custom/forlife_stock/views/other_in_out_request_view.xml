@@ -81,7 +81,6 @@
                         <group>
                             <field name="create_date"/>
                             <field name="date_planned"/>
-                            <field name="is_last_transfer" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

@@ -22,7 +22,6 @@
         'forlife_base',
         'forlife_stock',
         'purchase_request',
-        'forlife_promotion',
         'forlife_point_of_sale',
         'forlife_customer_card_rank',
         'forlife_pos_product_change_refund',
@@ -64,7 +63,6 @@
         'wizard/report_num_27.xml',
         'wizard/report_num_28.xml',
         'wizard/report_num_29.xml',
-        'wizard/report_num30_views.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',

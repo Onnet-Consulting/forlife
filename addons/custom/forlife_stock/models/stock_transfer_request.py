@@ -36,8 +36,6 @@ class StockTransferRequest(models.Model):
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
-    location_id = fields.Many2one('stock.location', "Từ kho", check_company=True)
-    location_dest_id = fields.Many2one('stock.location', "Đến kho", check_company=True)
 
     @api.model
     def default_get(self, default_fields):
@@ -78,20 +76,6 @@ class StockTransferRequest(models.Model):
         self.write({
             'request_lines': request_lines
         })
-
-    @api.onchange('location_id')
-    def onchange_location_id(self):
-        for r in self:
-            r.request_lines.write({
-                'location_id': r.location_id.id or False
-            })
-
-    @api.onchange('location_dest_id')
-    def onchange_location_dest_id(self):
-        for r in self:
-            r.request_lines.write({
-                'location_dest_id': r.location_dest_id.id or False
-            })
 
     @api.model
     def get_import_templates(self):
