@@ -49,7 +49,7 @@
                             </group>
                         </group>
                     </page>
-                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '=', False)]}">
+                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '!=', False)]}">
                         <field name="eivoice_file_return" attrs="{'invisible':[('eivoice_file_return', '=', False)]}"/>
                         <button name="create_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav_return', '!=', False),('invoice_guid_return', '!=', False)]}"
@@ -74,9 +74,9 @@
                         <group>
                             <group>
                                 <field name="exists_bkav_return" readonly="1"/>
-                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_no','!=',False)]}"/>
+                                <field name="issue_invoice_type" attrs="{'readonly': [('invoice_guid_return','!=',False)]}"/>
                                 <field name="origin_move_id"
-                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'readonly': [('invoice_no','!=',False)]}"/>
+                                       attrs="{'invisible': [('issue_invoice_type','=','vat')], 'readonly': [('invoice_guid_return','!=',False)]}"/>
                                 <field name="invoice_no_return" readonly="1"/>
                                 <field name="invoice_form_return" readonly="1"/>
                             </group>

@@ -122,7 +122,7 @@ class PosOrder(models.Model):
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": 1000/(1+vat/100),
+                "Price": round(1000/(1+vat/100)),
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
@@ -179,7 +179,7 @@ class PosOrder(models.Model):
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id == False):
+            for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -266,7 +266,7 @@ class PosOrder(models.Model):
             return False
         if self.is_general:
             return False
-        return False
+        return True
 
     @api.depends('data_compare_status')
     def _compute_data_compare_status(self):

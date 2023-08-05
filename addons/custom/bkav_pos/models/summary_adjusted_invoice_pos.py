@@ -283,7 +283,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
-            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+            # ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
@@ -299,7 +299,6 @@ class SummaryAdjustedInvoicePos(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                line.message_post(body=f"{bkav_invoice_data}")
                 bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
             except Exception as e:
                 line.message_post(body=str(e))
