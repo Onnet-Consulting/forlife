@@ -23,6 +23,7 @@
     ],
 
     'data': [
+        'data/ir_sequence.xml',
         'security/ir.model.access.csv',
         'views/generate_product.xml',
         'views/menu_view.xml'
