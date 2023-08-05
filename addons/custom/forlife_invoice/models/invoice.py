@@ -725,11 +725,11 @@ class AccountMoveLine(models.Model):
                 self.name = None
                 return {'domain': {'product_id': [('id', '=', 0)],
                                    'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id.id)]
+                                                  ('company_id', '=', self.company_id.id)]
                                    }}
         else:
             return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                              ('company_id', '=', self.order_id.company_id.id)]}}
+                                              ('company_id', '=', self.company_id.id)]}}
 
     def get_product_code(self):
         account = self.asset_code.asset_account.id
