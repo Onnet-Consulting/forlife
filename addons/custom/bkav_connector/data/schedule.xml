@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
+<odoo>
     <!--    Job general invoice not exists bkav-->
     <record id="ir_cron_general_invoice_not_exists_bkav" model="ir.cron">
         <field name="name">Schedule: General invoice not exists BKAV</field>
         <field name="model_id" ref="model_invoice_not_exists_bkav"/>
         <field name="state">code</field>
-        <field name="code">model.general_invoice_not_exists_bkav()</field>
+        <field name="code">model.cronjob_collect_invoice_to_bkav_end_day()</field>
         <field name="active" eval="True"/>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>

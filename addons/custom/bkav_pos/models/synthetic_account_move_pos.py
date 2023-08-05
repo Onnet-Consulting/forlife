@@ -307,20 +307,18 @@ class SyntheticAccountMovePos(models.Model):
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
-            # ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
 
     def create_an_invoice(self):
         for line in self:
-            bkav_invoice_data = line.get_bkav_data_pos()
-            bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=False)
-            # try:
-            #     bkav_invoice_data = line.get_bkav_data_pos()
-            #     bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
-            # except Exception as e:
-            #     line.message_post(body=str(e))
+            try:
+                bkav_invoice_data = line.get_bkav_data_pos()
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+            except Exception as e:
+                line.message_post(body=str(e))
             
 
     def get_invoice_bkav(self):
