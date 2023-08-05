@@ -8,10 +8,11 @@ class ProductTemplateAttrLine(models.Model):
     def contraints_same_value(self):
         for rec in self:
             exits = self.search([('attribute_id', '=', rec.attribute_id.id),('id','!=',rec.id),('product_tmpl_id','=',rec.product_tmpl_id.id)], limit=1)
-            if rec.value_ids[0] == exits.value_ids[0]:
-                raise ValidationError('Đã tồn tại giá trị của thuộc tính này!')
-
-
+            if exits:
+                if rec.value_ids[0] == exits.value_ids[0]:
+                    raise ValidationError('Đã tồn tại giá trị của thuộc tính này!')
+            if len(rec.value_ids)>1:
+                raise ValidationError('Chỉ được một thuộc tính cho giá trị này !')
 
 class ProductAttribute(models.Model):
     _inherit = 'product.attribute'
