@@ -134,7 +134,7 @@ class SummaryAccountMovePos(models.Model):
         last_day = date.today()
         domain = [
             ('is_synthetic', '=', False),
-            ('invoice_date', '<', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
@@ -360,7 +360,7 @@ class SummaryAccountMovePos(models.Model):
     ):
         if synthetic_lines:
             lines = synthetic_lines.filtered(
-                lambda r: r.product_id == v["product_id"] and \
+                lambda r: r.product_id.id == v["product_id"] and \
                 r.synthetic_id.store_id.id == store_id and \
                 float(r.price_unit) == float(v["price_unit"])
             )
@@ -370,7 +370,7 @@ class SummaryAccountMovePos(models.Model):
                     if abs(line.remaining_quantity) > abs(v["quantity"]):
                         row["quantity"] = abs(row["quantity"])
                         row["price_unit"] = -abs(row["price_unit"])
-                        adjusted_quantity += abs(v["quantity"])
+                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
                         remaining_quantity = line.remaining_quantity + v["quantity"]
                         if remaining_records.get(store_id):
                             rows = remaining_records[store_id]
@@ -390,7 +390,7 @@ class SummaryAccountMovePos(models.Model):
                     else:
                         row["quantity"] = abs(line.remaining_quantity)
                         v["quantity"] += line.remaining_quantity
-                        adjusted_quantity += abs(line.remaining_quantity)
+                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
                         row["price_unit"] = -abs(row["price_unit"])
                         if remaining_records.get(store_id):
                             rows = remaining_records[store_id]
@@ -445,7 +445,6 @@ class SummaryAccountMovePos(models.Model):
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
         refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items(*args, **kwargs)
-
         matching_records = {}
         remaining_records = {}
 
@@ -524,11 +523,14 @@ class SummaryAccountMovePos(models.Model):
         self.collect_invoice_balance_clearing(matching_records, store_data, company_ids)
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
+
         if kwargs.get("is_synthetic"):
             if sale_synthetic:
-                sale_synthetic.write({"is_synthetic": True})
+                for line in sale_synthetic:
+                    line.write({"is_synthetic": True})
             if refund_synthetic:
-                refund_synthetic.write({"is_synthetic": True})
+                for line in refund_synthetic:
+                    line.write({"is_synthetic": True})
         
         return True
 

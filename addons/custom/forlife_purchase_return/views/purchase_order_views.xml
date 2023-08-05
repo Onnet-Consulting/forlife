@@ -14,7 +14,7 @@
             </field>
         </record>
 
-    	<record id="inherit_purchase_order_form_view" model="ir.ui.view">
+    	<record id="inherit_purchase_order_return_form_view" model="ir.ui.view">
             <field name="name">purchase.order.form</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="forlife_purchase.inherit_purchase_order_form_view"/>
@@ -35,10 +35,6 @@
                     <field name="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="replace">
-                    <field name="received"
-                           string="Đã nhận"
-                           attrs="{'column_invisible': ['|', ('received', '=', False), '|', ('parent.purchase_type', '!=', 'product'), ('parent.is_return', '=', True)]}"
-                           sum="discounted subtotal" force_save="1"/>
                     <field name="received"
                            string="SL hoàn thành"
                            attrs="{'column_invisible': ['|', ('received', '=', False), '|', ('parent.purchase_type', '!=', 'product'), ('parent.is_return', '!=', True)]}"
@@ -67,6 +63,26 @@
                     <attribute name="attrs">{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), '|', ('free_good', '=', True), '&amp;', ('parent.is_passersby', '=', False), ('parent.is_return', '=', False)]}</attribute>
                 </field>
 
+            </field>
+        </record>
+
+        <record id="inherit_purchase_order_purchase_request_form_view" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase_request.purchase_order_form_forlife_inherit"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='location_export_material_id']" position="replace">
+                    <field name="location_export_material_id"
+                           domain="[('usage', '=', 'internal')]"
+                           string="Địa điểm xuất NPL"
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)], 'required': [('is_check_line_material_line', '=', False)]}"/>
+
+                    <field name="location_export_material_id"
+                           domain="[('usage', '=', 'internal')]"
+                           string="Địa điểm nhập NPL"
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', False)], 'required': [('is_check_line_material_line', '=', False)]}"/>
+                </xpath>
             </field>
         </record>
 

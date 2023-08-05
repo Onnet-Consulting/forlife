@@ -30,7 +30,12 @@ class StockMove(models.Model):
             price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
             line = self.purchase_line_id
             order = line.order_id
-            price_unit = line.product_id.standard_price
+
+            if self.origin_returned_move_id:
+                price_unit = self.origin_returned_move_id.purchase_line_id.price_unit
+            else:
+                price_unit = line.product_id.standard_price if not line.origin_po_line_id else line.origin_po_line_id.price_unit
+
             if line.taxes_id:
                 qty = line.product_qty or 1
                 price_unit = line.taxes_id.with_context(round=False).compute_all(price_unit, currency=line.order_id.currency_id, quantity=qty)['total_void']

@@ -120,7 +120,10 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         if order_lines:
             order = order_lines[0].order_id
             for line in order_lines:
-                sale_order = line.order_id
+                if line.product_id.product_tmpl_id.product_type == 'service':
+                    continue
+
+                # sale_order = line.order_id
 
                 pk = f"{line.product_id.barcode}_{float(line.price_bkav)}"
                 price_bkav = line.price_bkav
@@ -278,7 +281,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     if abs(line.remaining_quantity) > abs(v["quantity"]):
                         row["quantity"] = abs(row["quantity"])
                         remaining_quantity = line.remaining_quantity - v["quantity"]
-                        adjusted_quantity += abs(v["quantity"])
+                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
 
                         if remaining_records.get(line.synthetic_id.id):
                             remaining_records[line.synthetic_id.id].append(row)
@@ -294,7 +297,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     else:
                         row["quantity"] = abs(line.remaining_quantity)
                         v["quantity"] -= line.remaining_quantity
-                        adjusted_quantity += abs(line.remaining_quantity)
+                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
 
                         if remaining_records.get(line.synthetic_id.id):
                             remaining_records[line.synthetic_id.id].append(row)
@@ -329,17 +332,16 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         items={},
         lines=[],
         page=0,
-        code=None,
-        table_name='',
         order=None
     ):
         first_n=0
         last_n=1000
+        so_nhanh_license_bkav = self.env['ir.sequence'].next_by_code('so.nhanh.license.bkav')
         if len(lines) > last_n:
             separate_lines = lines[first_n:last_n]
             del lines[first_n:last_n]
             items[page] = {
-                'code': code,
+                'code': so_nhanh_license_bkav,
                 'company_id': order.company_id.id,
                 'partner_id': order.partner_id.id,
                 'invoice_date': date.today(),
@@ -350,13 +352,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items, 
                 lines=lines, 
                 page=page, 
-                code=self.genarate_code(table_name=table_name,default_code=code),
-                table_name=table_name,
                 order=order
             )
         else:
             items[page] = {
-                'code': code,
+                'code': so_nhanh_license_bkav,
                 'company_id': order.company_id.id,
                 'partner_id': order.partner_id.id,
                 'invoice_date': date.today(),
@@ -367,14 +367,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         items = {}
         model = self.env['synthetic.account.move.so.nhanh']
         model_line = self.env['synthetic.account.move.so.nhanh.line']
-        code = self.genarate_code(table_name=model._table)
         if len(records):
             self.recursive_balance_clearing_items(
                 items=items,
                 lines=records,
                 page=0,
-                code=code,
-                table_name=model._table,
                 order=order
             )
 
@@ -389,17 +386,14 @@ class GeneralInvoiceNotExistsBkav(models.Model):
     def collect_invoice_difference(self, records, order):
         model = self.env['summary.adjusted.invoice.so.nhanh']
         model_line = self.env['summary.adjusted.invoice.so.nhanh.line']
-
-        model_code = self.genarate_code(table_name=model._table)
         vals_list = []
         i = 0
         if len(records.keys()):
             for k, v in records.items():
                 res_line = model_line.create(v)
-                if i > 0:
-                    model_code = self.genarate_code(table_name=model._table, default_code=model_code)
+                so_nhanh_license_bkav = self.env['ir.sequence'].next_by_code('so.nhanh.license.bkav')
                 vals_list.append({
-                    'code': model_code,
+                    'code': so_nhanh_license_bkav,
                     'company_id': order.company_id.id,
                     'partner_id': order.partner_id.id,
                     'invoice_date': date.today(),
@@ -430,6 +424,18 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             ('remaining_quantity', '>', 0),
             ('synthetic_id', '!=', False)
         ], order="invoice_date desc")
+
+
+    def create_an_invoice_bkav(self):
+        synthetic_account_move = self.env['synthetic.account.move.so.nhanh'].search([('exists_bkav', '=', False)])
+        synthetic_account_move.create_an_invoice()
+
+        adjusted_move = self.env['summary.adjusted.invoice.so.nhanh'].search([
+            ('exists_bkav', '=', False),
+            ('source_invoice', '!=', False)
+        ])
+        adjusted_move.create_an_invoice()
+
 
     def general_invoice_not_exists_bkav(self):
         synthetic_lines = self.get_last_synthetics()
@@ -484,10 +490,12 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
         if so_line_sell:
             sale_order = so_line_sell.mapped("order_id")
-            sale_order.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
+            for line in sale_order:
+                line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
         if so_line_return:
             sale_order = so_line_return.mapped("order_id")
-            sale_order.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
+            for line in sale_order:
+                line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
         
 
         # move_date = datetime.utcnow().date()
@@ -514,6 +522,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         # #     # invoice_bkav_id.genarate_code()
         # #     invoice_bkav_id.create_invoice_bkav()
         # #     invoice_bkav_id.update_invoice_status()
+
+
+    def cronjob_collect_invoice_to_bkav_end_day(self):
+        self.general_invoice_not_exists_bkav()
+        self.create_an_invoice_bkav()
 
 
     def create_general_invoice(self, invoices, move_date):

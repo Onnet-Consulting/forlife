@@ -140,7 +140,7 @@ class PosOrderReturn(models.Model):
         for invoice in self:       
             invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id != False):
+            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -178,8 +178,6 @@ class PosOrderReturn(models.Model):
             list_invoice_detail.extend(self._get_promotion_in_pos())
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
-            # if invoice.invoice_info_company_name:
-            #     BuyerName = invoice.invoice_info_company_name
 
             BuyerTaxCode =invoice.partner_id.vat or '' if invoice.partner_id.vat else ''
             if invoice.invoice_info_tax_number:
@@ -225,16 +223,16 @@ class PosOrderReturn(models.Model):
 
 
     def _check_info_before_bkav_return(self):
-        if self.is_post_bkav_store:
+        if not self.is_post_bkav_store:
             return True
-        if not self.is_general:
+        if self.is_general:
             return True
         if self.issue_invoice_type != 'vat':
             if not self.origin_move_id:
                 raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh/thay thế')
-            if not self.origin_move_id.exists_bkav:
-                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
-            return True
+            if not self.origin_move_id.is_post_bkav:
+                raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV, hoặc chưa được ký phát hành! Vui lòng về đơn gốc kiểm tra!')
+            return False
         return False
     
     @api.depends('data_compare_status_return')
@@ -250,8 +248,14 @@ class PosOrderReturn(models.Model):
         return bkav_action_return.get_invoice_status(self)
     
     def create_invoice_bkav_return(self):
-        if not self._check_info_before_bkav_return():
+        if self._check_info_before_bkav_return():
             return
+        if self.origin_move_id.date_order.date() == self.date_order.date():
+            if self.origin_move_id.invoice_guid and self.origin_move_id.is_post_bkav:
+                self.origin_move_id.cancel_invoice_bkav()
+                self.exists_bkav_return = True
+                self.is_post_bkav_return = True
+                return
         data = self.get_bkav_data_pos_return()
         origin_id = self.origin_move_id
         is_publish = False
@@ -260,7 +264,7 @@ class PosOrderReturn(models.Model):
 
 
     def update_invoice_bkav_return(self):
-        if not self._check_info_before_bkav_return():
+        if self._check_info_before_bkav_return():
             return
         data = self.get_bkav_data_pos_return()
         return bkav_action_return.update_invoice_bkav(self,data)
@@ -284,5 +288,18 @@ class PosOrderReturn(models.Model):
         for item in self:
             item.delete_invoice_bkav_return()
         return super(PosOrderReturn, self).unlink()
+    
+
+    @api.model
+    def _process_order(self, order, draft, existing_order):
+        pos_id = super(PosOrderReturn, self)._process_order(order, draft, existing_order)
+        if not existing_order:
+            pos = self.env['pos.order'].browse(pos_id)
+            if pos.is_refunded:
+                pos.update({
+                    'issue_invoice_type': 'adjust',
+                    'origin_move_id': pos_id
+                })
+        return pos_id
     
     

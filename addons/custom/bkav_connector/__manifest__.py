@@ -19,6 +19,7 @@
     "data": [
         'security/ir.model.access.csv',
         'data/schedule.xml',
+        'data/ir_sequence_data.xml',
         'views/invoice_view.xml',
         'views/invoice_not_exists_bkav_view.xml',
         'views/res_config_settings_views.xml',
