@@ -455,7 +455,8 @@ class SaleOrderLine(models.Model):
             raise UserError(_('Không có nhóm sản phẩm nào cấu hình Tài khoản định giá tồn kho là %s' % self.x_product_code_id.asset_account.code))
         product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
         if not product_id:
-            raise UserError(_('Không có sản phẩm nào cấu hình nhóm sản phẩm là %s' % product_categ_id.name))
+            categ_name = ','.join(product_categ_id.mapped('name'))
+            raise UserError(_('Không có sản phẩm nào cấu hình nhóm sản phẩm là %s' % categ_name))
         if len(product_id) == 1:
             self.product_id = product_id
             return True
