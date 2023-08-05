@@ -8,7 +8,8 @@
             <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <form string="Settings" class="oe_form_configuration o_base_settings" js_class="base_settings">
-                    <div class="o_setting_containers">
+                    <div class="o_setting_containers padding-setting-custom">
+                        <separator string="Danh sách key-value mã thuộc tính"/>
                         <field name="attr_code_config" widget="ace" options="{'mode': 'python'}"/>
                     </div>
                 </form>
