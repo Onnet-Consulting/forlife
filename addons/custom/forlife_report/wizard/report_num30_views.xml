@@ -7,6 +7,7 @@
             <form string="Bảng kê hàng hóa xuất hóa đơn" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>

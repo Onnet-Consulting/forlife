@@ -12,19 +12,27 @@ TITLES = [
 
 class ReportNum30(models.TransientModel):
     _name = 'report.num30'
-    _inherit = ['report.base', 'export.excel.client']
+    _inherit = 'report.base'
     _description = 'Bảng kê hàng hóa xuất hóa đơn'
 
-    month = fields.Many2one('month.data', 'Month', required=True)
-    year = fields.Integer('Year', required=True)
+    @api.model
+    def _get_default_year(self):
+        return fields.Date.today().year
+
+    @api.model
+    def _get_default_month(self):
+        return self.env['month.data'].search([('code', '=', str(fields.Date.today().month))])
+
+    month = fields.Many2one('month.data', 'Month', required=True, default=_get_default_month)
+    year = fields.Integer('Year', required=True, default=_get_default_year)
     product_count = fields.Integer('Product count', compute='_compute_value')
     product_ids = fields.Many2many('product.product', string='Products',
                                    domain="['|', ('detailed_type', '=', 'product'), '&', ('detailed_type', '=', 'service'), ('voucher', '=', True)]")
     warehouse_type_id = fields.Many2one('stock.warehouse.type', string='Warehouses Type', required=True)
     warehouse_count = fields.Integer('Warehouse count', compute='_compute_value')
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    is_get_price_unit = fields.Boolean('Get Price Unit', default=False)
-    is_with_tax = fields.Boolean('With tax', default=False)
+    is_get_price_unit = fields.Boolean('Get Price Unit', default=True)
+    is_with_tax = fields.Boolean('With tax', default=True)
     is_pos_order = fields.Boolean('Pos Order', default=True)
     is_wholesale = fields.Boolean('Wholesale', default=False)
     is_ecommerce = fields.Boolean('Ecommerce', default=False)
@@ -204,7 +212,7 @@ select row_number() over (order by thang desc, loai_hang, thue_suat) as stt,
        sum(sl_ban)::int                                         as sl_ban,
        sum(sl_tra)::int                                         as sl_tra,
        sum(sl)::int                                             as sl,
-       don_gia,
+       {'don_gia,' if self.is_get_price_unit else ''}
        thue_suat,
        sum(thue_gtgt)::int                                      as thue_gtgt,
        sum(doanh_thu_bh)::int                                   as doanh_thu_bh,
@@ -216,7 +224,7 @@ select row_number() over (order by thang desc, loai_hang, thue_suat) as stt,
        thoi_gian,
        thang
 from data_finals
-group by kho, dia_diem, ma_sp, ten_sp, don_vi, don_gia, thue_suat, kenh_ban, loai_hang, thoi_gian, thang
+group by kho, dia_diem, ma_sp, ten_sp, don_vi, {'don_gia,' if self.is_get_price_unit else ''} thue_suat, kenh_ban, loai_hang, thoi_gian, thang
 order by stt
 """
         return query
@@ -244,24 +252,57 @@ order by stt
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo tích - tiêu điểm theo cửa hàng')
-        sheet.set_row(0, 25)
-        sheet.write(0, 0, 'Báo cáo tích - tiêu điểm theo cửa hàng', formats.get('header_format'))
-        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
-        sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.set_row(3, 25)
+        sheet.set_row(6, 35)
+        sheet.freeze_panes(7, 0)
+        company = self.env['res.company'].search([('id', 'in', allowed_company)])
+        cong_ty = ', '.join(company.filtered(lambda f: f.name).mapped('name'))
+        dia_chi = ', '.join(company.filtered(lambda f: f.street).mapped('street'))
+        sheet.write(0, 0, f'Công ty: {cong_ty}', formats.get('normal_format'))
+        sheet.write(1, 0, f'Địa chỉ: {dia_chi}', formats.get('normal_format'))
+        sheet.write(3, 0, 'BẢNG KÊ HÀNG HÓA XUẤT HÓA ĐƠN', formats.get('header_format'))
+        sheet.write(4, 0, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), self.year)}', formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
-            sheet.write(4, idx, title, formats.get('title_format'))
-        sheet.set_column(0, len(TITLES), 20)
-        row = 5
+            sheet.write(6, idx, title, formats.get('title_format'))
+        sheet.set_column(1, len(data.get('titles')) - 1, 20)
+        row = 7
+        loai = 0
+        thang_x = ''
+        column_x = 10 if self.is_get_price_unit else 9
         for value in data.get('data'):
+            thoi_gian = value.get('thoi_gian')
+            loai_hang = value.get('loai_hang')
+            if thang_x != thoi_gian:
+                sheet.merge_range(row, 0, row, len(data.get('titles')) - 1, thoi_gian, formats.get('month_format'))
+                loai = 0
+                thang_x = thoi_gian
+                row += 1
+            elif loai != loai_hang:
+                if loai_hang == 2:
+                    sheet.merge_range(row, 0, row, len(data.get('titles')) - 1, 'Hàng tặng có điều kiện', formats.get('subtotal_format'))
+                    row += 1
+                elif loai_hang == 3:
+                    sheet.merge_range(row, 0, row, len(data.get('titles')) - 1, 'Hàng tặng không điều kiện', formats.get('subtotal_format'))
+                    row += 1
+                loai = loai_hang
             sheet.write(row, 0, value.get('stt'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('ma_cua_hang'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('ten_cua_hang'), formats.get('normal_format'))
-            sheet.write(row, 3, value.get('tich'), formats.get('int_number_format'))
-            sheet.write(row, 4, value.get('tieu'), formats.get('int_number_format'))
-            sheet.write(row, 5, value.get('tra'), formats.get('int_number_format'))
-            sheet.write(row, 6, value.get('hoan'), formats.get('int_number_format'))
-            sheet.write(row, 7, value.get('bu'), formats.get('int_number_format'))
-            sheet.write(row, 8, value.get('reset'), formats.get('int_number_format'))
+            sheet.write(row, 1, value.get('kho') or '', formats.get('normal_format'))
+            sheet.write(row, 2, value.get('dia_diem') or '', formats.get('normal_format'))
+            sheet.write(row, 3, value.get('ma_sp') or '', formats.get('normal_format'))
+            sheet.write(row, 4, value.get('ten_sp') or '', formats.get('normal_format'))
+            sheet.write(row, 5, value.get('don_vi') or '', formats.get('normal_format'))
+            sheet.write(row, 6, value.get('sl_ban') or 0, formats.get('int_number_format'))
+            sheet.write(row, 7, value.get('sl_tra') or 0, formats.get('int_number_format'))
+            sheet.write(row, 8, value.get('sl') or 0, formats.get('int_number_format'))
+            if self.is_get_price_unit:
+                sheet.write(row, 9, value.get('don_gia') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x, f"{value.get('thue_suat') or 0}%", formats.get('normal_format'))
+            sheet.write(row, column_x + 1, value.get('thue_gtgt') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x + 2, value.get('doanh_thu_bh') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x + 3, value.get('giam_tru_dt') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x + 4, value.get('khuyen_mai_bh') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x + 5, value.get('tong_tt') or 0, formats.get('int_number_format'))
+            sheet.write(row, column_x + 6, value.get('kenh_ban') or '', formats.get('normal_format'))
             row += 1
 
     def print_xlsx(self):
@@ -270,3 +311,20 @@ order by stt
         if not self.warehouse_ids:
             raise ValidationError('Vui lòng chọn kho')
         return super().print_xlsx()
+
+    @api.model
+    def get_format_workbook(self, workbook):
+        res = dict(super().get_format_workbook(workbook))
+        month_format = {
+            'bold': 1,
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': '#98cfe1',
+            'color': 'f54242',
+        }
+        month_format = workbook.add_format(month_format)
+        res.update({
+            'month_format': month_format,
+        })
+        return res

@@ -181,6 +181,5 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Bảng kê hàng hóa xuất hóa đơn',
         'reportTemplate': 'ReportNum30Template',
-        'reportPager': False,
     },
 }
