@@ -133,7 +133,7 @@
                             <field name="ware_id" invisible="1"/>
                             <field name="ware_name" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
-                            <field name="readonly_discount_percent" invisible="1"/>
+                            <field name="readonly_discount_value" invisible="1"/>
                             <field name="is_passersby" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_promotions" invisible="1"/>
@@ -170,10 +170,11 @@
                                    force_save="1"
                                    string="Chiết khấu %"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('parent.state', '=', 'posted'), ('readonly_discount', '=', True), ('is_check_promotions', '=', True)]}"/>
-                            <field name="discount_percent"
+                            <field name="discount_value"
                                    force_save="1"
+                                   string="Chiết khấu"
                                    widget="monetary"
-                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('readonly_discount_percent', '=', True), ('is_check_promotions', '=', True)]}"/>
+                                   attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': ['|',('parent.state', '=', 'posted'), ('readonly_discount_value', '=', True), ('is_check_promotions', '=', True)]}"/>
                             <field name="tax_ids"
                                    optional="show"
                                    widget="many2many_tags"
@@ -322,7 +323,7 @@
                                 <field name="price_unit" string="Đơn giá"/>
                                 <field name="quantity" sum="discounted subtotal"/>
                                 <field name="total_vnd_amount"/>
-                                <field name="discount_percent"/>
+                                <field name="discount_value"/>
                                 <field name="before_tax"/>
                                 <field name="amount_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>
                                 <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>

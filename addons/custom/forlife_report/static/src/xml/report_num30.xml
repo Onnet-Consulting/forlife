@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum30Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum30MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum30MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-set="loai" t-value="0"/>
+                <t t-set="thang_x" t-value=""/>
+                <t t-foreach="options.data" t-as="line">
+                    <t t-if="thang_x != line.thoi_gian">
+                        <tr class="month_row">
+                            <t t-if="widget.column_add"><td colspan="17"><t t-esc="line.thoi_gian"/></td></t>
+                            <t t-else=""><td colspan="16"><t t-esc="line.thoi_gian"/></td></t>
+                        </tr>
+                        <t t-set="thang_x" t-value="line.thoi_gian"/>
+                        <t t-set="loai" t-value="0"/>
+                    </t>
+                    <t t-elif="loai != line.loai_hang">
+                        <t t-if="line.loai_hang == 2">
+                            <tr class="type_product_row">
+                                <t t-if="widget.column_add"><td colspan="17">Hàng tặng có điều kiện</td></t>
+                                <t t-else=""><td colspan="16">Hàng tặng có điều kiện</td></t>
+                            </tr>
+                        </t>
+                        <t t-if="line.loai_hang == 3">
+                            <tr class="type_product_row">
+                                <t t-if="widget.column_add"><td colspan="17">Hàng tặng không điều kiện</td></t>
+                                <t t-else=""><td colspan="16">Hàng tặng không điều kiện</td></t>
+                            </tr>
+                        </t>
+                        <t t-set="loai" t-value="line.loai_hang"/>
+                    </t>
+                    <t t-else=""/>
+                    <tr>
+                        <td><t t-esc="line.stt"/></td>
+                        <td><t t-esc="line.kho"/></td>
+                        <td><t t-esc="line.dia_diem"/></td>
+                        <td><t t-esc="line.ma_sp"/></td>
+                        <td><t t-esc="line.ten_sp"/></td>
+                        <td><t t-esc="line.don_vi"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_ban, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl, 0)"/></td>
+                        <t t-if="widget.column_add"><td class="right"><t t-esc="format_decimal(line.don_gia, 0)"/></td></t>
+                        <td class="right"><t t-esc="line.thue_suat"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_gtgt, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.doanh_thu_bh, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.giam_tru_dt, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.khuyen_mai_bh, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong_tt, 0)"/></td>
+                        <td><t t-esc="line.kenh_ban"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>
