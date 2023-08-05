@@ -716,6 +716,38 @@ class AccountMoveLine(models.Model):
                                  store=0)
     company_currency = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
 
+    @api.onchange('asset_code')
+    def onchange_asset_code(self):
+        if self.asset_code:
+            self.asset_name = self.asset_code.name
+            if not self.get_product_code():
+                self.product_id = None
+                self.name = None
+                return {'domain': {'product_id': [('id', '=', 0)],
+                                   'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id.id)]
+                                   }}
+        else:
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.order_id.company_id.id)]}}
+
+    def get_product_code(self):
+        account = self.asset_code.asset_account.id
+        product_categ_id = self.env['product.category'].search([('property_account_expense_categ_id', '=', account)])
+        if not product_categ_id:
+            raise UserError(
+                _('Không có nhóm sản phẩm nào cấu hình Tài khoản chi phí là %s' % self.asset_code.asset_account.code))
+        product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+        if not product_id:
+            product_categ_name = ','.join(product_categ_id.mapped('display_name'))
+            raise UserError(_('Không có sản phẩm nào cấu hình nhóm sản phẩm là %s' % product_categ_name))
+        if len(product_id) == 1:
+            self.product_id = product_id
+            return True
+        else:
+            product_names = ','.join(product_id.mapped('display_name'))
+            raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
+
     @api.onchange('price_unit')
     def onchange_price_unit_set_discount(self):
         if self.price_unit and self.discount > 0:
