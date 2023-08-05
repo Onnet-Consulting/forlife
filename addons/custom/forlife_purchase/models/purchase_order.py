@@ -2714,7 +2714,7 @@ class PurchaseOrderLine(models.Model):
             })
         if self.asset_code:
             vals.update({
-                'asset_code': self.asset_code.name,
+                'asset_code': self.asset_code.id,
                 'asset_name': self.asset_name
             })
         return vals

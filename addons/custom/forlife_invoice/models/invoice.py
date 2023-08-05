@@ -656,7 +656,7 @@ class AccountMoveLine(models.Model):
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
     # asset invoice!!
-    asset_code = fields.Char('Mã tài sản cố định')
+    asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char('Mô tả tài sản cố định')
     code_tax = fields.Char(string='Mã số thuế')
     invoice_reference = fields.Char(string='Invoice Reference')
@@ -855,7 +855,6 @@ class AccountMoveLine(models.Model):
                 pass
 
     # asset invoice!!
-    asset_code = fields.Char('Mã tài sản cố định')
     asset_name = fields.Char('Mô tả tài sản cố định')
     code_tax = fields.Char(string='Mã số thuế')
     invoice_reference = fields.Char(string='Invoice Reference')
