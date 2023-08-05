@@ -277,9 +277,9 @@
                             </group>
                         </div>
                     </page>
-                    <field name="is_check_vendor_page" force_save="1" invisible="1"/>
+                    <!-- <field name="is_check_vendor_page" force_save="1" invisible="1"/> -->
                     <page string="NCC vãng lai" name="supplier_info"
-                          attrs="{'invisible':['|',('is_check_vendor_page', '=', False),('move_type', '=', 'entry')]}">
+                          attrs="{'invisible':[('move_type', '=', 'entry')]}">
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>

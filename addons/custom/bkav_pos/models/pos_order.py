@@ -176,8 +176,12 @@ class PosOrder(models.Model):
 
     def get_bkav_data_pos(self):
         bkav_data = []
-        for invoice in self:       
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
+        for invoice in self:
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.date_order, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.date_order, (datetime.now() + timedelta(hours=7)).time())       
+            # invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
             for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id):
                 #SP KM k đẩy BKAV
