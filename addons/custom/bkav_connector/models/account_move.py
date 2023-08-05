@@ -80,8 +80,10 @@ class AccountMoveBKAV(models.Model):
     def get_bkav_data(self):
         bkav_data = []
         for invoice in self:            
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
-                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
             exchange_rate = invoice.exchange_rate or 1.0
             for line in invoice.invoice_line_ids:
@@ -198,13 +200,13 @@ class AccountMoveBKAV(models.Model):
     def create_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
-        # if self.issue_invoice_type == 'adjust':
-        #     if not self.origin_move_id or not self.origin_move_id.invoice_no:
-        #         raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-        #     if self.origin_move_id.amount_total == self.amount_total:
-        #         self.origin_move_id.cancel_invoice_bkav()
-        #         self.exists_bkav = True
-        #         return
+        if self.issue_invoice_type == 'adjust':
+            if not self.origin_move_id or not self.origin_move_id.invoice_no:
+                raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
+            if self.origin_move_id.amount_total == self.amount_total:
+                self.origin_move_id.cancel_invoice_bkav()
+                self.exists_bkav = True
+                return
         data = []
         so_orders = self.invoice_line_ids.sale_line_ids.order_id
         origin_so_orders = False

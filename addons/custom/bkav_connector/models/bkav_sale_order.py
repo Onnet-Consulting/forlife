@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 
 
@@ -94,8 +94,10 @@ class AccountMoveSaleOrder(models.Model):
     def get_bkav_data_so(self):
         bkav_data = []
         for invoice in self:
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
-                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
