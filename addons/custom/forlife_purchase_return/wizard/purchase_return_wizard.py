@@ -65,23 +65,10 @@ class PurchaseReturnWizard(models.TransientModel):
         line_fields = [f for f in self.env['stock.return.picking.line']._fields.keys()]
         purchase_return_lines_data_tmpl = self.env['purchase.return.wizard.line'].default_get(line_fields)
         for line in self.purchase_id.order_line:
-            # Tính toán số lượng đã nhận
-            qty_received = 0
-            moves = line.move_ids.filtered(lambda m: m.product_id == line.product_id and m.state == 'done')
-            for move in moves:
-                if move._is_purchase_return():
-                    if move.to_refund:
-                        pass
-                elif move.origin_returned_move_id and move.origin_returned_move_id._is_dropshipped() and not move._is_dropshipped_returned():
-                    pass
-                else:
-                    qty_received += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
-
-            if qty_received == 0 or (qty_received - line.qty_returned) <= 0:
+            if line.qty_received <= 0 or (line.qty_received - line.qty_returned) <= 0:
                 continue
-
             purchase_return_lines_data = dict(purchase_return_lines_data_tmpl)
-            purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line, qty_received))
+            purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line))
             if purchase_return_lines_data.get('purchase_remain', 0) > 0:
                 purchase_return_lines.append((0, 0, purchase_return_lines_data))
 
@@ -92,8 +79,8 @@ class PurchaseReturnWizard(models.TransientModel):
             self.location_id = self.purchase_id.location_id.id
 
     @api.model
-    def _prepare_stock_return_purchase_line_vals(self, purchase_line, qty_received):
-        purchase_received = qty_received/purchase_line.exchange_quantity
+    def _prepare_stock_return_purchase_line_vals(self, purchase_line):
+        purchase_received = purchase_line.qty_received/purchase_line.exchange_quantity
         purchase_returned = purchase_line.qty_returned/purchase_line.exchange_quantity
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price

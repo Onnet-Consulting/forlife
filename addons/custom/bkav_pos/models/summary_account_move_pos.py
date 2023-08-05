@@ -524,15 +524,13 @@ class SummaryAccountMovePos(models.Model):
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
 
-        # if kwargs.get("is_synthetic"):
-        if sale_synthetic:
-            sale_synthetic.update({"is_synthetic": True})
-            # for line in sale_synthetic:
-            #     line.write({"is_synthetic": True})
-        if refund_synthetic:
-            refund_synthetic.update({"is_synthetic": True})
-            # for line in refund_synthetic:
-            #     line.write({"is_synthetic": True})
+        if kwargs.get("is_synthetic"):
+            if sale_synthetic:
+                for line in sale_synthetic:
+                    line.write({"is_synthetic": True})
+            if refund_synthetic:
+                for line in refund_synthetic:
+                    line.write({"is_synthetic": True})
         
         return True
 

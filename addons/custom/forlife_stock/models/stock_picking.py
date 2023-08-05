@@ -277,7 +277,6 @@ class StockPicking(models.Model):
     # Lệnh sản xuất, xử lý khi tạo điều chuyển cho LSX A sang LSX B
     work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
     work_to = fields.Many2one('forlife.production', string="LSX To", ondelete='restrict')
-    is_last_transfer = fields.Boolean(string="Lần nhập kho cuối")
 
     @api.onchange('reason_type_id')
     def _onchange_reason_location(self):
