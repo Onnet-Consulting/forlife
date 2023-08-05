@@ -293,7 +293,7 @@ class SalaryRecord(models.Model):
                 'line_ids': [(0, 0, line_value) for line_value in move_lines]
             })
             move = account_move.create(move_value)
-            # self.check_valid_salary_move(move) todo: Đaihv tạm thời comment lại để check bút toán
+            self.check_valid_salary_move(move)
             move.action_post()
             accounting_lines = accounting_line_by_entry[entry_id]
             accounting_lines.write({'move_id': move.id})

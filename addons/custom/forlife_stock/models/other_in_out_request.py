@@ -34,6 +34,7 @@ class ForlifeOtherInOutRequest(models.Model):
                                               string="Other Import/Export")
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
+    is_last_transfer = fields.Boolean(string="Lần nhập kho cuối")
 
     @api.model
     def default_get(self, default_fields):
@@ -156,6 +157,7 @@ class ForlifeOtherInOutRequest(models.Model):
                     'is_from_request': True,
                     'origin': record.name,
                     'other_import_export_request_id': record.id,
+                    'is_last_transfer': record.is_last_transfer,
                     'move_ids_without_package': [data_other_line]
                 }
                 if value.get(key):

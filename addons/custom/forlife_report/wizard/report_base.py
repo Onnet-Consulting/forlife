@@ -56,11 +56,16 @@ class ReportBase(models.AbstractModel):
 
     def get_data(self, allowed_company):
         report_data = AVAILABLE_REPORT.get(self._name, {})
+        try:
+            client_export_excel = self._client_export_excel
+        except:
+            client_export_excel = False
         return {
             'reportTitle': report_data.get('name', ''),
             'reportTemplate': report_data.get('reportTemplate', ''),
             'reportPager': report_data.get('reportPager', False),
             'recordPerPage': 80 if report_data.get('reportPager', False) else False,
+            'clientExportExcel': client_export_excel,
         }
 
     def view_report(self):
@@ -78,6 +83,7 @@ class ReportBase(models.AbstractModel):
 class ExportExcelClient(models.AbstractModel):
     _name = 'export.excel.client'
     _description = 'Export excel from client'
+    _client_export_excel = True
 
     @api.model
     def export_excel_from_client(self, data, filename):
