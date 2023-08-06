@@ -182,4 +182,10 @@ AVAILABLE_REPORT = {
         'name': 'Bảng kê hàng hóa xuất hóa đơn',
         'reportTemplate': 'ReportNum30Template',
     },
+    'report.num31': {
+        'module': 'Kho',
+        'name': 'Báo cáo template import PO',
+        'reportTemplate': 'ReportNum31Template',
+        'reportPager': True,
+    },
 }
