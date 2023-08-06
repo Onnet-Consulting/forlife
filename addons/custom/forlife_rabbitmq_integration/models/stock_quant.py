@@ -11,8 +11,9 @@ class StockQuant(models.Model):
     _update_action = 'update'
     _priority = 1
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.location_id.warehouse_id.whs_type.code in ('3', '4', '5'))
+        return [('location_id.warehouse_id.whs_type.code', 'in', ('3', '4', '5'))]
 
     def get_sync_info_value(self):
         return {

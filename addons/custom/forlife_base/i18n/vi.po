@@ -6,14 +6,29 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-13 09:46+0000\n"
-"PO-Revision-Date: 2023-06-13 09:46+0000\n"
+"POT-Creation-Date: 2023-08-05 11:06+0000\n"
+"PO-Revision-Date: 2023-08-05 11:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: forlife_base
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_groups_view_inherit
+msgid "Access"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_groups
+msgid "Access Groups"
+msgstr "Nhóm truy cập"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_res_groups__access_count
+msgid "Access count"
+msgstr ""
 
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_model_mixin__active
@@ -89,13 +104,12 @@ msgid "Asset Location"
 msgstr "Vị trí tài sản"
 
 #. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__attr_code
-msgid "Attribute Code"
-msgstr "Mã thuộc tính sản phẩm"
+#: model:ir.model,name:forlife_base.model_assets_assets
+msgid "Assets"
+msgstr ""
 
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.attribute_code_config_action
-#: model:ir.model,name:forlife_base.model_attribute_code_config
 #: model:ir.ui.menu,name:forlife_base.attribute_code_config_menu_base
 msgid "Attribute Code Config"
 msgstr "Đặt mã thuộc tính"
@@ -104,6 +118,11 @@ msgstr "Đặt mã thuộc tính"
 #: model:ir.model,name:forlife_base.model_product_attribute_value
 msgid "Attribute Value"
 msgstr "Giá trị thuộc tính"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_res_config_settings__attr_code_config
+msgid "Attribute code config"
+msgstr ""
 
 #. module: forlife_base
 #: model:ir.model,name:forlife_base.model_res_bank
@@ -147,6 +166,11 @@ msgid "Brand"
 msgstr "Thương hiệu"
 
 #. module: forlife_base
+#: model:ir.ui.menu,name:forlife_base.odoo_integration_bravo
+msgid "Bravo"
+msgstr ""
+
+#. module: forlife_base
 #: model:ir.model.constraint,message:forlife_base.constraint_product_attribute_value_value_code_uniq
 msgid "Bạn không thể tạo hai mã có cùng giá trị cho cùng một thuộc tính."
 msgstr ""
@@ -170,6 +194,11 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__card_no
 msgid "CardNo"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_report_category_type
+msgid "Category Type Relate"
 msgstr ""
 
 #. module: forlife_base
@@ -269,6 +298,11 @@ msgid "Company code must be unique!"
 msgstr "Mã công ty phải là duy nhất"
 
 #. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cài đặt cấu hình"
+
+#. module: forlife_base
 #: model:ir.ui.menu,name:forlife_base.menu_master_data_config
 msgid "Configuration"
 msgstr "Thiết lập"
@@ -292,7 +326,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__create_uid
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__create_uid
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__create_uid
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__create_uid
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__create_uid
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__create_uid
@@ -319,7 +352,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__create_date
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__create_date
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__create_date
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__create_date
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__create_date
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__create_date
@@ -366,8 +398,18 @@ msgid "Cấp độ"
 msgstr ""
 
 #. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__is_need_scan_barcode
+msgid "Cần quét Barcode"
+msgstr "Yêu cầu quét mã vạch"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__category_product
 msgid "Danh mục sản phẩm"
+msgstr ""
+
+#. module: forlife_base
+#: model_terms:ir.ui.view,arch_db:forlife_base.attribute_code_config_view_form
+msgid "Danh sách key-value mã thuộc tính"
 msgstr ""
 
 #. module: forlife_base
@@ -411,7 +453,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__display_name
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__display_name
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__display_name
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__display_name
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__display_name
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__display_name
@@ -452,7 +493,7 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_product_product__daisai
 #: model:ir.model.fields,field_description:forlife_base.field_product_template__daisai
-msgid "Dải sai"
+msgid "Dải size"
 msgstr ""
 
 #. module: forlife_base
@@ -493,6 +534,11 @@ msgid "Giấy phép thành lập"
 msgstr ""
 
 #. module: forlife_base
+#: model:ir.model,name:forlife_base.model_hr_team
+msgid "HR Team"
+msgstr ""
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_product_product__user_manual
 #: model:ir.model.fields,field_description:forlife_base.field_product_template__user_manual
 msgid "Hướng dẫn sử dụng"
@@ -501,7 +547,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__id
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__id
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__id
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__id
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__id
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__id
@@ -539,6 +584,13 @@ msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
 msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp lệ"
 
 #. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_move__is_need_scan_barcode
+#: model:ir.model.fields,field_description:forlife_base.field_stock_move_line__is_need_scan_barcode
+#: model:ir.model.fields,field_description:forlife_base.field_stock_picking__is_need_scan_barcode
+msgid "Is Need Scan Barcode"
+msgstr "Yêu cầu quét mã vạch"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__item_code
 msgid "ItemCode"
 msgstr ""
@@ -561,7 +613,6 @@ msgstr "Từ khóa phải là duy nhất"
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location____last_update
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets____last_update
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config____last_update
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level____last_update
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link____last_update
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team____last_update
@@ -588,7 +639,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__write_uid
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__write_uid
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__write_uid
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__write_uid
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__write_uid
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__write_uid
@@ -615,7 +665,6 @@ msgstr ""
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_asset_location__write_date
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__write_date
-#: model:ir.model.fields,field_description:forlife_base.field_attribute_code_config__write_date
 #: model:ir.model.fields,field_description:forlife_base.field_bank_level__write_date
 #: model:ir.model.fields,field_description:forlife_base.field_forlife_app_api_link__write_date
 #: model:ir.model.fields,field_description:forlife_base.field_hr_team__write_date
@@ -643,6 +692,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_base.field_product_category__level
 #: model:ir.model.fields,field_description:forlife_base.field_product_category_sequece_level__level
 msgid "Level"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_report_category_type__product_brand_id
+msgid "Level 1"
 msgstr ""
 
 #. module: forlife_base
@@ -688,6 +742,29 @@ msgstr ""
 #: model:ir.ui.menu,name:forlife_base.menu_master_data_root
 msgid "Master Data"
 msgstr ""
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_ir_ui_menu
+#: model:ir.model.fields,field_description:forlife_base.field_ir_model__menu_ids
+#: model:ir.model.fields,field_description:forlife_base.field_ir_model_access__menu_ids
+#: model_terms:ir.ui.view,arch_db:forlife_base.ir_model_view_inherit
+msgid "Menu"
+msgstr "Trình đơn"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_ir_ui_menu__model_id
+msgid "Model"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_ir_model_access
+msgid "Model Access"
+msgstr "Truy cập đối tượng"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_ir_model
+msgid "Models"
+msgstr "Mô hình"
 
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_occasion_group__name
@@ -828,6 +905,16 @@ msgid "Occasion name"
 msgstr "Tên vụ việc"
 
 #. module: forlife_base
+#: model:ir.model,name:forlife_base.model_odoo_app_logging
+msgid "Odoo App Logging"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.ui.menu,name:forlife_base.odoo_integration
+msgid "Odoo tích hợp"
+msgstr ""
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__original_cost
 msgid "Original Cost"
 msgstr ""
@@ -865,7 +952,12 @@ msgstr "Sản phẩm"
 #. module: forlife_base
 #: model:ir.model,name:forlife_base.model_product_category
 msgid "Product Category"
-msgstr "Danh mục sản phẩm"
+msgstr "Nhóm sản phẩm"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Chuyển sản phẩm (Chi tiết phiếu kho)"
 
 #. module: forlife_base
 #: model:ir.model,name:forlife_base.model_uom_uom
@@ -878,8 +970,18 @@ msgid "Product Variant"
 msgstr "Biến thể sản phẩm"
 
 #. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_product_product_barcode_required
+msgid "Product barcode is required when barcode scanning is requested!"
+msgstr "Sản phẩm yêu cầu quét nhưng chưa được thiết lập mã vạch!"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__quantity
 msgid "Quantity"
+msgstr ""
+
+#. module: forlife_base
+#: model:ir.ui.menu,name:forlife_base.odoo_integration_rabbitmq
+msgid "RabbitMQ"
 msgstr ""
 
 #. module: forlife_base
@@ -900,6 +1002,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_base.field_product_category_sequece_level__sequence
 msgid "Sequence"
 msgstr ""
+
+#. module: forlife_base
+#: model_terms:ir.ui.view,arch_db:forlife_base.attribute_code_config_view_form
+msgid "Settings"
+msgstr "Cài đặt"
 
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__short_name_internal
@@ -928,6 +1035,11 @@ msgstr "Trạng thái"
 #: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_status_view_tree
 msgid "Status of Warehouse"
 msgstr "Trạng thái kho"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_stock_move
+msgid "Stock Move"
+msgstr "Dịch chuyển kho"
 
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_res_users__stock_ids
@@ -983,6 +1095,11 @@ msgid "Team Default"
 msgstr ""
 
 #. module: forlife_base
+#: model:ir.ui.menu,name:forlife_base.odoo_integration_telegram
+msgid "Telegram"
+msgstr ""
+
+#. module: forlife_base
 #. odoo-python
 #: code:addons/forlife_base/models/product_product.py:0
 #, python-format
@@ -1013,6 +1130,11 @@ msgid "Thời điểm kết thúc kinh doanh"
 msgstr ""
 
 #. module: forlife_base
+#: model:ir.model,name:forlife_base.model_stock_picking
+msgid "Transfer"
+msgstr "Điều chuyển"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_assets_assets__state
 msgid "Trạng thái"
 msgstr ""
@@ -1026,6 +1148,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:forlife_base.product_category_type_action
 #: model:ir.model,name:forlife_base.model_product_category_type
 #: model:ir.model.fields,field_description:forlife_base.field_product_category__category_type_id
+#: model:ir.model.fields,field_description:forlife_base.field_report_category_type__category_type_id
 #: model:ir.ui.menu,name:forlife_base.menu_product_category_type_action_purchase
 #: model_terms:ir.ui.view,arch_db:forlife_base.product_category_type_view_tree
 msgid "Type of Product Category"
@@ -1043,6 +1166,7 @@ msgstr "Loại hàng hoá NCC"
 
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.stock_warehouse_type_action
+#: model:ir.model,name:forlife_base.model_stock_warehouse_type
 #: model:ir.ui.menu,name:forlife_base.stock_warehouse_type_menu
 #: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_type_view_tree
 msgid "Type of Warehouse"
@@ -1152,16 +1276,6 @@ msgid "and"
 msgstr ""
 
 #. module: forlife_base
-#: model:ir.model,name:forlife_base.model_assets_assets
-msgid "assets.assets"
-msgstr ""
-
-#. module: forlife_base
-#: model_terms:ir.ui.view,arch_db:forlife_base.attribute_code_config_view_form
-msgid "attribute_code_config_form"
-msgstr ""
-
-#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse_type__code
 msgid "code"
 msgstr "Mã"
@@ -1172,14 +1286,9 @@ msgid "forlife_app_api_link_tree"
 msgstr ""
 
 #. module: forlife_base
-#: model:ir.model,name:forlife_base.model_hr_team
-msgid "hr.team"
+#: model:ir.model,name:forlife_base.model_search_by_name_code
+msgid "search by name code"
 msgstr ""
-
-#. module: forlife_base
-#: model:ir.model,name:forlife_base.model_stock_warehouse_type
-msgid "stock.warehouse.type"
-msgstr "Loại kho"
 
 #. module: forlife_base
 #. odoo-python
@@ -1203,13 +1312,3 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_base.field_account_analytic_account__address
 msgid "Địa chỉ"
 msgstr ""
-
-#. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_product_product__is_need_scan_barcode
-msgid "Is Need Scan Barcode"
-msgstr "Yêu cầu quét mã vạch"
-
-#. module: forlife_base
-#: model:ir.model.constraint,message:forlife_base.constraint_product_product_barcode_required
-msgid "Product barcode is required when barcode scanning is requested!"
-msgstr "Sản phẩm yêu cầu quét nhưng chưa được thiết lập mã vạch!"

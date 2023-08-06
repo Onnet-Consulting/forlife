@@ -1,147 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data noupdate="1">
-        <record id="sync_customer_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">res.partner</field>
-            <field name="queue_name">sync_customer_info_queue</field>
-            <field name="description">Đồng bộ thông tin khách hàng</field>
-            <field name="target">customer_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_customer_card_rank_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">partner.card.rank.line</field>
-            <field name="queue_name">sync_customer_info_queue</field>
-            <field name="description">Đồng bộ thông tin khách hàng (hạng thẻ)</field>
-            <field name="target">customer_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_customer_score_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">partner.history.point</field>
-            <field name="queue_name">sync_customer_info_queue</field>
-            <field name="description">Đồng bộ thông tin khách hàng (điểm)</field>
-            <field name="target">customer_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_product_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">product.product</field>
-            <field name="queue_name">sync_product_info_queue</field>
-            <field name="description">Đồng bộ thông tin sản phẩm</field>
-            <field name="target">product_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_product_template_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">product.template</field>
-            <field name="queue_name">sync_product_info_queue</field>
-            <field name="description">Đồng bộ thông tin sản phẩm</field>
-            <field name="target">product_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_store_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">store</field>
-            <field name="queue_name">sync_store_info_queue</field>
-            <field name="description">Đồng bộ thông tin cửa hàng</field>
-            <field name="target">store_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_wh_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">stock.warehouse</field>
-            <field name="queue_name">sync_store_info_queue</field>
-            <field name="description">Đồng bộ thông tin cửa hàng</field>
-            <field name="target">store_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_location_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">stock.location</field>
-            <field name="queue_name">sync_store_info_queue</field>
-            <field name="description">Đồng bộ thông tin cửa hàng</field>
-            <field name="target">store_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_product_inventory_queue" model="rabbitmq.queue">
-            <field name="queue_key">stock.quant</field>
-            <field name="queue_name">sync_product_inventory_queue</field>
-            <field name="description">Đồng bộ thông tin tồn kho</field>
-            <field name="target">product_inventory</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_campaign_queue" model="rabbitmq.queue">
-            <field name="queue_key">promotion.campaign</field>
-            <field name="queue_name">sync_campaign_queue</field>
-            <field name="description">Đồng bộ thông tin campaign</field>
-            <field name="target">campaign_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_promotion_queue" model="rabbitmq.queue">
-            <field name="queue_key">promotion.program</field>
-            <field name="queue_name">sync_promotion_queue</field>
-            <field name="description">Đồng bộ thông tin Promotion</field>
-            <field name="target">sync_promotion_queue</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_coupon_queue" model="rabbitmq.queue">
-            <field name="queue_key">promotion.code</field>
-            <field name="queue_name">sync_coupon_queue</field>
-            <field name="description">Đồng bộ thông tin Coupon</field>
-            <field name="target">coupon_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_change_fixed_pricing_product_queue" model="rabbitmq.queue">
-            <field name="queue_key">promotion.pricelist.item</field>
-            <field name="queue_name">sync_change_fixed_pricing_product_queue</field>
-            <field name="description">Đồng bộ thông tin thay đổi giá niêm yết</field>
-            <field name="target">fixed_pricing_change</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_pos_order_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">pos.order</field>
-            <field name="queue_name">sync_order_info_queue</field>
-            <field name="description">Đồng bộ thông tin đơn hàng</field>
-            <field name="target">order_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_sale_order_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">sale.order</field>
-            <field name="queue_name">sync_order_info_queue</field>
-            <field name="description">Đồng bộ thông tin đơn hàng</field>
-            <field name="target">order_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_attribute_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">product.attribute</field>
-            <field name="queue_name">sync_attribute_info_queue</field>
-            <field name="description">Đồng bộ các thông tin thuộc tính</field>
-            <field name="target">attribute_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
-
-        <record id="sync_category_info_queue" model="rabbitmq.queue">
-            <field name="queue_key">product.category</field>
-            <field name="queue_name">sync_category_info_queue</field>
-            <field name="description">Đồng bộ thông tin về loại sản phẩm (category)</field>
-            <field name="target">category_info</field>
-            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>
 
         <record id="sync_city_info_queue" model="rabbitmq.queue">
             <field name="queue_key">res.country.state</field>
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu tỉnh/thành phố</field>
             <field name="target">city</field>
+            <field name="sequence">1</field>
+            <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -150,6 +17,8 @@
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu quận/huyện</field>
             <field name="target">district</field>
+            <field name="sequence">2</field>
+            <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -158,6 +27,178 @@
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu phường/xã</field>
             <field name="target">ward</field>
+            <field name="sequence">3</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_customer_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">res.partner</field>
+            <field name="queue_name">sync_customer_info_queue</field>
+            <field name="description">Đồng bộ thông tin khách hàng</field>
+            <field name="target">customer_info</field>
+            <field name="sequence">4</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_customer_card_rank_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">partner.card.rank.line</field>
+            <field name="queue_name">sync_customer_info_queue</field>
+            <field name="description">Đồng bộ thông tin khách hàng (hạng thẻ)</field>
+            <field name="target">customer_info</field>
+            <field name="sequence">5</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_customer_score_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">partner.history.point</field>
+            <field name="queue_name">sync_customer_info_queue</field>
+            <field name="description">Đồng bộ thông tin khách hàng (điểm)</field>
+            <field name="target">customer_info</field>
+            <field name="sequence">6</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_wh_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">stock.warehouse</field>
+            <field name="queue_name">sync_store_info_queue</field>
+            <field name="description">Đồng bộ thông tin cửa hàng</field>
+            <field name="target">store_info</field>
+            <field name="sequence">7</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_location_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">stock.location</field>
+            <field name="queue_name">sync_store_info_queue</field>
+            <field name="description">Đồng bộ thông tin cửa hàng</field>
+            <field name="target">store_info</field>
+            <field name="sequence">8</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_store_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">store</field>
+            <field name="queue_name">sync_store_info_queue</field>
+            <field name="description">Đồng bộ thông tin cửa hàng</field>
+            <field name="target">store_info</field>
+            <field name="sequence">9</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_attribute_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">product.attribute</field>
+            <field name="queue_name">sync_attribute_info_queue</field>
+            <field name="description">Đồng bộ các thông tin thuộc tính</field>
+            <field name="target">attribute_info</field>
+            <field name="sequence">10</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_category_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">product.category</field>
+            <field name="queue_name">sync_category_info_queue</field>
+            <field name="description">Đồng bộ thông tin về loại sản phẩm (category)</field>
+            <field name="target">category_info</field>
+            <field name="sequence">11</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_product_template_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">product.template</field>
+            <field name="queue_name">sync_product_info_queue</field>
+            <field name="description">Đồng bộ thông tin sản phẩm</field>
+            <field name="target">product_info</field>
+            <field name="sequence">12</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_product_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">product.product</field>
+            <field name="queue_name">sync_product_info_queue</field>
+            <field name="description">Đồng bộ thông tin sản phẩm</field>
+            <field name="target">product_info</field>
+            <field name="sequence">13</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_product_inventory_queue" model="rabbitmq.queue">
+            <field name="queue_key">stock.quant</field>
+            <field name="queue_name">sync_product_inventory_queue</field>
+            <field name="description">Đồng bộ thông tin tồn kho</field>
+            <field name="target">product_inventory</field>
+            <field name="sequence">14</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_campaign_queue" model="rabbitmq.queue">
+            <field name="queue_key">promotion.campaign</field>
+            <field name="queue_name">sync_campaign_queue</field>
+            <field name="description">Đồng bộ thông tin campaign</field>
+            <field name="target">campaign_info</field>
+            <field name="sequence">15</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_promotion_queue" model="rabbitmq.queue">
+            <field name="queue_key">promotion.program</field>
+            <field name="queue_name">sync_promotion_queue</field>
+            <field name="description">Đồng bộ thông tin Promotion</field>
+            <field name="target">sync_promotion_queue</field>
+            <field name="sequence">16</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_coupon_queue" model="rabbitmq.queue">
+            <field name="queue_key">promotion.code</field>
+            <field name="queue_name">sync_coupon_queue</field>
+            <field name="description">Đồng bộ thông tin Coupon</field>
+            <field name="target">coupon_info</field>
+            <field name="sequence">17</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_change_fixed_pricing_product_queue" model="rabbitmq.queue">
+            <field name="queue_key">promotion.pricelist.item</field>
+            <field name="queue_name">sync_change_fixed_pricing_product_queue</field>
+            <field name="description">Đồng bộ thông tin thay đổi giá niêm yết</field>
+            <field name="target">fixed_pricing_change</field>
+            <field name="sequence">18</field>
+            <field name="sync_manual">True</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_pos_order_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">pos.order</field>
+            <field name="queue_name">sync_order_info_queue</field>
+            <field name="description">Đồng bộ thông tin đơn hàng</field>
+            <field name="target">order_info</field>
+            <field name="sequence">19</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_sale_order_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">sale.order</field>
+            <field name="queue_name">sync_order_info_queue</field>
+            <field name="description">Đồng bộ thông tin đơn hàng</field>
+            <field name="target">order_info</field>
+            <field name="sequence">20</field>
+            <field name="sync_manual">False</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -166,6 +207,8 @@
             <field name="queue_name">sync_voucher_program_queue</field>
             <field name="description">Đồng bộ dữ liệu Voucher</field>
             <field name="target">voucher_program</field>
+            <field name="sequence">21</field>
+            <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -174,6 +217,8 @@
             <field name="queue_name">notification_plan_queue</field>
             <field name="description">Gửi Notification Voucher</field>
             <field name="target">voucher_code</field>
+            <field name="sequence">22</field>
+            <field name="sync_manual">False</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
     </data>

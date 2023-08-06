@@ -95,6 +95,12 @@ class PartnerCardRankLine(models.Model):
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
     program_cr_id = fields.Many2one('member.card', string='Program Card Rank', required=True)
     status = fields.Boolean('Status', default=False, copy=False)
+    is_change_rank = fields.Boolean('Change rank', compute='_compute_change_rank', store=True)
+
+    @api.depends('old_card_rank_id', 'new_card_rank_id')
+    def _compute_change_rank(self):
+        for line in self:
+            line.is_change_rank = True if line.old_card_rank_id != line.new_card_rank_id else False
 
     @api.onchange('program_cr_id')
     def onchange_program_cr(self):

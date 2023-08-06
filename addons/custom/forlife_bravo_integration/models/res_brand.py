@@ -14,6 +14,8 @@ class ResBrand(models.Model):
 
     @api.model
     def bravo_push_existing_brands(self):
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return True
         exist_brands = self.env.ref("forlife_point_of_sale.brand_format") + \
                        self.env.ref("forlife_point_of_sale.brand_tokyolife")
         exist_brands.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
