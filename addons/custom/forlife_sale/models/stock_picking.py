@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class StockPicking(models.Model):
@@ -98,8 +98,13 @@ class StockPicking(models.Model):
                 account_move_line = account_move.line_ids.filtered(lambda line: line.debit > 0)
                 account_id = move.product_id.product_tmpl_id.categ_id.x_property_account_return_id
                 if not account_id:
-                    raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
+                    raise UserError(_('Bạn chưa cấu hình "Tài khoản trả hàng" trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
+
+        # Trường hợp xuất bán thành phẩm hoặc NVL theo LSX từ SO
+        for picking_id in self.filtered(lambda x: x.sale_id and x.sale_id.x_manufacture_order_code_id):
+            self.update_quantity_production_order(picking_id)
+
         try:
             sale_from_nhanh = self.sale_id and self.sale_id.source_record
             if self.state == "done" and self.picking_type_code == "outgoing" and sale_from_nhanh:
@@ -124,3 +129,22 @@ class StockPicking(models.Model):
             pass
         
         return res
+
+    def update_quantity_production_order(self, picking_id):
+        """
+            Update lại số lượng tồn kho theo LSX ở phiếu nhập xuất bán SO
+        """
+
+        for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+            quantity_prodution = self.env['quantity.production.order'].search(domain)
+            if quantity_prodution:
+                quantity = quantity_prodution.quantity - rec.quantity_done
+                if quantity < 0:
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.display_name, rec.work_production.code))
+                else:
+                    quantity_prodution.update({
+                        'quantity': quantity
+                    })
+            else:
+                raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (rec.product_id.display_name, rec.work_production.code))
