@@ -11,6 +11,8 @@ class StockMove(models.Model):
 
     def _action_done(self, cancel_backorder=False):
         res = super()._action_done(cancel_backorder=cancel_backorder)
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         moves = self.filtered(lambda m: m.state == 'done')
         insert_queries = moves.bravo_get_insert_sql()
         if insert_queries:

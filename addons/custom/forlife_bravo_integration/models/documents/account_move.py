@@ -13,6 +13,8 @@ class AccountMove(models.Model):
 
     def _post(self, soft=True):
         res = super()._post(soft=soft)
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         posted_moves = self.filtered(lambda m: m.state == 'posted')
         insert_queries = posted_moves.bravo_get_insert_sql()
         if insert_queries:
@@ -279,7 +281,7 @@ class AccountMove(models.Model):
             return super().write(vals)
         vals.update({CONTEXT_UPDATE_JOURNAL: True})
         insert_queries = records.bravo_get_insert_sql(**vals)
-        if insert_queries:
+        if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up") and insert_queries:
             self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         vals.pop(CONTEXT_UPDATE_JOURNAL, None)
         return super().write(vals)
