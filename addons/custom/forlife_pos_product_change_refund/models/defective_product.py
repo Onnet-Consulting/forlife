@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError, UserError
 class ProductDefective(models.Model):
     _name = 'product.defective'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
+    _check_company_auto = True
     _order = 'create_date desc'
     _description = 'Product Defective'
 
@@ -27,6 +28,7 @@ class ProductDefective(models.Model):
     reason_refuse_product = fields.Char('Lí do từ chối')
     active = fields.Boolean(default=True)
     quantity_require = fields.Integer('Số lượng yêu cầu')
+    company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
 
     @api.onchange('product_id')
     def change_product(self):
