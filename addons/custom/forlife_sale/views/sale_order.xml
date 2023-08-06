@@ -77,7 +77,9 @@
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='discount']" position="attributes">
                     <attribute name="context">{'notloop_discount':True}</attribute>
                 </xpath>
-                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='name']" position="replace"></xpath>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
                     <field name="x_product_code_id"
                            attrs="{'column_invisible': [('parent.x_sale_type','!=','asset')], 'required': [('parent.x_sale_type','=','asset')]}"
