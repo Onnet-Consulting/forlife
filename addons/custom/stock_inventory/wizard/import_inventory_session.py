@@ -221,14 +221,11 @@ class ImportInventorySessionWizard(models.TransientModel):
             old_session = self.env['inventory.session'].search([('inv_id', '=', self.inv_id.id), ('type', '=', type)])
             if old_session:
                 old_session.with_context(not_update_inv=True).sudo().action_inactive_session()
-        res = self.env['inventory.session'].sudo().create({
+        self.env['inventory.session'].sudo().create({
             'inv_id': self.inv_id.id,
             'type': type,
             'line_ids': vals,
         })
-        action = self.env.ref('stock_inventory.inventory_session_form_view_action').read()[0]
-        action['res_id'] = res.id
-        return action
 
     def return_error_log(self, error=''):
         self.write({
