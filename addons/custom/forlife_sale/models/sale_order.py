@@ -561,5 +561,7 @@ class SaleOrderLine(models.Model):
         rslt.update({
             'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price,
             'account_analytic_id': self.x_account_analytic_id.id or False,
+            'asset_code': self.x_product_code_id.id or False,
+            'price_unit': self.price_unit or False
         })
         return rslt
