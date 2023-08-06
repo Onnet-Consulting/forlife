@@ -31,6 +31,8 @@ class PurchaseOrder(models.Model):
 
     def action_approved(self):
         res = super().action_approved()
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         queries = self.bravo_get_insert_sql()
         if queries:
             self.env['purchase.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
