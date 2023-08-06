@@ -132,6 +132,7 @@ class ForlifeOtherInOutRequest(models.Model):
                 data_other_line = (
                     0, 0, {
                         'product_id': item.product_id.id,
+                        'ref_asset': item.asset_id,
                         'product_uom_qty': item.quantity,
                         'product_uom': item.uom_id.id,
                         'name': item.description,
