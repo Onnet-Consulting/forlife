@@ -2378,6 +2378,17 @@ class PurchaseOrderLine(models.Model):
             return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
                                                      ('company_id', '=', self.order_id.company_id.id)]}}
 
+    @api.onchange('product_id')
+    def onchange_product_id_comput_assets(self):
+        if self.order_id.purchase_type == 'asset':
+            account = self.product_id.categ_id.property_account_expense_categ_id
+            if account:
+                return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id.id),
+                                                  ('asset_account', '=', account.id)]}}
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id.id)]}}
+
     def get_product_code(self):
         account = self.asset_code.asset_account.id
         product_categ_id = self.env['product.category'].search([('property_account_expense_categ_id', '=', account)])
