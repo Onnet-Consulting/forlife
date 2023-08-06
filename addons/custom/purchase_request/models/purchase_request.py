@@ -227,6 +227,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
+                    'product_uom': line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
@@ -302,15 +303,6 @@ class PurchaseRequestLine(models.Model):
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        self.description = self.product_id.name
-
-    @api.onchange('vendor_code')
-    def onchange_vendor_code(self):
-        self.currency_id = self.vendor_code.property_purchase_currency_id.id
-
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
@@ -334,6 +326,17 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.write({
+            'description': self.product_id.name,
+            'purchase_uom': self.product_id.uom_id.id,
+        })
+
+    @api.onchange('vendor_code')
+    def onchange_vendor_code(self):
+        self.currency_id = self.vendor_code.property_purchase_currency_id.id
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):
