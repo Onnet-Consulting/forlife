@@ -223,7 +223,7 @@ class BravoModelUpdateAction(models.AbstractModel):
 
     def write(self, values):
         res = super().write(values)
-        if self.bravo_check_need_sync(list(values.keys())):
+        if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up") and self.bravo_check_need_sync(list(values.keys())):
             queries = self.bravo_get_update_sql(values)
             if queries:
                 self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
@@ -289,7 +289,7 @@ class BravoModelDeleteAction(models.AbstractModel):
         return queries
 
     def unlink(self):
-        queries = self.sudo().bravo_get_delete_sql()
+        queries = self.sudo().bravo_get_delete_sql() if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up") else False
         res = super().unlink()
         if queries:
             self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
@@ -429,7 +429,8 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        res.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
+        if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            res.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
         return res
 
 
