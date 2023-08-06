@@ -13,6 +13,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
     def _create_invoices(self, sale_orders):
         res = super(SaleAdvancePaymentInv, self)._create_invoices(sale_orders)
         # copy promotion từ đơn hàng qua hóa đơn
+        if len(sale_orders.mapped('x_sale_type')) == 1:
+            res.write({
+                'purchase_type': sale_orders.mapped('x_sale_type')[0],
+            })
         if res and sale_orders.promotion_ids:
             res.write({
                 'promotion_ids': [(0, 0, {
