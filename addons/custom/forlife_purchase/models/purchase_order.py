@@ -685,6 +685,7 @@ class PurchaseOrder(models.Model):
             'date_order': self.date_order,
             'warehouse_id': self.source_location_id[0].warehouse_id.id,
             'x_location_id': self.source_location_id.id,
+            'x_manufacture_order_code_id': self.production_id.id or False,
             'order_line': sale_order_lines
         }
         sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
