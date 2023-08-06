@@ -44,6 +44,7 @@
 
     'data': [
         # Security
+        'security/security.xml',
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
         # Wizards
