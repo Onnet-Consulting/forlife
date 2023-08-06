@@ -300,6 +300,7 @@ class PurchaseRequestLine(models.Model):
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
     asset_description = fields.Char(string="Asset description")
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
@@ -333,6 +334,17 @@ class PurchaseRequestLine(models.Model):
             'description': self.product_id.name,
             'purchase_uom': self.product_id.uom_id.id,
         })
+
+    @api.onchange('product_id')
+    def onchange_product_id_comput_assets(self):
+        if self.product_id.product_type == 'asset':
+            account = self.product_id.categ_id.property_account_expense_categ_id
+            if account:
+                return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id.id),
+                                                  ('asset_account', '=', account.id)]}}
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.order_id.company_id.id)]}}
 
     @api.onchange('vendor_code')
     def onchange_vendor_code(self):
