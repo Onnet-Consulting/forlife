@@ -74,7 +74,7 @@
                 <!--field name="discount_after_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/-->
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="replace">
-                <field name="name" attrs="{'column_invisible': [('parent.source_record', '=', True)]}"/>
+                <field name="name" invisible="1"/>
                 <field name="categ_id" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
             </xpath>
         </field>
