@@ -222,6 +222,7 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'asset_code': line.asset_code.id,
                     'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
@@ -341,10 +342,10 @@ class PurchaseRequestLine(models.Model):
             account = self.product_id.categ_id.property_account_expense_categ_id
             if account:
                 return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                  ('company_id', '=', self.order_id.company_id.id),
+                                                  ('company_id', '=', self.request_id.company_id.id),
                                                   ('asset_account', '=', account.id)]}}
             return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                              ('company_id', '=', self.order_id.company_id.id)]}}
+                                              ('company_id', '=', self.request_id.company_id.id)]}}
 
     @api.onchange('vendor_code')
     def onchange_vendor_code(self):
