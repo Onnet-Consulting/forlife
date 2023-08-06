@@ -146,10 +146,10 @@
                             <field name="promotions"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="asset_code"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.state', '=', 'posted')]}"/>
                             <field name="asset_name"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="purchase_uom" string="Đơn vị mua"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.state', '=', 'posted')]}"/>
+                            <field name="purchase_uom" string="Đơn vị mua" attrs="{'readonly': [('parent.state', '=', 'posted')]}"/>
                             <field name="quantity_purchased"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="product_uom_id"
