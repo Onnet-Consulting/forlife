@@ -231,29 +231,30 @@ class PurchaseOrder(models.Model):
         res = super().onchange_partner_id_warning()
         if self.purchase_type == 'product':
             if self.partner_id and self.order_line and self.currency_id:
-                for item in self.order_line:
-                    if item.product_id:
-                        item.product_uom = item.product_id.uom_id.id
-                        date_item = datetime.now().date()
-                        supplier_info = self.env['product.supplierinfo'].search(
-                            [('product_id', '=', item.product_id.id),
-                             ('partner_id', '=', self.partner_id.id),
-                             ('date_start', '<', date_item),
-                             ('date_end', '>', date_item),
-                             ('currency_id', '=', self.currency_id.id)
-                             ])
-                        if supplier_info:
-                            item.purchase_uom = supplier_info[-1].product_uom
-                            data = self.env['product.supplierinfo'].search([
-                                ('product_tmpl_id', '=', item.product_id.product_tmpl_id.id),
-                                ('partner_id', '=', self.partner_id.id),
-                                ('product_uom', '=', item.purchase_uom.id),
-                                ('amount_conversion', '=', item.exchange_quantity)
-                            ], limit=1)
-                            item.vendor_price = data.price if data else False
-                            item.price_unit = item.vendor_price / item.exchange_quantity if item.exchange_quantity else False
-        else:
-            pass
+                date_now = datetime.now().date()
+                domain = [
+                    ('company_id', '=', self.company_id.id),
+                    ('partner_id', '=', self.partner_id.id),
+                    ('date_start', '<=', date_now),
+                    ('date_end', '>=', date_now),
+                    ('currency_id', '=', self.currency_id.id)
+                ]
+                for line in self.order_line:
+                    if line.product_uom.id != line.product_id.uom_id.id:
+                        line.product_uom = line.product_id.uom_id.id
+                    domain_supplierinfo = [
+                        '|', ('product_id', '=', line.product_id.id), ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                        ('product_uom', '=', line.purchase_uom.id), ('amount_conversion', '=', line.exchange_quantity)
+                    ]
+                    supplier_ids = self.env['product.supplierinfo'].search(domain + domain_supplierinfo)
+                    if supplier_ids:
+                        supplier_id = supplier_ids.sorted('price')[:1]
+                        vendor_price = supplier_id.price if supplier_id.price else 0
+                        line.write({
+                            'purchase_uom': supplier_id.product_uom.id,
+                            'vendor_price': vendor_price,
+                            'price_unit': vendor_price / line.exchange_quantity if line.exchange_quantity else 0
+                        })
 
         if self.partner_id and self.sudo().source_location_id.company_id and self.env['res.company'].sudo().search([
             ('partner_id', '=', self.partner_id.id),
