@@ -88,6 +88,21 @@ class PurchaseOrder(models.Model):
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
     location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
 
+    def _get_department_default(self):
+        user_id = self.env['res.users'].browse(self._uid)
+        if not user_id:
+            return
+        return user_id.department_default_id
+
+    def _get_team_default(self):
+        user_id = self.env['res.users'].browse(self._uid)
+        if not user_id:
+            return
+        return user_id.team_default_id
+
+    department_id = fields.Many2one('hr.department', string='Department', default=_get_department_default)
+    team_id = fields.Many2one('hr.team', string='Team', default=_get_team_default)
+
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):
         for rec in self:
