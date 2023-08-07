@@ -76,7 +76,7 @@ class AccountMoveBKAV(models.Model):
             tax_rate_id = 3
         else:
             tax_rate_id = 4
-        return vat, tax_rate_id
+        return vat, tax_rate_id, price_unit
 
 
     def get_bkav_data(self):
