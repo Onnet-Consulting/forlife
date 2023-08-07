@@ -1254,7 +1254,7 @@ class RespartnerVendor(models.Model):
     _x_invoice_date = fields.Date(string='Ngày hóa đơn')
     tax_percent = fields.Many2one('account.tax', string='% Thuế', inverse='inverse_account_move_line')
     date_due = fields.Date(string='Hạn xử lý')
-    currency_id = fields.Many2one('res.currency', related='vendor_back_id.currency_id', currency_field='currency_id')
+    currency_id = fields.Many2one('res.currency', related='vendor_back_id.currency_id', string='Currency')
 
     def inverse_account_move_line(self):
         for rec in self:
