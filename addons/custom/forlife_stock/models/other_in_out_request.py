@@ -118,7 +118,7 @@ class ForlifeOtherInOutRequest(models.Model):
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
             for line in record.other_in_out_request_line_ids:
-                if line.product_id.categ_id.property_stock_valuation_account_id != line.asset_id.asset_account:
+                if line.location_id.x_property_valuation_in_account_id != line.asset_id.asset_account:
                     raise ValidationError(
                     _('Tài khoản trong Mã tài sản của bạn khác với tài khoản trong cấu hình lý do nhập khác xuất khác!'))
             if record.type_other_id.code == 'N01':
