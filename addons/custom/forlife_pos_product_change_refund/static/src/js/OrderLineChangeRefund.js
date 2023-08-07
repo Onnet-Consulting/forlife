@@ -78,6 +78,13 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 			    self.props.line.set_quantity(parseInt(event.target.value) || 0, true);
 			}
 
+			isShowChangeProduct() {
+			    console.log('==========================12');
+			    let line = this.props.line;
+			    if (line.quantity && !line.get_alternative_lines().length && line.refunded_orderline_id) return true;
+			    return false;
+			}
+
 			async actUpdate(event) {
 			    var args = {};
                 args.id = this.props.line.handle_change_refund_id;
@@ -142,6 +149,34 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                     await this.showPopup('ErrorPopup', { title, body });
                 }
 
+            }
+
+            async actChangeProduct(event) {
+                let orderline = this.props.line;
+                let order = this.env.pos.get_order();
+                console.log('event.detail', event);
+                const { confirmed, payload } = await this.showPopup('EditListPopup', {
+                    title: this.env._t('Choose New Alternative Product'),
+                    isSingleItem: false,
+                    array: [],
+                    isBarcodeInput: true
+                });
+                if (confirmed) {
+                    const newBarcodeLines = payload.newArray
+                        .map(item => ({ product_barcode: item.text }));
+                    let toAddProducts = []
+                    newBarcodeLines.forEach(bar => {
+                        let product = this.env.pos.db.product_by_barcode[bar.product_barcode];
+                        if (product) {
+                            toAddProducts.push(product);
+                        };
+                    });
+
+                    for (let product of toAddProducts) {
+                        let options = {related_refund_line_cid: orderline.cid};
+                        order.add_product(product, options);
+                    };
+                }
             }
 
             getTotalDiscount() {
