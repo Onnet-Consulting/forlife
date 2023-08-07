@@ -7,7 +7,16 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    invoice_id = records.create_invoice_out_refund()
+                    action =  {
+                    'name': 'Hóa đơn giảm trừ công nợ',
+                    'view_mode': 'form',
+                    'views': [(False, 'form')],
+                    'view_id': records.env.ref('account.view_move_form').id,
+                    'res_model': 'account.move',
+                    'res_id': records.create_invoice_out_refund(),
+                    'type': 'ir.actions.act_window',
+                    'target': 'current',
+                }
             </field>
         </record>
 </odoo>
