@@ -600,6 +600,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                             'pos_order_line_id': item.pos_order_line_id,
                             'money_reduced': item.money_reduced,
                             'type': item.type,
+                            'money_reduced_unit': item.money_reduced_unit
                     })
                 })
 
@@ -665,6 +666,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                     'pos_order_line_id': item.pos_order_line_id,
                     'money_reduced': item.money_reduced,
                     'type': item.type,
+                    'money_reduced_unit': item.money_reduced_unit
                 })
             })
             return {

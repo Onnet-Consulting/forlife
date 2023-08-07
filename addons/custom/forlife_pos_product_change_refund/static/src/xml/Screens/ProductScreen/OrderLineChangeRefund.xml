@@ -52,7 +52,7 @@
                             </li>
                             <li style="width: 50%;">
                                 <span>
-                                    <t t-esc="env.pos.format_currency(((discount.money_reduced)/Math.abs(props.line.quantity_canbe_refund))*Math.abs(props.line.quantity))"/>
+                                    <t t-esc="env.pos.format_currency((discount.money_reduced_unit)*Math.abs(props.line.quantity))"/>
                                 </span>
                             </li>
                         </t>
