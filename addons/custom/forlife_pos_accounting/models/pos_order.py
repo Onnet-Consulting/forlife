@@ -397,7 +397,8 @@ class InheritPosOrderLine(models.Model):
                 product_id=promotion.program_id.product_discount_id,
                 price=-promotion.discount_total,
                 promotion=promotion.program_id,
-                promotion_type='ctkm'
+                promotion_type='ctkm',
+                is_state_registration=promotion.registering_tax
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
@@ -412,7 +413,8 @@ class InheritPosOrderLine(models.Model):
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
-                if discount.type == 'point' else discount.type in ('product_defective', 'handle', 'change_refund'),
+                if discount.type == 'point' else pol.order_id.card_rank_program_id.check_registering_tax()
+                if discount.type == 'card' else discount.type in ('product_defective', 'handle', 'change_refund'),
                 promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
         ]
