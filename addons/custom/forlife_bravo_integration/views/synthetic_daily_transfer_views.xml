@@ -61,7 +61,6 @@
                     <field name="employee"/>
                     <field name="source_warehouse"/>
                     <field name="destination_warehouse"/>
-                    <field name="location_id"/>
                 </tree>
             </field>
         </record>
