@@ -286,6 +286,7 @@ class NhanhClient:
             'x_location_id': location_id.id,
             'sale_channel_id': sale_channel.id if sale_channel else None,
             'x_transfer_code': x_transfer_code if x_transfer_code else '',
+            'x_account_analytic_ids': [nhanh_partner.property_account_cost_center_id.id] if nhanh_partner.property_account_cost_center_id else None
         }
         return order_data
 

@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError, UserError
 class ProductDefective(models.Model):
     _name = 'product.defective'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
+    _check_company_auto = True
     _order = 'create_date desc'
     _description = 'Product Defective'
 
@@ -27,11 +28,20 @@ class ProductDefective(models.Model):
     reason_refuse_product = fields.Char('Lí do từ chối')
     active = fields.Boolean(default=True)
     quantity_require = fields.Integer('Số lượng yêu cầu')
+    company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
 
     @api.onchange('product_id')
     def change_product(self):
-        if self.product_id:
-            program_pricelist_item_id = self.env['promotion.pricelist.item'].search([('product_id', '=', self.product_id.id)], limit=1, order='id desc')
+        if self.product_id and self.store_id:
+            programs = self.env['promotion.program'].search([
+                ('promotion_type', '=', 'pricelist'),
+                ('state', '=', 'in_progress'),
+                ('store_ids', 'in', self.store_id.id)
+            ])
+            program_pricelist_item_id = self.env['promotion.pricelist.item'].search([
+                ('product_id', '=', self.product_id.id),
+                ('program_id', 'in', programs.ids),
+            ], limit=1, order="create_date DESC")
             self.with_context(show_price=True).program_pricelist_item_id = program_pricelist_item_id.id
 
     def unlink(self):

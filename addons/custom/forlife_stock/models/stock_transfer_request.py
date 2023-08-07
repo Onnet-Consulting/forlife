@@ -36,6 +36,8 @@ class StockTransferRequest(models.Model):
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
+    location_id = fields.Many2one('stock.location', "Từ kho", check_company=True)
+    location_dest_id = fields.Many2one('stock.location', "Đến kho", check_company=True)
 
     @api.model
     def default_get(self, default_fields):
@@ -76,6 +78,20 @@ class StockTransferRequest(models.Model):
         self.write({
             'request_lines': request_lines
         })
+
+    @api.onchange('location_id')
+    def onchange_location_id(self):
+        for r in self:
+            r.request_lines.write({
+                'location_id': r.location_id.id or False
+            })
+
+    @api.onchange('location_dest_id')
+    def onchange_location_dest_id(self):
+        for r in self:
+            r.request_lines.write({
+                'location_dest_id': r.location_dest_id.id or False
+            })
 
     @api.model
     def get_import_templates(self):
@@ -124,10 +140,13 @@ class StockTransferRequest(models.Model):
                 })
                 dic_data = {
                     'state': 'approved',
-                    'employee_id': record.user_id.id,
+                    'employee_id': record.user_id.employee_id.id or False,
+                    'department_id': record.department_id.id,
                     'stock_request_id': record.id,
                     'location_id': item.location_id.id,
+                    'location_name': item.location_id.location_id.name+'/'+item.location_id.name,
                     'location_dest_id': item.location_dest_id.id,
+                    'location_dest_name': item.location_dest_id.location_id.name+'/'+item.location_dest_id.name,
                     'work_to': record.production_id.id or False,
                     'stock_transfer_line': [data_stock_transfer_line]
                 }
@@ -219,10 +238,10 @@ class TransferRequestLine(models.Model):
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
     request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True, ondelete='cascade')
     quantity = fields.Float(default=1, string='Quantity', required=True)
-    plan_quantity = fields.Integer(string="Plan Quantity")
-    quantity_reality_transfer = fields.Integer(string="Quantity reality transfer", compute='compute_quantity_reality_transfer', )
-    quantity_reality_receive = fields.Integer(string="Quantity reality receive", compute='compute_quantity_reality_receive', )
-    quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
+    plan_quantity = fields.Float(string="Plan Quantity")
+    quantity_reality_transfer = fields.Float(string="Quantity reality transfer", compute='compute_quantity_reality_transfer', )
+    quantity_reality_receive = fields.Float(string="Quantity reality receive", compute='compute_quantity_reality_receive', )
+    quantity_remaining = fields.Float(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_transfer_line_ids = fields.One2many('stock.transfer.line', 'product_str_id')
     production_from = fields.Many2one('forlife.production', string="Từ LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     production_to = fields.Many2one('forlife.production', string="Đến LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')

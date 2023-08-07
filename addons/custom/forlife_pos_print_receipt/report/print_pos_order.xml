@@ -21,7 +21,7 @@
                             <div class="text-center mt-2">
                                 <t t-esc="doc['phone']"/>
                             </div>
-                            <div t-if="doc['brand'] == 'TKL'" class="qr_code text-center mt-2"
+                            <div t-if="doc['brand'] == 'TKL' and doc['qr_code']" class="qr_code text-center mt-2"
                                  style="width: 95%;margin: auto;border: 1px solid;">
                                 <div class="text-center">
                                     <div>
@@ -31,7 +31,7 @@
                                     </div>
                                 </div>
                                 <img class="mt-2"
-                                     t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', 'text', 150, 150)"/>
+                                     t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', doc['qr_code'], 150, 150)"/>
                                 <div class="text-center mt-3">
                                     Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng
                                 </div>
@@ -67,6 +67,11 @@
                                             <td>Ghi chú:</td>
                                             <td></td>
                                         </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="line" style="border-bottom: 1px solid;"/>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -74,22 +79,22 @@
                                 <table class="table no_color_border">
                                     <tbody>
                                         <tr style="border-top: 1px solid #dee2e6; border-left: unset; border-right: unset; border-color: #FFF">
-                                            <td style="white-space: normal;">
+                                            <td style="white-space: nowrap;">
                                                 <strong>Tên hàng</strong>
                                             </td>
-                                            <td style="white-space: normal;">
+                                            <td style="white-space: nowrap;">
                                                 <strong>SL</strong>
                                             </td>
-                                            <td style="white-space: normal;">
+                                            <td style="white-space: nowrap;">
                                                 <strong>Đơn giá</strong>
                                             </td>
-                                            <td style="white-space: normal;" t-if="doc['brand'] == 'TKL'">
+                                            <td style="white-space: nowrap;" t-if="doc['brand'] == 'TKL'">
                                                 <strong>GG</strong>
                                             </td>
-                                            <td style="white-space: normal;" t-if="doc['brand'] == 'FMT'">
+                                            <td style="white-space: nowrap;" t-if="doc['brand'] == 'FMT'">
                                                 <strong>-%GG</strong>
                                             </td>
-                                            <td style="white-space: normal;">
+                                            <td style="white-space: nowrap;">
                                                 <strong>Tổng tiền</strong>
                                             </td>
                                         </tr>
@@ -112,7 +117,7 @@
                                             </t>
                                             <t t-foreach="line[1]" t-as="line_item">
                                                 <tr>
-                                                    <td colspan="5">
+                                                    <td colspan="5" style="font-size: 15px;">
                                                         <t t-esc="line_item['name']"/>
                                                     </td>
                                                 </tr>
@@ -170,7 +175,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2">Tổng cộng</td>
+                                            <td>Tổng cộng</td>
                                             <td style="text-align: right !important;">
                                                 <t t-esc="doc['total_qty']"/>
                                             </td>
@@ -217,7 +222,7 @@
                                                 </td>
                                             </tr>
                                         </t>
-                                        <tr>
+                                        <tr t-if="doc['accumulation'] &gt; 0">
                                             <td colspan="2">Tiêu tích lũy</td>
                                             <td colspan="3" style="text-align: right !important;">
                                                 <t t-esc="doc['accumulation']"/>
@@ -248,7 +253,9 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <t t-esc="doc['receipt_footer']"/>
+                            <strong>
+                                <t t-esc="doc['receipt_footer']"/>
+                            </strong>
                         </div>
                     </t>
                 </t>

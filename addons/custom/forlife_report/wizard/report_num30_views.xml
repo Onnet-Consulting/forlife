@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num30_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num30</field>
+        <field name="arch" type="xml">
+            <form string="Bảng kê hàng hóa xuất hóa đơn" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="month" widget="selection" class="oe_inline"/>
+                            <field name="year" widget="char" class="oe_inline"/>
+                            <label for="product_ids" string="Products"/>
+                            <div class="o_row">
+                                <button name="btn_choice_values" type="object" string="Products" class="btn-secondary"
+                                        context="{'action_xml_id': 'report_num30_window_action_choice_product'}">
+                                    <field name="product_count" string="Products"/>
+                                </button>
+                                products
+                            </div>
+                            <field name="is_get_price_unit"/>
+                            <field name="is_with_tax"/>
+                        </group>
+                        <group>
+                            <label for="is_pos_order" string="Sale channel"/>
+                            <div>
+                                <div>
+                                    <field name="is_pos_order"/>Pos Order
+                                </div>
+                                <div>
+                                    <field name="is_wholesale"/>Wholesale
+                                </div>
+                                <div>
+                                    <field name="is_ecommerce"/>Ecommerce
+                                </div>
+                                <div>
+                                    <field name="is_inter_company"/>Inter-company
+                                </div>
+                            </div>
+                            <field name="warehouse_type_id" options="{'no_create': True, 'no_open': True}" class="oe_inline"/>
+                            <label for="warehouse_ids" string="Warehouses"/>
+                            <div class="o_row">
+                                <button name="btn_choice_values" type="object" string="Warehouses" class="btn-secondary"
+                                        context="{'action_xml_id': 'report_num30_window_action_choice_warehouse', 'whs_type': warehouse_type_id}">
+                                    <field name="warehouse_count" string="Warehouses"/>
+                                </button>
+                                warehouses
+                            </div>
+                        </group>
+                    </group>
+                    <field name="warehouse_ids" invisible="1" force_save="1"/>
+                    <field name="product_ids" invisible="1" force_save="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num30_window_action" model="ir.actions.act_window">
+        <field name="name">Bảng kê hàng hóa xuất hóa đơn</field>
+        <field name="res_model">report.num30</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num30_menu"
+              action="report_num30_window_action"
+              parent="report_menu_sale"
+              sequence="30"/>
+
+    <record id="report_num30_form_choice_product" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num30</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form string="Chọn sản phẩm" create="0">
+                <sheet>
+                    <separator string="Products"/>
+                    <field name="product_ids">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="barcode"/>
+                            <field name="name"/>
+                        </tree>
+                        <form create="0" edit="0" delete="0">
+                            <group>
+                                <field name="barcode" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num30_window_action_choice_product" model="ir.actions.act_window">
+        <field name="name">Chọn sản phẩm</field>
+        <field name="res_model">report.num30</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="report_num30_form_choice_product"/>
+    </record>
+
+    <record id="report_num30_form_choice_warehouse" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num30</field>
+        <field name="priority">1001</field>
+        <field name="arch" type="xml">
+            <form string="Chọn kho" create="0">
+                <sheet>
+                    <separator string="Warehouses"/>
+                    <field name="warehouse_ids" domain="[('whs_type', '=', context.get('whs_type'))]">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="code"/>
+                            <field name="name"/>
+                        </tree>
+                        <form create="0" edit="0" delete="0">
+                            <group>
+                                <field name="code" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num30_window_action_choice_warehouse" model="ir.actions.act_window">
+        <field name="name">Chọn kho</field>
+        <field name="res_model">report.num30</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="report_num30_form_choice_warehouse"/>
+    </record>
+
+</odoo>

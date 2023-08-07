@@ -46,24 +46,98 @@ class InheritStockPicking(models.Model):
 
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
-            for material in bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.type == 'product'):
-                move_outgoing_value = [{
-                    'picking_id': self.id,
-                    'name': material.product_id.name,
-                    'product_id': material.product_id.id,
-                    'location_id': self.location_id.id,
-                    'location_dest_id': reason_export_id.id,
-                    'product_uom_qty': move.product_uom_qty * material.total,
-                    'price_unit': material.product_id.standard_price,
-                    'amount_total': move.product_uom_qty * material.total * material.product_id.standard_price,
-                    'bom_model': material._name,
-                    'bom_id': material.id,
-                    'reason_type_id': reason_type_id.id,
-                }]
+            product_qty_prodution_remaining = self.env['quantity.production.order'].search([('location_id', '=', self.location_id.id), ('production_id', '=', move.work_production.id)])
+            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and not x.product_backup_id)
+            material_backup_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and x.product_backup_id)
+            if not material_ids:
+                raise ValidationError(_("BOM của sản phẩm '%s' hiện tại đang không có sản phẩm lưu kho, vui lòng kiểm tra lại!" %  move.product_id.display_name))
+            for material in material_ids:
+                move_outgoing_value = self.validate_product_backup(move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id)
                 if not move_outgoing_value:
                     raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
                 move_outgoing_values += move_outgoing_value
         return self.env['stock.move'].create(move_outgoing_values)
+
+    def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
+        product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
+        product_qty = sum(product_prodution_quantity.mapped('quantity'))
+        product_uom_qty = round(move.product_uom_qty * material.total, 2)
+        move_outgoing_value = []
+        qty_remain = product_uom_qty
+        if product_qty >= product_uom_qty:
+            val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_uom_qty, material, reason_type_id)
+            product_prodution_quantity.update({
+                'quantity': product_prodution_quantity.quantity - product_uom_qty
+            })
+            move_outgoing_value.append(val)
+            return move_outgoing_value
+
+        if product_qty:
+            val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_qty, material, reason_type_id)
+            product_prodution_quantity.update({
+                'quantity': product_prodution_quantity.quantity - product_qty
+            })
+            move_outgoing_value.append(val)
+            qty_remain = round(product_uom_qty - product_qty, 2)
+
+        if qty_remain:
+            # Check sản phẩm thay thế Level 1
+            material_backup_01 = material_backup_ids.filtered(lambda x: x.product_backup_id.id == material.product_id.id)
+            if not material_backup_01:
+                raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+            else:
+                product_backup_01_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
+                material_backup_01_qty = sum(product_backup_01_prodution_quantity.mapped('quantity'))
+                if material_backup_01_qty >= qty_remain:
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_remain, material_backup_01, reason_type_id)
+                    move_outgoing_value.append(val)
+                    product_backup_01_prodution_quantity.update({
+                        'quantity': product_backup_01_prodution_quantity.quantity - qty_remain
+                    })
+                    return move_outgoing_value
+
+                if material_backup_01_qty:
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, material_backup_01_qty, material_backup_01, reason_type_id)
+                    move_outgoing_value.append(val)
+                    qty_remain = round(qty_remain - material_backup_01_qty, 2)
+                    product_backup_01_prodution_quantity.update({
+                        'quantity': product_backup_01_prodution_quantity.quantity - material_backup_01_qty
+                    })
+
+                if qty_remain:
+                    # Check sản phẩm thay thế Level 2
+                    material_backup_02 = material_backup_ids.filtered(lambda x: x.product_backup_id.id == material_backup_01.product_id.id)
+                    if not material_backup_02:
+                        raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+                    else:
+                        product_backup_02_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_02.product_id.id)
+                        material_backup_02_qty = sum(product_backup_02_prodution_quantity.mapped('quantity'))
+                        if material_backup_02_qty >= qty_remain:
+                            val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
+                            move_outgoing_value.append(val)
+                            product_backup_02_prodution_quantity.update({
+                                'quantity': product_backup_02_prodution_quantity.quantity - qty_remain
+                            })
+                        else:
+                            raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
+
+        return move_outgoing_value
+
+    def prepare_data_stock_move_material(self, product_id, reason_export_id, product_uom_qty, material, reason_type_id):
+        return {
+            'picking_id': self.id,
+            'name': product_id.name,
+            'product_id': product_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': reason_export_id.id,
+            'product_uom_qty': product_uom_qty,
+            'price_unit': product_id.standard_price,
+            'amount_total': product_uom_qty * product_id.standard_price,
+            'bom_model': material._name,
+            'bom_id': material.id,
+            'reason_type_id': reason_type_id.id,
+        }
+
 
     def _generate_outgoing_picking(self):
         """
@@ -88,6 +162,22 @@ class InheritStockPicking(models.Model):
         return picking_outgoing_id
 
     def button_validate(self):
+        if self.picking_type_id.exchange_code == 'incoming':
+            for move_in in self.move_ids:
+                bom = move_in.work_production.forlife_production_finished_product_ids.filtered(lambda b: b.product_id.id == move_in.product_id.id)
+                if len(bom) != 1:
+                    raise ValidationError(
+                        not bom and _('Cannot find BOM for product "%s"!', move_in.product_id.name)
+                        or _('There are too many BOM for product "%s"!', move_in.product_id.name)
+                    )
+                bom.update_price()
+                price_unit = bom.unit_price or move_in.price_unit
+                move_in.write({
+                    'bom_model': bom._name,
+                    'bom_id': bom.id,
+                    'price_unit': price_unit,
+                    'amount_total': price_unit * move_in.product_uom_qty
+                })
         res = super(InheritStockPicking, self).button_validate()
         if self.picking_type_id.exchange_code == 'incoming' and self.state == 'done':
             self._update_forlife_production()
@@ -106,9 +196,13 @@ class InheritStockPicking(models.Model):
                     'price_unit': price_unit,
                     'amount_total': price_unit * move_in.product_uom_qty
                 })
-            picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
-            self = self.with_context(exchange_code='incoming')
-            self.write({'picking_outgoing_id': picking_outgoing_id.id})
+
+            # K tạo phiếu xuất NVL với trường hợp xuất thừa
+            if self.location_id.code != 'N0103':
+                picking_outgoing_id = self.with_context(exchange_code='outgoing')._generate_outgoing_picking()
+                self = self.with_context(exchange_code='incoming')
+                self.write({'picking_outgoing_id': picking_outgoing_id.id})
+
         return res
 
     def _update_forlife_production(self):

@@ -11,8 +11,9 @@ class ResPartner(models.Model):
     _update_action = 'update'
     _delete_action = 'delete'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
+        return [('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c').id)]
 
     def get_sync_info_value(self):
         brands = self.env['res.brand'].search_read([], ['id', 'code'])

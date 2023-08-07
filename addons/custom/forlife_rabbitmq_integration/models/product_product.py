@@ -10,8 +10,9 @@ class ProductProduct(models.Model):
     _update_action = 'update'
     _delete_action = 'delete'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.detailed_type == 'product')
+        return [('detailed_type', '=', 'product'), ('voucher', '=', False)]
 
     def get_sync_info_value(self):
         return [{

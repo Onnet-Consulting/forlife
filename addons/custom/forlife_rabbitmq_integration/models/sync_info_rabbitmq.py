@@ -22,8 +22,15 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
             self.push_message_to_rabbitmq(data, action, self._name)
         return True
 
+    @api.model
     def domain_record_sync_info(self):
-        return self
+        return []
+
+    def action_filter_records(self):
+        filter_domain = self.domain_record_sync_info()
+        if not filter_domain:
+            return self
+        return self.filtered_domain(filter_domain)
 
     def get_rabbitmq_queue_by_queue_key(self, queue_key):
         rabbitmq_queue = self.env['rabbitmq.queue'].search([('queue_key', '=', queue_key)])
@@ -58,6 +65,10 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
             channel.basic_publish(exchange='', routing_key=rabbitmq_queue.queue_name, body=message)
         connection.close()
 
+    @api.model
+    def _check_active_queue_rabbit(self):
+        return self.env['rabbitmq.queue'].sudo().search_count([('queue_key', '=', self._name)]) > 0
+
 
 class SyncInfoRabbitmqCreate(models.AbstractModel):
     _name = 'sync.info.rabbitmq.create'
@@ -68,8 +79,8 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        record = res.domain_record_sync_info()
-        if record:
+        record = res.action_filter_records()
+        if record and self._check_active_queue_rabbit():
             record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
         return res
 
@@ -91,8 +102,8 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     def write(self, values):
         res = super().write(values)
         check = self.check_update_info(self.get_field_update(), values)
-        record = self.domain_record_sync_info()
-        if check and record:
+        record = self.action_filter_records()
+        if check and record and self._check_active_queue_rabbit():
             record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
         return res
 
@@ -109,9 +120,9 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
             self.push_message_to_rabbitmq(data, self._delete_action, self._name)
 
     def unlink(self):
-        record_ids = self.domain_record_sync_info().ids
+        record_ids = self.action_filter_records().ids
         res = super().unlink()
-        if record_ids:
+        if record_ids and self._check_active_queue_rabbit():
             self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 

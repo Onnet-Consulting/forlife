@@ -34,6 +34,7 @@ class ForlifeOtherInOutRequest(models.Model):
                                               string="Other Import/Export")
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
+    is_last_transfer = fields.Boolean(string="Lần nhập kho cuối")
 
     @api.model
     def default_get(self, default_fields):
@@ -116,6 +117,10 @@ class ForlifeOtherInOutRequest(models.Model):
         picking_type_out = self.env['stock.picking.type'].search(
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
+            for line in record.other_in_out_request_line_ids:
+                if record.location_id.x_property_valuation_in_account_id != line.asset_id.asset_account:
+                    raise ValidationError(
+                    _('Tài khoản trong Mã tài sản của bạn khác với tài khoản trong cấu hình lý do nhập khác xuất khác!'))
             if record.type_other_id.code == 'N01':
                 picking_type_in = self.env['stock.picking.type'].search([('company_id', '=', company_id), ('code', '=', 'incoming'), ('exchange_code', '=', 'incoming')], limit=1)
                 if not picking_type_in:
@@ -127,6 +132,7 @@ class ForlifeOtherInOutRequest(models.Model):
                 data_other_line = (
                     0, 0, {
                         'product_id': item.product_id.id,
+                        'ref_asset': item.asset_id,
                         'product_uom_qty': item.quantity,
                         'product_uom': item.uom_id.id,
                         'name': item.description,
@@ -156,6 +162,7 @@ class ForlifeOtherInOutRequest(models.Model):
                     'is_from_request': True,
                     'origin': record.name,
                     'other_import_export_request_id': record.id,
+                    'is_last_transfer': record.is_last_transfer,
                     'move_ids_without_package': [data_other_line]
                 }
                 if value.get(key):

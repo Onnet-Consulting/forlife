@@ -14,7 +14,7 @@
     'category': 'Generic Modules',
     'version': '16.0.1.0.0',
 
-    'depends': ['base'],
+    'depends': ['base', 'forlife_base'],
     'auto_install': True,
 
     'data': [

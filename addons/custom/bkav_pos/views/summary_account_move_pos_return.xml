@@ -37,13 +37,14 @@
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
-                                    <field name="description"/>
+                                    <!--field name="description"/-->
                                     <field name="barcode"/>
-                                    <field name="account_id"/>
+                                    <!--field name="account_id"/-->
                                     <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
+                                    <field name="price_unit_origin"/>
                                     <field name="x_free_good"/>
 <!--                                    <field name="discount"/>-->
 <!--                                    <field name="discount_amount"/>-->
@@ -58,6 +59,17 @@
                             <field name="number_bill"/>
                             <field name="einvoice_status"/>
                             <field name="einvoice_date"/>
+                        </page>
+                        <page name="other_info" string="Other Information">
+                            <field name="line_discount_ids">
+                                <tree editable="bottom" create="0">
+                                    <field name="promotion_type"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_amount"/>
+                                    <field name="amount_total"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -77,7 +89,7 @@
     </record>
 
     <menuitem id="summary_account_move_pos_return_menu"
-              name="Hóa đơn đổi trả tổng cuối ngày"
+              name="Total refund invoice at the end of the day"
               parent="summary_account_move_menu"
               action="summary_account_move_pos_return_action"
               sequence="10"/>

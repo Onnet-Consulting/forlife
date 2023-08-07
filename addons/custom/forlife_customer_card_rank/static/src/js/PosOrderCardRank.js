@@ -46,7 +46,9 @@ const PosOrderCardRank = (Order) => class extends Order {
 
     add_product(product, options) {
         super.add_product(...arguments);
-        this.action_reset_card_rank_program();
+        if (!product.is_product_auto) {
+            this.action_reset_card_rank_program();
+        };
     }
 
     get_total_without_tax() {

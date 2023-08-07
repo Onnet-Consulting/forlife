@@ -171,6 +171,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
     }
 
     _loadPromotionPriceListItem(promotionItems) {
+        if (!promotionItems) {
+            return
+        }
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;

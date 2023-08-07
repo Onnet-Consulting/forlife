@@ -57,7 +57,7 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
     CmdType = int(configs.get('cmd_addInvoice'))
     if issue_invoice_type:
         if issue_invoice_type in ('adjust', 'replace') and (not origin_id or not origin_id.invoice_no):
-            raise ValidationError('Vui lòng chọn hóa đơn gốc cho đã được phát hành để điều chỉnh hoặc thay thế')
+            raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh hoặc thay thế')
         if issue_invoice_type == 'adjust':
             CmdType = int(configs.get('cmd_addInvoiceEdit'))
         elif issue_invoice_type == 'replace':
@@ -91,10 +91,8 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
                 self.message_post(body=result_data.get('MessLog'))
             if is_publish:
                 publish_invoice_bkav(self)
-                get_invoice_status(self)
-            else: 
-                get_invoice_bkav(self)
-                get_invoice_status(self)
+            get_invoice_bkav(self)
+            get_invoice_status(self)
         except:
             get_invoice_bkav(self)
             get_invoice_status(self)
@@ -170,6 +168,9 @@ def get_invoice_bkav(self):
 def cancel_invoice_bkav(self):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
+    is_publish = False
+    if self.is_post_bkav:
+        is_publish = True
     configs = get_bkav_config(self)
     data = {
         "CmdType": int(configs.get('cmd_cancelInvoice')),
@@ -190,6 +191,9 @@ def cancel_invoice_bkav(self):
         raise ValidationError(response.get('Object'))
     else:
         self.is_check_cancel = True
+        if is_publish:
+            publish_invoice_bkav(self)
+        get_invoice_bkav(self)
         get_invoice_status(self)
 
 
@@ -219,29 +223,21 @@ def delete_invoice_bkav(self,):
 def download_invoice_bkav(self):
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
-    if not self.eivoice_file:
-        configs = get_bkav_config(self)
-        data = {
-            "CmdType": int(configs.get('cmd_downloadPDF')),
-            "CommandObject": self.invoice_guid,
-        }
-        _logger.info(f'BKAV - data download invoice to BKAV: {data}')
-        response_action = connect_bkav(data, configs)
-        if response_action.get('Status') == '1':
-            self.message_post(body=(response_action.get('Object')))
-        else:
-            attachment_id = self.env['ir.attachment'].sudo().create({
-                'name': f"{self.invoice_no}.pdf",
-                'datas': json.loads(response_action.get('Object')).get('PDF', ''),
-            })
-            self.eivoice_file = attachment_id
-            return {
-                'type': 'ir.actions.act_url',
-                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                        % (self.eivoice_file.id, self.eivoice_file.name),
-                'target': 'self',
-            }
+    configs = get_bkav_config(self)
+    data = {
+        "CmdType": int(configs.get('cmd_downloadPDF')),
+        "CommandObject": self.invoice_guid,
+    }
+    _logger.info(f'BKAV - data download invoice to BKAV: {data}')
+    response_action = connect_bkav(data, configs)
+    if response_action.get('Status') == '1':
+        self.message_post(body=(response_action.get('Object')))
     else:
+        attachment_id = self.env['ir.attachment'].sudo().create({
+            'name': f"{self.invoice_no}.pdf",
+            'datas': json.loads(response_action.get('Object')).get('PDF', ''),
+        })
+        self.eivoice_file = attachment_id
         return {
             'type': 'ir.actions.act_url',
             'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"

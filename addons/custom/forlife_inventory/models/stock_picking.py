@@ -10,6 +10,7 @@ class StockPicking(models.Model):
     from_company = fields.Many2one('res.company')
     to_company = fields.Many2one('res.company')
     from_po_give = fields.Boolean(default=False)
+    is_generate_auto_company = fields.Boolean(default=False)
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
@@ -27,16 +28,16 @@ class StockPicking(models.Model):
                 if not location_dest_map:
                     raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             companyId = self.company_id.id
-            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id', '=',companyId)],
+            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'N0202'),('company_id', '=',companyId)],
                                                                                              limit=1)
             location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', companyId)], limit=1)
             reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', companyId)])
             reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', companyId)])
             ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
             if self.sale_id.source_record and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
-                    and self.location_id.stock_location_type_id.id == ec_warehouse_id:
+                    and self.location_id.stock_location_type_id.id == ec_warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='export')
-            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
+            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
                 self.create_other_give(type_create='import')
             po = self.purchase_id
             product_is_voucher = self.move_line_ids_without_package.filtered(lambda x: x.product_id.voucher)
@@ -56,7 +57,7 @@ class StockPicking(models.Model):
         if type_create == 'import':
             location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_dest_id.id)])
             company_id = location_mapping.location_map_id.company_id.id
-            location_id = self.env['stock.location'].sudo().search([('code', '=', 'X701'),('company_id','=',company_id)], limit=1).id
+            location_id = self.env['stock.location'].sudo().search([('code', '=', 'N0701'),('company_id','=',company_id)], limit=1).id
             if not location_id:
                 raise UserError(_(f"Không tìm thấy địa điểm {self.location_id.name_get()[0][1]} ở công ty bán lẻ"))
             location_dest_id = location_mapping.location_map_id.id
@@ -96,6 +97,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         other = self.validate_picking_give_voucher(other=other, company_id=company_id)
         return other
@@ -143,6 +145,7 @@ class StockPicking(models.Model):
             'other_import': True if type_create == 'import' else False,
             'other_export': True if type_create == 'export' else False,
             'move_ids_without_package': data,
+            'is_generate_auto_company':True
         })
         if type_create == 'from_po':
             other = self.validate_picking_give_voucher(other=other, company_id=company_id)
@@ -202,12 +205,13 @@ class StockPicking(models.Model):
                                 'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
                             }))
                         pickking_ortherimport = Picking.with_company(company).create({
-                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]),
+                            'reason_type_id': self.env['forlife.reason.type'].sudo().search([('code','=','N05'), ('company_id','=',company)]).id,
                             'picking_type_id': location_mapping.location_id.warehouse_id.int_type_id.id,
                             'location_id': location_id.id,
                             'location_dest_id': location_mapping.location_id.id,
                             'other_import': True,
                             'move_ids_without_package': data,
+                            'is_generate_auto_company': True
                         })
-                        pickking_ortherimport.button_validate()
+                        pickking_ortherimport.with_context(endloop=True).button_validate()
         return pickings

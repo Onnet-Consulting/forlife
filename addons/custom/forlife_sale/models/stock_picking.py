@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class StockPicking(models.Model):
@@ -66,9 +66,12 @@ class StockPicking(models.Model):
             'move_type': 'out_refund',
             'invoice_line_ids': invoice_line_ids,
             'promotion_ids': promotion_ids,
-            'invoice_origin': line.sale_line_id.order_id.name
+            'invoice_origin': line.sale_line_id.order_id.name,
         }
-        invoice_id = self.env['account.move'].create(vals)
+        if line.sale_line_id.order_id.source_record:
+            vals['company_id'] = line.sale_line_id.order_id.company_id.id
+
+        invoice_id = self.env['account.move'].sudo().create(vals)
         for line in invoice_id.invoice_line_ids:
             if line.product_id:
                 if self.sale_source_record:
@@ -82,7 +85,7 @@ class StockPicking(models.Model):
                         account_id = str(ir_property.value_reference).replace("account.account,", "")
                         line.account_id = self.env['account.account'].sudo().search([('id', '=', account_id)], limit=1)
                     else:
-                        line.account_id = None
+                        line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
                 else:
                     line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id
@@ -95,8 +98,13 @@ class StockPicking(models.Model):
                 account_move_line = account_move.line_ids.filtered(lambda line: line.debit > 0)
                 account_id = move.product_id.product_tmpl_id.categ_id.x_property_account_return_id
                 if not account_id:
-                    raise UserError(_('Bạn chưa cấu hình tài khoản trả hàng trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
+                    raise UserError(_('Bạn chưa cấu hình "Tài khoản trả hàng" trong danh mục sản phẩm của sản phẩm %s') % move.product_id.name)
                 account_move_line.account_id = account_id
+
+        # Trường hợp xuất bán thành phẩm hoặc NVL theo LSX từ SO
+        for picking_id in self.filtered(lambda x: x.sale_id and x.sale_id.x_manufacture_order_code_id):
+            self.update_quantity_production_order(picking_id)
+
         try:
             sale_from_nhanh = self.sale_id and self.sale_id.source_record
             if self.state == "done" and self.picking_type_code == "outgoing" and sale_from_nhanh:
@@ -114,8 +122,29 @@ class StockPicking(models.Model):
                     })
                     invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
                     invoice_id.action_post()
-
+            if self.state == "done" and sale_from_nhanh and self.sale_id.x_is_return:
+                if self.company_id.id == self.sale_id.company_id.id:
+                    self.create_invoice_out_refund()
         except Exception as e:
             pass
         
         return res
+
+    def update_quantity_production_order(self, picking_id):
+        """
+            Update lại số lượng tồn kho theo LSX ở phiếu nhập xuất bán SO
+        """
+
+        for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+            quantity_prodution = self.env['quantity.production.order'].search(domain)
+            if quantity_prodution:
+                quantity = quantity_prodution.quantity - rec.quantity_done
+                if quantity < 0:
+                    raise ValidationError('Số lượng tồn kho sản phẩm %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.display_name, rec.work_production.code))
+                else:
+                    quantity_prodution.update({
+                        'quantity': quantity
+                    })
+            else:
+                raise ValidationError('Sản phẩm %s không có trong lệnh sản xuất %s!' % (rec.product_id.display_name, rec.work_production.code))

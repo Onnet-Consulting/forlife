@@ -31,6 +31,8 @@ class SaleOrder(models.Model):
 
     def action_create_picking(self):
         res = super().action_create_picking()
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         queries = self.bravo_get_insert_sql()
         if queries:
             self.env['sale.order'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)

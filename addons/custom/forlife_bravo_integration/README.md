@@ -8,7 +8,7 @@
       pip install pyodbc 
    ```
 
-2. Config SQL Server params in Odoo: *Settings/ General Settings/ SQL Server Integration (MSSQL)* <br/><br/>
+2. Config SQL Server params in Odoo: *Settings/ Odoo tích hợp/ Bravo/ Cấu hình đồng bộ* <br/><br/>
 ![img](static/img/config.png)
 
 3. (Optional): install mssql-cli (an interactive command line query tool for SQL Server)

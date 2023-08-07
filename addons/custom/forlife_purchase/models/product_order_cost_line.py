@@ -22,7 +22,7 @@ class PurchaseOrderCostLine(models.Model):
     def compute_cost_paid(self):
         for rec in self:
             invoice = self.env['account.move'].search([
-                ('purchase_order_product_id', 'in', rec.purchase_order_id.id),
+                ('purchase_order_product_id', 'in', rec.purchase_order_id.ids),
                 ('move_type', '=', 'in_invoice'),
                 ('select_type_inv', '=', 'expense')
             ])

@@ -19,8 +19,8 @@ class PurchaseRequest(models.Model):
     user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
     employee_id = fields.Many2one('hr.employee', string='User Request')
     department_id = fields.Many2one('hr.department', string='Department', required=True)
-    date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
-    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True, options={'format': 'DD-MM-YYYY'})
+    date_planned = fields.Datetime(string='Expected Arrival', required=True)
+    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True)
     order_lines = fields.One2many('purchase.request.line', 'request_id', copy=True)
     order_ids = fields.One2many('purchase.order', 'request_id')
     rejection_reason = fields.Char(string="Rejection_reason")
@@ -163,10 +163,13 @@ class PurchaseRequest(models.Model):
                 if time_request > time_plan:
                     raise ValidationError(_("Expected Arrival must be greater than request date"))
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
+        if not isinstance(vals, list):
+            vals = [vals]
+        for val in vals:
+            if val.get('name', 'New') == 'New':
+                val['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
         return super(PurchaseRequest, self).create(vals)
 
     @api.constrains('order_lines')
@@ -191,16 +194,16 @@ class PurchaseRequest(models.Model):
             else:
                 groups[key] = [line]
         purchase_order = self.env['purchase.order']
-        occasion_code_id = []
+        # occasion_code_id = []
         account_analytic_id = []
         production_id = []
         for rec in self:
             if rec.state != 'approved':
                 raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
-            if rec.occasion_code_id:
-                occasion_code_id.append(rec.occasion_code_id.id)
-            if rec.account_analytic_id:
-                account_analytic_id.append(rec.account_analytic_id.id)
+            # if rec.occasion_code_id:
+            #     occasion_code_id.append(rec.occasion_code_id.id)
+            # if rec.account_analytic_id:
+            #     account_analytic_id.append(rec.account_analytic_id.id)
             if rec.production_id:
                 production_id.append(rec.production_id.id)
         for group in groups:
@@ -219,11 +222,13 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'asset_code': line.asset_code.id,
                     'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    'purchase_uom': line.purchase_uom.id,
+                    'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
+                    'product_uom': line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
@@ -237,7 +242,7 @@ class PurchaseRequest(models.Model):
                 source_document = ', '.join(name_pr)
                 po_data = {
                     'is_inter_company': False,
-                    'type_po_cost': rec.type_po,
+                    'type_po_cost': self.type_po,
                     'is_check_readonly_partner_id': True if vendor_id else False,
                     'is_check_readonly_purchase_type': True if product_type else False,
                     'is_purchase_request': True,
@@ -245,10 +250,9 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, lines[0].request_id.ids)],
                     'order_line': po_line_data,
-                    'occasion_code_ids': occasion_code_id,
-                    'account_analytic_ids': account_analytic_id,
+                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
+                    'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'source_document': source_document,
-                    'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
                 }
@@ -297,18 +301,10 @@ class PurchaseRequestLine(models.Model):
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
     asset_description = fields.Char(string="Asset description")
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        self.description = self.product_id.name
-
-    @api.onchange('vendor_code')
-    def onchange_vendor_code(self):
-        self.currency_id = self.vendor_code.property_purchase_currency_id.id
-
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
@@ -332,6 +328,28 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.write({
+            'description': self.product_id.name,
+            'purchase_uom': self.product_id.uom_id.id,
+        })
+
+    @api.onchange('product_id')
+    def onchange_product_id_comput_assets(self):
+        if self.product_id.product_type == 'asset':
+            account = self.product_id.categ_id.property_account_expense_categ_id
+            if account:
+                return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.request_id.company_id.id),
+                                                  ('asset_account', '=', account.id)]}}
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.request_id.company_id.id)]}}
+
+    @api.onchange('vendor_code')
+    def onchange_vendor_code(self):
+        self.currency_id = self.vendor_code.property_purchase_currency_id.id
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):

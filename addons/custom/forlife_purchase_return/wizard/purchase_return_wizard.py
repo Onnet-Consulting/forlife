@@ -57,7 +57,7 @@ class PurchaseReturnWizard(models.TransientModel):
 
     @api.onchange('purchase_id')
     def _onchange_purchase_id(self):
-        purchase_return_lines = [(5,)]
+        purchase_return_lines = []
         if self.purchase_id and self.purchase_id.custom_state != 'approved':
             raise UserError(_("You may only return Approved Purchase."))
         # In case we want to set specific default values (e.g. 'to_refund'), we must fetch the
@@ -65,23 +65,36 @@ class PurchaseReturnWizard(models.TransientModel):
         line_fields = [f for f in self.env['stock.return.picking.line']._fields.keys()]
         purchase_return_lines_data_tmpl = self.env['purchase.return.wizard.line'].default_get(line_fields)
         for line in self.purchase_id.order_line:
-            if line.qty_received <= 0 or (line.qty_received - line.qty_returned) <= 0:
+            # Tính toán số lượng đã nhận
+            qty_received = 0
+            moves = line.move_ids.filtered(lambda m: m.product_id == line.product_id and m.state == 'done')
+            for move in moves:
+                if move._is_purchase_return():
+                    if move.to_refund:
+                        pass
+                elif move.origin_returned_move_id and move.origin_returned_move_id._is_dropshipped() and not move._is_dropshipped_returned():
+                    pass
+                else:
+                    qty_received += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
+
+            if qty_received == 0 or (qty_received - line.qty_returned) <= 0:
                 continue
+
             purchase_return_lines_data = dict(purchase_return_lines_data_tmpl)
-            purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line))
+            purchase_return_lines_data.update(self._prepare_stock_return_purchase_line_vals(line, qty_received))
             if purchase_return_lines_data.get('purchase_remain', 0) > 0:
                 purchase_return_lines.append((0, 0, purchase_return_lines_data))
 
         if self.purchase_id and not purchase_return_lines:
-            raise UserError(_("No products to return (only lines in Done state and not fully returned yet can be returned)."))
+            raise UserError(_("Tất cả các sản phẩm của đơn đã được trả hết, vui lòng kiểm tra lại!"))
         if self.purchase_id:
             self.purchase_return_lines = purchase_return_lines
             self.location_id = self.purchase_id.location_id.id
 
     @api.model
-    def _prepare_stock_return_purchase_line_vals(self, purchase_line):
-        purchase_received = purchase_line.qty_received
-        purchase_returned = purchase_line.qty_returned
+    def _prepare_stock_return_purchase_line_vals(self, purchase_line, qty_received):
+        purchase_received = qty_received/purchase_line.exchange_quantity
+        purchase_returned = purchase_line.qty_returned/purchase_line.exchange_quantity
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price
         price_unit = purchase_line.price_unit
@@ -94,7 +107,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'quantity': 0,
             'vendor_price': vendor_price,
             'price_unit': price_unit,
-            'uom_id': purchase_line.purchase_uom.id if purchase_line.purchase_uom else purchase_line.product_id.uom_id.id,
+            'uom_id': purchase_line.purchase_uom.id,
             'purchase_line_id': purchase_line.id
         }
 
@@ -125,7 +138,7 @@ class PurchaseReturnWizard(models.TransientModel):
             discount = 0
         price_unit = return_line.vendor_price / return_line.exchange_quantity if return_line.exchange_quantity and return_line.vendor_price else return_line.purchase_line_id.price_unit
         location_id = self.location_id.id if self.location_id else (return_line.purchase_line_id.location_id.id or return_line.purchase_line_id.order_id.location_id.id)
-        purchase_quantity = return_line.quantity / return_line.exchange_quantity if return_line.exchange_quantity else return_line.quantity
+        purchase_quantity = return_line.quantity
 
         production_data = []
         for material_line_id in return_line.purchase_line_id.purchase_order_line_material_line_ids:
@@ -147,7 +160,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'product_uom': return_line.uom_id.id,
             'purchase_quantity': purchase_quantity,
             'exchange_quantity': return_line.exchange_quantity,
-            'product_qty': return_line.quantity,
+            'product_qty': return_line.quantity * return_line.exchange_quantity,
             'vendor_price': return_line.vendor_price,
             'price_unit': price_unit,
             'origin_po_line_id': return_line.purchase_line_id.id,

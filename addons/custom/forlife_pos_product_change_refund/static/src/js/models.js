@@ -206,6 +206,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             // manhld
             json.approvalStatus = this.approvalStatus || false;
             json.beStatus = this.beStatus || false;
+            json.handle_change_refund_price = this.handle_change_refund_price || 0;
             json.check_button = this.check_button || false;
             json.is_new_line = this.is_new_line || false;
             json.is_promotion = this.is_promotion || false;

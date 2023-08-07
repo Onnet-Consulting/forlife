@@ -62,6 +62,16 @@
                                 <span class="o_stat_text">Quét Barcode</span>
                             </div>
                         </button>
+
+                        <field name="backorder_count" invisible="1"/>
+                        <button type="object" name="action_view_backorder" class="oe_stat_button" icon="fa-file" attrs="{'invisible':[('backorder_count','=', 0)]}" groups="stock.group_stock_user">
+                            <field name="backorder_count" widget="statinfo" string="Dở dang"/>
+                        </button>
+
+                        <field name="picking_count" invisible="1"/>
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_count','=', 0)]}" groups="stock.group_stock_user">
+                            <field name="picking_count" widget="statinfo" string="Điều chuyển hàng"/>
+                        </button>
                     </div>
                     <h1>
                         <field name="name" readonly="1"/>
@@ -69,9 +79,8 @@
                     <group>
                         <group>
                             <field name="is_diff_transfer" invisible="1"/>
-                            <field name="employee_id" invisible="1"/>
                             <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_id"/>
+                            <field name="department_id" force_save="1" readonly="1"/>
                             <field name="document_type" invisible="1"/>
                             <field name="method_transfer" invisible="1"/>
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>

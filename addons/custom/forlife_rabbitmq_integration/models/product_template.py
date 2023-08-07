@@ -8,8 +8,9 @@ class ProductTemplate(models.Model):
     _inherit = ['product.template', 'sync.info.rabbitmq.update']
     _update_action = 'update'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.detailed_type == 'product')
+        return [('detailed_type', '=', 'product'), ('voucher', '=', False)]
 
     def get_sync_info_value(self):
         return [{

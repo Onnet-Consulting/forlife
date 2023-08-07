@@ -36,6 +36,7 @@ class InheritPosOrder(models.Model):
 
     @staticmethod
     def _create_promotion_account_move(order_line, partner_id, credit_account_id):
+        customer_id = order_line.order_id.partner_id
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
         if order_line.refunded_orderline_id:
@@ -65,7 +66,7 @@ class InheritPosOrder(models.Model):
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
-                'partner_id': partner_id,
+                'partner_id': customer_id.id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
@@ -216,11 +217,20 @@ class InheritPosOrder(models.Model):
                     with_purchase_condition = p.product_count > 0 or p.order_amount_min > 0
         return is_reward_line, with_purchase_condition
 
+    # Thêm đối tượng cửa hàng vào dòng Debit của bút toán Invoice Payment
+    def _apply_invoice_payments(self):
+        results = super(InheritPosOrder, self)._apply_invoice_payments()
+        for move in results:
+            receivable_store_partner = self.session_id.config_id.store_id.contact_id
+            if receivable_store_partner:
+                move.line_ids.filtered(lambda line: not line.partner_id).partner_id = receivable_store_partner
+        return results
+
     @api.model
     def _process_order(self, order, draft, existing_order):
         pol_object = self.env['pos.order.line']
         to_invoice = order['data']['to_invoice']
-        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
+        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': True})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
             line[-1]['is_reward_line'], line[-1]['with_purchase_condition'] = self.get_reward_line(line[-1])
@@ -237,6 +247,21 @@ class InheritPosOrder(models.Model):
                 line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
+        # update account.move.line of tax type for out_invoice: bút toán hóa đơn công nợ
+        invoices = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
+                                            .filtered(lambda m: m.move_type in ('out_invoice', 'out_refund'))
+        for invoice in invoices:
+            if invoice.journal_id.company_consignment_id:
+                tax_lines = invoice.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_lines.partner_id = invoice.journal_id.company_consignment_id
+
+        # update account.move.line of tax type for entry: bút toán hạch toán khuyến mãi
+        promotion_moves = self.env['account.move'].search([('pos_order_id', 'in', [result])])\
+                                            .filtered(lambda m: m.move_type == 'entry')
+        for move in promotion_moves:
+            if move.journal_id.company_consignment_id:
+                tax_lines = move.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_lines.partner_id = move.journal_id.company_consignment_id
         return result
 
     def action_view_invoice(self):
@@ -296,7 +321,8 @@ class InheritPosOrderLine(models.Model):
     def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
-        price_unit = product_id.taxes_id.compute_all(price)['total_excluded']
+        taxes = self.product_id.taxes_id if is_state_registration else product_id.taxes_id
+        price_unit = taxes.compute_all(price)['total_excluded']
         return {
             'order_id': self.order_id.id,
             'product_src_id': self.id,
@@ -308,7 +334,7 @@ class InheritPosOrderLine(models.Model):
             'price_subtotal_incl': price,
             'discount': 0,
             'product_id': product_id.id,
-            'tax_ids': [[6, False, product_id.taxes_id.ids]],
+            'tax_ids': [[6, False, taxes.ids]],
             'pack_lot_ids': [],
             'full_product_name': product_id.name,
             'price_extra': 0,
@@ -361,7 +387,8 @@ class InheritPosOrderLine(models.Model):
                 ],
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
-                is_state_registration=False if discount.type == 'card' else pol.order_id.program_store_point_id.check_validity_state_registration() if discount.type == 'point' else False,
+                is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
+                if discount.type == 'point' else discount.type in ('product_defective', 'handle', 'change_refund'),
                 promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
         ]

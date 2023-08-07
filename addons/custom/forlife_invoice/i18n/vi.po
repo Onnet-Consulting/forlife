@@ -6,35 +6,36 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-06 06:33+0000\n"
-"PO-Revision-Date: 2023-06-06 13:38+0700\n"
+"POT-Creation-Date: 2023-07-31 10:13+0000\n"
+"PO-Revision-Date: 2023-07-31 17:17+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.3.1\n"
+"Language: vi\n"
+"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__special_consumption_tax
-msgid "% %Thuế tiêu thụ đặc biệt"
+#: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__tax_percent
+msgid "% Thuế"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__tax_percent_back
-msgid "% Thuế"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__vat_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vat_tax
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
 msgid "% Thuế GTGT"
+msgstr "Tiền thuế"
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__import_tax
+msgid "% Thuế nhập khẩu"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__import_tax
-msgid "% Thuế nhập khẩu"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__special_consumption_tax
+msgid "% Thuế tiêu thụ đặc biệt"
 msgstr ""
 
 #. module: forlife_invoice
@@ -54,13 +55,21 @@ msgid "Accounting Date"
 msgstr "Ngày kế toán"
 
 #. module: forlife_invoice
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__asset
-msgid "Asset"
-msgstr "TSCĐ"
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.account_move_reversal_import_view_form
+msgid "Action import"
+msgstr "Thực hiện nhập"
 
 #. module: forlife_invoice
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
 msgid "Auto-Complete"
+msgstr ""
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/invoice.py:0
+#, python-format
+msgid ""
+"Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!"
 msgstr ""
 
 #. module: forlife_invoice
@@ -80,13 +89,38 @@ msgid "Bạn không được nhập thành tiền nhỏ hơn 0 !!"
 msgstr ""
 
 #. module: forlife_invoice
-#. odoo-python
-#: code:addons/forlife_invoice/models/invoice.py:0
-#, python-format
-msgid ""
-"Bạn chưa cấu hình tài khoản thuế trong mục thuế!! Gợi ý tài khoản được lấy "
-"ra từ bản ghi có mã code = 'VATTNK' ở %s tab 'PHÂN PHỐI CHO CÁC HÓA ĐƠN' "
-"dòng kèm thuế"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__invoice_ids
+msgid "Bills"
+msgstr "Hóa đơn"
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_cost
+msgid "Bút toán chi phí"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_cost_labor
+msgid "Bút toán chi phí nhân công thuê ngoài/nội bộ"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_normal
+msgid "Bút toán chi tiết hàng hóa"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_material
+msgid "Bút toán nguyên phụ liệu"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_import_tax
+msgid "Bút toán thuế nhập khẩu"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_entry_types__entry_special_consumption_tax
+msgid "Bút toán thuế tiêu thụ đặc biệt"
 msgstr ""
 
 #. module: forlife_invoice
@@ -94,13 +128,28 @@ msgstr ""
 #: code:addons/forlife_invoice/models/invoice.py:0
 #, python-format
 msgid ""
-"Bạn chưa gắn sản phẩm Thuế VAT (Nhập khẩu)trong mục thuế!! Gợi ý sản phẩm "
-"sẽ được gán vào trong  bản ghi có mã code = 'VATTNK ở %s tab 'PHÂN PHỐI "
-"HOÀN TIỀN' dòng kèm thuế"
+"Bạn chưa cấu hình tài khoản phải trả ở tab kế toán trong nhà cung cấp %s"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__after_tax
+#. odoo-python
+#: code:addons/forlife_invoice/models/invoice.py:0
+#, python-format
+msgid ""
+"Bạn không thể thêm dòng !!, Vì số dòng sản phẩm của hóa đơn đã được khống "
+"chế theo số dòng của PO liên quan tương ứng!, /n Nhưng vẫn có thể xóa dòng"
+msgstr ""
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/invoice.py:0
+#, python-format
+msgid ""
+"Bạn khổng thể nhập % thuế VAT của chiết khấu nhỏ hơn 0 hoặc lớn hơn 100!"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__after_tax
 msgid "Chi phí sau thuế (TNK - TTTDT)"
 msgstr ""
 
@@ -110,7 +159,7 @@ msgid "Chi phí trước thuế"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__before_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__before_tax
 msgid "Chi phí trước tính thuế"
 msgstr ""
 
@@ -120,11 +169,21 @@ msgid "Chi phí"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__discount
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__x_entry_types
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__x_entry_types
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__x_entry_types
+msgid "Chi tiết loại bút toán custom"
+msgstr ""
+
+#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__discount_percent
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__discount
 msgid "Chiết khấu"
 msgstr "Chiết khấu %"
+
+#. module: forlife_invoice
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
+msgid "Chiết khấu %"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__trade_discount
@@ -154,6 +213,7 @@ msgid "Code must be unique per company !"
 msgstr "Mã phải là duy nhất trong mỗi công ty !"
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__company_id
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__company_id
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__company_id
 msgid "Company"
@@ -161,7 +221,6 @@ msgstr "Công ty"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__cost_id
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__type_inv__cost
 msgid "Cost"
 msgstr ""
 
@@ -171,31 +230,40 @@ msgid "Cost Center"
 msgstr "Trung tâm chi phí"
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__cost_type
-msgid "Cost Type"
-msgstr ""
-
-#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__create_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__create_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__create_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__create_uid
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__create_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__create_uid
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__create_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Được tạo bởi"
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__create_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__create_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__create_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__create_date
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__create_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__create_date
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__create_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Được tạo vào"
+
+#. module: forlife_invoice
+#: model:ir.actions.act_window,name:forlife_invoice.account_move_reversal_import_action
+#: model:ir.ui.menu,name:forlife_invoice.menu_account_move_reversal_import
+msgid "Credit Notes Import"
+msgstr "Nhập giấy báo có"
+
+#. module: forlife_invoice
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.account_move_reversal_import_view_form
+msgid "Credit notes"
+msgstr "Giấy báo có"
+
+#. module: forlife_invoice
+#: model:ir.model,name:forlife_invoice.model_account_move_reversal_import
+msgid "Credit notes import"
+msgstr "Nhập giấy báo có"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__currency_rate
@@ -205,18 +273,8 @@ msgid "Currency Rate"
 msgstr "Tiền tệ"
 
 #. module: forlife_invoice
-#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Cập nhật trạng thái"
-msgstr ""
-
-#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__company_id
 msgid "Công ty"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,help:forlife_invoice.field_forlife_invoice_synthetic__product_uom
-msgid "Default unit of measure used for all stock operations."
 msgstr ""
 
 #. module: forlife_invoice
@@ -230,12 +288,12 @@ msgid "Discount Pervent must be lower than 100%."
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__display_name
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__display_name
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__display_name
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__display_name
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__display_name
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__display_name
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__display_name
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__display_name
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
@@ -244,6 +302,68 @@ msgstr "Tên hiển thị"
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__invoice_description
 msgid "Diễn giải hóa đơn"
 msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__domain_receiving_warehouse_id
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__domain_receiving_warehouse_id
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__domain_receiving_warehouse_id
+msgid "Domain Receiving Warehouse"
+msgstr ""
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/account_move_reversal_import.py:0
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move_reversal_import__state__done
+#, python-format
+msgid "Done"
+msgstr "Hoàn thành"
+
+#. module: forlife_invoice
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.account_move_reversal_import_view_form
+msgid "Download Template"
+msgstr "Tải mẫu nhập"
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/account_move_reversal_import.py:0
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move_reversal_import__state__draft
+#, python-format
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__is_check_promotions
+msgid "Dùng để readonly line nếu self.promotions = True"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__service
+msgid "Dịch vụ"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__e_in_check
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__e_in_check
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__e_in_check
+msgid "E In Check"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__error_file_name
+msgid "Error File Name"
+msgstr "Tên tệp lỗi"
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__error_file
+msgid "Error file"
+msgstr "Tệp lỗi"
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/account_move_reversal_import.py:0
+#, python-format
+msgid "ErrorFile.txt"
+msgstr "Tệp lỗi.txt"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__exchange_quantity
@@ -256,6 +376,13 @@ msgstr "Số lượng quy đổi"
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__exchange_rate
 msgid "Exchange Rate"
 msgstr "Tỷ giá"
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__exchange_rate_line_ids
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__exchange_rate_line_ids
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__exchange_rate_line_ids
+msgid "Exchange Rate Line"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.actions.act_window,name:forlife_invoice.expense_category_action
@@ -272,9 +399,9 @@ msgid "Expense Item"
 msgstr "Khoản mục phí"
 
 #. module: forlife_invoice
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__product
-msgid "Goods"
-msgstr "Hàng hóa"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vendor_price
+msgid "Giá nhà cung cấp"
+msgstr "Gía nhà cung cấp"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__group_id
@@ -294,39 +421,84 @@ msgid "Hóa đơn chi phí"
 msgstr ""
 
 #. module: forlife_invoice
-#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Hủy HĐĐT trên BKAV"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__is_check_cost_out_source
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__is_check_cost_out_source
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__is_check_cost_out_source
+msgid "Hóa đơn chi phí thuê ngoài"
 msgstr ""
 
 #. module: forlife_invoice
-#. odoo-python
-#: code:addons/forlife_invoice/models/invoice.py:0
-#, python-format
-msgid "Hóa đơn thuế nhập khẩu %s"
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__product
+msgid "Hàng hóa"
 msgstr ""
 
 #. module: forlife_invoice
-#. odoo-python
-#: code:addons/forlife_invoice/models/invoice.py:0
-#, python-format
-msgid "Hóa đơn thuế tiêu thụ đặc biệt %s"
+#: model:ir.actions.act_window,name:forlife_invoice.action_inherit_vendor_invoice_form_view
+msgid "Hóa đơn"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__select_type_inv__expense
+msgid "Hóa đơn chi phí mua hàng"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__select_type_inv__labor
+msgid "Hóa đơn chi phí nhân công"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__select_type_inv__normal
+msgid "Hóa đơn chi tiết hàng hóa"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.ui.menu,name:forlife_invoice.menu_inherit_vendor_invoice_view
+msgid "Hóa đơn nhà cung cấp"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__id
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__id
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__id
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__id
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__id
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__id
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__id
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__id
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__id
 msgid "ID"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__import_file_name
+msgid "Import File Name"
+msgstr "Tên tệp nhập"
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__import_file
+msgid "Import file"
+msgstr "Tệp nhập"
+
+#. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/account_move_reversal_import.py:0
+#, python-format
+msgid "Import file invalid"
+msgstr "Tệp nhập không hợp lệ"
+
+#. module: forlife_invoice
 #: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_root__intel_
 msgid "Intel "
 msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__occasion_code_id
+msgid "Internal Order Code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_invoice
+#: model:ir.model,name:forlife_invoice.model_stock_location
+msgid "Inventory Locations"
+msgstr "Địa điểm Kiểm kê"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__invoice_description
@@ -348,15 +520,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__invoice_description
 msgid "Invoice Description"
 msgstr "Diễn giải hóa đơn"
-
-#. module: forlife_invoice
-#: model:ir.model,name:forlife_invoice.model_invoice_exchange_rate
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__exchange_rate_line
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__exchange_rate_line
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__exchange_rate_line
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__invoice_rate_id
-msgid "Invoice Exchange Rate"
-msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__invoice_reference
@@ -386,11 +549,6 @@ msgid "Is Check Exchange Quantity"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__is_check_foreign_amount
-msgid "Is Check Foreign Amount"
-msgstr ""
-
-#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__is_check_invoice_tnk
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move__is_check_invoice_tnk
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__is_check_invoice_tnk
@@ -398,8 +556,10 @@ msgid "Is Check Invoice Tnk"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__is_check_is_passersby
-msgid "Is Check Is Passersby"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__is_check_select_type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__is_check_select_type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__is_check_select_type_inv
+msgid "Is Check Select Type Inv"
 msgstr ""
 
 #. module: forlife_invoice
@@ -412,8 +572,14 @@ msgstr ""
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__is_passersby
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move__is_passersby
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__is_passersby
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__is_passersby
 msgid "Is Passersby"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__is_red_color
+msgid "Is Red Color"
 msgstr ""
 
 #. module: forlife_invoice
@@ -424,7 +590,7 @@ msgstr "Bút toán"
 #. module: forlife_invoice
 #: model:ir.model,name:forlife_invoice.model_account_move_line
 msgid "Journal Item"
-msgstr "Bút toán"
+msgstr "Hạng mục bút toán"
 
 #. module: forlife_invoice
 #. odoo-python
@@ -435,41 +601,55 @@ msgid ""
 msgstr ""
 
 #. module: forlife_invoice
-#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Ký HĐĐT trên BKAV"
-msgstr ""
-
-#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import____last_update
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type____last_update
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice____last_update
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category____last_update
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item____last_update
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic____last_update
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line____last_update
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate____last_update
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__write_uid
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__write_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__write_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__write_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__write_uid
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__write_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__write_uid
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__write_uid
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__write_date
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__write_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__write_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__write_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__write_date
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__write_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__write_date
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__write_date
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_invoice
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
+msgid "Loại hình doanh nghiệp"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__type_inv
+msgid "Loại hóa đơn"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__select_type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__select_type_inv
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__select_type_inv
+msgid "Loại hóa đơn"
 msgstr ""
 
 #. module: forlife_invoice
@@ -478,18 +658,19 @@ msgid "Loại mua hàng"
 msgstr "Loại"
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__description
-msgid "Mã hàng"
+#: model:ir.model,name:forlife_invoice.model_contract_type
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__type
+msgid "Loại hợp đồng"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_stock_location__expense_item_id
+msgid "Mã khoản mục"
 msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__request_code
 msgid "Mã phiếu yêu cầu"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__product_id
-msgid "Mã sản phẩm"
 msgstr ""
 
 #. module: forlife_invoice
@@ -504,6 +685,7 @@ msgid "Mã tài sản cố định"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_contract_type__description
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__name
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
 msgid "Mô tả"
@@ -520,6 +702,7 @@ msgid "NCC vãng lai"
 msgstr ""
 
 #. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__name
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_category__name
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__name
 msgid "Name"
@@ -531,10 +714,13 @@ msgid "Ngày phát hành HĐĐT"
 msgstr ""
 
 #. module: forlife_invoice
-#. odoo-python
-#: code:addons/forlife_invoice/models/invoice.py:0
-#, python-format
-msgid "Nhà cung cấp vãng lai đã tồn tại !!"
+#: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back___x_invoice_date
+msgid "Ngày hóa đơn"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__type_inv__tax
+msgid "Nhập khẩu"
 msgstr ""
 
 #. module: forlife_invoice
@@ -545,25 +731,16 @@ msgid "Number bills"
 msgstr "Số hóa đơn"
 
 #. module: forlife_invoice
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__type_inv__cost
+msgid "Nội địa"
+msgstr ""
+
+#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__purchase_type
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move__purchase_type
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__purchase_type
 msgid "PO Type"
 msgstr "Loại hàng hóa"
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__partner_domain
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__partner_domain
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__partner_domain
-msgid "Partner Domain"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__partner_domain_2
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__partner_domain_2
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__partner_domain_2
-msgid "Partner Domain 2"
-msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__payment_status
@@ -587,14 +764,16 @@ msgid "Phân loại tài chính"
 msgstr ""
 
 #. module: forlife_invoice
+#. odoo-python
+#: code:addons/forlife_invoice/models/account_move_reversal_import.py:0
+#, python-format
+msgid "Please upload import file !"
+msgstr "Vui lòng tải lên tệp nhập liệu"
+
+#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__po_id
 msgid "Po"
 msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model,name:forlife_invoice.model_product_product
-msgid "Product Variant"
-msgstr "Biến thể sản phẩm"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__production_order
@@ -619,14 +798,14 @@ msgid "Purchase Order"
 msgstr "Đơn hàng mua"
 
 #. module: forlife_invoice
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_asset_fin__qt
-msgid "QT"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__purchase_uom
+msgid "Purchase UOM"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__quantity
-msgid "Quantity"
-msgstr "Số lượng"
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_asset_fin__qt
+msgid "QT"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__quantity_purchased
@@ -653,7 +832,7 @@ msgstr "Phiếu nhập kho"
 #. module: forlife_invoice
 #: model:ir.model,name:forlife_invoice.model_stock_return_picking
 msgid "Return Picking"
-msgstr "Phiếu trả hàng"
+msgstr "Trả hàng"
 
 #. module: forlife_invoice
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
@@ -666,11 +845,6 @@ msgid "Sản phẩm"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__service
-msgid "Service"
-msgstr "Dịch vụ"
-
-#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__reference
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move__reference
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__reference
@@ -678,9 +852,9 @@ msgid "Source Material"
 msgstr "Tài liệu gốc"
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__synthetic_id
-msgid "Synthetic"
-msgstr ""
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_reversal_import__state
+msgid "State"
+msgstr "Trạng thái"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_e_invoice__number_e_invoice
@@ -693,13 +867,13 @@ msgid "Số hóa đơn"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__quantity
-msgid "Số lượng"
+#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__product_id
+msgid "Sản phẩm"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__product_id
-msgid "Sản phẩm"
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
+msgid "Số lượng"
 msgstr ""
 
 #. module: forlife_invoice
@@ -712,19 +886,8 @@ msgid ""
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__qty_product
-#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Số lượng đặt mua"
-msgstr ""
-
-#. module: forlife_invoice
 #: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__x_asset_fin__tc
 msgid "TC"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__type_inv__tax
-msgid "Tax"
 msgstr ""
 
 #. module: forlife_invoice
@@ -733,39 +896,44 @@ msgid "Tax Repartition Line"
 msgstr "Chi tiết phân bổ thuế"
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__price_subtotal
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__text_check_cp_normal
+msgid "Text Check Cp Normal"
+msgstr ""
+
+#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__price_subtotal_back
 msgid "Thành tiền"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,help:forlife_invoice.field_account_move_line__quantity
+#. odoo-python
+#: code:addons/forlife_invoice/models/invoice.py:0
+#, python-format
 msgid ""
-"The optional quantity expressed by this line, eg: number of product sold. "
-"The quantity is not a legal requirement but is very useful for some reports."
-msgstr ""
-"Tùy chọn số lượng được lập theo từng dòng, ví dụ: số lượng sản phẩm đã bán. "
-"Số lượng không phải là một phần bắt buộc nhưng nó rất hữu dụng với một số "
-"báo cáo."
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__tnk_tax
-msgid "Thuế nhập khẩu"
+"The Unit of Measure (UoM) '%s' you have selected for product '%s', is "
+"incompatible with its category : %s."
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__db_tax
-msgid "Thuế tiêu thụ đặc biệt"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__tax_amount
+msgid "Thuế"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__taxes_id
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
 msgid "Thuế %"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__vat_tax_amount
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vat_tax_amount
 msgid "Thuế GTGT"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__x_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__x_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__x_tax
+msgid "Thuế VAT cùa chiết khấu(%)"
 msgstr ""
 
 #. module: forlife_invoice
@@ -774,18 +942,18 @@ msgid "Thông tin thuế"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__special_consumption_tax_amount
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__special_consumption_tax_amount
 msgid "Thuế tiêu thụ đặc biệt"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__usd_amount
-msgid "Thành tiền (USD)"
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
+msgid "Thành tiền"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__vnd_amount
-msgid "Thành tiền (VND)"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__total_vnd_exchange
+msgid "Thành tiền VND"
 msgstr ""
 
 #. module: forlife_invoice
@@ -809,12 +977,14 @@ msgid "Tiền tệ"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__tax_amount
-msgid "Tiền thuế"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__x_amount_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__x_amount_tax
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__x_amount_tax
+msgid "Tiền VAT của chiết khấu"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__tax_amount
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__amount_tax
 msgid "Tiền thuế nhập khẩu"
 msgstr ""
 
@@ -824,21 +994,14 @@ msgid "Trạng thái HĐĐT"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__type_inv
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__type_inv
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__type_inv
-msgid "Type Inv"
-msgstr ""
-
-#. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_invoice_cost_line__exchange_rate
 msgid "Tỷ giá"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__product_id
-msgid "Tên hàng"
-msgstr ""
+#: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__asset
+msgid "Tài sản"
+msgstr "TSCĐ"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__vendor
@@ -846,12 +1009,7 @@ msgid "Tên nhà cung cấp"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__name
-msgid "Tên sản phẩm"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__total_product
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__total_product
 msgid "Tổng giá trị tiền hàng"
 msgstr ""
 
@@ -874,6 +1032,13 @@ msgstr ""
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__totals_back
 msgid "Tổng tiền sau thuế"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__cost_total
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move__cost_total
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_payment__cost_total
+msgid "Tổng chi phí"
 msgstr ""
 
 #. module: forlife_invoice
@@ -905,19 +1070,18 @@ msgid "Tổng chiết khấu thương mại"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_invoice_exchange_rate__total_tax_amount
-msgid "Tổng tiền thuế"
+#. odoo-python
+#: code:addons/forlife_invoice/models/invoice.py:0
+#, python-format
+msgid ""
+"Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua "
+"hàng dịch vụ %s liên quan là %s!"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__price_unit
-msgid "Unit Price"
-msgstr "Đơn giá"
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__uom_id
-msgid "Uom"
-msgstr "Đơn vị"
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__total_tax_amount
+msgid "Tổng tiền thuế"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__vendor_back_ids
@@ -928,9 +1092,14 @@ msgid "Vendor Back"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vendor_price
-msgid "Vendor Price"
-msgstr "Gía nhà cung cấp"
+#: model:ir.model,name:forlife_invoice.model_vendor_back
+msgid "Vendor back"
+msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__ware_id
+msgid "Ware"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__ware_name
@@ -953,8 +1122,13 @@ msgid "Work Order"
 msgstr "Lệnh Sản Xuất"
 
 #. module: forlife_invoice
-#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "Xem và tải xuống HĐĐT"
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.account_move_reversal_import_view_form
+msgid "account_move_reversal_import_form"
+msgstr ""
+
+#. module: forlife_invoice
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.account_move_reversal_import_view_tree
+msgid "account_move_reversal_import_tree"
 msgstr ""
 
 #. module: forlife_invoice
@@ -977,30 +1151,20 @@ msgstr ""
 
 #. module: forlife_invoice
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
-msgid "e-Invoice"
+msgid "Đơn giá"
 msgstr ""
 
 #. module: forlife_invoice
-#: model:ir.model,name:forlife_invoice.model_forlife_invoice_synthetic
-msgid "forlife.invoice.synthetic"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model,name:forlife_invoice.model_vendor_back
-msgid "vendor.back"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__product_uom
-msgid "ĐVT"
-msgstr ""
-
-#. module: forlife_invoice
-#: model:ir.model.fields,field_description:forlife_invoice.field_forlife_invoice_synthetic__price_unit
-msgid "Đơn giá"
+#: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
+msgid "Đơn vị mua"
 msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__street_ven
 msgid "Địa chỉ"
 msgstr ""
+
+#. module: forlife_invoice
+#: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__asset_code
+msgid "Asset code"
+msgstr "Mã tài sản"

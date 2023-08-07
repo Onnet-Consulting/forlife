@@ -25,14 +25,24 @@
                         <img class="pos-receipt-logo tokyolife"
                              src="/forlife_pos_print_receipt/static/src/img/logo-format.png" width="40%"/>
                     </div>
-                    <div class="text-center" t-if="o.type == 'in'">
-                        PHIẾU NHẬP GIAO VẬN
+                    <div class="mt-2">
+                        <h4 class="text-center" t-if="o.type == 'in'">
+                            PHIẾU NHẬP GIAO VẬN
+                        </h4>
+                        <h4 class="text-center" t-if="o.type == 'out'">
+                            PHIẾU XUẤT GIAO VẬN
+                        </h4>
                     </div>
-                    <div class="text-center" t-if="o.type == 'out'">
-                        PHIẾU XUẤT GIAO VẬN
+                    <div class="mt-3">
+                        <div class="mt-2">Ghi chú:
+                            <t t-esc="o.note"/>
+                        </div>
+                        <div class="mt-2">Tổng đơn:
+                            <t t-esc="o.order_count"/>
+                        </div>
                     </div>
-                    <div>Tổng đơn: <t t-esc="o.order_count"/></div>
-                    <table class="table table-bordered">
+
+                    <table class="table table-bordered mt-3">
                         <thead>
                             <tr>
                                 <th>STT</th>
@@ -47,32 +57,56 @@
                             <t t-foreach="o.session_line" t-as="line">
                                 <t t-set="index" t-value="index + 1"/>
                                 <tr>
-                                    <td class="text-center"><t t-esc="index"/></td>
-                                    <td><t t-esc="line.order_id.name"/></td>
-                                    <td><t t-esc="line.delivery_carrier_id.name"/></td>
-                                    <td><t t-esc="line.channel.name"/></td>
-                                    <td><t t-esc="line.transport_code"/></td>
+                                    <td class="text-center">
+                                        <t t-esc="index"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="line.order_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="line.delivery_carrier_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="line.channel.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="line.transport_code"/>
+                                    </td>
                                 </tr>
                             </t>
 
                         </tbody>
                     </table>
-                    <div style="text-align: right;"><t t-esc="o.date.strftime('Ngày %d tháng %m năm %Y')"/></div>
-                    <div>
+                    <div style="text-align: right;">
+                        <t t-esc="o.date.strftime('Ngày %d tháng %m năm %Y')"/>
+                    </div>
+                    <div class="mt-3">
                         <table class="table" style="width: 100%">
                             <tbody>
                                 <tr style="border-color: #fff">
                                     <td class="text-center">
-                                        <div><strong>Nhận hàng</strong></div>
-                                        <div><i>(Ký, họ tên)</i></div>
+                                        <div>
+                                            <strong>Nhận hàng</strong>
+                                        </div>
+                                        <div>
+                                            <i>(Ký, họ tên)</i>
+                                        </div>
                                     </td>
                                     <td class="text-center">
-                                        <div><strong>Thủ kho</strong></div>
-                                        <div><i>(Ký, họ tên)</i></div>
+                                        <div>
+                                            <strong>Thủ kho</strong>
+                                        </div>
+                                        <div>
+                                            <i>(Ký, họ tên)</i>
+                                        </div>
                                     </td>
                                     <td class="text-center">
-                                        <div><strong>Vận chuyển</strong></div>
-                                        <div><i>(Ký, họ tên)</i></div>
+                                        <div>
+                                            <strong>Vận chuyển</strong>
+                                        </div>
+                                        <div>
+                                            <i>(Ký, họ tên)</i>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

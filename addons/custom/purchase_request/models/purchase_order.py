@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
+    # production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
@@ -139,8 +139,7 @@ class PurchaseOrderLine(models.Model):
         self.ensure_one()
         if not self.purchase_order_line_material_line_ids:
             product = self.product_id
-            production_order = self.env['production.order'].search(
-                [('product_id', '=', product.id), ('type', '=', 'normal')], limit=1)
+            production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
             if not production_order:
                 raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
             production_data = []

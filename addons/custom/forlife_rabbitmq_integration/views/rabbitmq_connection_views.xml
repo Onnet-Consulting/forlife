@@ -50,5 +50,12 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record id="sync_all_master_data_for_rabbitmq_action" model="ir.actions.server">
+            <field name="name">Đồng bộ master data thủ công</field>
+            <field name="model_id" ref="forlife_rabbitmq_integration.model_rabbitmq_connection"/>
+            <field name="state">code</field>
+            <field name="code">action = model.sync_all_master_data_for_rabbitmq()</field>
+        </record>
+
     </data>
 </odoo>
