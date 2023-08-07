@@ -7,7 +7,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if not vals_list.get('barcode', False):
+        if ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)) and ('sku_code' not in vals_list or ('sku_code' in vals_list and vals_list['sku_code'] is False)):
             if 'brand_id' in vals_list and 'attribute_line_ids' in vals_list and vals_list['brand_id'] and vals_list['attribute_line_ids']:
                 attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
                 rule = False
@@ -25,26 +25,91 @@ class ProductTemplate(models.Model):
                 # kiểm tra thuộc tinh bắt buoc
                 self.validate_attr_required(rule, vals_list)
                 # kiem tra field check create SKU Barcode
-                sku_field_check = self.validate_field_check_create_sku(rule, vals_list)
+                sku_field_check = self.validate_field_check_create(rule, vals_list, create='sku', record=False)
                 if sku_field_check:
-                    raise ValidationError(_(f"Bị trùng thông tin trường trong sản phẩm {vals_list['name']}!"))
+                    raise ValidationError(_(f"Bị trùng thông tin trường check tạo SKU trong sản phẩm {vals_list['name']}!"))
                 res = super(ProductTemplate, self).create(vals_list)
-                #kiem tra thuoc tinh check create barcode
-                pmtl_attr_exits = self.sudo().search([('attribute_check_text','=', res.attribute_check_text),('id','!=', res.id)], limit=1)
+                #kiem tra thuoc tinh check create sku
+                pmtl_attr_exits = self.sudo().search(
+                    [('attribute_check_text', '=', res.attribute_check_text), ('id', '!=', res.id), ('attribute_check_text', '!=', False)], limit=1)
                 if pmtl_attr_exits:
-                    raise ValidationError(_(f"Bị trùng thông tin thuộc tính trong sản phẩm {vals_list['name']}!"))
-                if not sku_field_check and not pmtl_attr_exits and not vals_list.get('sku_code', False):
-                    sku_code = self.generate_sku(rule)
-                    barcode = self.generate_ean_barcode(rule, sku_code)
-                    res.sku_code = sku_code
-                    res.barcode = barcode
+                    raise ValidationError(_(f"Bị trùng thông tin thuộc tính check tạo SKU trong sản phẩm {res.name}!"))
+                sku_code = self.generate_sku(rule)
+                barcode = self.generate_ean_barcode(rule, sku_code)
+                res.sku_code = sku_code
+                res.barcode = barcode
+                return res
+        if 'sku_code' in vals_list and vals_list['sku_code'] and ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)):
+            old_sku = self.env['product.template'].sudo().search([('sku_code','=', vals_list['sku_code'])], limit=1)
+            if not old_sku:
+                raise ValidationError(f"Chưa tồn tại sản phẩm nào có cùng SKU cho sản phẩm {vals_list['name']}")
+            if old_sku:
+                res = super(ProductTemplate, self).create(vals_list)
+                if not res.rule_id:
+                    raise ValidationError(f"Không tìm thấy cấu hình sinh mã nào cho sản phẩm {res.name}")
+                self.validate_required_field(res.rule_id, vals_list)
+                # kiểm tra thuộc tinh bắt buoc
+                self.validate_attr_required(res.rule_id, vals_list)
+                if res.attribute_check_text != old_sku.attribute_check_text:
+                    raise ValidationError(f"Chưa đúng thông tin SKU cho sản phẩm {res.name}")
+                else:
+                    barcode_field_check = self.validate_field_check_create(res.rule_id, vals_list, create='barcode', record=res)
+                    barcode_att_check = self._check_duplicate_att_barcode(res.rule_id, res)
+                    if barcode_field_check or not barcode_att_check:
+                        raise ValidationError(f"Bị trùng thông tin check Barcode sản phẩm {res.name}")
+                barcode = self.generate_ean_barcode(rule=res.rule_id, sku_code=vals_list['sku_code'])
+                res.barcode = barcode
                 return res
         return super(ProductTemplate, self).create(vals_list)
+
+    def _check_duplicate_att_barcode(self, rule, res):
+        att_id_check_create_barcode = rule.attribute_check_barcode_ids.mapped('id')
+        att_id_of_new_product = res.attribute_line_ids.mapped('attribute_id.id')
+        set_same = list(set(att_id_check_create_barcode) & set(att_id_of_new_product))
+        values_ids = []
+        if set_same:
+            for r in set_same:
+                for rec in res.attribute_line_ids:
+                    if rec.attribute_id.id == r:
+                        values_ids.append(rec.value_ids[0].id)
+            sql = f"""SELECT pt.id FROM product_template_attribute_line as ptal 
+            JOIN product_attribute_value as pav on pav.attribute_id = ptal.attribute_id
+            JOIN product_template as pt on pt.id = ptal.product_tmpl_id
+            WHERE ptal.attribute_id IN {tuple(att_id_of_new_product) if len(att_id_of_new_product) >1 else str(tuple(att_id_of_new_product)).replace(',', '')} 
+            AND pav.id in {tuple(values_ids) if len(values_ids) >1 else str(tuple(values_ids)).replace(',', '')} 
+            AND pt.sku_code = '{res.sku_code}' AND pt.id != {res.id} LIMIT 1"""
+            self._cr.execute(sql)
+            data = self._cr.fetchone()
+            if data:
+                return False
+        return True
+
+        # @api.constrains('attribute_check_text')
+    # def contrainst_attribute_rule_create_barcode(self):
+    #     for rec in self:
+    #         pmtl_attr_exits = self.sudo().search([('attribute_check_text', '=', rec.attribute_check_text), ('id', '!=', rec.id),('attribute_check_text','!=', False)], limit=1)
+    #         if pmtl_attr_exits:
+    #             raise ValidationError(_(f"Bị trùng thông tin thuộc tính check tạo SKU trong sản phẩm {rec.name}!"))
 
     def generate_ean_barcode(self, rule, sku_code):
         first_char = rule.name[0]
         sku_code = sku_code
-        sequence = self.env['ir.sequence'].next_by_code('product.template.barcode') or ''
+        sequence_for_sku = self.env['ir.sequence'].search([('sku_code','=',sku_code)], limit=1)
+        if sequence_for_sku:
+            sequence = self.env['ir.sequence'].next_by_code(f"{sequence_for_sku.code}")
+        else:
+            sequence = self.env['ir.sequence'].create({
+                'name': f'BARCODE sequence {sku_code}',
+                'sku_code':sku_code,
+                'code': f"product.template.{sku_code}",
+                'active': True,
+                'padding': 3,
+                'number_next': 1,
+                'number_increment': 1,
+                'company_id': False
+            })
+            sequence = self.env['ir.sequence'].next_by_code(f"{sequence.code}")
+            # self.env['ir.sequence'].next_by_code('product.template.barcode') or ''
         barcode = first_char + str(sku_code) + str(sequence)
         ean = self.return_ean(barcode)
         return barcode + ean
@@ -93,11 +158,14 @@ class ProductTemplate(models.Model):
             if list_field_invalid:
                 raise ValidationError(f"""Thiếu trường bắt buộc "{', '.join(list_field_invalid)}" cho sản phẩm {vals_list['name']}!""")
 
-    def validate_field_check_create_sku(self, rule, vals_list):
-        sku_fields_check = rule.sku_field_check_ids.mapped('name')
+    def validate_field_check_create(self, rule, vals_list, create, record):
+        if create == 'sku':
+            fields_check = rule.sku_field_check_ids.mapped('name')
+        else:
+            fields_check = rule.barcode_field_check_ids.mapped('name')
         value_field_dict = {}
-        if sku_fields_check:
-            for field in sku_fields_check:
+        if fields_check:
+            for field in fields_check:
                 if field in vals_list:
                     value_field_dict[field] = vals_list[field]
                 else:
@@ -106,7 +174,9 @@ class ProductTemplate(models.Model):
         for key, val in value_field_dict.items():
             output_list.append(tuple((key, '=', val)))
         output_list.append(tuple(('rule_id', '=', rule.id)))
-        product_check = self.sudo().search(output_list, limit=1)
+        if create == 'barcode':
+            output_list.append(tuple(('id', '!=', record.id)))
+        product_check = self.env['product.template'].search(output_list, limit=1)
         if product_check:
             return True
         return False
