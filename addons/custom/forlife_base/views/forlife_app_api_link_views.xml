@@ -20,7 +20,5 @@
             <field name="view_mode">tree</field>
         </record>
 
-        <menuitem id="forlife_app_api_link_menu" parent="base.menu_custom" action="forlife_app_api_link_action" sequence="23"/>
-
     </data>
 </odoo>

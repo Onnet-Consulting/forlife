@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="synthetic_daily_transfer_line_view_tree" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_line_view_tree</field>
+            <field name="model">synthetic.daily.transfer.line</field>
+            <field name="arch" type="xml">
+                <tree string="synthetic_daily_transfer_line_tree" create="0" edit="0" delete="0">
+                    <field name="product_code"/>
+                    <field name="product_name"/>
+                    <field name="product_uom"/>
+                    <field name="debit_account"/>
+                    <field name="credit_account"/>
+                    <field name="qty"/>
+                    <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="occasion_code"/>
+                    <field name="account_analytic"/>
+                    <field name="work_production"/>
+                    <field name="ma_xd_co_ban"/>
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="synthetic_daily_transfer_line_view_form" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_line_view_form</field>
+            <field name="model">synthetic.daily.transfer.line</field>
+            <field name="arch" type="xml">
+                <form string="synthetic_daily_transfer_line_form" create="0" edit="0" delete="0">
+                    <sheet>
+                        <group>
+                            <field name="product_code"/>
+                            <field name="product_name"/>
+                            <field name="product_uom"/>
+                            <field name="debit_account"/>
+                            <field name="credit_account"/>
+                            <field name="qty"/>
+                            <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="occasion_code"/>
+                            <field name="account_analytic"/>
+                            <field name="work_production"/>
+                            <field name="ma_xd_co_ban"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="synthetic_daily_transfer_location_view_tree" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_location_view_tree</field>
+            <field name="model">synthetic.daily.transfer.location</field>
+            <field name="arch" type="xml">
+                <tree string="synthetic_daily_transfer_location_tree" create="0" edit="0" delete="0">
+                    <field name="company_code"/>
+                    <field name="transfer_code"/>
+                    <field name="description"/>
+                    <field name="employee"/>
+                    <field name="source_warehouse"/>
+                    <field name="destination_warehouse"/>
+                    <field name="location_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="synthetic_daily_transfer_location_view_form" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_location_view_form</field>
+            <field name="model">synthetic.daily.transfer.location</field>
+            <field name="arch" type="xml">
+                <form string="synthetic_daily_transfer_location_form" create="0" edit="0" delete="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_code"/>
+                                <field name="transfer_code"/>
+                                <field name="description"/>
+                            </group>
+                            <group>
+                                <field name="employee"/>
+                                <field name="source_warehouse"/>
+                                <field name="destination_warehouse"/>
+                            </group>
+                        </group>
+                        <separator string="Chi tiết sản phẩm"/>
+                        <field name="detail_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="synthetic_daily_transfer_view_tree" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_view_tree</field>
+            <field name="model">synthetic.daily.transfer</field>
+            <field name="arch" type="xml">
+                <tree string="synthetic_daily_transfer_tree" create="0" edit="0" delete="0">
+                    <field name="date"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="synthetic_daily_transfer_view_form" model="ir.ui.view">
+            <field name="name">synthetic_daily_transfer_view_form</field>
+            <field name="model">synthetic.daily.transfer</field>
+            <field name="arch" type="xml">
+                <form string="synthetic_daily_transfer_form" create="0" edit="0" delete="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="company_id"/>
+                            </group>
+                        </group>
+                        <separator string="Chi tiết điều chuyển"/>
+                        <field name="line_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="synthetic_daily_transfer_action" model="ir.actions.act_window">
+            <field name="name">Tổng hợp điều chuyển kho hàng ngày</field>
+            <field name="res_model">synthetic.daily.transfer</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="synthetic_daily_transfer_menu" parent="account.menu_finance_entries" action="synthetic_daily_transfer_action" sequence="100"/>
+    </data>
+</odoo>
