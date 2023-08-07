@@ -142,7 +142,7 @@ msgstr "Loại hợp đồng"
 #. module: bkav_stock
 #: model_terms:ir.ui.view,arch_db:bkav_stock.stock_transfer_form_inherit_bkav
 msgid "Create & Publish eInvoice"
-msgstr ""
+msgstr "Tạo và ký HDDT"
 
 #. module: bkav_stock
 #: model_terms:ir.ui.view,arch_db:bkav_stock.stock_transfer_form_inherit_bkav

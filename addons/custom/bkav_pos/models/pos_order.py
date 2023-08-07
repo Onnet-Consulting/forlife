@@ -61,12 +61,10 @@ class PosOrder(models.Model):
         default['origin_move_id'] = self.id
         return super().copy(default)
 
-    def _get_vat_line_bkav(self,vat_id, price_unit):
+    def _get_vat_line_bkav(self, line):
         vat = 0
-        if vat_id:
-            vat = vat_id.amount
-            if vat_id.price_include:
-                price_unit = price_unit/(1+vat_id.amount/100)
+        if line.tax_ids:
+            vat = line.tax_ids[0].amount  
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
