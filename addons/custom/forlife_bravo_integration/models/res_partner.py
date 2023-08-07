@@ -43,6 +43,8 @@ class ResPartnerGroup(models.Model):
 
     @api.model
     def bravo_push_existing_groups(self):
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return True
         exist_groups = self.env.ref("forlife_pos_app_member.partner_group_1") + \
                        self.env.ref("forlife_pos_app_member.partner_group_2") + \
                        self.env.ref("forlife_pos_app_member.partner_group_3") + \

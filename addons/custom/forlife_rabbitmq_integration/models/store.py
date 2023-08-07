@@ -10,8 +10,9 @@ class Store(models.Model):
     _create_action = 'update'
     _update_action = 'update'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.warehouse_id and f.warehouse_id.whs_type.code in ('3', '4', '5'))
+        return [('warehouse_id.whs_type.code', 'in', ('3', '4', '5'))]
 
     def get_sync_info_value(self):
         return [{

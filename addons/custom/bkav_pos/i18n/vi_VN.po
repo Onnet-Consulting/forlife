@@ -1,13 +1,13 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#   * bkav_pos
+# 	* bkav_pos
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 02:49+0000\n"
-"PO-Revision-Date: 2023-07-24 02:49+0000\n"
+"POT-Creation-Date: 2023-08-07 04:13+0000\n"
+"PO-Revision-Date: 2023-08-07 04:13+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,19 +16,507 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__einvoice_status
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__einvoice_status
+msgid " Trạng thái HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__discount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__discount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__discount
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__discount
+msgid "% chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_needaction
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_needaction
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_needaction
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_exception_decoration
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_exception_decoration
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_exception_decoration
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_state
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_state
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_state
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_type_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_type_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_type_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__adjusted_invoice_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__adjusted_invoice_id
+msgid "Adjusted Invoice"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__adjusted_line_id
+msgid "Adjusted Line"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_attachment_count
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_attachment_count
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_attachment_count
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "BKAV Invoice"
+msgstr "HDDT bán hàng"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "BKAV Invoice Return"
+msgstr "HDDT Trả hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__barcode
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__barcode
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__barcode
+msgid "Barcode"
+msgstr "Mã vạch"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__9
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__9
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__9
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__9
+msgid "Bị thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__10
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__10
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__10
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__10
+msgid "Bị điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Cancel eInvoice"
+msgstr "Hủy HDDT"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_line_discount__promotion_type__card
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_return_line_discount__promotion_type__card
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos_line_discount__promotion_type__card
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos_line_discount__promotion_type__card
+msgid "Card"
+msgstr "Thẻ"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__13
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__13
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__13
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__13
+msgid "Chờ huỷ"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__5
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__5
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__5
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__5
+msgid "Chờ thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__7
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__7
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__7
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__7
+msgid "Chờ điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__14
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__14
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__14
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__14
+msgid "Chờ điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__code
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__code
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__code
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__code
+msgid "Code"
+msgstr "MÃ"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__company_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__company_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__company_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Create & Publish eInvoice"
+msgstr "Tạo và Ký"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Create eInvoice"
+msgstr "Tạo HD mới"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__create_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__create_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__currency_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_post_bkav_store
+#: model:ir.model.fields,field_description:bkav_pos.field_store__is_post_bkav
+msgid "Có phát hành hóa đơn bkav"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__data_compare_status
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__data_compare_status
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__data_compare_status
+msgid "Data Compare Status"
+msgstr "Trạng thái"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__data_compare_status_return
+msgid "Data Compare Status Return"
+msgstr "Trạng thái"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__invoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__invoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__invoice_date
+msgid "Date"
+msgstr "Ngày HD"
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_line__product_uom_id
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return_line__product_uom_id
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos_line__product_uom_id
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos_line__product_uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_return_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Detail"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__display_name
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: bkav_pos
+#. odoo-python
+#: code:addons/bkav_pos/models/pos_post_bkav.py:0
+#, python-format
+msgid "Don't have any eInvoice in this invoice. Please check again!"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Download eInvoice"
+msgstr "Tai HDDT"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos__einvoice_status__draft
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_return__einvoice_status__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_follower_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_follower_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_follower_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_partner_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_partner_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_partner_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__activity_type_icon
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__activity_type_icon
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__activity_type_icon
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__vat
+msgid "GTGT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_guid
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_guid_return
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_guid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_guid
+msgid "GUID HDDT"
+msgstr ""
+
+#. module: bkav_pos
 #: model:ir.ui.menu,name:bkav_pos.summary_account_move_menu
 msgid "General invoice at the end of the day"
 msgstr "Hóa đơn tổng hợp cuối ngày"
 
 #. module: bkav_pos
-#: model:ir.ui.menu,name:bkav_pos.summary_account_move_pos_menu
-msgid "Total sales invoice at the end of the day"
-msgstr "Hóa đơn bán tổng cuối ngày"
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Get eInvoice"
+msgstr "Lấy TT"
 
 #. module: bkav_pos
-#: model:ir.ui.menu,name:bkav_pos.summary_account_move_pos_return_menu
-msgid "Total refund invoice at the end of the day"
-msgstr "Hóa đơn đổi trả tổng cuối ngày"
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__has_message
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__has_message
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__has_message
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__x_free_good
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__x_free_good
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__x_free_good
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__x_free_good
+msgid "Hàng tặng"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__invoice_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__invoice_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__invoice_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__invoice_ids
+msgid "Hóa đơn"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.actions.act_window,name:bkav_pos.summary_account_move_pos_action
+msgid "Hóa đơn bán tổng cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.actions.act_window,name:bkav_pos.synthetic_account_move_pos_action
+msgid "Hóa đơn bù trừ cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__origin_move_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__source_invoice
+msgid "Hóa đơn gốc"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.actions.act_window,name:bkav_pos.summary_adjusted_invoice_pos_action
+msgid "Hóa đơn điều chỉnh cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__source_einvoice
+msgid "Hóa đơn điện tử gốc"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.actions.act_window,name:bkav_pos.summary_account_move_pos_return_action
+msgid "Hóa đơn đổi trả tổng cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__id
+msgid "ID"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_exception_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_exception_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_exception_icon
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__activity_exception_icon
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__activity_exception_icon
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__activity_exception_icon
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__message_needaction
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__message_needaction
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__message_needaction
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__message_has_error
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__message_has_sms_error
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__message_has_error
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__message_has_sms_error
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__message_has_error
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__message_has_sms_error
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__message_has_error
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__image_1920
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__image_1920
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__image_1920
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__image_1920
+msgid "Image"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__image_1024
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__image_1024
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__image_1024
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__image_1024
+msgid "Image 1024"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__image_128
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__image_128
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__image_128
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__image_128
+msgid "Image 128"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__image_256
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__image_256
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__image_256
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__image_256
+msgid "Image 256"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__image_512
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__image_512
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__image_512
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__image_512
+msgid "Image 512"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_line__barcode
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return_line__barcode
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos_line__barcode
+msgid "International Article Number used for product identification."
+msgstr ""
 
 #. module: bkav_pos
 #: model:ir.ui.menu,name:bkav_pos.summary_adjusted_invoice_pos_menu
@@ -39,3 +527,763 @@ msgstr "Hóa đơn điều chỉnh cuối ngày"
 #: model:ir.ui.menu,name:bkav_pos.synthetic_account_move_pos_menu
 msgid "Invoice offset at the end of the day"
 msgstr "Hóa đơn bù trừ cuối ngày"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_date
+msgid "Invoice/Bill Date"
+msgstr "Ngày HD"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_return_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Invoices"
+msgstr "Hóa đơn"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_is_follower
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_is_follower
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_is_follower
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__12
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__12
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__12
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__12
+msgid "Không sử dụng"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_serial
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_serial_return
+msgid "Ký hiệu HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line____last_update
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__write_uid
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__write_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__line_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__line_ids
+msgid "Line"
+msgstr "Chi tiết"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__line_discount_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__line_discount_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__line_discount_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__line_discount_ids
+msgid "Line Discount"
+msgstr "Chiêt khấu chi tiết"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__issue_invoice_type
+msgid "Loại phát hành"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_main_attachment_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_main_attachment_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_main_attachment_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_has_error
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_has_error
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_has_error
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__my_activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__my_activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__my_activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__description
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__description
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__description
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__description
+msgid "Mô tả"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_serial
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_serial
+msgid "Mẫu số - Ký hiệu hóa đơn"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_form
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_form_return
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_form
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_form
+msgid "Mẫu số HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__1
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__1
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__1
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__1
+msgid "Mới tạo"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_date_deadline
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_summary
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_summary
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_summary
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_type_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_type_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_type_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_e_date
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_e_date_return
+msgid "Ngày HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__einvoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__einvoice_date
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_e_date
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_e_date
+msgid "Ngày phát hành"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos__state__draft
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_return__state__draft
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__state__draft
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__state__draft
+msgid "Nháp"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_needaction_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_needaction_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_needaction_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_has_error_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_has_error_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_has_error_counter
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__message_needaction_counter
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__message_needaction_counter
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__message_needaction_counter
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__message_has_error_counter
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__message_has_error_counter
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__message_has_error_counter
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_account_move_pos_return_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Other Information"
+msgstr "Thông tin khác"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__partner_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__partner_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__partner_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__partner_id
+msgid "Partner"
+msgstr "Khách hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_line_discount__promotion_type__point
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_return_line_discount__promotion_type__point
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos_line_discount__promotion_type__point
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos_line_discount__promotion_type__point
+msgid "Point"
+msgstr "Điểm"
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn hàng điểm bán lẻ"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order_line__price_bkav
+msgid "Price Bkav"
+msgstr "Giá xuất BKAV"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order_line__price_unit_excl
+msgid "Price Unit Excl"
+msgstr "Giá xuất BKAV"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__promotion_type
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__promotion_type
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__promotion_type
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__promotion_type
+msgid "Promotion Type"
+msgstr "Loại KM"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Publish eInvoice"
+msgstr "Ký HDDT"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__activity_user_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__activity_user_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__activity_user_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__return_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__return_id
+msgid "Return"
+msgstr "Trả hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__return_line_id
+msgid "Return Line"
+msgstr "Chi tiết trả hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__message_has_sms_error
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__message_has_sms_error
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__message_has_sms_error
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.actions.server,name:bkav_pos.ir_cron_general_sales_invoice_to_bkav_end_day_ir_actions_server
+#: model:ir.cron,cron_name:bkav_pos.ir_cron_general_sales_invoice_to_bkav_end_day
+msgid "Schedule: General POS invoice for BKAV at the end of the day"
+msgstr "Định kỳ: Tổng hợp HĐ bán lẻ POS"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__state
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__state
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__state
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__activity_state
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__activity_state
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__activity_state
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_store
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__store_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__store_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__store_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__store_id
+msgid "Store"
+msgstr "Cửa hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__summary_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__summary_id
+msgid "Summary"
+msgstr "Tổng hợp"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__summary_line_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__summary_line_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__summary_line_id
+msgid "Summary Line"
+msgstr "Chi tiết tổng hợp"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_synthetic
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__synthetic_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__synthetic_id
+msgid "Synthetic"
+msgstr "Tổng hợp"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__synthetic_line_id
+msgid "Synthetic Line"
+msgstr "Chi tiết tổng hợp"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__product_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__product_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__product_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__product_id
+msgid "Sản phẩm"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_no
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_no_return
+msgid "Số HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__number_bill
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__number_bill
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_no
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__partner_invoice_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_no
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__partner_invoice_id
+msgid "Số hóa đơn"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__quantity
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__quantity
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__quantity
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__quantity
+msgid "Số lượng"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__remaining_quantity
+msgid "Số lượng còn lại"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__adjusted_quantity
+msgid "Số lượng điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__discount_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__discount_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__discount_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__discount_amount
+msgid "Số tiền chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__6
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__6
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__replace
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__6
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__6
+msgid "Thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__tax_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__tax_ids
+msgid "Thuế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__amount_total
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__amount_total
+msgid "Thành tiền"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__price_subtotal
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__price_subtotal
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__price_subtotal
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__price_subtotal
+msgid "Thành tiền trước thuế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__total_point
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__total_point
+msgid "Total Point"
+msgstr "Tổng điểm"
+
+#. module: bkav_pos
+#: model:ir.ui.menu,name:bkav_pos.summary_account_move_pos_return_menu
+msgid "Total refund invoice at the end of the day"
+msgstr "Hóa đơn đổi trả tổng cuối ngày"
+
+#. module: bkav_pos
+#: model:ir.ui.menu,name:bkav_pos.summary_account_move_pos_menu
+msgid "Total sales invoice at the end of the day"
+msgstr "Hóa đơn bán tổng cuối ngày"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_state_e
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_state_e_return
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__invoice_state_e
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__invoice_state_e
+msgid "Trạng thái HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__11
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__11
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__11
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__11
+msgid "Trống (Đã cấp số, Chờ ký)"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__activity_exception_decoration
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__activity_exception_decoration
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__activity_exception_decoration
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__account_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__account_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__account_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__account_id
+msgid "Tài khoản"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Tạo hóa đơn tổng hợp"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+msgid "Tạo hóa đơn tổng hợp đến BKAV"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__tax_amount
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__tax_amount
+msgid "Tổng tiền thuế"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.summary_adjusted_invoice_pos_tree
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_form
+#: model_terms:ir.ui.view,arch_db:bkav_pos.synthetic_account_move_pos_tree
+msgid "Tổng tích điểm"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Update eInvoice"
+msgstr "Cập nhật HDDT"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos__website_message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return__website_message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__website_message_ids
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos__website_message_ids
+#: model:ir.model.fields,help:bkav_pos.field_summary_account_move_pos_return__website_message_ids
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__website_message_ids
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__eivoice_file
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__eivoice_file_return
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__eivoice_file
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__eivoice_file
+msgid "eInvoice PDF"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos
+msgid "summary.account.move.pos"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos_line
+msgid "summary.account.move.pos.line"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos_line_discount
+msgid "summary.account.move.pos.line.discount"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos_return
+msgid "summary.account.move.pos.return"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos_return_line
+msgid "summary.account.move.pos.return.line"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_account_move_pos_return_line_discount
+msgid "summary.account.move.pos.return.line.discount"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_adjusted_invoice_pos
+msgid "summary.adjusted.invoice.pos"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_adjusted_invoice_pos_line
+msgid "summary.adjusted.invoice.pos.line"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_summary_adjusted_invoice_pos_line_discount
+msgid "summary.adjusted.invoice.pos.line.discount"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_synthetic_account_move_pos
+msgid "synthetic.account.move.pos"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_synthetic_account_move_pos_line
+msgid "synthetic.account.move.pos.line"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_synthetic_account_move_pos_line_discount
+msgid "synthetic.account.move.pos.line.discount"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__8
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__8
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__adjust
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__8
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__8
+msgid "Điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__15
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__15
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__15
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__15
+msgid "Điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,help:bkav_pos.field_summary_adjusted_invoice_pos__total_point
+#: model:ir.model.fields,help:bkav_pos.field_synthetic_account_move_pos__total_point
+msgid "Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_general
+msgid "Đã chạy tổng hợp cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_check_cancel
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__3
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__3
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__3
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__3
+msgid "Đã hủy"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_post_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_post_bkav_return
+msgid "Đã ký HĐ trên BKAV"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__2
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__2
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos__state__posted
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_account_move_pos_return__state__posted
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__2
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__2
+msgid "Đã phát hành"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__exists_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__exists_bkav_return
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_exists_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos__exists_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos__exists_bkav
+msgid "Đã tồn tại trên BKAV"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__state__posted
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__state__posted
+msgid "Đã vào sổ"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__4
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__4
+#: model:ir.model.fields.selection,name:bkav_pos.selection__summary_adjusted_invoice_pos__data_compare_status__4
+#: model:ir.model.fields.selection,name:bkav_pos.selection__synthetic_account_move_pos__data_compare_status__4
+msgid "Đã xóa"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__price_unit
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__price_unit
+msgid "Đơn giá"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__price_unit_origin
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__price_unit_origin
+msgid "Đơn giá gốc"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line_discount__price_unit_incl
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line_discount__price_unit_incl
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line_discount__price_unit_incl
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line_discount__price_unit_incl
+msgid "Đơn giá sau thuế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_line__product_uom_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_account_move_pos_return_line__product_uom_id
+#: model:ir.model.fields,field_description:bkav_pos.field_summary_adjusted_invoice_pos_line__product_uom_id
+#: model:ir.model.fields,field_description:bkav_pos.field_synthetic_account_move_pos_line__product_uom_id
+msgid "Đơn vị"
+msgstr ""

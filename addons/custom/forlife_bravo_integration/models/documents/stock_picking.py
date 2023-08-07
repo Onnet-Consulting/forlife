@@ -19,6 +19,8 @@ class StockPicking(models.Model):
 
     def _action_done(self):
         res = super()._action_done()
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         done_pickings = self.filtered(lambda p: p.state == 'done')
         insert_queries = done_pickings.bravo_get_insert_sql()
         if insert_queries:
@@ -168,7 +170,7 @@ class StockPicking(models.Model):
             return super().write(vals)
         vals.update({CONTEXT_PICKING_UPDATE: True})
         insert_queries = records.bravo_get_insert_sql(**vals)
-        if insert_queries:
+        if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up") and insert_queries:
             self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         vals.pop(CONTEXT_PICKING_UPDATE, None)
         return super().write(vals)
@@ -197,6 +199,8 @@ class StockPicking(models.Model):
     def action_cancel(self):
         records = self.filtered(lambda r: r.state == 'done')
         res = super().action_cancel()
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return res
         records = records.filtered(lambda r: r.state == 'cancel')
         if records:
             queries = records.bravo_get_insert_sql(**{CONTEXT_CANCEL_OTHER_PICKING: True})

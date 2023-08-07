@@ -148,8 +148,8 @@ class StockTransfer(models.Model):
         if not self.transporter_id:
             raise ValidationError('Vui lòng thêm thông tin người vận chuyển để tạo HDDT BKAV!')
         if self.location_dest_id.id_deposit or self.location_id.id_deposit:
-            if not self.delivery_contract_id:
-                raise ValidationError('Vui lòng thêm thông tin HĐ vận chuyển để tạo HDDT BKAV!')
+            if not self.vendor_contract_id:
+                raise ValidationError('Vui lòng thêm thông tin HĐ kinh tế số để tạo HDDT BKAV!')
         return True
 
     @api.depends('data_compare_status')
@@ -173,17 +173,23 @@ class StockTransfer(models.Model):
         data = self.get_bkav_data()
         origin_id = False
         is_publish = False
-        issue_invoice_type = self.issue_invoice_type
-        if data:
-            return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
-
-        return bkav_action.create_invoice_bkav(self,data)
+        issue_invoice_type = ''
+        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         return bkav_action.publish_invoice_bkav(self)
-
+    
+    def create_publish_invoice_bkav(self):
+        if not self._check_info_before_bkav():
+            return
+        data = self.get_bkav_data()
+        origin_id = False
+        is_publish = True
+        issue_invoice_type = ''
+        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+    
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return

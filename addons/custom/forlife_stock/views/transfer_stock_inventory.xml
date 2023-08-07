@@ -10,6 +10,7 @@
                 <field name="location_id"/>
                 <field name="note"/>
                 <field name="create_date" string="Create Date"/>
+                <field name="company_id" string="Công ty"/>
                 <field name="state" widget="badge"/>
             </tree>
         </field>
@@ -72,6 +73,7 @@
                         </group>
                         <group>
                             <field name="create_date" string="Create Date"/>
+                            <field name="company_id" string="Công ty" readonly="1"/>
                             <field name="x_classify" invisible="1" force_save="1"/>
                             <field name="reason_cancel" readonly="1" attrs="{'invisible':[('state', '!=', 'cancel')]}"/>
                             <field name="reason_reject" readonly="1" attrs="{'invisible':[('state', '!=', 'reject')]}"/>

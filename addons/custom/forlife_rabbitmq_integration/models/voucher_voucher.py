@@ -11,8 +11,9 @@ class VoucherVoucher(models.Model):
     _exchange = 'notification_plan_exchange'
     _routing_key = 'notification_plan_routing_key'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.notification_id and f.state == 'sold' and f.type == 'e' and f.partner_id and f.partner_id.phone)
+        return [('notification_id', 'not in', (False, '')), ('state', '=', 'sold'), ('type', '=', 'e'), ('partner_id.phone', 'not in', (False, ''))]
 
     def get_sync_info_value(self):
         return [{

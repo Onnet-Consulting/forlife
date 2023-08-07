@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from . import bkav_action
 from odoo.exceptions import ValidationError
 
@@ -60,10 +60,12 @@ class AccountMoveBKAV(models.Model):
         default['origin_move_id'] = self.id
         return super().copy(default)
 
-    def _get_vat_line_bkav(self, line):
+    def _get_vat_line_bkav(self,vat_id, price_unit):
         vat = 0
-        if line.tax_ids:
-            vat = line.tax_ids[0].amount
+        if vat_id:
+            vat = vat_id.amount
+            if vat_id.price_include:
+                price_unit = price_unit/(1+vat_id.amount/100)
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
@@ -88,12 +90,16 @@ class AccountMoveBKAV(models.Model):
             exchange_rate = invoice.exchange_rate or 1.0
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else ''                                                                                                                                                                              
+                            line.product_id.name or line.name) else '' 
+                vat_id = False
+                if line.tax_ids:
+                    vat_id = line.tax_ids[0]
+                vat, tax_rate_id, price_unit = self._get_vat_line_bkav(vat_id, line.price_unit)                                                                                                                                                                             
                 item = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.quantity) or 0.0,
-                    "Price": abs(line.price_unit),
+                    "Price": abs(price_unit),
                     "Amount": abs(line.price_subtotal),
                     "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
@@ -101,7 +107,6 @@ class AccountMoveBKAV(models.Model):
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
-                vat, tax_rate_id = self._get_vat_line_bkav(line)
                 item.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
@@ -236,12 +241,17 @@ class AccountMoveBKAV(models.Model):
                 raise ValidationError('Hóa đơn gốc chưa tồn tại trên hệ thống HDDT BKAV! Vui lòng về đơn gốc kiểm tra!')
         origin_id = self.origin_move_id if self.origin_move_id else False
         is_publish = False
+        if self._context.get('is_publish'):
+            is_publish = True
         issue_invoice_type = self.issue_invoice_type
         if data:
             return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
     def publish_invoice_bkav(self):
         return bkav_action.publish_invoice_bkav(self)
+    
+    def create_publish_invoice_bkav(self):
+        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
 
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():

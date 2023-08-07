@@ -36,7 +36,7 @@ class SaleOrder(models.Model):
     x_punish = fields.Boolean(string='Đơn phạt', copy=False)
     # x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
-    x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
+    x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất', check_company=True)
     x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
     x_origin = fields.Many2one('sale.order', 'Tài liệu gốc', copy=False)
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
@@ -72,34 +72,35 @@ class SaleOrder(models.Model):
                 r.x_domain_pricelist = None
                 continue
             if not r.x_punish:
-                pricelist = self.env['product.pricelist'].search(
-                    ['|', ('x_partner_id', '=', r.partner_id.id), ('x_partner_id', '=', False), '|',
-                     ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
+                pricelist = self.env['product.pricelist'].search([
+                    '|',
+                        ('x_partner_id', '=', r.partner_id.id),
+                        ('x_partner_id', '=', False),
+                    '|',
+                        ('company_id', '=', False),
+                        ('company_id', '=', r.company_id.id)
+                ]).ids
             else:
                 pricelist = r.get_pricelist()
             r.x_domain_pricelist = [(6, 0, pricelist)]
 
     def get_pricelist(self):
         sql = f"""            
-                select pp.id from product_pricelist pp 
-                left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
-                where 1=1
-                and pp.x_punish is True
-                and pp.x_partner_id = {self.partner_id.id}
-                and '{str(self.date_order)}' between ppi.date_start and ppi.date_end
-                and (pp.company_id = {self.company_id.id} or pp.company_id is Null)
-                order by pp.id desc
-            """
+            select pp.id from product_pricelist pp 
+            left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
+            where 1=1
+            and pp.x_punish is True
+            and pp.x_partner_id = {self.partner_id.id}
+            and '{str(self.date_order)}' between ppi.date_start and ppi.date_end
+            and (pp.company_id = {self.company_id.id} or pp.company_id is Null)
+            order by pp.id desc
+        """
         self._cr.execute(sql)
         result = self._cr.fetchall()
         if result:
             return [rec[0] for rec in result]
         else:
             return []
-    # @api.onchange('x_process_punish')
-    # def onchange_x_process_punish(self):
-    #     for line in self.order_line:
-    #         line._compute_price_unit()
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -112,10 +113,7 @@ class SaleOrder(models.Model):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
         if picking_ids and len(picking_ids) == 1:
-            stock_return_picking_form = Form(
-                self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids,
-                                                              active_id=picking_ids[0].id,
-                                                              active_model='stock.picking'))
+            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids, active_id=picking_ids[0].id, active_model='stock.picking'))
             ctx = {
                 'so_return': self.id,
                 'x_return': True,
@@ -135,10 +133,11 @@ class SaleOrder(models.Model):
 
         line = []
         for picking in picking_ids:
-            line.append((0, 0, {'picking_name': picking.name,
-                                'state': list_state.get(picking.state),
-                                'picking_id': picking.id,
-                                }))
+            line.append((0, 0, {
+                'picking_name': picking.name,
+                'state': list_state.get(picking.state),
+                'picking_id': picking.id,
+            }))
 
         comfirm = self.env['confirm.return.so'].create({
             'origin': self.id,
@@ -174,6 +173,7 @@ class SaleOrder(models.Model):
         res = super().create(vals_list)
         res.check_debtBalance()
         return res
+
     def write(self, vals_list):
         res = super().write(vals_list)
         if self._context.get("skip_check_debt_balance"):
@@ -192,8 +192,7 @@ class SaleOrder(models.Model):
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
 
     def action_view_so_punish(self):
-        count = self.env['sale.order'].search(
-            [('x_origin', '=', self.id), ('x_punish', '=', True)])
+        count = self.env['sale.order'].search([('x_origin', '=', self.id), ('x_punish', '=', True)])
         action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
         if len(count) > 1:
             action['domain'] = [('id', 'in', count.ids)]
@@ -205,9 +204,9 @@ class SaleOrder(models.Model):
                 action['views'] = form_view
             action['res_id'] = count.id
         return action
+
     def action_view_so_return(self):
-        count = self.env['sale.order'].search(
-            [('x_origin', '=', self.id), ('x_is_return', '=', True)])
+        count = self.env['sale.order'].search([('x_origin', '=', self.id), ('x_is_return', '=', True)])
         action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
         if len(count) > 1:
             action['domain'] = [('id', 'in', count.ids)]
@@ -221,8 +220,7 @@ class SaleOrder(models.Model):
         return action
 
     def action_view_so_exchange(self):
-        count = self.env['sale.order'].search(
-            [('x_origin', '=', self.id), ('x_is_exchange', '=', True)])
+        count = self.env['sale.order'].search([('x_origin', '=', self.id), ('x_is_exchange', '=', True)])
         action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
         if len(count) > 1:
             action['domain'] = [('id', 'in', count.ids)]
@@ -234,9 +232,9 @@ class SaleOrder(models.Model):
                 action['views'] = form_view
             action['res_id'] = count.id
         return action
+
     def get_rule_domain(self):
-        domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),
-                  ('action', '!=', 'push')]
+        domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id), ('action', '!=', 'push')]
         if self.env.su and self.company_id:
             domain_company = ['|', ('company_id', '=', False), ('company_id', 'child_of', self.company_id.ids)]
             domain = expression.AND([domain, domain_company])
@@ -244,14 +242,10 @@ class SaleOrder(models.Model):
 
     def get_rule(self):
         if self.warehouse_id:
-            domain = expression.AND(
-                [['|', ('warehouse_id', '=', self.warehouse_id.id), ('warehouse_id', '=', False)],
-                 self.get_rule_domain()])
+            domain = expression.AND([['|', ('warehouse_id', '=', self.warehouse_id.id), ('warehouse_id', '=', False)], self.get_rule_domain()])
             warehouse_routes = self.warehouse_id.route_ids
             if warehouse_routes:
-                res = self.env['stock.rule'].search(
-                    expression.AND([[('route_id', 'in', warehouse_routes.ids)], domain]),
-                    order='route_sequence, sequence', limit=1)
+                res = self.env['stock.rule'].search(expression.AND([[('route_id', 'in', warehouse_routes.ids)], domain]), order='route_sequence, sequence', limit=1)
             return res
 
     def action_create_picking(self):
@@ -281,12 +275,10 @@ class SaleOrder(models.Model):
         line_x_scheduled_date = []
         for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
             if line.x_manufacture_order_code_id:
-                quant = self.env['stock.quant'].search(
-                    [('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
+                quant = self.env['stock.quant'].search([('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
                 if not quant or quant.quantity < line.product_uom_qty:
                     raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
-            date = datetime.combine(line.x_scheduled_date,
-                                    datetime.min.time()) if line.x_scheduled_date else datetime.now()
+            date = datetime.combine(line.x_scheduled_date, datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
             if not group_id:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
@@ -442,11 +434,13 @@ class SaleOrderLine(models.Model):
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_manufacture_order_code_id:
-            product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped(
-                'product_id').ids
+            product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped('product_id').ids
             domain = [('id', 'in', product_ids)]
-            return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
-                                              ('company_id', '=', self.order_id.company_id)] + domain}}
+            return {
+                'domain': {
+                    'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', self.order_id.company_id)] + domain
+                }
+            }
 
     def get_product_code(self):
         account = self.x_product_code_id.asset_account.id
@@ -470,13 +464,18 @@ class SaleOrderLine(models.Model):
             if not self.get_product_code():
                 self.product_id = None
                 self.name = None
-                return {'domain': {'product_id': [('id', '=', 0)],
-                                   'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                         ('company_id', '=', self.order_id.company_id.id)]
-                                   }}
+                return {
+                    'domain': {
+                        'product_id': [('id', '=', 0)],
+                        'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False), ('company_id', '=', self.order_id.company_id.id)]
+                    }
+                }
         else:
-            return {'domain': {'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False),
-                                                     ('company_id', '=', self.order_id.company_id.id)]}}
+            return {
+                'domain': {
+                    'x_product_code_id': [('state', '=', 'using'), '|', ('company_id', '=', False), ('company_id', '=', self.order_id.company_id.id)]
+                }
+            }
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
@@ -561,5 +560,7 @@ class SaleOrderLine(models.Model):
         rslt.update({
             'x_cart_discount_fixed_price': self.x_cart_discount_fixed_price,
             'account_analytic_id': self.x_account_analytic_id.id or False,
+            'asset_code': self.x_product_code_id.id or False,
+            'price_unit': self.price_unit or False
         })
         return rslt

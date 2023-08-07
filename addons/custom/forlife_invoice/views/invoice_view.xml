@@ -139,17 +139,17 @@
                             <field name="is_check_promotions" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
-                                   domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                   domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" attrs="{'readonly': [ ('parent.state', '=', 'posted'), ('parent.move_type', '=', 'in_invoice')]}"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
                             <field name="type"/>
                             <field name="promotions"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="asset_code"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.state', '=', 'posted')]}"/>
                             <field name="asset_name"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
-                            <field name="purchase_uom" string="Đơn vị mua"/>
+                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.state', '=', 'posted')]}"/>
+                            <field name="purchase_uom" string="Đơn vị mua" attrs="{'readonly': [('parent.state', '=', 'posted')]}"/>
                             <field name="quantity_purchased"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|', ('parent.purchase_type', '!=', 'product'), ('parent.state', '=', 'posted')]}"/>
                             <field name="product_uom_id"
@@ -159,12 +159,12 @@
                             <field name="exchange_quantity"
                                    readonly="1"/>
                             <field name="quantity"
-                                   readonly="0"
+                                   attrs="{'readonly': [('parent.state', '=', 'posted'), ('parent.move_type', '=', 'in_invoice')]}"
                                    force_save="1"/>
                             <field name="vendor_price"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', 'in', ('out_refund','out_invoice'))], 'readonly': ['|',('parent.state', '=', 'posted'), ('is_passersby', '=', False), ('is_check_promotions', '=', True)]}"
                                    force_save="1"/>
-                            <field name="price_unit" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}" force_save="1"/>
+                            <field name="price_unit" attrs="{'readonly': ['|', ('parent.purchase_type', '=', 'product'), ('parent.state', '=', 'posted'), ('parent.move_type', '=', 'in_invoice')]}" force_save="1"/>
                             <field name="warehouse" invisible="1"/>
                             <field name="discount"
                                    force_save="1"
@@ -188,7 +188,7 @@
                                    string="Thành tiền"
                                    widget="monetary"
                                    sum="discounted subtotal"
-                                   readonly="0"/>
+                                   attrs="{'readonly': [ ('parent.state', '=', 'posted'), ('parent.move_type', '=', 'in_invoice')]}"/>
                             <field name="total_vnd_amount"
                                    widget="monetary" options="{'currency_field': 'company_currency'}"
                                    sum="discounted subtotal"
