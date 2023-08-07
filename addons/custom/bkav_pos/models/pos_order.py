@@ -61,10 +61,12 @@ class PosOrder(models.Model):
         default['origin_move_id'] = self.id
         return super().copy(default)
 
-    def _get_vat_line_bkav(self, line):
+    def _get_vat_line_bkav(self,vat_id, price_unit):
         vat = 0
-        if line.tax_ids:
-            vat = line.tax_ids[0].amount  
+        if vat_id:
+            vat = vat_id.amount
+            if vat_id.price_include:
+                price_unit = price_unit/(1+vat_id.amount/100)
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
@@ -289,21 +291,25 @@ class PosOrder(models.Model):
         data = self.get_bkav_data_pos()
         origin_id = False
         is_publish = False
+        if self._context.get('is_publish'):
+            is_publish = True
         issue_invoice_type = 'vat'
         return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+    
+    def publish_invoice_bkav(self):
+        return bkav_action.publish_invoice_bkav(self)
+    
+    def create_publish_invoice_bkav(self):
+        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
 
-
+    def get_invoice_bkav(self):
+        return bkav_action.get_invoice_bkav(self)
+    
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data_pos()
         return bkav_action.update_invoice_bkav(self,data)
-    
-    def publish_invoice_bkav(self):
-        return bkav_action.publish_invoice_bkav(self)
-
-    def get_invoice_bkav(self):
-        return bkav_action.get_invoice_bkav(self)
 
     def cancel_invoice_bkav(self):
         return bkav_action.cancel_invoice_bkav(self)

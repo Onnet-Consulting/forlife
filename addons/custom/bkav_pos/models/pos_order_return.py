@@ -264,21 +264,26 @@ class PosOrderReturn(models.Model):
         data = self.get_bkav_data_pos_return()
         origin_id = self.origin_move_id
         is_publish = False
+        if self._context.get('is_publish'):
+            is_publish = True
         issue_invoice_type = self.issue_invoice_type
         return bkav_action_return.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
+    def publish_invoice_bkav_return(self):
+        return bkav_action_return.publish_invoice_bkav(self)
+    
+    def create_publish_invoice_bkav_return(self):
+        return self.with_context({'is_publish': True}).create_invoice_bkav_return(self)
 
+    def get_invoice_bkav_return(self):
+        return bkav_action_return.get_invoice_bkav(self)
+    
     def update_invoice_bkav_return(self):
         if self._check_info_before_bkav_return():
             return
         data = self.get_bkav_data_pos_return()
         return bkav_action_return.update_invoice_bkav(self,data)
     
-    def publish_invoice_bkav_return(self):
-        return bkav_action_return.publish_invoice_bkav(self)
-
-    def get_invoice_bkav_return(self):
-        return bkav_action_return.get_invoice_bkav(self)
 
     def cancel_invoice_bkav_return(self):
         return bkav_action_return.cancel_invoice_bkav(self)
@@ -300,5 +305,4 @@ class PosOrderReturn(models.Model):
         if res.refunded_order_ids:
             res.origin_move_id = res.refunded_order_ids[0].id
         return res
-    
     
