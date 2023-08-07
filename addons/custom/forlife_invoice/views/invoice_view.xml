@@ -104,13 +104,24 @@
                     <field name="purchase_order_product_id"
                            widget="many2many_tags"
                            options="{'no_open': False}"
-                           domain="[('type_po_cost','=', type_inv),('custom_state','=', 'approved')]"
+                           domain="[('custom_state','=', 'approved')]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
-                    <field name="receiving_warehouse_id"
+
+                    <label for="receiving_warehouse_id"/>
+                    <div class="o_row">
+                        <field name="receiving_warehouse_id"
                            widget="many2many_tags"
                            domain="domain_receiving_warehouse_id"
                            options="{'no_open': False}"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
+                        <button name="insert_data" type="object" string="Tổng hợp"
+                                icon="fa-plus-square" class="btn btn-primary"/>
+                    </div>
+<!--                    <field name="receiving_warehouse_id"-->
+<!--                           widget="many2many_tags"-->
+<!--                           domain="domain_receiving_warehouse_id"-->
+<!--                           options="{'no_open': False}"-->
+<!--                           attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>-->
                     <field name="x_asset_fin" widget="radio"/>
                     <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
@@ -118,7 +129,7 @@
                 </xpath>
                 <xpath expr="//field[@name='line_ids']//tree//field[@name='account_id']" position="after">
                     <field name="product_id"/>
-                    <field name="product_expense_origin_id" invisible="1"/>
+                    <field name="product_expense_origin_id" invisible="0" optional="hide"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
@@ -231,7 +242,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[@id='aml_tab']" position="before">
                     <page string="Chi tiết hóa đơn" attrs="{'invisible': [('select_type_inv', '=', 'normal')]}">
-                        <field name="account_expense_labor_detail_ids">
+                        <field name="account_expense_labor_detail_ids" readonly="1" force_save="1">
                             <tree editable="bottom">
                                 <field name="currency_id" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
@@ -239,10 +250,10 @@
                                 <field name="description"/>
                                 <field name="uom_id"/>
                                 <field name="qty"/>
-                                <field name="price_subtotal_back"/>
+                                <field name="price_subtotal_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="tax_percent"/>
-                                <field name="tax_back"/>
-                                <field name="totals_back"/>
+                                <field name="tax_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="totals_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </tree>
                         </field>
                     </page>
@@ -304,13 +315,15 @@
                                 <field name="code_tax"/>
                                 <field name="street_ven"/>
                                 <field name="company_id"/>
+                                <field name="currency_id" optional="hide"/>
                                 <field name="invoice_reference"/>
                                 <field name="invoice_description"/>
-                                <field name="price_subtotal_back" force_save="1"/>
-                                <field name="tax_back" force_save="1"/>
+                                <field name="price_subtotal_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="tax_percent" force_save="1"/>
+                                <field name="tax_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="_x_invoice_date" force_save="1"/>
                                 <field name="date_due" force_save="1"/>
-                                <field name="totals_back" force_save="1"/>
+                                <field name="totals_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </tree>
                         </field>
                     </page>
@@ -347,8 +360,9 @@
 <!--                                <field name="discount_percent"/>-->
                                 <field name="currency_id" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
-                                <field name="before_tax" sum="Sum Before Tax"/>
-                                <field name="after_tax" sum="Sum After Tax"/>
+                                <field name="before_tax" sum="Sum Before Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="after_tax" sum="Sum After Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="expense_labor" sum="Sum Expense Labor" widget="monetary" options="{'currency_field': 'currency_id'}"/>
 <!--                                <field name="amount_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
 <!--                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
 <!--                                <field name="total_product"/>-->
