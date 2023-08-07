@@ -89,6 +89,7 @@ class StockPicking(models.Model):
                 else:
                     line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id
+        
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
