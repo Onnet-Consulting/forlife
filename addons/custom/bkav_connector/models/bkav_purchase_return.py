@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 
 
@@ -21,25 +21,24 @@ class AccountMovePurchaseReturn(models.Model):
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
                             line.product_id.name or line.name) else ''
-                                                                                                                                                                                     
+                vat_id = False
+                if line.tax_ids:
+                    vat_id = line.tax_ids[0]
+                vat, tax_rate_id, price_unit = self._get_vat_line_bkav(vat_id, line.price_unit)                                                                                                                  
                 item = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.quantity) or 0.0,
-                    "Price": abs(line.price_unit),
+                    "Price": abs(price_unit),
                     "Amount": abs(line.price_subtotal),
                     "TaxAmount": abs((line.tax_amount or 0.0)),
                     "ItemTypeID": 0,
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat,
                     # "DiscountRate": line.discount/100,
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.discount != 0 else 0
                 }
-
-                vat, tax_rate_id = self._get_vat_line_bkav(line)
-                item.update({
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat
-                })
                 if invoice.issue_invoice_type == 'adjust':
                     item['IsIncrease'] = 1 if (invoice.move_type == invoice.origin_move_id.move_type) else 0
                 list_invoice_detail.append(item)
