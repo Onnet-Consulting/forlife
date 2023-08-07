@@ -48,4 +48,5 @@ class PosOlDiscountDetails(models.Model):
             'pos_order_line_id': self.pos_order_line_id.id,
             'money_reduced': self.money_reduced,
             'type': self.type,
+            'money_reduced_unit': self.pos_order_line_id.qty and self.money_reduced / self.pos_order_line_id.qty or 0
         }
