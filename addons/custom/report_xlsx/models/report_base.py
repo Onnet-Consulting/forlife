@@ -87,6 +87,7 @@ class ReportBase(models.AbstractModel):
         center_format.update({'align': 'center'})
         float_number_format.update(normal_format)
         int_number_format.update(normal_format)
+        int_number_format.update(align_right)
         float_number_title_format = float_number_format.copy()
         float_number_title_format.update(title_format)
         int_number_title_format = int_number_format.copy()
