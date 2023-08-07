@@ -260,8 +260,8 @@ order by stt
         dia_chi = ', '.join(company.filtered(lambda f: f.street).mapped('street'))
         sheet.write(0, 0, f'Công ty: {cong_ty}', formats.get('normal_format'))
         sheet.write(1, 0, f'Địa chỉ: {dia_chi}', formats.get('normal_format'))
-        sheet.write(3, 0, 'BẢNG KÊ HÀNG HÓA XUẤT HÓA ĐƠN', formats.get('header_format'))
-        sheet.write(4, 0, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), self.year)}', formats.get('italic_format'))
+        sheet.merge_range(3, 0, 3, len(data.get('titles')) - 1, 'BẢNG KÊ HÀNG HÓA XUẤT HÓA ĐƠN', formats.get('header_format'))
+        sheet.merge_range(4, 0, 4, len(data.get('titles')) - 1, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), self.year)}', formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(6, idx, title, formats.get('title_format'))
         sheet.set_column(1, len(data.get('titles')) - 1, 20)
@@ -327,4 +327,6 @@ order by stt
         res.update({
             'month_format': month_format,
         })
+        res.get('header_format').set_align('center')
+        res.get('italic_format').set_align('center')
         return res
