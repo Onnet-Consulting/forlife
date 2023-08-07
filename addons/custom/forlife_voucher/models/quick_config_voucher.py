@@ -6,7 +6,7 @@ import base64
 import tempfile
 
 
-class QuickConfigVoucher(models.TransientModel):
+class QuickConfigVoucher(models.Model):
     _name = 'quick.config.voucher'
     _description = "Quick Config Voucher"
 

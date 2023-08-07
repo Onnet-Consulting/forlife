@@ -63,12 +63,34 @@
             </field>
         </record>
 
+        <record id="quick_config_view_tree" model="ir.ui.view">
+            <field name="name">quick_config_view_tree</field>
+            <field name="model">quick.config.voucher</field>
+            <field name="arch" type="xml">
+                <tree string="quick_config_tree">
+                    <field name="name" string="Tên"/>
+                    <field name="create_date" string="Ngày tạo"/>
+                    <field name="create_uid" string="Người tạo"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="rule_quick_config_voucer" model="ir.rule">
+            <field name="name">config voucher</field>
+            <field ref="model_quick_config_voucher" name="model_id"/>
+            <field name="domain_force">[('create_uid','=', user.id)]</field>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="global" eval="1"/>
+        </record>
 
         <record id="quick_config_voucher_action" model="ir.actions.act_window">
             <field name="name">Thay đổi trạng thái voucher</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">quick.config.voucher</field>
-            <field name="view_mode">form</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
