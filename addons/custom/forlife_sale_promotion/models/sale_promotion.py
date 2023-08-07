@@ -26,3 +26,4 @@ class SaleOrderPromotion(models.Model):
         ('reward', 'reward')
     ], string='promotion_type')
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
+    order_line_id = fields.Many2one("sale.order.line", string="Order line")
