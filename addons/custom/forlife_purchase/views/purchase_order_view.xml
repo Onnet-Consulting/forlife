@@ -308,7 +308,7 @@
                         <field name="name" invisible="1"/>
                         <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
-                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}" sum="discounted subtotal" force_save="1" string="Số lượng đề nghị"/>
+<!--                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}" sum="discounted subtotal" force_save="1" string="Số lượng đề nghị"/>-->
                         <field name="purchase_uom" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" string="Tỷ lệ quy đổi" force_save="1"/>
                         <field name="purchase_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
@@ -320,16 +320,16 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="free_good"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="purchase_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="domain_uom" invisible="1"/>
-                        <field name="purchase_uom"
-                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"
-                               decoration-danger="is_red_color == True"
-                               string="Tỷ lệ quy đổi"
-                               force_save="1"/>
+<!--                        <field name="purchase_quantity"-->
+<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
+<!--                        <field name="domain_uom" invisible="1"/>-->
+<!--                        <field name="purchase_uom"-->
+<!--                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
+<!--                        <field name="exchange_quantity"-->
+<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"-->
+<!--                               decoration-danger="is_red_color == True"-->
+<!--                               string="Tỷ lệ quy đổi"-->
+<!--                               force_save="1"/>-->
                         <field name="product_qty"
                                attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal"
