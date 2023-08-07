@@ -393,6 +393,20 @@ class SaleOrder(models.Model):
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
                 line.x_origin = picking_location_list.get(line.x_location_id.id)
+        ctx = {
+            'default_x_is_return': True,
+            'default_x_origin': self.id
+        }
+        return {
+            'name': so_return.name,
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'res_id': so_return.id,
+            'context': ctx,
+            'target': 'current'
+        }
 
     def action_punish(self):
         return {
