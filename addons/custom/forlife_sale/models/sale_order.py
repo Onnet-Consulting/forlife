@@ -250,7 +250,9 @@ class SaleOrder(models.Model):
 
     def action_create_picking(self):
         if self.state in ('draft', 'sent'):
-            self.check_sale_promotion()
+            action = self.check_sale_promotion()
+            if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
+                return action
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
@@ -393,20 +395,6 @@ class SaleOrder(models.Model):
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
                 line.x_origin = picking_location_list.get(line.x_location_id.id)
-        ctx = {
-            'default_x_is_return': True,
-            'default_x_origin': self.id
-        }
-        return {
-            'name': so_return.name,
-            'view_mode': 'form',
-            'res_model': 'sale.order',
-            'type': 'ir.actions.act_window',
-            'views': [(False, 'form')],
-            'res_id': so_return.id,
-            'context': ctx,
-            'target': 'current'
-        }
 
     def action_punish(self):
         return {
