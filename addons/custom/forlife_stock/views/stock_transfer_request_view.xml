@@ -40,7 +40,7 @@
                     <button string="Cancel" name="action_cancel"
                             type="object" attrs="{'invisible':[('state', 'in', ('draft','done','cancel'))]}" confirm="Bạn có thực sự muốn hủy bỏ?"/>
                     <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'wait_confirm','reject','cancel','done'))]}" confirm="Bạn có thực sự muốn hoàn thành phiếu không?"/>
-                    <field name="state" widget="statusbar"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,wait_confirm,approved,done"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -70,7 +70,11 @@
                     </group>
                     <notebook>
                         <page string="Product">
-                            <field name="request_lines" widget="section_and_note_one2many" mode="tree"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}">
+                            <field name="request_lines"
+                                   widget="section_and_note_one2many"
+                                   mode="tree" required="1"
+                                   context="{'default_location_id': location_id, 'default_location_dest_id': location_dest_id, 'default_production_to': production_id}"
+                                   attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}">
                                 <tree editable="bottom" class="width-hh" decoration-muted="quantity_remaining == 0" delete="1">
                                     <field name="product_id" domain="[('product_type', '=', 'product')]" options="{'no_create': True, 'no_edit': True}"/>
                                     <field name="plan_quantity"/>

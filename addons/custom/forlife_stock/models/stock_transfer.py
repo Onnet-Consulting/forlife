@@ -849,7 +849,10 @@ class ForlifeProductionFinishedProduct(models.Model):
             qty_done = sum([line.quantity_done for line in rec.forlife_production_stock_move_ids.filtered(
                 lambda r: r.picking_id.state in 'done')])
             rec.stock_qty = qty_done
-            rec.remaining_qty = rec.produce_qty - qty_done
+
+            #Trường hợp nhập thừa thành phẩm
+            remaining_qty = 0 if qty_done > rec.produce_qty else rec.produce_qty - qty_done
+            rec.remaining_qty = remaining_qty
 
 
 class HREmployee(models.Model):

@@ -26,9 +26,9 @@ class StockTransferRequest(models.Model):
         selection=[('draft', 'Draft'),
                    ('wait_confirm', 'Wait Confirm'),
                    ('approved', 'Approved'),
+                    ('done', 'Done'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel'),
-                   ('done', 'Done')], default='draft', copy=False)
+                   ('cancel', 'Cancel')], default='draft', copy=False)
     request_lines = fields.One2many('transfer.request.line', 'request_id', string='Chi tiết', copy=True)
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
@@ -75,6 +75,8 @@ class StockTransferRequest(models.Model):
                     'uom_id': production_material_id.uom_id.id or production_material_id.product_id.uom_id.id,
                     'production_to': self.production_id.id,
                 }))
+        self.onchange_location_id()
+        self.onchange_location_dest_id()
         self.write({
             'request_lines': request_lines
         })
@@ -176,7 +178,6 @@ class StockTransferRequest(models.Model):
                     'edit': True
                 }
             }
-
 
     @api.constrains('request_lines')
     def constrains_request_lines(self):

@@ -17,6 +17,8 @@ list_state = {
     'done': 'Hoàn thành',
     'cancel': 'Đã hủy'
 }
+
+
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -44,19 +46,9 @@ class SaleOrder(models.Model):
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
 
-
-    # @api.depends('warehouse_id')
-    # def _compute_location_id(self):
-    #     for r in self:
-    #         if r.source_record:
-    #             r.x_location_id = r.order_line[0].x_location_id
-    #         else:
-    #             r.x_location_id = r.warehouse_id.lot_stock_id
-
     def _get_x_location_id(self):
         warehouse_id = self.user_id.with_company(self.company_id.id)._get_default_warehouse_id()
         return warehouse_id.lot_stock_id.id
-
 
     x_location_id = fields.Many2one('stock.location', string='Địa điểm kho', default=_get_x_location_id)
 
@@ -131,9 +123,9 @@ class SaleOrder(models.Model):
                 'target': 'new'
             }
 
-        line = []
+        lines = []
         for picking in picking_ids:
-            line.append((0, 0, {
+            lines.append((0, 0, {
                 'picking_name': picking.name,
                 'state': list_state.get(picking.state),
                 'picking_id': picking.id,
@@ -141,7 +133,8 @@ class SaleOrder(models.Model):
 
         comfirm = self.env['confirm.return.so'].create({
             'origin': self.id,
-            'line_ids': line})
+            'line_ids': lines
+        })
         return {
             'view_mode': 'form',
             'res_model': 'confirm.return.so',
@@ -150,23 +143,18 @@ class SaleOrder(models.Model):
             'res_id': comfirm.id,
             'target': 'current'
         }
+
     def _compute_order_punish_count(self):
         for r in self:
-            count = self.env['sale.order'].search(
-                [('x_origin', '=', r.id), ('x_punish', '=', True)])
-            r.x_order_punish_count = len(count)
+            r.x_order_punish_count = self.env['sale.order'].search_count([('x_origin', '=', r.id), ('x_punish', '=', True)])
 
     def _compute_exchange_count(self):
         for r in self:
-            count = self.env['sale.order'].search(
-                [('x_origin', '=', r.id), ('x_is_exchange', '=', True)])
-            r.x_is_exchange_count = len(count)
+            r.x_is_exchange_count = self.env['sale.order'].search_count([('x_origin', '=', r.id), ('x_is_exchange', '=', True)])
 
     def _compute_order_return_count(self):
         for r in self:
-            count = self.env['sale.order'].search(
-                [('x_origin', '=', r.id), ('x_is_return', '=', True)])
-            r.x_order_return_count = len(count)
+            r.x_order_return_count = self.env['sale.order'].search_count([('x_origin', '=', r.id), ('x_is_return', '=', True)])
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -185,8 +173,7 @@ class SaleOrder(models.Model):
         if not self.partner_id.use_partner_credit_limit:
             return True
         debtBalance_bravo = self.get_DebtBalance()
-        sale_so_ids = self.env['sale.order'].search(
-            [('partner_id', '=', self.partner_id.id), ('state', '=', 'sale'), ('id', '!=', self.id)])
+        sale_so_ids = self.env['sale.order'].search([('partner_id', '=', self.partner_id.id), ('state', '=', 'sale'), ('id', '!=', self.id)])
         debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
         if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
@@ -375,7 +362,6 @@ class SaleOrder(models.Model):
         cursor.close()
         return debtBalance
 
-
     def action_cancel(self):
         for line in self.order_line:
             if line.qty_delivered > 0:
@@ -395,6 +381,16 @@ class SaleOrder(models.Model):
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
                 line.x_origin = picking_location_list.get(line.x_location_id.id)
+
+        if so_return:
+            action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = so_return.id
+            return action
 
     def action_punish(self):
         return {
@@ -518,30 +514,6 @@ class SaleOrderLine(models.Model):
             # if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
             #     line.set_price_unit()
         return res
-    '''
-    def set_price_unit(self):
-        tmpl_id = self.product_id.product_tmpl_id.id
-        sql = f"""
-            select ppi.product_tmpl_id  , ppi.fixed_price from product_pricelist pp 
-            left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
-            where 1=1
-            and pp.x_punish is True
-            and pp.x_partner_id = {self.order_id.partner_id.id}
-            and (ppi.product_tmpl_id = {tmpl_id} or ppi.product_tmpl_id is null)
-            and '{str(self.order_id.date_order)}' between ppi.date_start and ppi.date_end
-            order by pp.id desc
-            limit 2 
-        """
-        self._cr.execute(sql)
-        result = self._cr.dictfetchall()
-        if not result:
-            raise UserError(_('Khách hàng chưa được cấu hình bảng giá cho đơn phạt'))
-        if len(result) > 1:
-            self.price_unit = [r.get('fixed_price') for r in result if r.get('product_tmpl_id') == tmpl_id][0]
-        else:
-            self.price_unit = [r.get('fixed_price') for r in result][0]
-            
-            '''
 
     def _convert_to_tax_base_line_dict(self):
         """ Convert the current record to a dictionary in order to use the generic taxes computation method
