@@ -31,10 +31,12 @@ class SummaryAccountMovePosReturn(models.Model):
 
     def get_line_discount_detail(self, line):
         item = {
+            "line_pk": line.get_pk_synthetic_line_discount(),
             "price_unit": line.price_subtotal,
             "price_unit_incl": line.price_subtotal_incl,
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
-            "promotion_type": line.promotion_type
+            "promotion_type": line.promotion_type,
+            "amount_total": line.price_subtotal_incl,
         }
         return item
 
@@ -56,6 +58,7 @@ class SummaryAccountMovePosReturn(models.Model):
             "product_id": line.product_id.id,
             "quantity": line.qty,
             "price_unit": line.price_unit_excl,
+            "price_unit_incl": line.price_unit_incl,
             "price_unit_origin": line.refunded_orderline_id.price_unit_excl,
             "x_free_good": line.is_reward_line,
             "invoice_ids": [line.order_id.id],
@@ -68,8 +71,9 @@ class SummaryAccountMovePosReturn(models.Model):
     def include_line_by_product_and_price_bkav(self, lines):
         items = {}
         for line in lines:
-            pk = f"{line.product_id.barcode}_{float(line.price_unit_excl)}"
+            pk = line.get_pk_synthetic()
             item = self.get_move_line(line)
+            item["line_pk"] = pk
             if items.get(pk):
                 row = items[pk]
                 row["quantity"] += item["quantity"]
@@ -134,15 +138,13 @@ class SummaryAccountMovePosReturn(models.Model):
         last_day = date.today()
         domain = [
             ('invoice_exists_bkav', '=', False),
-            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('is_synthetic', '=', False),
         ]
 
-        if kwargs.get("domain"):
-            domain = kwargs["domain"]
-
+        if not kwargs.get("env"):
+            domain.append(('invoice_date', '<', last_day))
         pos_order = self.env['pos.order'].search(domain)
 
         lines = self.env['pos.order.line'].search([
@@ -194,6 +196,7 @@ class SummaryAccountMovePosReturn(models.Model):
 class SummaryAccountMovePosReturnLine(models.Model):
     _name = 'summary.account.move.pos.return.line'
 
+    line_pk = fields.Char('Line primary key')
     return_id = fields.Many2one('summary.account.move.pos.return')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     barcode = fields.Char(related='product_id.barcode')
@@ -202,6 +205,7 @@ class SummaryAccountMovePosReturnLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     price_unit_origin = fields.Float('Đơn giá gốc')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
@@ -223,10 +227,10 @@ class SummaryAccountMovePosReturnLine(models.Model):
         for r in self:
             r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
 
-    @api.depends('price_subtotal', 'tax_amount')
+    @api.depends('price_subtotal', 'tax_amount', 'price_unit_incl')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = r.price_unit_incl *  r.quantity - r.discount_amount
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
@@ -239,13 +243,14 @@ class SummaryAccountMovePosReturnLine(models.Model):
 class SummaryAccountMovePosReturnLineDiscount(models.Model):
     _name = 'summary.account.move.pos.return.line.discount'
 
+    line_pk = fields.Char('Line primary key')
     summary_line_id = fields.Many2one('summary.account.move.pos.return.line')
     return_id = fields.Many2one('summary.account.move.pos.return', related="summary_line_id.return_id")
     price_unit = fields.Float('Đơn giá')
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
-    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    amount_total = fields.Monetary('Thành tiền')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     promotion_type = fields.Selection(
         selection=[
@@ -266,7 +271,7 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
             else:
                 r.tax_amount = 0
 
-    @api.depends('price_unit', 'tax_amount')
-    def compute_amount_total(self):
-        for r in self:
-            r.amount_total = r.price_unit + r.tax_amount
+    # @api.depends('price_unit', 'tax_amount')
+    # def compute_amount_total(self):
+    #     for r in self:
+    #         r.amount_total = r.price_unit + r.tax_amount

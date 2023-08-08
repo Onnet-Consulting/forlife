@@ -7,3 +7,4 @@ from . import sale_order
 from . import pos_session
 from . import journal_entry_payroll
 from . import stock_picking_transfer_bkav
+from . import synthetic_daily_transfer

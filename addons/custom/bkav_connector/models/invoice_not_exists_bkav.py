@@ -102,31 +102,84 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         code += '0'*(3-len(str(index+1)))+str(index+1)
         return code
 
-    def get_move_line(self, line, price_bkav):
+    def get_pk_tax(self, line):
+        tax_ids = []
+        if line.tax_ids:
+            for tax_id in line.tax_ids:
+                tax_ids.append(str(tax_id.id))
+        return "_".join(tax_ids)
+
+    def get_pk_line_discount_tax(self, line):
+        tax_ids = []
+        if line.tax_ids:
+            for tax_id in line.tax_id:
+                tax_ids.append(str(tax_id.id))
+        return "_".join(tax_ids)
+
+    def get_pk_synthetic(self, line):
+        pk = f"{line.product_id.barcode}_{float(abs(line.price_unit_excl))}_{self.get_pk_tax(line)}"
+        return pk
+
+    def get_pk_synthetic_line_discount(self, line):
+        pk = f"{line.product_id.barcode}_{self.get_pk_line_discount_tax(line)}"
+        return pk
+
+    def get_line_discount_detail(self, line):
+        price_unit = line.tax_id.compute_all(line.value)['total_excluded']
+        item = {
+            "line_pk": self.get_pk_synthetic_line_discount(line),
+            "price_unit": price_unit,
+            "price_unit_incl": line.value,
+            "tax_ids": line.tax_id.ids,
+            "promotion_type": line.promotion_type,
+            "amount_total": line.value,
+        }
+        return item
+
+    def get_line_discount(self, line):
+        line_discount_details = line.move_id.promotion_ids.filtered(
+            lambda r: r.product_id.id == line.product_id.id \
+            and r.promotion_type in ['vip_amount']
+        )
+        items = []
+        if line_discount_details:
+            for line_discount_detail in line_discount_details:
+                item = self.get_line_discount_detail(line_discount_detail)
+                items.append((0,0,item))
+        return items
+
+    def get_move_line(self, line):
+        line_discount_item = self.get_line_discount(line)
+        order_lines = line.sale_line_ids
         item = {
             "product_id": line.product_id.id,
-            "quantity": line.product_uom_qty,
-            "price_unit": price_bkav,
-            "x_free_good": line.x_free_good,
-            "invoice_ids": [line.order_id.id],
-            "tax_ids": line.tax_id.filtered(lambda r: r.company_id.id == line.order_id.company_id.id).ids,
+            "quantity": line.quantity,
+            "price_unit": line.price_unit_excl,
+            "price_unit_incl": line.price_unit_incl,
+            "x_free_good": order_lines[0].x_free_good if order_lines else False,
+            "invoice_ids": [line.move_id.id],
+            "tax_ids": line.tax_ids.ids,
+            "line_ids": line_discount_item,
         }
         return item
 
 
-    def include_line_by_product_and_price_bkav(self, order_lines):
+    def include_line_by_product_and_price_bkav(self, move_lines):
         items = {}
         order = None
-        if order_lines:
-            order = order_lines[0].order_id
-            for line in order_lines:
-                if line.product_id.product_tmpl_id.product_type == 'service':
+        if move_lines:
+            if not order:
+                order = move_lines.sale_line_ids.order_id[0]
+
+            for line in move_lines:
+                if not line.product_id or line.product_id.product_tmpl_id.product_type == 'service':
                     continue
 
                 # sale_order = line.order_id
 
-                pk = f"{line.product_id.barcode}_{float(line.price_bkav)}"
-                price_bkav = line.price_bkav
+
+                pk = self.get_pk_synthetic(line)
+                # price_bkav = line.price_bkav
                 # if sale_order.x_is_return:
                 #     if sale_order.x_origin:
                 #         line_origin = sale_order.x_origin.order_line.filtered(
@@ -136,14 +189,17 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 #             pk = f"{line.product_id.barcode}_{float(line_origin[0].price_bkav)}"
                 #             price_bkav = line_origin[0].price_bkav
                 
-                item = self.get_move_line(line, price_bkav)
+                item = self.get_move_line(line)
+                item["line_pk"] = pk
                 if items.get(pk):
                     row = items[pk]
                     row["quantity"] += item["quantity"]
                     row["invoice_ids"].extend(item["invoice_ids"])
                     row["invoice_ids"] = list(set(row["invoice_ids"]))
+                    row["line_ids"].extend(item["line_ids"])
                     # row["tax_ids"].extend(item["tax_ids"])
                     # row["tax_ids"] = list(set(row["tax_ids"]))
+                    items[pk] = row
                 else:
                     items[pk] = item
         return items, order
@@ -270,58 +326,65 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         synthetic_lines,
         v,
     ):
+        is_adjusted = False
         if synthetic_lines:
             lines = synthetic_lines.filtered(
-                lambda r: r.product_id.id == v["product_id"] and \
-                float(r.price_unit) == float(v["price_unit"])
+                lambda r: r.line_pk == v["line_pk"] and abs(r.remaining_quantity) >= abs(v["quantity"])
             )
             if lines:
-                for line in lines:
-                    row = v
-                    if abs(line.remaining_quantity) > abs(v["quantity"]):
-                        row["quantity"] = abs(row["quantity"])
-                        remaining_quantity = line.remaining_quantity - v["quantity"]
-                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-
-                        if remaining_records.get(line.synthetic_id.id):
-                            remaining_records[line.synthetic_id.id].append(row)
-                        else:
-                            remaining_records[line.synthetic_id.id] = [row]
-                        line.sudo().with_delay(
-                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                        ).write({
-                            "remaining_quantity": remaining_quantity,
-                            "adjusted_quantity": adjusted_quantity
-                        })
-                        break
-                    else:
-                        row["quantity"] = abs(line.remaining_quantity)
-                        v["quantity"] -= line.remaining_quantity
-                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
-
-                        if remaining_records.get(line.synthetic_id.id):
-                            remaining_records[line.synthetic_id.id].append(row)
-                        else:
-                            remaining_records[line.synthetic_id.id] = [row]
-
-                        line.sudo().with_delay(
-                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                        ).write({
-                            "remaining_quantity": 0,
-                            "adjusted_quantity": adjusted_quantity
-                        })
-            else:
+                line = lines[0]
                 row = v
+                # if lines:
+                #     for line in lines:
+                #         row = v
+                #         if abs(line.remaining_quantity) >= abs(v["quantity"]):
                 row["quantity"] = abs(row["quantity"])
+                row["price_unit"] = -abs(row["price_unit"])
+                row["price_unit_incl"] = -abs(row["price_unit_incl"])
+                remaining_quantity = line.remaining_quantity - abs(v["quantity"])
+                adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
 
-                if remaining_records.get('adjusted'):
-                    remaining_records['adjusted'].append(row)
+                if remaining_records.get(line.synthetic_id.id):
+                    remaining_records[line.synthetic_id.id].append(row)
                 else:
-                    remaining_records['adjusted'] = [row]
-        else:
+                    remaining_records[line.synthetic_id.id] = [row]
+                line.sudo().with_delay(
+                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                ).write({
+                    "remaining_quantity": remaining_quantity,
+                    "adjusted_quantity": adjusted_quantity
+                })
+                is_adjusted = True
+                        # break
+                    # else:
+                    #     row["quantity"] = abs(line.remaining_quantity)
+                    #     v["quantity"] -= line.remaining_quantity
+                    #     adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+
+                    #     if remaining_records.get(line.synthetic_id.id):
+                    #         remaining_records[line.synthetic_id.id].append(row)
+                    #     else:
+                    #         remaining_records[line.synthetic_id.id] = [row]
+
+                    #     line.sudo().with_delay(
+                    #         description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                    #     ).write({
+                    #         "remaining_quantity": 0,
+                    #         "adjusted_quantity": adjusted_quantity
+                    #     })
+            # else:
+            #     row = v
+            #     row["quantity"] = abs(row["quantity"])
+
+            #     if remaining_records.get('adjusted'):
+            #         remaining_records['adjusted'].append(row)
+            #     else:
+            #         remaining_records['adjusted'] = [row]
+        if not is_adjusted:
             row = v
             row["quantity"] = abs(row["quantity"])
-
+            row["price_unit"] = -abs(row["price_unit"])
+            row["price_unit_incl"] = -abs(row["price_unit_incl"])
             if remaining_records.get('adjusted'):
                 remaining_records['adjusted'].append(row)
             else:
@@ -336,6 +399,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
     ):
         first_n=0
         last_n=1000
+
         so_nhanh_license_bkav = self.env['ir.sequence'].next_by_code('so.nhanh.license.bkav')
         if len(lines) > last_n:
             separate_lines = lines[first_n:last_n]
@@ -404,25 +468,46 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             res = model.create(vals_list)
 
 
-    def get_sale_order_nhanh_not_exists_bkav(self):
-        so_line_sell = self.env['sale.order.line'].sudo().search([
-            ('sale_source_record', '=', True),
-            ('sale_x_is_return', '=', False),
-            ('sale_is_synthetic', '=', False)
-        ])
-        so_line_return = self.env['sale.order.line'].sudo().search([
-            ('sale_source_record', '=', True),
-            ('sale_x_is_return', '=', True),
-            ('sale_is_synthetic', '=', False)
-        ])
+    def get_sale_order_nhanh_not_exists_bkav(self, *args, **kwargs):
+        move_date = datetime.utcnow().date()
+        where_extra = ''
+        params = ()
 
-        return so_line_sell, so_line_return
+        if not kwargs.get("env"):
+            where_extra = 'AND (am.invoice_date <= %s)'
+            params = ((move_date,))
+        #WHERE so.source_record = TRUE
+        query = """
+            SELECT DISTINCT am.id 
+            FROM sale_order so
+            JOIN sale_order_line sol on sol.order_id = so.id
+            JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
+            JOIN account_move_line aml on solir.invoice_line_id = aml.id
+            JOIN account_move am on am.id = aml.move_id
+            
+            {where_extra}
+            AND am.exists_bkav = 'f'
+            AND am.state = 'posted'
+            AND (am.is_synthetic = 'f' OR am.is_synthetic is NULL)
+        """.format(where_extra=where_extra)
+        self._cr.execute(query, params)
+        result = self._cr.fetchall()
+        move_ids = [idd[0] for idd in result]
+        move_lines = self.env['account.move.line'].sudo().search([
+            ('move_type', 'in', ['out_refund','out_invoice']),
+            ('move_id', 'in', move_ids),
+        ])
+        move_out_refund_lines = move_lines.filtered(lambda r: r.move_type == 'out_refund')
+        move_out_invoice_lines = move_lines.filtered(lambda r: r.move_type == 'out_invoice')
+
+        return move_out_invoice_lines, move_out_refund_lines
 
 
     def get_last_synthetics(self):
         return self.env['synthetic.account.move.so.nhanh.line'].sudo().search([
             ('remaining_quantity', '>', 0),
-            ('synthetic_id', '!=', False)
+            ('synthetic_id', '!=', False),
+            ('exists_bkav', '=', True)
         ], order="invoice_date desc")
 
 
@@ -437,29 +522,30 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         adjusted_move.create_an_invoice()
 
 
-    def general_invoice_not_exists_bkav(self):
+    def general_invoice_not_exists_bkav(self, *args, **kwargs):
         synthetic_lines = self.get_last_synthetics()
 
-        so_line_sell, so_line_return = self.get_sale_order_nhanh_not_exists_bkav()
+        move_out_invoice_lines, move_out_refund_lines = self.get_sale_order_nhanh_not_exists_bkav(*args, **kwargs)
 
-        sell_items, order_sell = self.include_line_by_product_and_price_bkav(so_line_sell)
-        res = self.create_summary_account_move_so_nhanh(sell_items, order_sell)
-        return_items, order_return = self.include_line_by_product_and_price_bkav(so_line_return)
-        res_return = self.create_summary_account_move_so_nhanh_return(return_items, order_return)
+        move_out_invoice_items, order_out_invoice = self.include_line_by_product_and_price_bkav(move_out_invoice_lines)
+        res = self.create_summary_account_move_so_nhanh(move_out_invoice_items, order_out_invoice)
+
+        move_out_refund_items, order_out_refund = self.include_line_by_product_and_price_bkav(move_out_refund_lines)
+        res_refund = self.create_summary_account_move_so_nhanh_return(move_out_refund_items, order_out_refund)
         matching_records = []
         remaining_records = {}
-
-        if len(return_items.keys()):
-            for k, v in return_items.items():
-                if sell_items.get(k):
-                    sale_data = sell_items.pop(k)
+        
+        if len(move_out_refund_items.keys()):
+            for k, v in move_out_refund_items.items():
+                if move_out_invoice_items.get(k):
+                    sale_data = move_out_invoice_items.pop(k)
                     if abs(sale_data["quantity"]) > abs(v["quantity"]):
                         self.handle_invoice_balance_clearing(
                             matching_records,
                             v,
                             sale_data,
                             res,
-                            res_return
+                            res_refund
                         )
                     elif abs(sale_data["quantity"]) < abs(v["quantity"]):
                         self.handle_invoice_difference(
@@ -474,8 +560,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                         v
                     )
 
-        if len(sell_items.keys()):
-            for k, v in sell_items.items():
+        if len(move_out_invoice_items.keys()):
+            for k, v in move_out_invoice_items.items():
                 self.handle_invoice_balance_clearing(
                     matching_records,
                     None,
@@ -483,22 +569,19 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     res,
                     None
                 )
-        order = order_sell or order_return
+        order = order_out_invoice or order_out_refund
         self.collect_invoice_balance_clearing(matching_records, order)
         self.collect_invoice_difference(remaining_records, order)
 
 
-        if so_line_sell:
-            sale_order = so_line_sell.mapped("order_id")
-            sale_order.update({"is_synthetic": True})
-            # for line in sale_order:
-            #     line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
-        if so_line_return:
-            sale_order = so_line_return.mapped("order_id")
-            sale_order.update({"is_synthetic": True})
-            # for line in sale_order:
-            #     line.with_context({'skip_check_debt_balance': True}).write({"is_synthetic": True})
+        if move_out_invoice_lines:
+            move_ids = move_out_invoice_lines.mapped("move_id")
+            move_ids.update({"is_synthetic": True})
         
+
+        if move_out_refund_lines:
+            move_ids = move_out_refund_lines.mapped("move_id")
+            move_ids.update({"is_synthetic": True})
 
         # move_date = datetime.utcnow().date()
         # # tổng hợp hóa đơn nhanh
@@ -526,8 +609,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         # #     invoice_bkav_id.update_invoice_status()
 
 
-    def cronjob_collect_invoice_to_bkav_end_day(self):
-        self.general_invoice_not_exists_bkav()
+    def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
+        self.general_invoice_not_exists_bkav(*args, **kwargs)
         self.create_an_invoice_bkav()
 
 
