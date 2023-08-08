@@ -258,8 +258,9 @@ class PurchaseOrder(models.Model):
                     if line.product_uom.id != line.product_id.uom_id.id:
                         line.product_uom = line.product_id.uom_id.id
                     domain_supplierinfo = [
-                        '|', ('product_id', '=', line.product_id.id), ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-                        ('product_uom', '=', line.purchase_uom.id), ('amount_conversion', '=', line.exchange_quantity)
+                        '|', ('product_id', '=', line.product_id.id),
+                        ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                        ('amount_conversion', '=', line.exchange_quantity)
                     ]
                     supplier_ids = self.env['product.supplierinfo'].search(domain + domain_supplierinfo)
                     if supplier_ids:
