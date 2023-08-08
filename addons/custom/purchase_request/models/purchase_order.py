@@ -152,7 +152,6 @@ class PurchaseOrderLine(models.Model):
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'production_line_price_unit': production_line.price,
-                    'price_unit': production_line.price if production_line.product_id.product_tmpl_id.x_type_cost_product else 0,
                     'is_from_po': True,
                 }))
             self.write({
@@ -197,7 +196,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     def _compute_price_unit(self):
         for rec in self:
             if rec.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
-                rec.price_unit = rec.product_qty * rec.production_line_price_unit
+                rec.price_unit = rec.production_line_price_unit
             else:
                 rec.price_unit = 0
 
