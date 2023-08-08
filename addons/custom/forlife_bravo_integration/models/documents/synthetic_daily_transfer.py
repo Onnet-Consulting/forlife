@@ -168,10 +168,10 @@ class SyntheticDailyTransfer(models.Model):
 
     def bravo_get_insert_values(self, **kwargs):
         bravo_column_names = [
-            'Active', "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate",
-            "Description", "EmployeeCode", "DeptCode", "IsTransfer", "ReceiptWarehouseCode", "PushDate", "BuiltinOrder",
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "Description",
+            "EmployeeCode", "DeptCode", "IsTransfer", "ReceiptWarehouseCode", "PushDate", "BuiltinOrder",
             "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
-            "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode" "RowId", "DocNo_WO",
+            "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId", "DocNo_WO",
         ]
         values = []
         builtin_order = 1
@@ -179,7 +179,6 @@ class SyntheticDailyTransfer(models.Model):
             row_id = 1
             for detail in transfer_wh.detail_ids:
                 values.append({
-                    "Active": 1,
                     "CompanyCode": transfer_wh.company_code or None,
                     "Stt": transfer_wh.transfer_code or None,
                     "DocCode": "DC",
