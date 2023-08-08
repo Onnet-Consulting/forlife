@@ -14,20 +14,27 @@
                     <field name="state" invisible="1"/>
                     <field name="move_type" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible': ['|',('state','=','draft'),('move_type','not in',('out_invoice', 'out_refund','in_refund'))]}">
+                          attrs="{'invisible': [('state','=','draft')]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="create_publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('is_post_bkav', '=', True)]}"
+                                string="Create &amp; Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Get eInvoice" groups="account.group_account_invoice"/>
                         <button name="update_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
-                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
-                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <!-- <button name="cancel_invoice_bkav" type="object" class="btn btn-primary"
+                                string="Cancel eInvoice"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                groups="account.group_account_invoice"/> -->
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Download eInvoice" groups="account.group_account_invoice"/>
@@ -54,5 +61,36 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Treeview invoice out -->
+        <record id="view_out_invoice_tree_inherit_bkav" model="ir.ui.view">
+            <field name="name">account.move.tree.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+            <field name="arch" type="xml">
+                <field name="state" position="before">
+                    <field name="issue_invoice_type"/>
+                    <field name="invoice_no"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Filter invoice out -->
+        <record id="account_invoice_filter_inherit_bkav" model="ir.ui.view">
+            <field name="name">account.invoice.select.inherit.bkav</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <field name="issue_invoice_type"/>
+                    <field name="invoice_no"/>
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <filter string="Loại phát hành" name="issue_invoice_type" domain="[]" context="{'group_by':'issue_invoice_type'}"/>
+                    <filter string="Số HDDT" name="invoice_no" domain="[]" context="{'group_by':'invoice_no'}"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

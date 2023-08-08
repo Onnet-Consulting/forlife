@@ -9,8 +9,11 @@
                 <field name="user_id"/>
                 <field name="department_id"/>
                 <field name="type_other_id"/>
-                <field name="location_id"/>
-                <field name="location_dest_id"/>
+                <field name="type_other" invisible="1"/>
+                <field name="location_id" string="Lý do nhập/xuất khác"/>
+                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')]}" string="Địa điểm nguồn"/>
+                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')]}" string="Địa điểm đích"/>
+                <field name="company_id"/>
                 <field name="create_date"/>
                 <field name="date_planned"/>
             </tree>
@@ -64,6 +67,7 @@
                             <field name="department_id" readonly="1" force_save="1"/>
                             <field name="type_other"/>
                             <field name="type_other_id" required="1"/>
+                            <field name="type_other_code" invisible="1"/>
                             <label for="location_id" string="Lý do nhập khác" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_dest_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
@@ -81,6 +85,8 @@
                         <group>
                             <field name="create_date"/>
                             <field name="date_planned"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="is_last_transfer" attrs="{'readonly': [('status', '!=', 'draft')], 'invisible': [('type_other_code', '!=', 'N01')]}"/>
                         </group>
                     </group>
                     <notebook>

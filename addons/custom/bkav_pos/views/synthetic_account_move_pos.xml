@@ -11,8 +11,6 @@
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
                 <field name="total_point" string="Tổng tích điểm"/>
-                <field name="focus_point" string="Tổng tiêu điểm"/>
-                <field name="card_class" string="Tổng hạng thẻ"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -36,8 +34,6 @@
                             <field name="partner_id"/>
                             <field name="invoice_date"/>
                             <field name="total_point" string="Tổng tích điểm"/>
-                            <field name="focus_point" string="Tổng tiêu điểm"/>
-                            <field name="card_class" string="Tổng hạng thẻ"/>
                         </group>
                     </group>
                     <notebook>
@@ -84,6 +80,18 @@
                                 <field name="eivoice_file" widget="binary" filename="invoice_no"/>
                             </group>
                         </page>
+                        <page name="other_info" string="Other Information">
+                            <field name="line_discount_ids">
+                                <tree editable="bottom" create="0">
+                                    <field name="promotion_type"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_amount"/>
+                                    <field name="price_unit_incl"/>
+                                    <field name="amount_total"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -103,7 +111,7 @@
 
     <menuitem id="synthetic_account_move_pos_menu"
               parent="summary_account_move_menu"
-              name="Hóa đơn bù trừ cuối ngày"
+              name="Invoice offset at the end of the day"
               action="synthetic_account_move_pos_action"
               sequence="10"/>
 </odoo>

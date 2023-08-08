@@ -104,6 +104,8 @@ class Import(models.TransientModel):
                             value_attrs.append(','.join(attr_val_ids))
                             row_attrs.append(value_attrs)
                     else:
+                        if isinstance(cell.value, str):
+                            cell.value.replace(' 00:00:00', '')
                         if cell.ctype is xlrd.XL_CELL_NUMBER:
                             is_float = cell.value % 1 != 0.0
                             values.append(

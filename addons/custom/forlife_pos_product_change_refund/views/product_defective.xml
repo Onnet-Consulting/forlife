@@ -17,6 +17,7 @@
                     <field name="total_reduce" required="1"/>
                     <field name="defective_type_id" required="1"/>
                     <field name="detail_defective"/>
+                    <field name="company_id"/>
                 </tree>
             </field>
         </record>
@@ -58,6 +59,7 @@
                                 <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="reason_refuse_product" states="refuse" readonly="True"/>
+                                <field name="company_id" string="Công ty" readonly="1"/>
                             </group>
                         </group>
                     </sheet>

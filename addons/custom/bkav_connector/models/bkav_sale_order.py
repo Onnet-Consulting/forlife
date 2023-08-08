@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 
 
@@ -15,8 +15,8 @@ class AccountMoveSaleOrder(models.Model):
         for promotion_id in self.promotion_ids:
             if promotion_id.promotion_type == 'vip_amount':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0]
                 if vat not in list(vip_amount.keys()):
                     vip_amount.update({
                         vat:promotion_id.value,
@@ -25,8 +25,8 @@ class AccountMoveSaleOrder(models.Model):
                     vip_amount[vat] += promotion_id.value
             if promotion_id.promotion_type == 'reward':
                 vat = 0
-                if promotion_id.product_id.taxes_id:
-                    vat = promotion_id.product_id.taxes_id[0].amount
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0]
                 if vat not in list(reward_amount.keys()):
                     reward_amount.update({
                         vat:promotion_id.value,
@@ -34,52 +34,62 @@ class AccountMoveSaleOrder(models.Model):
                 else:
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = value
+            vat_value = 0
+            if vat:
+                vat_value = vat.amount
+                if vat.price_include:
+                    value_not_tax = round(value/(1+vat_value/100))
             item = {
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
-                "Qty": 1.0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Qty": 0,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
-            if vat == 0:
+            if vat_value == 0:
                 tax_rate_id = 1
-            elif vat == 5:
+            elif vat_value == 5:
                 tax_rate_id = 2
-            elif vat == 8:
+            elif vat_value == 8:
                 tax_rate_id = 9
-            elif vat == 10:
+            elif vat_value == 10:
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
             item.update({
                 "TaxRateID": tax_rate_id,
-                "TaxRate": vat
+                "TaxRate": vat_value
             })
             list_invoice_detail.append(item)
         
         for vat, value in reward_amount.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            value_not_tax = value
+            vat_value = 0
+            if vat:
+                vat_value = vat.amount
+                if vat.price_include:
+                    value_not_tax = round(value/(1+vat_value/100))
             item = {
-                "ItemName": 'Chiết khấu tổng đơn',
+                "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
-                "Qty": 1.0,
-                "Price": value_not_tax,
-                "Amount": value_not_tax,
-                "TaxAmount": value - value_not_tax,
+                "Qty": 0,
+                "Price": abs(value_not_tax),
+                "Amount": abs(value_not_tax),
+                "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
-            if vat == 0:
+            if vat_value == 0:
                 tax_rate_id = 1
-            elif vat == 5:
+            elif vat_value == 5:
                 tax_rate_id = 2
-            elif vat == 8:
+            elif vat_value == 8:
                 tax_rate_id = 9
-            elif vat == 10:
+            elif vat_value == 10:
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
@@ -94,34 +104,38 @@ class AccountMoveSaleOrder(models.Model):
     def get_bkav_data_so(self):
         bkav_data = []
         for invoice in self:
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.invoice_date,
-                                                                                       datetime.now().time())) if invoice.invoice_date else fields.Datetime.context_timestamp(invoice, datetime.now())
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
                 if line.product_id.voucher:continue
-                ItemName = (line.product_id.name or line.name) if (
-                            line.product_id.name or line.name) else ''
+                ItemName = (line.product_id.name or line.description) if (
+                            line.product_id.name or line.description) else ''
+                if line.sale_line_ids and line.sale_line_ids[0].order_id.x_sale_type == 'asset':
+                    ItemName = line.sale_line_ids[0].x_product_code_id.name if line.sale_line_ids[0].x_product_code_id else line.sale_line_ids[0].product_id.name
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
-                vat, tax_rate_id = self._get_vat_line_bkav(line)
-                Price = round(line.price_unit/ ((1 + vat/100)))
+                vat_id = False
+                if line.tax_ids:
+                    vat_id = line.tax_ids[0]
+                vat, tax_rate_id, price_unit = self._get_vat_line_bkav(vat_id, line.price_unit)      
                 item = {
                     "ItemName": ItemName,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": line.quantity,
-                    "Price": Price,
+                    "Qty": abs(line.quantity),
+                    "Price": abs(price_unit),
                     "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
                     "ItemTypeID": 0,
-                    "DiscountRate": line.discount/100,
-                    "DiscountAmount": line.price_subtotal/(1+line.discount/100) * line.discount/100,
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat,
+                    # "DiscountRate": line.discount/100,
+                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
-                item.update({
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat
-                })
                 if invoice.issue_invoice_type == 'adjust':
                     item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
 

@@ -11,8 +11,9 @@ class StockWarehouse(models.Model):
     _update_action = 'update'
     _delete_action = 'delete'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda f: f.whs_type.code in ('3', '4', '5'))
+        return [('whs_type.code', 'in', ('3', '4', '5'))]
 
     def get_sync_info_value(self):
         return [{

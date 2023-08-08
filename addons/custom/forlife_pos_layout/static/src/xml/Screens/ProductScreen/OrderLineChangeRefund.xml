@@ -79,7 +79,7 @@
                 <t t-set="_totalDiscount" t-value="getTotalDiscount()"/>
                 <t t-set="_totalDiscountmanual" t-value="getTotalDiscountManual()"/>
                 <li class="refund-discount" style="width: 10%;">
-                    <t t-if="props.line.get_discount_str() !== '0'">
+                    <t t-if="props.line.get_discount_str() !== '0' or props.line.use_discount_cash">
                         <t t-esc="env.pos.format_currency(_totalDiscountmanual)"/>
                     </t>
                     <t t-else="">
@@ -96,7 +96,7 @@
 
                 </li>
 
-                <t t-if="props.line.get_discount_str() !== '0'">
+                <t t-if="props.line.get_discount_str() !== '0' or props.line.use_discount_cash">
                     <li class="info" style="width: 50%;">
                         With a
                         <em>

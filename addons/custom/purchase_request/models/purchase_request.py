@@ -222,11 +222,13 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'asset_code': line.asset_code.id,
                     'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    'purchase_uom': line.purchase_uom.id,
+                    'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
+                    'product_uom': line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
@@ -251,7 +253,6 @@ class PurchaseRequest(models.Model):
                     'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'source_document': source_document,
-                    'production_id': production_id,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
                 }
@@ -300,18 +301,10 @@ class PurchaseRequestLine(models.Model):
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
     asset_description = fields.Char(string="Asset description")
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        self.description = self.product_id.name
-
-    @api.onchange('vendor_code')
-    def onchange_vendor_code(self):
-        self.currency_id = self.vendor_code.property_purchase_currency_id.id
-
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     request_id = fields.Many2one('purchase.request')
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
@@ -335,6 +328,28 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.write({
+            'description': self.product_id.name,
+            'purchase_uom': self.product_id.uom_id.id,
+        })
+
+    @api.onchange('product_id')
+    def onchange_product_id_comput_assets(self):
+        if self.product_id.product_type == 'asset':
+            account = self.product_id.categ_id.property_account_expense_categ_id
+            if account:
+                return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.request_id.company_id.id),
+                                                  ('asset_account', '=', account.id)]}}
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.request_id.company_id.id)]}}
+
+    @api.onchange('vendor_code')
+    def onchange_vendor_code(self):
+        self.currency_id = self.vendor_code.property_purchase_currency_id.id
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):

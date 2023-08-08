@@ -15,7 +15,7 @@ class ProductTemplate(models.Model):
 
     def write(self, values):
         res = super().write(values)
-        if self.bravo_check_need_sync(list(values.keys())):
+        if self.bravo_check_need_sync(list(values.keys())) and self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             queries = self.product_variant_ids.bravo_get_update_sql(values)
             if queries:
                 self.env['product.product'].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)

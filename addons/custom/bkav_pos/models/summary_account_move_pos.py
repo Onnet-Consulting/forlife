@@ -21,8 +21,37 @@ class SummaryAccountMovePos(models.Model):
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
 
+    line_discount_ids = fields.One2many('summary.account.move.pos.line.discount', compute="_compute_line_discount")
+
+    def _compute_line_discount(self):
+        for r in self:
+            r.line_discount_ids = self.env["summary.account.move.pos.line.discount"].search([
+                ('summary_id', '=', r.id)
+            ])
+
+    def get_line_discount_detail(self, line):
+        item = {
+            "price_unit": line.price_subtotal,
+            "price_unit_incl": line.price_subtotal_incl,
+            "tax_ids": line.tax_ids_after_fiscal_position.ids,
+            "promotion_type": line.promotion_type
+        }
+        return item
+
+    def get_line_discount(self, line):
+        line_discount_details = line.order_id.lines.filtered(
+            lambda r: r.is_promotion == True and r.promotion_type in ['card','point']
+        )
+        items = []
+        if line_discount_details:
+            for line_discount_detail in line_discount_details:
+                item = self.get_line_discount_detail(line_discount_detail)
+                items.append((0,0,item))
+        return items
+
 
     def get_move_line(self, line):
+        line_discount_item = self.get_line_discount(line)
         item = {
             "product_id": line.product_id.id,
             "quantity": line.qty,
@@ -30,24 +59,29 @@ class SummaryAccountMovePos(models.Model):
             "x_free_good": line.is_reward_line,
             "invoice_ids": [line.order_id.id],
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
+            "line_ids": line_discount_item,
         }
         return item
 
-
     def include_line_by_product_and_price_bkav(self, lines):
         items = {}
+
         for line in lines:
             pk = f"{line.product_id.barcode}_{float(line.price_unit_excl)}"
             item = self.get_move_line(line)
+
             if items.get(pk):
                 row = items[pk]
                 row["quantity"] += item["quantity"]
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
+                row["line_ids"].extend(item["line_ids"])
                 # row["tax_ids"].extend(item["tax_ids"])
                 # row["tax_ids"] = list(set(row["tax_ids"]))
+                items[pk] = row
             else:
                 items[pk] = item
+
         return items
 
 
@@ -100,7 +134,7 @@ class SummaryAccountMovePos(models.Model):
         last_day = date.today()
         domain = [
             ('is_synthetic', '=', False),
-            ('invoice_date', '<', last_day),
+            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
@@ -190,8 +224,6 @@ class SummaryAccountMovePos(models.Model):
         store_id=0,
         lines=[],
         page=0,
-        code=0,
-        model=None,
         company_ids={}
     ):
         store = stores.get(store_id)
@@ -199,11 +231,12 @@ class SummaryAccountMovePos(models.Model):
         first = 0
         last = 1000
         pk = f"{store_id}_{page}"
+        pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
         if len(lines) > 1000:
             separate_lines = lines[first:last]
             del lines[first:last]
             items[pk] = {
-                'code': code,
+                'code': pos_license_bkav,
                 'company_id': company_id.id,
                 'store_id': store.id,
                 'partner_id': store.contact_id.id,
@@ -217,13 +250,11 @@ class SummaryAccountMovePos(models.Model):
                 store_id=store_id,
                 lines=lines,
                 page=page,
-                code=genarate_code(self, model, default_code=code),
-                model=model,
                 company_ids=company_ids
             )
         else:
             items[pk] = {
-                'code': code,
+                'code': pos_license_bkav,
                 'company_id': company_id.id,
                 'store_id': store.id,
                 'partner_id': store.contact_id.id,
@@ -235,7 +266,6 @@ class SummaryAccountMovePos(models.Model):
         items = {}
         model = self.env['synthetic.account.move.pos']
         model_line = self.env['synthetic.account.move.pos.line']
-        code = genarate_code(self, model)
         for k, v in records.items():
             self.recursive_move_items(
                 items=items,
@@ -243,8 +273,6 @@ class SummaryAccountMovePos(models.Model):
                 store_id=k,
                 lines=v,
                 page=0,
-                code=code,
-                model=model,
                 company_ids=company_ids
             )
 
@@ -257,62 +285,10 @@ class SummaryAccountMovePos(models.Model):
         res = model.create(vals_list)
 
 
-    def recursive_difference_move_items(
-        self, 
-        items={},
-        stores={}, 
-        store_id=None,
-        lines={}, 
-        product_ids={},
-        synthetic_ids=[], 
-        company_ids={}
-    ):
-        company_id = company_ids[store_id]
-        store = stores[store_id]
-
-        synthetic_id = synthetic_ids[0]
-        del synthetic_ids[0]
-        line_product_ids = lines.keys()
-        p_ids = synthetic_id.line_ids.mapped("product_id").ids
-        ids = set(line_product_ids) - set(p_ids)
-        remaining_ids = set(line_product_ids) - ids
-        line_ids = []
-        for pid in remaining_ids:
-            rows = lines[pid]
-            line_qty = sum(synthetic_id.line_ids.filtered(lambda r: r.product_id.id == pid).mapped("quantity"))
-
-            i = 0
-            for row in rows:
-                if abs(row["quantity"]) > abs(line_qty):
-                    row["quantity"] = abs(line_qty)
-                    line_ids.append(row)
-                    rows[i]["quantity"] = rows[i]["quantity"] + line_qty
-                else:
-                    row["quantity"] = abs(row["quantity"])
-                    line_ids.append(row)
-                    del rows[i]
-                i += 1
-            if len(rows) > 0:
-                lines[pid] = rows
-            else:
-                lines.pop(pid)
-
-        items[synthetic_id.id] = {
-            'code': '',
-            'company_id': company_id.id,
-            'store_id': store.id,
-            'partner_id': store.contact_id.id,
-            'invoice_date': date.today(),
-            'line_ids': line_ids
-        }
-
-
-
     def collect_invoice_difference(self, records, store_data, company_ids):
         model = self.env['summary.adjusted.invoice.pos']
         model_line = self.env['summary.adjusted.invoice.pos.line']
 
-        model_code = genarate_code(self, model)
         vals_list = []
         for store_id, lines in records.items():
             store = store_data[store_id]
@@ -320,10 +296,9 @@ class SummaryAccountMovePos(models.Model):
             i = 0
             for k, v in lines.items():
                 res_line = model_line.create(v)
-                if i > 0:
-                    model_code = genarate_code(self, model, default_code=model_code)
+                pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
                 vals_list.append({
-                    'code': model_code,
+                    'code': pos_license_bkav,
                     'company_id': company_id.id,
                     'store_id': store.id,
                     'partner_id': store.contact_id.id,
@@ -365,6 +340,8 @@ class SummaryAccountMovePos(models.Model):
             and float(r.price_unit) == float(sale_data["price_unit"])
         )
 
+        sale_data["line_ids"].extend(v["line_ids"])
+
         sale_data["quantity"] += v["quantity"]
         sale_data["remaining_quantity"] = sale_data["quantity"]
         sale_data["summary_line_id"] = summary_line_id[0].id if summary_line_id else None
@@ -383,7 +360,7 @@ class SummaryAccountMovePos(models.Model):
     ):
         if synthetic_lines:
             lines = synthetic_lines.filtered(
-                lambda r: r.product_id == v["product_id"] and \
+                lambda r: r.product_id.id == v["product_id"] and \
                 r.synthetic_id.store_id.id == store_id and \
                 float(r.price_unit) == float(v["price_unit"])
             )
@@ -392,7 +369,8 @@ class SummaryAccountMovePos(models.Model):
                     row = v
                     if abs(line.remaining_quantity) > abs(v["quantity"]):
                         row["quantity"] = abs(row["quantity"])
-                        adjusted_quantity += abs(v["quantity"])
+                        row["price_unit"] = -abs(row["price_unit"])
+                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
                         remaining_quantity = line.remaining_quantity + v["quantity"]
                         if remaining_records.get(store_id):
                             rows = remaining_records[store_id]
@@ -412,8 +390,8 @@ class SummaryAccountMovePos(models.Model):
                     else:
                         row["quantity"] = abs(line.remaining_quantity)
                         v["quantity"] += line.remaining_quantity
-                        adjusted_quantity += abs(line.remaining_quantity)
-
+                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+                        row["price_unit"] = -abs(row["price_unit"])
                         if remaining_records.get(store_id):
                             rows = remaining_records[store_id]
                             if rows.get(line.synthetic_id.id):
@@ -431,6 +409,7 @@ class SummaryAccountMovePos(models.Model):
             else:
                 row = v
                 row["quantity"] = abs(row["quantity"])
+                row["price_unit"] = -abs(row["price_unit"])
                 if remaining_records.get(store_id):
                     rows = remaining_records[store_id]
                     if rows.get('adjusted'):
@@ -442,6 +421,7 @@ class SummaryAccountMovePos(models.Model):
         else:
             row = v
             row["quantity"] = abs(row["quantity"])
+            row["price_unit"] = -abs(row["price_unit"])
             if remaining_records.get(store_id):
                 rows = remaining_records[store_id]
                 if rows.get('adjusted'):
@@ -465,21 +445,19 @@ class SummaryAccountMovePos(models.Model):
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
         refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items(*args, **kwargs)
-
         matching_records = {}
         remaining_records = {}
 
         store_data = {}
         company_ids = {}
         if len(refunds.keys()):
-            move_pos_line = sale_res.line_ids
             move_refund_pos_line = refund_res.line_ids
             for store_id, refund in refunds.items():
-                res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                res_store = refund_res.filtered(lambda r: r.store_id.id == store_id)
                 store_data[store_id] = res_store[0].store_id
                 company_ids[store_id] = res_store[0].company_id
-
                 if sales.get(store_id):
+                    move_pos_line = sale_res.line_ids
                     sale = sales[store_id]
                     for k, v in refund.items():
                         if sale.get(k):
@@ -511,7 +489,14 @@ class SummaryAccountMovePos(models.Model):
                         sales[store_id] = sale
                     else:
                         sales.pop(store_id)
-
+                else:
+                    for k, v in refund.items():
+                        self.handle_invoice_difference(
+                            remaining_records,
+                            synthetic_lines,
+                            v,
+                            store_id
+                        )
         if len(sales.keys()):
             move_pos_line = sale_res.line_ids
             for store_id, sale in sales.items():
@@ -538,11 +523,16 @@ class SummaryAccountMovePos(models.Model):
         self.collect_invoice_balance_clearing(matching_records, store_data, company_ids)
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
-        if kwargs.get("is_synthetic"):
-            if sale_synthetic:
-                sale_synthetic.write({"is_synthetic": True})
-            if refund_synthetic:
-                refund_synthetic.write({"is_synthetic": True})
+
+        # if kwargs.get("is_synthetic"):
+        if sale_synthetic:
+            sale_synthetic.update({"is_synthetic": True})
+            # for line in sale_synthetic:
+            #     line.write({"is_synthetic": True})
+        if refund_synthetic:
+            refund_synthetic.update({"is_synthetic": True})
+            # for line in refund_synthetic:
+            #     line.write({"is_synthetic": True})
         
         return True
 
@@ -567,6 +557,7 @@ class SummaryAccountMovePosLine(models.Model):
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+    line_ids = fields.One2many('summary.account.move.pos.line.discount', 'summary_line_id')
 
     def __str__(self):
         return f"{self.summary_id.code} - {self.barcode}"
@@ -591,3 +582,38 @@ class SummaryAccountMovePosLine(models.Model):
                 r.tax_amount = tax_amount
             else:
                 r.tax_amount = 0
+
+class SummaryAccountMovePosLineDiscount(models.Model):
+    _name = 'summary.account.move.pos.line.discount'
+
+    summary_line_id = fields.Many2one('summary.account.move.pos.line')
+    summary_id = fields.Many2one('summary.account.move.pos', related="summary_line_id.summary_id")
+    price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+    promotion_type = fields.Selection(
+        selection=[
+            ('point', 'Point'),
+            ('card', 'Card'),
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+
+    @api.depends('tax_ids', 'price_unit')
+    def compute_tax_amount(self):
+        for r in self:
+            if r.tax_ids:
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_unit * tax.amount) / 100
+                r.tax_amount = tax_amount
+            else:
+                r.tax_amount = 0
+
+    @api.depends('price_unit', 'tax_amount')
+    def compute_amount_total(self):
+        for r in self:
+            r.amount_total = r.price_unit + r.tax_amount
