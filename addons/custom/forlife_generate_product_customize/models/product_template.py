@@ -2,12 +2,14 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import math
 
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     @api.model
     def create(self, vals_list):
-        if ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)) and ('sku_code' not in vals_list or ('sku_code' in vals_list and vals_list['sku_code'] is False)):
+        if ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)) and (
+                'sku_code' not in vals_list or ('sku_code' in vals_list and vals_list['sku_code'] is False)):
             if 'brand_id' in vals_list and 'attribute_line_ids' in vals_list and vals_list['brand_id'] and vals_list['attribute_line_ids']:
                 attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
                 rule = False
@@ -20,7 +22,7 @@ class ProductTemplate(models.Model):
                             break
                 if not rule:
                     raise ValidationError(f"Không tìm thấy cấu hình sinh mã nào cho sản phẩm {vals_list['name']}")
-                #kiem tra truong bat buoc
+                # kiem tra truong bat buoc
                 self.validate_required_field(rule, vals_list)
                 # kiểm tra thuộc tinh bắt buoc
                 self.validate_attr_required(rule, vals_list)
@@ -29,18 +31,19 @@ class ProductTemplate(models.Model):
                 if sku_field_check:
                     raise ValidationError(_(f"Bị trùng thông tin trường check tạo SKU trong sản phẩm {vals_list['name']}!"))
                 res = super(ProductTemplate, self).create(vals_list)
-                #kiem tra thuoc tinh check create sku
+                # kiem tra thuoc tinh check create sku
                 pmtl_attr_exits = self.sudo().search(
                     [('attribute_check_text', '=', res.attribute_check_text), ('id', '!=', res.id), ('attribute_check_text', '!=', False)], limit=1)
                 if pmtl_attr_exits:
                     raise ValidationError(_(f"Bị trùng thông tin thuộc tính check tạo SKU trong sản phẩm {res.name}!"))
-                sku_code = self.generate_sku(rule)
-                barcode = self.generate_ean_barcode(rule, sku_code)
-                res.sku_code = sku_code
-                res.barcode = barcode
+                if 'test_import' not in self._context or not self._context.get('test_import'):
+                    sku_code = self.generate_sku(rule)
+                    barcode = self.generate_ean_barcode(rule, sku_code)
+                    res.sku_code = sku_code
+                    res.barcode = barcode
                 return res
         if 'sku_code' in vals_list and vals_list['sku_code'] and ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)):
-            old_sku = self.env['product.template'].sudo().search([('sku_code','=', vals_list['sku_code'])], limit=1)
+            old_sku = self.env['product.template'].sudo().search([('sku_code', '=', vals_list['sku_code'])], limit=1)
             if not old_sku:
                 raise ValidationError(f"Chưa tồn tại sản phẩm nào có cùng SKU cho sản phẩm {vals_list['name']}")
             if old_sku:
@@ -55,10 +58,13 @@ class ProductTemplate(models.Model):
                 else:
                     barcode_field_check = self.validate_field_check_create(res.rule_id, vals_list, create='barcode', record=res)
                     barcode_att_check = self._check_duplicate_att_barcode(res.rule_id, res)
-                    if barcode_field_check or not barcode_att_check:
-                        raise ValidationError(f"Bị trùng thông tin check Barcode sản phẩm {res.name}")
-                barcode = self.generate_ean_barcode(rule=res.rule_id, sku_code=vals_list['sku_code'])
-                res.barcode = barcode
+                    if barcode_field_check:
+                        raise ValidationError(f"Bị trùng thông tin trường check Barcode sản phẩm {res.name}")
+                    if not barcode_att_check:
+                        raise ValidationError(f"Bị trùng thông tin thuộc tính check Barcode sản phẩm {res.name}")
+                if 'test_import' not in self._context or not self._context.get('test_import'):
+                    barcode = self.generate_ean_barcode(rule=res.rule_id, sku_code=vals_list['sku_code'])
+                    res.barcode = barcode
                 return res
         return super(ProductTemplate, self).create(vals_list)
 
@@ -72,16 +78,11 @@ class ProductTemplate(models.Model):
                 for rec in res.attribute_line_ids:
                     if rec.attribute_id.id == r:
                         values_ids.append(rec.value_ids[0].id)
-            sql = f"""SELECT pt.id FROM product_template_attribute_line as ptal 
-            JOIN product_attribute_value as pav on pav.attribute_id = ptal.attribute_id
-            JOIN product_template as pt on pt.id = ptal.product_tmpl_id
-            WHERE ptal.attribute_id IN {tuple(att_id_of_new_product) if len(att_id_of_new_product) >1 else str(tuple(att_id_of_new_product)).replace(',', '')} 
-            AND pav.id in {tuple(values_ids) if len(values_ids) >1 else str(tuple(values_ids)).replace(',', '')} 
-            AND pt.sku_code = '{res.sku_code}' AND pt.id != {res.id} LIMIT 1"""
-            self._cr.execute(sql)
-            data = self._cr.fetchone()
-            if data:
-                return False
+            for rec in set_same:
+                ptal = self.env['product.template.attribute.line'].search(
+                    [('attribute_id', '=', rec), ('value_ids', 'in', values_ids), ('product_tmpl_id', '!=', res.id), ('product_tmpl_id.sku_code', '=', res.sku_code)])
+                if ptal:
+                    return False
         return True
 
         # @api.constrains('attribute_check_text')
@@ -94,13 +95,13 @@ class ProductTemplate(models.Model):
     def generate_ean_barcode(self, rule, sku_code):
         first_char = rule.name[0]
         sku_code = sku_code
-        sequence_for_sku = self.env['ir.sequence'].search([('sku_code','=',sku_code)], limit=1)
+        sequence_for_sku = self.env['ir.sequence'].search([('sku_code', '=', sku_code)], limit=1)
         if sequence_for_sku:
             sequence = self.env['ir.sequence'].next_by_code(f"{sequence_for_sku.code}")
         else:
             sequence = self.env['ir.sequence'].create({
-                'name': f'BARCODE sequence {sku_code}',
-                'sku_code':sku_code,
+                'name': f'BARCODE SEQUENCE {sku_code}',
+                'sku_code': sku_code,
                 'code': f"product.template.{sku_code}",
                 'active': True,
                 'padding': 3,
@@ -134,7 +135,7 @@ class ProductTemplate(models.Model):
     def generate_sku(self, rule):
         second_char = rule.name[1]
         sequence = self.env['ir.sequence'].next_by_code('product.template.sku') or ''
-        return second_char+str(sequence)
+        return second_char + str(sequence)
 
     def validate_attr_required(self, rule, vals_list):
         attribute_required_ids = rule.attribute_required_ids.ids
