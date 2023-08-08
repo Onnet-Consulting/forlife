@@ -32,8 +32,8 @@ class SyntheticDailyTransfer(models.Model):
             ('transfer_id.exists_bkav', '=', False),
             ('other_export', '=', False),
             ('other_import', '=', False),
-            ('date_done', '>', begin_date),
-            ('date_done', '<=', end_date),
+            ('date_done', '>=', begin_date),
+            ('date_done', '<', end_date),
         ]
         companies = self.env['res.company'].search([('code', '!=', False)])
         for company in companies:
@@ -68,7 +68,7 @@ class SyntheticDailyTransfer(models.Model):
                 description=f"Đồng bộ: Tổng hợp điều chuyển ngày {self.date.strftime('%d-%m-%Y')}", channel="root.Bravo").bravo_execute_query(queries).uuid
             queue_job_id = self.env['queue.job'].search([('uuid', '=', uuid)], limit=1)
             if queue_job_id:
-                self.write({'queue_job_id': queue_job_id.id})
+                self.sudo().write({'queue_job_id': queue_job_id.id})
 
     @api.model
     def prepare_data(self, type, description, pickings, company):
@@ -272,3 +272,151 @@ class SyntheticDailyTransferLine(models.Model):
     work_production = fields.Char('Lệnh sản xuất')
     ma_xd_co_ban = fields.Char('Mã xây dựng cơ bản')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+
+
+class AccountingInventoryDifferenceWizard(models.TransientModel):
+    _name = 'acc.inv.diff.wizard'
+    _description = 'Đồng bộ hạch toán chênh lệch kiểm kê'
+    _inherit = 'bravo.model.insert.action'
+
+    @api.model
+    def synchronize_accounting_inventory_difference(self, **kwargs):
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Datetime.now()
+        begin_date = (date + timedelta(days=-1)).replace(hour=17, second=0, minute=0)
+        end_date = date.replace(hour=17, second=0, minute=0)
+        domain = [
+            '|', '&', '&',
+            ('date_confirm1', '>=', begin_date),
+            ('date_confirm1', '<', end_date),
+            ('move_in_count1', '!=', 0),
+            '&', '&',
+            ('date_confirm2', '>=', begin_date),
+            ('date_confirm2', '<', end_date),
+            ('move_in_count', '!=', 0),
+        ]
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for company in companies:
+            dm = domain + [('company_id', '=', company.id)]
+            inv_count = self.env['stock.inventory'].search_count(dm)
+            if inv_count > 0:
+                self._action_synchronize(dm, begin_date, end_date, date.strftime('%Y-%m-%d 07:00:00'))
+
+    @api.model
+    def _action_synchronize(self, domain, begin_date, end_date, date):
+        inventories = self.env['stock.inventory'].search(domain)
+        for inv in inventories:
+            sync_number = inv.sync_number
+            if inv.date_confirm1 and inv.date_confirm1 >= begin_date and inv.date_confirm1 < end_date:
+                move_out1 = inv.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == inv.location_id.id and x.inv_state == 'first_inv')
+                sync_number = self.sync_move(inv, move_out1, 'out', sync_number, 'xuất lần 1', date)
+                move_in1 = inv.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == inv.location_id.id and x.inv_state == 'first_inv')
+                sync_number = self.sync_move(inv, move_in1, 'in', sync_number, 'nhập lần 1', date)
+            if inv.date_confirm2 and inv.date_confirm2 >= begin_date and inv.date_confirm2 < end_date:
+                move_out2 = inv.move_ids.filtered(lambda x: x.state == 'done' and x.location_id.id == inv.location_id.id and x.inv_state == 'second_inv')
+                sync_number = self.sync_move(inv, move_out2, 'out', sync_number, 'xuất lần 2', date)
+                move_in2 = inv.move_ids.filtered(lambda x: x.state == 'done' and x.location_dest_id.id == inv.location_id.id and x.inv_state == 'second_inv')
+                sync_number = self.sync_move(inv, move_in2, 'in', sync_number, 'nhập  lần 2', date)
+            if sync_number > inv.sync_number:
+                inv.sudo().write({'sync_number': sync_number})
+
+    @api.model
+    def bravo_get_table(self, **kwargs):
+        return 'B30AccDocItemReceipt' if kwargs.get('move_type') == 'in' else 'B30AccDocItemIssue'
+
+    @api.model
+    def bravo_get_default_insert_value(self):
+        return {}
+
+    @api.model
+    def bravo_get_insert_values(self, **kwargs):
+        bravo_column_names = [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DocumentType", "PushDate",
+            "BuiltinOrder", "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9",
+            "ConvertRate9", "Quantity", "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount",
+            "WarehouseCode", "JobCode", "RowId", "DocNo_WO", "DeptCode", "ExpenseCatgCode",
+        ]
+        values = []
+        inventory = kwargs.get('inventory')
+        company = inventory.company_id
+        sync_number = kwargs.get('sync_number')
+        date = kwargs.get('date')
+        move_type = kwargs.get('move_type')
+        for stock_move in (kwargs.get('move_ids') or []):
+            if move_type == 'in':
+                doc_code = "PN"
+                description = 'Nhập kho theo phiếu kiểm kê'
+                document_type = 'N0202'
+                account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
+                credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
+                credit_account = credit_line.account_id.code or self.env['stock.location'].search([
+                    ('company_id', '=', company.id), ('code', '=', 'N0202'), ('type_other', '!=', False)]).with_company(company).x_property_valuation_out_account_id.code or None
+                credit = int(credit_line[0].credit) if credit_line else 0
+                debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
+                debit_account = debit_line.account_id.code or stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or None
+                debit = int(debit_line[0].debit) if debit_line else 0
+                wh_code = 1
+                amount = debit or credit
+            else:
+                doc_code = 'PX'
+                description = 'Xuất kho theo phiếu kiểm kê'
+                document_type = 'X0202'
+                account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
+                credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
+                credit_account = credit_line.account_id.code or stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or None
+                credit = int(credit_line[0].credit) if credit_line else 0
+                debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
+                debit_account = debit_line.account_id.code or self.env['stock.location'].search([
+                    ('company_id', '=', company.id), ('code', '=', 'X0202'), ('type_other', '!=', False)]).with_company(company).x_property_valuation_out_account_id.code or None
+                debit = int(debit_line[0].debit) if debit_line else 0
+                wh_code = 2
+                amount = debit or credit
+
+            values.append({
+                "CompanyCode": company.code or None,
+                "Stt": inventory.name[1:] + ('%.2d' % sync_number) or None,
+                "DocCode": doc_code,
+                "DocNo": inventory.name[1:] + ('%.2d' % sync_number) or None,
+                "DocDate": date or None,
+                "CurrencyCode": company.currency_id.name or None,
+                "ExchangeRate": 1,
+                "CustomerCode": None,
+                "CustomerName": None,
+                "Address": None,
+                "Description": description,
+                "EmployeeCode": inventory.create_uid.employee_id.code or None,
+                "IsTransfer": 0,
+                "DocumentType": document_type,
+                "PushDate": date or None,
+                "BuiltinOrder": 1,
+                "CreditAccount": credit_account or None,
+                "ItemCode": stock_move.product_id.barcode or None,
+                "ItemName": stock_move.product_id.name or None,
+                "UnitPurCode": stock_move.product_id.uom_id.code or None,
+                "DebitAccount": debit_account or None,
+                "Quantity9": stock_move.quantity_done or 0,
+                "ConvertRate9": 1,
+                "Quantity": stock_move.quantity_done or 0,
+                "OriginalUnitCost": stock_move.quantity_done if amount / stock_move.quantity_done else 0,
+                "UnitCost": stock_move.quantity_done if amount / stock_move.quantity_done else 0,
+                "OriginalAmount": amount,
+                "Amount": amount,
+                "WarehouseCode": wh_code or None,
+                "JobCode": stock_move.occasion_code_id.code or None,
+                "RowId": 1,
+                "DocNo_WO": stock_move.work_production.code or None,
+                'DeptCode': stock_move.account_analytic_id.code or None,
+                'ExpenseCatgCode': None,
+            })
+        return bravo_column_names, values
+
+    @api.model
+    def sync_move(self, inventory, move_ids, move_type, sync_number, lan_kk, date):
+        while move_ids:
+            _move_ids = move_ids[:1000]
+            queries = self.bravo_get_insert_sql(inventory=inventory, move_type=move_type, move_ids=_move_ids, sync_number=sync_number, date=date)
+            if queries:
+                self.with_company(inventory.company_id).with_delay(description=f"Đồng bộ: Hạch toán chênh lệch kiểm kê {lan_kk}", channel="root.Bravo").bravo_execute_query(queries)
+            move_ids = move_ids - _move_ids
+            sync_number += 1
+        return sync_number
