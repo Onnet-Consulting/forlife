@@ -11,9 +11,14 @@ class SyntheticDailyTransfer(models.Model):
     _description = 'Synthetic daily transfer'
     _rec_name = 'date'
     _order = 'date desc, id desc'
+    _inherit = 'bravo.model.insert.action'
+    _bravo_table = 'B30AccDocInventory'
 
     date = fields.Date('Ngày', default=fields.Date.context_today)
     company_id = fields.Many2one('res.company', 'Công ty', default=lambda self: self.env.company)
+    queue_job_id = fields.Many2one('queue.job', 'Queue job')
+    state = fields.Selection(related='queue_job_id.state', string='Trạng thái đồng bộ Bravo')
+    message = fields.Text(related='queue_job_id.exc_info', string='Thông báo')
     line_ids = fields.One2many('synthetic.daily.transfer.location', 'synthetic_id', string='Chi tiết điều chuyển')
 
     @api.model
@@ -24,11 +29,11 @@ class SyntheticDailyTransfer(models.Model):
         domain = [
             ('state', '=', 'done'),
             ('transfer_id', '!=', False),
-            # ('transfer_id.exists_bkav', '=', False),
-            # ('other_export', '=', False),
-            # ('other_import', '=', False),
-            # ('date_done', '>', begin_date),
-            # ('date_done', '<=', end_date),
+            ('transfer_id.exists_bkav', '=', False),
+            ('other_export', '=', False),
+            ('other_import', '=', False),
+            ('date_done', '>', begin_date),
+            ('date_done', '<=', end_date),
         ]
         companies = self.env['res.company'].search([('code', '!=', False)])
         for company in companies:
@@ -43,18 +48,30 @@ class SyntheticDailyTransfer(models.Model):
         source_is_deposit = pickings.filtered(lambda f: f.location_id.id_deposit and not f.location_dest_id.id_deposit)
         dest_is_deposit = pickings.filtered(lambda f: not f.location_id.id_deposit and f.location_dest_id.id_deposit)
         other_picking = pickings - source_is_deposit - dest_is_deposit
-        line_ids = self.prepare_data('source', 'Thu hồi hàng ký gửi', source_is_deposit, company, date) if source_is_deposit else []
-        line_ids.extend(self.prepare_data('dest', 'Xuất hàng ký gửi', dest_is_deposit, company, date) if dest_is_deposit else [])
-        line_ids.extend(self.prepare_data('other', 'Xuất điều chuyển nội bộ', other_picking, company, date) if other_picking else [])
+        line_ids = self.prepare_data('source', 'Thu hồi hàng ký gửi', source_is_deposit, company) if source_is_deposit else []
+        line_ids.extend(self.prepare_data('dest', 'Xuất hàng ký gửi', dest_is_deposit, company) if dest_is_deposit else [])
+        line_ids.extend(self.prepare_data('other', 'Xuất điều chuyển nội bộ', other_picking, company) if other_picking else [])
         if line_ids:
-            self.sudo().create({
+            result = self.sudo().create([{
                 'date': date,
                 'company_id': company.id,
                 'line_ids': line_ids,
-            })
+            }])
+            if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+                result.action_sync_by_queue()
+
+    def action_sync_by_queue(self):
+        self.ensure_one()
+        queries = self.bravo_get_insert_sql()
+        if queries:
+            uuid = self.with_company(self.company_id).with_delay(
+                description=f"Đồng bộ: Tổng hợp điều chuyển ngày {self.date.strftime('%d-%m-%Y')}", channel="root.Bravo").bravo_execute_query(queries).uuid
+            queue_job_id = self.env['queue.job'].search([('uuid', '=', uuid)], limit=1)
+            if queue_job_id:
+                self.write({'queue_job_id': queue_job_id.id})
 
     @api.model
-    def prepare_data(self, type, description, pickings, company, date):
+    def prepare_data(self, type, description, pickings, company):
         if not pickings:
             return []
         data = []
@@ -64,24 +81,44 @@ class SyntheticDailyTransfer(models.Model):
                 'destination_warehouse': picking.location_dest_id.warehouse_id.code or '',
             }
             for stock_move in picking.move_ids:
+                account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
+                credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
+                credit = int(credit_line[0].credit) if credit_line else 0
+                if type == 'source':
+                    price = int(credit / stock_move.quantity_done) if stock_move.quantity_done else 0
+                    amount_total = credit
+                    debit_account = stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or ''
+                    credit_account = picking.location_dest_id.account_stock_give.code or ''
+                elif type == 'dest':
+                    price = int(credit / stock_move.quantity_done) if stock_move.quantity_done else 0
+                    amount_total = credit
+                    debit_account = picking.location_id.account_stock_give.code or ''
+                    credit_account = stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or ''
+                else:
+                    price = 0
+                    amount_total = 0
+                    debit_account = stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or ''
+                    credit_account = stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or ''
                 val.update({
                     'product_code': stock_move.product_id.barcode or '',
                     'product_name': stock_move.product_id.name or '',
                     'product_uom': stock_move.product_id.uom_id.code or '',
-                    'debit_account': stock_move.product_id.categ_id.property_stock_valuation_account_id.code or '',
-                    'credit_account': stock_move.product_id.categ_id.property_stock_valuation_account_id.code or '',
+                    'debit_account': debit_account,
+                    'credit_account': credit_account,
                     'qty': stock_move.quantity_done,
-                    'price': 0,
-                    'amount_total': 0,
+                    'price': price,
+                    'amount_total': amount_total,
                     'occasion_code': stock_move.occasion_code_id.code or '',
                     'account_analytic': stock_move.account_analytic_id.code or '',
                     'work_production': stock_move.work_production.code or '',
                 })
                 data.append(val)
         key_getter1 = itemgetter('source_warehouse', 'destination_warehouse')
-        value_getter1 = itemgetter('product_code', 'product_name', 'product_uom', 'debit_account', 'credit_account', 'qty', 'price', 'amount_total', 'occasion_code', 'account_analytic', 'work_production')
-        key_getter2 = itemgetter('product_code', 'product_name', 'product_uom', 'debit_account', 'credit_account', 'occasion_code', 'account_analytic', 'work_production', 'price', 'amount_total')
-        value_getter2 = itemgetter('qty', 'qty')
+        value_getter1 = itemgetter('product_code', 'product_name', 'product_uom', 'debit_account', 'credit_account',
+                                   'qty', 'price', 'amount_total', 'occasion_code', 'account_analytic', 'work_production')
+        key_getter2 = itemgetter('product_code', 'product_name', 'product_uom', 'debit_account', 'credit_account',
+                                 'occasion_code', 'account_analytic', 'work_production', 'price')
+        value_getter2 = itemgetter('qty', 'amount_total')
         result1 = []
         for (source_wh, destination_wh), objs1 in groupby(sorted(data, key=key_getter1), key_getter1):
             vals1 = []
@@ -102,7 +139,7 @@ class SyntheticDailyTransfer(models.Model):
                 })
             result2 = []
             for key, objs2 in groupby(sorted(vals1, key=key_getter2), key_getter2):
-                qty, x = zip(*map(value_getter2, objs2))
+                qty, amount_total = zip(*map(value_getter2, objs2))
                 result2.append((0, 0, {
                     'product_code': key[0],
                     'product_name': key[1],
@@ -114,7 +151,7 @@ class SyntheticDailyTransfer(models.Model):
                     'work_production': key[7],
                     'qty': sum(qty) or 0,
                     'price': key[8],
-                    'amount_total': key[9],
+                    'amount_total': sum(amount_total) or 0,
                 }))
             result1.append((0, 0, {
                 'source_warehouse': source_wh,
@@ -124,6 +161,58 @@ class SyntheticDailyTransfer(models.Model):
                 'detail_ids': result2,
             }))
         return result1
+
+    @api.model
+    def bravo_get_default_insert_value(self):
+        return {}
+
+    def bravo_get_insert_values(self, **kwargs):
+        bravo_column_names = [
+            'Active', "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate",
+            "Description", "EmployeeCode", "DeptCode", "IsTransfer", "ReceiptWarehouseCode", "PushDate", "BuiltinOrder",
+            "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
+            "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode" "RowId", "DocNo_WO",
+        ]
+        values = []
+        builtin_order = 1
+        for transfer_wh in self.line_ids:
+            row_id = 1
+            for detail in transfer_wh.detail_ids:
+                values.append({
+                    "Active": 1,
+                    "CompanyCode": transfer_wh.company_code or None,
+                    "Stt": transfer_wh.transfer_code or None,
+                    "DocCode": "DC",
+                    "DocNo": transfer_wh.transfer_code or None,
+                    "DocDate": self.date.strftime('%Y-%m-%d 07:00:00') if self.date else None,
+                    "CurrencyCode": self.company_id.currency_id.name or None,
+                    "ExchangeRate": 1,
+                    "Description": transfer_wh.description or None,
+                    "IsTransfer": 0,
+                    "ReceiptWarehouseCode": transfer_wh.destination_warehouse or None,
+                    "PushDate": self.date.strftime('%Y-%m-%d 07:00:00') if self.date else None,
+                    "BuiltinOrder": builtin_order,
+                    "CreditAccount": detail.credit_account or None,
+                    "ItemCode": detail.product_code or None,
+                    "ItemName": detail.product_name or None,
+                    "UnitPurCode": detail.product_uom or None,
+                    "DebitAccount": detail.debit_account or None,
+                    "Quantity9": detail.qty or 0,
+                    "ConvertRate9": 1,
+                    "Quantity": detail.qty or 0,
+                    "OriginalUnitCost": detail.price or 0,
+                    "UnitCost": detail.price or 0,
+                    "OriginalAmount": detail.amount_total or 0,
+                    "Amount": detail.amount_total or 0,
+                    "WarehouseCode": transfer_wh.source_warehouse or None,
+                    "JobCode": detail.occasion_code or None,
+                    "RowId": row_id,
+                    "DocNo_WO": detail.work_production or None,
+                    'DeptCode': detail.account_analytic or None,
+                })
+                row_id += 1
+            builtin_order += 1
+        return bravo_column_names, values
 
 
 class SyntheticDailyTransferLocation(models.Model):
