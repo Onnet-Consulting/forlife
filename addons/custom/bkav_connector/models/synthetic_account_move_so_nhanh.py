@@ -48,19 +48,42 @@ class SyntheticAccountMoveSoNhanh(models.Model):
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
-   
+
+
+    line_discount_ids = fields.One2many('synthetic.so.nhanh.line.discount', compute="_compute_line_discount")
+
+    def _compute_line_discount(self):
+        for r in self:
+            r.line_discount_ids = self.env["synthetic.so.nhanh.line.discount"].search([
+                ('synthetic_id', '=', r.id)
+            ])
+
+
+    def get_invoice_identify(self):
+        return bkav_action.get_invoice_identify(self)
+
     def action_download_view_e_invoice(self):
         pass
 
     def get_vat(self, line):
         vat = 0
         if line.tax_ids:
-            vat = line.tax_ids[0].amount
+            if len(line.tax_ids) == 1:
+                vat = line.tax_ids[0].amount
+            else:
+                tax_amount = 1
+                for tax in r.tax_ids:
+                    tax_amount = tax_amount * tax.amount
+                vat = tax_amount / 100
 
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
+        elif vat == 3.5:
+            tax_rate_id = 7
+        elif vat == 7:
+            tax_rate_id = 8
         elif vat == 8:
             tax_rate_id = 9
         elif vat == 10:
@@ -74,6 +97,39 @@ class SyntheticAccountMoveSoNhanh(models.Model):
         if line.x_free_good:
             item_type = 15
         return item_type
+
+    def get_promotion(self, ln):
+        list_invoice_details_ws = []
+        line_discount_ids = ln.line_discount_ids
+
+        if line_discount_ids:
+            line_discount_vip_amount_ids = line_discount_ids.filtered(lambda r: r.promotion_type == 'vip_amount')
+            if line_discount_vip_amount_ids:
+                line_discount_vip_amount_taxs = {}
+                for line in line_discount_vip_amount_ids:
+                    line_pk = line.line_pk
+                    if line_discount_vip_amount_taxs.get(line_pk):
+                        row = line_discount_vip_amount_taxs[line_pk]
+                        row["Price"] += abs(line.price_unit)
+                        row["Amount"] += abs(line.price_unit)
+                        row["TaxAmount"] += abs(line.tax_amount)
+                        line_discount_vip_amount_taxs[line_pk] = row
+                    else:
+                        vat, tax_rate_id = self.get_vat(line)
+                        line_discount_vip_amount_taxs[line_pk] = {
+                            "ItemName": "Chiết khấu hạng thẻ",
+                            "UnitName": '',
+                            "Price": abs(line.price_unit),
+                            "Amount": abs(line.price_unit),
+                            "TaxAmount": abs(line.tax_amount),
+                            "IsDiscount": 1,
+                            "ItemTypeID": 0,
+                            "TaxRateID": tax_rate_id,
+                            "TaxRate": vat,
+                        }
+        
+                list_invoice_details_ws.extend(list(line_discount_vip_amount_taxs.values()))
+        return list_invoice_details_ws
 
     def get_bkav_data_pos(self):
         bkav_invoices = []
@@ -128,6 +184,7 @@ class SyntheticAccountMoveSoNhanh(models.Model):
                     "TaxRate": vat
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
@@ -144,6 +201,7 @@ class SyntheticAccountMoveSoNhanh(models.Model):
 class SyntheticAccountMoveSoNhanhLine(models.Model):
     _name = 'synthetic.account.move.so.nhanh.line'
 
+    line_pk = fields.Char('Line primary key')
     synthetic_id = fields.Many2one('synthetic.account.move.so.nhanh')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     barcode = fields.Char(related='product_id.barcode')
@@ -154,6 +212,7 @@ class SyntheticAccountMoveSoNhanhLine(models.Model):
     remaining_quantity = fields.Float('Số lượng còn lại')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
@@ -162,11 +221,13 @@ class SyntheticAccountMoveSoNhanhLine(models.Model):
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    invoice_ids = fields.Many2many('sale.order', string='Hóa đơn')
+    invoice_ids = fields.Many2many('account.move', string='Hóa đơn')
     summary_line_id = fields.Many2one('summary.account.move.so.nhanh.line')
     return_line_id = fields.Many2one('summary.account.move.so.nhanh.return.line')
-    invoice_date = fields.Date(string='Date', related="synthetic_id.invoice_date", store=True)
+    invoice_date = fields.Date(string='Date', related="synthetic_id.invoice_date", store=True, copy=False)
+    exists_bkav = fields.Boolean(copy=False, string="Đã tồn tại trên BKAV", related="synthetic_id.exists_bkav")
 
+    line_ids = fields.One2many('synthetic.so.nhanh.line.discount', 'synthetic_line_id')
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
@@ -176,7 +237,7 @@ class SyntheticAccountMoveSoNhanhLine(models.Model):
     @api.depends('price_subtotal', 'tax_amount')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = r.price_unit_incl * r.quantity - r.discount_amount
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
@@ -185,6 +246,38 @@ class SyntheticAccountMoveSoNhanhLine(models.Model):
                 tax_amount = 0
                 for tax in r.tax_ids:
                     tax_amount += (r.price_subtotal * tax.amount) / 100
+                r.tax_amount = tax_amount
+            else:
+                r.tax_amount = 0
+
+
+
+class SyntheticAccountMoveSoNhanhLineDiscount(models.Model):
+    _name = 'synthetic.so.nhanh.line.discount'
+
+    line_pk = fields.Char('Line primary key')
+    synthetic_line_id = fields.Many2one('synthetic.account.move.so.nhanh.line')
+    synthetic_id = fields.Many2one('synthetic.account.move.so.nhanh', related="synthetic_line_id.synthetic_id")
+    price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    amount_total = fields.Monetary('Thành tiền')
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+    promotion_type = fields.Selection(
+        selection=[
+            ('vip_amount', 'Vip'),
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+
+    @api.depends('tax_ids', 'price_unit')
+    def compute_tax_amount(self):
+        for r in self:
+            if r.tax_ids:
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_unit * tax.amount) / 100
                 r.tax_amount = tax_amount
             else:
                 r.tax_amount = 0

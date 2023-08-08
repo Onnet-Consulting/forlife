@@ -376,7 +376,7 @@ class SummaryAccountMovePos(models.Model):
                 row["price_unit"] = -abs(row["price_unit"])
                 row["price_unit_incl"] = -abs(row["price_unit_incl"])
                 adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-                remaining_quantity = line.remaining_quantity + v["quantity"]
+                remaining_quantity = line.remaining_quantity - abs(v["quantity"])
                 if remaining_records.get(store_id):
                     rows = remaining_records[store_id]
                     if rows.get(line.synthetic_id.id):
@@ -428,6 +428,7 @@ class SummaryAccountMovePos(models.Model):
             row = v
             row["quantity"] = abs(row["quantity"])
             row["price_unit"] = -abs(row["price_unit"])
+            row["price_unit_incl"] = -abs(row["price_unit_incl"])
             if remaining_records.get(store_id):
                 rows = remaining_records[store_id]
                 if rows.get('adjusted'):

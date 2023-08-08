@@ -347,18 +347,18 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     @api.depends('price_subtotal', 'tax_amount', 'price_unit_incl')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_unit_incl *  r.quantity - r.discount_amount
+            r.amount_total = -(abs(r.price_unit_incl *  r.quantity) - r.discount_amount)
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
         for r in self:
-            r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
+            r.price_subtotal = -(abs(r.price_unit * r.quantity) - r.discount_amount)
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal / 100
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * abs(r.price_subtotal) / 100
             else:
                 r.tax_amount = 0
 

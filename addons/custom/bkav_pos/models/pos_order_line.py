@@ -26,7 +26,7 @@ class PosOrderLine(models.Model):
         return "_".join(tax_ids)
 
     def get_pk_synthetic(self):
-        pk = f"{self.product_id.barcode}_{float(self.price_unit_excl)}_{self.get_pk_tax()}"
+        pk = f"{self.product_id.barcode}_{float(abs(self.price_unit_excl))}_{self.get_pk_tax()}"
         return pk
 
     def get_pk_synthetic_line_discount(self):

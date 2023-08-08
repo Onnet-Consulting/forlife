@@ -145,7 +145,7 @@ class SaleOrder(models.Model):
                         if vip_number and str(vip_number).isnumeric() and int(vip_number) != 0:
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.code
-                                if rec.source_record:
+                                if rec.source_record and rec.x_account_analytic_ids:
                                     analytic_account_id = rec.x_account_analytic_ids[0]
                                 else:
                                     analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
@@ -193,7 +193,7 @@ class SaleOrder(models.Model):
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
-                        if rec.source_record:
+                        if rec.source_record and rec.x_account_analytic_ids:
                             analytic_account_id = rec.x_account_analytic_ids[0]
                         else:
                             analytic_account_id = warehouse_code and self.env['account.analytic.account'].sudo().search([('code', 'like', '%' + warehouse_code)], limit=1)

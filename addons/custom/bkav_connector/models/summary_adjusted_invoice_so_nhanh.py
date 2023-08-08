@@ -54,6 +54,14 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
+    line_discount_ids = fields.One2many('adjusted.so.nhanh.line.discount', compute="_compute_line_discount")
+
+    def _compute_line_discount(self):
+        for r in self:
+            r.line_discount_ids = self.env["adjusted.so.nhanh.line.discount"].search([
+                ('adjusted_invoice_id', '=', r.id)
+            ])
+            
     def action_download_view_e_invoice(self):
         pass
 
@@ -106,6 +114,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
                     "InvoiceNo": 0,
+                    "OriginalInvoiceIdentify": ln.source_invoice.get_invoice_identify(),
                 },
                 "ListInvoiceDetailsWS": [],
                 "PartnerInvoiceID": 0,
@@ -141,7 +150,8 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+                # print('-------------', bkav_invoice_data)
+                # bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
             except Exception as e:
                 line.message_post(body=str(e))
 
@@ -149,6 +159,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
 class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     _name = 'summary.adjusted.invoice.so.nhanh.line'
 
+    line_pk = fields.Char('Line primary key')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.so.nhanh')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     barcode = fields.Char(related='product_id.barcode')
@@ -157,6 +168,7 @@ class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
@@ -165,22 +177,55 @@ class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    invoice_ids = fields.Many2many('sale.order', string='Hóa đơn')
+    invoice_ids = fields.Many2many('account.move', string='Hóa đơn')
+
+    line_ids = fields.One2many('adjusted.so.nhanh.line.discount', 'adjusted_line_id')
 
     @api.depends('price_subtotal', 'tax_amount')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = -(abs(r.price_unit_incl * r.quantity) - r.discount_amount)
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
         for r in self:
-            r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
+            r.price_subtotal = -(abs(r.price_unit * r.quantity) - r.discount_amount)
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * abs(r.price_subtotal)
+            else:
+                r.tax_amount = 0
+
+
+class SummaryAdjustedInvoiceSoNhanhLineDiscount(models.Model):
+    _name = 'adjusted.so.nhanh.line.discount'
+
+    line_pk = fields.Char('Line primary key')
+    adjusted_line_id = fields.Many2one('summary.adjusted.invoice.so.nhanh.line')
+    adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.so.nhanh', related="adjusted_line_id.adjusted_invoice_id")
+    price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    amount_total = fields.Monetary('Thành tiền')
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+    promotion_type = fields.Selection(
+        selection=[
+            ('vip_amount', 'Vip'),
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+
+    @api.depends('tax_ids', 'price_unit')
+    def compute_tax_amount(self):
+        for r in self:
+            if r.tax_ids:
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_unit * tax.amount) / 100
+                r.tax_amount = tax_amount
             else:
                 r.tax_amount = 0

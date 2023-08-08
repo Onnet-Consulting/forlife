@@ -52,6 +52,9 @@ class AccountMoveBKAV(models.Model):
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
 
+    is_synthetic = fields.Boolean(string='Synthetic', default=False, copy=False)
+
+
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         self.ensure_one()

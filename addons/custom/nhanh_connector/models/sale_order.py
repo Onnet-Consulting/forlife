@@ -58,8 +58,6 @@ class SaleOrderNhanh(models.Model):
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
 
-    is_synthetic = fields.Boolean(string='Synthetic', default=False)
-
 
     # def write(self, vals):
     #     res = super().write(vals)
