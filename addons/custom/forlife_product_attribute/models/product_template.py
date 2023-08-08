@@ -11,8 +11,8 @@ class ProductTemplateAttrLine(models.Model):
             if exits:
                 if rec.value_ids[0] == exits.value_ids[0]:
                     raise ValidationError('Đã tồn tại giá trị của thuộc tính này!')
-            if len(rec.value_ids)>1:
-                raise ValidationError('Chỉ được một thuộc tính cho giá trị này !')
+            if len(rec.value_ids) > 1:
+                raise ValidationError('Chỉ được một giá trị cho một thuộc tính!')
 
 class ProductAttribute(models.Model):
     _inherit = 'product.attribute'
