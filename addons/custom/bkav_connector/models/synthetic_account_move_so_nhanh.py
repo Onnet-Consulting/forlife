@@ -63,7 +63,7 @@ class SyntheticAccountMoveSoNhanh(models.Model):
         return bkav_action.get_invoice_identify(self)
 
     def action_download_view_e_invoice(self):
-        pass
+        return bkav_action.download_invoice_bkav(self)
 
     def get_vat(self, line):
         vat = 0

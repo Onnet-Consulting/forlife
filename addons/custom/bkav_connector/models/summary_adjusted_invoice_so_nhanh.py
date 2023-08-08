@@ -63,7 +63,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
             ])
             
     def action_download_view_e_invoice(self):
-        pass
+        return bkav_action.download_invoice_bkav(self)
 
     def get_vat(self, line):
         vat = 0
@@ -150,8 +150,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                # print('-------------', bkav_invoice_data)
-                # bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
             except Exception as e:
                 line.message_post(body=str(e))
 

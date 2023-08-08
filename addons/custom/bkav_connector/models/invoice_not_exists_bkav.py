@@ -476,6 +476,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         if not kwargs.get("env"):
             where_extra = 'AND (am.invoice_date <= %s)'
             params = ((move_date,))
+        #WHERE so.source_record = TRUE
         query = """
             SELECT DISTINCT am.id 
             FROM sale_order so
@@ -483,7 +484,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
             JOIN account_move_line aml on solir.invoice_line_id = aml.id
             JOIN account_move am on am.id = aml.move_id
-            WHERE so.source_record = TRUE
+            
             {where_extra}
             AND am.exists_bkav = 'f'
             AND am.state = 'posted'
