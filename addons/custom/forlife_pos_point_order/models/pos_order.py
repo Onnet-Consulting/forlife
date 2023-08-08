@@ -307,7 +307,7 @@ class PosOrder(models.Model):
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        if data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True:
+        if (data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True) or ('is_refund_order' in data and data['is_refund_order']) or ('is_change_order' in data and data['is_change_order']):
             program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id
