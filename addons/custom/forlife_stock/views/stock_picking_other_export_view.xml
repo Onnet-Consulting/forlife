@@ -77,7 +77,12 @@
                     <attribute name="attrs">{'invisible': ['|', '|',('other_export', '=', True), ('other_import', '=', True),'&amp;',('other_export', '=', False), ('other_import', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="after">
-                    <field name="location_id" id="source_reason" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"/>
+                    <field name="location_id"
+                           id="source_reason"
+                           string="Lý do nhập khác"
+                           context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"
+                           attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"/>
+
                     <field name="location_id" id="source_location" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
@@ -85,7 +90,13 @@
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="after">
                     <field name="location_dest_id" id="dest_location" string="Địa điểm đích" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}" force_save="1"/>
-                    <field name="location_dest_id" id="dest_reason" string="Lý do xuất khác" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}" force_save="1"/>
+
+                    <field name="location_dest_id"
+                           id="dest_reason"
+                           string="Lý do xuất khác"
+                           context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"
+                           attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"
+                           force_save="1"/>
                 </xpath>
                 <xpath expr="//page[@name='operations']//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="class" add="width-hh" separator=" "/>

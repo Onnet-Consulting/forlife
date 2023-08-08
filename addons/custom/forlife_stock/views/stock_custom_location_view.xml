@@ -7,11 +7,11 @@
             <field name="priority" eval="1000" />
             <field name="arch" type="xml">
                 <tree>
-                        <field name="name"/>
-                        <field name="code"/>
-                        <field name="type_other"/>
-                        <field name="x_property_valuation_out_account_id" attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
-                        <field name="x_property_valuation_in_account_id" attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="type_other"/>
+                    <field name="x_property_valuation_out_account_id" attrs="{'invisible': [('type_other', '!=', 'incoming')]}"/>
+                    <field name="x_property_valuation_in_account_id" attrs="{'invisible': [('type_other', '!=', 'outcoming')]}"/>
                 </tree>
             </field>
         </record>
