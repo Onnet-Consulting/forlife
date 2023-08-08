@@ -88,6 +88,21 @@ class PurchaseOrder(models.Model):
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
     location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
 
+    def _get_department_default(self):
+        user_id = self.env['res.users'].browse(self._uid)
+        if not user_id:
+            return
+        return user_id.department_default_id
+
+    def _get_team_default(self):
+        user_id = self.env['res.users'].browse(self._uid)
+        if not user_id:
+            return
+        return user_id.team_default_id
+
+    department_id = fields.Many2one('hr.department', string='Department', default=_get_department_default)
+    team_id = fields.Many2one('hr.team', string='Team', default=_get_team_default)
+
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):
         for rec in self:
@@ -243,8 +258,9 @@ class PurchaseOrder(models.Model):
                     if line.product_uom.id != line.product_id.uom_id.id:
                         line.product_uom = line.product_id.uom_id.id
                     domain_supplierinfo = [
-                        '|', ('product_id', '=', line.product_id.id), ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-                        ('product_uom', '=', line.purchase_uom.id), ('amount_conversion', '=', line.exchange_quantity)
+                        '|', ('product_id', '=', line.product_id.id),
+                        ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                        ('amount_conversion', '=', line.exchange_quantity)
                     ]
                     supplier_ids = self.env['product.supplierinfo'].search(domain + domain_supplierinfo)
                     if supplier_ids:
@@ -264,24 +280,6 @@ class PurchaseOrder(models.Model):
 
         # Do something with res
         return res
-
-    # @api.constrains('account_analytic_ids')
-    # def constrains_account_analytic_ids(self):
-    #     for item in self:
-    #         if not item.is_purchase_request and item.account_analytic_ids and len(item.account_analytic_ids) > 1:
-    #             raise ValidationError('Bạn chỉ được chọn một 1 trung tâm chi phí')
-
-    # @api.constrains('occasion_code_ids')
-    # def constrains_occasion_code_ids(self):
-    #     for item in self:
-    #         if not item.is_purchase_request and item.occasion_code_ids and len(item.occasion_code_ids) > 1:
-    #             raise ValidationError('Bạn chỉ được chọn một 1 mã vụ việc')
-
-    # @api.constrains('production_id')
-    # def constrains_production_id(self):
-    #     for item in self:
-    #         if not item.is_purchase_request and item.production_id and len(item.production_id) > 1:
-    #             raise ValidationError('Bạn chỉ được chọn một 1 lệnh sản xuất')
 
     @api.onchange('currency_id')
     def onchange_exchange_rate(self):
@@ -1196,14 +1194,14 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_expense(self, order, cost_line, po_line, cp):
+    def _prepare_invoice_expense(self, cost_line, po_line, cp):
         # if cost_line.actual_cost <= 0:
         #     return {}
-        amount_rate = po_line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))
-        cp += ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * po_line.qty_received
-        if po_line.currency_id != po_line.company_currency:
-            rates = po_line.currency_id._get_rates(po_line.company_id, order.date_order)
-            cp = cp * rates.get(po_line.currency_id.id)
+        # amount_rate = po_line.total_vnd_amount / sum(self.order_line.mapped('total_vnd_amount'))
+        # cp += ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * po_line.qty_received
+        # if po_line.currency_id != po_line.company_currency:
+        #     rates = po_line.currency_id._get_rates(po_line.company_id, self.date_order)
+        #     cp = cp * rates.get(po_line.currency_id.id)
 
         data_line = {
             'po_id': po_line.id,
@@ -1211,7 +1209,7 @@ class PurchaseOrder(models.Model):
             'product_expense_origin_id': cost_line.product_id.id,
             'description': po_line.product_id.name,
             'account_id': cost_line.product_id.categ_id.property_stock_account_input_categ_id.id,
-            'name': cost_line. product_id.name,
+            'name': cost_line.product_id.name,
             'quantity': 1,
             'price_unit': cp,
             'occasion_code_id': po_line.occasion_code_id.id if po_line.occasion_code_id else False,
@@ -1348,7 +1346,7 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_labor(self, order, labor_cost_id):
+    def _prepare_invoice_labor(self, labor_cost_id):
         pol_id = labor_cost_id.purchase_order_line_id
         data = {
             'po_id': pol_id.id,
@@ -1412,7 +1410,7 @@ class PurchaseOrder(models.Model):
                             labor_cost_ids = pol_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
                             for labor_cost_id in labor_cost_ids:
                                 pol_id = labor_cost_id.purchase_order_line_id
-                                data_line = self._prepare_invoice_labor(order, labor_cost_id)
+                                data_line = self._prepare_invoice_labor(labor_cost_id)
                                 if pol_id.display_type == 'line_section':
                                     pending_section = pol_id
                                     continue
@@ -1522,7 +1520,13 @@ class PurchaseOrder(models.Model):
                                 #             if wave_item.picking_id.name == x_return.picking_id.relation_return:
                                 #                 data_line = self.create_invoice_expense_no_return(order, nine, line, cp, wave_item, x_return)
                                 #     else:
-                                data_line = self._prepare_invoice_expense(order, cost_line, line, cp)
+                                amount_rate = line.total_vnd_amount / sum(self.order_line.mapped('total_vnd_amount'))
+                                cp += ((amount_rate * cost_line.vnd_amount) / line.product_qty) * line.qty_received
+                                if line.currency_id != line.company_currency:
+                                    rates = line.currency_id._get_rates(line.company_id, self.date_order)
+                                    cp = cp * rates.get(line.currency_id.id)
+
+                                data_line = self._prepare_invoice_expense(cost_line, line, cp)
                                 if line.display_type == 'line_section':
                                     pending_section = line
                                     continue
@@ -1556,6 +1560,7 @@ class PurchaseOrder(models.Model):
                         for line in order.order_line:
                             # nếu ko phải order return
                             # if not order.is_return:
+                                    # tìm move line gán với pol, sản phẩm, picking nhập, và ko phải return
                             #     wave = picking_in.move_line_ids_without_package.filtered(
                             #         lambda w: w.move_id.purchase_line_id.id == line.id
                             #                   and w.product_id.id == line.product_id.id
@@ -2966,7 +2971,7 @@ class StockPicking(models.Model):
                 'sequence': 1,
                 'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
                 'product_id': line.product_id.id,
-                'name': line.product_id.name,
+                'name': product_tax.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': (amount / qty_po_origin) * qty_po_done,
                 'debit': 0
@@ -2986,7 +2991,7 @@ class StockPicking(models.Model):
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
                     'product_id': move.product_id.id,
-                    'name': move.product_id.name,
+                    'name': product_tax.name,
                     'text_check_cp_normal': line.product_id.name,
                     'credit': 0.0,
                     'debit': (amount / qty_po_origin) * qty_po_done,

@@ -297,21 +297,25 @@ class PosOrder(models.Model):
         data = self.get_bkav_data_pos()
         origin_id = False
         is_publish = False
+        if self._context.get('is_publish'):
+            is_publish = True
         issue_invoice_type = 'vat'
         return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+    
+    def publish_invoice_bkav(self):
+        return bkav_action.publish_invoice_bkav(self)
+    
+    def create_publish_invoice_bkav(self):
+        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
 
-
+    def get_invoice_bkav(self):
+        return bkav_action.get_invoice_bkav(self)
+    
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data_pos()
         return bkav_action.update_invoice_bkav(self,data)
-    
-    def publish_invoice_bkav(self):
-        return bkav_action.publish_invoice_bkav(self)
-
-    def get_invoice_bkav(self):
-        return bkav_action.get_invoice_bkav(self)
 
     def cancel_invoice_bkav(self):
         return bkav_action.cancel_invoice_bkav(self)

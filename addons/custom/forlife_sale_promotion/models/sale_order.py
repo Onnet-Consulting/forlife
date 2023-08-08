@@ -95,17 +95,19 @@ class SaleOrder(models.Model):
                             orig_order = rec.search([('nhanh_id', '=', nhanh_origin_id), ('x_is_return', '=', False)], limit=1)
                             return_order = rec.search([('nhanh_id', '=', nhanh_return_id), ('x_is_return', '=', True)], limit=1)
                             if not orig_order or not return_order:
-                                action = self.env['ir.actions.actions']._for_xml_id(
-                                    'forlife_sale_promotion.action_check_promotion_wizard')
+                                action = self.env['ir.actions.actions']._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                                 action['context'] = {
-                                    'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)}
+                                    'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)
+                                }
                                 return action
                             else:
                                 rec.nhanh_origin_id = nhanh_origin_id
                                 rec.nhanh_return_id = nhanh_return_id
                         else:
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
-                            action['context'] = {'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")}
+                            action['context'] = {
+                                'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")
+                            }
                             return action
 
                     has_vip = False
@@ -115,29 +117,43 @@ class SaleOrder(models.Model):
                             barcode = re.split(' |,', barcode_str)[0]
 
                             if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
-                                rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                                rec.order_line.write({
+                                    'x_free_good': True,
+                                    'price_unit': 0,
+                                    'odoo_price_unit': 0,
+                                    'x_cart_discount_fixed_price': 0
+                                })
 
                             else:
                                 line = self.get_oder_line_barcode(barcode)
                                 if not line or len(line) == 0:
                                     rec.write({"state": "check_promotion"})
-                                    action = self.env['ir.actions.actions'].sudo()._for_xml_id(
-                                        'forlife_sale_promotion.action_check_promotion_wizard')
-                                    action['context'] = {'default_message': _("Order note '#MN' invalid!")}
+                                    action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                                    action['context'] = {
+                                        'default_message': _("Order note '#MN' invalid!")
+                                    }
                                     return action
                                 elif len(line) >= 1:
                                     if line[0].product_uom_qty == 1:
-                                        line[0].write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                                        line[0].write({
+                                            'x_free_good': True,
+                                            'price_unit': 0,
+                                            'odoo_price_unit': 0,
+                                            'x_cart_discount_fixed_price': 0
+                                        })
                                     elif line[0].product_uom_qty > 1:
                                         line[0].write({
                                             'product_uom_qty': line[0].product_uom_qty - 1,
                                             'price_unit': line[0].price_unit
                                         })
-                                        line[0].copy(
-                                            {'x_free_good': True, 'order_id': line[0].order_id.id,
-                                             'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0,
-                                             'x_cart_discount_fixed_price': 0}
-                                        )
+                                        line[0].copy({
+                                            'x_free_good': True,
+                                            'order_id': line[0].order_id.id,
+                                            'product_uom_qty': 1,
+                                            'price_unit': 0,
+                                            'odoo_price_unit': 0,
+                                            'x_cart_discount_fixed_price': 0,
+                                        })
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]
@@ -148,8 +164,7 @@ class SaleOrder(models.Model):
                                 if rec.source_record and rec.x_account_analytic_ids:
                                     analytic_account_id = rec.x_account_analytic_ids[0]
                                 else:
-                                    analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
-                                        [('code', 'like', '%' + warehouse_code)], limit=1)
+                                    analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
                                 # gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
@@ -167,7 +182,8 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'product_uom_qty': ln.product_uom_qty,
                                         'description': "Chiết khấu theo chính sách vip",
-                                        'tax_id': ln.tax_id
+                                        'tax_id': ln.tax_id,
+                                        'order_line_id': ln.id,
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
@@ -181,14 +197,17 @@ class SaleOrder(models.Model):
                                         'product_uom_qty': ln.product_uom_qty,
                                         'promotion_type': 'vip_amount_remain',
                                         'description': "Chiết khấu giảm giá trực tiếp",
-                                        'tax_id': ln.tax_id
+                                        'tax_id': ln.tax_id,
+                                        'order_line_id': ln.id,
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
                             self.env.cr.rollback()
                             rec.write({"state": "check_promotion"})
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
-                            action['context'] = {'default_message': _("Order note '#VIP' invalid!")}
+                            action['context'] = {
+                                'default_message': _("Order note '#VIP' invalid!")
+                            }
                             return action
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
@@ -214,7 +233,8 @@ class SaleOrder(models.Model):
                                 'account_id': discount_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp",
-                                'tax_id': ln.tax_id
+                                'tax_id': ln.tax_id,
+                                'order_line_id': ln.id,
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
@@ -226,7 +246,8 @@ class SaleOrder(models.Model):
                                 'account_id': promotion_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá",
-                                'tax_id': ln.tax_id
+                                'tax_id': ln.tax_id,
+                                'order_line_id': ln.id,
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
@@ -294,6 +315,42 @@ class SaleOrder(models.Model):
                             # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí ship báo khách hàng"
                         })]
+
+                    # Check voucher và giá trị
+                    if rec.source_record and not rec.x_is_change and rec.x_code_voucher:
+                        voucher_id = self.env['voucher.voucher'].search([('name', '=', rec.x_code_voucher)])
+                        if not voucher_id:
+                            rec.write({
+                                "state": "check_promotion"
+                            })
+                            action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action['context'] = {
+                                'default_message': _("Voucher %s invalid or wrong value!" % rec.x_code_voucher),
+                                'default_voucher_name': rec.x_code_voucher
+                            }
+                            return action
+
+                        if voucher_id.state not in ['sold', 'valid']:
+                            rec.write({
+                                "state": "check_promotion"
+                            })
+                            action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action['context'] = {
+                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán" hoặc "Còn giá trị"' % rec.x_code_voucher),
+                            }
+                            return action
+
+                        if voucher_id and voucher_id.price_residual < rec.x_voucher:
+                            rec.write({
+                                "state": "check_promotion"
+                            })
+                            action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
+                            action['context'] = {
+                                'default_message': _("Giá trị voucher (Nhanh) không được vượt quá %s" % "{:0,.0f}".format(voucher_id.price_residual)),
+                                'default_voucher_value': rec.x_voucher
+                            }
+                            return action
+
                 # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
                     product_domain = []
@@ -318,7 +375,8 @@ class SaleOrder(models.Model):
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi",
-                                        'tax_id': line.tax_id
+                                        'tax_id': line.tax_id,
+                                        'order_line_id': line_promotion.id,
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             line.write({'state': 'draft'})
@@ -349,7 +407,8 @@ class SaleOrder(models.Model):
                                             'account_id': discount_account_id and discount_account_id.id,
                                             'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                             'description': "Chiết khấu khuyến mãi",
-                                            'tax_id': line.tax_id
+                                            'tax_id': line.tax_id,
+                                            'order_line_id': line_promotion.id
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 line.write({'state': 'draft'})
@@ -362,7 +421,12 @@ class SaleOrder(models.Model):
             for line in rec.order_line:
                 if line.is_reward_line:
                     if line.reward_id.reward_type == "product":
-                        line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                        line.write({
+                            'x_free_good': True,
+                            'price_unit': 0,
+                            'odoo_price_unit': 0,
+                            'x_cart_discount_fixed_price': 0
+                        })
             return res
 
 class SaleOrderLine(models.Model):

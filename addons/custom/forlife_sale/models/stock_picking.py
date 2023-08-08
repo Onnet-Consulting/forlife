@@ -32,10 +32,10 @@ class StockPicking(models.Model):
         for line in self.move_ids:
             if self.sale_id.x_origin and self.sale_id.x_origin.promotion_ids:
                 promotion_id = self.sale_id.x_origin.promotion_ids.filtered(lambda x: x.product_id.id == line.product_id.id)
-                if promotion_id and promotion_id.product_uom_qty:
+                if promotion_id and promotion_id.order_line_id.product_uom_qty:
                     promotion_ids.append((0, 0, {
                         "product_id": promotion_id.product_id.id,
-                        "value": - (promotion_id.value / promotion_id.product_uom_qty) * line.quantity_done,
+                        "value": - (promotion_id.value / promotion_id.order_line_id.product_uom_qty) * line.quantity_done,
                         "promotion_type": promotion_id.promotion_type,
                         "account_id": promotion_id.account_id.id,
                         "analytic_account_id": promotion_id.analytic_account_id.id,
@@ -89,6 +89,7 @@ class StockPicking(models.Model):
                 else:
                     line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id
+        
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()

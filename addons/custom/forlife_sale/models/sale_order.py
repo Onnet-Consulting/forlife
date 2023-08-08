@@ -250,7 +250,9 @@ class SaleOrder(models.Model):
 
     def action_create_picking(self):
         if self.state in ('draft', 'sent'):
-            self.check_sale_promotion()
+            action = self.check_sale_promotion()
+            if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
+                return action
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
@@ -444,9 +446,9 @@ class SaleOrderLine(models.Model):
 
     def get_product_code(self):
         account = self.x_product_code_id.asset_account.id
-        product_categ_id = self.env['product.category'].search([('property_stock_valuation_account_id', '=', account)])
+        product_categ_id = self.env['product.category'].search([('property_account_expense_categ_id', '=', account)])
         if not product_categ_id:
-            raise UserError(_('Không có nhóm sản phẩm nào cấu hình Tài khoản định giá tồn kho là %s' % self.x_product_code_id.asset_account.code))
+            raise UserError(_('Không có nhóm sản phẩm nào cấu hình Tài khoản chi phí là %s' % self.x_product_code_id.asset_account.code))
         product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
         if not product_id:
             categ_name = ','.join(product_categ_id.mapped('name'))
