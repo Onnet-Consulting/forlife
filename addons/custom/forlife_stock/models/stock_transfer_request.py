@@ -74,9 +74,9 @@ class StockTransferRequest(models.Model):
                     'plan_quantity': production_material_id.total,
                     'uom_id': production_material_id.uom_id.id or production_material_id.product_id.uom_id.id,
                     'production_to': self.production_id.id,
+                    'location_id': self.location_id.id or False,
+                    'location_dest_id': self.location_dest_id.id or False,
                 }))
-        self.onchange_location_id()
-        self.onchange_location_dest_id()
         self.write({
             'request_lines': request_lines
         })
