@@ -8,3 +8,4 @@ base_group_system_bravo_sync_pos_expense_label_wizard,base.group_system_bravo_sy
 access_synthetic_daily_transfer,synthetic.daily.transfer,model_synthetic_daily_transfer,base.group_user,1,0,0,0
 access_synthetic_daily_transfer_location,synthetic.daily.transfer.location,model_synthetic_daily_transfer_location,base.group_user,1,0,0,0
 access_synthetic_daily_transfer_line,synthetic.daily.transfer.line,model_synthetic_daily_transfer_line,base.group_user,1,0,0,0
+access_acc_inv_diff_wizard,acc.inv.diff.wizard,model_acc_inv_diff_wizard,base.group_user,1,1,1,0

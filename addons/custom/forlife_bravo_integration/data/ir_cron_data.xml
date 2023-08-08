@@ -22,6 +22,18 @@
         <field name="model_id" ref="model_synthetic_daily_transfer"/>
         <field name="code">model.synchronize_daily_transfer()</field>
         <field name="state">code</field>
-        <field name="nextcall" eval="(DateTime.now().replace(hour=21, minute=0, second=0)).strftime('%Y-%m-%d %H:%M:%S')" />
+        <field name="nextcall" eval="(DateTime.now().replace(hour=21, minute=0, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <record id="ir_cron_synchronize_accounting_inventory_difference" model="ir.cron">
+        <field name="name">Bravo: Đồng bộ hạch toán chênh lệch kiểm kê</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_acc_inv_diff_wizard"/>
+        <field name="code">model.synchronize_accounting_inventory_difference()</field>
+        <field name="state">code</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=20, minute=0, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
     </record>
 </odoo>

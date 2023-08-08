@@ -109,7 +109,7 @@ class ForlifeOtherInOutRequest(models.Model):
 
     def action_wait_approve(self):
         for record in self:
-            if record.type_other_id.code == 'N01':
+            if record.type_other_id.code == 'N01' and record.location_id.code in ['N0101', 'N0102']:
                 line_productions = record.other_in_out_request_line_ids.filtered(lambda x: x.production_id)
                 for rec in line_productions:
                     remaining_qty = rec.production_id.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id).remaining_qty or 0
