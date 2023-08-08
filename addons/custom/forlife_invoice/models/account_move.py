@@ -152,13 +152,14 @@ class SummaryExpenseLaborAccount(models.Model):
             total_cost_false += sum([x.price_unit for x in lines])
             rec.after_tax = total_cost_false
 
-    @api.depends('product_id', 'move_id.invoice_line_ids')
+    @api.depends('product_id', 'move_id.invoice_line_ids', 'move_id.invoice_line_ids.product_expense_origin_id')
     def _compute_expense_labor(self):
         for item in self:
             item.expense_labor = 0
             total = 0
             lines = item.move_id.invoice_line_ids.filtered(
-                lambda x: x.product_id == item.product_id)
+                lambda x: x.product_id == item.product_id and x.product_expense_origin_id
+                          and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
             total += sum([x.price_unit for x in lines])
             item.expense_labor = total
 
