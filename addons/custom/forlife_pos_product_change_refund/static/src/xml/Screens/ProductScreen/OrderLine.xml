@@ -3,10 +3,10 @@
     <t t-name="forlife_pos_product_change_refund.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
         <xpath expr="//ul[hasclass('info-list')]" position="inside">
             <t t-if="props.line.employee_id">
-                    <li class="info orderline-note">
-                        <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
-                        <t t-esc="env.pos.assignable_employee_by_id[props.line.employee_id]"/>
-                    </li>
+                <li class="info orderline-note">
+                    <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
+                    <t t-esc="env.pos.assignable_employee_by_id[props.line.employee_id]"/>
+                </li>
             </t>
         </xpath>
         <xpath expr="//span[hasclass('price')]" position="after">

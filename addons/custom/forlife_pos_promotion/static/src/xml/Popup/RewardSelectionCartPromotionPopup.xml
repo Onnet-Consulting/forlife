@@ -4,7 +4,7 @@
     <t t-name="RewardSelectionCartPromotionPopup" owl="1">
         <div style="border-left: outset; margin: 6px">
             <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.max_reward_quantity"/> sản phẩm</div>
-            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram(this.state.program)"/> sản phẩm</div>
             <div t-if="this.state.program.program.reward_type == 'cart_discount_amount'">
                 <span style="font-weight: normal">Số tiền giảm: </span>
                 <strong t-esc="this.env.pos.format_currency(this.state.program.program.disc_amount)"/>
@@ -14,13 +14,13 @@
                         <li class="program-item" t-att-style="getDisplayStyle(reward)"
                             t-att-class="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'unselectable' : 'selectable'">
                             <input type="checkbox" name="programs"
-                                   t-att-id="reward.line.cid+this.state.program.program.str_id"
+                                   t-att-id="reward.line.cid+'p'+this.state.program.program.str_id"
                                    t-att-checked="'checked' ? reward.isSelected : ''"
                                    t-att-value="reward.line.cid"
                                    t-on-click="() => this.selectItem(reward.line.cid)"
                                    t-att-disabled="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'selectable' : ''"
                             />
-                            <label t-att-for="reward.line.cid+this.state.program.program.str_id">
+                            <label t-att-for="reward.line.cid+'p'+this.state.program.program.str_id">
                                 [<t t-esc="reward.line.product.barcode or reward.line.product.default_code"/>]
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
@@ -34,10 +34,10 @@
                                     <span t-if="this.state.program.program.reward_type!='cart_discount_amount'"><t t-esc="this.getDiscountPrice(reward)"/></span>
                                 </li>
                             </ul>
-                            <div t-if="reward.isSelected" style="margin: 0 0 0 20px;">
+                            <div t-att-style="!reward.isSelected ? 'display: none' : ''" style="margin: 0 0 0 20px;">
                                 <div>SL chọn
                                     <input type="number"
-                                           id="quantity" name="SL"
+                                           t-att-id="'quantity-'+reward.line.cid+'p'+this.state.program.program.str_id" name="SL"
                                            t-att-value="reward.quantity" min="0" t-att-max="reward.max_qty"
                                            t-on-change="(ev) => this.onChangeQty(reward, ev.target)"
                                     />
