@@ -54,10 +54,15 @@ class AccountExpenseLaborDetail(models.Model):
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', store=True, related='move_id.currency_id')
     company_id = fields.Many2one(related='move_id.company_id', string='Công ty', store=True)
     qty = fields.Float('Số lượng')
-    price_subtotal_back = fields.Float(string='Thành tiền')
-    tax_back = fields.Float(string='Tiền thuế', compute='compute_tax')
-    totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back')
+    price_subtotal_back = fields.Float(string='Thành tiền', currency_field='currency_id')
+    tax_back = fields.Float(string='Tiền thuế', compute='compute_tax', currency_field='currency_id')
+    totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', currency_field='currency_id')
     tax_percent = fields.Many2one('account.tax', string='% Thuế')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(AccountExpenseLaborDetail, self).create(vals_list)
+        return res
 
     @api.depends('tax_percent', 'price_subtotal_back')
     def compute_tax(self):
@@ -84,11 +89,17 @@ class SummaryExpenseLaborAccount(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, related='move_id.currency_id')
     company_id = fields.Many2one(related='move_id.company_id', string='Company', store=True)
 
-    before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax')
-    after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax')
-    # expense_labor = fields.Float(string='Chi phí nhân công', compute='_compute_expense_labor')
+    before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', currency_field='currency_id')
+    after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', currency_field='currency_id')
+    expense_labor = fields.Float(string='Chi phí nhân công', compute='_compute_expense_labor')
     # total_product = fields.Float(string='Tổng giá trị tiền hàng',
     #                              compute='_compute_total_product')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(SummaryExpenseLaborAccount, self).create(vals_list)
+        return res
+
 
     @api.onchange('product_id')
     def onchange_product(self):
@@ -141,12 +152,13 @@ class SummaryExpenseLaborAccount(models.Model):
             total_cost_false += sum([x.price_unit for x in lines])
             rec.after_tax = total_cost_false
 
-    # @api.depends('product_id', 'move_id.invoice_line_ids', 'move_id.invoice_line_ids.product_expense_origin_id')
-    # def _compute_expense_labor(self):
-    #     for item in self:
-    #         item.expense_labor = 0
-    #         total = 0
-    #         lines = item.move_id.invoice_line_ids.filtered(
-    #             lambda x: x.product_id == item.product_id and x.product_expense_origin_id in cost_line_false.mapped(
-    #                 'product_id'))
+    @api.depends('product_id', 'move_id.invoice_line_ids')
+    def _compute_expense_labor(self):
+        for item in self:
+            item.expense_labor = 0
+            total = 0
+            lines = item.move_id.invoice_line_ids.filtered(
+                lambda x: x.product_id == item.product_id)
+            total += sum([x.price_unit for x in lines])
+            item.expense_labor = total
 
