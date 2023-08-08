@@ -21,11 +21,11 @@
         <field name="model">synthetic.account.move.pos</field>
         <field name="arch" type="xml">
             <form>
-                <header>
+                <!--header>
                     <button name="generate_invoices" type="object" string="Tạo hóa đơn tổng hợp"/>
                     <button name="generate_invoices_bkav" type="object" string="Tạo hóa đơn tổng hợp đến BKAV"/>
                     <field name="state" widget="statusbar"/>
-                </header>
+                </header-->
                 <sheet>
                     <group>
                         <group>
@@ -50,6 +50,7 @@
                                     <field name="remaining_quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
+                                     <field name="price_unit_incl"/>
                                     <field name="x_free_good"/>
 <!--                                    <field name="discount"/>-->
 <!--                                    <field name="discount_amount"/>-->

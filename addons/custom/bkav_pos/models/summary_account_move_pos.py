@@ -31,10 +31,12 @@ class SummaryAccountMovePos(models.Model):
 
     def get_line_discount_detail(self, line):
         item = {
+            "line_pk": line.get_pk_synthetic_line_discount(),
             "price_unit": line.price_subtotal,
             "price_unit_incl": line.price_subtotal_incl,
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
-            "promotion_type": line.promotion_type
+            "promotion_type": line.promotion_type,
+            "amount_total": line.price_subtotal_incl,
         }
         return item
 
@@ -56,6 +58,7 @@ class SummaryAccountMovePos(models.Model):
             "product_id": line.product_id.id,
             "quantity": line.qty,
             "price_unit": line.price_unit_excl,
+            "price_unit_incl": line.price_unit_incl,
             "x_free_good": line.is_reward_line,
             "invoice_ids": [line.order_id.id],
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
@@ -67,9 +70,9 @@ class SummaryAccountMovePos(models.Model):
         items = {}
 
         for line in lines:
-            pk = f"{line.product_id.barcode}_{float(line.price_unit_excl)}"
+            pk = line.get_pk_synthetic()
             item = self.get_move_line(line)
-
+            item["line_pk"] = pk
             if items.get(pk):
                 row = items[pk]
                 row["quantity"] += item["quantity"]
@@ -134,13 +137,12 @@ class SummaryAccountMovePos(models.Model):
         last_day = date.today()
         domain = [
             ('is_synthetic', '=', False),
-            # ('invoice_date', '<', last_day),
             ('is_post_bkav_store', '=', True),
             ('is_invoiced', '=', True),
             ('invoice_exists_bkav', '=', False),
         ]
-        if kwargs.get("domain"):
-            domain = kwargs["domain"]
+        if not kwargs.get("env"):
+            domain.append(('invoice_date', '<', last_day))
 
         pos_order = self.env['pos.order'].search(domain)
 
@@ -329,15 +331,14 @@ class SummaryAccountMovePos(models.Model):
         sale_data,
         store_id
         ):
+        line_pk = sale_data["line_pk"]
         summary_line_id = move_pos_line.filtered(
             lambda r: r.summary_id.store_id.id == store_id \
-            and r.product_id.id == sale_data["product_id"]\
-            and float(r.price_unit) == float(sale_data["price_unit"])
+            and r.line_pk == line_pk
         )
         return_line_id = move_refund_pos_line.filtered(
             lambda r: r.return_id.store_id.id == store_id \
-            and r.product_id.id == sale_data["product_id"]\
-            and float(r.price_unit) == float(sale_data["price_unit"])
+            and r.line_pk == line_pk
         )
 
         sale_data["line_ids"].extend(v["line_ids"])
@@ -358,67 +359,72 @@ class SummaryAccountMovePos(models.Model):
         v,
         store_id
     ):
+        is_adjusted = False
         if synthetic_lines:
+            line_pk = v["line_pk"]
             lines = synthetic_lines.filtered(
-                lambda r: r.product_id.id == v["product_id"] and \
-                r.synthetic_id.store_id.id == store_id and \
-                float(r.price_unit) == float(v["price_unit"])
+                lambda r: r.synthetic_id.store_id.id == store_id and \
+                r.line_pk == line_pk and abs(r.remaining_quantity) >= abs(v["quantity"])
             )
             if lines:
-                for line in lines:
-                    row = v
-                    if abs(line.remaining_quantity) > abs(v["quantity"]):
-                        row["quantity"] = abs(row["quantity"])
-                        row["price_unit"] = -abs(row["price_unit"])
-                        adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-                        remaining_quantity = line.remaining_quantity + v["quantity"]
-                        if remaining_records.get(store_id):
-                            rows = remaining_records[store_id]
-                            if rows.get(line.synthetic_id.id):
-                                rows[line.synthetic_id.id].append(row)
-                            else:
-                                rows[line.synthetic_id.id] = [row]
-                        else:
-                            remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                        line.sudo().with_delay(
-                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                        ).write({
-                            "remaining_quantity": remaining_quantity,
-                            "adjusted_quantity": adjusted_quantity
-                        })
-                        break
-                    else:
-                        row["quantity"] = abs(line.remaining_quantity)
-                        v["quantity"] += line.remaining_quantity
-                        adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
-                        row["price_unit"] = -abs(row["price_unit"])
-                        if remaining_records.get(store_id):
-                            rows = remaining_records[store_id]
-                            if rows.get(line.synthetic_id.id):
-                                rows[line.synthetic_id.id].append(row)
-                            else:
-                                rows[line.synthetic_id.id] = [row]
-                        else:
-                            remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                        line.sudo().with_delay(
-                            description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                        ).write({
-                            "remaining_quantity": 0,
-                            "adjusted_quantity": adjusted_quantity
-                        })
-            else:
+                line = lines[0]
                 row = v
+                # for line in lines:
+                #     row = v
+                #     if abs(line.remaining_quantity) >= abs(v["quantity"]):
                 row["quantity"] = abs(row["quantity"])
                 row["price_unit"] = -abs(row["price_unit"])
+                row["price_unit_incl"] = -abs(row["price_unit_incl"])
+                adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
+                remaining_quantity = line.remaining_quantity + v["quantity"]
                 if remaining_records.get(store_id):
                     rows = remaining_records[store_id]
-                    if rows.get('adjusted'):
-                        rows['adjusted'].append(row)
+                    if rows.get(line.synthetic_id.id):
+                        rows[line.synthetic_id.id].append(row)
                     else:
-                        rows['adjusted'] = [row]
+                        rows[line.synthetic_id.id] = [row]
                 else:
-                    remaining_records[store_id] = {'adjusted': [row]}
-        else:
+                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                line.sudo().with_delay(
+                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                ).write({
+                    "remaining_quantity": remaining_quantity,
+                    "adjusted_quantity": adjusted_quantity
+                })
+                is_adjusted = True
+                        # break
+                    # else:
+                    #     row["quantity"] = abs(line.remaining_quantity)
+                    #     v["quantity"] += line.remaining_quantity
+                    #     adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+                    #     row["price_unit"] = -abs(row["price_unit"])
+                    #     if remaining_records.get(store_id):
+                    #         rows = remaining_records[store_id]
+                    #         if rows.get(line.synthetic_id.id):
+                    #             rows[line.synthetic_id.id].append(row)
+                    #         else:
+                    #             rows[line.synthetic_id.id] = [row]
+                    #     else:
+                    #         remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                    #     line.sudo().with_delay(
+                    #         description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                    #     ).write({
+                    #         "remaining_quantity": 0,
+                    #         "adjusted_quantity": adjusted_quantity
+                    #     })
+            # else:
+            #     row = v
+            #     row["quantity"] = abs(row["quantity"])
+            #     row["price_unit"] = -abs(row["price_unit"])
+            #     if remaining_records.get(store_id):
+            #         rows = remaining_records[store_id]
+            #         if rows.get('adjusted'):
+            #             rows['adjusted'].append(row)
+            #         else:
+            #             rows['adjusted'] = [row]
+            #     else:
+            #         remaining_records[store_id] = {'adjusted': [row]}
+        if not is_adjusted:
             row = v
             row["quantity"] = abs(row["quantity"])
             row["price_unit"] = -abs(row["price_unit"])
@@ -432,16 +438,18 @@ class SummaryAccountMovePos(models.Model):
                 remaining_records[store_id] = {'adjusted': [row]}
 
 
-    def cronjob_collect_invoice_to_bkav_end_day(self):
-        self.collect_invoice_to_bkav_end_day({'is_synthetic': True})
+    def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
+        self.collect_invoice_to_bkav_end_day(*args, **kwargs)
         self.create_an_invoice_bkav()
 
 
     def collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         synthetic_lines = self.env['synthetic.account.move.pos.line'].search([
             ('remaining_quantity', '>', 0),
-            ('synthetic_id', '!=', False)
+            ('synthetic_id', '!=', False),
+            ('exists_bkav', '=', True)
         ], order="invoice_date desc")
+
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
         refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items(*args, **kwargs)
@@ -506,10 +514,10 @@ class SummaryAccountMovePos(models.Model):
 
                 if len(sale.keys()):
                     for k, v in sale.items():
+                        line_pk = v["line_pk"]
                         summary_line_id = move_pos_line.filtered(
                             lambda r: r.summary_id.store_id.id == store_id \
-                            and r.product_id.id == v["product_id"]\
-                            and float(r.price_unit) == float(v["price_unit"])
+                            and r.line_pk == line_pk
                         )
                         v["remaining_quantity"] = v["quantity"]
                         v["summary_line_id"] = summary_line_id[0].id
@@ -540,6 +548,7 @@ class SummaryAccountMovePos(models.Model):
 class SummaryAccountMovePosLine(models.Model):
     _name = 'summary.account.move.pos.line'
 
+    line_pk = fields.Char('Line primary key')
     summary_id = fields.Many2one('summary.account.move.pos')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     barcode = fields.Char(related='product_id.barcode')
@@ -548,6 +557,7 @@ class SummaryAccountMovePosLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
@@ -567,10 +577,10 @@ class SummaryAccountMovePosLine(models.Model):
         for r in self:
             r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
 
-    @api.depends('price_subtotal', 'tax_amount')
+    @api.depends('price_subtotal', 'tax_amount', 'price_unit_incl')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = r.price_unit_incl *  r.quantity - r.discount_amount
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
@@ -586,13 +596,14 @@ class SummaryAccountMovePosLine(models.Model):
 class SummaryAccountMovePosLineDiscount(models.Model):
     _name = 'summary.account.move.pos.line.discount'
 
+    line_pk = fields.Char('Line primary key')
     summary_line_id = fields.Many2one('summary.account.move.pos.line')
     summary_id = fields.Many2one('summary.account.move.pos', related="summary_line_id.summary_id")
     price_unit = fields.Float('Đơn giá')
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
-    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    amount_total = fields.Monetary('Thành tiền')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     promotion_type = fields.Selection(
         selection=[
@@ -613,7 +624,7 @@ class SummaryAccountMovePosLineDiscount(models.Model):
             else:
                 r.tax_amount = 0
 
-    @api.depends('price_unit', 'tax_amount')
-    def compute_amount_total(self):
-        for r in self:
-            r.amount_total = r.price_unit + r.tax_amount
+    # @api.depends('price_unit', 'tax_amount')
+    # def compute_amount_total(self):
+    #     for r in self:
+    #         r.amount_total = r.price_unit + r.tax_amount

@@ -51,7 +51,15 @@ class PosOrder(models.Model):
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+    exists_total_point = fields.Boolean(default=False, copy=False, string="Exists total point")
 
+    def get_total_point(self):
+        total_point = self.total_point
+        if self.exists_total_point:
+            total_point = 0
+        else:
+            self.write({"exists_total_point": True})
+        return total_point
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
