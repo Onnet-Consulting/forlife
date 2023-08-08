@@ -19,9 +19,18 @@ class SummaryAccountMoveSoNhanh(models.Model):
     einvoice_status = fields.Selection([('draft', 'Draft')], string=' Trạng thái HDDT')
     einvoice_date = fields.Date(string="Ngày phát hành")
 
+    line_discount_ids = fields.One2many('summary.so.nhanh.line.discount', compute="_compute_line_discount")
+
+    def _compute_line_discount(self):
+        for r in self:
+            r.line_discount_ids = self.env["summary.so.nhanh.line.discount"].search([
+                ('summary_id', '=', r.id)
+            ])
+            
 class SummaryAccountMoveSONhanhLine(models.Model):
     _name = 'summary.account.move.so.nhanh.line'
 
+    line_pk = fields.Char('Line primary key')
     summary_id = fields.Many2one('summary.account.move.so.nhanh')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     barcode = fields.Char(related='product_id.barcode')
@@ -30,6 +39,7 @@ class SummaryAccountMoveSONhanhLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
@@ -38,17 +48,19 @@ class SummaryAccountMoveSONhanhLine(models.Model):
     price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
     amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    invoice_ids = fields.Many2many('sale.order', string='Hóa đơn')
+    invoice_ids = fields.Many2many('account.move', string='Hóa đơn')
+
+    line_ids = fields.One2many('summary.so.nhanh.line.discount', 'summary_line_id')
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
         for r in self:
             r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
 
-    @api.depends('price_subtotal', 'tax_amount')
+    @api.depends('price_unit_incl', 'tax_amount')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = r.price_unit_incl * r.quantity - r.discount_amount
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
@@ -57,6 +69,36 @@ class SummaryAccountMoveSONhanhLine(models.Model):
                 tax_amount = 0
                 for tax in r.tax_ids:
                     tax_amount += (r.price_subtotal * tax.amount) / 100
+                r.tax_amount = tax_amount
+            else:
+                r.tax_amount = 0
+
+class SummaryAccountMoveSONhanhLineDiscount(models.Model):
+    _name = 'summary.so.nhanh.line.discount'
+
+    line_pk = fields.Char('Line primary key')
+    summary_line_id = fields.Many2one('summary.account.move.so.nhanh.line')
+    summary_id = fields.Many2one('summary.account.move.so.nhanh', related="summary_line_id.summary_id")
+    price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
+    tax_ids = fields.Many2many('account.tax', string='Thuế')
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    amount_total = fields.Monetary('Thành tiền')
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
+    promotion_type = fields.Selection(
+        selection=[
+            ('vip_amount', 'Vip'),
+        ],
+        string='Promotion Type', index=True, readonly=True
+    )
+
+    @api.depends('tax_ids', 'price_unit')
+    def compute_tax_amount(self):
+        for r in self:
+            if r.tax_ids:
+                tax_amount = 0
+                for tax in r.tax_ids:
+                    tax_amount += (r.price_unit * tax.amount) / 100
                 r.tax_amount = tax_amount
             else:
                 r.tax_amount = 0

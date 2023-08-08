@@ -47,6 +47,7 @@
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
+                                    <field name="price_unit_incl"/>
                                     <field name="x_free_good"/>
                                     <field name="discount"/>
                                     <field name="discount_amount"/>
@@ -75,7 +76,7 @@
                                 <field name="eivoice_file" widget="binary" filename="invoice_no"/>
                             </group>
                         </page>
-                        <page name="other_info" string="Other Information">
+                        <!--page name="other_info" string="Other Information">
                             <field name="line_discount_ids">
                                 <tree editable="bottom" create="0">
                                     <field name="promotion_type"/>
@@ -85,7 +86,7 @@
                                     <field name="amount_total"/>
                                 </tree>
                             </field>
-                        </page>
+                        </page-->
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

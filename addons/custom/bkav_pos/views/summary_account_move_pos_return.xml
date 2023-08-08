@@ -44,6 +44,7 @@
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
+                                    <field name="price_unit_incl"/>
                                     <field name="price_unit_origin"/>
                                     <field name="x_free_good"/>
 <!--                                    <field name="discount"/>-->

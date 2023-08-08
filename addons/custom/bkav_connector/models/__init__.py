@@ -2,6 +2,7 @@ from . import bkav_connector
 from . import bkav_action
 from . import bkav_action_return
 from . import account_move
+from . import account_move_line
 from . import bkav_purchase_return
 from . import bkav_sale_order
 from . import bkav_inter_company

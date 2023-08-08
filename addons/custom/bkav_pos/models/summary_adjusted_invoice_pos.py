@@ -85,7 +85,7 @@ class SummaryAdjustedInvoicePos(models.Model):
             for pos in res.line_ids.invoice_ids:
                 if not exists_pos.get(pos.id):
                     exists_pos[pos.id] = True
-                    total_point += pos.total_point
+                    total_point += pos.get_total_point()
                     # price_subtotal = pos.lines.filtered(
                     #     lambda r: r.is_promotion == True and r.promotion_type == 'point'
                     # ).mapped("price_subtotal")
@@ -101,46 +101,28 @@ class SummaryAdjustedInvoicePos(models.Model):
 
 
     def action_download_view_e_invoice(self):
-        if not self.eivoice_file:
-            configs = self.env['summary.account.move.pos'].get_bkav_config()
-            data = {
-                "CmdType": int(configs.get('cmd_downloadPDF')),
-                "CommandObject": self.partner_invoice_id,
-            }
-            _logger.info(f'BKAV - data download invoice to BKAV: {data}')
-            response_action = connect_bkav(data, configs)
-            if response_action.get('Status') == '1':
-                self.message_post(body=(response_action.get('Object')))
-            else:
-                attachment_id = self.env['ir.attachment'].sudo().create({
-                    'name': f"{self.number_bill}.pdf",
-                    'datas': json.loads(response_action.get('Object')).get('PDF', ''),
-                })
-                self.eivoice_file = attachment_id
-                return {
-                    'type': 'ir.actions.act_url',
-                    'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                           % (self.eivoice_file.id, self.eivoice_file.name),
-                    'target': 'self',
-                }
-        else:
-            return {
-                'type': 'ir.actions.act_url',
-                'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
-                       % (self.eivoice_file.id, self.eivoice_file.name),
-                'target': 'self',
-            }
+        return bkav_action.download_invoice_bkav(self)
 
 
     def get_vat(self, line):
         vat = 0
         if line.tax_ids:
-            vat = line.tax_ids[0].amount
+            if len(line.tax_ids) == 1:
+                vat = line.tax_ids[0].amount
+            else:
+                tax_amount = 1
+                for tax in r.tax_ids:
+                    tax_amount = tax_amount * tax.amount
+                vat = tax_amount / 100
 
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
+        elif vat == 3.5:
+            tax_rate_id = 7
+        elif vat == 7:
+            tax_rate_id = 8
         elif vat == 8:
             tax_rate_id = 9
         elif vat == 10:
@@ -255,6 +237,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "InvoiceForm": "",
                     "InvoiceSerial": "",
                     "InvoiceNo": 0,
+                    "OriginalInvoiceIdentify": ln.source_invoice.get_invoice_identify()
                 },
                 "ListInvoiceDetailsWS": [],
                 "PartnerInvoiceID": 0,
@@ -310,6 +293,7 @@ class SummaryAdjustedInvoicePos(models.Model):
 class SummaryAdjustedInvoicePosLine(models.Model):
     _name = 'summary.adjusted.invoice.pos.line'
 
+    line_pk = fields.Char('Line primary key')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.pos')
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     description = fields.Char('Mô tả')
@@ -317,6 +301,7 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     quantity = fields.Float('Số lượng')
     product_uom_id = fields.Many2one(related="product_id.uom_id", string="Đơn vị")
     price_unit = fields.Float('Đơn giá')
+    price_unit_incl = fields.Float('Đơn giá sau thuế')
     price_unit_origin = fields.Float('Đơn giá gốc')
     x_free_good = fields.Boolean('Hàng tặng')
     discount = fields.Float('% chiết khấu')
@@ -331,34 +316,35 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', 'adjusted_line_id')
 
 
-    @api.depends('price_subtotal', 'tax_amount')
+    @api.depends('price_subtotal', 'tax_amount', 'price_unit_incl')
     def compute_amount_total(self):
         for r in self:
-            r.amount_total = r.price_subtotal + r.tax_amount
+            r.amount_total = -(abs(r.price_unit_incl *  r.quantity) - r.discount_amount)
 
     @api.depends('price_unit', 'quantity', 'discount_amount')
     def compute_price_subtotal(self):
         for r in self:
-            r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
+            r.price_subtotal = -(abs(r.price_unit * r.quantity) - r.discount_amount)
 
     @api.depends('tax_ids', 'price_subtotal')
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal / 100
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * abs(r.price_subtotal) / 100
             else:
                 r.tax_amount = 0
 
 class SummaryAdjustedInvoicePosDiscount(models.Model):
     _name = 'summary.adjusted.invoice.pos.line.discount'
 
+    line_pk = fields.Char('Line primary key')
     adjusted_line_id = fields.Many2one('summary.adjusted.invoice.pos.line')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.pos', related="adjusted_line_id.adjusted_invoice_id")
     price_unit = fields.Float('Đơn giá')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
-    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    amount_total = fields.Monetary('Thành tiền')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     promotion_type = fields.Selection(
         selection=[
@@ -367,6 +353,10 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+
+    def get_tax_amount(self):
+        return (1 + sum(line.tax_ids.mapped("amount"))/100)
+
 
     @api.depends('tax_ids', 'price_unit')
     def compute_tax_amount(self):
@@ -379,7 +369,7 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
             else:
                 r.tax_amount = 0
 
-    @api.depends('price_unit', 'tax_amount')
-    def compute_amount_total(self):
-        for r in self:
-            r.amount_total = r.price_unit + r.tax_amount
+    # @api.depends('price_unit', 'tax_amount')
+    # def compute_amount_total(self):
+    #     for r in self:
+    #         r.amount_total = r.price_unit + r.tax_amount
