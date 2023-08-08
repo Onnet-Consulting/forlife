@@ -38,7 +38,7 @@
                     <field name="reason_type_id" attrs="{'invisible': [('other_export', '=', False),('other_import', '=', False)]}" context="{'form': 'inherit_stock_picking_for_other_import_form_view_action'}"/>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id']" position="after">
-                    <field name="is_last_transfer" readonly="1"/>
+                    <field name="is_last_transfer" readonly="1" attrs="{'invisible': [('is_last_transfer', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
