@@ -66,20 +66,20 @@ class PurchaseRequest(models.Model):
     def load(self, fields, data):
         if "import_file" in self.env.context:
             if 'request_date' not in fields:
-                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu."))
             for record in data:
                 if 'order_lines/product_id' in fields and not record[fields.index('order_lines/product_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm."))
                 if 'order_lines/purchase_quantity' in fields and not record[fields.index('order_lines/purchase_quantity')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua."))
                 if 'order_lines/exchange_quantity' in fields and not record[fields.index('order_lines/exchange_quantity')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi."))
                 if 'order_lines/purchase_uom' in fields and not record[fields.index('order_lines/purchase_uom')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua."))
                 if 'order_lines/request_date' in fields and not record[fields.index('order_lines/request_date')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu."))
                 if 'order_lines/date_planned' in fields and not record[fields.index('order_lines/date_planned')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày nhận hàng dự kiến"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày nhận hàng dự kiến."))
         return super().load(fields, data)
 
     @api.model
