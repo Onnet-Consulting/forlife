@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from datetime import date, datetime, timedelta
-import json
-import logging
-
+from datetime import datetime
 from ...bkav_connector.models import bkav_action
-
-_logger = logging.getLogger(__name__)
 
 
 class SummaryAdjustedInvoiceSoNhanh(models.Model):

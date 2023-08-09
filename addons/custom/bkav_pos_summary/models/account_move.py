@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
-from datetime import datetime, timedelta
-
-from odoo.exceptions import ValidationError
-
+from odoo import models, fields
 
 class AccountMoveBKAV(models.Model):
     _inherit = 'account.move'
