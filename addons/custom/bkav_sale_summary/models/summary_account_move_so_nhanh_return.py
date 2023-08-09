@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from datetime import date, datetime, timedelta
 
 
 class SummaryAccountMoveSoNhanhReturn(models.Model):
