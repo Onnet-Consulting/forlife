@@ -22,6 +22,7 @@ class SummaryAdjustedInvoicePos(models.Model):
     company_id = fields.Many2one('res.company')
 
     exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     invoice_guid = fields.Char('GUID HDDT')
     invoice_no = fields.Char('Số hóa đơn')
     invoice_form = fields.Char('Mẫu số HDDT')
@@ -267,18 +268,17 @@ class SummaryAdjustedInvoicePos(models.Model):
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
 
-    # def create_an_invoice(self):
-    #     for line in self:
-    #         try:
-    #             bkav_invoice_data = line.get_bkav_data_pos()
-    #             bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
-    #         except Exception as e:
-    #             line.message_post(body=str(e))
     def create_an_invoice(self):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+                bkav_action.create_invoice_bkav(
+                    line, 
+                    bkav_invoice_data, 
+                    is_publish=True,
+                    origin_id=line.source_invoice,
+                    issue_invoice_type='adjust'
+                )
             except Exception as e:
                 line.message_post(body=str(e))
     
