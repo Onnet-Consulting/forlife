@@ -183,12 +183,14 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                     });
                     if (promotion_data) {
                         let {program_data, pricelist_data} = promotion_data;
-                        program_data = program_data.filter(p => !pos.promotion_program_by_id.hasOwnProperty(p.id));
-                        pricelist_data = pricelist_data.filter(pl => !pos.pro_pricelist_item_by_id.hasOwnProperty(pl.id));
-                        pos.promotionPrograms.push(...program_data);
-                        pos._loadPromotionData(program_data);
-                        pos._loadPromotionPriceListItem(pricelist_data);
-                        order.finished_programs.push(...program_data.map(p=>p.id))
+                        if (program_data.length && pricelist_data.length) {
+                            program_data = program_data.filter(p => !pos.promotion_program_by_id.hasOwnProperty(p.id));
+                            pricelist_data = pricelist_data.filter(pl => !pos.pro_pricelist_item_by_id.hasOwnProperty(pl.id));
+                            pos.promotionPrograms.push(...program_data);
+                            pos._loadPromotionData(program_data);
+                            pos._loadPromotionPriceListItem(pricelist_data);
+                            order.finished_programs.push(...program_data.map(p=>p.id))
+                        }
                     };
                     for (let product of toAddProducts) {
                         let options = {

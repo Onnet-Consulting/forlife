@@ -62,6 +62,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.hourData = loadedData['hour.data'] || [];
         this.promotionPricelistItems = [];
         this._loadPromotionData(this.promotionPrograms);
+        this._promotionComboLineData(this.promotionComboLines);
+        this._rewardLineData(this.rewardLines);
         this.loadPromotionPriceListItemBackground();
 //        this._loadPromotionPriceListItem(loadedData['promotion.pricelist.item']);
     }
@@ -129,6 +131,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.str_id = String(program.id);
             program.display_name = program.name
         };
+    }
+
+    _promotionComboLineData(promotionComboLines) {
         for (const item of this.promotionComboLines) {
             if(item.json_valid_product_ids){
                 let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
@@ -136,8 +141,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
                 item.program_id = item.program_id[0];
                 item.program = this.promotion_program_by_id[item.program_id];
                 item.program.comboFormula.push(item);
-            }
+            };
         };
+    }
+
+    _rewardLineData(rewardLines) {
         for (const reward of this.rewardLines) {
             this.reward_line_by_id[reward.id] = reward;
             reward.program_id = reward.program_id[0];
@@ -145,6 +153,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             reward.program.rewards.push(reward);
         };
     }
+
 
     async loadPromotionPriceListItemBackground() {
         let page = 0;
@@ -650,7 +659,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         if (!priceItem) {
-            if (!this._products_in_order().has(product.id)) {
+            if (!this._products_in_order().has(product.id) || !options.related_refund_line_cid) {
                 priceItem = this._getPricelistItem(product, false, false);
             }
             else {
@@ -1022,7 +1031,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 continue;
             };
             pricelistItem = program.pricelistItems.find(item => item.product_id === product.id);
-            if (pricelistItem && this._programIsApplicableAutomatically(pricelistItem.program, incl_finished)) {
+            if (pricelistItem && this._programIsApplicableAutomatically(pricelistItem, incl_finished)) {
                 return pricelistItem;
             };
         };
@@ -1086,7 +1095,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         });
         return filtered_orderline.filter(line => line.product.id==pricelistItem.product_id
                                                 && line.pricelist_item
-                                                && line.pricelist_item.product_id == pricelistItem.product_id);
+                                                && line.pricelist_item.id == pricelistItem.id);
     }
 
     prepare_to_discount_line_val(line, quantity, price_unit, is_not_discount) {

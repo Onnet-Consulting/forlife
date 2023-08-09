@@ -24,13 +24,12 @@ class PosSession(models.Model):
         return result
 
     def _loader_params_promotion_pricelist_item(self, ):
-        product_id = self._get_product_ids_by_store()
         return {
             'search_params': {
                 'domain': ['&',
                            ('program_id', 'in', self.config_id._get_promotion_program_ids().ids),
                            ('active', '=', True)],
-                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price']
+                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price', 'lst_price', 'with_code', 'reward_type']
             }
         }
 
