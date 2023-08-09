@@ -40,7 +40,8 @@ class ForlifeProduction(models.Model):
         ('done', 'Hoàn thành'),
     ], compute='compute_check_status')
     check_status = fields.Boolean(default=False)
-    order_manager_id = fields.Many2one('res.partner', string='Quản lý đơn hàng')
+    machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
+    leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
 
     def action_draft(self):
         for record in self:
