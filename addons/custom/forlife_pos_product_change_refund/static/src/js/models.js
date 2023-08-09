@@ -227,6 +227,14 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             return json;
         }
 
+        get_alternative_lines() {
+            let order = this.pos.get_order();
+            return order.get_orderlines().reduce((arr, l) => {
+                if (l.related_refund_line_cid == this.cid) {arr.push(l.cid)};
+                return arr;
+            }, []);
+        }
+
         set_quantity(quantity, keep_price){
             if(this.is_product_defective && quantity > 1){
                     Gui.showPopup('ErrorPopup', {
