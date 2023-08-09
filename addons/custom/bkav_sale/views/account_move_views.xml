@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="company_type"/>
+                    <field name="company_type" string="Loại hình doanh nghiệp"/>
                 </xpath>
                 <xpath expr="//page[@id='aml_tab']" position="after">
                     <field name="pos_order_id" invisible="1"/>
