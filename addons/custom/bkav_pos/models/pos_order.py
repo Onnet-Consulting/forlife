@@ -175,7 +175,7 @@ class PosOrder(models.Model):
                 for l in sublines:
                     price_subtotal += l.price_subtotal
                     price_subtotal_incl += l.price_subtotal_incl
-                price_bkav = round(price_subtotal/line.qty)
+                price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
                 if line.is_reward_line:
