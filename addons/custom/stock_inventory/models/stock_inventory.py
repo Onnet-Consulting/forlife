@@ -25,7 +25,7 @@ class Inventory(models.Model):
 
     name = fields.Char('Mã phiếu', default="Phiếu kiểm kê", readonly=True, required=True,
                        states={'draft': [('readonly', False)]})
-    date = fields.Datetime('Ngày kiểm kho', required=True, default=fields.Datetime.now)
+    date = fields.Datetime('Ngày chốt tồn', required=True, default=fields.Datetime.now)
     accounting_date = fields.Date('Ngày kế toán')
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Chi tiết tồn kho',
                                copy=False, readonly=False, states={'done': [('readonly', True)]})
@@ -78,6 +78,10 @@ class Inventory(models.Model):
     detail_ids = fields.One2many('inventory.detail', 'inventory_id', string='Chi tiết đếm kiểm', copy=False, readonly=True)
     x_status = fields.Integer('Trạng thái chi tiết', default=0,
                               help='1: Đã đồng bộ từ chi tiết kiểm kê\n2: Cửa hàng đã xác nhận lần 1\n3: Cửa hàng đã xác nhận lần 2')
+    date_confirm1 = fields.Datetime('Ngày xác nhận lần 1', readonly=True)
+    date_confirm2 = fields.Datetime('Ngày xác nhận lần 2', readonly=True)
+    create_date = fields.Datetime('Ngày tạo phiếu', readonly=True, default=fields.Datetime.now)
+    sync_number = fields.Integer('Số phiếu đồng bộ Bravo', default=1)
 
     # total_valorisation = fields.Float(string='Tổng kiểm kê', compute='_compute_total_valorisation')
     #
@@ -208,7 +212,10 @@ class Inventory(models.Model):
                     negative.product_qty
                 ))
         self.action_check(current_state)
-        self.write({'state': state})
+        self.write({
+            'state': state,
+            'date_confirm1' if state == 'second_inv' else 'date_confirm2': fields.Datetime.now()
+        })
         self.post_inventory(current_state)
         return True
 
@@ -258,7 +265,7 @@ class Inventory(models.Model):
 
     def action_cancel_draft(self):
         self.ensure_one()
-        if self.state in ('draft', 'done'):
+        if self.state in ('draft', 'second_inv', 'done'):
             return {'type': 'ir.actions.client', 'tag': 'reload'}
         self.sudo().mapped('move_ids')._action_cancel()
         self.sudo().line_ids.unlink()

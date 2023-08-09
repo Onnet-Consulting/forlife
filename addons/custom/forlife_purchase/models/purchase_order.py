@@ -1139,7 +1139,7 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_normal(self, order, line):
+    def _prepare_invoice_normal(self, line):
         data_line = {
             # 'ware_id': move_line_id.id,
             # 'ware_name': move_line_id.picking_id.name,
@@ -1160,7 +1160,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax * (line.qty_received / line.product_qty),
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
-            'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+            'total_vnd_amount': line.price_subtotal * self.exchange_rate,
             'occasion_code_id': line.occasion_code_id.id if line.occasion_code_id else False,
             'work_order': line.production_id.id if line.production_id else False,
             'account_analytic_id': line.account_analytic_id.id if line.account_analytic_id else False,
@@ -1495,7 +1495,7 @@ class PurchaseOrder(models.Model):
                             # }))
                             # sequence += 1
                             # invoice_vals_list.append(invoice_vals)
-                            cp = 0
+                            # cp = 0
                             for line in order.order_line:
                                 # if not order.is_return:
                                 #     wave = picking_expense_in.move_line_ids_without_package.filtered(
@@ -1521,7 +1521,7 @@ class PurchaseOrder(models.Model):
                                 #                 data_line = self.create_invoice_expense_no_return(order, nine, line, cp, wave_item, x_return)
                                 #     else:
                                 amount_rate = line.total_vnd_amount / sum(self.order_line.mapped('total_vnd_amount'))
-                                cp += ((amount_rate * cost_line.vnd_amount) / line.product_qty) * line.qty_received
+                                cp = ((amount_rate * cost_line.vnd_amount) / line.product_qty) * line.qty_received
                                 if line.currency_id != line.company_currency:
                                     rates = line.currency_id._get_rates(line.company_id, self.date_order)
                                     cp = cp * rates.get(line.currency_id.id)
@@ -1583,7 +1583,7 @@ class PurchaseOrder(models.Model):
                             #                 if wave_item.picking_id.name == x_return.picking_id.relation_return:
                             #                     data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
                             #         else:
-                            data_line = self._prepare_invoice_normal(order, line)
+                            data_line = self._prepare_invoice_normal(line)
                             if line.display_type == 'line_section':
                                 pending_section = line
                                 continue
