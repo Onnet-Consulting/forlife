@@ -4,7 +4,6 @@ from odoo.exceptions import ValidationError
 import logging
 import json
 _logger = logging.getLogger(__name__)
-disable_create_function = False
 from ...bkav_connector.models.bkav_connector import connect_bkav
 
 class SummaryAccountMovePos(models.Model):

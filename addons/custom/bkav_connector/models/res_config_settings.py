@@ -10,6 +10,7 @@ class ResConfigSettings(models.TransientModel):
     bkav_partner_token = fields.Char(string='Partner Token', config_parameter='bkav.partner_token')
     bkav_partner_guid = fields.Char(string='Partner GUID', config_parameter='bkav.partner_guid')
     bkav_add_einvoice = fields.Char(string='Mã tạo HD', config_parameter='bkav.add_einvoice')
+    bkav_add_einvoice_stock = fields.Char(string='Mã tạo phiếu xuất kho', config_parameter='bkav.add_einvoice_stock')
     bkav_add_einvoice_replace = fields.Char(string='Mã tạo HD thay thế', config_parameter='bkav.add_einvoice_replace')
     bkav_add_einvoice_edit = fields.Char(string='Mã tạo HD điều chỉnh', config_parameter='bkav.add_einvoice_edit')
     bkav_add_einvoice_edit_discount = fields.Char(string='Mã tạo HD điều chỉnh chiết khấu', config_parameter='bkav.add_einvoice_edit_discount')

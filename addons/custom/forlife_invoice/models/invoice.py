@@ -117,7 +117,7 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
 
     # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
+    # e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
 
     # lấy id để search ghi lại ref cho bút toán phát sinh
     e_in_check = fields.Integer(index=True)
@@ -132,21 +132,21 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    @api.onchange('exists_bkav')
-    def onchange_exitsts_bakv_e_invoice(self):
-        for rec in self:
-            if rec.exists_bkav:
-                data_e_invoice = self.env['e.invoice'].search(
-                    [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
-                if not data_e_invoice:
-                    self.env['e.invoice'].create({
-                        'number_e_invoice': rec.invoice_no,
-                        'date_start_e_invoice': rec.create_date,
-                        'state_e_invoice': rec.invoice_state_e,
-                        'e_invoice_id': rec.id,
-                    })
-                rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
+    # @api.onchange('exists_bkav')
+    # def onchange_exitsts_bakv_e_invoice(self):
+    #     for rec in self:
+    #         if rec.exists_bkav:
+    #             data_e_invoice = self.env['e.invoice'].search(
+    #                 [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
+    #                  ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
+    #             if not data_e_invoice:
+    #                 self.env['e.invoice'].create({
+    #                     'number_e_invoice': rec.invoice_no,
+    #                     'date_start_e_invoice': rec.create_date,
+    #                     'state_e_invoice': rec.invoice_state_e,
+    #                     'e_invoice_id': rec.id,
+    #                 })
+    #             rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
 
     def view_move_entry(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
@@ -1392,12 +1392,12 @@ class InvoiceCostLine(models.Model):
             rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
 
 
-class eInvoice(models.Model):
-    _name = 'e.invoice'
-    _description = 'e Invoice'
+# class eInvoice(models.Model):
+#     _name = 'e.invoice'
+#     _description = 'e Invoice'
 
-    e_invoice_id = fields.Many2one('account.move', string='e invoice')
+#     e_invoice_id = fields.Many2one('account.move', string='e invoice')
 
-    number_e_invoice = fields.Char('Số HĐĐT')
-    date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
-    state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
+#     number_e_invoice = fields.Char('Số HĐĐT')
+#     date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
+#     state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')

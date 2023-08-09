@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_transfer_not_exists_bkav,name_transfer_not_exists_bkav,model_transfer_not_exists_bkav,,1,0,0,0
+access_transfer_not_exists_bkav_manager,name_transfer_not_exists_bkav_manager,model_transfer_not_exists_bkav,account.group_account_user,1,1,1,1
+access_transfer_not_exists_bkav_line,name_transfer_not_exists_bkav_line,model_transfer_not_exists_bkav_line,,1,1,1,1

@@ -273,7 +273,7 @@ class PosOrderReturn(models.Model):
         return bkav_action_return.publish_invoice_bkav(self)
     
     def create_publish_invoice_bkav_return(self):
-        return self.with_context({'is_publish': True}).create_invoice_bkav_return(self)
+        return self.with_context({'is_publish': True}).create_invoice_bkav_return()
 
     def get_invoice_bkav_return(self):
         return bkav_action_return.get_invoice_bkav(self)

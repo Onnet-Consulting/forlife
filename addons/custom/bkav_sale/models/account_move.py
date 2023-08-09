@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
-from . import bkav_action
+from ...bkav_connector.models import bkav_action
 from odoo.exceptions import ValidationError
 
 
@@ -51,8 +51,6 @@ class AccountMoveBKAV(models.Model):
 
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
-
-    is_synthetic = fields.Boolean(string='Synthetic', default=False, copy=False)
 
 
     @api.returns('self', lambda value: value.id)
@@ -254,7 +252,7 @@ class AccountMoveBKAV(models.Model):
         return bkav_action.publish_invoice_bkav(self)
     
     def create_publish_invoice_bkav(self):
-        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
+        return self.with_context({'is_publish': True}).create_invoice_bkav()
 
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():

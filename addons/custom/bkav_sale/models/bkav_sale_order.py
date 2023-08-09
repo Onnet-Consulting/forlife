@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models
 from datetime import datetime, timedelta
-from odoo.exceptions import ValidationError
 
 
 class AccountMoveSaleOrder(models.Model):
