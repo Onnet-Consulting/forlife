@@ -14,26 +14,28 @@ class ForlifeOtherInOutRequest(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Nhân viên")
     user_id = fields.Many2one('res.users', string="Người yêu cầu", required=True)
     department_id = fields.Many2one('hr.department', string="Phòng ban")
-    company_id = fields.Many2one('res.partner', string="Công ty")
+    company_id = fields.Many2one('res.company', string="Công ty", default=lambda self: self.env.company)
     type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
-    type_other = fields.Selection([('other_import', 'Nhập khác'),
-                                   ('other_export', 'Xuất khác'),
-                                   ], default='other_import', string='Loại phiếu', required=True)
+    type_other_code = fields.Char(related='type_other_id.code', string='Mã lý do')
+    type_other = fields.Selection([
+        ('other_import', 'Nhập khác'),
+        ('other_export', 'Xuất khác'),], default='other_import', string='Loại phiếu', required=True)
     location_id = fields.Many2one('stock.location', string='Location From', domain=_domain_location_id)
     location_dest_id = fields.Many2one('stock.location', string='Location To')
     date_planned = fields.Datetime(string='Ngày kế hoạch', required=True)
-    status = fields.Selection([('draft', 'Dự thảo'),
-                               ('wait_approve', 'Chờ duyệt'),
-                               ('approved', 'Đã duyệt'),
-                               ('done', 'Hoàn thành'),
-                               ('cancel', 'Hủy'),
-                               ('reject', 'Từ chối')], default='draft', copy=False)
+    status = fields.Selection([
+        ('draft', 'Dự thảo'),
+        ('wait_approve', 'Chờ duyệt'),
+        ('approved', 'Đã duyệt'),
+        ('done', 'Hoàn thành'),
+        ('cancel', 'Hủy'),
+        ('reject', 'Từ chối')], default='draft', copy=False)
     other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Chi tiết', copy=True)
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
-    other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
-                                              string="Other Import/Export")
+    other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id', string="Other Import/Export")
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
+    is_last_transfer = fields.Boolean(string="Lần nhập kho cuối")
 
     @api.model
     def default_get(self, default_fields):
@@ -107,6 +109,13 @@ class ForlifeOtherInOutRequest(models.Model):
 
     def action_wait_approve(self):
         for record in self:
+            if record.type_other_id.code == 'N01' and record.location_id.code in ['N0101', 'N0102']:
+                line_productions = record.other_in_out_request_line_ids.filtered(lambda x: x.production_id)
+                for rec in line_productions:
+                    remaining_qty = rec.production_id.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id).remaining_qty or 0
+                    if rec.production_id and rec.quantity > remaining_qty:
+                        raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
+
             record.write({'status': 'wait_approve'})
 
     def action_approve(self):
@@ -116,6 +125,10 @@ class ForlifeOtherInOutRequest(models.Model):
         picking_type_out = self.env['stock.picking.type'].search(
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
+            for line in record.other_in_out_request_line_ids.filtered(lambda x: x.asset_id):
+                if record.location_id.x_property_valuation_in_account_id != line.asset_id.asset_account:
+                    raise ValidationError(
+                    _('Tài khoản trong Mã tài sản của bạn khác với tài khoản trong cấu hình lý do nhập khác xuất khác!'))
             if record.type_other_id.code == 'N01':
                 picking_type_in = self.env['stock.picking.type'].search([('company_id', '=', company_id), ('code', '=', 'incoming'), ('exchange_code', '=', 'incoming')], limit=1)
                 if not picking_type_in:
@@ -127,6 +140,7 @@ class ForlifeOtherInOutRequest(models.Model):
                 data_other_line = (
                     0, 0, {
                         'product_id': item.product_id.id,
+                        'ref_asset': item.asset_id,
                         'product_uom_qty': item.quantity,
                         'product_uom': item.uom_id.id,
                         'name': item.description,
@@ -156,6 +170,7 @@ class ForlifeOtherInOutRequest(models.Model):
                     'is_from_request': True,
                     'origin': record.name,
                     'other_import_export_request_id': record.id,
+                    'is_last_transfer': record.is_last_transfer,
                     'move_ids_without_package': [data_other_line]
                 }
                 if value.get(key):

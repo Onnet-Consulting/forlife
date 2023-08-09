@@ -47,3 +47,15 @@ class RabbitmqConnection(models.Model):
     def onchange_connection_info(self):
         self.is_connected = False
         self.connection_log = False
+
+    @api.model
+    def sync_all_master_data_for_rabbitmq(self):
+        models = self.env['rabbitmq.queue'].search([('active', 'in', (True, False)), ('sync_manual', '=', True)]).mapped('queue_key')
+        for model in models:
+            _self = self.env[model]
+            domain = _self.domain_record_sync_info()
+            records = _self.search(domain)
+            while records:
+                record = records[:min(500, len(records))]
+                record.sudo().with_delay(description="Create '%s'" % _self._name, channel='root.RabbitMQ', priority=_self._priority).action_sync_info_data(action=_self._create_action)
+                records = records - record

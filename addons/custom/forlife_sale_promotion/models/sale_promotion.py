@@ -15,6 +15,7 @@ class SaleOrderPromotion(models.Model):
     description = fields.Char(string="Description")
     order_id = fields.Many2one("sale.order", string="Order")
     product_uom_qty = fields.Float(string="Quantity", digits='Product Unit of Measure',)
+    tax_id = fields.Many2many(comodel_name='account.tax', string="Taxes", context={'active_test': False})
     promotion_type = fields.Selection([
         ('diff_price', 'diff_price'),
         ('discount', 'discount'),
@@ -25,3 +26,4 @@ class SaleOrderPromotion(models.Model):
         ('reward', 'reward')
     ], string='promotion_type')
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
+    order_line_id = fields.Many2one("sale.order.line", string="Order line")

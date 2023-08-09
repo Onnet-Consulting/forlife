@@ -2,10 +2,9 @@
 <odoo>
     <data>
 
-        <menuitem id="rabbitmq_config_menu" name="RabbitMQ Integration" parent="base.menu_custom" sequence="22">
-            <menuitem id="rabbitmq_connection_menu" action="rabbitmq_connection_action" sequence="10"/>
-            <menuitem id="rabbitmq_queue_menu" action="rabbitmq_queue_action" sequence="20"/>
-        </menuitem>
+        <menuitem id="rabbitmq_connection_menu" action="rabbitmq_connection_action" sequence="10" parent="forlife_base.odoo_integration_rabbitmq"/>
+        <menuitem id="rabbitmq_queue_menu" action="rabbitmq_queue_action" sequence="20" parent="forlife_base.odoo_integration_rabbitmq"/>
+        <menuitem id="sync_all_master_data_for_rabbitmq_menu" action="sync_all_master_data_for_rabbitmq_action" parent="forlife_base.odoo_integration_rabbitmq" sequence="30"/>
 
     </data>
 </odoo>

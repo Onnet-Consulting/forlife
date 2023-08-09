@@ -72,5 +72,12 @@
                       groups="base.group_system"
                       action="attribute_code_config_action"
                       sequence="100"/>
+
+        <menuitem id="odoo_integration" name="Odoo tích hợp" parent="base.menu_administration" sequence="150" groups="base.group_no_one">
+            <menuitem id="odoo_integration_bravo" name="Bravo" sequence="10"/>
+            <menuitem id="odoo_integration_rabbitmq" name="RabbitMQ" sequence="20"/>
+            <menuitem id="odoo_integration_telegram" name="Telegram" sequence="30"/>
+            <menuitem id="forlife_app_api_link_menu" action="forlife_app_api_link_action" sequence="40"/>
+        </menuitem>
     </data>
 </odoo>

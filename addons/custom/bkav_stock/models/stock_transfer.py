@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from odoo.exceptions import ValidationError
 
@@ -69,8 +69,10 @@ class StockTransfer(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer,
-                                                                                       datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.date_transfer, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.date_transfer, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
             sequence = 0
             for line in invoice.stock_transfer_line:
@@ -148,8 +150,8 @@ class StockTransfer(models.Model):
         if not self.transporter_id:
             raise ValidationError('Vui lòng thêm thông tin người vận chuyển để tạo HDDT BKAV!')
         if self.location_dest_id.id_deposit or self.location_id.id_deposit:
-            if not self.delivery_contract_id:
-                raise ValidationError('Vui lòng thêm thông tin HĐ vận chuyển để tạo HDDT BKAV!')
+            if not self.vendor_contract_id:
+                raise ValidationError('Vui lòng thêm thông tin HĐ kinh tế số để tạo HDDT BKAV!')
         return True
 
     @api.depends('data_compare_status')
@@ -171,18 +173,30 @@ class StockTransfer(models.Model):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        return bkav_action.create_invoice_bkav(self,data)
+        origin_id = False
+        is_publish = False
+        issue_invoice_type = ''
+        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
 
     def publish_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         return bkav_action.publish_invoice_bkav(self)
-
+    
+    def create_publish_invoice_bkav(self):
+        if not self._check_info_before_bkav():
+            return
+        data = self.get_bkav_data()
+        origin_id = False
+        is_publish = True
+        issue_invoice_type = ''
+        return bkav_action.create_invoice_bkav(self,data,is_publish,origin_id,issue_invoice_type)
+    
     def update_invoice_bkav(self):
         if not self._check_info_before_bkav():
             return
         data = self.get_bkav_data()
-        return bkav_action.create_invoice_bkav(self,data)
+        return bkav_action.update_invoice_bkav(self,data)
 
     def get_invoice_bkav(self):
         if not self._check_info_before_bkav():
@@ -205,10 +219,10 @@ class StockTransfer(models.Model):
         return bkav_action.download_invoice_bkav(self)
 
 
-    def action_cancel(self):
-        res = super(StockTransfer, self).action_cancel()
-        self.cancel_invoice_bkav()
-        return res
+    # def action_cancel(self):
+    #     res = super(StockTransfer, self).action_cancel()
+    #     self.cancel_invoice_bkav()
+    #     return res
     
     def unlink(self):
         for item in self:

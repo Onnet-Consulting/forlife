@@ -19,48 +19,48 @@ class ResUsers(models.Model):
 
     @api.model
     def get_department(self):
-        if not self.department_ids and not self.department_default_id:
+        if not self.department_ids:
             department_ids = self.department_ids.search([]).mapped('id')
         else:
-            department_ids = (self.department_ids + self.department_default_id).mapped('id')
+            department_ids = self.department_ids.mapped('id')
         return department_ids
 
     @api.model
     def get_team(self):
-        if not self.team_default_id and not self.team_ids:
+        if not self.team_ids:
             team_ids = self.team_default_id.search([]).mapped('id')
         else:
-            team_ids = (self.team_default_id + self.team_ids).mapped('id')
+            team_ids = self.team_ids.mapped('id')
         return team_ids
 
     @api.model
     def get_company(self):
-        if not self.company_ids and not self.company_id:
+        if not self.company_ids:
             conpany_ids = self.company_ids.search([]).mapped('id')
         else:
-            conpany_ids = (self.company_ids + self.company_id).mapped('id')
+            conpany_ids = self.company_ids.mapped('id')
         return conpany_ids
 
     @api.model
     def get_stock(self):
-        if not self.stock_ids and not self.stock_default_id:
+        if not self.stock_ids:
             stock_ids = self.stock_ids.search([]).mapped('id')
         else:
-            stock_ids = (self.stock_ids + self.stock_default_id).mapped('id')
+            stock_ids = self.stock_ids.mapped('id')
         return stock_ids
 
     @api.model
     def get_brand(self):
-        if not self.brand_ids and not self.brand_default_id:
+        if not self.brand_ids:
             brand_ids = self.brand_ids.search([]).mapped('id')
         else:
-            brand_ids = (self.brand_ids + self.brand_default_id).mapped('id')
+            brand_ids = self.brand_ids.mapped('id')
         return brand_ids
 
     @api.model
     def get_store(self):
-        if not self.store_ids and not self.store_default_id:
+        if not self.store_ids:
             store_ids = self.store_ids.search([]).mapped('id')
         else:
-            store_ids = (self.store_ids + self.store_default_id).mapped('id')
+            store_ids = self.store_ids.mapped('id')
         return store_ids

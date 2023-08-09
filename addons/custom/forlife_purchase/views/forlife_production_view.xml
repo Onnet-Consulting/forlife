@@ -48,7 +48,8 @@
                             <field name="user_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="created_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="selected_product_ids" invisible="1"/>
-                            <field name="order_manager_id"/>
+                            <field name="leader_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="machining_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
                         <group>
                             <field name="implementation_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>

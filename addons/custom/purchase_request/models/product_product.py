@@ -9,7 +9,7 @@ class ProductProduct(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Employee")
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     asset_location_id = fields.Many2one('asset.location', string="Asset Location")
-    x_check_npl = fields.Boolean('')
+    x_check_npl = fields.Boolean('', company_dependent=True)
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):

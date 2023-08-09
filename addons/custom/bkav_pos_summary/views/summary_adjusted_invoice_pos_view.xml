@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="summary_adjusted_invoice_pos_tree" model="ir.ui.view">
+        <field name="name">summary.adjusted.invoice.pos.tree</field>
+        <field name="model">summary.adjusted.invoice.pos</field>
+        <field name="arch" type="xml">
+            <tree create="true" edit="false">
+                <field name="code"/>
+                <field name="company_id"/>
+                <field name="store_id"/>
+                <field name="partner_id"/>
+                <field name="invoice_date"/>
+                <field name="source_invoice"/>
+                <field name="total_point" string="Tổng tích điểm"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="summary_adjusted_invoice_pos_form" model="ir.ui.view">
+        <field name="name">summary.adjusted.invoice.pos.form</field>
+        <field name="model">summary.adjusted.invoice.pos</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="store_id"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_date"/>
+                            <field name="source_invoice"/>
+                            <field name="total_point" string="Tổng tích điểm"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="detail" string="Detail">
+                            <field name="line_ids">
+                                <tree editable="bottom" create="0">
+                                    <field name="product_id"/>
+                                    <!--field name="description"/-->
+                                    <!--field name="account_id"/-->
+                                    <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_unit_incl"/>
+                                    <field name="x_free_good"/>
+                                    <field name="discount"/>
+                                    <field name="discount_amount"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_amount"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="amount_total"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="HĐĐT" string="Invoices">
+                            <button name="get_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Get eInvoice" groups="account.group_account_invoice"/>
+                            <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
+                                    string="Download eInvoice"/>
+                            <group>
+                                <field name="invoice_no"/>
+                                <field name="invoice_state_e"/>
+                                <field name="invoice_e_date"/>
+                                <field name="invoice_serial"/>
+                                <field name="invoice_guid"/>
+                                <field name="invoice_form"/>
+                            </group>
+                            <group>
+                                <field name="eivoice_file" widget="binary" filename="invoice_no"/>
+                            </group>
+                        </page>
+                        <!--page name="other_info" string="Other Information">
+                            <field name="line_discount_ids">
+                                <tree editable="bottom" create="0">
+                                    <field name="promotion_type"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_amount"/>
+                                    <field name="amount_total"/>
+                                </tree>
+                            </field>
+                        </page-->
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="summary_adjusted_invoice_pos_action" model="ir.actions.act_window">
+        <field name="name">Hóa đơn điều chỉnh cuối ngày</field>
+        <field name="res_model">summary.adjusted.invoice.pos</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="summary_adjusted_invoice_pos_menu"
+              parent="summary_account_move_menu"
+              name="Invoice adjusted at the end of the day"
+              action="summary_adjusted_invoice_pos_action"
+              sequence="10"/>
+</odoo>

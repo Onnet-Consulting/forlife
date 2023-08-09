@@ -8,8 +8,9 @@ class StockLocation(models.Model):
     _inherit = ['stock.location', 'sync.info.rabbitmq.create']
     _create_action = 'update'
 
+    @api.model
     def domain_record_sync_info(self):
-        return self.filtered(lambda l: l.usage == 'internal' and l.warehouse_id.whs_type.code in ('3', '4', '5'))
+        return [('usage', '=', 'internal'), ('warehouse_id.whs_type.code', 'in', ('3', '4', '5'))]
 
     def get_sync_info_value(self):
         return [{

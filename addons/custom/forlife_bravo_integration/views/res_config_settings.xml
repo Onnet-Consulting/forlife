@@ -1,42 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="res_config_settings_view_form" model="ir.ui.view">
+    <record id="bravo_res_config_settings_view_form" model="ir.ui.view">
         <field name="name">res.config.settings.form</field>
         <field name="model">res.config.settings</field>
-        <field name="priority" eval="100"/>
-        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="1001"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='recaptcha']" position="after">
-                <div class="col-12 col-lg-6 o_setting_box" id="mssql_config">
-                    <div class="o_setting_right_pane">
-                        <span class="o_form_label">SQL Server Integration (MSSQL)</span>
-                        <div class="content-group mt16">
-                            <div class="text-muted mb8">
-                                SQL Server database connection parameters
+            <form string="Settings" class="oe_form_configuration o_base_settings" js_class="base_settings">
+                <div class="o_setting_containers">
+                    <div class="col-12 col-lg-6 o_setting_box" id="mssql_config">
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">SQL Server Integration (MSSQL)</span>
+                            <div class="content-group mt16">
+                                <div class="text-muted mb8">
+                                    SQL Server database connection parameters
+                                </div>
+                                <label for="mssql_driver" class="col-lg-3 o_light_label"/>
+                                <field name="mssql_driver"/>
                             </div>
-                            <label for="mssql_driver" class="col-lg-3 o_light_label"/>
-                            <field name="mssql_driver"/>
-                        </div>
-                        <div class="content-group">
-                            <label for="mssql_host" class="col-lg-3 o_light_label"/>
-                            <field name="mssql_host"/>
-                        </div>
-                        <div class="content-group">
-                            <label for="mssql_database" class="col-lg-3 o_light_label"/>
-                            <field name="mssql_database"/>
-                        </div>
-                        <div class="content-group">
-                            <label for="mssql_username" class="col-lg-3 o_light_label"/>
-                            <field name="mssql_username"/>
-                        </div>
-                        <div class="content-group">
-                            <label for="mssql_password" class="col-lg-3 o_light_label"/>
-                            <field name="mssql_password" password="True"/>
+                            <div class="content-group">
+                                <label for="mssql_host" class="col-lg-3 o_light_label"/>
+                                <field name="mssql_host"/>
+                            </div>
+                            <div class="content-group">
+                                <label for="mssql_database" class="col-lg-3 o_light_label"/>
+                                <field name="mssql_database"/>
+                            </div>
+                            <div class="content-group">
+                                <label for="mssql_username" class="col-lg-3 o_light_label"/>
+                                <field name="mssql_username"/>
+                            </div>
+                            <div class="content-group">
+                                <label for="mssql_password" class="col-lg-3 o_light_label"/>
+                                <field name="mssql_password" password="True"/>
+                            </div>
+                            <div class="content-group">
+                                <label for="integration_bravo_up" class="col-lg-3 o_light_label"/>
+                                <field name="integration_bravo_up"/>
+                            </div>
                         </div>
                     </div>
+                    <div class="padding-setting-custom">
+                        <separator string="Danh sách đối tượng đồng bộ master data sang bravo"/>
+                        <field name="list_model_sync_bravo" widget="ace" options="{'mode': 'python'}"/>
+                    </div>
                 </div>
-
-            </xpath>
+            </form>
         </field>
     </record>
+
+    <record id="sql_server_database_config_action" model="ir.actions.act_window">
+        <field name="name">Cấu hình đồng bộ</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="forlife_bravo_integration.bravo_res_config_settings_view_form"/>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem id="sql_server_database_config_menu" parent="forlife_base.odoo_integration_bravo" action="sql_server_database_config_action" sequence="10"/>
+
+    <record id="sync_all_master_data_for_bravo_action" model="ir.actions.server">
+        <field name="name">Đồng bộ master data thủ công</field>
+        <field name="model_id" ref="forlife_bravo_integration.model_res_config_settings"/>
+        <field name="state">code</field>
+        <field name="code">action = model.sync_all_master_data_for_bravo()</field>
+    </record>
+
+    <menuitem id="sync_all_master_data_for_bravo_menu" parent="forlife_base.odoo_integration_bravo" action="sync_all_master_data_for_bravo_action" sequence="20"/>
+
 </odoo>

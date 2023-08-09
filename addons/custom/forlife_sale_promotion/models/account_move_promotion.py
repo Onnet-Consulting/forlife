@@ -25,3 +25,4 @@ class AccountMovePromotion(models.Model):
     move_id = fields.Many2one("account.move", string="Order")
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
     partner_id = fields.Many2one('res.partner', required=False)
+    tax_id = fields.Many2many(comodel_name='account.tax', string="Taxes", context={'active_test': False})

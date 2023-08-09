@@ -21,10 +21,9 @@ class StockTransfer(models.Model):
     work_to = fields.Many2one('forlife.production', string="LSX To",
                               domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
-    employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id,
-                                  required=1)
+    employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
+    department_id = fields.Many2one('hr.department', string="Phòng ban")
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
     create_date = fields.Datetime(string='Create Date', default=lambda self: fields.datetime.now())
@@ -850,7 +849,10 @@ class ForlifeProductionFinishedProduct(models.Model):
             qty_done = sum([line.quantity_done for line in rec.forlife_production_stock_move_ids.filtered(
                 lambda r: r.picking_id.state in 'done')])
             rec.stock_qty = qty_done
-            rec.remaining_qty = rec.produce_qty - qty_done
+
+            #Trường hợp nhập thừa thành phẩm
+            remaining_qty = 0 if qty_done > rec.produce_qty else rec.produce_qty - qty_done
+            rec.remaining_qty = remaining_qty
 
 
 class HREmployee(models.Model):

@@ -55,7 +55,7 @@ class StockPickingTransferBkav(models.Model):
             "EmployeeCode": employee.code or None,
             'DeptCode': picking.transfer_id and picking.transfer_id.department_id.center_expense_id.code or None,
             "IsTransfer": 0,
-            "ReceiptWarehouseCode": picking.location_dest_id.code or None,
+            "ReceiptWarehouseCode": picking.location_dest_id.warehouse_id.code or None,
             "BuiltinOrder": line_count or None,
             "CreditAccount": credit_line[0].account_id.code if credit_line else (product.categ_id.property_stock_valuation_account_id.code or None),
             "ItemCode": product.barcode or None,

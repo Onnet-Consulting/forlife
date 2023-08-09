@@ -14,5 +14,10 @@ class ProductTemplateAttrLine(models.Model):
             if len(rec.value_ids) > 1:
                 raise ValidationError('Chỉ được một giá trị cho một thuộc tính!')
 
+class ProductAttribute(models.Model):
+    _inherit = 'product.attribute'
 
+    number_related_products = fields.Integer(compute='_compute_number_related_products', store=True)
 
+    def action_open_related_products(self):
+        pass

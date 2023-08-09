@@ -12,7 +12,6 @@
         'base',
         # 'forlife_purchase',
         'forlife_stock',
-        'bkav_connector',
     ],
     "data": [
         'data/ir_attachment_data.xml',

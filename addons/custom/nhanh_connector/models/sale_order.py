@@ -51,14 +51,12 @@ class SaleOrderNhanh(models.Model):
         ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
     delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
-    x_voucher  = fields.Float(string='Giá trị voucher (Nhanh)')
+    x_voucher = fields.Float(string='Giá trị voucher (Nhanh)')
     x_code_voucher = fields.Char(string="Mã voucher/code (Nhanh)")
     x_is_change = fields.Boolean(string="Đơn đổi hàng")
     nhanh_return_id = fields.Char(string='Id đơn trả Nhanh.vn', copy=False)
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
-
-    is_synthetic = fields.Boolean(string='Synthetic', default=False)
 
 
     # def write(self, vals):

@@ -19,7 +19,7 @@
             <field name="view_mode">tree</field>
         </record>
 
-        <menuitem id="telegram_bot_menu" parent="integration_telegram_root_menu" action="telegram_bot_action" sequence="20"/>
+        <menuitem id="telegram_bot_menu" parent="forlife_base.odoo_integration_telegram" action="telegram_bot_action" sequence="20"/>
 
     </data>
 </odoo>

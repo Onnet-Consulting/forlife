@@ -34,11 +34,13 @@
         'forlife_invoice',
         'forlife_pos_popup_cash',
         'forlife_product_combo',
+        'stock_inventory',
     ],
     'auto_install': True,
 
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/res_partner_group_data.xml',
         'data/queue_job_data.xml',
         'data/ir_cron_data.xml',
@@ -47,6 +49,7 @@
         'wizard/bravo_sync_account_wizard_views.xml',
         'wizard/bravo_sync_tax_wizard_views.xml',
         'views/product_category_views.xml',
+        'views/synthetic_daily_transfer_views.xml',
         'wizard/bravo_sync_asset_wizard_views.xml',
         'wizard/bravo_sync_pos_expense_label_views.xml',
     ],

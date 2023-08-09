@@ -26,9 +26,9 @@ class StockTransferRequest(models.Model):
         selection=[('draft', 'Draft'),
                    ('wait_confirm', 'Wait Confirm'),
                    ('approved', 'Approved'),
+                    ('done', 'Done'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel'),
-                   ('done', 'Done')], default='draft', copy=False)
+                   ('cancel', 'Cancel')], default='draft', copy=False)
     request_lines = fields.One2many('transfer.request.line', 'request_id', string='Chi tiết', copy=True)
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
@@ -36,6 +36,8 @@ class StockTransferRequest(models.Model):
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
+    location_id = fields.Many2one('stock.location', "Từ kho", check_company=True)
+    location_dest_id = fields.Many2one('stock.location', "Đến kho", check_company=True)
 
     @api.model
     def default_get(self, default_fields):
@@ -72,10 +74,26 @@ class StockTransferRequest(models.Model):
                     'plan_quantity': production_material_id.total,
                     'uom_id': production_material_id.uom_id.id or production_material_id.product_id.uom_id.id,
                     'production_to': self.production_id.id,
+                    'location_id': self.location_id.id or False,
+                    'location_dest_id': self.location_dest_id.id or False,
                 }))
         self.write({
             'request_lines': request_lines
         })
+
+    @api.onchange('location_id')
+    def onchange_location_id(self):
+        for r in self:
+            r.request_lines.write({
+                'location_id': r.location_id.id or False
+            })
+
+    @api.onchange('location_dest_id')
+    def onchange_location_dest_id(self):
+        for r in self:
+            r.request_lines.write({
+                'location_dest_id': r.location_dest_id.id or False
+            })
 
     @api.model
     def get_import_templates(self):
@@ -124,10 +142,13 @@ class StockTransferRequest(models.Model):
                 })
                 dic_data = {
                     'state': 'approved',
-                    'employee_id': record.user_id.id,
+                    'employee_id': record.user_id.employee_id.id or False,
+                    'department_id': record.department_id.id,
                     'stock_request_id': record.id,
                     'location_id': item.location_id.id,
+                    'location_name': item.location_id.location_id.name+'/'+item.location_id.name,
                     'location_dest_id': item.location_dest_id.id,
+                    'location_dest_name': item.location_dest_id.location_id.name+'/'+item.location_dest_id.name,
                     'work_to': record.production_id.id or False,
                     'stock_transfer_line': [data_stock_transfer_line]
                 }
@@ -157,7 +178,6 @@ class StockTransferRequest(models.Model):
                     'edit': True
                 }
             }
-
 
     @api.constrains('request_lines')
     def constrains_request_lines(self):

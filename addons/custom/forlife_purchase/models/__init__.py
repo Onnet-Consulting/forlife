@@ -3,7 +3,7 @@ from . import product_order_cost_line
 from . import purchase_order
 from . import forlife_event
 from . import forlife_production
-from . import barcode
+from . import account_move_line
 from . import product
 from . import barcode
 from . import res_partner

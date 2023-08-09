@@ -120,6 +120,7 @@
                                     <field name="state" invisible="1"/>
                                     <field name="description" optional="show"/>
                                     <field name="purchase_product_type" optional="show"/>
+                                    <field name="asset_code" attrs="{'invisible': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="asset_description" attrs="{'readonly': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="purchase_quantity" optional="show"/>
                                     <field name="exchange_quantity" optional="show" string="Tỷ lệ quy đổi"/>
