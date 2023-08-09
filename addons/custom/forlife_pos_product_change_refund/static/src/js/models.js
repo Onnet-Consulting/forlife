@@ -15,7 +15,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.approved = this.approved || false;
             this.is_refund_product = this.is_refund_product || false;
             this.is_change_product = this.is_change_product || false;
-            this.listOrderLineRefundSelected = []
+            this.listOrderLineRefundSelected = [];
+            this.finished_programs = [];
         }
 
 
@@ -24,6 +25,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.approved = json.approved || false;
             this.is_refund_product = json.is_refund_product || false;
             this.is_change_product = json.is_change_product || false;
+            this.finished_programs = json.finished_programs || [];
         }
 
         clone() {
@@ -39,6 +41,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.approved = this.approved || false;
             json.is_refund_product = this.is_refund_product || false;
             json.is_change_product = this.is_change_product || false;
+            json.finished_programs = this.finished_programs || [];
             return json;
         }
 
@@ -174,6 +177,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.product_defective_id = json.product_defective_id || 0;
             this.subtotal_paid = json.subtotal_paid || 0;
             this.pos_order_line_discount_details = json.pos_order_line_discount_details || [];
+            this.related_refund_line_cid = json.related_refund_line_cid || null;
         }
 
         clone() {
@@ -222,6 +226,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.product_defective_id = this.product_defective_id || 0;
             json.subtotal_paid = this.subtotal_paid || 0;
             json.pos_order_line_discount_details = this.pos_order_line_discount_details || [];
+            json.related_refund_line_cid = this.related_refund_line_cid || null;
             return json;
         }
 
