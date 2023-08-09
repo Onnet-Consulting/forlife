@@ -10,7 +10,6 @@ odoo.define('point_of_sale.EditListPopupInherit', function(require) {
         class extends EditListPopup {
 
             setup() {
-                console.log('1111111111111111111111111111111111111111');
                 super.setup();
                 this.state = Object.assign(this.state, useState({isBarcodeInput: this.props.isBarcodeInput}));
             }
