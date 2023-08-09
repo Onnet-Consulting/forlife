@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
        <record id="accountant_print_stock_group" model="res.groups">
            <field name="name">Accountant Print Stock</field>
