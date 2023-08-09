@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <record id="bo_plan_user" model="res.groups">
             <field name="name">Business objective plan user</field>
