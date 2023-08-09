@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from ...bkav_connector.models import bkav_action
 
@@ -210,8 +210,10 @@ class TransferNotExistsBkav(models.Model):
             if invoice.location_dest_id.id_deposit or invoice.location_id.id_deposit:
                 InvoiceTypeID = 6
                 ShiftCommandNo = invoice.vendor_contract_id.name if invoice.vendor_contract_id else ''
-            invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_transfer,
-                                                                                       datetime.now().time())) if invoice.date_transfer else fields.Datetime.context_timestamp(invoice, datetime.now())
+            if datetime.now().time().hour >= 17:
+                invoice_date = datetime.combine(invoice.date_transfer, (datetime.now() - timedelta(hours=17)).time())
+            else:
+                invoice_date = datetime.combine(invoice.date_transfer, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
             sequence = 0
             for line in invoice.line_ids:
