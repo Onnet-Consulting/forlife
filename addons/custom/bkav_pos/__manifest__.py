@@ -6,7 +6,7 @@
     'license': 'LGPL-3',
     "sequence": 1,
     "description": """BKAV POS""",
-    "depends": ['base', 'account','point_of_sale','bkav_connector','forlife_invoice','forlife_point_of_sale'],
+    "depends": ['base', 'account','point_of_sale','bkav_connector','forlife_invoice','forlife_pos_product_change_refund'],
     "data": [
         'views/store.xml',
         'views/pos_order_views.xml',
