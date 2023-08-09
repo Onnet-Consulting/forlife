@@ -348,8 +348,8 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     remaining_records[line.synthetic_id.id].append(row)
                 else:
                     remaining_records[line.synthetic_id.id] = [row]
-                line.sudo().with_delay(
-                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                line.with_delay(
+                    description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
                 ).write({
                     "remaining_quantity": remaining_quantity,
                     "adjusted_quantity": adjusted_quantity

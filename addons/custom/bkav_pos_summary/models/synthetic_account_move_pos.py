@@ -19,6 +19,7 @@ class SyntheticAccountMovePos(models.Model):
     company_id = fields.Many2one('res.company')
     
     exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     invoice_guid = fields.Char('GUID HDDT')
     invoice_no = fields.Char('Số hóa đơn')
     invoice_form = fields.Char('Mẫu số HDDT')
@@ -163,7 +164,9 @@ class SyntheticAccountMovePos(models.Model):
 
     def get_promotion(self, ln):
         list_invoice_details_ws = []
-        line_discount_ids = ln.line_discount_ids
+        line_discount_ids = self.env["synthetic.account.move.pos.line.discount"].search([
+            ('synthetic_id', '=', ln.id)
+        ])
         if ln.total_point > 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
