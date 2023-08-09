@@ -78,6 +78,12 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 			    self.props.line.set_quantity(parseInt(event.target.value) || 0, true);
 			}
 
+			isShowChangeProduct() {
+			    let line = this.props.line;
+			    if (line.quantity && !line.get_alternative_lines().length && line.refunded_orderline_id) return true;
+			    return false;
+			}
+
 			async actUpdate(event) {
 			    var args = {};
                 args.id = this.props.line.handle_change_refund_id;
@@ -143,6 +149,54 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                     await this.showPopup('ErrorPopup', { title, body });
                 }
 
+            }
+
+            async actChangeProduct(event) {
+                console.log(this.env.pos);
+                let orderline = this.props.line;
+                let order = this.env.pos.get_order();
+                let pos = this.env.pos;
+                console.log('event.detail', event);
+                const { confirmed, payload } = await this.showPopup('EditListPopup', {
+                    title: this.env._t('Choose New Alternative Product'),
+                    isSingleItem: false,
+                    array: [],
+                    isBarcodeInput: true
+                });
+                if (confirmed) {
+                    const newBarcodeLines = payload.newArray
+                        .map(item => ({ product_barcode: item.text }));
+                    let toAddProducts = []
+                    newBarcodeLines.forEach(bar => {
+                        let product = this.env.pos.db.product_by_barcode[bar.product_barcode];
+                        if (product) {
+                            toAddProducts.push(product);
+                        };
+                    });
+                    if (!toAddProducts.length) {
+                        return;
+                    };
+                    const promotion_data = await this.rpc({
+                        model: 'pos.config',
+                        method: 'check_promotion_for_change_products',
+                        args: [[pos.config.id], [orderline.refunded_orderline_id], toAddProducts.map(p=>p.id)]
+                    });
+                    if (promotion_data) {
+                        let {program_data, pricelist_data} = promotion_data;
+                        program_data = program_data.filter(p => !pos.promotion_program_by_id.hasOwnProperty(p.id));
+                        pricelist_data = pricelist_data.filter(pl => !pos.pro_pricelist_item_by_id.hasOwnProperty(pl.id));
+                        pos.promotionPrograms.push(...program_data);
+                        pos._loadPromotionData(program_data);
+                        pos._loadPromotionPriceListItem(pricelist_data);
+                        order.finished_programs.push(...program_data.map(p=>p.id))
+                    };
+                    for (let product of toAddProducts) {
+                        let options = {
+                            related_refund_line_cid: orderline.cid
+                        };
+                        order.add_product(product, options);
+                    };
+                }
             }
 
             getTotalDiscount() {
