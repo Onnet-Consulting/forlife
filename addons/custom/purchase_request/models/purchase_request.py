@@ -227,7 +227,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': 1,
                     'product_qty': (line.purchase_quantity - line.order_quantity),
                     'purchase_uom': line.product_id.uom_po_id.id or False,
-                    'product_uom': line.product_id.uom_id.id,
+                    'product_uom': line.product_uom.id or line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
