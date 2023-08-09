@@ -16,6 +16,14 @@ odoo.define('forlife_pos_vietinbank.models', function (require) {
                 return newPaymentline;
             }
 
+            get_due(paymentline) {
+                const due = super.get_due(...arguments)
+                if (this.is_vietinbank() &&  due <= 0) {
+                    this.selected_paymentline.set_payment_status('done')
+                }
+                return due
+            }
+
             is_vietinbank() {
                 return this.selected_paymentline && this.selected_paymentline.payment_method.use_payment_terminal === 'vietinbank'
             }
