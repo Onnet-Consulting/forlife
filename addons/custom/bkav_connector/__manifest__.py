@@ -6,7 +6,7 @@
     'license': 'LGPL-3',
     "sequence": 1,
     "description": """BKAV Connector""",
-    "depends": ['base'],
+    "depends": ['base','account'],
     "data": [
         'views/res_config_settings_views.xml',
     ],
