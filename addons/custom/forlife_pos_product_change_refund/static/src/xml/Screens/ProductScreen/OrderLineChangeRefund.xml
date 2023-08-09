@@ -20,7 +20,7 @@
             <t t-if="this.isShowChangeProduct()">
                 <div class="control-button" t-on-click="actChangeProduct"
                      style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: ;">
-                    Change
+                    Đổi SP
                 </div>
             </t>
         </xpath>
