@@ -3,7 +3,6 @@ from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta
 import json
 import logging
-from ...bkav_connector.models.bkav_connector import connect_bkav
 from ...bkav_connector.models import bkav_action
 
 _logger = logging.getLogger(__name__)

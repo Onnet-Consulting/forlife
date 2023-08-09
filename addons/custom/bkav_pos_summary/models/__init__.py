@@ -1,3 +1,4 @@
+from . import account_move
 from . import pos_order
 from . import pos_order_line
 from . import summary_account_move_pos

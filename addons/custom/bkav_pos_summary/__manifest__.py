@@ -6,7 +6,7 @@
     'license': 'LGPL-3',
     "sequence": 1,
     "description": """BKAV POS Summary""",
-    "depends": ['bkav_pos'],
+    "depends": ['bkav_pos', 'bkav_sale'],
     "data": [
         'security/ir.model.access.csv',
         'data/schedule.xml',
