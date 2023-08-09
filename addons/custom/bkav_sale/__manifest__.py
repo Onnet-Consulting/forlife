@@ -12,6 +12,6 @@
         'forlife_pos_point_order',
     ],
     "data": [
-        # 'views/account_move_views.xml',
+        'views/account_move_views.xml',
     ],
 }
