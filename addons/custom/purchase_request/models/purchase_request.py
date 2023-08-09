@@ -13,6 +13,7 @@ from pytz import UTC
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
+    _rec_names_search = ['name']
     _description = "Purchase Request"
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
@@ -72,9 +73,7 @@ class PurchaseRequest(models.Model):
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm."))
                 if 'order_lines/purchase_quantity' in fields and not record[fields.index('order_lines/purchase_quantity')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua."))
-                if 'order_lines/exchange_quantity' in fields and not record[fields.index('order_lines/exchange_quantity')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi."))
-                if 'order_lines/purchase_uom' in fields and not record[fields.index('order_lines/purchase_uom')]:
+                if 'order_lines/product_uom' in fields and not record[fields.index('order_lines/product_uom')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua."))
                 if 'order_lines/request_date' in fields and not record[fields.index('order_lines/request_date')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu."))
@@ -103,8 +102,8 @@ class PurchaseRequest(models.Model):
     def submit_action(self):
         for record in self:
             for line in record.order_lines:
-                if not line.purchase_uom:
-                    raise UserError(_('Đơn vị mua của sản phẩm %s chưa được chọn') % line.product_id.name)
+                if not line.product_uom:
+                    raise UserError(_('Đơn vị tính của sản phẩm %s chưa được chọn') % line.product_id.name)
                 if not line.date_planned:
                     raise UserError(_('Ngày nhận hàng dự kiến của sản phẩm %s chưa được chọn') % line.product_id.name)
             record.write({'state': 'confirm'})
@@ -225,9 +224,9 @@ class PurchaseRequest(models.Model):
                     'asset_code': line.asset_code.id,
                     'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
-                    'exchange_quantity': line.exchange_quantity,
-                    'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
+                    'exchange_quantity': 1,
+                    'product_qty': (line.purchase_quantity - line.order_quantity),
+                    'purchase_uom': line.product_id.uom_po_id.id or False,
                     'product_uom': line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
@@ -310,7 +309,7 @@ class PurchaseRequestLine(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_date = fields.Date(string='Request date', required=True)
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
-    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
+    product_uom = fields.Many2one('uom.uom', string='Product uom', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
@@ -332,8 +331,7 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         self.write({
-            'description': self.product_id.name,
-            'purchase_uom': self.product_id.uom_id.id,
+            'product_uom': self.product_id.uom_id.id,
         })
 
     @api.onchange('product_id')
