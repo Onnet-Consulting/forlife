@@ -137,18 +137,25 @@ class SummaryAccountMovePosReturn(models.Model):
 
         last_day = date.today()
         domain = [
-            ('invoice_exists_bkav', '=', False),
+            ('is_general', '=', False),
             ('is_post_bkav_store', '=', True),
-            ('is_invoiced', '=', True),
-            ('is_synthetic', '=', False),
+            ('exists_bkav', '=', False),
+            ('pos_order_id', '!=', False),
+            ('move_type', '=', 'out_refund'),
+            ('state', '=', 'posted'),
         ]
 
         if not kwargs.get("env"):
             domain.append(('invoice_date', '<', last_day))
-        pos_order = self.env['pos.order'].search(domain)
+        # pos_order = self.env['pos.order'].search(domain)
+
+        move_ids = self.env['account.move'].search(domain)
+        # .filtered(
+        #     lambda r: r.pos_order_id.store_id.is_post_bkav == True
+        # )
 
         lines = self.env['pos.order.line'].search([
-            ('order_id', 'in', pos_order.ids),
+            ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '!=', False),
             ('qty', '<', 0),
             ('is_promotion', '=', False)
@@ -182,7 +189,7 @@ class SummaryAccountMovePosReturn(models.Model):
 
             res_pos = model.create(vals_list)
 
-        return data, res_pos, pos_order_synthetic
+        return data, res_pos, move_ids
 
 
 

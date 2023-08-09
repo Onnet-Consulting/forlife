@@ -110,19 +110,19 @@ class SyntheticAccountMovePos(models.Model):
 
 
 
-    def generate_invoices(self):
-        domain = [
-            ('is_synthetic', '=', False),
-            ('is_post_bkav_store', '=', True),
-            # ('is_invoiced', '=', True),
-            # ('invoice_exists_bkav', '=', False),
-        ]
-        kwargs = {"domain": domain, 'is_synthetic': True}
-        self.env['summary.account.move.pos'].collect_invoice_to_bkav_end_day(**kwargs)
+    # def generate_invoices(self):
+    #     domain = [
+    #         ('is_synthetic', '=', False),
+    #         ('is_post_bkav_store', '=', True),
+    #         # ('is_invoiced', '=', True),
+    #         # ('invoice_exists_bkav', '=', False),
+    #     ]
+    #     kwargs = {"domain": domain, 'is_synthetic': True}
+    #     self.env['summary.account.move.pos'].collect_invoice_to_bkav_end_day(**kwargs)
 
 
-    def generate_invoices_bkav(self):
-        self.env['summary.account.move.pos'].create_an_invoice_bkav()
+    # def generate_invoices_bkav(self):
+    #     self.env['summary.account.move.pos'].create_an_invoice_bkav()
 
 
     def action_download_view_e_invoice(self):

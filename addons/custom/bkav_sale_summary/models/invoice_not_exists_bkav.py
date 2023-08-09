@@ -111,7 +111,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
     def get_pk_line_discount_tax(self, line):
         tax_ids = []
-        if line.tax_ids:
+        if line.tax_id:
             for tax_id in line.tax_id:
                 tax_ids.append(str(tax_id.id))
         return "_".join(tax_ids)
@@ -476,7 +476,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         if not kwargs.get("env"):
             where_extra = 'AND (am.invoice_date <= %s)'
             params = ((move_date,))
-        #WHERE so.source_record = TRUE
+
         query = """
             SELECT DISTINCT am.id 
             FROM sale_order so
@@ -484,11 +484,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
             JOIN account_move_line aml on solir.invoice_line_id = aml.id
             JOIN account_move am on am.id = aml.move_id
-            
+            WHERE so.source_record = TRUE
             {where_extra}
             AND am.exists_bkav = 'f'
             AND am.state = 'posted'
-            AND (am.is_synthetic = 'f' OR am.is_synthetic is NULL)
+            AND (am.is_general = 'f' OR am.is_general is NULL)
         """.format(where_extra=where_extra)
         self._cr.execute(query, params)
         result = self._cr.fetchall()
@@ -576,12 +576,12 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
         if move_out_invoice_lines:
             move_ids = move_out_invoice_lines.mapped("move_id")
-            move_ids.update({"is_synthetic": True})
+            move_ids.update({"is_general": True})
         
 
         if move_out_refund_lines:
             move_ids = move_out_refund_lines.mapped("move_id")
-            move_ids.update({"is_synthetic": True})
+            move_ids.update({"is_general": True})
 
         # move_date = datetime.utcnow().date()
         # # tổng hợp hóa đơn nhanh

@@ -56,11 +56,11 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="HĐĐT" string="Invoices">
+                        <!-- <page name="HĐĐT" string="Invoices">
                             <field name="number_bill"/>
                             <field name="einvoice_status"/>
                             <field name="einvoice_date"/>
-                        </page>
+                        </page> -->
                         <page name="other_info" string="Other Information">
                             <field name="line_discount_ids">
                                 <tree editable="bottom" create="0">
