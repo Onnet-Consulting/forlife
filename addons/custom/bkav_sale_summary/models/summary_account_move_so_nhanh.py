@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from datetime import date, datetime, timedelta
-
 
 class SummaryAccountMoveSoNhanh(models.Model):
     _name = 'summary.account.move.so.nhanh'

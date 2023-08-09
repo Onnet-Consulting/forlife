@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from datetime import date, datetime, timedelta
-from .utils import collect_pos_to_bkav_end_day, genarate_code, genarate_pos_code
+from datetime import date
+from .utils import collect_pos_to_bkav_end_day, genarate_pos_code
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'

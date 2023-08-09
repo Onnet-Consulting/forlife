@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from datetime import date, datetime, timedelta
-from . import bkav_action
+from ...bkav_connector.models import bkav_action
 
 
 class GeneralInvoiceNotExistsBkav(models.Model):

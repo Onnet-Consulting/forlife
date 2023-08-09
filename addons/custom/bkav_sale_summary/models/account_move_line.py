@@ -1,5 +1,4 @@
-from odoo import api, fields, models, Command, _
-
+from odoo import api, fields, models
 
 
 class AccountMoveLine(models.Model):
