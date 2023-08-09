@@ -14,7 +14,7 @@
                     <field name="state" invisible="1"/>
                     <field name="move_type" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice"
-                          attrs="{'invisible': [('state','=','draft')]}">
+                          attrs="{'invisible': ['|',('state','=','draft'),('pos_order_id','!=',False)]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"

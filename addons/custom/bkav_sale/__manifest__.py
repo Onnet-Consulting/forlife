@@ -9,6 +9,7 @@
     "depends": [
         'bkav_connector', 
         'account_debit_note',
+        'forlife_pos_point_order',
     ],
     "data": [
         'views/account_move_views.xml',
