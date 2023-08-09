@@ -3588,6 +3588,3 @@ class AccountTax(models.Model):
     _inherit = 'account.tax'
     _rec_names_search = ['code', 'name']
 
-class PurchaseRequest(models.Model):
-    _name = "purchase.request"
-    _rec_names_search = ['name']

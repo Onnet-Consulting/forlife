@@ -205,13 +205,14 @@ class ProductTemplate(models.Model):
         for rec in self:
             if rec.brand_id and rec.attribute_line_ids:
                 att = rec.attribute_line_ids.filtered(lambda x: x.attribute_id.id == attribute_id.id)
-                if att:
+                if att and att.value_ids[0]:
                     value_id = att.value_ids[0].id
-                    rule_sku = self.env['generate.rule'].search([('type_product_id', '=', value_id), ('brand_id', '=', rec.brand_id.id)], limit=1)
-                    if rule_sku:
-                        rec.rule_id = rule_sku.id
-                    else:
-                        rec.rule_id = False
+                    if value_id:
+                        rule_sku = self.env['generate.rule'].search([('type_product_id', '=', value_id), ('brand_id', '=', rec.brand_id.id)], limit=1)
+                        if rule_sku:
+                            rec.rule_id = rule_sku.id
+                        else:
+                            rec.rule_id = False
                 else:
                     rec.rule_id = False
             else:

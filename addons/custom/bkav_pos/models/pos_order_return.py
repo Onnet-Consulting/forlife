@@ -220,7 +220,7 @@ class PosOrderReturn(models.Model):
                     "OriginalInvoiceIdentify": invoice.origin_move_id.get_invoice_identify() if invoice.issue_invoice_type in ('adjust', 'replace') else '',  # dùng cho hóa đơn điều chỉnh
                 },
                 "PartnerInvoiceID": 0,
-                "PartnerInvoiceStringID": invoice.pos_reference,
+                "PartnerInvoiceStringID": invoice.pos_reference+'_refund',
                 "ListInvoiceDetailsWS": list_invoice_detail
             })
         return bkav_data
