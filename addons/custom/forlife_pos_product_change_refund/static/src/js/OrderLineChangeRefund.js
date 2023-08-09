@@ -78,15 +78,12 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 			    self.props.line.set_quantity(parseInt(event.target.value) || 0, true);
 			}
 
-<<<<<<< HEAD
-=======
 			isShowChangeProduct() {
 			    let line = this.props.line;
 			    if (line.quantity && !line.get_alternative_lines().length && line.refunded_orderline_id) return true;
 			    return false;
 			}
 
->>>>>>> 46c136483 ( MFL2201ER-1051-lamgia: Load CT giá của đơn đổi)
 			async actUpdate(event) {
 			    var args = {};
                 args.id = this.props.line.handle_change_refund_id;
