@@ -41,6 +41,8 @@
                                     <field name="account_id"/>
                                     <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="quantity"/>
+                                    <field name="adjusted_quantity"/>
+                                    <field name="remaining_quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
                                     <field name="x_free_good"/>
@@ -64,6 +66,9 @@
                             </field>
                         </page>
                         <page name="HĐĐT" string="Invoices">
+                            <button name="get_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_guid', '=', False)]}"
+                                string="Get eInvoice" groups="account.group_account_invoice"/>
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>

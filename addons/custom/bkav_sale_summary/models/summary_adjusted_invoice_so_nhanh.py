@@ -22,6 +22,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
     company_id = fields.Many2one('res.company')
 
     exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     invoice_guid = fields.Char('GUID HDDT')
     invoice_no = fields.Char('Số hóa đơn')
     invoice_form = fields.Char('Mẫu số HDDT')
@@ -55,9 +56,17 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
             r.line_discount_ids = self.env["adjusted.so.nhanh.line.discount"].search([
                 ('adjusted_invoice_id', '=', r.id)
             ])
-            
+    
+    @api.depends('data_compare_status')
+    def _compute_data_compare_status(self):
+        for rec in self:
+            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
+
     def action_download_view_e_invoice(self):
         return bkav_action.download_invoice_bkav(self)
+
+    def get_invoice_bkav(self):
+        bkav_action.get_invoice_bkav(self)
 
     def get_vat(self, line):
         vat = 0
@@ -144,7 +153,13 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
         for line in self:
             try:
                 bkav_invoice_data = line.get_bkav_data_pos()
-                bkav_action.create_invoice_bkav(line, bkav_invoice_data, is_publish=True)
+                bkav_action.create_invoice_bkav(
+                    line, 
+                    bkav_invoice_data, 
+                    is_publish=True,
+                    origin_id=line.source_invoice,
+                    issue_invoice_type='adjust'
+                )
             except Exception as e:
                 line.message_post(body=str(e))
 
@@ -188,7 +203,7 @@ class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     def compute_tax_amount(self):
         for r in self:
             if r.tax_ids:
-                r.tax_amount = sum(r.tax_ids.mapped('amount')) * abs(r.price_subtotal)
+                r.tax_amount = sum(r.tax_ids.mapped('amount')) * r.price_subtotal/100
             else:
                 r.tax_amount = 0
 
