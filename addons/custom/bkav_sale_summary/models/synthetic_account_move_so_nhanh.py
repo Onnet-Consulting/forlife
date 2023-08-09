@@ -19,6 +19,7 @@ class SyntheticAccountMoveSoNhanh(models.Model):
     company_id = fields.Many2one('res.company')
     
     exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
     invoice_guid = fields.Char('GUID HDDT')
     invoice_no = fields.Char('Số hóa đơn')
     invoice_form = fields.Char('Mẫu số HDDT')
@@ -55,8 +56,16 @@ class SyntheticAccountMoveSoNhanh(models.Model):
             ])
 
 
+    @api.depends('data_compare_status')
+    def _compute_data_compare_status(self):
+        for rec in self:
+            rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
+
     def get_invoice_identify(self):
         return bkav_action.get_invoice_identify(self)
+
+    def get_invoice_bkav(self):
+        bkav_action.get_invoice_bkav(self)
 
     def action_download_view_e_invoice(self):
         return bkav_action.download_invoice_bkav(self)
@@ -96,7 +105,9 @@ class SyntheticAccountMoveSoNhanh(models.Model):
 
     def get_promotion(self, ln):
         list_invoice_details_ws = []
-        line_discount_ids = ln.line_discount_ids
+        line_discount_ids = self.env["synthetic.so.nhanh.line.discount"].search([
+            ('synthetic_id', '=', ln.id)
+        ])
 
         if line_discount_ids:
             line_discount_vip_amount_ids = line_discount_ids.filtered(lambda r: r.promotion_type == 'vip_amount')
@@ -125,6 +136,7 @@ class SyntheticAccountMoveSoNhanh(models.Model):
                         }
         
                 list_invoice_details_ws.extend(list(line_discount_vip_amount_taxs.values()))
+
         return list_invoice_details_ws
 
     def get_bkav_data_pos(self):

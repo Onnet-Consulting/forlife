@@ -56,7 +56,7 @@
             <div>
                 <div style="margin-top:10px;font-size:14px;">
                     <select name="expense_label" t-model="state.expense_label" id="expense_label" class="details"
-                        style="float: left; display: none; border: 1px solid black; font-size: 14px;">
+                        style="float: left; display: none; border: 1px solid black; font-size: 14px; max-width: 100%">
                         <option t-att-value="0">--Chọn khoản mục dòng tiền--</option>
                         <t t-foreach="env.pos.pos_expense_labels" t-as="expense" t-key="expense.id">
                             <option t-att-value="expense.id">
