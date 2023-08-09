@@ -17,6 +17,7 @@
                                     <field name="bkav_partner_token"/>
                                     <field name="bkav_partner_guid"/>
                                     <field name="bkav_add_einvoice"/>
+                                    <field name="bkav_add_einvoice_stock"/>
                                     <field name="bkav_add_einvoice_replace"/>
                                     <field name="bkav_add_einvoice_edit"/>
                                     <field name="bkav_add_einvoice_edit_discount"/>

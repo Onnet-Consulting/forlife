@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
-from odoo.tools.translate import _
-from odoo.exceptions import UserError
+from odoo import models
 
 
 class AccountMoveReversal(models.TransientModel):
