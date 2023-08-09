@@ -66,7 +66,7 @@ class AccountMoveBKAV(models.Model):
         if vat_id:
             vat = vat_id.amount
             if vat_id.price_include:
-                price_unit = price_unit/(1+vat_id.amount/100)
+                price_unit = round(price_unit/(1+vat_id.amount/100))
         if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
