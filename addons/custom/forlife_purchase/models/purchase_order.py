@@ -245,31 +245,31 @@ class PurchaseOrder(models.Model):
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
         if self.purchase_type == 'product':
-            if self.partner_id and self.order_line and self.currency_id:
+            if self.partner_id and self.order_line and self.currency_id and not self.partner_id.is_passersby:
                 date_now = datetime.now().date()
                 domain = [
+                    '|', ('product_id', 'in', self.order_line.product_id.ids),
+                    ('product_tmpl_id', '=', self.order_line.product_id.product_tmpl_id.ids),
                     ('company_id', '=', self.company_id.id),
                     ('partner_id', '=', self.partner_id.id),
                     ('date_start', '<=', date_now),
                     ('date_end', '>=', date_now),
                     ('currency_id', '=', self.currency_id.id)
                 ]
+                product_supplierinfo_ids = self.env['product.supplierinfo'].search(domain)
+
                 for line in self.order_line:
-                    if line.product_uom.id != line.product_id.uom_id.id:
-                        line.product_uom = line.product_id.uom_id.id
-                    domain_supplierinfo = [
-                        '|', ('product_id', '=', line.product_id.id),
-                        ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-                        ('amount_conversion', '=', line.exchange_quantity)
-                    ]
-                    supplier_ids = self.env['product.supplierinfo'].search(domain + domain_supplierinfo)
+                    supplier_ids = product_supplierinfo_ids.filtered(lambda x: x.product_id.id == line.product_id.id or x.product_tmpl_id.id == line.product_id.product_tmpl_id.id)
                     if supplier_ids:
                         supplier_id = supplier_ids.sorted('price')[:1]
                         vendor_price = supplier_id.price if supplier_id.price else 0
+                        exchange_quantity = supplier_id.amount_conversion if supplier_id.amount_conversion else 1
                         line.write({
                             'purchase_uom': supplier_id.product_uom.id,
                             'vendor_price': vendor_price,
-                            'price_unit': vendor_price / line.exchange_quantity if line.exchange_quantity else 0
+                            'exchange_quantity': exchange_quantity,
+                            'purchase_quantity': line.product_qty / exchange_quantity,
+                            'price_unit': vendor_price / exchange_quantity
                         })
 
         if self.partner_id and self.sudo().source_location_id.company_id and self.env['res.company'].sudo().search([
