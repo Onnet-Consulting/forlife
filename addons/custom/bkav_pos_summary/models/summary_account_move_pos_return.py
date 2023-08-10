@@ -94,11 +94,12 @@ class SummaryAccountMovePosReturn(models.Model):
         lines=[],
         store=None,
         page=0,
+        limit=1000,
         company_id=None
     ):
         model_code = genarate_pos_code(typ='T', store_id=store, index=page)
         first_n=0
-        last_n=1000
+        last_n=limit
         pk = f"{store.id}_{page}"
         if len(lines) > last_n:
             separate_lines = lines[first_n:last_n]
@@ -118,6 +119,7 @@ class SummaryAccountMovePosReturn(models.Model):
                 lines=lines, 
                 store=store, 
                 page=page, 
+                limit=limit,
                 company_id=company_id
             )
         else:
@@ -148,6 +150,11 @@ class SummaryAccountMovePosReturn(models.Model):
         if not kwargs.get("env"):
             domain.append(('invoice_date', '<', last_day))
 
+        limit = 1000
+        if kwargs.get("limit") and str(kwargs.get("limit")).isnumeric():
+            limit = int(kwargs["limit"])
+
+
         move_ids = self.env['account.move'].search(domain)
 
         lines = self.env['pos.order.line'].search([
@@ -172,6 +179,7 @@ class SummaryAccountMovePosReturn(models.Model):
                     lines=list(line_items.values()),
                     store=store,
                     page=0,
+                    limit=limit,
                     company_id=res[0].company_id
                 )
                 data[store.id] = line_items

@@ -199,7 +199,7 @@ class SummaryAdjustedInvoicePos(models.Model):
     def get_bkav_data_pos(self):
         bkav_invoices = []
         for ln in self:
-            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(ln.invoice_date, datetime.now().time()))
             ln_invoice = {
                 "Invoice": {
                     "InvoiceTypeID": 1,
@@ -243,6 +243,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "DiscountAmount":0.0,
                     "IsDiscount": 0,
                     "ItemTypeID": self.get_item_type_bkav(line),
+                    "IsIncrease": 0,
                 }
                 vat, tax_rate_id = self.get_vat(line)
                 line_invoice.update({
