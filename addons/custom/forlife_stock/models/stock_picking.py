@@ -100,14 +100,13 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                 'picking_type_id': self.picking_id.picking_type_id.id,
                 'move_ids_without_package': list_line_over,
             }
-            xk_picking = self.env['stock.picking'].create(master_data_over)
+            data_pk_over = self.env['stock.picking'].create(master_data_over)
 
-        data_pk_over = self.env['stock.picking'].search([('leftovers_id', '=', self.picking_id.id)])
-        for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
-            pk.write({
-                'quantity_change': pk_od.quantity_change,
-                'quantity_purchase_done': pk.qty_done
-            })
+            for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
+                pk.write({
+                    'quantity_change': pk_od.quantity_change,
+                    'quantity_purchase_done': pk.qty_done
+                })
         return self.picking_id.button_validate()
 
 
