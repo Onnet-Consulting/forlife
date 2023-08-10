@@ -31,6 +31,7 @@
                                     <field name="bkav_get_status_einvoice"/>
                                     <field name="bkav_download_pdf"/>
                                     <field name="bkav_download_xml"/>
+                                    <field name="bkav_search_infor"/>
                                 </group>
                             </group>
                         </div>

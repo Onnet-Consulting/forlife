@@ -58,7 +58,7 @@ class PosOrderReturn(models.Model):
         
         use_point = {}
         rank_total = {}
-        for promotion_id in self.lines:
+        for promotion_id in self.lines.filtered(lambda x: x.refunded_orderline_id):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = 0
                 if promotion_id.tax_ids:
