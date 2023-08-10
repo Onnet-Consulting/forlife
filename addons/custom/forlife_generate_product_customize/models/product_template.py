@@ -27,15 +27,12 @@ class ProductTemplate(models.Model):
                 # kiểm tra thuộc tinh bắt buoc
                 self.validate_attr_required(rule, vals_list)
                 # kiem tra field check create SKU Barcode
-                sku_field_check = self.validate_field_check_create(rule, vals_list, create='sku', record=False)
-                if sku_field_check:
-                    raise ValidationError(_(f"Bị trùng thông tin trường check tạo SKU trong sản phẩm {vals_list['name']}!"))
                 res = super(ProductTemplate, self).create(vals_list)
                 # kiem tra thuoc tinh check create sku
                 pmtl_attr_exits = self.sudo().search(
                     [('attribute_check_text', '=', res.attribute_check_text), ('id', '!=', res.id), ('attribute_check_text', '!=', False)], limit=1)
                 if pmtl_attr_exits:
-                    raise ValidationError(_(f"Bị trùng thông tin thuộc tính check tạo SKU trong sản phẩm {res.name}!"))
+                    raise ValidationError(_(f"Bị trùng thông tin trường hoặc thuộc tính check tạo SKU trong sản phẩm {res.name}!"))
                 if 'test_import' not in self._context or not self._context.get('test_import'):
                     sku_code = self.generate_sku(rule)
                     barcode = self.generate_ean_barcode(rule, sku_code)
@@ -56,10 +53,8 @@ class ProductTemplate(models.Model):
                 if res.attribute_check_text != old_sku.attribute_check_text:
                     raise ValidationError(f"Chưa đúng thông tin SKU cho sản phẩm {res.name}")
                 else:
-                    barcode_field_check = self.validate_field_check_create(res.rule_id, vals_list, create='barcode', record=res)
-                    barcode_att_check = self._check_duplicate_att_barcode(res.rule_id, res)
-                    if barcode_field_check:
-                        raise ValidationError(f"Bị trùng thông tin trường check Barcode sản phẩm {res.name}")
+                    output_list = self.validate_field_check_create(res.rule_id, vals_list)
+                    barcode_att_check = self._check_duplicate_att_and_field_barcode(res.rule_id, res, output_list)
                     if not barcode_att_check:
                         raise ValidationError(f"Bị trùng thông tin thuộc tính check Barcode sản phẩm {res.name}")
                 if 'test_import' not in self._context or not self._context.get('test_import'):
@@ -68,7 +63,13 @@ class ProductTemplate(models.Model):
                 return res
         return super(ProductTemplate, self).create(vals_list)
 
-    def _check_duplicate_att_barcode(self, rule, res):
+    def _compute_domain(self, rec, output_list, values_ids, res):
+        domain = [('attribute_id', '=', rec), ('value_ids', 'in', values_ids), ('product_tmpl_id', '!=', res.id), ('product_tmpl_id.sku_code', '=', res.sku_code)]
+        for d in output_list:
+            domain.append(d)
+        return domain
+
+    def _check_duplicate_att_and_field_barcode(self, rule, res, output_list):
         att_id_check_create_barcode = rule.attribute_check_barcode_ids.mapped('id')
         att_id_of_new_product = res.attribute_line_ids.mapped('attribute_id.id')
         set_same = list(set(att_id_check_create_barcode) & set(att_id_of_new_product))
@@ -79,8 +80,8 @@ class ProductTemplate(models.Model):
                     if rec.attribute_id.id == r:
                         values_ids.append(rec.value_ids[0].id)
             for rec in set_same:
-                ptal = self.env['product.template.attribute.line'].search(
-                    [('attribute_id', '=', rec), ('value_ids', 'in', values_ids), ('product_tmpl_id', '!=', res.id), ('product_tmpl_id.sku_code', '=', res.sku_code)])
+                domain = self._compute_domain(rec, output_list, values_ids, res)
+                ptal = self.env['product.template.attribute.line'].search(domain)
                 if ptal:
                     return False
         return True
@@ -159,28 +160,20 @@ class ProductTemplate(models.Model):
             if list_field_invalid:
                 raise ValidationError(f"""Thiếu trường bắt buộc "{', '.join(list_field_invalid)}" cho sản phẩm {vals_list['name']}!""")
 
-    def validate_field_check_create(self, rule, vals_list, create, record):
-        if create == 'sku':
-            fields_check = rule.sku_field_check_ids.mapped('name')
-        else:
-            fields_check = rule.barcode_field_check_ids.mapped('name')
+    def validate_field_check_create(self, rule, vals_list):
+        fields_check = rule.barcode_field_check_ids.mapped('name')
         value_field_dict = {}
         if fields_check:
             for field in fields_check:
                 if field in vals_list:
-                    value_field_dict[field] = vals_list[field]
+                    value_field_dict[f"product_tmpl_id.{field}"] = vals_list[field]
                 else:
-                    value_field_dict[field] = False
+                    value_field_dict[f"product_tmpl_id.{field}"] = False
         output_list = []
         for key, val in value_field_dict.items():
             output_list.append(tuple((key, '=', val)))
-        output_list.append(tuple(('rule_id', '=', rule.id)))
-        if create == 'barcode':
-            output_list.append(tuple(('id', '!=', record.id)))
-        product_check = self.env['product.template'].search(output_list, limit=1)
-        if product_check:
-            return True
-        return False
+        output_list.append(tuple(('product_tmpl_id.rule_id', '=', rule.id)))
+        return output_list
 
     def convert_diff_attribute_line_to_dict(self, vals_list, check_sku):
         list_attribute_id, list_value_id = [], []
@@ -225,6 +218,10 @@ class ProductTemplate(models.Model):
         for rec in self:
             if rec.rule_id:
                 att_check_sku_ids = rec.rule_id.attribute_check_sku_ids.ids
+                fields_check = rec.rule_id.sku_field_check_ids.mapped('name')
+                sql = f"""SELECT {', '.join(fields_check)} FROM product_template WHERE id = {rec.id}"""
+                self._cr.execute(sql)
+                data = self._cr.dictfetchall()
                 attribute_line_id = rec.attribute_line_ids.mapped('attribute_id.id')
                 set_same = list(set(att_check_sku_ids) & set(attribute_line_id))
                 attr_id_not_in_vals_list = []
@@ -237,8 +234,8 @@ class ProductTemplate(models.Model):
                         string_field.append(f"{r.attribute_id.name}-{r.value_ids[0].name}")
                 stringfield = ':'.join(string_field)
                 if attr_id_not_in_vals_list:
-                    rec.attribute_check_text = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{stringfield}-{':'.join(attr_id_not_in_vals_list)}"
+                    rec.attribute_check_text = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{stringfield}-{str(data)}-{':'.join(attr_id_not_in_vals_list)}"
                 else:
-                    rec.attribute_check_text = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{stringfield}"
+                    rec.attribute_check_text = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{str(data)}-{stringfield}"
             else:
                 rec.attribute_check_text = False
