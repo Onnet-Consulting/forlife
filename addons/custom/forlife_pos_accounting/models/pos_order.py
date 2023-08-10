@@ -36,7 +36,8 @@ class InheritPosOrder(models.Model):
 
     @staticmethod
     def _create_promotion_account_move(order_line, partner_id, credit_account_id):
-        customer_id = order_line.order_id.partner_id
+        customer_id = (order_line.order_id.real_to_invoice and order_line.order_id.partner_id.id
+                       or order_line.order_id.session_id.config_id.store_id.contact_id.id)
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
         if order_line.refunded_orderline_id:
@@ -66,7 +67,7 @@ class InheritPosOrder(models.Model):
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
-                'partner_id': customer_id.id or False,
+                'partner_id': customer_id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,

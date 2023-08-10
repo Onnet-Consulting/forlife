@@ -32,9 +32,10 @@ class PurchaseRequest(models.Model):
         copy=False,
         string="Loại đơn hàng",
         default='',
-        selection=[('tax', 'Đơn mua hàng nhập khẩu'),
-                   ('cost', 'Đơn mua hàng nội địa'),
-                   ])
+        selection=[
+            ('tax', 'Đơn mua hàng nhập khẩu'),
+            ('cost', 'Đơn mua hàng nội địa'),
+        ])
 
     state = fields.Selection(
         copy=False,
@@ -48,8 +49,10 @@ class PurchaseRequest(models.Model):
                    ('close', 'Close'),
                    ], tracking=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
-    # approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
-
+    close_request = fields.Boolean('')
+    is_no_more_quantity = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_close = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_all_line = fields.Boolean(compute='_compute_true_false_is_check', store=1)
     #check button orders_smart_button
     is_check_button_orders_smart_button = fields.Boolean(default=False)
 
@@ -118,13 +121,10 @@ class PurchaseRequest(models.Model):
     def approve_action(self):
         self.write({'state': 'approved'})
 
-    close_request = fields.Boolean('')
-
     def close_action(self):
         for record in self:
             record.close_request = True
             record.write({'state': 'close'})
-
 
     def set_to_draft(self):
         for record in self:
@@ -227,7 +227,7 @@ class PurchaseRequest(models.Model):
                     'exchange_quantity': 1,
                     'product_qty': (line.purchase_quantity - line.order_quantity),
                     'purchase_uom': line.product_id.uom_po_id.id or False,
-                    'product_uom': line.product_id.uom_id.id,
+                    'product_uom': line.product_uom.id or line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
@@ -265,10 +265,6 @@ class PurchaseRequest(models.Model):
             'domain': [('id', 'in', purchase_order.ids)],
         }
 
-    is_no_more_quantity = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-    is_close = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-    is_all_line = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-
     @api.depends('order_lines', 'order_lines.is_no_more_quantity', 'order_lines.is_all_line', 'order_lines.is_close',
                  'order_lines.is_all_line', 'state')
     def _compute_true_false_is_check(self):
@@ -277,11 +273,11 @@ class PurchaseRequest(models.Model):
                 rec.is_close = all(rec.order_lines.mapped('is_close'))
             rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
             rec.is_all_line = all(rec.order_lines.mapped('is_all_line'))
-            if rec.state == 'close':
-                if rec.order_lines.mapped('is_all_line'):
-                    rec.state = 'approved'
-            if rec.close_request:
+            if rec.close_request or rec.is_all_line:
                 rec.state = 'close'
+            else:
+                if rec.state == 'close' and not rec.is_all_line:
+                    rec.state = 'approved'
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -384,11 +380,7 @@ class PurchaseRequestLine(models.Model):
         for rec in self:
             if not rec.is_close and not rec.is_no_more_quantity:
                 rec.is_all_line = False
-            if not rec.is_close and rec.is_no_more_quantity:
-                rec.is_all_line = True
-            if rec.is_close and not rec.is_no_more_quantity:
-                rec.is_all_line = True
-            if rec.is_close and rec.is_no_more_quantity:
+            else:
                 rec.is_all_line = True
 
 class ApprovalLogs(models.Model):
