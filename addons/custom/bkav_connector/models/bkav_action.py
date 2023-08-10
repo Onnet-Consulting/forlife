@@ -23,7 +23,8 @@ def get_bkav_config(self):
         'cmd_getInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_einvoice'),
         'cmd_getStatusInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_status_einvoice'),
         'cmd_downloadPDF': self.env['ir.config_parameter'].sudo().get_param('bkav.download_pdf'),
-        'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
+        'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml'),
+        'cmd_searchInfor': self.env['ir.config_parameter'].sudo().get_param('bkav.search_infor')
     }
 
 
@@ -252,3 +253,16 @@ def download_invoice_bkav(self):
                     % (self.eivoice_file.id, self.eivoice_file.name),
             'target': 'self',
         }
+
+def search_infor_bkav(self, mst):
+    configs = get_bkav_config(self)
+    data = {
+        "CmdType": int(configs.get('cmd_searchInfor')),
+        "CommandObject": mst,
+    }
+    _logger.info(f'BKAV - data search infor in BKAV: {data}')
+    response_action = connect_bkav(data, configs)
+    if response_action.get('Status') == '1':
+        self.message_post(body=(response_action.get('Object')))
+    else:
+        return response_action.get('Object')

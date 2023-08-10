@@ -77,7 +77,7 @@ class PosOrder(models.Model):
         
         use_point = {}
         rank_total = {}
-        for promotion_id in self.lines:
+        for promotion_id in self.lines.filtered(lambda x: not x.refunded_orderline_id):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = 0
                 if promotion_id.tax_ids:
@@ -130,7 +130,7 @@ class PosOrder(models.Model):
             value_not_tax = round(value/(1+vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
-                "UnitName": 'Đơn vị',
+                "UnitName": '',
                 "Qty": 0,
                 "Price": abs(value_not_tax),
                 "Amount": abs(value_not_tax),

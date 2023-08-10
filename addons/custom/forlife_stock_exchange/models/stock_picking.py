@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools import float_compare, float_round
 
 
 class InheritStockPicking(models.Model):
@@ -61,7 +62,8 @@ class InheritStockPicking(models.Model):
     def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
         product_qty = sum(product_prodution_quantity.mapped('quantity'))
-        product_uom_qty = round(move.product_uom_qty * material.total, 2)
+        material_total = float_round(material.total, precision_rounding=material.production_uom_id.rounding)
+        product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding)
         move_outgoing_value = []
         qty_remain = product_uom_qty
         if product_qty >= product_uom_qty:
@@ -73,12 +75,13 @@ class InheritStockPicking(models.Model):
             return move_outgoing_value
 
         if product_qty:
-            val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_qty, material, reason_type_id)
+            qty_need = float_round(product_qty, precision_rounding=material.production_uom_id.rounding)
+            val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, qty_need, material, reason_type_id)
             product_prodution_quantity.update({
-                'quantity': product_prodution_quantity.quantity - product_qty
+                'quantity': product_prodution_quantity.quantity - qty_need
             })
             move_outgoing_value.append(val)
-            qty_remain = round(product_uom_qty - product_qty, 2)
+            qty_remain = float_round(product_uom_qty - qty_need, precision_rounding=material.production_uom_id.rounding)
 
         if qty_remain:
             # Check sản phẩm thay thế Level 1
@@ -89,19 +92,21 @@ class InheritStockPicking(models.Model):
                 product_backup_01_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
                 material_backup_01_qty = sum(product_backup_01_prodution_quantity.mapped('quantity'))
                 if material_backup_01_qty >= qty_remain:
-                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_remain, material_backup_01, reason_type_id)
+                    qty_need = float_round(qty_remain, precision_rounding=material_backup_01.production_uom_id.rounding)
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
                     product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - qty_remain
+                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
                     })
                     return move_outgoing_value
 
                 if material_backup_01_qty:
-                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, material_backup_01_qty, material_backup_01, reason_type_id)
+                    qty_need = float_round(material_backup_01_qty, precision_rounding=material_backup_01.production_uom_id.rounding)
+                    val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
-                    qty_remain = round(qty_remain - material_backup_01_qty, 2)
+                    qty_remain = float_round(qty_remain - qty_need, precision_rounding=material_backup_01.production_uom_id.rounding)
                     product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - material_backup_01_qty
+                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
                     })
 
                 if qty_remain:
