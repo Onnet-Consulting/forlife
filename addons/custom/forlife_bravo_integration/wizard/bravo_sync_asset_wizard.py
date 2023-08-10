@@ -217,7 +217,7 @@ class BravoSyncAssetWizard(models.TransientModel):
                 value.pop('location')
                 value.pop('dept_code')
                 value.pop('employee')
-                self.env['asset.asset'].browse(asset_id).sudo().with_context(from_bravo=True).write(value)
+                self.env['assets.assets'].browse(asset_id).sudo().with_context(from_bravo=True).write(value)
             else:
                 odoo_values.append(value)
         return odoo_values
