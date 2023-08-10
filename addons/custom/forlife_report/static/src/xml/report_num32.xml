@@ -77,19 +77,19 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>STT</th>
+                            <th style="text-align: center;">STT</th>
                             <th>Chi nhánh</th>
                             <th>Số CT</th>
-                            <th>Số lượng</th>
-                            <th>Thành tiền đơn hàng</th>
-                            <th>Thành tiền tích lũy</th>
-                            <th>Giảm giá</th>
+                            <th style="text-align: center;">Số lượng</th>
+                            <th style="text-align: right;">Thành tiền đơn hàng</th>
+                            <th style="text-align: right;">Thành tiền tích lũy</th>
+                            <th style="text-align: right;">Giảm giá</th>
                             <th>Loại</th>
-                            <th>Điểm tích lũy HĐ</th>
-                            <th>Điểm hệ số</th>
-                            <th>Tiêu tích lũy</th>
-                            <th>Điểm trả</th>
-                            <th>Tổng điểm TL</th>
+                            <th style="text-align: center;">Điểm tích lũy HĐ</th>
+                            <th style="text-align: center;">Điểm hệ số</th>
+                            <th style="text-align: center;">Tiêu tích lũy</th>
+                            <th style="text-align: center;">Điểm trả</th>
+                            <th style="text-align: center;">Tổng điểm TL</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -97,19 +97,19 @@
                         <t t-foreach="o.detail" t-as="line">
                             <t t-set="index" t-value="index + 1"/>
                             <tr class="show-history-point-detail" t-att-id="line.id" style="cursor: pointer">
-                                <td><t t-esc="index"/></td>
+                                <td style="text-align: center;"><t t-esc="index"/></td>
                                 <td><t t-esc="line.store"/></td>
                                 <td><t t-esc="line.ct"/></td>
-                                <td><t t-esc="line.qty"/></td>
-                                <td><t t-esc="format_decimal(line.amount_total,0)"/></td>
-                                <td><t t-esc="format_decimal(line.amount,0)"/></td>
-                                <td><t t-esc="format_decimal(line.money_reduced,0)"/></td>
+                                <td style="text-align: center;"><t t-esc="line.qty"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.amount_total,0)"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.amount,0)"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.money_reduced,0)"/></td>
                                 <td><t t-esc="line.point_order_type"/></td>
-                                <td><t t-esc="line.points_fl_order"/></td>
-                                <td><t t-esc="line.points_coefficient"/></td>
-                                <td><t t-esc="line.points_used"/></td>
-                                <td><t t-esc="line.points_back"/></td>
-                                <td><t t-esc="line.points_store"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_fl_order"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_coefficient"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_used"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_back"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_store"/></td>
                             </tr>
                         </t>
                     </tbody>
@@ -127,14 +127,14 @@
             <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>STT</th>
+                    <th style="text-align: center;">STT</th>
                     <th>Tên sản phẩm</th>
                     <th>Đơn vị</th>
-                    <th>Số lượng</th>
-                    <th>Giá bán</th>
-                    <th>% Giảm giá</th>
-                    <th>Tiền giảm giá</th>
-                    <th>Thành tiền</th>
+                    <th style="text-align: center;">Số lượng</th>
+                    <th style="text-align: right;">Giá bán</th>
+                    <th style="text-align: center;">% Giảm giá</th>
+                    <th style="text-align: right;">Tiền giảm giá</th>
+                    <th style="text-align: right;">Thành tiền</th>
                 </tr>
             </thead>
             <tbody>
@@ -142,14 +142,14 @@
                 <t t-foreach="data" t-as="line">
                     <t t-set="index" t-value="index + 1"/>
                     <tr>
-                        <td><t t-esc="index"/></td>
+                        <td style="text-align: center;"><t t-esc="index"/></td>
                         <td><t t-esc="line.name"/></td>
                         <td><t t-esc="line.uom_name"/></td>
-                        <td><t t-esc="line.qty"/></td>
-                        <td><t t-esc="line.price"/></td>
-                        <td><t t-esc="line.rate"/></td>
-                        <td><t t-esc="line.money_reduced"/></td>
-                        <td><t t-esc="line.amount_total"/></td>
+                        <td style="text-align: center;"><t t-esc="line.qty"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.price,0)"/></td>
+                        <td style="text-align: center;"><t t-esc="line.rate"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.money_reduced,0)"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.amount_total,0)"/></td>
                     </tr>
                 </t>
             </tbody>
