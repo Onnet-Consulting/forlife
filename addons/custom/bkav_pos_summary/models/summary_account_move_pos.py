@@ -79,8 +79,6 @@ class SummaryAccountMovePos(models.Model):
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
                 row["line_ids"].extend(item["line_ids"])
-                # row["tax_ids"].extend(item["tax_ids"])
-                # row["tax_ids"] = list(set(row["tax_ids"]))
                 items[pk] = row
             else:
                 items[pk] = item
@@ -150,10 +148,6 @@ class SummaryAccountMovePos(models.Model):
             domain.append(('invoice_date', '<', last_day))
 
         move_ids = self.env['account.move'].search(domain)
-        # .filtered(
-        #     lambda r: r.pos_order_id.store_id.is_post_bkav == True
-        # )
-        # pos_order = self.env['pos.order'].search(domain)
 
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
@@ -458,7 +452,7 @@ class SummaryAccountMovePos(models.Model):
             ('remaining_quantity', '>', 0),
             ('synthetic_id', '!=', False),
             ('exists_bkav', '=', True)
-        ], order="invoice_date desc")
+        ], order="invoice_date desc, id desc")
 
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
@@ -567,36 +561,24 @@ class SummaryAccountMovePosLine(models.Model):
     discount = fields.Float('% chiết khấu')
     discount_amount = fields.Monetary('Số tiền chiết khấu')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
-    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
-    price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="compute_price_subtotal")
-    amount_total = fields.Monetary('Thành tiền', compute="compute_amount_total")
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
+    price_subtotal = fields.Monetary('Thành tiền trước thuế', compute="_compute_amount")
+    amount_total = fields.Monetary('Thành tiền', compute="_compute_amount")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
     line_ids = fields.One2many('summary.account.move.pos.line.discount', 'summary_line_id')
 
-    def __str__(self):
+    def get_name(self):
         return f"{self.summary_id.code} - {self.barcode}"
 
-    @api.depends('price_unit', 'quantity', 'discount_amount')
-    def compute_price_subtotal(self):
+    @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
+    def _compute_amount(self):
         for r in self:
-            r.price_subtotal = r.price_unit * r.quantity - r.discount_amount
+            tax_results = r.tax_ids.compute_all(r.price_unit_incl, quantity=r.quantity)
+            r.price_subtotal = tax_results["total_excluded"]
+            r.amount_total = tax_results["total_included"]
+            r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
 
-    @api.depends('price_subtotal', 'tax_amount', 'price_unit_incl')
-    def compute_amount_total(self):
-        for r in self:
-            r.amount_total = r.price_unit_incl *  r.quantity - r.discount_amount
-
-    @api.depends('tax_ids', 'price_subtotal')
-    def compute_tax_amount(self):
-        for r in self:
-            if r.tax_ids:
-                tax_amount = 0
-                for tax in r.tax_ids:
-                    tax_amount += (r.price_subtotal * tax.amount) / 100
-                r.tax_amount = tax_amount
-            else:
-                r.tax_amount = 0
 
 class SummaryAccountMovePosLineDiscount(models.Model):
     _name = 'summary.account.move.pos.line.discount'
@@ -607,7 +589,7 @@ class SummaryAccountMovePosLineDiscount(models.Model):
     price_unit = fields.Float('Đơn giá')
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
-    tax_amount = fields.Monetary('Tổng tiền thuế', compute="compute_tax_amount")
+    tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
     amount_total = fields.Monetary('Thành tiền')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     promotion_type = fields.Selection(
@@ -618,18 +600,12 @@ class SummaryAccountMovePosLineDiscount(models.Model):
         string='Promotion Type', index=True, readonly=True
     )
 
-    @api.depends('tax_ids', 'price_unit')
-    def compute_tax_amount(self):
+    @api.depends('tax_ids', 'price_unit_incl')
+    def _compute_amount(self):
         for r in self:
             if r.tax_ids:
-                tax_amount = 0
-                for tax in r.tax_ids:
-                    tax_amount += (r.price_unit * tax.amount) / 100
-                r.tax_amount = tax_amount
+                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
             else:
                 r.tax_amount = 0
 
-    # @api.depends('price_unit', 'tax_amount')
-    # def compute_amount_total(self):
-    #     for r in self:
-    #         r.amount_total = r.price_unit + r.tax_amount
