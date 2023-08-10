@@ -43,11 +43,11 @@ class PosOrderReturn(models.Model):
     
     def _get_promotion_in_pos_return(self):
         list_invoice_detail = []
-        if self.total_point != 0:
+        if self.pay_point != 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
                 "UnitName": 'Điểm',
-                "Qty": abs(self.total_point),
+                "Qty": -abs(self.pay_point),
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
@@ -85,8 +85,8 @@ class PosOrderReturn(models.Model):
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": 1000/(1+vat/100),
-                "TaxAmount": abs(value - value_not_tax),
+                "Price": -1000/(1+vat/100),
+                "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -110,10 +110,10 @@ class PosOrderReturn(models.Model):
             value_not_tax = round(abs(value)/(1+vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
-                "UnitName": 'Đơn vị',
+                "UnitName": '',
                 "Qty": 1,
-                "Price": abs(value_not_tax),
-                "TaxAmount": abs(value - value_not_tax),
+                "Price": -abs(value_not_tax),
+                "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -154,7 +154,7 @@ class PosOrderReturn(models.Model):
                 for l in sublines:
                     price_subtotal += l.price_subtotal
                     price_subtotal_incl += l.price_subtotal_incl
-                price_bkav = round(price_subtotal/line.qty)
+                price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
                 if line.is_reward_line:
@@ -180,20 +180,20 @@ class PosOrderReturn(models.Model):
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos())
+            origin_id = invoice.origin_move_id
+            BuyerName = origin_id.partner_id.name if origin_id.partner_id.name else ''
 
-            BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
+            BuyerTaxCode =origin_id.partner_id.vat or '' if origin_id.partner_id.vat else ''
+            if origin_id.invoice_info_tax_number:
+                BuyerTaxCode = origin_id.invoice_info_tax_number
 
-            BuyerTaxCode =invoice.partner_id.vat or '' if invoice.partner_id.vat else ''
-            if invoice.invoice_info_tax_number:
-                BuyerTaxCode = invoice.invoice_info_tax_number
+            BuyerUnitName = origin_id.partner_id.name if origin_id.partner_id.name else ''
+            if origin_id.invoice_info_company_name:
+                BuyerUnitName = origin_id.invoice_info_company_name
 
-            BuyerUnitName = invoice.partner_id.name if invoice.partner_id.name else ''
-            if invoice.invoice_info_company_name:
-                BuyerUnitName = invoice.invoice_info_company_name
-
-            BuyerAddress = invoice.partner_id.contact_address_complete if invoice.partner_id.contact_address_complete else ''
-            if invoice.invoice_info_address:
-                BuyerAddress = invoice.invoice_info_address
+            BuyerAddress = origin_id.partner_id.contact_address_complete if origin_id.partner_id.contact_address_complete else ''
+            if origin_id.invoice_info_address:
+                BuyerAddress = origin_id.invoice_info_address
 
             bkav_data.append({
                 "Invoice": {

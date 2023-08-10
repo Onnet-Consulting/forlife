@@ -7,7 +7,8 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='notes']" position="after">
-                    <field name="is_refunded" invisible="1"/>
+                    <field name="is_refund_order" invisible="1"/>
+                    <field name="is_change_order" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
@@ -49,7 +50,7 @@
                             </group>
                         </group>
                     </page>
-                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '!=', True)]}">
+                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refund_order', '=', False),('is_change_order', '=', False)]}">
                         <field name="eivoice_file_return" attrs="{'invisible':[('eivoice_file_return', '=', False)]}"/>
                         <button name="create_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav_return', '!=', False),('invoice_guid_return', '!=', False)]}"
