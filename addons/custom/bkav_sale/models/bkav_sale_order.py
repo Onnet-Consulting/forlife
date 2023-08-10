@@ -94,7 +94,7 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 4
             item.update({
                 "TaxRateID": tax_rate_id,
-                "TaxRate": vat
+                "TaxRate": vat_value
             })
             list_invoice_detail.append(item)
         return list_invoice_detail

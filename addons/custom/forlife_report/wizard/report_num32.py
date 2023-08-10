@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
-from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'Mã khách hàng', 'Ngày sinh', 'Nghề nghiệp', 'Email', 'CMND',
@@ -24,10 +22,10 @@ class ReportNum28(models.TransientModel):
         query = f"""
                 with last_history as (
                     select
-                            php.id,
-                            php.partner_id,
-                            date_order,
-                            points_coefficient + points_fl_order as last_point
+                        php.id,
+                        php.partner_id,
+                        date_order,
+                        points_coefficient + points_fl_order as last_point
                     from
                         partner_history_point php
                     join res_partner rp on
@@ -37,120 +35,150 @@ class ReportNum28(models.TransientModel):
                         and php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
                     order by
                         php.id desc
-                    limit 1
-                ),
-                history as (
+                    limit 1),
+                    payment as (
                     select
-                    rp.id,
-                    rp.ref as ma_kh,
-                    rp.name as ho_ten,
-                    rp.email as email,
-                    rp.phone as dien_thoai,
-                    '' as cccd,
-                    rp.birthday as ngay_sinh,
-                    hj.name as nghe_nghiep,
-                    CONCAT_WS(', ',
-                    rp.street,
-                    rp.street2,
-                    rp.city,
-                    rcs.name,
-                    coalesce (rc.name->>'vi_VN',
-                    rc.name->>'en_US')) as dia_chi,
-                    php.total_point as tong_tich_luy,
-                    php.points_used as tong_tieu,
-                    php.points_back as tong_tra,
-                    php.points_store as hien_co,
-                    php_detail.detail
-                from
-                    res_partner rp
-                left join (
-                    select
-                        store,
-                        partner_id,
-                        sum(points_coefficient) + sum(points_fl_order) as total_point,
-                        sum(points_used) as points_used,
-                        sum(points_back) as points_back,
-                        sum(points_coefficient) + sum(points_fl_order) - sum(points_used) - sum(points_back) as points_store
+                        po.id,
+                        sum(ppm.amount) as amount
                     from
-                        partner_history_point php1
+                        partner_history_point php
+                    join pos_order po on
+                        po.id = php.pos_order_id
+                    join res_partner rp on
+                        rp.id = po.partner_id
+                    join pos_payment ppm on
+                        po.id = ppm.pos_order_id
+                    where 
+                        rp.phone = '{self.phone}'
+                        and php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
                     group by
-                        store,
-                        partner_id
-                ) php on
-                    php.partner_id = rp.id
-                left join hr_job hj on
-                    hj.id = rp.job_id
-                left join res_country_state rcs on
-                    rp.state_id = rcs.id
-                left join res_country rc on
-                    rc.id = rp.country_id
-                left join (
+                        po.id
+                    ),
+                    history as (
                     select
-                        php.partner_id as partner_id,
-                        json_agg(to_json(php.*)) as detail
+                        rp.id,
+                        rp.ref as ma_kh,
+                        rp.name as ho_ten,
+                        rp.email as email,
+                        rp.phone as dien_thoai,
+                        '' as cccd,
+                        rp.birthday as ngay_sinh,
+                        hj.name as nghe_nghiep,
+                        CONCAT_WS(', ',
+                        rp.street,
+                        rp.street2,
+                        rp.city,
+                        rcs.name,
+                        coalesce (rc.name->>'vi_VN',
+                        rc.name->>'en_US')) as dia_chi,
+                        php.total_point as tong_tich_luy,
+                        php.points_used as tong_tieu,
+                        php.points_back as tong_tra,
+                        php.points_store as hien_co,
+                        php_detail.detail
                     from
-                        (
+                        res_partner rp
+                    left join (
                         select
-                            st.name as store,
-                            po.name as ct,
-                            php.date_order,
-                            po.id,
-                            php.partner_id,
-                            sum(pol.qty) as qty,
-                            po.amount_total,
-                            sum(payp.amount) as amount,
-                            sum(poldd.money_reduced) as money_reduced,
-                            case
-                                when php.point_order_type = 'new' then 'Đơn mới'
-                                when php.point_order_type = 'back_order' then 'Đơn trả'
-                                when php.point_order_type = 'reset_order' then 'Reset điểm'
-                                when php.point_order_type = 'point compensate' then 'Tích điểm bù'
-                                when php.point_order_type = 'coefficient' then 'Hệ số'
-                                else ''
-                            end as point_order_type,
-                            sum(php.points_fl_order) as points_fl_order,
-                            php.points_coefficient,
-                            php.points_used,
-                            php.points_back,
-                            php.points_store
+                            store,
+                            partner_id,
+                            sum(points_coefficient) + sum(points_fl_order) as total_point,
+                            sum(points_used) as points_used,
+                            sum(points_back) as points_back,
+                            sum(points_coefficient) + sum(points_fl_order) - sum(points_used) - sum(points_back) as points_store
                         from
-                            partner_history_point php
-                        left join pos_order po on
-                            po.id = php.pos_order_id
-                        left join pos_session ps 
-                            on po.session_id = ps.id
-                        left join pos_config pc
-                            on ps.config_id = pc.id
-                        left join store st on
-                            pc.store_id = st.id
-                        join pos_order_line pol on
-                            po.id = pol.order_id
-                        left join pos_payment payp on
-                            po.id = payp.pos_order_id
-                        left join pos_order_line_discount_details poldd on
-                            pol.id = poldd.pos_order_line_id
-                        where php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
+                            partner_history_point php1
                         group by
-                            st.name,
-                            po.name,
-                            php.date_order,
-                            po.id,
-                            php.partner_id,
-                            po.amount_total,
-                            point_order_type,
-                            php.points_coefficient,
-                            php.points_used,
-                            php.points_back,
-                            php.points_store
+                            store,
+                            partner_id
+                    ) php on
+                        php.partner_id = rp.id
+                    left join hr_job hj on
+                        hj.id = rp.job_id
+                    left join res_country_state rcs on
+                        rp.state_id = rcs.id
+                    left join res_country rc on
+                        rc.id = rp.country_id
+                    left join (
+                        select
+                            php.partner_id as partner_id,
+                            json_agg(to_json(php.*)) as detail
+                        from
+                            (
+                            select
+                                st.name as store,
+                                po.name as ct,
+                                php.date_order,
+                                php.id,
+                                php.partner_id,
+                                sum(pol.qty) as qty,
+                                po.amount_total,
+                                sum(poldd.money_reduced) as money_reduced,
+                                case
+                                    when php.point_order_type = 'new' then 'Đơn mới'
+                                    when php.point_order_type = 'back_order' then 'Đơn trả'
+                                    when php.point_order_type = 'reset_order' then 'Reset điểm'
+                                    when php.point_order_type = 'point compensate' then 'Tích điểm bù'
+                                    when php.point_order_type = 'coefficient' then 'Hệ số'
+                                    else ''
+                                end as point_order_type,
+                                php.points_fl_order as points_fl_order,
+                                php.points_coefficient,
+                                php.points_used,
+                                php.points_back,
+                                php.points_store,
+                                p.amount as amount
+                            from
+                                partner_history_point php
+                            left join res_partner rp on
+                                rp.id = php.partner_id
+                            left join pos_order po on
+                                po.id = php.pos_order_id
+                            left join pos_session ps on
+                                po.session_id = ps.id
+                            left join pos_config pc on
+                                ps.config_id = pc.id
+                            left join store st on
+                                pc.store_id = st.id
+                            join pos_order_line pol on
+                                po.id = pol.order_id
+                            left join pos_order_line_discount_details poldd on
+                                pol.id = poldd.pos_order_line_id
+                            left join payment p on
+                                p.id = po.id
+                            where
+                                php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
+                                and rp.phone = '{self.phone}'
+                            group by
+                                st.name,
+                                po.name,
+                                php.date_order,
+                                php.id,
+                                php.partner_id,
+                                po.amount_total,
+                                point_order_type,
+                                php.points_coefficient,
+                                php.points_used,
+                                php.points_back,
+                                php.points_store,
+                                points_fl_order,
+                                amount
                     ) php
-                    group by
-                        php.partner_id
-                ) php_detail on
-                    php_detail.partner_id = rp.id
-                where
-                    rp.phone = '{self.phone}' and php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
-                )
-                select h.*, lh.date_order, lh.last_point from history h, last_history lh
+                        group by
+                            php.partner_id
+                    ) php_detail on
+                        php_detail.partner_id = rp.id
+                    where
+                        rp.phone = '{self.phone}'
+                        and php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
+                    )
+                    select
+                        h.*,
+                        lh.date_order,
+                        lh.last_point
+                    from
+                        history h,
+                        last_history lh
         """
         return query
 
@@ -166,7 +194,8 @@ class ReportNum28(models.TransientModel):
         return values
 
     @api.model
-    def get_history_detail(self, po_id):
+    def get_history_detail(self, history_id):
+        history = self.env['partner.history.point'].browse(int(history_id))
         sql = f"""
             with dpos_order as (select
                 pp.barcode  as barcode,
@@ -184,7 +213,7 @@ class ReportNum28(models.TransientModel):
             left join (
                 select pos_order_line_id, sum(money_reduced) as money_reduced from pos_order_line_discount_details group by pos_order_line_id
             ) pold on pol.id = pold.pos_order_line_id
-            where po.id = {po_id}
+            where po.id = {history.pos_order_id.id}
             )
             
             select 
