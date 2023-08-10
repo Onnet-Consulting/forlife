@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record model="ir.rule" id="purchase_request_read">
             <field name="name">purchase_request_read</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
