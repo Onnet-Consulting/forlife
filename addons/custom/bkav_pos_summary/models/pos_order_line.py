@@ -32,7 +32,7 @@ class PosOrderLine(models.Model):
                 discount_details_lines = self.env['pos.order.line'].search([
                     ('is_promotion', '=', True),
                     ('order_id', '=', r.order_id.id),
-                    ('product_src_id', '=', r.product_id.id),
+                    ('product_src_id', '=', r.id),
                     ('promotion_type', 'in', ['ctkm', 'make_price', 'product_defective', 'handle'])
                 ])
                 sum_km_excl =sum(discount_details_lines.mapped('price_subtotal'))
