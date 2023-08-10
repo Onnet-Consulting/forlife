@@ -8,7 +8,7 @@ class ResUtility(models.AbstractModel):
     _inherit = 'res.utility'
 
     @api.model
-    def get_customer_card_rank_information(self, phone_number, brand_code):
+    def get_customer_information_with_brand(self, phone_number, brand_code):
         customer = self.env['res.partner'].search([('phone', '=', phone_number)], limit=1)
         if not customer:
             return []
