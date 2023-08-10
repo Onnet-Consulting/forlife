@@ -117,7 +117,7 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
 
     # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
+    # e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
 
     # lấy id để search ghi lại ref cho bút toán phát sinh
     e_in_check = fields.Integer(index=True)
@@ -132,21 +132,21 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    @api.onchange('exists_bkav')
-    def onchange_exitsts_bakv_e_invoice(self):
-        for rec in self:
-            if rec.exists_bkav:
-                data_e_invoice = self.env['e.invoice'].search(
-                    [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
-                if not data_e_invoice:
-                    self.env['e.invoice'].create({
-                        'number_e_invoice': rec.invoice_no,
-                        'date_start_e_invoice': rec.create_date,
-                        'state_e_invoice': rec.invoice_state_e,
-                        'e_invoice_id': rec.id,
-                    })
-                rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
+    # @api.onchange('exists_bkav')
+    # def onchange_exitsts_bakv_e_invoice(self):
+    #     for rec in self:
+    #         if rec.exists_bkav:
+    #             data_e_invoice = self.env['e.invoice'].search(
+    #                 [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
+    #                  ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
+    #             if not data_e_invoice:
+    #                 self.env['e.invoice'].create({
+    #                     'number_e_invoice': rec.invoice_no,
+    #                     'date_start_e_invoice': rec.create_date,
+    #                     'state_e_invoice': rec.invoice_state_e,
+    #                     'e_invoice_id': rec.id,
+    #                 })
+    #             rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
 
     def view_move_entry(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
@@ -239,17 +239,29 @@ class AccountMove(models.Model):
             'price_subtotal_back': price_subtotal
         }
         return vals
+
+    def _prepare_sum_expense_labor_value(self, product):
+        vals = {
+            'move_id': self.id,
+            'product_id': product.id,
+            'description': product.name,
+            'uom_id': product.uom_id.id
+        }
+        return vals
+
     def insert_data(self):
         self.ensure_one()
         AccountMoveLine = self.env['account.move.line']
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
 
-        self.invoice_line_ids = False
-        self.account_expense_labor_detail_ids = False
-        self.sum_expense_labor_ids = False
-        self.vendor_back_ids = False
-        self.cost_line = False
+        self.write({
+            'invoice_line_ids': False,
+            'account_expense_labor_detail_ids': False,
+            'sum_expense_labor_ids': False,
+            'vendor_back_ids': False,
+            'cost_line': False,
+        })
 
         purchase_order_id = self.purchase_order_product_id
         picking_ids = self.receiving_warehouse_id
@@ -281,6 +293,8 @@ class AccountMove(models.Model):
 
                     amount_pol = po_line.total_vnd_amount
                     total_amount_po = sum(po_line.order_id.order_line.mapped('total_vnd_amount'))
+                    if not total_amount_po or not product_qty:
+                        return
                     cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
                     cost_actual_from_po += cost_actual
 
@@ -337,12 +351,7 @@ class AccountMove(models.Model):
             if products:
                 product_lst = []
                 for product in products:
-                    product_vals = {
-                        'move_id': self.id,
-                        'product_id': product.id,
-                        'description': product.name,
-                        'uom_id': product.uom_id.id
-                    }
+                    product_vals = self._prepare_sum_expense_labor_value(product)
                     product_lst.append(product_vals)
                 sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
 
@@ -403,14 +412,27 @@ class AccountMove(models.Model):
             if products:
                 product_lst = []
                 for product in products:
-                    product_vals = {
-                        'move_id': self.id,
-                        'product_id': product.id,
-                        'description': product.name,
-                        'uom_id': product.uom_id.id
-                    }
+                    product_vals = self._prepare_sum_expense_labor_value(product)
                     product_lst.append(product_vals)
                 sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
+        else:
+            vals_lst = []
+            for po_line in purchase_order_id.order_line:
+                data_line = purchase_order_id._prepare_invoice_normal(po_line)
+                if po_line.display_type == 'line_section':
+                    pending_section = po_line
+                    continue
+                if pending_section:
+                    line_vals = pending_section._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    line_vals.update({'move_id': self.id})
+                    pending_section = None
+                    vals_lst.append(line_vals)
+                line_vals = po_line._prepare_account_move_line()
+                line_vals.update(data_line)
+                line_vals.update({'move_id': self.id})
+                vals_lst.append(line_vals)
+            aml_ids = AccountMoveLine.create(vals_lst)
     @api.onchange('receiving_warehouse_id', 'select_type_inv')
     def onchange_invoice_line_ids_by_type(self):
         for rec in self:
@@ -470,37 +492,38 @@ class AccountMove(models.Model):
                     #                         existing_line.price_unit += out_source_line.price_unit * (pnk_l.quantity_done / out_source.product_qty)
                     #             rec.invoice_line_ids = invoice_line_ids
                 else:
-                    if rec.receiving_warehouse_id:
-                        rec.purchase_type = 'product'
-                        product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
-                        for product in product_cost.order_line:
-                            if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                                raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
-                            for pnk in rec.receiving_warehouse_id.move_line_ids_without_package:
-                                if product.id == pnk.move_id.purchase_line_id.id:
-                                    invoice_line_ids += self.env['account.move.line'].new({
-                                        'purchase_line_id': product.id,
-                                        'product_id': product.product_id.id,
-                                        'description': product.name,
-                                        'request_code': product.request_purchases,
-                                        'promotions': product.free_good,
-                                        'quantity_purchased': pnk.quantity_purchase_done,
-                                        'product_uom_id': product.product_uom.id,
-                                        'exchange_quantity': pnk.quantity_change,
-                                        'quantity': pnk.qty_done,
-                                        'vendor_price': product.vendor_price,
-                                        'price_unit': product.price_unit,
-                                        'warehouse': product.location_id.id,
-                                        'tax_ids': product.taxes_id.ids,
-                                        'tax_amount': product.price_tax,
-                                        'price_subtotal': product.price_subtotal,
-                                        'discount_value': product.discount,
-                                        'discount': product.discount_percent,
-                                        'event_id': product.free_good,
-                                        'work_order': product.production_id.id,
-                                        'account_analytic_id': product.account_analytic_id.id,
-                                    })
-                                rec.invoice_line_ids = invoice_line_ids
+                    pass
+                    # if rec.receiving_warehouse_id:
+                    #     rec.purchase_type = 'product'
+                    #     product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
+                    #     for product in product_cost.order_line:
+                    #         if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                    #             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
+                    #         for pnk in rec.receiving_warehouse_id.move_line_ids_without_package:
+                    #             if product.id == pnk.move_id.purchase_line_id.id:
+                    #                 invoice_line_ids += self.env['account.move.line'].new({
+                    #                     'purchase_line_id': product.id,
+                    #                     'product_id': product.product_id.id,
+                    #                     'description': product.name,
+                    #                     'request_code': product.request_purchases,
+                    #                     'promotions': product.free_good,
+                    #                     'quantity_purchased': pnk.quantity_purchase_done,
+                    #                     'product_uom_id': product.product_uom.id,
+                    #                     'exchange_quantity': pnk.quantity_change,
+                    #                     'quantity': pnk.qty_done,
+                    #                     'vendor_price': product.vendor_price,
+                    #                     'price_unit': product.price_unit,
+                    #                     'warehouse': product.location_id.id,
+                    #                     'tax_ids': product.taxes_id.ids,
+                    #                     'tax_amount': product.price_tax,
+                    #                     'price_subtotal': product.price_subtotal,
+                    #                     'discount_value': product.discount,
+                    #                     'discount': product.discount_percent,
+                    #                     'event_id': product.free_good,
+                    #                     'work_order': product.production_id.id,
+                    #                     'account_analytic_id': product.account_analytic_id.id,
+                    #                 })
+                    #             rec.invoice_line_ids = invoice_line_ids
             else:
                 if rec.select_type_inv == 'service':
                     rec.purchase_type = 'service'
@@ -1369,12 +1392,12 @@ class InvoiceCostLine(models.Model):
             rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
 
 
-class eInvoice(models.Model):
-    _name = 'e.invoice'
-    _description = 'e Invoice'
+# class eInvoice(models.Model):
+#     _name = 'e.invoice'
+#     _description = 'e Invoice'
 
-    e_invoice_id = fields.Many2one('account.move', string='e invoice')
+#     e_invoice_id = fields.Many2one('account.move', string='e invoice')
 
-    number_e_invoice = fields.Char('Số HĐĐT')
-    date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
-    state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
+#     number_e_invoice = fields.Char('Số HĐĐT')
+#     date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
+#     state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')

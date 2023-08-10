@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 import json
 import copy
 import base64
+from datetime import date
 
 
 class MemberCard(models.Model):
@@ -192,3 +193,6 @@ class MemberCard(models.Model):
             for program in self:
                 result.append((program.id, program.card_rank_id.name))
         return result
+
+    def check_registering_tax(self):
+        return self.is_register and self.register_from_date <= date.today() <= self.register_to_date

@@ -210,7 +210,7 @@ class PurchaseOrder(models.Model):
 
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
-        self.currency_id = self.partner_id.property_purchase_currency_id.id
+        self.currency_id = self.partner_id.property_purchase_currency_id.id or self.env.company.currency_id.id
 
     def compute_count_stock(self):
         for item in self:
@@ -245,31 +245,31 @@ class PurchaseOrder(models.Model):
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
         if self.purchase_type == 'product':
-            if self.partner_id and self.order_line and self.currency_id:
+            if self.partner_id and self.order_line and self.currency_id and not self.partner_id.is_passersby:
                 date_now = datetime.now().date()
                 domain = [
+                    '|', ('product_id', 'in', self.order_line.product_id.ids),
+                    ('product_tmpl_id', '=', self.order_line.product_id.product_tmpl_id.ids),
                     ('company_id', '=', self.company_id.id),
                     ('partner_id', '=', self.partner_id.id),
                     ('date_start', '<=', date_now),
                     ('date_end', '>=', date_now),
                     ('currency_id', '=', self.currency_id.id)
                 ]
+                product_supplierinfo_ids = self.env['product.supplierinfo'].search(domain)
+
                 for line in self.order_line:
-                    if line.product_uom.id != line.product_id.uom_id.id:
-                        line.product_uom = line.product_id.uom_id.id
-                    domain_supplierinfo = [
-                        '|', ('product_id', '=', line.product_id.id),
-                        ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-                        ('amount_conversion', '=', line.exchange_quantity)
-                    ]
-                    supplier_ids = self.env['product.supplierinfo'].search(domain + domain_supplierinfo)
+                    supplier_ids = product_supplierinfo_ids.filtered(lambda x: x.product_id.id == line.product_id.id or x.product_tmpl_id.id == line.product_id.product_tmpl_id.id)
                     if supplier_ids:
                         supplier_id = supplier_ids.sorted('price')[:1]
                         vendor_price = supplier_id.price if supplier_id.price else 0
+                        exchange_quantity = supplier_id.amount_conversion if supplier_id.amount_conversion else 1
                         line.write({
                             'purchase_uom': supplier_id.product_uom.id,
                             'vendor_price': vendor_price,
-                            'price_unit': vendor_price / line.exchange_quantity if line.exchange_quantity else 0
+                            'exchange_quantity': exchange_quantity,
+                            'purchase_quantity': line.product_qty / exchange_quantity,
+                            'price_unit': vendor_price / exchange_quantity
                         })
 
         if self.partner_id and self.sudo().source_location_id.company_id and self.env['res.company'].sudo().search([
@@ -693,7 +693,7 @@ class PurchaseOrder(models.Model):
         # self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
-                super(PurchaseOrder, self).button_confirm()
+                record.button_confirm()
                 picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
                 picking_in.write({
                     'is_pk_purchase': True
@@ -1139,7 +1139,7 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_normal(self, order, line):
+    def _prepare_invoice_normal(self, line):
         data_line = {
             # 'ware_id': move_line_id.id,
             # 'ware_name': move_line_id.picking_id.name,
@@ -1160,7 +1160,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax * (line.qty_received / line.product_qty),
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
-            'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+            'total_vnd_amount': line.price_subtotal * self.exchange_rate,
             'occasion_code_id': line.occasion_code_id.id if line.occasion_code_id else False,
             'work_order': line.production_id.id if line.production_id else False,
             'account_analytic_id': line.account_analytic_id.id if line.account_analytic_id else False,
@@ -1495,7 +1495,7 @@ class PurchaseOrder(models.Model):
                             # }))
                             # sequence += 1
                             # invoice_vals_list.append(invoice_vals)
-                            cp = 0
+                            # cp = 0
                             for line in order.order_line:
                                 # if not order.is_return:
                                 #     wave = picking_expense_in.move_line_ids_without_package.filtered(
@@ -1521,7 +1521,7 @@ class PurchaseOrder(models.Model):
                                 #                 data_line = self.create_invoice_expense_no_return(order, nine, line, cp, wave_item, x_return)
                                 #     else:
                                 amount_rate = line.total_vnd_amount / sum(self.order_line.mapped('total_vnd_amount'))
-                                cp += ((amount_rate * cost_line.vnd_amount) / line.product_qty) * line.qty_received
+                                cp = ((amount_rate * cost_line.vnd_amount) / line.product_qty) * line.qty_received
                                 if line.currency_id != line.company_currency:
                                     rates = line.currency_id._get_rates(line.company_id, self.date_order)
                                     cp = cp * rates.get(line.currency_id.id)
@@ -1583,7 +1583,7 @@ class PurchaseOrder(models.Model):
                             #                 if wave_item.picking_id.name == x_return.picking_id.relation_return:
                             #                     data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
                             #         else:
-                            data_line = self._prepare_invoice_normal(order, line)
+                            data_line = self._prepare_invoice_normal(line)
                             if line.display_type == 'line_section':
                                 pending_section = line
                                 continue
@@ -3588,6 +3588,3 @@ class AccountTax(models.Model):
     _inherit = 'account.tax'
     _rec_names_search = ['code', 'name']
 
-class PurchaseRequest(models.Model):
-    _name = "purchase.request"
-    _rec_names_search = ['name']

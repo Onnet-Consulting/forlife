@@ -36,7 +36,8 @@ class InheritPosOrder(models.Model):
 
     @staticmethod
     def _create_promotion_account_move(order_line, partner_id, credit_account_id):
-        customer_id = order_line.order_id.partner_id
+        customer_id = (order_line.order_id.real_to_invoice and order_line.order_id.partner_id.id
+                       or order_line.order_id.session_id.config_id.store_id.contact_id.id)
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
         if order_line.refunded_orderline_id:
@@ -66,7 +67,7 @@ class InheritPosOrder(models.Model):
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
-                'partner_id': customer_id.id or False,
+                'partner_id': customer_id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
@@ -396,7 +397,8 @@ class InheritPosOrderLine(models.Model):
                 product_id=promotion.program_id.product_discount_id,
                 price=-promotion.discount_total,
                 promotion=promotion.program_id,
-                promotion_type='ctkm'
+                promotion_type='ctkm',
+                is_state_registration=promotion.registering_tax
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
@@ -411,7 +413,8 @@ class InheritPosOrderLine(models.Model):
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
-                if discount.type == 'point' else discount.type in ('product_defective', 'handle', 'change_refund'),
+                if discount.type == 'point' else pol.order_id.card_rank_program_id.check_registering_tax()
+                if discount.type == 'card' else discount.type in ('product_defective', 'handle', 'change_refund'),
                 promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
         ]

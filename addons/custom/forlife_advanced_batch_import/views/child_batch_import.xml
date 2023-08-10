@@ -28,7 +28,9 @@
                             <field name="progress_bar" widget="progressbar"/>
                             <field name="error_rows"/>
                             <field name="file_invalid_records_name" invisible="1"/>
+                            <field name="file_record_done_from_rule_name" invisible="1"/>
                             <field name="file_invalid_records" filename="file_invalid_records_name" style="color:red"/>
+                            <field name="file_record_done_from_rule" filename="file_record_done_from_rule_name" style="color: blue"/>
                             <field name="log"/>
                         </group>
                     </sheet>

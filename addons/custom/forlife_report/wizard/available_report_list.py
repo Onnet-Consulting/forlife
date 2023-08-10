@@ -188,4 +188,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum31Template',
         'reportPager': True,
     },
+    'report.num32': {
+        'module': 'Bán hàng',
+        'name': 'Tra cứu thông tin khách hàng',
+        'reportTemplate': 'ReportNum32Template',
+        'tag': 'report_num32_action',
+    },
 }

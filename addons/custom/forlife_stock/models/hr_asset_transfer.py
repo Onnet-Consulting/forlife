@@ -19,26 +19,16 @@ class HrAssetTransfer(models.Model):
         string="Status",
         selection=[('draft', 'Draft'),
                    ('wait_approve', 'Wait Approve'),
-                   ('approved_1', 'Phê duyệt lần 1'),
-                   ('approved_2', 'Phê duyệt lần 2'),
+                   ('approved_out', 'Xác nhận xuất'),
+                   ('approved_in', 'Xác nhận nhập'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft', copy=False)
     hr_asset_transfer_line_ids = fields.One2many('hr.asset.transfer.line', 'hr_asset_transfer_id', string="Hr Asset Transfer", copy=True)
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
-    approve_id_1 = fields.Many2one('res.users', string='Người duyệt lần 1')
-    approve_id_2 = fields.Many2one('res.users', string='Người duyệt lần 2')
-    check_permission_approved = fields.Boolean(compute='_check_permission_approved', default=False)
-
-    def _check_permission_approved(self):
-        for rec in self:
-            if rec.state == 'wait_approve' and rec.approve_id_1 == self.env.user:
-                rec.check_permission_approved = True
-            elif rec.state == 'approved_1' and rec.approve_id_2 == self.env.user:
-                rec.check_permission_approved = True
-            else:
-                rec.check_permission_approved = False
+    location_id = fields.Many2one('stock.location', string='Kho xuất', check_company=True)
+    location_dest_id = fields.Many2one('stock.location', string='Kho nhập', check_company=True)
 
     @api.model
     def default_get(self, default_fields):
@@ -67,9 +57,9 @@ class HrAssetTransfer(models.Model):
         for record in self:
             state = 'wait_approve'
             if record.state == 'wait_approve':
-                state = 'approved_1'
-            if record.state == 'approved_1':
-                state = 'approved_2'
+                state = 'approved_out'
+            if record.state == 'approved_out':
+                state = 'approved_in'
             record.write({
                 'state': state,
                 'validate_date': fields.Datetime.now()

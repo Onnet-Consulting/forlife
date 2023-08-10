@@ -321,18 +321,19 @@ order by php.date_order desc
         tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz)).utcoffset().total_seconds() / 3600)
 
         sql = f"""
-select po.name                                                             as ma_don_hang,
+select po.pos_reference                                                    as ma_don_hang,
        store.code                                                          as ma_cua_hang,
        store.name                                                          as ten_cua_hang,
        to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY') as ngay_mua_hang,
        coalesce(po.amount_total, 0)                                        as so_tien_phai_tra,
-       coalesce(po.point_order, 0)                                         as diem_tich_luy
-
+       coalesce(po.point_order, 0)                                         as diem_tich_luy,
+       coalesce(wh.street, '')                                             as dia_chi
 from pos_order po
          join res_partner rp on rp.id = po.partner_id
          join pos_session ps on ps.id = po.session_id
          join pos_config pc on pc.id = ps.config_id
          join store on store.id = pc.store_id
+         left join stock_warehouse wh on wh.id = store.warehouse_id
          join res_brand rb on rb.id = po.brand_id and rb.code = '{brand}'
 where rp.phone = '{phone_number}'
   and to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY') = '{"%.2d/%.4d" % (month, year)}'

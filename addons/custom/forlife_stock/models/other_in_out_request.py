@@ -109,6 +109,13 @@ class ForlifeOtherInOutRequest(models.Model):
 
     def action_wait_approve(self):
         for record in self:
+            if record.type_other_id.code == 'N01' and record.location_id.code in ['N0101', 'N0102']:
+                line_productions = record.other_in_out_request_line_ids.filtered(lambda x: x.production_id)
+                for rec in line_productions:
+                    remaining_qty = rec.production_id.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id).remaining_qty or 0
+                    if rec.production_id and rec.quantity > remaining_qty:
+                        raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
+
             record.write({'status': 'wait_approve'})
 
     def action_approve(self):
@@ -118,7 +125,7 @@ class ForlifeOtherInOutRequest(models.Model):
         picking_type_out = self.env['stock.picking.type'].search(
             [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
-            for line in record.other_in_out_request_line_ids:
+            for line in record.other_in_out_request_line_ids.filtered(lambda x: x.asset_id):
                 if record.location_id.x_property_valuation_in_account_id != line.asset_id.asset_account:
                     raise ValidationError(
                     _('Tài khoản trong Mã tài sản của bạn khác với tài khoản trong cấu hình lý do nhập khác xuất khác!'))

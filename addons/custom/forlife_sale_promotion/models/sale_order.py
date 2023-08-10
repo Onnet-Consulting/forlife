@@ -161,7 +161,10 @@ class SaleOrder(models.Model):
                         if vip_number and str(vip_number).isnumeric() and int(vip_number) != 0:
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.code
-                                analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
+                                if rec.source_record and rec.x_account_analytic_ids:
+                                    analytic_account_id = rec.x_account_analytic_ids[0]
+                                else:
+                                    analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
                                 # gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
@@ -209,7 +212,10 @@ class SaleOrder(models.Model):
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
-                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].sudo().search([('code', 'like', '%' + warehouse_code)], limit=1)
+                        if rec.source_record and rec.x_account_analytic_ids:
+                            analytic_account_id = rec.x_account_analytic_ids[0]
+                        else:
+                            analytic_account_id = warehouse_code and self.env['account.analytic.account'].sudo().search([('code', 'like', '%' + warehouse_code)], limit=1)
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
@@ -252,7 +258,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_income_id'),
+                                    ('name', '=', 'property_account_expense_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -261,19 +267,18 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_income_id.id
+                                account_id = product_id.property_account_expense_id.id
                         except Exception as e:
                             account_id = None
                         
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
                             
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển"
                         })]
 
@@ -284,7 +289,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_expense_id'),
+                                    ('name', '=', 'property_account_income_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -293,20 +298,19 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_expense_id
+                                account_id = product_id.property_account_income_id
                         except Exception as e:
                             account_id = None
 
 
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
 
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí ship báo khách hàng"
                         })]
 

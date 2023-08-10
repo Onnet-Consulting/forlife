@@ -14,6 +14,7 @@
                 <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')]}" string="Địa điểm nguồn"/>
                 <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')]}" string="Địa điểm đích"/>
                 <field name="company_id"/>
+                <field name="status"/>
                 <field name="create_date"/>
                 <field name="date_planned"/>
             </tree>
@@ -68,17 +69,17 @@
                             <field name="type_other"/>
                             <field name="type_other_id" required="1"/>
                             <field name="type_other_code" invisible="1"/>
-                            <label for="location_id" string="Lý do nhập khác" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                            <label for="location_id" string="Lý do nhập khác" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_dest_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
-                                <field name="location_id" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>
+                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>
                                 <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')], 'required': True}"/>
                             </div>
                             <label for="location_dest_id" string="Địa điểm đích" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_id" string="Lý do xuất khác" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
                                 <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>
-                                <field name="location_id" attrs="{'invisible': [('type_other','=', 'other_import')], 'required': True}"/>
+                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_import')], 'required': True}"/>
                             </div>
                             <field name="quantity_match" invisible="1"/>
                         </group>

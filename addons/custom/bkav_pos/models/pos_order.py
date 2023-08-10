@@ -1,27 +1,10 @@
 from odoo import api, fields, models
 from datetime import date, datetime, timedelta
 from ...bkav_connector.models import bkav_action
-from odoo.exceptions import ValidationError
 
 
 class PosOrder(models.Model):
     _inherit = "pos.order"
-
-
-    is_post_bkav_store = fields.Boolean(
-        string='Có phát hành hóa đơn bkav', 
-        related="store_id.is_post_bkav"
-    )
-    invoice_date = fields.Date(
-        string='Invoice/Bill Date',
-        related="account_move.invoice_date"
-    )
-    invoice_exists_bkav = fields.Boolean(
-        string="Đã tồn tại trên BKAV", 
-        related="account_move.exists_bkav"
-    )
-    is_synthetic = fields.Boolean(string='Synthetic', default=False)
-
 
     exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
     is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
@@ -51,7 +34,6 @@ class PosOrder(models.Model):
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
-
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -193,7 +175,7 @@ class PosOrder(models.Model):
                 for l in sublines:
                     price_subtotal += l.price_subtotal
                     price_subtotal_incl += l.price_subtotal_incl
-                price_bkav = round(price_subtotal/line.qty)
+                price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
                 if line.is_reward_line:
@@ -298,7 +280,7 @@ class PosOrder(models.Model):
         return bkav_action.publish_invoice_bkav(self)
     
     def create_publish_invoice_bkav(self):
-        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
+        return self.with_context({'is_publish': True}).create_invoice_bkav()
 
     def get_invoice_bkav(self):
         return bkav_action.get_invoice_bkav(self)

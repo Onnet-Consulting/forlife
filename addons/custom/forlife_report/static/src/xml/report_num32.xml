@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum32Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum32MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum32MainTemplate">
+        <div style="padding: 15px">
+            <t t-foreach="options.data" t-as="o">
+            <div class="info_partner">
+                <div class="row">
+                    <div class="col-6">
+                        <h3>Thông tin chi tiết</h3>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td><b>Họ tên:</b></td>
+                                    <td><t t-esc="o.ho_ten"/></td>
+                                    <td><b>Email:</b></td>
+                                    <td><t t-esc="o.email"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Ngày sinh:</b></td>
+                                    <td><t t-esc="o.ngay_sinh"/></td>
+                                    <td><b>CCCD:</b></td>
+                                    <td><t t-esc="o.cccd"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Điện thoại:</b></td>
+                                    <td><t t-esc="o.dien_thoai"/></td>
+                                    <td><b>Địa chỉ:</b></td>
+                                    <td><t t-esc="o.dia_chi"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Nghề nghiệp:</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    </div>
+                    <div class="col-6">
+                        <h3>Thông tin tích lũy</h3>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td><b>Tổng tích lũy:</b></td>
+                                    <td><t t-esc="format_decimal(o.tong_tich_luy,0)"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tổng tiêu TL:</b></td>
+                                    <td><t t-esc="format_decimal(o.tong_tieu,0)"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tích lũy hiện có:</b></td>
+                                    <td><t t-esc="format_decimal(o.hien_co,0)"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Ngày tích lũy gần nhất:</b></td>
+                                    <td><t t-esc="o.date_order"/></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tiền tích lũy gần nhất:</b></td>
+                                    <td><t t-esc="format_decimal(o.last_point,0)"/></td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    </div>
+
+                </div>
+            </div>
+            <div class="history">
+                <h4>Lịch sử tích lũy</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">STT</th>
+                            <th>Chi nhánh</th>
+                            <th>Số CT</th>
+                            <th style="text-align: center;">Số lượng</th>
+                            <th style="text-align: right;">Thành tiền đơn hàng</th>
+                            <th style="text-align: right;">Thành tiền tích lũy</th>
+                            <th style="text-align: right;">Giảm giá</th>
+                            <th>Loại</th>
+                            <th style="text-align: center;">Điểm tích lũy HĐ</th>
+                            <th style="text-align: center;">Điểm hệ số</th>
+                            <th style="text-align: center;">Tiêu tích lũy</th>
+                            <th style="text-align: center;">Điểm trả</th>
+                            <th style="text-align: center;">Tổng điểm TL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="index" t-value="0"/>
+                        <t t-foreach="o.detail" t-as="line">
+                            <t t-set="index" t-value="index + 1"/>
+                            <tr class="show-history-point-detail" t-att-id="line.id" style="cursor: pointer">
+                                <td style="text-align: center;"><t t-esc="index"/></td>
+                                <td><t t-esc="line.store"/></td>
+                                <td><t t-esc="line.ct"/></td>
+                                <td style="text-align: center;"><t t-esc="line.qty"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.amount_total,0)"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.amount,0)"/></td>
+                                <td style="text-align: right;"><t t-esc="format_decimal(line.money_reduced,0)"/></td>
+                                <td><t t-esc="line.point_order_type"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_fl_order"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_coefficient"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_used"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_back"/></td>
+                                <td style="text-align: center;"><t t-esc="line.points_store"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+            </t>
+            <div id="history-detail"/>
+        </div>
+
+    </t>
+
+    <t t-name="ReportHistoryDetail">
+        <h3>Chi tiết giao dịch</h3>
+        <div style="width: 50%">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Đơn vị</th>
+                    <th style="text-align: center;">Số lượng</th>
+                    <th style="text-align: right;">Giá bán</th>
+                    <th style="text-align: center;">% Giảm giá</th>
+                    <th style="text-align: right;">Tiền giảm giá</th>
+                    <th style="text-align: right;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="index" t-value="0"/>
+                <t t-foreach="data" t-as="line">
+                    <t t-set="index" t-value="index + 1"/>
+                    <tr>
+                        <td style="text-align: center;"><t t-esc="index"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td style="text-align: center;"><t t-esc="line.qty"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.price,0)"/></td>
+                        <td style="text-align: center;"><t t-esc="line.rate"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.money_reduced,0)"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.amount_total,0)"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        </div>
+    </t>
+
+</template>
