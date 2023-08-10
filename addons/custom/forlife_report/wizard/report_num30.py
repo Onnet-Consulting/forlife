@@ -170,7 +170,7 @@ with order_lines as (select pol.id                    as order_line_id,
                             pol.qty                                                                                                   as sl,
                             {'pol.original_price' if self.is_with_tax else '(pol.original_price / (1 + coalesce(olf.tax_percent, 0) / 100))::int'} as don_gia,
                             coalesce(olf.tax_percent, 0)                                                                              as thue_suat,
-                            (pol.qty * pol.original_price / (1 + coalesce(olf.tax_percent, 0) / 100))
+                            (pol.qty * pol.original_price * (coalesce(olf.tax_percent, 0) / 100) / (1 + coalesce(olf.tax_percent, 0) / 100))
                                 - (coalesce(dd.khuyen_mai_bh, 0) / (1 + coalesce(olf.tax_percent, 0) / 100))                          as thue_gtgt,
                             case
                                 when pol.qty < 0 then pol.price_subtotal
