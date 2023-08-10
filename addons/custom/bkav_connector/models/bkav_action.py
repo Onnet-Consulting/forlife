@@ -222,6 +222,14 @@ def delete_invoice_bkav(self,):
 
 
 def download_invoice_bkav(self):
+    # if self.eivoice_file:
+    #     return {
+    #         'type': 'ir.actions.act_url',
+    #         'url': "web/content/?model=ir.attachment&id=%s&filename_field=name&field=datas&name=%s&download=true"
+    #                 % (self.eivoice_file.id, self.eivoice_file.name),
+    #         'target': 'self',
+    #     }
+
     if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
         return
     configs = get_bkav_config(self)

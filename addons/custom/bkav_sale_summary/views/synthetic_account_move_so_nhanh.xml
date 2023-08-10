@@ -79,9 +79,6 @@
                                 <field name="invoice_guid"/>
                                 <field name="invoice_form"/>
                             </group>
-                            <group>
-                                <field name="eivoice_file" widget="binary" filename="invoice_no"/>
-                            </group>
                         </page>
                     </notebook>
                 </sheet>

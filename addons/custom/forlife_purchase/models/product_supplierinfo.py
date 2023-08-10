@@ -8,15 +8,15 @@ class SupplierInfo(models.Model):
     vendor_code = fields.Char(related='partner_id.code')
     amount_conversion = fields.Float('Số lượng quy đổi', default=1, required=1)
 
-    date_start = fields.Date('Start Date', help="Start date for this vendor price", required=True)
-    date_end = fields.Date('End Date', help="End date for this vendor price", required=True)
+    date_start = fields.Date('Start Date', help="Start date for this vendor price", required=False)
+    date_end = fields.Date('End Date', help="End date for this vendor price", required=False)
 
     @api.constrains('partner_id', 'product_tmpl_id', 'product_id', 'date_start', 'date_end', 'amount_conversion', 'price', 'product_uom')
     def constrains_supplier(self):
         for rec in self:
             if rec.partner_id and rec.product_tmpl_id and rec.product_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(
                     [('partner_id', '=', rec.partner_id.id),
-                     ('product_tmpl_id', '=', rec.product_tmpl_id.id),
+                     '|', ('product_tmpl_id', '=', rec.product_tmpl_id.id),
                      ('product_id', '=', rec.product_id.id),
                      ('date_start', '=', rec.date_start),
                      ('date_end', '=', rec.date_end),

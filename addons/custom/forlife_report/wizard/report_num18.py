@@ -93,11 +93,11 @@ purchase_request_line_x as (
   {where_condition}
 ),
 po_line_qty as (
-    select prl.id                             as req_line_id,
+    select prl.req_line_id                    as req_line_id,
            coalesce(sum(pol.qty_received), 0) as qty
     from purchase_request_line_x prl
              left join purchase_order_line pol on prl.req_line_id = pol.purchase_request_line_id
-    group by prl.id
+    group by prl.req_line_id
 )
 select 
     rp.name                                                                                 as nha_cung_cap,
