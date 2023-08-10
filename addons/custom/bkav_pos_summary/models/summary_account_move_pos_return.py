@@ -42,7 +42,7 @@ class SummaryAccountMovePosReturn(models.Model):
 
     def get_line_discount(self, line):
         line_discount_details = line.order_id.lines.filtered(
-            lambda r: r.is_promotion == True and r.promotion_type in ['card','point']
+            lambda r: r.is_promotion == True and r.promotion_type in ['card','point'] and r.product_src_id.id == line.id
         )
         items = []
         if line_discount_details:

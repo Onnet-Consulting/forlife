@@ -207,7 +207,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "BuyerName": 'Khách lẻ',
                     "BuyerTaxCode": '',
                     "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
-                    "BuyerAddress": ln.partner_id.street if ln.partner_id.street else '',
+                    "BuyerAddress": str(ln.partner_id.street).strip() if ln.partner_id.street else '',
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
                     "ReceiveTypeID": 3,
