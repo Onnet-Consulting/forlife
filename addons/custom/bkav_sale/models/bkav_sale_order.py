@@ -43,7 +43,7 @@ class AccountMoveSaleOrder(models.Model):
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
@@ -76,7 +76,7 @@ class AccountMoveSaleOrder(models.Model):
                 "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
@@ -197,13 +197,19 @@ class AccountMoveSaleOrder(models.Model):
     #                 item.exists_bkav = True
     #     return res
 
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
 
-#     def create_invoice_out_refund(self):
-#         invoice_id = super(StockPicking, self).create_invoice_out_refund()
-#         move_id = self.env['account.move'].browse(invoice_id)
-#         move_id.update({
-#             'origin_move_id': move_id.id,
-#             'issue_invoice_type': 'adjust',
-#         })
+    def create_invoice_out_refund(self):
+        invoice_id = super(StockPicking, self).create_invoice_out_refund()
+        move_id = self.env['account.move'].browse(invoice_id)
+        sale_order_id = move_id.invoice_line_ids.sale_line_ids.order_id
+        invoices = False
+        if sale_order_id:
+            invoices = sale_order_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice' and x.state == 'posted')
+        if invoices:
+            move_id.update({
+                'origin_move_id': invoices[0].id,
+                'issue_invoice_type': 'adjust',
+            })
+        return invoice_id
