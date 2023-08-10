@@ -88,7 +88,6 @@
                                     <field name="price_unit"/>
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="tax_amount"/>
-                                    <field name="price_unit_incl"/>
                                     <field name="amount_total"/>
                                 </tree>
                             </field>

@@ -253,11 +253,11 @@ class ChildBatchImport(models.Model):
             chunk_data = output.read()
             chunk_data_base64 = base64.b64encode(chunk_data)
             self.write({
-                'file_record_done_from_rule_name': f"{rec.file_name.split('.')[0]}_valid_records.{rec.file_name.split('.')[-1]}",
+                'file_record_done_from_rule_name': f"{self.file_name.split('.')[0]}_valid_records.{self.file_name.split('.')[-1]}",
                 'file_record_done_from_rule': chunk_data_base64
             })
         except Exception as e:
-            rec.log = e
+            self.log = e
             _logger.info(e)
 
     def make_file_log_invalid_records_exel(self, error_rows=[]):

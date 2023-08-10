@@ -179,16 +179,6 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
 
                 pk = self.get_pk_synthetic(line)
-                # price_bkav = line.price_bkav
-                # if sale_order.x_is_return:
-                #     if sale_order.x_origin:
-                #         line_origin = sale_order.x_origin.order_line.filtered(
-                #             lambda r: r.product_id.id == line.product_id.id
-                #         )
-                #         if line_origin:
-                #             pk = f"{line.product_id.barcode}_{float(line_origin[0].price_bkav)}"
-                #             price_bkav = line_origin[0].price_bkav
-                
                 item = self.get_move_line(line)
                 item["line_pk"] = pk
                 if items.get(pk):
@@ -197,8 +187,6 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     row["invoice_ids"].extend(item["invoice_ids"])
                     row["invoice_ids"] = list(set(row["invoice_ids"]))
                     row["line_ids"].extend(item["line_ids"])
-                    # row["tax_ids"].extend(item["tax_ids"])
-                    # row["tax_ids"] = list(set(row["tax_ids"]))
                     items[pk] = row
                 else:
                     items[pk] = item
@@ -508,7 +496,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             ('remaining_quantity', '>', 0),
             ('synthetic_id', '!=', False),
             ('exists_bkav', '=', True)
-        ], order="invoice_date desc")
+        ], order="invoice_date desc, id desc")
 
 
     def create_an_invoice_bkav(self):
@@ -524,7 +512,6 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
     def general_invoice_not_exists_bkav(self, *args, **kwargs):
         synthetic_lines = self.get_last_synthetics()
-
         move_out_invoice_lines, move_out_refund_lines = self.get_sale_order_nhanh_not_exists_bkav(*args, **kwargs)
 
         move_out_invoice_items, order_out_invoice = self.include_line_by_product_and_price_bkav(move_out_invoice_lines)
@@ -583,135 +570,10 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             move_ids = move_out_refund_lines.mapped("move_id")
             move_ids.update({"is_general": True})
 
-        # move_date = datetime.utcnow().date()
-        # # tổng hợp hóa đơn nhanh
-        # query = """
-        #     SELECT DISTINCT am.id 
-        #     FROM sale_order so
-        #     JOIN sale_order_line sol on sol.order_id = so.id
-        #     JOIN sale_order_line_invoice_rel solir on solir.order_line_id = sol.id
-        #     JOIN account_move_line aml on solir.invoice_line_id = aml.id
-        #     JOIN account_move am on am.id = aml.move_id
-        #     JOIN res_company r on am.company_id = r.id
-        #     WHERE so.source_record = TRUE 
-        #     AND (am.invoice_date <= %s)
-        #     AND am.exists_bkav = 'f'
-        #     AND am.state = 'posted' AND r.code = '1300'
-        # """
-        # self._cr.execute(query, ((move_date,)))
-        # result = self._cr.fetchall()
-        # nhanh_invoice_ids = self.env['account.move'].sudo().browse([idd[0] for idd in result])
-        # company_id = nhanh_invoice_ids[0].company_id
-        # invoice_bkav_ids = self.with_company(company_id).create_general_invoice(nhanh_invoice_ids, move_date)
-        # # for invoice_bkav_id in invoice_bkav_ids:
-        # #     # invoice_bkav_id.genarate_code()
-        # #     invoice_bkav_id.create_invoice_bkav()
-        # #     invoice_bkav_id.update_invoice_status()
-
 
     def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         self.general_invoice_not_exists_bkav(*args, **kwargs)
         self.create_an_invoice_bkav()
-
-
-    def create_general_invoice(self, invoices, move_date):
-        out_invoices = invoices.filtered(lambda x: x.move_type == 'out_invoice')
-        refund_invoices = invoices.filtered(lambda x: x.move_type == 'out_refund')
-        invoice_bkav_ids = []
-        # list_out_line_vals = []
-        # list_negative_line_vals = []
-        # if out_invoices or refund_invoices:
-        #     out_line_vals = []
-        #     negative_line_vals = []
-        #     line_checked = []
-        #     product_checked = []
-        #     # Sản phẩm có cả bán và trả trong ngày
-        #     for line in out_invoices.invoice_line_ids:
-        #         if line.id not in line_checked:
-        #             product_checked.append(line.product_id.id)
-        #             product_line_ids = out_invoices.invoice_line_ids.filtered(
-        #                 lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
-        #             refund_line_ids = refund_invoices.invoice_line_ids.filtered(
-        #                 lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
-        #             line_checked += (product_line_ids + refund_line_ids).ids
-        #             diff_qty = sum(product_line_ids.mapped('quantity')) - sum(refund_line_ids.mapped('quantity'))
-        #             price_subtotal = sum(product_line_ids.mapped('price_subtotal')) - sum(
-        #                 refund_line_ids.mapped('price_subtotal'))
-        #             if diff_qty > 0:
-        #                 out_line_vals.append((0, 0, {
-        #                     'product_id': line.product_id.id,
-        #                     'uom_id': line.product_id.uom_id.id,
-        #                     'quantity': diff_qty,
-        #                     'price_unit': line.price_unit,
-        #                     'price_subtotal': price_subtotal,
-        #                     'taxes_id': line.tax_ids.id
-        #                 }))
-        #                 if len(out_line_vals) == 1000:
-        #                     list_out_line_vals.append(out_line_vals)
-        #                     out_line_vals = []
-        #             if diff_qty < 0:
-        #                 negative_line_vals.append((0, 0, {
-        #                     'product_id': line.product_id.id,
-        #                     'uom_id': line.product_id.uom_id.id,
-        #                     'quantity': diff_qty,
-        #                     'price_unit': line.price_unit,
-        #                     'price_subtotal': price_subtotal,
-        #                     'taxes_id': line.tax_ids.id
-        #                 }))
-        #                 if len(negative_line_vals) == 1000:
-        #                     list_negative_line_vals.append(negative_line_vals)
-        #                     negative_line_vals = []
-        #     # Sản phẩm chỉ có trả trong ngày
-        #     for line in refund_invoices.invoice_line_ids.filtered(lambda x: x.product_id.id not in product_checked):
-        #         if line.id not in line_checked:
-        #             refund_line_ids = refund_invoices.invoice_line_ids.filtered(
-        #                 lambda r: r.product_id.id == line.product_id.id and r.price_unit == line.price_unit)
-        #             line_checked += refund_line_ids.ids
-        #             negative_line_vals.append((0, 0, {
-        #                 'product_id': line.product_id.id,
-        #                 'uom_id': line.product_id.uom_id.id,
-        #                 'quantity': -sum(refund_line_ids.mapped('quantity')),
-        #                 'price_unit': line.price_unit,
-        #                 'price_subtotal': -sum(refund_line_ids.mapped('price_subtotal')),
-        #                 'taxes_id': line.tax_ids.id
-        #             }))
-        #             if len(negative_line_vals) == 1000:
-        #                 list_negative_line_vals.append(negative_line_vals)
-        #                 negative_line_vals = []
-        # if out_line_vals:
-        #     list_out_line_vals.append(out_line_vals)
-        # if negative_line_vals:
-        #     list_negative_line_vals.append(negative_line_vals)
-        # for out_item in list_out_line_vals:
-        #     invoice_bkav_id = self.env['invoice.not.exists.bkav'].sudo().create({
-        #         'code': self.genarate_code(),
-        #         'company_id': invoices[0].company_id.id,
-        #         'partner_id': invoices[0].partner_id.id,
-        #         'move_date': move_date,
-        #         'invoice_ids': [(6, 0, invoices.ids)],
-        #         'line_ids': out_item,
-        #     })
-        #     invoice_bkav_ids.append(invoice_bkav_id)
-        # for negative_item in list_negative_line_vals:
-        #     invoice_bkav_id = self.env['invoice.not.exists.bkav'].sudo().create({
-        #         'code': self.genarate_code(),
-        #         'company_id': invoices[0].company_id.id,
-        #         'partner_id': invoices[0].partner_id.id,
-        #         'move_date': move_date,
-        #         'invoice_ids': [(6, 0, invoices.ids)],
-        #         'line_ids': negative_item,
-        #     })
-        #     invoice_bkav_ids.append(invoice_bkav_id)
-        return invoice_bkav_ids
-
-    def update_invoice_status(self):
-        for invoice in self:
-            if invoice.state == 'new':
-                invoice.state = 'post'
-            for invoice_id in invoice.invoice_ids:
-                if not invoice_id.is_general:
-                    invoice_id.is_general = True
-                    invoice_id.exists_bkav = True
 
 
     def get_bkav_data(self):
