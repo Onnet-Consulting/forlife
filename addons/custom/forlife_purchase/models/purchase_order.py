@@ -1080,6 +1080,10 @@ class PurchaseOrder(models.Model):
             'domain': [('id', 'in', data_search)],
         }
 
+    def _add_supplier_to_product(self):
+        if not self.partner_id.is_passersby:
+            return super(PurchaseOrder, self)._add_supplier_to_product()
+
     def action_view_invoice_expense_new(self):
         for rec in self:
             data_search = self.env['account.move'].search(
