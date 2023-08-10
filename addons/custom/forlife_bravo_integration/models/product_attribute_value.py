@@ -13,7 +13,7 @@ class ProductAttributeValue(models.Model):
     br1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
 
-    def bravo_filter_records(self):
-        records = super().bravo_filter_records()
+    @api.model
+    def bravo_get_filter_domain(self):
         attr_value = self.env['res.utility'].get_attribute_code_config()
-        return records.filtered(lambda rec: rec.attribute_id.attrs_code == attr_value.get('mua_vu'))
+        return [('attribute_id.attrs_code', '=', attr_value.get('mua_vu'))]
