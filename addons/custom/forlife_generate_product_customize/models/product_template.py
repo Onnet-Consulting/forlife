@@ -53,9 +53,8 @@ class ProductTemplate(models.Model):
                 if res.attribute_check_text != old_sku.attribute_check_text:
                     raise ValidationError(f"Chưa đúng thông tin SKU cho sản phẩm {res.name}")
                 else:
-                    output_list = self.validate_field_check_create(res.rule_id, vals_list)
-                    barcode_att_check = self._check_duplicate_att_and_field_barcode(res.rule_id, res, output_list)
-                    if not barcode_att_check:
+                    barcode_att_and_check = self.env['product.template'].search([('att_and_field_barcode','=', res.att_and_field_barcode),('id','!=', res.id)], limit=1)
+                    if barcode_att_and_check:
                         raise ValidationError(f"Bị trùng thông tin thuộc tính check Barcode sản phẩm {res.name}")
                 if 'test_import' not in self._context or not self._context.get('test_import'):
                     barcode = self.generate_ean_barcode(rule=res.rule_id, sku_code=vals_list['sku_code'])
@@ -63,28 +62,34 @@ class ProductTemplate(models.Model):
                 return res
         return super(ProductTemplate, self).create(vals_list)
 
-    def _compute_domain(self, rec, output_list, values_ids, res):
-        domain = [('attribute_id', '=', rec), ('value_ids', 'in', values_ids), ('product_tmpl_id', '!=', res.id), ('product_tmpl_id.sku_code', '=', res.sku_code)]
-        for d in output_list:
-            domain.append(d)
-        return domain
+    att_and_field_barcode = fields.Text(compute='_compute_att_and_field_barcode', store=True)
 
-    def _check_duplicate_att_and_field_barcode(self, rule, res, output_list):
-        att_id_check_create_barcode = rule.attribute_check_barcode_ids.mapped('id')
-        att_id_of_new_product = res.attribute_line_ids.mapped('attribute_id.id')
-        set_same = list(set(att_id_check_create_barcode) & set(att_id_of_new_product))
-        values_ids = []
-        if set_same:
-            for r in set_same:
-                for rec in res.attribute_line_ids:
-                    if rec.attribute_id.id == r:
-                        values_ids.append(rec.value_ids[0].id)
-            for rec in set_same:
-                domain = self._compute_domain(rec, output_list, values_ids, res)
-                ptal = self.env['product.template.attribute.line'].search(domain)
-                if ptal:
-                    return False
-        return True
+    @api.depends('rule_id', 'attribute_line_ids')
+    def _compute_att_and_field_barcode(self):
+        for rec in self:
+            if rec.rule_id:
+                att_check_barcode_ids = rec.rule_id.attribute_check_barcode_ids.ids
+                fields_check = rec.rule_id.barcode_field_check_ids.mapped('name')
+                sql = f"""SELECT {', '.join(fields_check)} FROM product_template WHERE id = {rec.id}"""
+                self._cr.execute(sql)
+                data = self._cr.dictfetchall()
+                attribute_line_id = rec.attribute_line_ids.mapped('attribute_id.id')
+                set_same = list(set(att_check_barcode_ids) & set(attribute_line_id))
+                attr_id_not_in_vals_list = []
+                for x in att_check_barcode_ids:
+                    if x not in attribute_line_id:
+                        attr_id_not_in_vals_list.append('false')
+                string_field = []
+                for r in sorted(rec.attribute_line_ids):
+                    if r.attribute_id.id in set_same:
+                        string_field.append(f"{r.attribute_id.name}-{r.value_ids[0].name}")
+                stringfield = ':'.join(string_field)
+                if attr_id_not_in_vals_list:
+                    rec.att_and_field_barcode = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{stringfield}-{str(data)}-{':'.join(attr_id_not_in_vals_list)}"
+                else:
+                    rec.att_and_field_barcode = f"{rec.brand_id.name}-{rec.rule_id.type_product_id.name}-{str(data)}-{stringfield}"
+            else:
+                rec.att_and_field_barcode = False
 
         # @api.constrains('attribute_check_text')
     # def contrainst_attribute_rule_create_barcode(self):
