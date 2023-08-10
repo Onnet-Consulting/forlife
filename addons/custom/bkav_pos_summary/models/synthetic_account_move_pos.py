@@ -53,20 +53,6 @@ class SyntheticAccountMovePos(models.Model):
         store=True,
         help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
     )
-    # focus_point = fields.Float(
-    #     string='Focus Point', 
-    #     readonly=True, 
-    #     compute='_compute_total_point', 
-    #     store=True,
-    #     help='Tiêu điểm'
-    # )
-    # card_class = fields.Float(
-    #     string='Card class', 
-    #     readonly=True, 
-    #     compute='_compute_total_point', 
-    #     store=True,
-    #     help='Hạng thẻ'
-    # )
 
     line_discount_ids = fields.One2many('synthetic.account.move.pos.line.discount', compute="_compute_line_discount")
 
@@ -85,45 +71,18 @@ class SyntheticAccountMovePos(models.Model):
     def _compute_total_point(self):
         for res in self:
             total_point = 0
-            focus_point = 0
-            card_class = 0
             exists_pos = {}
             for pos in res.line_ids.invoice_ids:
                 if not exists_pos.get(pos.id):
                     exists_pos[pos.id] = True
                     total_point += pos.get_total_point()
-                    # price_subtotal = pos.lines.filtered(
-                    #     lambda r: r.is_promotion == True and r.promotion_type == 'point'
-                    # ).mapped("price_subtotal")
-                    # card_price_subtotal = pos.lines.filtered(
-                    #     lambda r: r.is_promotion == True and r.promotion_type == 'card'
-                    # ).mapped("price_subtotal")
-                    # focus_point += sum(price_subtotal)
-                    # card_class += sum(card_price_subtotal)
 
             res.total_point = abs(total_point)
-            # res.focus_point = abs(focus_point)
-            # res.card_class = abs(card_class)
 
 
     def get_invoice_identify(self):
         return bkav_action.get_invoice_identify(self)
 
-
-
-    # def generate_invoices(self):
-    #     domain = [
-    #         ('is_synthetic', '=', False),
-    #         ('is_post_bkav_store', '=', True),
-    #         # ('is_invoiced', '=', True),
-    #         # ('invoice_exists_bkav', '=', False),
-    #     ]
-    #     kwargs = {"domain": domain, 'is_synthetic': True}
-    #     self.env['summary.account.move.pos'].collect_invoice_to_bkav_end_day(**kwargs)
-
-
-    # def generate_invoices_bkav(self):
-    #     self.env['summary.account.move.pos'].create_an_invoice_bkav()
 
 
     def action_download_view_e_invoice(self):
@@ -251,7 +210,7 @@ class SyntheticAccountMovePos(models.Model):
                     "BuyerName": 'Khách lẻ',
                     "BuyerTaxCode": '',
                     "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
-                    "BuyerAddress":  '',
+                    "BuyerAddress":  ln.partner_id.street if ln.partner_id.street else '',
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
                     "ReceiveTypeID": 3,

@@ -102,7 +102,7 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
                     "BuyerName": 'Khách lẻ',
                     "BuyerTaxCode": '',
                     "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
-                    "BuyerAddress":  '',
+                    "BuyerAddress": '',
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
                     "ReceiveTypeID": 3,

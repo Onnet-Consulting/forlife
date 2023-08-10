@@ -79,8 +79,6 @@ class SummaryAccountMovePos(models.Model):
                 row["invoice_ids"].extend(item["invoice_ids"])
                 row["invoice_ids"] = list(set(row["invoice_ids"]))
                 row["line_ids"].extend(item["line_ids"])
-                # row["tax_ids"].extend(item["tax_ids"])
-                # row["tax_ids"] = list(set(row["tax_ids"]))
                 items[pk] = row
             else:
                 items[pk] = item
@@ -150,10 +148,6 @@ class SummaryAccountMovePos(models.Model):
             domain.append(('invoice_date', '<', last_day))
 
         move_ids = self.env['account.move'].search(domain)
-        # .filtered(
-        #     lambda r: r.pos_order_id.store_id.is_post_bkav == True
-        # )
-        # pos_order = self.env['pos.order'].search(domain)
 
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
@@ -458,7 +452,7 @@ class SummaryAccountMovePos(models.Model):
             ('remaining_quantity', '>', 0),
             ('synthetic_id', '!=', False),
             ('exists_bkav', '=', True)
-        ], order="invoice_date desc")
+        ], order="invoice_date desc, id desc")
 
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)

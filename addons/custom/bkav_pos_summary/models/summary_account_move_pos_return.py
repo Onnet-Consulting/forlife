@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import date
-from .utils import collect_pos_to_bkav_end_day, genarate_pos_code
+from .utils import genarate_pos_code
 
 class SummaryAccountMovePosReturn(models.Model):
     _name = 'summary.account.move.pos.return'
@@ -147,12 +147,8 @@ class SummaryAccountMovePosReturn(models.Model):
 
         if not kwargs.get("env"):
             domain.append(('invoice_date', '<', last_day))
-        # pos_order = self.env['pos.order'].search(domain)
 
         move_ids = self.env['account.move'].search(domain)
-        # .filtered(
-        #     lambda r: r.pos_order_id.store_id.is_post_bkav == True
-        # )
 
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
@@ -190,13 +186,6 @@ class SummaryAccountMovePosReturn(models.Model):
             res_pos = model.create(vals_list)
 
         return data, res_pos, move_ids
-
-
-
-    def collect_return_invoice_to_bkav_end_day(self, lines):
-        model = self.env['summary.account.move.pos.return']
-        model_line = self.env['summary.account.move.pos.return.line']
-        return collect_pos_to_bkav_end_day(self, lines, model, model_line)
 
 
 
