@@ -202,7 +202,7 @@ class SyntheticAccountMovePos(models.Model):
     def get_bkav_data_pos(self):
         bkav_invoices = []
         for ln in self:
-            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(datetime.now(), datetime.now().time()))
+            invoice_date = fields.Datetime.context_timestamp(ln, datetime.combine(ln.invoice_date, datetime.now().time()))
             ln_invoice = {
                 "Invoice": {
                     "InvoiceTypeID": 1,
@@ -254,7 +254,6 @@ class SyntheticAccountMovePos(models.Model):
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
             ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
-
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
 
