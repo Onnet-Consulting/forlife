@@ -16,7 +16,19 @@ class SaleAdvancePaymentInv(models.TransientModel):
         promotion_vals = []
         if sale_orders.promotion_ids:
             for prm in sale_orders.promotion_ids:
-                if prm.order_line_id.qty_to_invoice:
+                if prm.promotion_type in ['customer_shipping_fee', 'nhanh_shipping_fee']:
+                    val = (0, 0, {
+                        "product_id": prm.product_id.id,
+                        "value": prm.value,
+                        "promotion_type": prm.promotion_type,
+                        "account_id": prm.account_id.id,
+                        "analytic_account_id": prm.analytic_account_id.id,
+                        "description": prm.description,
+                        "tax_id": prm.tax_id,
+                    })
+                    promotion_vals.append(val)
+
+                if prm.order_line_id.qty_to_invoice and prm.promotion_type not in ['customer_shipping_fee', 'nhanh_shipping_fee']:
                     value = round(prm.value * (prm.order_line_id.qty_to_invoice / prm.order_line_id.product_uom_qty), 0)
                     val = (0, 0, {
                         "product_id": prm.product_id.id,

@@ -36,7 +36,7 @@ class PosOrderLine(models.Model):
                     ('promotion_type', 'in', ['ctkm', 'make_price', 'product_defective', 'handle'])
                 ])
                 sum_km_excl =sum(discount_details_lines.mapped('price_subtotal'))
-                sum_km_incl =sum(discount_details_lines.mapped('price_subtotal'))
+                sum_km_incl =sum(discount_details_lines.mapped('price_subtotal_incl'))
                 # sum_km = sum(r.discount_details_lines.filtered(lambda x: x.type in ('ctkm', ' make_price', 'product_defactive', 'handle')).mapped('money_reduced'))
                 # tax = sum(r.tax_ids_after_fiscal_position.mapped('amount')) / 100
                 price_unit_excl = (r.price_subtotal + sum_km_excl)/r.qty
