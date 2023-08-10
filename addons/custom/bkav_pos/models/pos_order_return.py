@@ -179,7 +179,7 @@ class PosOrderReturn(models.Model):
                     item['IsIncrease'] = 0 if (invoice.refunded_order_ids.ids) else 1
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
-            list_invoice_detail.extend(self._get_promotion_in_pos())
+            list_invoice_detail.extend(self._get_promotion_in_pos_return())
             origin_id = invoice.origin_move_id
             BuyerName = origin_id.partner_id.name if origin_id.partner_id.name else ''
 
