@@ -243,6 +243,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "DiscountAmount":0.0,
                     "IsDiscount": 0,
                     "ItemTypeID": self.get_item_type_bkav(line),
+                    "IsIncrease": 0,
                 }
                 vat, tax_rate_id = self.get_vat(line)
                 line_invoice.update({
