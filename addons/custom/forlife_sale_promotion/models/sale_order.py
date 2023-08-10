@@ -258,7 +258,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_income_id'),
+                                    ('name', '=', 'property_account_expense_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -267,19 +267,18 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_income_id.id
+                                account_id = product_id.property_account_expense_id.id
                         except Exception as e:
                             account_id = None
                         
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
                             
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển"
                         })]
 
@@ -290,7 +289,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_expense_id'),
+                                    ('name', '=', 'property_account_income_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -299,20 +298,19 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_expense_id
+                                account_id = product_id.property_account_income_id
                         except Exception as e:
                             account_id = None
 
 
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
 
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí ship báo khách hàng"
                         })]
 

@@ -210,7 +210,7 @@ class PurchaseOrder(models.Model):
 
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
-        self.currency_id = self.partner_id.property_purchase_currency_id.id
+        self.currency_id = self.partner_id.property_purchase_currency_id.id or self.env.company.currency_id.id
 
     def compute_count_stock(self):
         for item in self:
@@ -693,7 +693,7 @@ class PurchaseOrder(models.Model):
         # self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
-                super(PurchaseOrder, self).button_confirm()
+                record.button_confirm()
                 picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
                 picking_in.write({
                     'is_pk_purchase': True
