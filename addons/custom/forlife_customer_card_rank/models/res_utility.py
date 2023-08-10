@@ -23,7 +23,7 @@ class ResUtility(models.AbstractModel):
             'email': customer.email or '',
             'gender': customer.gender or '',
             'total_points_available': total_points_available or 0,
-            'reset_day_of_point': (reset_day_of_point + timedelta(hours=7)).strftime('%d/%m/%Y %H:%M:%S') if reset_day_of_point else '',
+            'reset_day_of_point': (reset_day_of_point + timedelta(hours=7)).strftime('%d/%m/%Y') if reset_day_of_point else '',
             'TotalRevenue': 0,
             'SubRevenue': 0,
             'NextClass': '',
