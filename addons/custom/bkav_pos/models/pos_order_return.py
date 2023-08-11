@@ -58,7 +58,7 @@ class PosOrderReturn(models.Model):
         
         use_point = {}
         rank_total = {}
-        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id).ids
+        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id and x.qty != 0).ids
         for promotion_id in self.lines.filtered(lambda x: x.product_src_id.id in refunded_orderline_ids):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = False
@@ -81,12 +81,13 @@ class PosOrderReturn(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": -1000/(1+vat/100),
+                "Price": -1000/(1+int_vat/100),
                 "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -109,7 +110,8 @@ class PosOrderReturn(models.Model):
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": '',
@@ -147,7 +149,7 @@ class PosOrderReturn(models.Model):
                 invoice_date = datetime.combine(invoice.date_order, (datetime.now() + timedelta(hours=7)).time())  
             # invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id):
+            for line in invoice.lines.filtered(lambda x: x.refunded_orderline_id and x.qty != 0):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
