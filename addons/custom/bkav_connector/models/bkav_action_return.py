@@ -23,7 +23,8 @@ def get_bkav_config(self):
         'cmd_getInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_einvoice'),
         'cmd_getStatusInvoice': self.env['ir.config_parameter'].sudo().get_param('bkav.get_status_einvoice'),
         'cmd_downloadPDF': self.env['ir.config_parameter'].sudo().get_param('bkav.download_pdf'),
-        'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml')
+        'cmd_downloadXML': self.env['ir.config_parameter'].sudo().get_param('bkav.download_xml'),
+        'cmd_searchInfor': self.env['ir.config_parameter'].sudo().get_param('bkav.search_infor')
     }
 
 

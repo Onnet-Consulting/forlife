@@ -93,11 +93,12 @@ class SummaryAccountMovePos(models.Model):
         lines=[],
         store=None,
         page=0,
+        limit=1000,
         company_id=None
     ):
         model_code = genarate_pos_code(store_id=store, index=page)
         first_n=0
-        last_n=1000
+        last_n=limit
         pk = f"{store.id}_{page}"
         if len(lines) > last_n:
             separate_lines = lines[first_n:last_n]
@@ -117,6 +118,7 @@ class SummaryAccountMovePos(models.Model):
                 lines=lines, 
                 store=store, 
                 page=page, 
+                limit=limit,
                 company_id=company_id
             )
         else:
@@ -146,7 +148,10 @@ class SummaryAccountMovePos(models.Model):
         
 
         if not kwargs.get("env"):
-            domain.append(('invoice_date', '<', last_day))
+            domain.append(('invoice_date', '<=', last_day))
+        limit = 1000
+        if kwargs.get("limit") and str(kwargs.get("limit")).isnumeric():
+            limit = int(kwargs["limit"])
 
         move_ids = self.env['account.move'].search(domain)
 
@@ -174,6 +179,7 @@ class SummaryAccountMovePos(models.Model):
                     lines=list(line_items.values()),
                     store=store,
                     page=0,
+                    limit=limit,
                     company_id=res[0].company_id
                 )
                 data[store.id] = line_items
@@ -230,15 +236,16 @@ class SummaryAccountMovePos(models.Model):
         store_id=0,
         lines=[],
         page=0,
+        limit=1000,
         company_ids={}
     ):
         store = stores.get(store_id)
         company_id = company_ids.get(store_id)
         first = 0
-        last = 1000
+        last = limit
         pk = f"{store_id}_{page}"
         pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-        if len(lines) > 1000:
+        if len(lines) > last:
             separate_lines = lines[first:last]
             del lines[first:last]
             items[pk] = {
@@ -256,6 +263,7 @@ class SummaryAccountMovePos(models.Model):
                 store_id=store_id,
                 lines=lines,
                 page=page,
+                limit=limit,
                 company_ids=company_ids
             )
         else:
@@ -268,7 +276,7 @@ class SummaryAccountMovePos(models.Model):
                 'line_ids': lines
             }
 
-    def collect_invoice_balance_clearing(self, records, store_data, company_ids):
+    def collect_invoice_balance_clearing(self, records, store_data, company_ids, limit):
         items = {}
         model = self.env['synthetic.account.move.pos']
         model_line = self.env['synthetic.account.move.pos.line']
@@ -279,6 +287,7 @@ class SummaryAccountMovePos(models.Model):
                 store_id=k,
                 lines=v,
                 page=0,
+                limit=limit,
                 company_ids=company_ids
             )
 
@@ -455,6 +464,10 @@ class SummaryAccountMovePos(models.Model):
             ('exists_bkav', '=', True)
         ], order="invoice_date desc, id desc")
 
+        limit = 1000
+        if kwargs.get("limit") and str(kwargs.get("limit")).isnumeric():
+            limit = int(kwargs["limit"])
+
 
         sales, sale_res, sale_synthetic = self.env['summary.account.move.pos'].get_items(*args, **kwargs)
         refunds, refund_res, refund_synthetic = self.env['summary.account.move.pos.return'].get_items(*args, **kwargs)
@@ -533,7 +546,7 @@ class SummaryAccountMovePos(models.Model):
                         else:
                             matching_records[store_id] = [v]
 
-        self.collect_invoice_balance_clearing(matching_records, store_data, company_ids)
+        self.collect_invoice_balance_clearing(matching_records, store_data, company_ids, limit)
         self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
 

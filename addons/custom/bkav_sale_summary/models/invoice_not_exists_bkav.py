@@ -197,11 +197,13 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         items={},
         lines=[],
         page=0,
-        order=None
+        limit=1000,
+        order=None,
+        typ="B"
     ):
         first_n=0
-        last_n=1000
-        model_code = self.genarate_pos_code(order=order, index=page)
+        last_n=limit
+        model_code = self.genarate_pos_code(typ=typ, order=order, index=page)
         if len(lines) > last_n:
             separate_lines = lines[first_n:last_n]
             del lines[first_n:last_n]
@@ -217,7 +219,9 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items, 
                 lines=lines, 
                 page=page, 
-                order=order
+                limit=limit,
+                order=order,
+                typ=typ
             )
         else:
             items[page] = {
@@ -229,7 +233,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             }
 
 
-    def create_summary_account_move_so_nhanh(self, line_items, order):
+    def create_summary_account_move_so_nhanh(self, line_items, order, limit):
         model = self.env['summary.account.move.so.nhanh']
         model_line = self.env['summary.account.move.so.nhanh.line']
         items = {}
@@ -239,7 +243,9 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items,
                 lines=list(line_items.values()),
                 page=0,
+                limit=limit,
                 order=order,
+                typ="B"
             )
 
             for k, v in items.items():
@@ -251,7 +257,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
             res = model.create(vals_list)
         return res
 
-    def create_summary_account_move_so_nhanh_return(self, line_items, order):
+    def create_summary_account_move_so_nhanh_return(self, line_items, order, limit):
         model = self.env['summary.account.move.so.nhanh.return']
         model_line = self.env['summary.account.move.so.nhanh.return.line']
         items = {}
@@ -261,7 +267,9 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items,
                 lines=list(line_items.values()),
                 page=0,
+                limit=limit,
                 order=order,
+                typ="T"
             )
 
             for k, v in items.items():
@@ -383,10 +391,11 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         items={},
         lines=[],
         page=0,
+        limit=1000,
         order=None
     ):
         first_n=0
-        last_n=1000
+        last_n=limit
 
         so_nhanh_license_bkav = self.env['ir.sequence'].next_by_code('so.nhanh.license.bkav')
         if len(lines) > last_n:
@@ -404,6 +413,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items, 
                 lines=lines, 
                 page=page, 
+                limit=limit,
                 order=order
             )
         else:
@@ -415,7 +425,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 'line_ids': lines
             }
 
-    def collect_invoice_balance_clearing(self, records, order):
+    def collect_invoice_balance_clearing(self, records, order, limit):
         items = {}
         model = self.env['synthetic.account.move.so.nhanh']
         model_line = self.env['synthetic.account.move.so.nhanh.line']
@@ -424,6 +434,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                 items=items,
                 lines=records,
                 page=0,
+                limit=limit,
                 order=order
             )
 
@@ -511,14 +522,18 @@ class GeneralInvoiceNotExistsBkav(models.Model):
 
 
     def general_invoice_not_exists_bkav(self, *args, **kwargs):
+        limit = 1000
+        if kwargs.get("limit") and str(kwargs.get("limit")).isnumeric():
+            limit = int(kwargs["limit"])
+
         synthetic_lines = self.get_last_synthetics()
         move_out_invoice_lines, move_out_refund_lines = self.get_sale_order_nhanh_not_exists_bkav(*args, **kwargs)
 
         move_out_invoice_items, order_out_invoice = self.include_line_by_product_and_price_bkav(move_out_invoice_lines)
-        res = self.create_summary_account_move_so_nhanh(move_out_invoice_items, order_out_invoice)
+        res = self.create_summary_account_move_so_nhanh(move_out_invoice_items, order_out_invoice, limit)
 
         move_out_refund_items, order_out_refund = self.include_line_by_product_and_price_bkav(move_out_refund_lines)
-        res_refund = self.create_summary_account_move_so_nhanh_return(move_out_refund_items, order_out_refund)
+        res_refund = self.create_summary_account_move_so_nhanh_return(move_out_refund_items, order_out_refund, limit)
         matching_records = []
         remaining_records = {}
         
@@ -557,7 +572,7 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                     None
                 )
         order = order_out_invoice or order_out_refund
-        self.collect_invoice_balance_clearing(matching_records, order)
+        self.collect_invoice_balance_clearing(matching_records, order, limit)
         self.collect_invoice_difference(remaining_records, order)
 
 
