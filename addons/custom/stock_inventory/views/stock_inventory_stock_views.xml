@@ -172,7 +172,7 @@
                 <button name="clone_detail_data" type="object" class="oe_highlight" string="Xác nhận chốt tồn" attrs="{'invisible': [('state', '!=', 'waiting')]}"/>
                 <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'first_inv'), ('x_status', '!=', 2)]}" class="oe_highlight" groups="stock.group_stock_manager"/>
                 <button name="action_approved_first" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'second_inv'), ('x_status', '!=', 3)]}" class="oe_highlight" groups="stock.group_stock_manager"/>
-                <button name="action_validate" string="Xác nhận lần 2" type="object" invisible="1" class="oe_highlight"/>
+                <!--                <button name="action_validate" string="Xác nhận lần 2" type="object" invisible="1" class="oe_highlight"/>-->
                 <button name="action_cancel_draft" states="cancel" string="Đưa về nháp" type="object"/>
                 <button name="action_cancel_draft" attrs="{'invisible': [('state', 'in', ['done', 'second_inv', 'draft'])]}" string="Hủy kiểm kê" type="object"
                     confirm="Nếu bạn hủy phiếu kiểm kê này, tất cả chi tiết kiểm kê của phiếu này sẽ bị xóa. Bạn có chắc chắn muốn hủy phiếu??"/>

@@ -1,0 +1,275 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bkav_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20230224\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-11 06:53+0000\n"
+"PO-Revision-Date: 2023-08-11 06:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bkav_sale
+#: model:ir.model,name:bkav_sale.model_account_move_reversal
+msgid "Account Move Reversal"
+msgstr "Đảo bút toán kế toán"
+
+#. module: bkav_sale
+#: model:ir.model,name:bkav_sale.model_account_debit_note
+msgid "Add Debit Note wizard"
+msgstr "Tạo HD điều chỉnh tăng"
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "BKAV Invoice"
+msgstr "HDDT BKAV"
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__9
+msgid "Bị thay thế"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__10
+msgid "Bị điều chỉnh"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__13
+msgid "Chờ huỷ"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__5
+msgid "Chờ thay thế"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__7
+msgid "Chờ điều chỉnh"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__14
+msgid "Chờ điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__company_type
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__company_type
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__company_type
+msgid "Company Type"
+msgstr "Loại công ty"
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Create & Publish eInvoice"
+msgstr "Tạo & Ký HD"
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Create eInvoice"
+msgstr "Tạo HD"
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__data_compare_status
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__data_compare_status
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__data_compare_status
+msgid "Data Compare Status"
+msgstr "Trạng thái"
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Download eInvoice"
+msgstr "Tải HD"
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__issue_invoice_type__vat
+msgid "GTGT"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_guid
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_guid
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_guid
+msgid "GUID HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Get eInvoice"
+msgstr "Lấy TTHD"
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__origin_move_id
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__origin_move_id
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__origin_move_id
+msgid "Hóa đơn gốc"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model,name:bkav_sale.model_account_move
+msgid "Journal Entry"
+msgstr "Bút toán sổ nhật ký"
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__12
+msgid "Không sử dụng"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_serial
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_serial
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_serial
+msgid "Ký hiệu HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Loại hình doanh nghiệp"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__issue_invoice_type
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__issue_invoice_type
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__issue_invoice_type
+#: model_terms:ir.ui.view,arch_db:bkav_sale.account_invoice_filter_inherit_bkav
+msgid "Loại phát hành"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_form
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_form
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_form
+msgid "Mẫu số HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__1
+msgid "Mới tạo"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_e_date
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_e_date
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_e_date
+msgid "Ngày HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Publish eInvoice"
+msgstr "Ký HD"
+
+#. module: bkav_sale
+#: model:ir.model,name:bkav_sale.model_purchase_order
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__po_source_id
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__po_source_id
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__po_source_id
+msgid "Purchase Order"
+msgstr "Đơn mua hàng"
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__sequence
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_no
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_no
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_no
+#: model_terms:ir.ui.view,arch_db:bkav_sale.account_invoice_filter_inherit_bkav
+msgid "Số HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__6
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__issue_invoice_type__replace
+msgid "Thay thế"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model,name:bkav_sale.model_stock_picking
+msgid "Transfer"
+msgstr "Điều chuyển"
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__invoice_state_e
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__invoice_state_e
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__invoice_state_e
+msgid "Trạng thái HDDT"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__11
+msgid "Trống (Đã cấp số, Chờ ký)"
+msgstr ""
+
+#. module: bkav_sale
+#: model_terms:ir.ui.view,arch_db:bkav_sale.bkav_invoice_form_view
+msgid "Update eInvoice"
+msgstr "Cập nhật HD"
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__eivoice_file
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__eivoice_file
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__eivoice_file
+msgid "eInvoice PDF"
+msgstr "Tệp HĐĐT PDF"
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__8
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__issue_invoice_type__adjust
+msgid "Điều chỉnh"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__15
+msgid "Điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__is_general
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__is_general
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__is_general
+msgid "Đã chạy tổng hợp cuối ngày"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__is_check_cancel
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__is_check_cancel
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__is_check_cancel
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__3
+msgid "Đã hủy"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__is_post_bkav
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__is_post_bkav
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__is_post_bkav
+msgid "Đã ký HĐ trên BKAV"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__2
+msgid "Đã phát hành"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields,field_description:bkav_sale.field_account_bank_statement_line__exists_bkav
+#: model:ir.model.fields,field_description:bkav_sale.field_account_move__exists_bkav
+#: model:ir.model.fields,field_description:bkav_sale.field_account_payment__exists_bkav
+msgid "Đã tồn tại trên BKAV"
+msgstr ""
+
+#. module: bkav_sale
+#: model:ir.model.fields.selection,name:bkav_sale.selection__account_move__data_compare_status__4
+msgid "Đã xóa"
+msgstr ""

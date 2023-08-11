@@ -62,12 +62,12 @@ class AccountMoveBKAV(models.Model):
         return super().copy(default)
 
     def _get_vat_line_bkav(self,vat_id, price_unit):
-        vat = 0
+        vat = False
         if vat_id:
             vat = vat_id.amount
             if vat_id.price_include:
                 price_unit = round(price_unit/(1+vat_id.amount/100))
-        if vat == 0:
+        if vat == 0 and vat != False:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
@@ -101,17 +101,16 @@ class AccountMoveBKAV(models.Model):
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.quantity) or 0.0,
                     "Price": abs(price_unit),
-                    "Amount": abs(line.price_subtotal),
-                    "TaxAmount": abs((line.tax_amount or 0.0)),
+                    "Amount": line.price_subtotal,
+                    "TaxAmount": (line.tax_amount or 0.0),
                     "ItemTypeID": 0,
-                    # "DiscountRate": line.discount/100,
-                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
-                item.update({
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat
-                })
+                if vat != False:
+                    item.update({
+                        "TaxRateID": tax_rate_id,
+                        "TaxRate": vat
+                    })
                 if invoice.issue_invoice_type == 'adjust':
                     item['IsIncrease'] = 1 if (invoice.move_type == invoice.origin_move_id.move_type) else 0
                 list_invoice_detail.append(item)
@@ -209,10 +208,11 @@ class AccountMoveBKAV(models.Model):
         if self.issue_invoice_type == 'adjust':
             if not self.origin_move_id or not self.origin_move_id.invoice_no:
                 raise ValidationError('Vui lòng chọn hóa đơn gốc đã được phát hành để điều chỉnh')
-            if self.origin_move_id.amount_total == self.amount_total:
-                self.origin_move_id.cancel_invoice_bkav()
-                self.exists_bkav = True
-                return
+            if self.origin_move_id.invoice_date == self.invoice_date:
+                if self.origin_move_id.amount_total == self.amount_total:
+                    self.origin_move_id.cancel_invoice_bkav()
+                    self.exists_bkav = True
+                    return
         data = []
         so_orders = self.invoice_line_ids.sale_line_ids.order_id
         origin_so_orders = False

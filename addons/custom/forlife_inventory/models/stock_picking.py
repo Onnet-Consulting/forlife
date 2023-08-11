@@ -51,7 +51,54 @@ class StockPicking(models.Model):
             if self.reason_type_id.id == reason_type_4.id and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
                 if product_is_voucher and not product_not_voucher:
                     self.create_check_inventory(type_create='export')
+        if self.transfer_stock_inventory_id and self.company_id.code == '1400':
+            if self.other_import:
+                lc_map = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)], limit=1)
+                if lc_map:
+                    self._create_oth_tranfer_stock(type_create='import', loc=lc_map)
+            elif self.other_export:
+                lc_map = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_id.id)], limit=1)
+                if lc_map:
+                    self._create_oth_tranfer_stock(type_create='export', loc=lc_map)
         return res
+
+    def _create_oth_tranfer_stock(self, type_create, loc):
+        company = loc.sudo().location_id.company_id
+        if type_create == 'import':
+            location_dest_id = loc.sudo().location_id.id
+            location_id = self.env['stock.location'].sudo().search([('code','=', 'N0201'), ('company_id','=', company.id)], limit=1).id
+            reason_type_id = self.env['forlife.reason.type'].sudo().search([('code','=','N02'),('company_id','=',company.id)], limit=1).id
+        else:
+            location_id = loc.sudo().location_id.id
+            location_dest_id = self.env['stock.location'].sudo().search([('code','=', 'X0201'), ('company_id','=', company.id)], limit=1).id
+            reason_type_id = self.env['forlife.reason.type'].sudo().search([('code','=','X02'),('company_id','=',company.id)], limit=1).id
+        data = []
+        for line in self.move_line_ids_without_package:
+            product = line.product_id
+            data.append((0, 0, {
+                'product_id': product.id,
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
+                'name': product.display_name,
+                'date': datetime.now(),
+                'product_uom': line.product_uom_id.id,
+                'product_uom_qty': line.qty_done,
+                'quantity_done': line.qty_done,
+                'amount_total': 0,
+                'company_id': company.id,
+            }))
+        other = self.env['stock.picking'].with_company(company).create({
+            'reason_type_id': reason_type_id,
+            'picking_type_id': loc.sudo().location_id.warehouse_id.int_type_id.id,
+            'location_id': location_id,
+            'location_dest_id': location_dest_id,
+            'other_import': True if type_create == 'import' else False,
+            'other_export': True if type_create == 'export' else False,
+            'move_ids_without_package': data,
+            'is_generate_auto_company': True
+        })
+        other.with_context(endloop=True).button_validate()
+        return other
 
     def create_check_inventory(self, type_create):
         if type_create == 'import':

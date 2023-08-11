@@ -50,7 +50,6 @@ class PosOrderReturn(models.Model):
                 "Qty": -abs(self.pay_point),
                 "Price": 0,
                 "Amount": 0,
-                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
