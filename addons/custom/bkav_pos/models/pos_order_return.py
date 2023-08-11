@@ -58,9 +58,10 @@ class PosOrderReturn(models.Model):
         
         use_point = {}
         rank_total = {}
-        for promotion_id in self.lines.filtered(lambda x: x.refunded_orderline_id):
+        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id).ids
+        for promotion_id in self.lines.filtered(lambda x: x.product_src_id.id in refunded_orderline_ids):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
-                vat = 0
+                vat = False
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
@@ -70,7 +71,7 @@ class PosOrderReturn(models.Model):
                 else:
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
-                vat = 0
+                vat = False
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
@@ -90,7 +91,7 @@ class PosOrderReturn(models.Model):
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
-            if vat == 0:
+            if vat == 0 and vat != False:
                 tax_rate_id = 1
             elif vat == 5:
                 tax_rate_id = 2
@@ -100,10 +101,11 @@ class PosOrderReturn(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != False:
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
@@ -117,7 +119,7 @@ class PosOrderReturn(models.Model):
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
-            if vat == 0:
+            if vat == 0 and vat != False:
                 tax_rate_id = 1
             elif vat == 5:
                 tax_rate_id = 2
@@ -127,10 +129,11 @@ class PosOrderReturn(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != False:
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
         return list_invoice_detail
 
@@ -171,10 +174,11 @@ class PosOrderReturn(models.Model):
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
-                item.update({
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat
-                })
+                if vat != False:
+                    item.update({
+                        "TaxRateID": tax_rate_id,
+                        "TaxRate": vat
+                    })
                 if invoice.issue_invoice_type == 'adjust':
                     item['IsIncrease'] = 0 if (invoice.refunded_order_ids.ids) else 1
                 list_invoice_detail.append(item)
