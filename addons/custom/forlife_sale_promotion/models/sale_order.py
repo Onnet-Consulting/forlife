@@ -413,6 +413,7 @@ class SaleOrder(models.Model):
                     for line in list_line_promotion:
                         line.write({'state': 'draft'})
                         line.unlink()
+                        break
                 rec.write({"state": "done_sale"})
 
     def action_open_reward_wizard(self):
