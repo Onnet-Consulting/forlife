@@ -128,6 +128,10 @@ ul.custom-info-list {
     background: rgba(0, 0, 0, 0);
 }
 
+.pos .order .orderline.selected{
+    scroll-margin-block-start: 50px;
+}
+
 @media (min-width: 768px){
     .pos .product-screen .leftpane,
     .pos .product-screen .rightpane{
