@@ -259,17 +259,17 @@ class SummaryAdjustedInvoicePos(models.Model):
 
     def create_an_invoice(self):
         for line in self:
-            try:
-                bkav_invoice_data = line.get_bkav_data_pos()
-                bkav_action.create_invoice_bkav(
-                    line, 
-                    bkav_invoice_data, 
-                    is_publish=True,
-                    origin_id=line.source_invoice,
-                    issue_invoice_type='adjust'
-                )
-            except Exception as e:
-                line.message_post(body=str(e))
+            # try:
+            bkav_invoice_data = line.get_bkav_data_pos()
+            bkav_action.create_invoice_bkav(
+                line, 
+                bkav_invoice_data, 
+                is_publish=True,
+                origin_id=line.source_invoice,
+                issue_invoice_type='adjust'
+            )
+            # except Exception as e:
+            #     line.message_post(body=str(e))
     
     def get_invoice_bkav(self):
         bkav_action.get_invoice_bkav(self)
