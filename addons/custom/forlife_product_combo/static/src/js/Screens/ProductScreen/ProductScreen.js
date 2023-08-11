@@ -165,33 +165,33 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
 
                 }
             }
-            if (list_name.length >0){
-                let info_order;
-                if(!order.is_refund_product){
-                    info_order = 'Mua'
-                }else{
-                    info_order = 'Trả'
-                }
-                this.showPopup('ErrorPopup', {
-                    title: this.env._t('Error: Product Invalid!'),
-                    body: this.env._t(`Sản phẩm ${list_name.toString()} thuộc bộ nên cần hoàn thành bộ khi ${info_order}!`),
-                });
-                return;
-            }
-            if(list_product_change_invalid.length >0){
-                this.showPopup('ErrorPopup', {
-                    title: this.env._t('Error: Product Invalid!'),
-                    body: this.env._t(`Sản phẩm đổi ${list_product_change_invalid.toString()} trùng với sản phẩm muốn đổi hoặc không thuộc cùng 1 biến thể với sản phẩm muốn đổi!`),
-                });
-                return;
-            }
-            if (list_quantity.length>0){
-                this.showPopup('ErrorPopup', {
-                    title: this.env._t('Error: Quantity Invalid!'),
-                    body: this.env._t(`Sản phẩm ${list_quantity.toString()} có số lượng chưa đúng so với cấu hình bộ !`),
-                });
-                return;
-            }
+//            if (list_name.length >0){
+//                let info_order;
+//                if(!order.is_refund_product){
+//                    info_order = 'Mua'
+//                }else{
+//                    info_order = 'Trả'
+//                }
+//                this.showPopup('ErrorPopup', {
+//                    title: this.env._t('Error: Product Invalid!'),
+//                    body: this.env._t(`Sản phẩm ${list_name.toString()} thuộc bộ nên cần hoàn thành bộ khi ${info_order}!`),
+//                });
+//                return;
+//            }
+//            if(list_product_change_invalid.length >0){
+//                this.showPopup('ErrorPopup', {
+//                    title: this.env._t('Error: Product Invalid!'),
+//                    body: this.env._t(`Sản phẩm đổi ${list_product_change_invalid.toString()} trùng với sản phẩm muốn đổi hoặc không thuộc cùng 1 biến thể với sản phẩm muốn đổi!`),
+//                });
+//                return;
+//            }
+//            if (list_quantity.length>0){
+//                this.showPopup('ErrorPopup', {
+//                    title: this.env._t('Error: Quantity Invalid!'),
+//                    body: this.env._t(`Sản phẩm ${list_quantity.toString()} có số lượng chưa đúng so với cấu hình bộ !`),
+//                });
+//                return;
+//            }
             return await super._onClickPay(...arguments);
         }
     };
