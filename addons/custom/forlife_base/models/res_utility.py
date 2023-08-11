@@ -341,6 +341,66 @@ where rp.phone = '{phone_number}'
         return self.execute_postgresql(sql, [], True)
 
     @api.model
+    def get_pos_order_detail_information(self, pos_reference):
+        order = self.env['pos.order'].search([('pos_reference', '=', pos_reference)], limit=1)
+        if not order:
+            return []
+        tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz or 'Asia/Saigon')).utcoffset().total_seconds() / 3600)
+        result = {
+            'date_order': (order.date_order + timedelta(hours=tz_offset)).strftime('%d/%m/%Y %H:%M:%S') if order.date_order else '',
+            'pos_reference': pos_reference or '',
+            'cashier': order.user_id.name or '',
+            'note': order.note or '',
+        }
+        promotion_code = set()
+        promotion_amount = 0
+        voucher_code = set()
+        voucher_amount = 0
+        amount_total = 0
+        discount_total = 0
+        qty_total = 0
+        abs_qty_total = 0
+        product_detail = dict()
+        for line in order.lines.filtered(lambda f: not f.is_promotion and f.qty != 0):
+            key = f"{'-' if line.qty < 0 else ''}{line.product_id.id}|{line.promotion_usage_ids.ids}|{int(line.original_price)}"
+            product_detail.update({
+                key: {
+                    'product_name': (product_detail.get(key) or {}).get('product_name') or line.product_id.name or '',
+                    'product_barcode': (product_detail.get(key) or {}).get('product_barcode') or line.product_id.barcode or '',
+                    'qty': ((product_detail.get(key) or {}).get('qty') or 0) + line.qty,
+                    'unit_price': (product_detail.get(key) or {}).get('unit_price') or line.original_price,
+                    'discount': ((product_detail.get(key) or {}).get('discount') or 0) + line.money_is_reduced,
+                    'amount': ((product_detail.get(key) or {}).get('amount') or 0) + line.subtotal_paid,
+                }
+            })
+            amount_total += (line.qty * line.original_price) if line.qty > 0 else (line.subtotal_paid or 0)
+            discount_total += (line.money_is_reduced or 0) if line.qty > 0 else 0
+            qty_total += line.qty
+            abs_qty_total += abs(line.qty)
+            for promotion in line.promotion_usage_ids:
+                if promotion.program_id.promotion_type == 'code' and promotion.code_id:
+                    promotion_code.add(promotion.code_id.name) if promotion.code_id.name else None
+                    promotion_amount += promotion.discount_total or 0
+        for voucher in order.pos_voucher_line_ids:
+            voucher_code.add(voucher.voucher_id.name)
+            voucher_amount += voucher.price_residual_no_compute
+        result.update({
+            'promotion_code': ','.join(list(promotion_code)),
+            'promotion_amount': promotion_amount,
+            'voucher_code': ','.join(list(voucher_code)),
+            'voucher_amount': voucher_amount,
+            'qty_total': qty_total,
+            'abs_qty_total': abs_qty_total,
+            'amount_total': amount_total,
+            'discount_total': discount_total,
+            'product_detail': list(product_detail.values()),
+            'amount_total_paid': amount_total - discount_total,
+            'voucher_paid': sum(order.payment_ids.filtered(lambda s: s.payment_method_id.is_voucher).mapped('amount')),
+            'point_total': order.total_point or 0,
+        })
+        return [result]
+
+    @api.model
     def get_stock_quant_in_store(self, brand, barcode, province_id, district_id=False):
         if any([not brand, not barcode, not province_id]):
             return []
