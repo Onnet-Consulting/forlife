@@ -21,12 +21,14 @@ class ResCurrencyRate(models.Model):
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }
 
-    def bravo_filter_records(self):
-        res = super().bravo_filter_records()
-        return res.filtered(lambda x: x.company_id.code == '1200')
+    @api.model
+    def bravo_get_filter_domain(self):
+        return [('company_id.code', '=', '1200')]
 
+    @api.model
     def bravo_get_update_values(self, values):
         return False
 
+    @api.model
     def bravo_get_delete_sql(self):
         return False

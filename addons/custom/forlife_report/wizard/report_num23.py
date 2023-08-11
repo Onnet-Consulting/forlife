@@ -146,7 +146,7 @@ with datas as (select (po.date_order + interval '{tz_offset} hours')::date      
                 sheet.write(row, 0, value.get('stt'), formats.get('center_format'))
                 sheet.write(row, 1, value.get('cua_hang'), formats.get('normal_format'))
                 sheet.write(row, 2, value.get('hang'), formats.get('normal_format'))
-                sheet.write(row, 3, f"{value.get('thue_suat') or 0}", formats.get('percentage_format'))
+                sheet.write(row, 3, (value.get('thue_suat') or 0) / 100, formats.get('percentage_format'))
                 sheet.write(row, 4, value.get('gia_tri_truoc_thue'), formats.get('int_number_format'))
                 sheet.write(row, 5, value.get('thue_gtgt'), formats.get('int_number_format'))
                 sheet.write(row, 6, value.get('tong_tien'), formats.get('int_number_format'))

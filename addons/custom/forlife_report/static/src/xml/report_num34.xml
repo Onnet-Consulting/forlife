@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum34Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum34MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum34MainTemplate">
+        <div class="oe_max_height_500">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                    <t t-foreach="options.data" t-as="line">
+                        <tr class="show-detail" t-att-id="line.num - 1">
+                            <td><t t-esc="line.stt"/></td>
+                            <td><t t-esc="line.ma_cn"/></td>
+                            <td><t t-esc="line.ten_cn"/></td>
+                            <td><t t-esc="line.ngay"/></td>
+                            <td><t t-esc="line.so_ct"/></td>
+                            <td><t t-esc="line.ma_kh"/></td>
+                            <td><t t-esc="line.sdt"/></td>
+                            <td><t t-esc="line.ten_kh"/></td>
+                            <td><t t-esc="line.mo_ta"/></td>
+                            <td><t t-esc="line.ma_the_gg"/></td>
+                            <td><t t-esc="line.voucher"/></td>
+                            <td><t t-esc="line.sl_mua"/></td>
+                            <td><t t-esc="line.sl_tra"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tong_cong - line.giam_tren_hd, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_tra_lai, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.dt_cua_hang, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
+                            <td><t t-esc="line.nguoi_lap"/></td>
+                            <td><t t-esc="line.ngay_lap"/></td>
+                            <td><t t-esc="line.so_ct_goc"/></td>
+                            <td><t t-esc="line.ngay_ct_nhap"/></td>
+                            <td><t t-esc="line.nhan_vien"/></td>
+                            <td><t t-esc="line.nhom_khach"/></td>
+                            <td><t t-esc="line.ma_van_don"/></td>
+                            <td><t t-esc="line.ma_gd_goc"/></td>
+                            <td><t t-esc="line.don_vi_vc"/></td>
+                            <td><t t-esc="line.kenh_ban"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div id="transaction-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportTransactionDetailTemplate34">
+        <button class="oe_tab">Transaction Detail</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+        <div class="oe_max_height_500">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-foreach="data" t-as="line">
+                        <t t-set="thanh_tien" t-value="(line.sl_mua + line.sl_tra) * line.gia_ban"/>
+                        <tr>
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.ma_vach"/></td>
+                            <td><t t-esc="line.ten_sp"/></td>
+                            <td><t t-esc="line.don_vi"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.so_luong, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
+                            <t t-if="thanh_tien != 0"><td class="right"><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
+                            <t t-else=""><td class="right">0</td></t>
+                            <td class="right"><t t-esc="format_decimal(line.tien_giam_gia, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(thanh_tien - line.tien_giam_gia, 0)"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+</template>
