@@ -4,7 +4,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
-TITLES = ['STT', 'Cửa hàng', 'Hạng thẻ', 'Tổng giá trị ưu đãi']
+TITLES = ['STT', 'Cửa hàng', 'Hạng thẻ', 'Thuế suất', 'Giá trị trước thuế', 'Thuế GTGT', 'Tổng giá trị ưu đãi']
 
 
 class ReportNum23(models.TransientModel):
@@ -37,38 +37,53 @@ class ReportNum23(models.TransientModel):
 select 0                           as stt,
        ngay                        as ngay,
        to_char(ngay, 'DD/MM/YYYY') as cua_hang,
-       ''                          as hang,
-       tong_tien                   as tong_tien
+       null                        as hang,
+       null                        as thue_suat,
+       gia_tri_truoc_thue::float4  as gia_tri_truoc_thue,
+       thue_gtgt::float4           as thue_gtgt,
+       tong_tien::float4           as tong_tien
 from data_by_day
 union all
-select row_number() over (PARTITION BY ngay) as stt,
-       ngay                                  as ngay,
-       cua_hang                              as cua_hang,
-       hang                                  as hang,
-       tong_tien                             as tong_tien
+select row_number() over (PARTITION BY ngay order by thue_suat) as stt,
+       ngay                                             as ngay,
+       cua_hang                                         as cua_hang,
+       hang                                             as hang,
+       thue_suat                                        as thue_suat,
+       gia_tri_truoc_thue::float4                       as gia_tri_truoc_thue,
+       thue_gtgt::float4                                as thue_gtgt,
+       tong_tien::float4                                as tong_tien
 from datas
 order by ngay desc, stt''',
             'store': '''
-select 0                           as stt,
-       ''                          as cua_hang,
-       ''                          as hang,
-       coalesce(sum(tong_tien), 0) as tong_tien
+select 0                                            as stt,
+       null                                         as cua_hang,
+       null                                         as hang,
+       null                                         as thue_suat,
+       coalesce(sum(gia_tri_truoc_thue)::float4, 0) as gia_tri_truoc_thue,
+       coalesce(sum(thue_gtgt)::float4, 0)          as thue_gtgt,
+       coalesce(sum(tong_tien)::float4, 0)          as tong_tien
 from datas
 union all
-select row_number() over (order by cua_hang, hang) as stt,
-       cua_hang                                    as cua_hang,
-       hang                                        as hang,
-       sum(tong_tien)                              as tong_tien
+select row_number() over (order by cua_hang, hang, thue_suat) as stt,
+       cua_hang                                               as cua_hang,
+       hang                                                   as hang,
+       thue_suat                                              as thue_suat,
+       sum(gia_tri_truoc_thue)::float4                        as gia_tri_truoc_thue,
+       sum(thue_gtgt)::float4                                 as thue_gtgt,
+       sum(tong_tien)::float4                                 as tong_tien
 from datas
-group by cua_hang, hang
+group by cua_hang, hang, thue_suat
 order by stt''',
         }
 
         query = f"""
-with datas as (select (po.date_order + interval '{tz_offset} hours')::date as ngay,
-                      store.name                                           as cua_hang,
-                      cr.name                                              as hang,
-                      sum(poldd.recipe)                                    as tong_tien
+with datas as (select (po.date_order + interval '{tz_offset} hours')::date                    as ngay,
+                      store.name                                                              as cua_hang,
+                      cr.name                                                                 as hang,
+                      coalesce(at.amount, 0)                                                  as thue_suat,
+                      sum(poldd.recipe / (1 + coalesce(at.amount, 0) / 100))                  as gia_tri_truoc_thue,
+                      sum(poldd.recipe - (poldd.recipe / (1 + coalesce(at.amount, 0) / 100))) as thue_gtgt,
+                      sum(poldd.recipe)                                                       as tong_tien
                from pos_order_line_discount_details as poldd
                         join pos_order_line pol on poldd.pos_order_line_id = pol.id
                         join pos_order po on pol.order_id = po.id
@@ -77,13 +92,17 @@ with datas as (select (po.date_order + interval '{tz_offset} hours')::date as ng
                         join store on pc.store_id = store.id
                         join member_card mc on po.card_rank_program_id = mc.id
                         join card_rank cr on mc.card_rank_id = cr.id
+                        left join account_tax_pos_order_line_rel tax_rel on tax_rel.pos_order_line_id = pol.id
+                        left join account_tax at on at.id = tax_rel.account_tax_id
                where type = 'card'
                 and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}' 
                 and {f'store.id = any(array{self.store_ids.ids})' if self.store_ids else f'store.brand_id = {self.brand_id.id}'}
-               group by ngay, cua_hang, hang
+               group by ngay, cua_hang, hang, thue_suat
                order by ngay),
-     data_by_day as (select ngay           as ngay,
-                            sum(tong_tien) as tong_tien
+     data_by_day as (select ngay                    as ngay,
+                            sum(gia_tri_truoc_thue) as gia_tri_truoc_thue,
+                            sum(thue_gtgt)          as thue_gtgt,
+                            sum(tong_tien)          as tong_tien
                      from datas
                      group by ngay)
 {_type.get(self.type)}
@@ -118,10 +137,17 @@ with datas as (select (po.date_order + interval '{tz_offset} hours')::date as ng
                 sheet.write(row, 0, '', formats.get('subtotal_format'))
                 sheet.write(row, 1, value.get('cua_hang'), formats.get('subtotal_format'))
                 sheet.write(row, 2, value.get('hang'), formats.get('subtotal_format'))
-                sheet.write(row, 3, value.get('tong_tien'), formats.get('int_subtotal_format'))
+                sheet.write(row, 2, value.get('hang'), formats.get('subtotal_format'))
+                sheet.write(row, 3, '', formats.get('subtotal_format'))
+                sheet.write(row, 4, value.get('gia_tri_truoc_thue'), formats.get('int_subtotal_format'))
+                sheet.write(row, 5, value.get('thue_gtgt'), formats.get('int_subtotal_format'))
+                sheet.write(row, 6, value.get('tong_tien'), formats.get('int_subtotal_format'))
             else:
                 sheet.write(row, 0, value.get('stt'), formats.get('center_format'))
                 sheet.write(row, 1, value.get('cua_hang'), formats.get('normal_format'))
                 sheet.write(row, 2, value.get('hang'), formats.get('normal_format'))
-                sheet.write(row, 3, value.get('tong_tien'), formats.get('int_number_format'))
+                sheet.write(row, 3, f"{value.get('thue_suat') or 0}", formats.get('percentage_format'))
+                sheet.write(row, 4, value.get('gia_tri_truoc_thue'), formats.get('int_number_format'))
+                sheet.write(row, 5, value.get('thue_gtgt'), formats.get('int_number_format'))
+                sheet.write(row, 6, value.get('tong_tien'), formats.get('int_number_format'))
             row += 1
