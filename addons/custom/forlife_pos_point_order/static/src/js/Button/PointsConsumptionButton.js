@@ -68,6 +68,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     points_of_customer = this.env.pos.selectedOrder.partner.total_points_available_forlife
                 }
             }
+            var Order = this.env.pos.selectedOrder
             var order_lines = this.order_lines;
             var promotion = await this.promotion;
             var product_valid_apply_all = [];
@@ -76,14 +77,14 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
 //                các sản phẩm hợp lệ được cấu hình
             for (let i=0; i< order_lines.length;i++){
                     for(let j=0;j<promotion.point_consumption_ids.length;j++){
-                        if(order_lines[i].product.id == promotion.point_consumption_ids[j].id && !order_lines[i].is_product_defective){
+                        if(order_lines[i].product.id == promotion.point_consumption_ids[j].id && !order_lines[i].is_product_defective && !order_lines[i].refunded_orderline_id){
                             product_valid.push(order_lines[i]);
                         }
                     }
             };
 
             for (let i=0; i< order_lines.length;i++){
-                    if(!order_lines[i].is_product_defective){
+                    if(!order_lines[i].is_product_defective && !order_lines[i].refunded_orderline_id){
                        product_valid_apply_all.push(order_lines[i])
                     }
             };

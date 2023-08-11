@@ -18,7 +18,7 @@
                             </tr>
                             <t t-if="props.old_data_props == false">
                                 <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
-                                    <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                    <t t-foreach="[...Array(Math.abs(line.quantity)).keys()]" t-as="num" t-key="num">
                                         <tr style="width:100%; border:1px solid black;">
                                             <td style="border:1px solid black;"
                                                 t-att-style="this._is_applied_promotion(line.id) ? 'color:orange' : ''"><t t-esc="line.product.display_name"/></td>
@@ -77,7 +77,7 @@
                             </tr>
                             <t t-if="props.old_data_props == false">
                                 <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
-                                    <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                    <t t-foreach="[...Array(Math.abs(line.quantity)).keys()]" t-as="num" t-key="num">
                                         <tr style="width:100%; border:1px solid black;">
                                             <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
                                             <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
