@@ -148,7 +148,7 @@ class SummaryAccountMovePos(models.Model):
         
 
         if not kwargs.get("env"):
-            domain.append(('invoice_date', '<', last_day))
+            domain.append(('invoice_date', '<=', last_day))
         limit = 1000
         if kwargs.get("limit") and str(kwargs.get("limit")).isnumeric():
             limit = int(kwargs["limit"])
