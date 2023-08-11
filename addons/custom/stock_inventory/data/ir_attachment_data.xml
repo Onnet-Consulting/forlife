@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <record id="template_import_inventory_session_add" model="ir.attachment">
             <field name="name">Mẫu nhập phiên đếm bổ sung.xlsx</field>
