@@ -77,7 +77,7 @@ class PosOrder(models.Model):
         
         use_point = {}
         rank_total = {}
-        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id).ids
+        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id and x.qty != 0).ids
         for promotion_id in self.lines.filtered(lambda x: x.product_src_id.id not in refunded_orderline_ids):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
                 vat = False
@@ -170,7 +170,7 @@ class PosOrder(models.Model):
                 invoice_date = datetime.combine(invoice.date_order, (datetime.now() + timedelta(hours=7)).time())       
             # invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id):
+            for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id and x.qty != 0):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
