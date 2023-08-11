@@ -256,7 +256,7 @@ class PosOrderReturn(models.Model):
             return
         if self.origin_move_id.date_order.date() == self.date_order.date():
             if self.origin_move_id.invoice_guid and self.origin_move_id.is_post_bkav:
-                if self.origin_move_id.amount_total == self.amount_total:
+                if abs(self.origin_move_id.amount_total) == abs(self.amount_total):
                     self.origin_move_id.cancel_invoice_bkav()
                     self.exists_bkav_return = True
                     self.is_post_bkav_return = True
