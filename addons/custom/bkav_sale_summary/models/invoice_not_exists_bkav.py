@@ -114,14 +114,17 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         if line.tax_id:
             for tax_id in line.tax_id:
                 tax_ids.append(str(tax_id.id))
+        else:
+            tax_ids.append(str(0))
+
         return "_".join(tax_ids)
 
     def get_pk_synthetic(self, line):
-        pk = f"{line.product_id.barcode}_{float(abs(line.price_unit_excl))}_{self.get_pk_tax(line)}"
+        pk = f"{line.product_id.barcode}_{float(abs(line.price_unit_incl))}_{self.get_pk_tax(line)}"
         return pk
 
     def get_pk_synthetic_line_discount(self, line):
-        pk = f"{line.product_id.barcode}_{self.get_pk_line_discount_tax(line)}"
+        pk = f"{self.get_pk_line_discount_tax(line)}"
         return pk
 
     def get_line_discount_detail(self, line):
