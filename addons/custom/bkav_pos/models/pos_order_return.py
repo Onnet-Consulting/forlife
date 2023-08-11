@@ -81,12 +81,13 @@ class PosOrderReturn(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": -1000/(1+vat/100),
+                "Price": -1000/(1+int_vat/100),
                 "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -109,7 +110,8 @@ class PosOrderReturn(models.Model):
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            value_not_tax = round(abs(value)/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": '',

@@ -100,12 +100,13 @@ class PosOrder(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            value_not_tax = round(value/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": round(1000/(1+vat/100)),
+                "Price": round(1000/(1+int_vat/100)),
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
@@ -121,14 +122,16 @@ class PosOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != False:
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            value_not_tax = round(value/(1+vat/100))
+            int_vat = (vat if vat != False else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": '',
@@ -149,10 +152,11 @@ class PosOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != False:
+                line_invoice.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
         return list_invoice_detail
 
