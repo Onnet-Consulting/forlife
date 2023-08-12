@@ -139,7 +139,11 @@ class StockPicking(models.Model):
                 'credit': 0.0,
                 'debit': (amount / qty_po_origin) * qty_po_done
             })]
+            total_after_credit = 0
+            length_move = len(self.move_ids)
+            i = 0
             for move in self.move_ids:
+                i += 1
                 if move.product_id.type in ('product', 'consu'):
                     svl_values.append((0, 0, {
                         'value': - (amount / qty_po_origin) * move.quantity_done,
@@ -152,15 +156,24 @@ class StockPicking(models.Model):
                         'stock_move_id': move.id
                     }))
 
-                move_lines += [(0, 0, {
+                credit = (amount / qty_po_origin) * move.quantity_purchase_done
+                after_digit = credit - int(credit)
+                if i < length_move:
+                    total_after_credit += after_digit
+                else:
+                    credit += total_after_credit
+
+                vals = {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
                     'product_id':  move.product_id.id,
                     'name':  move.product_id.name,
                     'text_check_cp_normal': line.product_id.name,
-                    'credit': (amount / qty_po_origin) * move.quantity_purchase_done,
+                    'credit': credit,
                     'debit': 0.0,
-                })]
+                }
+
+                move_lines += [(0, 0, vals)]
 
             move_value.update({
                 'stock_valuation_layer_ids': svl_values,
