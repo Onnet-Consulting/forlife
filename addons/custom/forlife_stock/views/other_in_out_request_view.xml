@@ -67,19 +67,19 @@
                             <field name="user_id"/>
                             <field name="department_id" readonly="1" force_save="1"/>
                             <field name="type_other"/>
-                            <field name="type_other_id" required="1"/>
+                            <field name="type_other_id"/>
                             <field name="type_other_code" invisible="1"/>
                             <label for="location_id" string="Lý do nhập khác" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_dest_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
-                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>
-                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')], 'required': True}"/>
+                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             </div>
                             <label for="location_dest_id" string="Địa điểm đích" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
                             <label for="location_id" string="Lý do xuất khác" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             <div>
-                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')], 'required': True}"/>
-                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_import')], 'required': True}"/>
+                                <field name="location_dest_id" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
+                                <field name="location_id" context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
                             </div>
                             <field name="quantity_match" invisible="1"/>
                         </group>
@@ -100,11 +100,11 @@
                                     <field name="date_expected"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
-                                    <field name="type_other_id"/>
-                                    <field name="whs_from_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
-                                    <field name="reason_from_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
-                                    <field name="reason_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_export')]}"/>
-                                    <field name="whs_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_export')]}"/>
+                                    <field name="type_other_id" required="1"/>
+                                    <field name="whs_from_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')], 'required':[('parent.type_other', '=', 'other_export')]}"/>
+                                    <field name="reason_from_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')], 'required':[('parent.type_other', '=', 'other_export')]}"/>
+                                    <field name="reason_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
+                                    <field name="whs_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
                                     <field name="occasion_id"/>
                                     <field name="production_id"/>
                                     <field name="cost_center"/>
