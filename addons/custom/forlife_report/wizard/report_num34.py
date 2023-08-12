@@ -131,7 +131,7 @@ with get_data_id_with_condition as (select so.id  as so_id,
                             (select array_agg(name)
                              from (select distinct name
                                    from res_partner_retail
-                                   where brand_id = 1
+                                   where brand_id = {self.brand_id.id}
                                      and id in (select res_partner_retail_id
                                                 from res_partner_res_partner_retail_rel
                                                 where res_partner_id = so.order_partner_id)) as xx) as nhom_khach,
