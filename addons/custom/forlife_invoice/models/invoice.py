@@ -1299,7 +1299,7 @@ class RespartnerVendor(models.Model):
                 for invoice_line in invoice_lines:
                     if rec.invoice_description and invoice_line:
                         invoice_line.write({
-                            'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price,
+                            'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price if sum_price > 0 else 0,
                             'tax_ids': [(6, 0, rec.tax_percent.ids)],
                         })
                     else:
