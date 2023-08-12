@@ -56,6 +56,12 @@ class InheritStockPicking(models.Model):
                 move_outgoing_value = self.validate_product_backup(move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id)
                 if not move_outgoing_value:
                     raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
+                for move_value in move_outgoing_value:
+                    move_value.update({
+                        'work_production': move.work_production.id,
+                        'occasion_code_id': move.occasion_code_id.id,
+                        'account_analytic_id': move.account_analytic_id.id,
+                    })
                 move_outgoing_values += move_outgoing_value
         return self.env['stock.move'].create(move_outgoing_values)
 
