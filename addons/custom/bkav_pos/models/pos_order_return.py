@@ -86,7 +86,8 @@ class PosOrderReturn(models.Model):
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": -1000/(1+int_vat/100),
+                "Price": -round(1000/(1+int_vat/100)),
+                "Amount": -abs(value_not_tax),
                 "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -114,8 +115,9 @@ class PosOrderReturn(models.Model):
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": '',
-                "Qty": 1,
-                "Price": -abs(value_not_tax),
+                "Qty": 0,
+                "Price": 0,
+                "Amount": abs(value_not_tax),
                 "TaxAmount": -abs(value - value_not_tax),
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
@@ -175,7 +177,7 @@ class PosOrderReturn(models.Model):
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
-                if vat != False:
+                if vat != False and not line.is_reward_line:
                     item.update({
                         "TaxRateID": tax_rate_id,
                         "TaxRate": vat
