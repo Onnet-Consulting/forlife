@@ -21,7 +21,7 @@ from odoo.addons.web.controllers.report import ReportController
 _logger = logging.getLogger(__name__)
 
 
-class ReportController(ReportController):
+class ReportControllers(ReportController):
     @route()
     def report_routes(self, reportname, docids=None, converter=None, **data):
         if converter == "xlsx":
