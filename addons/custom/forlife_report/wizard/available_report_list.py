@@ -200,4 +200,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum33Template',
         'reportPager': True,
     },
+    'report.num34': {
+        'module': 'Bán hàng',
+        'name': 'Danh sách hóa đơn TMĐT',
+        'reportTemplate': 'ReportNum34Template',
+        'tag': 'report_num34_action',
+    },
 }
