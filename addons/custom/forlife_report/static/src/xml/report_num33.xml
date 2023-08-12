@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum33Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum33MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum33MainTemplate">
+        <t t-set="filter_data" t-value="widget.func.filter_data"/>
+        <t t-set="list_product" t-value="filter_data(options.data, 'gift', '')"/>
+        <t t-set="conditional" t-value="filter_data(options.data, 'gift', 'conditional')"/>
+        <t t-set="unconditional" t-value="filter_data(options.data, 'gift', 'unconditional')"/>
+        <table t-att-id="widget.report_type_id"
+               class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <t t-set="index" t-value="0"></t>
+            <tbody>
+                <t t-foreach="list_product" t-as="line">
+                    <tr t-if="line.gift == ''">
+                        <t t-set="index" t-value="index + 1"></t>
+                        <td><t t-esc="index"/></td>
+                        <td><t t-esc="line.warehouse_name"/></td>
+                        <td><t t-esc="line.location_name"/></td>
+                        <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td><t t-esc="line.color"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="line.qty"/></td>
+                        <td t-if="line.price_tax or line.price_tax >= 0"><t t-esc="format_decimal(line.price_tax, 0)"/></td>
+                        <td><t t-esc="line.tax_rate"/></td>
+                        <td><t t-esc="format_decimal(line.tax_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenues_511, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.discount_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenue_deduction, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.price_subtotal_incl, 0)"/></td>
+                        <td><t t-esc="line.product_group"/></td>
+                        <td><t t-esc="line.product_line"/></td>
+                        <td><t t-esc="line.texture_name"/></td>
+                        <td><t t-esc="line.valuation_account"/></td>
+                        <td><t t-esc="line.warehouse_type"/></td>
+                    </tr>
+                </t>
+
+                <tr t-if="conditional.length &gt; 0">
+                    <td colspan="21" style="background: #714B67; color: white"><b>Tặng hàng có điều kiện</b></td>
+                </tr>
+                <t t-set="index" t-value="0"></t>
+                <t t-foreach="conditional" t-as="line">
+                    <tr t-if="line.gift == 'conditional'">
+                        <t t-set="index" t-value="index + 1"></t>
+                        <t t-set="is_condition" t-value="1"/>
+                        <td><t t-esc="index"/></td>
+                        <td><t t-esc="line.warehouse_name"/></td>
+                        <td><t t-esc="line.location_name"/></td>
+                        <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td><t t-esc="line.color"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="line.qty"/></td>
+                        <td t-if="line.price_tax or line.price_tax >= 0"><t t-esc="format_decimal(line.price_tax, 0)"/></td>
+                        <td><t t-esc="line.tax_rate"/></td>
+                        <td><t t-esc="format_decimal(line.tax_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenues_511, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.discount_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenue_deduction, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.price_subtotal_incl, 0)"/></td>
+                        <td><t t-esc="line.product_group"/></td>
+                        <td><t t-esc="line.product_line"/></td>
+                        <td><t t-esc="line.texture_name"/></td>
+                        <td><t t-esc="line.valuation_account"/></td>
+                        <td><t t-esc="line.warehouse_type"/></td>
+                    </tr>
+                </t>
+
+                <tr t-if="unconditional.length &gt; 0">
+                    <td colspan="21" style="background: #714B67; color: white"><b>Tặng hàng không điều kiện</b></td>
+                </tr>
+                <t t-set="index" t-value="0"></t>
+                <t t-foreach="unconditional" t-as="line">
+                    <tr t-if="line.gift == 'unconditional'">
+                        <t t-set="index" t-value="index + 1"></t>
+                        <td><t t-esc="index"/></td>
+                        <td><t t-esc="line.warehouse_name"/></td>
+                        <td><t t-esc="line.location_name"/></td>
+                        <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td><t t-esc="line.color"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="line.qty"/></td>
+                        <td t-if="line.price_tax or line.price_tax >= 0"><t t-esc="format_decimal(line.price_tax, 0)"/></td>
+                        <td><t t-esc="line.tax_rate"/></td>
+                        <td><t t-esc="format_decimal(line.tax_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenues_511, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.discount_amount, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.revenue_deduction, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.price_subtotal_incl, 0)"/></td>
+                        <td><t t-esc="line.product_group"/></td>
+                        <td><t t-esc="line.product_line"/></td>
+                        <td><t t-esc="line.texture_name"/></td>
+                        <td><t t-esc="line.valuation_account"/></td>
+                        <td><t t-esc="line.warehouse_type"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

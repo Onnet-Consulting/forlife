@@ -194,4 +194,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum32Template',
         'tag': 'report_num32_action',
     },
+    'report.num33': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo doanh thu sản phẩm',
+        'reportTemplate': 'ReportNum33Template',
+        'reportPager': True,
+    },
 }
