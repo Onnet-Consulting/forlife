@@ -193,16 +193,10 @@ class PurchaseRequest(models.Model):
             else:
                 groups[key] = [line]
         purchase_order = self.env['purchase.order']
-        # occasion_code_id = []
-        account_analytic_id = []
         production_id = []
         for rec in self:
             if rec.state != 'approved':
                 raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
-            # if rec.occasion_code_id:
-            #     occasion_code_id.append(rec.occasion_code_id.id)
-            # if rec.account_analytic_id:
-            #     account_analytic_id.append(rec.account_analytic_id.id)
             if rec.production_id:
                 production_id.append(rec.production_id.id)
         for group in groups:
@@ -232,6 +226,7 @@ class PurchaseRequest(models.Model):
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
+                    'occasion_code_id': self.account_analytic_id.id if self.account_analytic_id else False,
                     'date_planned': line.date_planned,
                 }))
             if po_line_data:
@@ -251,6 +246,7 @@ class PurchaseRequest(models.Model):
                     'order_line': po_line_data,
                     'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
+                    'production_id': self.production_id.id if self.production_id else False,
                     'source_document': source_document,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,

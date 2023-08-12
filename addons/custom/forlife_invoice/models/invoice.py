@@ -1285,6 +1285,8 @@ class RespartnerVendor(models.Model):
                 invoice_lines = rec.vendor_back_id.invoice_line_ids.filtered(
                     lambda x: x.product_expense_origin_id == rec.invoice_description)
 
+                invoice_invalid_lines = rec.vendor_back_id.invoice_line_ids - invoice_lines
+
                 expense_detail = rec.vendor_back_id.account_expense_labor_detail_ids.filtered(
                     lambda x: x.product_id == rec.invoice_description)
                 if expense_detail:
@@ -1292,11 +1294,12 @@ class RespartnerVendor(models.Model):
                         'price_subtotal_back': rec.price_subtotal_back,
                         'tax_percent':  rec.tax_percent.id if rec.tax_percent else False
                     })
+
                 sum_price = sum(invoice_lines.mapped('price_unit'))
                 for invoice_line in invoice_lines:
                     if rec.invoice_description and invoice_line:
                         invoice_line.write({
-                            'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price,
+                            'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price if sum_price > 0 else 0,
                             'tax_ids': [(6, 0, rec.tax_percent.ids)],
                         })
                     else:
@@ -1308,6 +1311,9 @@ class RespartnerVendor(models.Model):
                             'tax_ids': [Command.set(rec.tax_percent.ids)],
                         })
                         rec.vendor_back_id['invoice_line_ids'] += new_line
+
+                for invoice_invalid_line in invoice_invalid_lines:
+                    invoice_invalid_line.unlink()
 
     def unlink(self):
         for rec in self:
