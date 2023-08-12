@@ -226,7 +226,7 @@ class PurchaseRequest(models.Model):
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
-                    'occasion_code_id': self.account_analytic_id.id if self.account_analytic_id else False,
+                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'date_planned': line.date_planned,
                 }))
             if po_line_data:
