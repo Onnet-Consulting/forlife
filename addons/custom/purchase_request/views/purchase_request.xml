@@ -41,6 +41,8 @@
                     <field name="user_id"/>
                     <field name="department_id" force_save="1"/>
                     <field name="request_date" align="center"/>
+                    <field name="x_receiver_id"/>
+                    <field name="attention"/>
                     <field name="date_planned" align="center"/>
                     <field name="state" widget="badge" decoration-success="state == 'close'" decoration-info="state == 'approved'"/>
                 </tree>
@@ -99,7 +101,7 @@
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}" required="1"/>
                         </group>
                         <group string="Receiver's information">
-                            <field name="receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="x_receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': 1, 'no_open': 1}"/>
                             <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="attention" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="use_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>

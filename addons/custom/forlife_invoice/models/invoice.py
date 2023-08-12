@@ -122,14 +122,17 @@ class AccountMove(models.Model):
     # lấy id để search ghi lại ref cho bút toán phát sinh
     e_in_check = fields.Integer(index=True)
 
+    # todo: bỏ trường x_asset_fin sau golive. giữ lại để backup cho trường is_tc = true if x_asset_fin == 'TC'
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QT', 'QT'),
-    ], string='Phân loại tài chính')
+    ], string='Phân loại tài chính remove')
+    is_tc = fields.Boolean('Phân loại tài chính', default=False)
 
     x_root = fields.Selection([
-        ('Intel ', 'Intel '),
-        ('Winning', 'Winning'),
+        ('Intel', 'INT'),
+        ('Winning', 'WIN'),
+        ('other', 'Khác'),
     ], string='Phân loại nguồn')
 
     # @api.onchange('exists_bkav')
