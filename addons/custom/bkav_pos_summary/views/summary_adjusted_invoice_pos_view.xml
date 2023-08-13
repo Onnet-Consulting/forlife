@@ -102,7 +102,7 @@
     </record>
 
     <menuitem id="summary_adjusted_invoice_pos_menu"
-              parent="summary_account_move_menu"
+              parent="bkav_connector.menu_master_bkav_pos"
               name="Invoice adjusted at the end of the day"
               action="summary_adjusted_invoice_pos_action"
               sequence="10"/>

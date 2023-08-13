@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_master_bkav" name="Tổng hợp hóa đơn BKAV" parent="account_accountant.menu_accounting" sequence="10"/>
+
+            <menuitem id="menu_master_bkav_stock" name="Tổng hợp hóa đơn đi đường BKAV" parent="menu_master_bkav" sequence="10"/>
+            <menuitem id="menu_master_bkav_nhanh" name="Tổng hợp hóa đơn BKAV phần Nhanh.vn" parent="menu_master_bkav" sequence="13"/>
+            <menuitem id="menu_master_bkav_pos"  name="Tổng hợp hóa đơn BKAV phần POS" parent="menu_master_bkav" sequence="15"/>
+    </data>
+</odoo>

@@ -19,10 +19,12 @@ class ForlifeProduction(models.Model):
             material_vals = []
             for material in material_import_ids:
                 bom_material_values = {}
-                if material.size == product.size.name or material.color == product.color.name or (
-                        not material.size and not material.color):
+                if (material.product_finish_id.id in product.mapped('product_id.id') or not material.product_finish_id) \
+                        or ((material.size == product.size.name or material.color == product.color.name or (not material.size and not material.color))
+                            and not material.product_finish_id):
                     bom_material_values.update({
                         'product_id': material.product_id.id,
+                        'product_finish_id': material.product_finish_id.id,
                         'product_backup_id': material.product_backup_id.id,
                         'production_uom_id': material.production_uom_id.id,
                         'conversion_coefficient': material.conversion_coefficient,
@@ -33,10 +35,11 @@ class ForlifeProduction(models.Model):
                     material_vals.append((0, 0, bom_material_values))
             create_list_expense = []
             for expense in expense_import_ids:
-                create_list_expense.append((0, 0, {
-                    'product_id': expense.product_id.id,
-                    'rated_level': expense.cost_norms
-                }))
+                if expense.product_finish_id in product.mapped('product_id') or not expense.product_finish_id:
+                    create_list_expense.append((0, 0, {
+                        'product_id': expense.product_id.id,
+                        'rated_level': expense.cost_norms
+                    }))
             product.update({
                 'forlife_bom_material_ids': material_vals,
                 'forlife_bom_service_cost_ids': create_list_expense
@@ -60,6 +63,7 @@ class ProductionMaterialImport(models.Model):
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Mã NPL')
     product_backup_id = fields.Many2one('product.product', string='Mã NPL thay thế')
+    product_finish_id = fields.Many2one('product.product', string='Thành phẩm')
     size = fields.Char(string='Size')
     color = fields.Char(string='Màu')
     uom_id = fields.Many2one('uom.uom', related="product_id.uom_id", string='ĐVT Lưu kho')
@@ -81,6 +85,7 @@ class ProductionExpenseImport(models.Model):
 
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Chi phí')
+    product_finish_id = fields.Many2one('product.product', string='Mã thành phẩm')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
     quantity = fields.Float(string='Số lượng')

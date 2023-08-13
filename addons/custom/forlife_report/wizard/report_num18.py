@@ -21,7 +21,7 @@ class ReportNum18(models.TransientModel):
     pr_number = fields.Text('PR number')
     state = fields.Selection([('open', _('Open')), ('close', _('Close')), ('all', _('All'))], string='State', default='all', required=True)
     request_user_ids = fields.Many2many('res.users', 'report_num18_request_users_rel', string='Request user')
-    receiver_ids = fields.Many2many('hr.employee', 'report_num18_receiver_rel', string='Receiver')
+    receiver_ids = fields.Many2many('res.users', 'report_num18_x_receiver_rel', string='Receiver')
     product_brand_ids = fields.Many2many('product.category', 'report_num18_brand_rel', string='Level 1')
     product_group_ids = fields.Many2many('product.category', 'report_num18_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num18_line_rel', string='Level 3')

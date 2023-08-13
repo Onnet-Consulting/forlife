@@ -74,27 +74,27 @@ class ImportProductionFromExcel(models.TransientModel):
         for m in material:
             if not product_dict.get(m[0], False):
                 raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.', m[0]))
-            if not product_dict.get(m[1], False) and m[1] != '':
-                raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[1]))
-            if not uom_dict.get(m[4], False):
-                raise ValidationError(_('Không có Đvt lưu kho %s trong danh mục đơn vị tính.', m[3]))
+            if not product_dict.get(m[2], False) and m[2] != '':
+                raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[2]))
             if not uom_dict.get(m[5], False):
-                raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[4]))
+                raise ValidationError(_('Không có Đvt lưu kho %s trong danh mục đơn vị tính.', m[5]))
+            if not uom_dict.get(m[6], False):
+                raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[6]))
             create_material_vals.append((0, 0, {
                 'product_id': product_dict.get(m[0], False),
-                'product_backup_id': product_dict.get(m[1], False),
-                'size': m[2],
-                'color': m[3],
-                'uom_id': uom_dict.get(m[4], False),
-                'production_uom_id': uom_dict.get(m[5], False),
-                'conversion_coefficient': m[6],
-                'rated_level': m[7],
-                'loss': m[8],
-                'qty': m[9],
-                'total': round(float(m[10]), 0),
+                'product_finish_id': product_dict.get(m[1], False),
+                'product_backup_id': product_dict.get(m[2], False),
+                'size': m[3],
+                'color': m[4],
+                'uom_id': uom_dict.get(m[5], False),
+                'production_uom_id': uom_dict.get(m[6], False),
+                'conversion_coefficient': m[7],
+                'rated_level': m[8],
+                'loss': m[9],
+                'qty': m[10],
+                'total': round(float(m[11]), 0),
             }))
 
-        create_list_expense = []
         create_list_by_production_expense = []
         for e in expense:
             if not product_dict.get(e[0], False):
@@ -102,13 +102,9 @@ class ImportProductionFromExcel(models.TransientModel):
             cost_norms = 0
             if float(e[1]) > 0 and e[3]:
                 cost_norms = float(e[3]) / float(e[1])
-            create_list_expense.append((0, 0, {
-                'product_id': product_dict.get(e[0], False),
-                'rated_level': cost_norms
-            }))
-
             create_list_by_production_expense.append((0, 0, {
                 'product_id': product_dict.get(e[0], False),
+                'product_finish_id': product_dict.get(e[4], False),
                 'quantity': e[1],
                 'cost_norms': cost_norms,
                 'total_cost_norms': e[3],
@@ -142,27 +138,33 @@ class ImportProductionFromExcel(models.TransientModel):
                     if not product_dict.get(m[0], False):
                         raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.', m[0]))
                     if not product_dict.get(m[1], False) and m[1] != '':
-                        raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[1]))
-                    if not uom_dict.get(m[5], False):
+                        raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.', m[1]))
+                    if not product_dict.get(m[2], False) and m[2] != '':
+                        raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[2]))
+                    if not uom_dict.get(m[6], False):
                         raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[5]))
 
-                    if m[2].strip() in product_variant or m[3].strip() in product_variant or (not m[2] and not m[3]):
+                    if (m[1].strip() == order[9] or not m[1]) or \
+                            (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
-                            'product_backup_id': product_dict.get(m[1], False),
-                            'production_uom_id': uom_dict.get(m[5], False),
-                            'conversion_coefficient': m[6],
-                            'rated_level': m[7],
-                            'loss': m[8],
+                            'product_finish_id': product_dict.get(m[1], False),
+                            'product_backup_id': product_dict.get(m[2], False),
+                            'production_uom_id': uom_dict.get(m[6], False),
+                            'conversion_coefficient': m[7],
+                            'rated_level': m[8],
+                            'loss': m[9],
                         }))
-                        # if m[1] and m[1] != '':
-                        #     list_material.append((0, 0, {
-                        #         'product_id': product_dict.get(m[1], False),
-                        #         'production_uom_id': uom_dict.get(m[5], False),
-                        #         'conversion_coefficient': m[6],
-                        #         'rated_level': m[7],
-                        #         'loss': m[8],
-                        #     }))
+                create_list_expense = []
+                for e in expense:
+                    if e[4] == order[9] or not e[4]:
+                        cost_norms = 0
+                        if float(e[1]) > 0 and e[3]:
+                            cost_norms = float(e[3]) / float(e[1])
+                        create_list_expense.append((0, 0, {
+                            'product_id': product_dict.get(e[0], False),
+                            'rated_level': cost_norms
+                        }))
                 child_value['forlife_bom_material_ids'] = list_material
                 child_value['forlife_bom_service_cost_ids'] = create_list_expense
                 child = [(0, 0, child_value)]

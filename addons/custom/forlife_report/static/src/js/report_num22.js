@@ -21,7 +21,7 @@ odoo.define('forlife_report.report_num22', function (require) {
                 "titles": this.title_layer2,
                 "data": this.data[e.currentTarget.id].transaction_detail || [],
                 "report_type_id": 'data_detail',
-                "report_filename": 'Chi tiết giao dịch.xls',
+                "report_filename": 'Chi tiết giao dịch.xlsx',
                 "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("show-detail");

@@ -90,8 +90,8 @@
     </record>
 
     <menuitem id="summary_account_move_pos_return_menu"
-              name="Total refund invoice at the end of the day"
-              parent="summary_account_move_menu"
+              parent="bkav_connector.menu_master_bkav_pos"
+              name="Hóa đơn đổi trả tổng cuối ngày"
               action="summary_account_move_pos_return_action"
               sequence="10"/>
 </odoo>
