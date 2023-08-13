@@ -77,7 +77,7 @@ class ReturnPicking(models.TransientModel):
         if self.picking_id.sale_id:
             if stock_move.sale_line_id:
                 if 'so_return' in context and context.get('so_return'):
-                    so_return = SaleO.browse(context.get('so_return'))
+                    so_return = context.get('so_return')
                     new_sale_line_id = SaleOL.search([('product_id','=',stock_move.product_id.id),('order_id','=',so_return)],limit=1)
                     quantity_returned = new_sale_line_id.product_uom_qty
                     res.update({
