@@ -108,5 +108,5 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="transfer_not_exists_bkav_menu" parent="stock.menu_stock_config_settings" action="transfer_not_exists_bkav_action" sequence="100"/>
+    <menuitem id="transfer_not_exists_bkav_menu" parent="bkav_connector.menu_master_bkav_stock" action="transfer_not_exists_bkav_action" sequence="100"/>
 </odoo>
