@@ -89,13 +89,13 @@
     </record>
 
     <menuitem id="summary_account_move_menu"
-              name="General invoice at the end of the day"
-              parent="point_of_sale.menu_point_root"
-              sequence="10"/>
+              name="Hóa đơn bán tổng cuối ngày"
+              parent="bkav_connector.menu_master_bkav_pos"
+              sequence="15"/>
 
     <menuitem id="summary_account_move_pos_menu"
-              name="Total sales invoice at the end of the day"
-              parent="summary_account_move_menu"
+              name="Hóa đơn bán tổng cuối ngày"
+              parent="bkav_connector.menu_master_bkav_pos"
               action="summary_account_move_pos_action"
-              sequence="10"/>
+              sequence="20"/>
 </odoo>
