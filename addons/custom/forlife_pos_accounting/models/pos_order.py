@@ -78,7 +78,6 @@ class InheritPosOrder(models.Model):
         }
             for tax in compute_all_taxes['taxes']
             if tax['amount']]
-        print(tax_lines)
         return [
             (0, 0, {
                 'partner_id': partner_id,
@@ -155,7 +154,6 @@ class InheritPosOrder(models.Model):
                 }
 
         if values:
-            print(values)
             results = results.with_context(pos_entry=True).create([values[k] for k in values])
             results.line_ids.filtered(lambda l: l.display_type == 'tax').partner_id = self.session_id.config_id.store_id.contact_id.id
             results.with_context(pos_entry=False)._post()
