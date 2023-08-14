@@ -198,6 +198,10 @@ class BravoSyncAssetWizard(models.TransientModel):
 
     @api.model
     def generate_odoo_data(self, company_data):
+        _type = {
+            '1': 'CCDC',
+            '0': 'TSCD',
+        }
         bravo_data = self.get_new_bravo_data_by_company(company_data)
         if not bravo_data:
             return False
@@ -208,7 +212,10 @@ class BravoSyncAssetWizard(models.TransientModel):
         for rec in bravo_data:
             value = {}
             for bravo_column, odoo_column in mapping_bravo_odoo_fields.items():
-                value.update({odoo_column: rec.get(bravo_column)})
+                if odoo_column == 'type':
+                    value.update({odoo_column: _type.get(rec.get(bravo_column)) or rec.get(bravo_column)})
+                else:
+                    value.update({odoo_column: rec.get(bravo_column)})
                 value.update({
                     "state": "using"
                 })

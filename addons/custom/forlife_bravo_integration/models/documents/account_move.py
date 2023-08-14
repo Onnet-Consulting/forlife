@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from datetime import datetime
 import re
 
 CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
@@ -11,15 +12,31 @@ class AccountMove(models.Model):
     _name = 'account.move'
     _inherit = ['account.move', 'bravo.model.insert.action']
 
-    def _post(self, soft=True):
-        res = super()._post(soft=soft)
+    @api.model
+    def sync_bravo_account_move_daily(self, **kwargs):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-            return res
-        posted_moves = self.filtered(lambda m: m.state == 'posted')
-        insert_queries = posted_moves.bravo_get_insert_sql()
-        if insert_queries:
-            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
-        return res
+            return False
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Date.today()
+        domain = [
+            ('state', '=', 'posted'),
+            ('date', '=', date),
+        ]
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for company in companies:
+            dm = domain + [('company_id', '=', company.id)]
+            move_count = self.search_count(dm)
+            if move_count > 0:
+                self._action_sync_account_move(company, dm, date)
+
+    @api.model
+    def _action_sync_account_move(self, company, domain, date):
+        moves = self.with_company(company).search(domain)
+        for move in moves:
+            insert_queries = move.bravo_get_insert_sql()
+            if insert_queries:
+                self.env[self._name].sudo().with_delay(
+                    description=f'Bravo: sync account_move {move.name or move.id} [{date.strftime("%d/%m/%Y")}]', channel="root.Bravo").bravo_execute_query(insert_queries)
+        return True
 
     @api.model
     def bravo_get_table(self, **kwargs):
@@ -291,7 +308,7 @@ class AccountMove(models.Model):
         return columns, values
 
     def write(self, vals):
-        records = self.filtered(lambda r: r.state == 'posted')
+        records = self.filtered(lambda r: r.state == 'posted' and r.date != fields.Date.today())
         if 'invoice_description' not in vals or not bool(records):
             return super().write(vals)
         vals.update({CONTEXT_UPDATE_JOURNAL: True})

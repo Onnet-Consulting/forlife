@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from datetime import datetime, timedelta
 import re
 
 CONTEXT_PICKING_ACTION = 'bravo_picking_data'
@@ -17,15 +18,34 @@ class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = ['stock.picking', 'bravo.model.insert.action']
 
-    def _action_done(self):
-        res = super()._action_done()
+    @api.model
+    def sync_bravo_picking_daily(self, **kwargs):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-            return res
-        done_pickings = self.filtered(lambda p: p.state == 'done')
-        insert_queries = done_pickings.bravo_get_insert_sql()
-        if insert_queries:
-            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
-        return res
+            return False
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Datetime.now()
+        begin_date = (date + timedelta(days=-1)).replace(hour=17, second=0, minute=0)
+        end_date = date.replace(hour=17, second=0, minute=0)
+        domain = [
+            ('state', '=', 'done'),
+            ('date_done', '>=', begin_date),
+            ('date_done', '<', end_date),
+        ]
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for company in companies:
+            dm = domain + [('company_id', '=', company.id)]
+            picking_count = self.search_count(dm)
+            if picking_count > 0:
+                self._action_sync_picking(company, dm)
+
+    @api.model
+    def _action_sync_picking(self, company, domain):
+        pickings = self.with_company(company).search(domain)
+        for picking in pickings:
+            insert_queries = picking.bravo_get_insert_sql()
+            if insert_queries:
+                self.env[self._name].sudo().with_delay(
+                    description=f'Bravo: sync picking {picking.name or picking.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
+        return True
 
     @api.model
     def bravo_get_table(self, **kwargs):
@@ -165,7 +185,7 @@ class StockPicking(models.Model):
         return columns, values
 
     def write(self, vals):
-        records = self.filtered(lambda r: r.state == 'done')
+        records = self.filtered(lambda r: r.state == 'done' and r.date_done.date() != fields.Date.today())
         if 'note' not in vals or not bool(records):
             return super().write(vals)
         vals.update({CONTEXT_PICKING_UPDATE: True})
@@ -197,7 +217,7 @@ class StockPicking(models.Model):
         return columns, values
 
     def action_cancel(self):
-        records = self.filtered(lambda r: r.state == 'done')
+        records = self.filtered(lambda r: r.state == 'done' and r.date_done.date() != fields.Date.today())
         res = super().action_cancel()
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             return res
