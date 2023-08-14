@@ -65,6 +65,12 @@ class AccountMove(models.Model):
                                                 ('entry_normal', 'Bút toán chi tiết hàng hóa'),
                                                 ('entry_material', 'Bút toán nguyên phụ liệu'),
                                                 ])
+    product_expense_ids = fields.Many2many('product.product', string='Chi phí', compute='_compute_product_expense_ids')
+
+    @api.depends('cost_line', 'cost_line.product_id')
+    def _compute_product_expense_ids(self):
+        for rec in self:
+            rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
 
     @api.depends('total_trade_discount', 'x_tax')
     def compute_x_amount_tax(self):

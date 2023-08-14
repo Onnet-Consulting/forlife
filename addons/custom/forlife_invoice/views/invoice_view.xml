@@ -294,6 +294,7 @@
                         </div>
                     </page>
                     <page string="Kê khai hóa đơn GTGT" name="supplier_info" attrs="{'invisible':[('move_type', '=', 'entry')]}">
+                        <field name="product_expense_ids" invisible="1"/>
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
@@ -305,7 +306,7 @@
                                 <field name="street_ven"/>
                                 <field name="company_id"/>
                                 <field name="invoice_reference"/>
-                                <field name="invoice_description"/>
+                                <field name="invoice_description" domain="[('id', 'in', parent.product_expense_ids)]"/>
                                 <field name="price_subtotal_back" force_save="1"/>
                                 <field name="tax_back" force_save="1"/>
                                 <field name="_x_invoice_date" force_save="1"/>
