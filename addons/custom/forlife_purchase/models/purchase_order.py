@@ -2438,11 +2438,13 @@ class PurchaseOrderLine(models.Model):
 
     def compute_received(self):
         for item in self:
-            item.received = item.qty_received/item.exchange_quantity - (item.qty_returned or 0)
+            qty_received = sum(item._get_po_line_moves().filtered(lambda x: not x.to_refund and x.state == 'done').mapped('quantity_done'))
+            qty_returned = item.qty_returned or 0
+            item.received = qty_received/item.exchange_quantity - qty_returned if qty_received and item.exchange_quantity else 0
 
     def compute_billed(self):
         for item in self:
-            item.billed = item.qty_invoiced/item.exchange_quantity
+            item.billed = item.qty_invoiced/item.exchange_quantity if item.exchange_quantity else 0
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
