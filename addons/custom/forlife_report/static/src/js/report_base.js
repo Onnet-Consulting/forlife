@@ -19,6 +19,16 @@ odoo.define('forlife_report.report_base', function (require) {
         return amount;
     }
 
+    function filter_data(data_list, key, condition) {
+        let data = []
+        data_list.filter(function (record) {
+            if (record[key] === condition) {
+                data.push(record)
+            }
+        })
+        return data
+    }
+
     let ReportBaseAction = AbstractAction.extend({
         events: {
             'click button.o_pager_next': 'next_page',
@@ -34,7 +44,8 @@ odoo.define('forlife_report.report_base', function (require) {
             this.report_model = this.odoo_context.report_model || this.odoo_context.active_model || action.params.active_model;
             this.report_id = this.odoo_context.active_id || action.params.active_id;
             this.func = {
-                format_decimal
+                format_decimal,
+                filter_data
             };
             return this._super.apply(this, arguments);
         },

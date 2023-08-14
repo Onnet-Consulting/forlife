@@ -118,8 +118,9 @@
 <!--                           domain="domain_receiving_warehouse_id"-->
 <!--                           options="{'no_open': False}"-->
 <!--                           attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>-->
-                    <field name="x_asset_fin" widget="radio"/>
-                    <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
+                    <!--<field name="x_asset_fin" widget="radio"/> todo: bỏ trường này sau golive. giữ lại để backup cho trường is_tc-->
+                    <field name="is_tc"/>
+                    <field name="x_root" widget="radio" options="{'horizontal': True}" invisible="context.get('default_move_type', False) == 'out_invoice'" required="context.get('default_move_type', False) != 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
                 </xpath>

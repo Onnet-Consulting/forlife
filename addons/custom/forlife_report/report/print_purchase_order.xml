@@ -183,7 +183,7 @@
                                                 <span t-field="line.description"/>
                                             </td>
                                             <td>
-                                                <span t-field="line.purchase_uom"/>
+                                                <span t-field="line.product_uom"/>
                                             </td>
                                             <td class="x_center">
                                                 <span t-field="line.purchase_quantity"/>

@@ -56,7 +56,7 @@ class PurchaseRequest(models.Model):
     #check button orders_smart_button
     is_check_button_orders_smart_button = fields.Boolean(default=False)
 
-    receiver_id = fields.Many2one('hr.employee', string='Receiver')
+    x_receiver_id = fields.Many2one('res.users', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
@@ -226,7 +226,7 @@ class PurchaseRequest(models.Model):
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
-                    'occasion_code_id': self.account_analytic_id.id if self.account_analytic_id else False,
+                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'date_planned': line.date_planned,
                 }))
             if po_line_data:
