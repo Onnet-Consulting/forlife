@@ -7,7 +7,6 @@ _logger = logging.getLogger(__name__)
 class Location(models.Model):
     _inherit = 'stock.location'
 
-    # partner_id = fields.Many2one('res.partner', string='Công ty', required=True)
     code = fields.Char(string='Mã', required=True)
     type_other = fields.Selection([('incoming', 'Nhập khác'), ('outcoming', 'Xuất khác')], string='Loại khác',
                                   required=True)
@@ -77,14 +76,6 @@ class StockMove(models.Model):
 
     _inherit = 'stock.move'
 
-    # def _get_accounting_data_for_valuation(self):
-    #     journal_id, acc_src, acc_dest, acc_valuation = super()._get_accounting_data_for_valuation()
-    #
-    #     # Thay đổi giá trị của biến acc_valuation trước khi trả về
-    #     acc_valuation = self.picking_id.location_dest_id.valuation_in_account.id if self.picking_id.location_dest_id.type_other else acc_valuation
-    #
-    #     return journal_id, acc_src, acc_dest, acc_valuation
-
     # Hàm xử lý sinh bút toán nếu là nhâp khác xuất khác
     def _prepare_account_move_line(self, qty, cost, credit_account_id, debit_account_id, svl_id, description):
         """
@@ -143,8 +134,7 @@ class StockMove(models.Model):
             valued_move_lines = move._get_in_move_lines()
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
-                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done,
-                                                                                     move.product_id.uom_id)
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, move.product_id.uom_id)
             unit_cost = move.product_id.standard_price
             if move.product_id.cost_method != 'standard':
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
@@ -153,7 +143,6 @@ class StockMove(models.Model):
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
-                svl_vals[
-                    'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
+                svl_vals['description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
         return svl_vals_list
