@@ -312,10 +312,10 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
     def _compute_amount(self):
         for r in self:
-            tax_results = r.tax_ids.compute_all(r.price_unit_incl, quantity=r.quantity)
-            r.price_subtotal = tax_results["total_excluded"]
-            r.amount_total = tax_results["total_included"]
-            r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+            tax_results = r.tax_ids.compute_all(abs(r.price_unit_incl), quantity=abs(r.quantity))
+            r.price_subtotal = -tax_results["total_excluded"]
+            r.amount_total = -tax_results["total_included"]
+            r.tax_amount = -(tax_results["total_included"] - tax_results["total_excluded"])
 
 
 class SummaryAdjustedInvoicePosDiscount(models.Model):
