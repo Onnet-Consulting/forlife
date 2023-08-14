@@ -4,7 +4,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import copy
 from datetime import datetime, timedelta, date
-from dateutil import relativedelta
 
 TITLES = [
     'STT',
@@ -46,17 +45,16 @@ class ReportNum30(models.TransientModel):
     def _get_default_month(self):
         return self.env['month.data'].search([('code', '=', str(fields.Date.today().month))])
 
-    month = fields.Many2one('month.data', 'Month', required=True, default=_get_default_month)
-    # year = fields.Char(string='Year', required=True)
-    year = fields.Selection(years, string='Year', required=True, default=str(fields.Date.today().year))
-    product_count = fields.Integer('Product count', compute='_compute_value')
-    product_ids = fields.Many2many('product.product', string='Products',
+    date_from = fields.Datetime(string='Từ ngày', required=True)
+    date_to = fields.Datetime(string='Đến ngày', required=True)
+    product_count = fields.Integer('Số lượng sản phẩm', compute='_compute_value')
+    product_ids = fields.Many2many('product.product', string='Sản phẩm',
                                    domain="['|', ('detailed_type', '=', 'product'), '&', ('detailed_type', '=', 'service'), ('voucher', '=', True)]")
-    warehouse_type_id = fields.Many2one('stock.warehouse.type', string='Warehouses Type', required=True)
-    warehouse_count = fields.Integer('Warehouse count', compute='_compute_value')
-    warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    is_get_price_unit = fields.Boolean('Get Price Unit', default=True)
-    is_with_tax = fields.Boolean('With tax', default=True)
+    warehouse_type_id = fields.Many2one('stock.warehouse.type', string='Loại kho', required=True)
+    warehouse_count = fields.Integer('Số kho', compute='_compute_value')
+    warehouse_ids = fields.Many2many('stock.warehouse', string='Kho')
+    is_get_price_unit = fields.Boolean('Lấy đơn giá', default=True)
+    is_with_tax = fields.Boolean('Bao gồm thuế', default=True)
     sale_channels = fields.Selection([
         ('is_pos_order', 'Đơn bán hàng POS'),
         ('is_wholesale', 'Đơn bán buôn'),
@@ -359,7 +357,7 @@ class ReportNum30(models.TransientModel):
                             ctg."id" = prt.categ_id
                         left join uom_uom uom on
                             uom.ID = prt.uom_id 
-                        left join ir_property ip on ip.res_id = 'product.category,' || prt.categ_id AND ip."name" = 'property_stock_valuation_account_id'
+                        left join ir_property ip on ip.res_id = 'product.category,' || prt.categ_id AND ip."name" = 'property_stock_valuation_account_id' and ip.company_id = {self.env.company.id}
                         left join account_account aa on 'account.account,' || aa.id = ip.value_reference
                         ) as p1 on
                         p1.product_id = pol.product_id
@@ -575,7 +573,7 @@ class ReportNum30(models.TransientModel):
                             ctg."id" = prt.categ_id
                         left join uom_uom uom on
                             uom.ID = prt.uom_id 
-                        left join ir_property ip on ip.res_id = 'product.category,' || prt.categ_id AND ip."name" = 'property_stock_valuation_account_id'
+                        left join ir_property ip on ip.res_id = 'product.category,' || prt.categ_id AND ip."name" = 'property_stock_valuation_account_id' and ip.company_id = {self.env.company.id}
                         left join account_account aa on 'account.account,' || aa.id = ip.value_reference
                         ) p1 on
                         p1.product_id = acl.product_id
@@ -593,10 +591,8 @@ class ReportNum30(models.TransientModel):
                 where
                     1=1
             """
-        if self.month and self.year:
-            date_from = date.today().replace(year=int(self.year), month=int(self.month), day=1)
-            date_to = date_from + relativedelta.relativedelta(month=int(self.month) + 1)
-            query += f" and por.date_order between '{date_from}' and '{date_to}'"
+        if self.date_from and self.date_to:
+            query += f" and por.date_order between '{self.date_from}' and '{self.date_to}'"
         if self.product_ids:
             query += f" and por.product_id = any(array{self.product_ids.ids})"
         if self.warehouse_ids:
@@ -673,7 +669,7 @@ class ReportNum30(models.TransientModel):
         sheet.write(0, 0, f'Công ty: {cong_ty}', formats.get('normal_format'))
         sheet.write(1, 0, f'Địa chỉ: {dia_chi}', formats.get('normal_format'))
         sheet.write(3, 0, 'Báo cáo doanh thu theo sản phẩm', formats.get('header_format'))
-        sheet.write(4, 0, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), int(self.year))}',
+        sheet.write(4, 0, f"Báo cáo Từ ngày: {self.date_from.strftime('%d/%m/%Y %H:%M:%S')} Đến ngày: {self.date_to.strftime('%d/%m/%Y %H:%M:%S')}",
                     formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(6, idx, title, formats.get('title_format'))

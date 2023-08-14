@@ -373,83 +373,89 @@ class SummaryAccountMovePos(models.Model):
         store_id
     ):
         is_adjusted = False
-        if synthetic_lines:
-            line_pk = v["line_pk"]
-            lines = synthetic_lines.filtered(
-                lambda r: r.synthetic_id.store_id.id == store_id and \
-                r.line_pk == line_pk and abs(r.remaining_quantity) >= abs(v["quantity"])
-            )
-            if lines:
-                line = lines[0]
-                row = v
-                # for line in lines:
+        if abs(v["quantity"]) > 0:
+            if synthetic_lines:
+                line_pk = v["line_pk"]
+                lines = synthetic_lines.filtered(
+                    lambda r: r.synthetic_id.store_id.id == store_id and \
+                    r.line_pk == line_pk
+                )
+                if lines:
+                    # line = lines[0]
+                    # row = v
+                    for line in lines:
+                        row = v
+                        if abs(line.remaining_quantity) >= abs(v["quantity"]):
+                            row["quantity"] = abs(row["quantity"])
+                            row["price_unit"] = -abs(row["price_unit"])
+                            row["price_unit_incl"] = -abs(row["price_unit_incl"])
+                            row["synthetic_id"] = line.synthetic_id.id
+                            adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
+                            remaining_quantity = line.remaining_quantity - abs(v["quantity"])
+                            if remaining_records.get(store_id):
+                                rows = remaining_records[store_id]
+                                if rows.get(line.synthetic_id.id):
+                                    rows[line.synthetic_id.id].append(row)
+                                else:
+                                    rows[line.synthetic_id.id] = [row]
+                            else:
+                                remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                            line.with_delay(
+                                description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
+                            ).write({
+                                "remaining_quantity": remaining_quantity,
+                                "adjusted_quantity": adjusted_quantity
+                            })
+                            break
+                        else:
+                            row["quantity"] = abs(line.remaining_quantity)
+                            v["quantity"] += line.remaining_quantity
+                            adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+                            row["price_unit"] = -abs(row["price_unit"])
+                            row["synthetic_id"] = line.synthetic_id.id
+
+                            if remaining_records.get(store_id):
+                                rows = remaining_records[store_id]
+                                if rows.get(line.synthetic_id.id):
+                                    rows[line.synthetic_id.id].append(row)
+                                else:
+                                    rows[line.synthetic_id.id] = [row]
+                            else:
+                                remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                            line.sudo().with_delay(
+                                description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                            ).write({
+                                "remaining_quantity": 0,
+                                "adjusted_quantity": adjusted_quantity
+                            })
+                    is_adjusted = True
+                # else:
                 #     row = v
-                #     if abs(line.remaining_quantity) >= abs(v["quantity"]):
+                #     row["quantity"] = abs(row["quantity"])
+                #     row["price_unit"] = -abs(row["price_unit"])
+                #     if remaining_records.get(store_id):
+                #         rows = remaining_records[store_id]
+                #         if rows.get('adjusted'):
+                #             rows['adjusted'].append(row)
+                #         else:
+                #             rows['adjusted'] = [row]
+                #     else:
+                #         remaining_records[store_id] = {'adjusted': [row]}
+            if not is_adjusted:
+                row = v
                 row["quantity"] = abs(row["quantity"])
                 row["price_unit"] = -abs(row["price_unit"])
                 row["price_unit_incl"] = -abs(row["price_unit_incl"])
-                adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-                remaining_quantity = line.remaining_quantity - abs(v["quantity"])
+                row["synthetic_id"] = None
+
                 if remaining_records.get(store_id):
                     rows = remaining_records[store_id]
-                    if rows.get(line.synthetic_id.id):
-                        rows[line.synthetic_id.id].append(row)
+                    if rows.get('adjusted'):
+                        rows['adjusted'].append(row)
                     else:
-                        rows[line.synthetic_id.id] = [row]
+                        rows['adjusted'] = [row]
                 else:
-                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                line.with_delay(
-                    description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
-                ).write({
-                    "remaining_quantity": remaining_quantity,
-                    "adjusted_quantity": adjusted_quantity
-                })
-                is_adjusted = True
-                        # break
-                    # else:
-                    #     row["quantity"] = abs(line.remaining_quantity)
-                    #     v["quantity"] += line.remaining_quantity
-                    #     adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
-                    #     row["price_unit"] = -abs(row["price_unit"])
-                    #     if remaining_records.get(store_id):
-                    #         rows = remaining_records[store_id]
-                    #         if rows.get(line.synthetic_id.id):
-                    #             rows[line.synthetic_id.id].append(row)
-                    #         else:
-                    #             rows[line.synthetic_id.id] = [row]
-                    #     else:
-                    #         remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                    #     line.sudo().with_delay(
-                    #         description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                    #     ).write({
-                    #         "remaining_quantity": 0,
-                    #         "adjusted_quantity": adjusted_quantity
-                    #     })
-            # else:
-            #     row = v
-            #     row["quantity"] = abs(row["quantity"])
-            #     row["price_unit"] = -abs(row["price_unit"])
-            #     if remaining_records.get(store_id):
-            #         rows = remaining_records[store_id]
-            #         if rows.get('adjusted'):
-            #             rows['adjusted'].append(row)
-            #         else:
-            #             rows['adjusted'] = [row]
-            #     else:
-            #         remaining_records[store_id] = {'adjusted': [row]}
-        if not is_adjusted:
-            row = v
-            row["quantity"] = abs(row["quantity"])
-            row["price_unit"] = -abs(row["price_unit"])
-            row["price_unit_incl"] = -abs(row["price_unit_incl"])
-            if remaining_records.get(store_id):
-                rows = remaining_records[store_id]
-                if rows.get('adjusted'):
-                    rows['adjusted'].append(row)
-                else:
-                    rows['adjusted'] = [row]
-            else:
-                remaining_records[store_id] = {'adjusted': [row]}
+                    remaining_records[store_id] = {'adjusted': [row]}
 
 
     def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
@@ -498,6 +504,7 @@ class SummaryAccountMovePos(models.Model):
                                     store_id
                                 )
                             elif abs(sale_data["quantity"]) < abs(v["quantity"]):
+                                v["quantity"] = abs(v["quantity"]) - abs(sale_data["quantity"])
                                 self.handle_invoice_difference(
                                     remaining_records,
                                     synthetic_lines,
