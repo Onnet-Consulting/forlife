@@ -312,4 +312,19 @@ class PosOrder(models.Model):
             item.delete_invoice_bkav()
         return super(PosOrder, self).unlink()
     
+
+    @api.model
+    def _process_order(self, order, draft, existing_order):
+        pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
+        if not existing_order:
+            pos = self.env['pos.order'].browse(pos_id)
+            if pos.invoice_info_tax_number:
+                if not pos.is_refund_order:
+                    pos.create_publish_invoice_bkav()
+                else:
+                    pos.create_publish_invoice_bkav_return()
+                    if pos.is_change_order:
+                        pos.create_publish_invoice_bkav()
+        return pos_id
+    
     
