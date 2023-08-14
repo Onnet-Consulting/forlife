@@ -23,7 +23,7 @@ odoo.define('forlife_report.report_num12', function (require) {
                 "titles": this.title_layer2,
                 "data": data,
                 "report_type_id": 'data_detail',
-                "report_filename": 'Chi tiết.xls',
+                "report_filename": 'Chi tiết.xlsx',
                 "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("show-detail");

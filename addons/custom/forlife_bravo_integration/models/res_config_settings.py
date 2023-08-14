@@ -9,16 +9,11 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     @api.model
-    def bravo_get_default_list_model(self):
-        model = [
-            'res.brand', 'uom.uom', 'account.analytic.account', 'product.attribute.value', 'product.category',
-            'res.currency.rate', 'warehouse.group', 'stock.warehouse', 'stock.location', 'product.product',
-            'asset.location', 'assets.assets', 'expense.category', 'expense.item', 'forlife.production',
-            'hr.employee', 'occasion.group', 'occasion.code', 'res.partner.group', 'res.partner',
-        ]
-        if self._context.get('list_model'):
-            return model
-        return json.dumps(model)
+    def bravo_get_domain_model(self):
+        return [('model', 'in', ('res.brand', 'uom.uom', 'account.analytic.account', 'product.attribute.value', 'product.category',
+                                 'res.currency.rate', 'warehouse.group', 'stock.warehouse', 'stock.location', 'product.product',
+                                 'asset.location', 'assets.assets', 'expense.category', 'expense.item', 'forlife.production',
+                                 'hr.employee', 'occasion.group', 'occasion.code', 'res.partner.group', 'res.partner'))]
 
     mssql_driver = fields.Char(string='Driver Name', config_parameter="mssql.driver",
                                default='ODBC Driver 18 for SQL Server', required=True)
@@ -27,18 +22,29 @@ class ResConfigSettings(models.TransientModel):
     mssql_username = fields.Char(string='Username', config_parameter="mssql.username", default='sa', required=True)
     mssql_password = fields.Char(string='Password', config_parameter="mssql.password", required=True, default="admin")
     integration_bravo_up = fields.Boolean(string='Hoạt động', config_parameter="integration.bravo.up", default=False)
-    list_model_sync_bravo = fields.Char("Danh sách đối tượng", config_parameter="list.model.sync.bravo", default=bravo_get_default_list_model)
+    model_ids = fields.Many2many('ir.model', string='Đối tượng đồng bộ', domain=bravo_get_domain_model)
+    record_per_job = fields.Integer('Số bản ghi trên 1 queue job', default=500, help='Max: 500, Min: 1')
+    with_multi_company = fields.Boolean('Trên nhiều công ty', default=False, help='Nếu tích chọn hệ thống tự động chạy tất cả dữ liệu của tất cả công ty')
 
-    @api.model
-    def sync_all_master_data_for_bravo(self):
-        ir_config = self.env['ir.config_parameter'].sudo()
-        models = ast.literal_eval(ir_config.get_param("list.model.sync.bravo")) or []
-        if not models:
-            models = self.with_context(list_model=True).bravo_get_default_list_model()
-        for model in models:
-            domain = self.env[model].bravo_get_filter_domain()
-            records = self.env[model].search(domain)
-            while records:
-                record = records[:min(500, len(records))]
-                record.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
-                records = records - record
+    def sync_master_data_for_bravo(self):
+        record_per_job = max(1, min(500, self.record_per_job))
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for model in self.model_ids:
+            domain = self.env[model.model].bravo_get_filter_domain()
+            if self.with_multi_company:
+                for company in companies:
+                    records = self.env[model.model].sudo().with_company(company).search(domain + [('company_id', '=', company.id)])
+                    while records:
+                        record = records[:min(record_per_job, len(records))]
+                        record.sudo().with_company(company).with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
+                        records = records - record
+            else:
+                records = self.env[model.model].search(domain)
+                while records:
+                    record = records[:min(record_per_job, len(records))]
+                    record.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
+                    records = records - record
+        self.model_ids = [(5, 0, 0)]
+        action = self.env['ir.actions.act_window']._for_xml_id('forlife_bravo_integration.sync_master_data_for_bravo_action')
+        action['res_id'] = self.id
+        return action

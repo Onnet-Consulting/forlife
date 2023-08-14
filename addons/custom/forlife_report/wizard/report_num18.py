@@ -21,7 +21,7 @@ class ReportNum18(models.TransientModel):
     pr_number = fields.Text('PR number')
     state = fields.Selection([('open', _('Open')), ('close', _('Close')), ('all', _('All'))], string='State', default='all', required=True)
     request_user_ids = fields.Many2many('res.users', 'report_num18_request_users_rel', string='Request user')
-    receiver_ids = fields.Many2many('hr.employee', 'report_num18_receiver_rel', string='Receiver')
+    receiver_ids = fields.Many2many('res.users', 'report_num18_x_receiver_rel', string='Receiver')
     product_brand_ids = fields.Many2many('product.category', 'report_num18_brand_rel', string='Level 1')
     product_group_ids = fields.Many2many('product.category', 'report_num18_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num18_line_rel', string='Level 3')
@@ -93,11 +93,11 @@ purchase_request_line_x as (
   {where_condition}
 ),
 po_line_qty as (
-    select prl.id                             as req_line_id,
+    select prl.req_line_id                    as req_line_id,
            coalesce(sum(pol.qty_received), 0) as qty
     from purchase_request_line_x prl
              left join purchase_order_line pol on prl.req_line_id = pol.purchase_request_line_id
-    group by prl.id
+    group by prl.req_line_id
 )
 select 
     rp.name                                                                                 as nha_cung_cap,
@@ -111,8 +111,8 @@ select
     polx.name                                                                               as so_phieu_yc,
     row_number() over (PARTITION BY polx.id ORDER BY polx.id, prl.id)                       as so_dong_tren_phieu_yc,
     prl.asset_description                                                                   as mo_ta_ts,
-    prl.purchase_quantity                                                                   as sl_dat_mua,
-    prl.order_quantity                                                                      as sl_da_dat,
+    coalesce(prl.purchase_quantity, 0)                                                      as sl_dat_mua,
+    coalesce(prl.order_quantity, 0)                                                         as sl_da_dat,
     coalesce(plq.qty, 0)                                                                    as sl_da_nhan,
     coalesce(p_uom.name::json ->> '{user_lang_code}', p_uom.name::json ->> 'en_US')         as don_vi_mua,
     prl.exchange_quantity                                                                   as ty_le_quy_doi,

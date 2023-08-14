@@ -5,6 +5,78 @@
             <field name="name">Giới hạn bản ghi</field>
         </record>
 
+        <record id="group_limit_purchase_request_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Yêu cầu mua hàng</field>
+        </record>
+
+        <record id="group_limit_forlife_other_in_out_request_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Yêu cầu nhập/xuất khác</field>
+        </record>
+
+        <record id="group_limit_stock_transfer_request_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Yêu cầu điều chuyển</field>
+        </record>
+
+        <record id="group_limit_stock_transfer_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Phiếu điều chuyển</field>
+        </record>
+
+        <record id="group_limit_stock_picking_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Điều chuyển hàng</field>
+        </record>
+
+        <record id="group_limit_transfer_stock_inventory_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Nhập xuất tách mã - kiểm kê cân tồn</field>
+        </record>
+
+         <record id="group_limit_stock_picking_other_import_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Phiếu nhập khác</field>
+        </record>
+
+        <record id="group_limit_stock_picking_other_export_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Phiếu xuất khác</field>
+        </record>
+
+        <record id="group_limit_product_template_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Sản phẩm</field>
+        </record>
+
+        <record id="group_limit_product_product_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Biến thể sản phẩm</field>
+        </record>
+
+        <record id="group_limit_pos_order_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Đơn hàng POS</field>
+        </record>
+
+        <record id="group_limit_pos_session_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Phiên</field>
+        </record>
+
+        <record id="group_limit_pos_payment_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Thanh toán POS</field>
+        </record>
+
+        <record id="group_limit_handle_change_refund_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Xử lý đổi trả</field>
+        </record>
+
+        <record id="group_limit_product_defective_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Xử lý hàng lỗi</field>
+        </record>
+
+        <record id="group_limit_product_supplierinfo_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Bảng giá nhà cung cấp</field>
+        </record>
+
+         <record id="group_limit_print_stamps_barcode_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi In tem SP</field>
+         </record>
+
+        <record id="group_limit_pos_config_permission" model="res.groups">
+            <field name="name">Giới hạn bản ghi Trang tổng quan/Điểm bán lẻ</field>
+         </record>
+
         <!-- Shop -->
         <record model="ir.module.category" id="module_category_shop">
             <field name="name">Shop</field>

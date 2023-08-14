@@ -50,7 +50,7 @@ class JournalEntryPayroll(models.Model):
                 "Address": partner.contact_address_complete or None,
                 "Description": self.ref2 or None,
                 "EmployeeCode": self.user_id.employee_id.code or None,
-                "IsTransfer": 1 if self.x_asset_fin and self.x_asset_fin == 'TC' else 0,
+                "IsTransfer": 1 if self.is_tc else 0,
                 "DocumentType": None,
                 "BuiltinOrder": stt,
                 "DebitAccount": line.account_id.code if line.debit > 0 else one_line.account_id.code,

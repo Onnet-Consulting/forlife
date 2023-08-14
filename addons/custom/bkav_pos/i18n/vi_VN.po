@@ -1,0 +1,258 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bkav_pos
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20230224\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-11 06:53+0000\n"
+"PO-Revision-Date: 2023-08-11 06:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "BKAV Invoice"
+msgstr "HDDT Bán hàng"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "BKAV Invoice Return"
+msgstr "HDDT Trả hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__9
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__9
+msgid "Bị thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__10
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__10
+msgid "Bị điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__13
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__13
+msgid "Chờ huỷ"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__5
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__5
+msgid "Chờ thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__7
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__7
+msgid "Chờ điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__14
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__14
+msgid "Chờ điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Create & Publish eInvoice"
+msgstr "Tạo và Ký HD"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Create eInvoice"
+msgstr "Tạo HD"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_store__is_post_bkav
+msgid "Có phát hành hóa đơn bkav"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__data_compare_status
+msgid "Data Compare Status"
+msgstr "Trạng thái"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__data_compare_status_return
+msgid "Data Compare Status Return"
+msgstr "Trạng thái"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Download eInvoice"
+msgstr "Tai HDDT"
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__vat
+msgid "GTGT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_guid
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_guid_return
+msgid "GUID HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Get eInvoice"
+msgstr "Lấy TT"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__origin_move_id
+msgid "Hóa đơn gốc"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__12
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__12
+msgid "Không sử dụng"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_serial
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_serial_return
+msgid "Ký hiệu HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__issue_invoice_type
+msgid "Loại phát hành"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_form
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_form_return
+msgid "Mẫu số HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__1
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__1
+msgid "Mới tạo"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_e_date
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_e_date_return
+msgid "Ngày HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn hàng điểm bán lẻ"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order_line__price_bkav
+msgid "Price Bkav"
+msgstr "Giá xuất BKAV"
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Publish eInvoice"
+msgstr "Ký HD"
+
+#. module: bkav_pos
+#: model:ir.model,name:bkav_pos.model_store
+msgid "Store"
+msgstr "Cửa hàng"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_no
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_no_return
+msgid "Số HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__6
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__6
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__replace
+msgid "Thay thế"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_state_e
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__invoice_state_e_return
+msgid "Trạng thái HDDT"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__11
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__11
+msgid "Trống (Đã cấp số, Chờ ký)"
+msgstr ""
+
+#. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Update eInvoice"
+msgstr "Cập nhật HD"
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__eivoice_file
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__eivoice_file_return
+msgid "eInvoice PDF"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__8
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__8
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__adjust
+msgid "Điều chỉnh"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__15
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__15
+msgid "Điều chỉnh chiết khấu"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_general
+msgid "Đã chạy tổng hợp cuối ngày"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_check_cancel
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__3
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__3
+msgid "Đã hủy"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_post_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__is_post_bkav_return
+msgid "Đã ký HĐ trên BKAV"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__2
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__2
+msgid "Đã phát hành"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__exists_bkav
+#: model:ir.model.fields,field_description:bkav_pos.field_pos_order__exists_bkav_return
+msgid "Đã tồn tại trên BKAV"
+msgstr ""
+
+#. module: bkav_pos
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status__4
+#: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__data_compare_status_return__4
+msgid "Đã xóa"
+msgstr ""

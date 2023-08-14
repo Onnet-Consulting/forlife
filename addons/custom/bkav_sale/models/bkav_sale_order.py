@@ -13,7 +13,7 @@ class AccountMoveSaleOrder(models.Model):
         reward_amount = {}
         for promotion_id in self.promotion_ids:
             if promotion_id.promotion_type == 'vip_amount':
-                vat = 0
+                vat = False
                 if promotion_id.tax_id:
                     vat = promotion_id.tax_id[0]
                 if vat not in list(vip_amount.keys()):
@@ -23,7 +23,7 @@ class AccountMoveSaleOrder(models.Model):
                 else:
                     vip_amount[vat] += promotion_id.value
             if promotion_id.promotion_type == 'reward':
-                vat = 0
+                vat = False
                 if promotion_id.tax_id:
                     vat = promotion_id.tax_id[0]
                 if vat not in list(reward_amount.keys()):
@@ -34,7 +34,7 @@ class AccountMoveSaleOrder(models.Model):
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
             value_not_tax = value
-            vat_value = 0
+            vat_value = False
             if vat:
                 vat_value = vat.amount
                 if vat.price_include:
@@ -43,13 +43,13 @@ class AccountMoveSaleOrder(models.Model):
                 "ItemName": 'Chiết khấu hạng thẻ',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
-            if vat_value == 0:
+            if vat_value == 0 and vat_value != False:
                 tax_rate_id = 1
             elif vat_value == 5:
                 tax_rate_id = 2
@@ -59,15 +59,16 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            item.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat_value
-            })
+            if vat_value != False:
+                item.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat_value
+                })
             list_invoice_detail.append(item)
         
         for vat, value in reward_amount.items():
             value_not_tax = value
-            vat_value = 0
+            vat_value = False
             if vat:
                 vat_value = vat.amount
                 if vat.price_include:
@@ -76,13 +77,13 @@ class AccountMoveSaleOrder(models.Model):
                 "ItemName": 'Chiết khấu thương mại',
                 "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
-            if vat_value == 0:
+            if vat_value == 0 and vat_value != False:
                 tax_rate_id = 1
             elif vat_value == 5:
                 tax_rate_id = 2
@@ -92,10 +93,11 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            item.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat_value
-            })
+            if vat_value != False:
+                item.update({
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat_value
+                })
             list_invoice_detail.append(item)
         return list_invoice_detail
 
@@ -129,12 +131,13 @@ class AccountMoveSaleOrder(models.Model):
                     "Amount": line.price_subtotal,
                     "TaxAmount": line.tax_amount or 0.0,
                     "ItemTypeID": 0,
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat,
-                    # "DiscountRate": line.discount/100,
-                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 0
                 }
+                if vat != False:
+                    item.update({
+                        "TaxRateID": tax_rate_id,
+                        "TaxRate": vat
+                    })
                 if invoice.issue_invoice_type == 'adjust':
                     item['IsIncrease'] = 1 if (invoice.move_type == 'out_invoice') else 0
 
@@ -197,13 +200,19 @@ class AccountMoveSaleOrder(models.Model):
     #                 item.exists_bkav = True
     #     return res
 
-# class StockPicking(models.Model):
-#     _inherit = 'stock.picking'
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
 
-#     def create_invoice_out_refund(self):
-#         invoice_id = super(StockPicking, self).create_invoice_out_refund()
-#         move_id = self.env['account.move'].browse(invoice_id)
-#         move_id.update({
-#             'origin_move_id': move_id.id,
-#             'issue_invoice_type': 'adjust',
-#         })
+    def create_invoice_out_refund(self):
+        invoice_id = super(StockPicking, self).create_invoice_out_refund()
+        move_id = self.env['account.move'].browse(invoice_id)
+        sale_order_id = move_id.invoice_line_ids.sale_line_ids.order_id
+        invoices = False
+        if sale_order_id:
+            invoices = sale_order_id.invoice_ids.filtered(lambda x: x.move_type == 'out_invoice' and x.state == 'posted')
+        if invoices:
+            move_id.update({
+                'origin_move_id': invoices[0].id,
+                'issue_invoice_type': 'adjust',
+            })
+        return invoice_id

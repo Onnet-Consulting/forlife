@@ -59,11 +59,11 @@ class AccountMove(models.Model):
                     account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id
                     account_credit_id = pr.value > 0 and property_account_receivable_id or pr.account_id
 
-                if pr.promotion_type == 'nhanh_shipping_fee':
+                if pr.promotion_type == 'customer_shipping_fee':
                     line_allow = True
                     account_debit_id = property_account_receivable_id
                     account_credit_id = pr.account_id
-                if pr.promotion_type == 'customer_shipping_fee':
+                if pr.promotion_type == 'nhanh_shipping_fee':
                     line_allow = True
                     account_debit_id = pr.account_id
                     account_credit_id = account_payable_customer_id
@@ -101,7 +101,7 @@ class AccountMove(models.Model):
                         'debit': 0,
                         'credit': product_value_without_tax
                     })
-                    if pr.promotion_type == 'nhanh_shipping_fee':
+                    if pr.promotion_type == 'customer_shipping_fee':
                         if not account_repartition_tax or not account_repartition_tax[0].account_id:
                             raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
 

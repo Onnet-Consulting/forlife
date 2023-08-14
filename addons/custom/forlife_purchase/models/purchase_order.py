@@ -258,7 +258,7 @@ class PurchaseOrder(models.Model):
                 ]
                 product_supplierinfo_ids = self.env['product.supplierinfo'].search(domain)
 
-                for line in self.order_line:
+                for line in self.order_line.filtered(lambda x: not x.free_good):
                     supplier_ids = product_supplierinfo_ids.filtered(lambda x: x.product_id.id == line.product_id.id or x.product_tmpl_id.id == line.product_id.product_tmpl_id.id)
                     if supplier_ids:
                         supplier_id = supplier_ids.sorted('price')[:1]
@@ -1079,6 +1079,10 @@ class PurchaseOrder(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', data_search)],
         }
+
+    def _add_supplier_to_product(self):
+        if not self.partner_id.is_passersby:
+            return super(PurchaseOrder, self)._add_supplier_to_product()
 
     def action_view_invoice_expense_new(self):
         for rec in self:
@@ -2469,6 +2473,10 @@ class PurchaseOrderLine(models.Model):
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
+            if rec.free_good:
+                rec.vendor_price = 0
+                rec.price_subtotal = 0
+
             if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
                 if rec.vendor_price_import:
                     if not rec.free_good:

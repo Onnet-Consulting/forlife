@@ -125,8 +125,8 @@
     </record>
 
     <menuitem id="synthetic_account_move_pos_menu"
-              parent="summary_account_move_menu"
-              name="Invoice offset at the end of the day"
+              parent="bkav_connector.menu_master_bkav_pos"
+              name="Hóa đơn bù trừ cuối ngày"
               action="synthetic_account_move_pos_action"
               sequence="10"/>
 </odoo>

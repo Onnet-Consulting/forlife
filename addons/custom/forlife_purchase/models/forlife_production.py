@@ -42,6 +42,7 @@ class ForlifeProduction(models.Model):
     check_status = fields.Boolean(default=False)
     machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
     leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
+    production_price = fields.Float(string='Đơn giá nhân công')
 
     def action_draft(self):
         for record in self:
@@ -240,6 +241,7 @@ class ForlifeProductionMaterial(models.Model):
     forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade')
     product_id = fields.Many2one('product.product', required=True, string='Mã NPL')
     product_backup_id = fields.Many2one('product.product', required=True, string='Mã NPL thay thế')
+    product_finish_id = fields.Many2one('product.product', required=True, string='Mã thành phẩm')
     description = fields.Char(string='Description', related="product_id.name")
     quantity = fields.Integer()
     uom_id = fields.Many2one(related="product_id.uom_id", string='Unit')

@@ -323,7 +323,7 @@ class SaleOrder(models.Model):
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
-                                'default_message': _("Voucher %s invalid or wrong value!" % rec.x_code_voucher),
+                                'default_message': _("Voucher %s không tồn tại trong hệ thống. Vui lòng kiểm tra lại!" % rec.x_code_voucher),
                                 'default_voucher_name': rec.x_code_voucher
                             }
                             return action
@@ -352,11 +352,12 @@ class SaleOrder(models.Model):
                 # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
                     product_domain = []
+                    list_line_promotion = []
                     for line in rec.order_line:
                         # check khuyên mãi để tạo promotion
                         if line.reward_id.reward_type == "discount":
                             product_domain += line.reward_id._get_discount_product_domain()
-                            for line_promotion in rec.order_line:
+                            for line_promotion in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                 warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
 
@@ -377,17 +378,16 @@ class SaleOrder(models.Model):
                                         'order_line_id': line_promotion.id,
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
-                            line.write({'state': 'draft'})
-                            line.unlink()
+                            list_line_promotion.append(line)
                         else:
                             sub_total = 0
-                            for line_pri in rec.order_line:
+                            for line_pri in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                 if line_pri.product_id.filtered_domain(
                                         product_domain) and not line_pri.x_free_good and not line_pri.is_reward_line and not (
                                         line_pri.product_id.detailed_type == 'service' and line_pri.product_id.x_negative_value):
                                     sub_total += line_pri.price_subtotal
                             if line.product_id.detailed_type == 'service' and line.product_id.x_negative_value:
-                                for line_promotion in rec.order_line:
+                                for line_promotion in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                     warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                     analytic_account_id = warehouse_code and self.env[
                                         'account.analytic.account'].search([('code', 'like', '%' + warehouse_code)],
@@ -409,8 +409,11 @@ class SaleOrder(models.Model):
                                             'order_line_id': line_promotion.id
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
-                                line.write({'state': 'draft'})
-                                line.unlink()
+                                        list_line_promotion.append(line)
+                    for line in list_line_promotion:
+                        line.write({'state': 'draft'})
+                        line.unlink()
+                        break
                 rec.write({"state": "done_sale"})
 
     def action_open_reward_wizard(self):
