@@ -158,10 +158,11 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     @api.depends('product_id')
     def compute_attribute_value(self):
+        attrs = self.env['res.utility'].get_attribute_code_config()
         for rec in self:
-            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT004').value_ids.id
-            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT006').value_ids.id
-            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT008').value_ids.id
+            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('mau_sac')).value_ids.id
+            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('size')).value_ids.id
+            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('chat_luong')).value_ids.id
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
