@@ -19,9 +19,7 @@ class ForlifeProduction(models.Model):
             material_vals = []
             for material in material_import_ids:
                 bom_material_values = {}
-                if (material.product_finish_id.id in product.mapped('product_id.id') or not material.product_finish_id) \
-                        or ((material.size == product.size.name or material.color == product.color.name or (not material.size and not material.color))
-                            and not material.product_finish_id):
+                if (material.product_finish_id.id in product.mapped('product_id.id') or not material.product_finish_id) and (not material.size and not material.color):
                     bom_material_values.update({
                         'product_id': material.product_id.id,
                         'product_finish_id': material.product_finish_id.id,
@@ -31,6 +29,17 @@ class ForlifeProduction(models.Model):
                         'rated_level': material.rated_level,
                         'loss': material.loss,
                     })
+                elif (material.size == product.size.name or material.color == product.color.name or (not material.size and not material.color)) and not material.product_finish_id:
+                    bom_material_values.update({
+                        'product_id': material.product_id.id,
+                        'product_finish_id': material.product_finish_id.id,
+                        'product_backup_id': material.product_backup_id.id,
+                        'production_uom_id': material.production_uom_id.id,
+                        'conversion_coefficient': material.conversion_coefficient,
+                        'rated_level': material.rated_level,
+                        'loss': material.loss,
+                    })
+
                 if bom_material_values:
                     material_vals.append((0, 0, bom_material_values))
             create_list_expense = []
