@@ -437,3 +437,9 @@ msgstr ""
 #: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order_promotion__promotion_type__vip_amount_remain
 msgid "vip_amount_remain"
 msgstr ""
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_line_filter
+msgid "Order"
+msgstr "Đơn hàng"
