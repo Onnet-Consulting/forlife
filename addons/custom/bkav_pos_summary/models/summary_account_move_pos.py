@@ -326,10 +326,10 @@ class SummaryAccountMovePos(models.Model):
 
 
     def create_an_invoice_bkav(self):
-        synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
         synthetic_account_move.create_an_invoice()
 
-        adjusted_move = self.env['summary.adjusted.invoice.pos'].search([
+        adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
             ('exists_bkav', '=', False),
             ('source_invoice', '!=', False)
         ])

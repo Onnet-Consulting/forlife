@@ -106,7 +106,7 @@ class PosOrder(models.Model):
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": round(1000/(1+int_vat/100)),
+                "Price": abs(round(1000/(1+int_vat/100))),
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
@@ -189,9 +189,9 @@ class PosOrder(models.Model):
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.qty),
-                    "Price": price_bkav,
-                    "Amount": price_subtotal,
-                    "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
+                    "Price": abs(price_bkav),
+                    "Amount": abs(price_subtotal),
+                    "TaxAmount": 0,
                     "ItemTypeID": 0,
                     # "DiscountRate": line.discount/100,
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
@@ -199,6 +199,7 @@ class PosOrder(models.Model):
                 }
                 if vat != False and not line.is_reward_line:
                     item.update({
+                        "TaxAmount": abs((price_subtotal_incl - price_subtotal or 0.0)),
                         "TaxRateID": tax_rate_id,
                         "TaxRate": vat
                     })
