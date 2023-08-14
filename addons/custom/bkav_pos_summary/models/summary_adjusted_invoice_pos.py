@@ -333,7 +333,7 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
     )
 
     def get_tax_amount(self):
-        return (1 + sum(line.tax_ids.mapped("amount"))/100)
+        return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
 
     @api.depends('tax_ids', 'price_unit_incl')
