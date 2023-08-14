@@ -10,7 +10,7 @@ class ForLifeProduction(models.Model):
     _inherit = ['forlife.production', 'bravo.model']
     _bravo_table = 'B30StatsDoc'
     _bravo_field_sync = [
-        'company_id', 'code', 'create_date', 'name', 'produced_from_date', 'to_date', 'implementation_id',
+        'company_id', 'code', 'create_date', 'name', 'produced_from_date', 'to_date', 'implementation_id', 'production_price',
         'production_department', 'brand_id', 'user_id', 'management_id', 'br_line_uom_id', 'br_line_total_qty'
     ]
 
@@ -49,3 +49,4 @@ class ForLifeProduction(models.Model):
                               field_detail="code")
     br12 = BravoMany2oneField('uom.uom', odoo_name="br_line_uom_id", bravo_name="UnitCode", field_detail="code")
     br13 = BravoDecimalField(odoo_name="br_line_total_qty", bravo_name="ProductQuantity")
+    br14 = BravoDecimalField(odoo_name="production_price", bravo_name="UnitLabor")

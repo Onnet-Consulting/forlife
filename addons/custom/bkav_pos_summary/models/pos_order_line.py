@@ -20,7 +20,7 @@ class PosOrderLine(models.Model):
         return pk
 
     def get_pk_synthetic_line_discount(self):
-        pk = f"{self.product_id.barcode}_{self.get_pk_tax()}"
+        pk = f"_{self.get_pk_tax()}"
         return pk
 
     @api.depends('price_subtotal', 'price_subtotal_incl')

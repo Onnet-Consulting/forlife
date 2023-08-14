@@ -326,68 +326,73 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         v,
     ):
         is_adjusted = False
-        if synthetic_lines:
-            lines = synthetic_lines.filtered(
-                lambda r: r.line_pk == v["line_pk"] and abs(r.remaining_quantity) >= abs(v["quantity"])
-            )
-            if lines:
-                line = lines[0]
+        if abs(v["quantity"]) > 0:
+            if synthetic_lines:
+                lines = synthetic_lines.filtered(
+                    lambda r: r.line_pk == v["line_pk"]
+                )
+                if lines:
+                    # line = lines[0]
+                    # row = v
+
+                    for line in lines:
+                        row = v
+                        if abs(line.remaining_quantity) >= abs(v["quantity"]):
+                            row["quantity"] = -abs(row["quantity"])
+                            row["price_unit"] = -abs(row["price_unit"])
+                            row["price_unit_incl"] = -abs(row["price_unit_incl"])
+                            row["synthetic_id"] = line.synthetic_id.id
+                            
+                            remaining_quantity = line.remaining_quantity - abs(v["quantity"])
+                            adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
+
+                            if remaining_records.get(line.synthetic_id.id):
+                                remaining_records[line.synthetic_id.id].append(row)
+                            else:
+                                remaining_records[line.synthetic_id.id] = [row]
+                            line.with_delay(
+                                description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
+                            ).write({
+                                "remaining_quantity": remaining_quantity,
+                                "adjusted_quantity": adjusted_quantity
+                            })
+                            break
+                        else:
+                            row["quantity"] = -abs(line.remaining_quantity)
+                            v["quantity"] -= line.remaining_quantity
+                            row["synthetic_id"] = line.synthetic_id.id
+                            adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+
+                            if remaining_records.get(line.synthetic_id.id):
+                                remaining_records[line.synthetic_id.id].append(row)
+                            else:
+                                remaining_records[line.synthetic_id.id] = [row]
+
+                            line.sudo().with_delay(
+                                description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                            ).write({
+                                "remaining_quantity": 0,
+                                "adjusted_quantity": adjusted_quantity
+                            })
+                    is_adjusted = True
+                # else:
+                #     row = v
+                #     row["quantity"] = abs(row["quantity"])
+
+                #     if remaining_records.get('adjusted'):
+                #         remaining_records['adjusted'].append(row)
+                #     else:
+                #         remaining_records['adjusted'] = [row]
+            if not is_adjusted:
                 row = v
-                # if lines:
-                #     for line in lines:
-                #         row = v
-                #         if abs(line.remaining_quantity) >= abs(v["quantity"]):
-                row["quantity"] = abs(row["quantity"])
+                row["quantity"] = -abs(row["quantity"])
                 row["price_unit"] = -abs(row["price_unit"])
                 row["price_unit_incl"] = -abs(row["price_unit_incl"])
-                remaining_quantity = line.remaining_quantity - abs(v["quantity"])
-                adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-
-                if remaining_records.get(line.synthetic_id.id):
-                    remaining_records[line.synthetic_id.id].append(row)
+                row["synthetic_id"] = None
+                if remaining_records.get('adjusted'):
+                    remaining_records['adjusted'].append(row)
                 else:
-                    remaining_records[line.synthetic_id.id] = [row]
-                line.with_delay(
-                    description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
-                ).write({
-                    "remaining_quantity": remaining_quantity,
-                    "adjusted_quantity": adjusted_quantity
-                })
-                is_adjusted = True
-                        # break
-                    # else:
-                    #     row["quantity"] = abs(line.remaining_quantity)
-                    #     v["quantity"] -= line.remaining_quantity
-                    #     adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
-
-                    #     if remaining_records.get(line.synthetic_id.id):
-                    #         remaining_records[line.synthetic_id.id].append(row)
-                    #     else:
-                    #         remaining_records[line.synthetic_id.id] = [row]
-
-                    #     line.sudo().with_delay(
-                    #         description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                    #     ).write({
-                    #         "remaining_quantity": 0,
-                    #         "adjusted_quantity": adjusted_quantity
-                    #     })
-            # else:
-            #     row = v
-            #     row["quantity"] = abs(row["quantity"])
-
-            #     if remaining_records.get('adjusted'):
-            #         remaining_records['adjusted'].append(row)
-            #     else:
-            #         remaining_records['adjusted'] = [row]
-        if not is_adjusted:
-            row = v
-            row["quantity"] = abs(row["quantity"])
-            row["price_unit"] = -abs(row["price_unit"])
-            row["price_unit_incl"] = -abs(row["price_unit_incl"])
-            if remaining_records.get('adjusted'):
-                remaining_records['adjusted'].append(row)
-            else:
-                remaining_records['adjusted'] = [row]
+                    remaining_records['adjusted'] = [row]
 
     def recursive_balance_clearing_items(
         self,
@@ -553,12 +558,14 @@ class GeneralInvoiceNotExistsBkav(models.Model):
                             res_refund
                         )
                     elif abs(sale_data["quantity"]) < abs(v["quantity"]):
+                        v["quantity"] = abs(v["quantity"]) - abs(sale_data["quantity"])
                         self.handle_invoice_difference(
                             remaining_records,
                             synthetic_lines,
                             v
                         )
                 else:
+                    v["quantity"] = abs(v["quantity"])
                     self.handle_invoice_difference(
                         remaining_records,
                         synthetic_lines,

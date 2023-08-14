@@ -82,7 +82,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     exists_pos[pos.id] = True
                     total_point += pos.get_total_point()
 
-            res.total_point = total_point
+            res.total_point = -total_point
 
 
     def action_download_view_e_invoice(self):
@@ -125,7 +125,9 @@ class SummaryAdjustedInvoicePos(models.Model):
 
     def get_promotion(self, ln):
         list_invoice_details_ws = []
-        line_discount_ids = ln.line_discount_ids
+        line_discount_ids = self.env["summary.adjusted.invoice.pos.line.discount"].search([
+            ('adjusted_invoice_id', '=', ln.id)
+        ])
         if ln.total_point > 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
@@ -143,23 +145,23 @@ class SummaryAdjustedInvoicePos(models.Model):
             if line_discount_point_ids:
                 line_discount_point_taxs = {}
                 for line in line_discount_point_ids:
-                    tax_id = line.tax_ids[0].id
-                    if line_discount_point_taxs.get(tax_id):
-                        row = line_discount_point_taxs[tax_id]
-                        row["Qty"] += abs(line.price_unit_incl)/1000
-                        row["Amount"] += line.price_unit
-                        row["TaxAmount"] += line.tax_amount
-                        line_discount_point_taxs[tax_id] = row
+                    line_pk = line.line_pk
+                    if line_discount_point_taxs.get(line_pk):
+                        row = line_discount_point_taxs[line_pk]
+                        row["Qty"] += -abs(line.price_unit_incl)/1000
+                        row["Amount"] += -abs(line.price_unit)
+                        row["TaxAmount"] += -abs(line.tax_amount)
+                        line_discount_point_taxs[line_pk] = row
                     else:
                         price = 1000/ (1 + line.tax_ids[0].amount/100)
                         vat, tax_rate_id = self.get_vat(line)
-                        line_discount_point_taxs[tax_id] = {
+                        line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
-                            "Qty": abs(line.price_unit_incl)/1000,
-                            "Price": -round(price, 2),
-                            "Amount": line.price_unit,
-                            "TaxAmount": line.tax_amount,
+                            "Qty": -abs(line.price_unit_incl)/1000,
+                            "Price": -abs(round(price, 2)),
+                            "Amount": -abs(line.price_unit),
+                            "TaxAmount": -abs(line.tax_amount),
                             "IsDiscount": 1,
                             "ItemTypeID": 0,
                             "TaxRateID": tax_rate_id,
@@ -171,21 +173,19 @@ class SummaryAdjustedInvoicePos(models.Model):
             if line_discount_card_ids:
                 line_discount_card_taxs = {}
                 for line in line_discount_card_ids:
-                    tax_id = line.tax_ids[0].id
-                    if line_discount_card_taxs.get(tax_id):
-                        row = line_discount_card_taxs[tax_id]
-                        row["Price"] += line.price_unit
-                        row["Amount"] += line.price_unit
-                        row["TaxAmount"] += line.tax_amount
-                        line_discount_card_taxs[tax_id] = row
+                    line_pk = line.line_pk
+                    if line_discount_card_taxs.get(line_pk):
+                        row = line_discount_card_taxs[line_pk]
+                        row["Amount"] += -abs(line.price_unit)
+                        row["TaxAmount"] += -abs(line.tax_amount)
+                        line_discount_card_taxs[line_pk] = row
                     else:
                         vat, tax_rate_id = self.get_vat(line)
-                        line_discount_card_taxs[tax_id] = {
+                        line_discount_card_taxs[line_pk] = {
                             "ItemName": "Chiết khấu hạng thẻ",
                             "UnitName": '',
-                            "Price": line.price_unit,
-                            "Amount": line.price_unit,
-                            "TaxAmount": line.tax_amount,
+                            "Amount": -abs(line.price_unit),
+                            "TaxAmount": -abs(line.tax_amount),
                             "IsDiscount": 1,
                             "ItemTypeID": 0,
                             "TaxRateID": tax_rate_id,
@@ -258,7 +258,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                 })
                 ln_invoice["ListInvoiceDetailsWS"].append(line_invoice)
 
-            # ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
+            ln_invoice["ListInvoiceDetailsWS"].extend(self.get_promotion(ln))
 
             bkav_invoices.append(ln_invoice)
         return bkav_invoices
@@ -312,10 +312,10 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
     def _compute_amount(self):
         for r in self:
-            tax_results = r.tax_ids.compute_all(r.price_unit_incl, quantity=r.quantity)
-            r.price_subtotal = tax_results["total_excluded"]
-            r.amount_total = tax_results["total_included"]
-            r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+            tax_results = r.tax_ids.compute_all(abs(r.price_unit_incl), quantity=abs(r.quantity))
+            r.price_subtotal = -tax_results["total_excluded"]
+            r.amount_total = -tax_results["total_included"]
+            r.tax_amount = -(tax_results["total_included"] - tax_results["total_excluded"])
 
 
 class SummaryAdjustedInvoicePosDiscount(models.Model):

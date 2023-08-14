@@ -49,6 +49,9 @@ class SyntheticAccountMoveSoNhanh(models.Model):
 
     line_discount_ids = fields.One2many('synthetic.so.nhanh.line.discount', compute="_compute_line_discount")
 
+    line_adjusted_ids = fields.One2many('summary.adjusted.invoice.so.nhanh.line', 'synthetic_id')
+
+
     def _compute_line_discount(self):
         for r in self:
             r.line_discount_ids = self.env["synthetic.so.nhanh.line.discount"].search([

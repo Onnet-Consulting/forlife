@@ -297,7 +297,7 @@ class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
-    is_close = fields.Boolean(string='Is Close', default=False)
+    is_close = fields.Boolean(string='Is Close', default=False, copy=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
