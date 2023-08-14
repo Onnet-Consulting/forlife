@@ -24,7 +24,6 @@ class ReportNum17(models.TransientModel):
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
     store_id = fields.Many2one('store', string='Store')
-    type = fields.Selection([('store', _('Store')), ('ecommerce', _('Ecommerce'))], string='Sale Type', required=True, default='store')
     customer = fields.Char('Customer-info')
     order_filter = fields.Char('Order-filter')
 
@@ -64,7 +63,7 @@ with po_datas as (select po.id  as po_id,
                     and po.company_id = any (array {allowed_company})
                     and pt.detailed_type <> 'service'
                     and (pt.voucher = false or pt.voucher is null)
-                    and pol.qty <> 0
+                    and pol.qty <> 0 and pol.is_promotion = any (array[false, null]) and pt.is_product_auto = any (array[false, null])
                     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
                     {order_filter_condition}
                     and po.session_id in (select id
