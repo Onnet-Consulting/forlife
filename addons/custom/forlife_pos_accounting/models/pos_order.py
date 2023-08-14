@@ -302,6 +302,23 @@ class InheritPosOrder(models.Model):
         })
         return action
 
+    def show_journal_items(self):
+        self.ensure_one()
+        return {
+            'name': _('Journal Items'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move.line',
+            'view_mode': 'tree',
+            'view_id': self.env.ref('account.view_move_line_tree').id,
+            'domain': [('id', 'in', self.invoice_ids.mapped('line_ids').ids)],
+            'context': {
+                'journal_type': 'general',
+                'search_default_group_by_move': 1,
+                'group_by': 'move_id', 'search_default_posted': 1,
+            },
+        }
+
+
 
 class InheritPosOrderLine(models.Model):
     _inherit = 'pos.order.line'
