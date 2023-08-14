@@ -115,7 +115,7 @@ class StockTranfer(models.Model):
                         raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
                 if self.location_dest_id.id_deposit:
                     if not location_mapping:
-                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0[1]]}: Cấu hình -> Location Mapping!"))
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
 
                 location = location_mapping.with_company(company_match).location_map_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_map_id.id
@@ -131,7 +131,7 @@ class StockTranfer(models.Model):
                         raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
                 if self.location_dest_id.id_deposit:
                     if not location_mapping:
-                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0[1]]}: Cấu hình -> Location Mapping!"))
+                        raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]}: Cấu hình -> Location Mapping!"))
 
                 location = location_mapping.with_company(company_match).location_id.id
                 location_dst = location_dest_mapping.with_company(company_match).location_id.id

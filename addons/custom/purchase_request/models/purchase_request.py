@@ -13,6 +13,7 @@ from pytz import UTC
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
+    _rec_names_search = ['name']
     _description = "Purchase Request"
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
@@ -31,9 +32,10 @@ class PurchaseRequest(models.Model):
         copy=False,
         string="Loại đơn hàng",
         default='',
-        selection=[('tax', 'Đơn mua hàng nhập khẩu'),
-                   ('cost', 'Đơn mua hàng nội địa'),
-                   ])
+        selection=[
+            ('tax', 'Đơn mua hàng nhập khẩu'),
+            ('cost', 'Đơn mua hàng nội địa'),
+        ])
 
     state = fields.Selection(
         copy=False,
@@ -47,12 +49,14 @@ class PurchaseRequest(models.Model):
                    ('close', 'Close'),
                    ], tracking=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
-    # approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
-
+    close_request = fields.Boolean('')
+    is_no_more_quantity = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_close = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_all_line = fields.Boolean(compute='_compute_true_false_is_check', store=1)
     #check button orders_smart_button
     is_check_button_orders_smart_button = fields.Boolean(default=False)
 
-    receiver_id = fields.Many2one('hr.employee', string='Receiver')
+    x_receiver_id = fields.Many2one('res.users', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
@@ -66,20 +70,18 @@ class PurchaseRequest(models.Model):
     def load(self, fields, data):
         if "import_file" in self.env.context:
             if 'request_date' not in fields:
-                raise ValidationError(_("File nhập phải chứa ngày yêu cầu"))
+                raise ValidationError(_("File nhập phải chứa ngày yêu cầu."))
             for record in data:
                 if 'order_lines/product_id' in fields and not record[fields.index('order_lines/product_id')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường sản phẩm."))
                 if 'order_lines/purchase_quantity' in fields and not record[fields.index('order_lines/purchase_quantity')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua"))
-                if 'order_lines/exchange_quantity' in fields and not record[fields.index('order_lines/exchange_quantity')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng quy đổi"))
-                if 'order_lines/purchase_uom' in fields and not record[fields.index('order_lines/purchase_uom')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng đặt mua."))
+                if 'order_lines/product_uom' in fields and not record[fields.index('order_lines/product_uom')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường đơn vị mua."))
                 if 'order_lines/request_date' in fields and not record[fields.index('order_lines/request_date')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày yêu cầu."))
                 if 'order_lines/date_planned' in fields and not record[fields.index('order_lines/date_planned')]:
-                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày nhận hàng dự kiến"))
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày nhận hàng dự kiến."))
         return super().load(fields, data)
 
     @api.model
@@ -103,8 +105,8 @@ class PurchaseRequest(models.Model):
     def submit_action(self):
         for record in self:
             for line in record.order_lines:
-                if not line.purchase_uom:
-                    raise UserError(_('Đơn vị mua của sản phẩm %s chưa được chọn') % line.product_id.name)
+                if not line.product_uom:
+                    raise UserError(_('Đơn vị tính của sản phẩm %s chưa được chọn') % line.product_id.name)
                 if not line.date_planned:
                     raise UserError(_('Ngày nhận hàng dự kiến của sản phẩm %s chưa được chọn') % line.product_id.name)
             record.write({'state': 'confirm'})
@@ -119,13 +121,10 @@ class PurchaseRequest(models.Model):
     def approve_action(self):
         self.write({'state': 'approved'})
 
-    close_request = fields.Boolean('')
-
     def close_action(self):
         for record in self:
             record.close_request = True
             record.write({'state': 'close'})
-
 
     def set_to_draft(self):
         for record in self:
@@ -194,16 +193,10 @@ class PurchaseRequest(models.Model):
             else:
                 groups[key] = [line]
         purchase_order = self.env['purchase.order']
-        # occasion_code_id = []
-        account_analytic_id = []
         production_id = []
         for rec in self:
             if rec.state != 'approved':
                 raise ValidationError(_('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt! %s') % rec.name)
-            # if rec.occasion_code_id:
-            #     occasion_code_id.append(rec.occasion_code_id.id)
-            # if rec.account_analytic_id:
-            #     account_analytic_id.append(rec.account_analytic_id.id)
             if rec.production_id:
                 production_id.append(rec.production_id.id)
         for group in groups:
@@ -222,16 +215,18 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'asset_code': line.asset_code.id,
                     'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
-                    'exchange_quantity': line.exchange_quantity,
-                    'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    'purchase_uom': line.purchase_uom.id or line.product_id.uom_po_id.id,
-                    'product_uom': line.product_id.uom_id.id,
+                    'exchange_quantity': 1,
+                    'product_qty': (line.purchase_quantity - line.order_quantity),
+                    'purchase_uom': line.product_id.uom_po_id.id or False,
+                    'product_uom': line.product_uom.id or line.product_id.uom_id.id,
                     'receive_date': line.date_planned,
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
+                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'date_planned': line.date_planned,
                 }))
             if po_line_data:
@@ -251,6 +246,7 @@ class PurchaseRequest(models.Model):
                     'order_line': po_line_data,
                     'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
                     'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
+                    'production_id': self.production_id.id if self.production_id else False,
                     'source_document': source_document,
                     'date_planned': self.date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
@@ -265,10 +261,6 @@ class PurchaseRequest(models.Model):
             'domain': [('id', 'in', purchase_order.ids)],
         }
 
-    is_no_more_quantity = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-    is_close = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-    is_all_line = fields.Boolean(compute='_compute_true_false_is_check', store=1)
-
     @api.depends('order_lines', 'order_lines.is_no_more_quantity', 'order_lines.is_all_line', 'order_lines.is_close',
                  'order_lines.is_all_line', 'state')
     def _compute_true_false_is_check(self):
@@ -277,11 +269,11 @@ class PurchaseRequest(models.Model):
                 rec.is_close = all(rec.order_lines.mapped('is_close'))
             rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
             rec.is_all_line = all(rec.order_lines.mapped('is_all_line'))
-            if rec.state == 'close':
-                if rec.order_lines.mapped('is_all_line'):
-                    rec.state = 'approved'
-            if rec.close_request:
+            if rec.close_request or rec.is_all_line:
                 rec.state = 'close'
+            else:
+                if rec.state == 'close' and not rec.is_all_line:
+                    rec.state = 'approved'
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -300,6 +292,7 @@ class PurchaseRequestLine(models.Model):
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
     asset_description = fields.Char(string="Asset description")
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     description = fields.Char(string="Mô tả")
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     currency_id = fields.Many2one('res.currency', 'Currency')
@@ -308,7 +301,7 @@ class PurchaseRequestLine(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_date = fields.Date(string='Request date', required=True)
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
-    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', required=True)
+    product_uom = fields.Many2one('uom.uom', string='Product uom', required=True)
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
@@ -330,9 +323,19 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         self.write({
-            'description': self.product_id.name,
-            'purchase_uom': self.product_id.uom_id.id,
+            'product_uom': self.product_id.uom_id.id,
         })
+
+    @api.onchange('product_id')
+    def onchange_product_id_comput_assets(self):
+        if self.product_id.product_type == 'asset':
+            account = self.product_id.categ_id.property_account_expense_categ_id
+            if account:
+                return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.request_id.company_id.id),
+                                                  ('asset_account', '=', account.id)]}}
+            return {'domain': {'asset_code': [('state', '=', 'using'), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.request_id.company_id.id)]}}
 
     @api.onchange('vendor_code')
     def onchange_vendor_code(self):
@@ -373,11 +376,7 @@ class PurchaseRequestLine(models.Model):
         for rec in self:
             if not rec.is_close and not rec.is_no_more_quantity:
                 rec.is_all_line = False
-            if not rec.is_close and rec.is_no_more_quantity:
-                rec.is_all_line = True
-            if rec.is_close and not rec.is_no_more_quantity:
-                rec.is_all_line = True
-            if rec.is_close and rec.is_no_more_quantity:
+            else:
                 rec.is_all_line = True
 
 class ApprovalLogs(models.Model):

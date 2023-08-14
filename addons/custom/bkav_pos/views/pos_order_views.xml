@@ -7,25 +7,29 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='notes']" position="after">
-                    <field name="is_refunded" invisible="1"/>
+                    <field name="is_refund_order" invisible="1"/>
+                    <field name="is_change_order" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="create_publish_invoice_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('is_post_bkav', '=', True)]}"
+                                string="Create &amp; Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Get eInvoice" groups="account.group_account_invoice"/>
                         <button name="update_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
-                        <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
-                                string="Publish eInvoice" groups="account.group_account_invoice"/>
-                        <button name="cancel_invoice_bkav" type="object" class="btn btn-primary"
+                        <!-- <button name="cancel_invoice_bkav" type="object" class="btn btn-primary"
                                 string="Cancel eInvoice"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
-                                groups="account.group_account_invoice"/>
+                                groups="account.group_account_invoice"/> -->
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Download eInvoice" groups="account.group_account_invoice"/>
@@ -46,24 +50,27 @@
                             </group>
                         </group>
                     </page>
-                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refunded', '!=', False)]}">
+                    <page id="bkav_invoice_return" string="BKAV Invoice Return" attrs="{'invisible':[('is_refund_order', '=', False),('is_change_order', '=', False)]}">
                         <field name="eivoice_file_return" attrs="{'invisible':[('eivoice_file_return', '=', False)]}"/>
                         <button name="create_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('exists_bkav_return', '!=', False),('invoice_guid_return', '!=', False)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
+                        <button name="publish_invoice_bkav_return" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('invoice_guid_return', '=', False),('is_post_bkav_return', '=', True)]}"
+                                string="Publish eInvoice" groups="account.group_account_invoice"/>
+                        <button name="create_publish_invoice_bkav_return" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav_return', '!=', False),('is_post_bkav_return', '=', True)]}"
+                                string="Create &amp; Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid_return', '=', False)]}"
                                 string="Get eInvoice" groups="account.group_account_invoice"/>
                         <button name="update_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid_return', '=', False),('is_post_bkav_return', '=', True)]}"
                                 string="Update eInvoice" groups="account.group_account_invoice"/>
-                        <button name="publish_invoice_bkav_return" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_guid_return', '=', False),('is_post_bkav_return', '=', True)]}"
-                                string="Publish eInvoice" groups="account.group_account_invoice"/>
-                        <button name="cancel_invoice_bkav_return" type="object" class="btn btn-primary"
+                        <!-- <button name="cancel_invoice_bkav_return" type="object" class="btn btn-primary"
                                 string="Cancel eInvoice"
                                 attrs="{'invisible':[('invoice_guid_return', '=', False)]}"
-                                groups="account.group_account_invoice"/>
+                                groups="account.group_account_invoice"/> -->
                         <button name="download_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid_return', '=', False)]}"
                                 string="Download eInvoice" groups="account.group_account_invoice"/>

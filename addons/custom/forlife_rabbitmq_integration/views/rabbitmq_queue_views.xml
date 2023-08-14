@@ -7,6 +7,9 @@
             <field name="model">rabbitmq.queue</field>
             <field name="arch" type="xml">
                 <tree string="rabbitmq_queue_tree" multi_edit="1">
+                    <field name="sequence" widget="handle"/>
+                    <field name="active" widget="boolean_toggle"/>
+                    <field name="sync_manual" widget="boolean_toggle"/>
                     <field name="queue_key"/>
                     <field name="queue_name"/>
                     <field name="description"/>
@@ -28,6 +31,8 @@
                             <field name="description"/>
                             <field name="target"/>
                             <field name="rabbitmq_connection_id"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="sync_manual" widget="boolean_toggle"/>
                         </group>
                     </sheet>
                 </form>
@@ -38,6 +43,7 @@
             <field name="name">RabbitMQ Queue</field>
             <field name="res_model">rabbitmq.queue</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">[('active', 'in', (False, True))]</field>
         </record>
 
     </data>

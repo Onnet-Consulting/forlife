@@ -1,3 +1,5 @@
+import logging
+
 from odoo import api, fields, models
 
 
@@ -20,13 +22,19 @@ class PosOlDiscountDetails(models.Model):
     program_name = fields.Many2one('points.promotion', related='pos_order_line_id.order_id.program_store_point_id')
     listed_price = fields.Monetary('Listed price')
     recipe = fields.Float('Recipe')
-    money_reduced = fields.Monetary('Money Reduced', compute='_compute_money_reduced', store=False)  # compute_field
+    discounted_amount = fields.Monetary('Pro Discounted Amount', currency_field='currency_id')
+    money_reduced = fields.Monetary('Money Reduced', compute='_compute_money_reduced', store=True)  # compute_field
     currency_id = fields.Many2one('res.currency', related='pos_order_line_id.currency_id')
 
-    @api.depends('recipe', 'type')
+    @api.depends('recipe', 'type', 'discounted_amount')
     def _compute_money_reduced(self):
         for rec in self:
-            rec.money_reduced = rec.get_money_reduced()
+            if rec.type == 'point':
+                rec.money_reduced = rec.recipe * 1000
+            elif rec.type == 'ctkm':
+                rec.money_reduced = rec.discounted_amount
+            else:
+                rec.money_reduced = rec.recipe
 
     def get_money_reduced(self):
         if self.type == 'point':
@@ -49,4 +57,5 @@ class PosOlDiscountDetails(models.Model):
             'pos_order_line_id': self.pos_order_line_id.id,
             'money_reduced': self.money_reduced,
             'type': self.type,
+            'money_reduced_unit': self.pos_order_line_id.qty and self.money_reduced / self.pos_order_line_id.qty or 0
         }

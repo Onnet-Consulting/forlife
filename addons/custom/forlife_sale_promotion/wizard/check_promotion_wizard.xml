@@ -5,6 +5,14 @@
             <field name="arch" type="xml">
                 <form string="Reason">
                         <field name="message" readonly="True" nolabel="1" style="color:Red;font-size: 20px"/>
+                        <group>
+                            <field name="voucher_name" readonly="True" attrs="{'invisible': [('voucher_name', '=', False)]}"/>
+                            <field name="voucher_value" readonly="True" attrs="{'invisible': [('voucher_value', '=', 0)]}"/>
+                        </group>
+                        <group>
+                            <field name="voucher_name_change" attrs="{'invisible': [('voucher_name', '=', False)]}"/>
+                            <field name="voucher_value_change" attrs="{'invisible': [('voucher_value', '=', 0)]}"/>
+                        </group>
                     <footer>
                         <button name="action_ok" string="ok" type="object" class="btn-primary"/>
                     </footer>

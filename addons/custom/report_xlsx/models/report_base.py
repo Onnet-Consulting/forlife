@@ -87,6 +87,7 @@ class ReportBase(models.AbstractModel):
         center_format.update({'align': 'center'})
         float_number_format.update(normal_format)
         int_number_format.update(normal_format)
+        int_number_format.update(align_right)
         float_number_title_format = float_number_format.copy()
         float_number_title_format.update(title_format)
         int_number_title_format = int_number_format.copy()
@@ -102,11 +103,15 @@ class ReportBase(models.AbstractModel):
         float_number_format.update(align_right)
         float_number_format = workbook.add_format(float_number_format)
         float_number_format.set_num_format('#,##0.00')
+        percentage_format = int_number_format.copy()
         int_number_format = workbook.add_format(int_number_format)
         int_number_format.set_num_format('#,##0')
         int_subtotal_format = workbook.add_format(subtotal_format)
         int_subtotal_format.set_num_format('#,##0')
+        int_subtotal_format.set_align('right')
         subtotal_format = workbook.add_format(subtotal_format)
+        percentage_format.update({'align': 'right', 'num_format': '0%'})
+        percentage_format = workbook.add_format(percentage_format)
 
         float_number_title_format = workbook.add_format(float_number_title_format)
         float_number_title_format.set_num_format('#,##0.00')
@@ -126,4 +131,5 @@ class ReportBase(models.AbstractModel):
             'int_number_title_format': int_number_title_format,
             'subtotal_format': subtotal_format,
             'int_subtotal_format': int_subtotal_format,
+            'percentage_format': percentage_format,
         }

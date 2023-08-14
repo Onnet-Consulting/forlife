@@ -10,6 +10,7 @@ import base64
 class TransferStockInventory(models.Model):
     _name = 'transfer.stock.inventory'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
+    _check_company_auto = True
     _description = 'Kiểm kê cân tồn kho'
     _rec_name = 'code'
 
@@ -30,6 +31,7 @@ class TransferStockInventory(models.Model):
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
     is_nk_xk = fields.Boolean(default=False, copy=False)
+    company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
 
 
     def action_import_other(self):

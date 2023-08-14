@@ -170,8 +170,9 @@ with order_lines as (select pol.id                    as order_line_id,
                             pol.qty                                                                                                   as sl,
                             {'pol.original_price' if self.is_with_tax else '(pol.original_price / (1 + coalesce(olf.tax_percent, 0) / 100))::int'} as don_gia,
                             coalesce(olf.tax_percent, 0)                                                                              as thue_suat,
-                            (pol.qty * pol.original_price / (1 + coalesce(olf.tax_percent, 0) / 100))
-                                - (coalesce(dd.khuyen_mai_bh, 0) / (1 + coalesce(olf.tax_percent, 0) / 100))                          as thue_gtgt,
+                            ((pol.qty * pol.original_price / (1 + coalesce(olf.tax_percent, 0) / 100))
+                                - (coalesce(dd.khuyen_mai_bh, 0) / (1 + coalesce(olf.tax_percent, 0) / 100)))
+                                 * (coalesce(olf.tax_percent, 0) / 100)                                                               as thue_gtgt,
                             case
                                 when pol.qty < 0 then pol.price_subtotal
                                 else (pol.price_subtotal -
@@ -260,8 +261,8 @@ order by stt
         dia_chi = ', '.join(company.filtered(lambda f: f.street).mapped('street'))
         sheet.write(0, 0, f'Công ty: {cong_ty}', formats.get('normal_format'))
         sheet.write(1, 0, f'Địa chỉ: {dia_chi}', formats.get('normal_format'))
-        sheet.write(3, 0, 'BẢNG KÊ HÀNG HÓA XUẤT HÓA ĐƠN', formats.get('header_format'))
-        sheet.write(4, 0, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), self.year)}', formats.get('italic_format'))
+        sheet.merge_range(3, 0, 3, len(data.get('titles')) - 1, 'BẢNG KÊ HÀNG HÓA XUẤT HÓA ĐƠN', formats.get('header_format'))
+        sheet.merge_range(4, 0, 4, len(data.get('titles')) - 1, f'Báo cáo tháng: {"%.2d/%.4d" % (int(self.month.code), self.year)}', formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(6, idx, title, formats.get('title_format'))
         sheet.set_column(1, len(data.get('titles')) - 1, 20)
@@ -327,4 +328,6 @@ order by stt
         res.update({
             'month_format': month_format,
         })
+        res.get('header_format').set_align('center')
+        res.get('italic_format').set_align('center')
         return res

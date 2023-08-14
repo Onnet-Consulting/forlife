@@ -123,9 +123,9 @@
                         <button string="Reject" name="%(forlife_purchase.reject_order_wizard)d"
                                 type="action" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
                                 groups="purchase_request.admin_purchase_request_group" />
-                        <button string="Cancel (alpha)" name="action_cancel" type="object"
-                                attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>
-                        <button string="Cancel (beta)" name="%(forlife_purchase.cancel_order_wizard)d"
+<!--                        <button string="Cancel (alpha)" name="action_cancel" type="object"-->
+<!--                                attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>-->
+                        <button string="Cancel" name="%(forlife_purchase.cancel_order_wizard)d"
                                 type="action" attrs="{'invisible': [('custom_state', 'in', ('cancel', 'close', 'approved'))]}"/>
                         <button string="Close" name="action_close" type="object"
                                 attrs="{'invisible': [('custom_state', '!=', 'approved')]}"/>
@@ -308,7 +308,7 @@
                         <field name="name" invisible="1"/>
                         <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
-                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}" sum="discounted subtotal" force_save="1" string="Số lượng đề nghị"/>
+<!--                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}" sum="discounted subtotal" force_save="1" string="Số lượng đề nghị"/>-->
                         <field name="purchase_uom" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" string="Tỷ lệ quy đổi" force_save="1"/>
                         <field name="purchase_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
@@ -320,16 +320,16 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="free_good"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="purchase_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="domain_uom" invisible="1"/>
-                        <field name="purchase_uom"
-                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"
-                               decoration-danger="is_red_color == True"
-                               string="Tỷ lệ quy đổi"
-                               force_save="1"/>
+<!--                        <field name="purchase_quantity"-->
+<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
+<!--                        <field name="domain_uom" invisible="1"/>-->
+<!--                        <field name="purchase_uom"-->
+<!--                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
+<!--                        <field name="exchange_quantity"-->
+<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"-->
+<!--                               decoration-danger="is_red_color == True"-->
+<!--                               string="Tỷ lệ quy đổi"-->
+<!--                               force_save="1"/>-->
                         <field name="product_qty"
                                attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal"
@@ -348,6 +348,7 @@
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
                                domain="[('usage','!=','view')]"
+                               force_save="1"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"

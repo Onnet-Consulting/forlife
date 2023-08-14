@@ -756,7 +756,7 @@ msgid "Delivery Address"
 msgstr "Địa chỉ"
 
 #. module: purchase_request
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__receiver_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__x_receiver_id
 msgid "Receiver"
 msgstr "Người nhận"
 

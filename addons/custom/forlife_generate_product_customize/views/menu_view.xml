@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <menuitem id="menu_generate_product" name="Nguyên tắc sinh mã tự động" parent="stock.menu_product_in_config_stock" action="forlife_generate_product_customize.generate_product_action" />
+    </data>
+</odoo>

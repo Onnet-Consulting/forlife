@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 08:07+0000\n"
-"PO-Revision-Date: 2023-02-10 08:07+0000\n"
+"POT-Creation-Date: 2023-08-05 11:09+0000\n"
+"PO-Revision-Date: 2023-08-05 11:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -115,17 +115,11 @@ msgid "Name"
 msgstr "Tên"
 
 #. module: forlife_telegram_integration
-#: model:ir.model.constraint,message:forlife_telegram_integration.constraint_forlife_app_api_link_name_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_res_general_info_name_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_telegram_bot_name_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_telegram_group_name_uniq
 msgid "Name must be unique"
 msgstr "Tên phải là duy nhất"
-
-#. module: forlife_telegram_integration
-#: model:ir.ui.menu,name:forlife_telegram_integration.integration_telegram_root_menu
-msgid "Telegram"
-msgstr ""
 
 #. module: forlife_telegram_integration
 #: model:ir.actions.act_window,name:forlife_telegram_integration.telegram_bot_action
@@ -162,7 +156,6 @@ msgid "Value"
 msgstr "Giá trị"
 
 #. module: forlife_telegram_integration
-#: model:ir.model.constraint,message:forlife_telegram_integration.constraint_forlife_app_api_link_value_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_res_general_info_value_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_telegram_bot_value_uniq
 #: model:ir.model.constraint,message:forlife_telegram_integration.constraint_telegram_group_value_uniq

@@ -36,7 +36,8 @@ class InheritPosOrder(models.Model):
 
     @staticmethod
     def _create_promotion_account_move(order_line, partner_id, credit_account_id):
-        customer_id = order_line.order_id.partner_id
+        customer_id = (order_line.order_id.real_to_invoice and order_line.order_id.partner_id.id
+                       or order_line.order_id.session_id.config_id.store_id.contact_id.id)
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
         if order_line.refunded_orderline_id:
@@ -66,7 +67,7 @@ class InheritPosOrder(models.Model):
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
-                'partner_id': customer_id.id or False,
+                'partner_id': customer_id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
@@ -262,7 +263,30 @@ class InheritPosOrder(models.Model):
             if move.journal_id.company_consignment_id:
                 tax_lines = move.line_ids.filtered(lambda x: x.display_type == 'tax')
                 tax_lines.partner_id = move.journal_id.company_consignment_id
+
+        # recompute tax_amount
+        self.browse(result).recompute_amount_tax()
         return result
+
+    def recompute_amount_tax(self):
+        self.ensure_one()
+        self.amount_tax = self.get_recompute_amount_tax()
+
+    def get_recompute_amount_tax(self):
+        self.ensure_one()
+        amount_tax = 0.0
+        for line in self.lines:
+            taxes = line.tax_ids_after_fiscal_position.filtered(lambda t: t.company_id.id == line.order_id.company_id.id)
+            if taxes:
+                detail_taxes = taxes.compute_all(
+                    price_unit=line.original_price,
+                    currency=line.order_id.pricelist_id.currency_id,
+                    quantity=line.qty,
+                    product=line.product_id,
+                    partner=line.order_id.partner_id or False
+                )
+                amount_tax += sum(tax.get('amount', 0.0) for tax in detail_taxes['taxes'])
+        return amount_tax
 
     def action_view_invoice(self):
         action = super(InheritPosOrder, self).action_view_invoice()
@@ -373,7 +397,8 @@ class InheritPosOrderLine(models.Model):
                 product_id=promotion.program_id.product_discount_id,
                 price=-promotion.discount_total,
                 promotion=promotion.program_id,
-                promotion_type='ctkm'
+                promotion_type='ctkm',
+                is_state_registration=promotion.registering_tax
             ) for promotion in self.promotion_usage_ids
         ] + [
             self._prepare_pol_promotion_line(
@@ -388,7 +413,8 @@ class InheritPosOrderLine(models.Model):
                 price=-discount.money_reduced,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
-                if discount.type == 'point' else discount.type in ('product_defective', 'handle', 'change_refund'),
+                if discount.type == 'point' else pol.order_id.card_rank_program_id.check_registering_tax()
+                if discount.type == 'card' else discount.type in ('product_defective', 'handle', 'change_refund'),
                 promotion_type=discount.type
             ) for discount in self.discount_details_lines if discount.type in ('card', 'point', 'product_defective', 'handle', 'change_refund')
         ]

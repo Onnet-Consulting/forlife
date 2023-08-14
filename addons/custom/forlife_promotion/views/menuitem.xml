@@ -3,6 +3,7 @@
     <data>
 
         <menuitem id="promotion_root" name="Promotion" sequence="100"
+                  web_icon="forlife_promotion,static/description/icon.png"
                   groups="forlife_promotion.promotion_manager"/>
 
         <menuitem id="point_categ_menu" name="Point" parent="forlife_promotion.promotion_root" sequence="5"/>

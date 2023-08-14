@@ -20,9 +20,7 @@
             <field name="view_mode">tree</field>
         </record>
 
-        <menuitem id="integration_telegram_root_menu" name="Telegram" parent="base.menu_custom" sequence="22"/>
-
-        <menuitem id="integration_telegram_menu" parent="integration_telegram_root_menu" action="integration_telegram_action" sequence="10"/>
+        <menuitem id="integration_telegram_menu" parent="forlife_base.odoo_integration_telegram" action="integration_telegram_action" sequence="10"/>
 
     </data>
 </odoo>

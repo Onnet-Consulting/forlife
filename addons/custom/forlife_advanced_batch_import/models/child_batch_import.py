@@ -27,6 +27,8 @@ class ChildBatchImport(models.Model):
     file_type = fields.Char('File Type')
     file_length = fields.Integer(string="File Length")
     file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
+    file_record_done_from_rule = fields.Binary(string="File record valid", attachment=True)
+    file_record_done_from_rule_name = fields.Char('File record valid')
     file_invalid_records_name = fields.Char('Invalid records file')
 
     def rec_file_csv(self, file):
@@ -124,6 +126,7 @@ class ChildBatchImport(models.Model):
                             'file_length': file_length
                         })
                     rec.make_file_log_invalid_records(error_rows=error_rows)
+                    rec.make_file_record_done_from_rule(result_ids=result.get('ids'), error_rows=error_rows)
                     base_import_from_batch.sudo().unlink()
             except Exception as e:
                 rec.status = 'error'
@@ -229,6 +232,33 @@ class ChildBatchImport(models.Model):
                     'file_invalid_records_name': f"{rec.file_name.split('.')[0]}_invalid_records.{rec.file_name.split('.')[-1]}",
                     'file_invalid_records': encoded_output_data
                 })
+
+    def make_file_record_done_from_rule(self, result_ids, error_rows):
+        import pandas as pd
+        error_rows.sort()
+        decoded_data = base64.b64decode(self.file)
+        sheet_name = json.loads(self.parent_batch_import_id.options).get('sheet_name') if json.loads(self.parent_batch_import_id.options).get('sheet_name') else "Sheet1"
+        df = pd.read_excel(BytesIO(decoded_data), dtype=str)
+        # Lọc các hàng cần giữ lại
+        try:
+            filtered_df = df[[True if x not in error_rows else False for x in df.index.tolist()]]
+            products_valid = self.env['product.template'].sudo().search([('id','in',result_ids)])
+            filtered_df.update({'Mã SKU': [x.sku_code if x.sku_code else '' for x in products_valid], 'Mã barcode': [x.barcode if x.barcode else '' for x in products_valid]})
+            output = BytesIO()
+            writer = pd.ExcelWriter(output, engine='xlsxwriter')
+            filtered_df.to_excel(writer, sheet_name=sheet_name, index=False)
+            writer.close()
+            output.seek(0)
+
+            chunk_data = output.read()
+            chunk_data_base64 = base64.b64encode(chunk_data)
+            self.write({
+                'file_record_done_from_rule_name': f"{self.file_name.split('.')[0]}_valid_records.{self.file_name.split('.')[-1]}",
+                'file_record_done_from_rule': chunk_data_base64
+            })
+        except Exception as e:
+            self.log = e
+            _logger.info(e)
 
     def make_file_log_invalid_records_exel(self, error_rows=[]):
         import pandas as pd

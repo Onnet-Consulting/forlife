@@ -20,9 +20,7 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return res
         for picking in self:
-            if picking.state == 'done' and not picking.purchase_id.is_inter_company and \
-                    ((picking.purchase_id and picking.purchase_id.is_return) or \
-                     (picking.move_ids and picking.move_ids[0]._is_purchase_return())):
+            if picking.state == 'done' and not picking.purchase_id.is_inter_company and picking.x_is_check_return:
                 purchase_origin_id = picking.purchase_id if picking.purchase_id else picking.move_ids.purchase_line_id.origin_po_line_id.order_id
                 order_line = purchase_origin_id.order_line.filtered(lambda x: x.product_id.id in picking.move_ids.product_id.ids)
                 material_line = order_line.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product)
@@ -69,8 +67,7 @@ class StockPicking(models.Model):
             'purchase_type': po.purchase_type,
             'move_type': 'entry',
             'reference': po.name,
-            'journal_id': self.env['account.journal'].search([
-                ('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
+            'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
             'exchange_rate': po.exchange_rate,
             'date': datetime.now(),
             'invoice_payment_term_id': po.payment_term_id.id,
@@ -142,10 +139,14 @@ class StockPicking(models.Model):
                 'credit': 0.0,
                 'debit': (amount / qty_po_origin) * qty_po_done
             })]
+            total_after_credit = 0
+            length_move = len(self.move_ids)
+            i = 0
             for move in self.move_ids:
+                i += 1
                 if move.product_id.type in ('product', 'consu'):
                     svl_values.append((0, 0, {
-                        'value': (amount / qty_po_origin) * move.quantity_done,
+                        'value': - (amount / qty_po_origin) * move.quantity_done,
                         'unit_cost': amount / qty_po_origin,
                         'quantity': 0,
                         'remaining_qty': 0,
@@ -155,15 +156,24 @@ class StockPicking(models.Model):
                         'stock_move_id': move.id
                     }))
 
-                move_lines += [(0, 0, {
+                credit = (amount / qty_po_origin) * move.quantity_purchase_done
+                after_digit = credit - int(credit)
+                if i < length_move:
+                    total_after_credit += after_digit
+                else:
+                    credit += total_after_credit
+
+                vals = {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
                     'product_id':  move.product_id.id,
                     'name':  move.product_id.name,
                     'text_check_cp_normal': line.product_id.name,
-                    'credit': (amount / qty_po_origin) * move.quantity_purchase_done,
+                    'credit': credit,
                     'debit': 0.0,
-                })]
+                }
+
+                move_lines += [(0, 0, vals)]
 
             move_value.update({
                 'stock_valuation_layer_ids': svl_values,
