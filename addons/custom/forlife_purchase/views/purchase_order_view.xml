@@ -383,7 +383,6 @@
                         <field name="tolerance" string="Tolerance"/>
                         <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}"
                                sum="discounted subtotal" force_save="1"/>
-                        <field name="billed" attrs="{'invisible': [('billed', '=', False)]}"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
                         <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}" force_save="1"/>
