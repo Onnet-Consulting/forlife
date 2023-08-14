@@ -328,7 +328,7 @@ class PurchaseOrderLine(models.Model):
                         else:
                             total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
 
-                line.qty_returned = total
+                line.qty_returned = total/line.exchange_quantity
             else:
                 total = 0.0
                 if line.qty_received_method == 'stock_moves':
@@ -341,7 +341,7 @@ class PurchaseOrderLine(models.Model):
                 # Include qty of PO return
                 return_line = line.return_line_ids.filtered(lambda rl: rl.qty_received)
                 total += sum(return_line.mapped('qty_received'))
-                line.qty_returned = total
+                line.qty_returned = total/line.exchange_quantity
 
     @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom')
     def _compute_qty_received(self):

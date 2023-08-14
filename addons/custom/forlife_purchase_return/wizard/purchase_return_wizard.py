@@ -9,11 +9,12 @@ class PurchaseReturnWizardLine(models.TransientModel):
 
     wizard_id = fields.Many2one('purchase.return.wizard', string="Wizard")
     product_id = fields.Many2one('product.product', string="Product", required=True, domain="[('id', '=', product_id)]")
-    purchase_received = fields.Integer("Received Quantity", required=True)
-    purchase_returned = fields.Integer("Returned Quantity", required=True)
-    purchase_remain = fields.Integer("Remain Quantity", required=True)
+    purchase_received = fields.Float("Received Quantity", required=True)
+    purchase_returned = fields.Float("Returned Quantity", required=True)
+    purchase_remain = fields.Float("Remain Quantity", required=True)
     exchange_quantity = fields.Float("Exchange", digits='Product Unit of Measure', required=True)
-    quantity = fields.Integer("Quantity")
+    quantity = fields.Float("Quantity")
+    quantity_export = fields.Float("SL xuất kho")
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
     vendor_price = fields.Float(string="Vendor Price")
     price_unit = fields.Float(string="Unit Price")
@@ -94,7 +95,7 @@ class PurchaseReturnWizard(models.TransientModel):
     @api.model
     def _prepare_stock_return_purchase_line_vals(self, purchase_line, qty_received):
         purchase_received = qty_received/purchase_line.exchange_quantity
-        purchase_returned = purchase_line.qty_returned/purchase_line.exchange_quantity
+        purchase_returned = purchase_line.qty_returned
         exchange_quantity = purchase_line.exchange_quantity
         vendor_price = purchase_line.vendor_price
         price_unit = purchase_line.price_unit
@@ -105,6 +106,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'purchase_remain': purchase_received - purchase_returned,
             'exchange_quantity': exchange_quantity,
             'quantity': 0,
+            'quantity_export': purchase_line.qty_returned,
             'vendor_price': vendor_price,
             'price_unit': price_unit,
             'uom_id': purchase_line.purchase_uom.id,

@@ -343,7 +343,7 @@
                                invisible="1"/>
                         <field name="price_unit"
                                string="Đơn giá"
-                               attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
+                               attrs="{'readonly': ['|', ('billed', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
@@ -393,10 +393,10 @@
                                options="{'product_field': 'product_id', 'business_domain': 'purchase_order'}"/>
                         <field name="qty_received_manual" invisible="1"/>
                         <field name="qty_received_method" invisible="1"/>
-                        <field name="qty_received" string="Received"
+                        <field name="received" string="Đã nhận"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"
                                invisible="0"/>
-                        <field name="qty_invoiced" string="Billed"
+                        <field name="billed" string="Billed"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"
                                invisible="0"/>
                         <field name="product_packaging_qty"
