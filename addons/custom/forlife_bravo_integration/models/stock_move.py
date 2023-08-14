@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
+from datetime import datetime, timedelta
 
 CONTEXT_MOVE_ACTION = 'bravo_move_action'
 
@@ -9,15 +10,34 @@ class StockMove(models.Model):
     _name = 'stock.move'
     _inherit = ['stock.move', 'bravo.model.insert.action']
 
-    def _action_done(self, cancel_backorder=False):
-        res = super()._action_done(cancel_backorder=cancel_backorder)
+    @api.model
+    def sync_bravo_stock_move_daily(self, **kwargs):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-            return res
-        moves = self.filtered(lambda m: m.state == 'done')
-        insert_queries = moves.bravo_get_insert_sql()
-        if insert_queries:
-            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
-        return res
+            return False
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Datetime.now()
+        begin_date = (date + timedelta(days=-1)).replace(hour=17, second=0, minute=0)
+        end_date = date.replace(hour=17, second=0, minute=0)
+        domain = [
+            ('state', '=', 'done'),
+            ('date', '>=', begin_date),
+            ('date', '<', end_date),
+        ]
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for company in companies:
+            dm = domain + [('company_id', '=', company.id)]
+            picking_count = self.search_count(dm)
+            if picking_count > 0:
+                self._action_sync_stock_move(company, dm)
+
+    @api.model
+    def _action_sync_stock_move(self, company, domain):
+        records = self.with_company(company).search(domain)
+        for record in records:
+            insert_queries = record.bravo_get_insert_sql()
+            if insert_queries:
+                self.env[self._name].sudo().with_delay(
+                    description=f'Bravo: sync stock_move {record.name or record.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
+        return True
 
     @api.model
     def bravo_get_table(self):
