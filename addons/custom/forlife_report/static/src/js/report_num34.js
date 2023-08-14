@@ -1,4 +1,4 @@
-odoo.define('forlife_report.report_num12', function (require) {
+odoo.define('forlife_report.report_num34', function (require) {
     'use strict';
 
     const core = require('web.core');
@@ -6,24 +6,24 @@ odoo.define('forlife_report.report_num12', function (require) {
     const QWeb = core.qweb;
 
 
-    let ReportNum12Action = ReportBaseAction.extend({
+    let ReportNum34Action = ReportBaseAction.extend({
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .show-detail': 'show_detail',
         }),
 
         parse_data: function (data) {
-            this.title_layer2 = data.title_layer2;
+            this.transaction_detail_title = data.transaction_detail_title;
             this._super(...arguments);
         },
 
         show_detail: function (e) {
             this.key_data = e.currentTarget.id;
-            let data = this.data[this.key_data].value_detail;
-            this.$('#value-detail').html(QWeb.render("ReportValueDetailTemplate", {
-                "titles": this.title_layer2,
+            let data = this.data[this.key_data].value_detail || [];
+            this.$('#transaction-detail').html(QWeb.render("ReportTransactionDetailTemplate34", {
+                "titles": this.transaction_detail_title,
                 "data": data,
                 "report_type_id": 'data_detail',
-                "report_filename": 'Chi tiết.xlsx',
+                "report_filename": 'Chi tiết giao dịch.xlsx',
                 "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("show-detail");
@@ -38,8 +38,8 @@ odoo.define('forlife_report.report_num12', function (require) {
 
     })
 
-    core.action_registry.add('report_num12_action', ReportNum12Action)
+    core.action_registry.add('report_num34_action', ReportNum34Action)
 
-    return ReportNum12Action;
+    return ReportNum34Action;
 
 })

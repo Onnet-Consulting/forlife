@@ -136,7 +136,7 @@ class PosOrder(models.Model):
                 "ItemName": "Chiết khấu hạng thẻ",
                 "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
                 "TaxAmount": abs(value - value_not_tax),
                 "IsDiscount": 1,
@@ -197,7 +197,7 @@ class PosOrder(models.Model):
                     # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
                     "IsDiscount": 1 if line.is_promotion else 0
                 }
-                if vat != False:
+                if vat != False and not line.is_reward_line:
                     item.update({
                         "TaxRateID": tax_rate_id,
                         "TaxRate": vat

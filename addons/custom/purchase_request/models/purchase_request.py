@@ -56,7 +56,7 @@ class PurchaseRequest(models.Model):
     #check button orders_smart_button
     is_check_button_orders_smart_button = fields.Boolean(default=False)
 
-    receiver_id = fields.Many2one('hr.employee', string='Receiver')
+    x_receiver_id = fields.Many2one('res.users', string='Receiver')
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')

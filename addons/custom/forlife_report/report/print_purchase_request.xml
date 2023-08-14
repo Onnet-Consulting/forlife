@@ -67,32 +67,30 @@
                                     </tr>
                                     <tr class="x_bold">
                                         <td colspan="3">Người yêu cầu:
-                                            <span t-field="o.employee_id"/>
+                                            <span t-field="o.user_id"/>
                                         </td>
                                         <td colspan="3">Chức vụ:
-                                            <span t-field="o.employee_id.job_id"/>
+                                            <span t-field="o.user_id.function"/>
                                         </td>
                                         <td colspan="2">Email:
-                                            <span t-field="o.employee_id.work_email"/>
+                                            <span t-field="o.user_id.email"/>
                                         </td>
                                         <td>SĐT:
-                                            <span t-field="o.employee_id.mobile_phone"/>
+                                            <span t-field="o.user_id.phone"/>
                                         </td>
                                     </tr>
                                     <tr class="x_bold">
                                         <td colspan="3">Người nhận hàng:
-                                            <span t-field="o.receiver_id"/>
+                                            <span t-field="o.x_receiver_id"/>
                                         </td>
                                         <td colspan="3">Chức vụ:
-                                            <span t-field="o.receiver_id.job_id"/>
-                                            -
-                                            <span t-field="o.receiver_id.department_id"/>
+                                            <span t-field="o.x_receiver_id.function"/>
                                         </td>
                                         <td colspan="2">Email:
-                                            <span t-field="o.receiver_id.work_email"/>
+                                            <span t-field="o.x_receiver_id.email"/>
                                         </td>
                                         <td>SĐT:
-                                            <span t-field="o.receiver_id.mobile_phone"/>
+                                            <span t-field="o.x_receiver_id.phone"/>
                                         </td>
                                     </tr>
                                     <tr class="x_bold">
@@ -135,7 +133,7 @@
                                                 <span t-field="line.product_id.name"/>
                                             </td>
                                             <td>
-                                                <span t-field="line.purchase_uom"/>
+                                                <span t-field="line.product_uom"/>
                                             </td>
                                             <td class="x_center">
                                                 <span t-field="line.purchase_quantity"/>

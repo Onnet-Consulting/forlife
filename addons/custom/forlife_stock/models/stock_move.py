@@ -15,15 +15,6 @@ class StockMove(models.Model):
                 item['date'] = fields.Datetime.context_timestamp(self, self.picking_id.date_done).date()
         if self.picking_id.picking_type_id.code != 'incoming':
             return res
-        # line_ids = res[0].get('line_ids')
-        # po = self.env['purchase.order'].search([('name', '=', self.picking_id.origin), ('is_inter_company', '=', False)], limit=1)
-        # if not po:
-        #     return res
-        # for line in line_ids:
-        #     if 'amount_currency' in line[2]:
-        #         line[2]['balance'] = float(line[2]['amount_currency'] * po.exchange_rate)
-        #     else:
-        #         line[2]['balance'] = float(line[2]['balance'] * po.exchange_rate)
         return res
 
     def _get_price_unit(self):

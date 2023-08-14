@@ -279,7 +279,7 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if (is_tc_entry or self.is_tc) else 'QT',
+            'is_tc': is_tc_entry or self.is_tc,
             'journal_id': default_journal_id
         }
 

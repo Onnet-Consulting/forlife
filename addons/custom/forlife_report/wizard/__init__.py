@@ -32,3 +32,5 @@ from . import report_num29
 from . import report_num30
 from . import report_num31
 from . import report_num32
+from . import report_num33
+from . import report_num34
