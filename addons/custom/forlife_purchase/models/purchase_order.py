@@ -2438,34 +2438,11 @@ class PurchaseOrderLine(models.Model):
 
     def compute_received(self):
         for item in self:
-            if item.order_id:
-                st_picking = self.env['stock.picking'].search(
-                    [('origin', '=', item.order_id.name), ('state', '=', 'done')])
-                if st_picking:
-                    acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-                        'quantity_done')
-                    if item.qty_returned:
-                        item.received = sum(acc_move_line) - item.qty_returned
-                    else:
-                        item.received = sum(acc_move_line)
-                else:
-                    item.received = False
-            else:
-                item.received = False
+            item.received = item.qty_received/item.exchange_quantity - (item.qty_returned or 0)
 
     def compute_billed(self):
         for item in self:
-            if item.order_id:
-                acc_move = self.env['account.move'].search([('purchase_order_product_id', 'in', item.order_id.ids), ('state', '=', 'posted'), ('select_type_inv', '=', 'normal')])
-                if acc_move:
-                    acc_move_line = self.env['account.move.line'].search(
-                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id), ('po_id', '=', str(item.id))]).mapped('quantity')
-                    item.billed = sum(acc_move_line)
-                else:
-                    item.billed = False
-            else:
-                item.billed = False
+            item.billed = item.qty_invoiced/item.exchange_quantity
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
