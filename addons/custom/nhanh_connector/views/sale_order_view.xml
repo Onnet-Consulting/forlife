@@ -6,8 +6,10 @@
         <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
-                <field name="source_record"/>
+                <field name="source_record" optional="hide"/>
                 <field name="nhanh_id"/>
+                <field name="x_is_return"/>
+                <field name="x_is_change"/>
                 <field name="order_partner_id"/>
                 <field name="nhanh_order_status"/>
             </xpath>
@@ -21,8 +23,11 @@
             <xpath expr="//field[@name='state']" position="after">
                 <field name="source_record"/>
                 <field name="nhanh_id"/>
+                <field name="x_is_return"/>
+                <field name="x_is_change"/>
                 <field name="order_partner_id"/>
                 <field name="nhanh_order_status"/>
+                <field name="state"/>
             </xpath>
         </field>
     </record>
@@ -143,7 +148,25 @@
                 <filter string="Đang chuyển hoàn" name="nhanh_order_status_returning" domain="[('nhanh_order_status','=','returning')]"/>
                 <filter string="Đã chuyển hoàn" name="nhanh_order_status_returned" domain="[('nhanh_order_status','=','returned')]"/>
                 <separator/>
+                <filter string="Báo giá/Đã gửi" name="filter_draft" domain="[('state','in',('draft', 'sent'))]"/>
+                <filter string="Kiểm tra khuyến mãi" name="filter_check_promotion" domain="[('state', '=', 'check_promotion')]"/>
+                <filter string="Đơn bán hàng" name="filter_sales" domain="[('state', 'in', ('sale', 'done'))]"/>
+                <filter string="Hoàn thành" name="filter_done_sale" domain="[('state', '=', 'done_sale')]"/>
+                <filter string="Hủy" name="filter_cancel" domain="[('state', '=', 'done_cancel')]"/>
+                <separator/>
+                <filter string="Đơn trả hàng" name="filter_x_is_return" domain="[('x_is_return','=', True)]"/>
+                <filter string="Đơn đổi hàng" name="filter_x_is_change" domain="[('x_is_change','=', True)]"/>
+                <separator/>
                 <field name="nhanh_id" string="Id Nhanh.vn" filter_domain="[('nhanh_id', 'ilike', self)]"/>
+                <field name="nhanh_origin_id" string="Id đơn gốc Nhanh.vn" filter_domain="[('nhanh_origin_id', 'ilike', self)]"/>
+                <field name="nhanh_return_id" string="Id đơn trả Nhanh.vn" filter_domain="[('nhanh_return_id', 'ilike', self)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Sale Channel" name="groupby_sale_channel_id" domain="[]" context="{'group_by': 'sale_channel_id'}"/>
+                    <filter string="Khách Order" name="groupby_order_partner_id" domain="[]" context="{'group_by': 'order_partner_id'}"/>
+                    <filter string="Nhanh status" name="groupby_nhanh_order_status" domain="[]" context="{'group_by': 'nhanh_order_status'}"/>
+                    <filter string="Status" name="groupby_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Source Document" name="groupby_origin" domain="[]" context="{'group_by': 'origin'}"/>
+                </group>
             </filter>
         </field>
     </record>
