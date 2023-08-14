@@ -142,7 +142,7 @@ class ImportProductionFromExcel(models.TransientModel):
                     if not product_dict.get(m[2], False) and m[2] != '':
                         raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[2]))
                     if not uom_dict.get(m[6], False):
-                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[5]))
+                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[6]))
 
                     if (m[1].strip() == order[9] or not m[1]) or \
                             (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):

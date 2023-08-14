@@ -12,8 +12,8 @@
                     </div>
                     <group col="2">
                         <group>
-                            <field name="month" widget="selection"/>
-                            <field name="year"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
                             <label for="product_ids" string="Products"/>
                             <div class="o_row">
                                 <button name="btn_choice_values" type="object" string="Products" class="btn-secondary"

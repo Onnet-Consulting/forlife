@@ -12,7 +12,7 @@ TITLES = [
 class ReportNum28(models.TransientModel):
     _name = 'report.num32'
     _inherit = 'report.base'
-    _description = 'Truy vấn thông tin khách hàng'
+    _description = 'Tra cứu thông tin điểm tích lũy'
 
     brand = fields.Selection([('tokyolife', 'TokyoLife'), ('format', 'Format')], string='Thương hiệu', required=True)
     phone = fields.Char(string='Số điện thoại', required=True)
