@@ -42,6 +42,7 @@ class ForlifeProduction(models.Model):
     check_status = fields.Boolean(default=False)
     machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
     leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
+    production_price = fields.Float(string='Đơn giá nhân công')
 
     def action_draft(self):
         for record in self:
