@@ -76,12 +76,12 @@
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
                            string="Địa điểm xuất NPL"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)], 'required': [('is_check_line_material_line', '=', False)]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)], 'required': ['|', ('is_check_line_material_line', '=', False), ('purchase_type', '!=', 'product')]}"/>
 
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
                            string="Địa điểm nhập NPL"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', False)], 'required': [('is_check_line_material_line', '=', False)]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', False)], 'required': ['|', ('is_check_line_material_line', '=', False), ('purchase_type', '!=', 'product')]}"/>
                 </xpath>
             </field>
         </record>
