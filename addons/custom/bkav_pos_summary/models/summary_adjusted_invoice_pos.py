@@ -280,6 +280,7 @@ class SummaryAdjustedInvoicePosLine(models.Model):
 
     line_pk = fields.Char('Line primary key')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.pos')
+    adjusted_code = fields.Char('Mã hóa đơn điều chỉnh', related="adjusted_invoice_id.code")
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
@@ -299,6 +300,7 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
     
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', 'adjusted_line_id')
+    synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn gốc')
 
 
     @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
