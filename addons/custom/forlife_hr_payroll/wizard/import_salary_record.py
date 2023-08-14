@@ -239,6 +239,8 @@ class ImportSalaryRecord(models.TransientModel):
         return purpose_by_code, error_by_code
 
     def map_employee_data(self, data):
+        if not data:
+            return {}, {}
         employees = self.env['hr.employee'].search(
             ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
              '|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
@@ -457,7 +459,7 @@ class ImportSalaryRecord(models.TransientModel):
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
                     'asset_id': project_by_code.get(project_code) or False,
-                    'x_slns': float(row[5]) if row[5] else False,
+                    'x_slns': float(row[5]) if row[5] else 0,
                 }
                 res.append(value)
 
@@ -526,7 +528,7 @@ class ImportSalaryRecord(models.TransientModel):
                     'asset_id': project_by_code.get(project_code) or False,
                     'production_id': manufacturing_by_code.get(manufacturing_code) or False,
                     'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
-                    'x_ttn': float(row[7]) if row[7] else False,
+                    'x_ttn': float(row[7]) if row[7] else 0,
                     'note': row[8],
                 }
                 res.append(value)
@@ -595,18 +597,18 @@ class ImportSalaryRecord(models.TransientModel):
                     'asset_id': project_by_code.get(project_code) or False,
                     'production_id': manufacturing_by_code.get(manufacturing_code) or False,
                     'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
-                    'x_bhxh_level': float(row[7]),
-                    'x_bhxh_nld': float(row[8]),
-                    'x_bhyt_nld': float(row[9]),
-                    'x_bhtn_nld': float(row[10]),
-                    'x_tbh_nld': float(row[11]),
-                    'x_bhxh_bhbnn_tnld_ct': float(row[12]),
-                    'x_bhyt_ct': float(row[13]),
-                    'x_bhtn_ct': float(row[14]),
-                    'x_tbh_ct': float(row[15]),
-                    'x_cdp_ct': float(row[16]),
-                    'x_cdp_nld': float(row[17]),
-                    'x_tncn': float(row[18]),
+                    'x_bhxh_level': float(row[7]) if row[7] else 0,
+                    'x_bhxh_nld': float(row[8]) if row[8] else 0,
+                    'x_bhyt_nld': float(row[9]) if row[9] else 0,
+                    'x_bhtn_nld': float(row[10]) if row[10] else 0,
+                    'x_tbh_nld': float(row[11]) if row[11] else 0,
+                    'x_bhxh_bhbnn_tnld_ct': float(row[12]) if row[12] else 0,
+                    'x_bhyt_ct': float(row[13]) if row[13] else 0,
+                    'x_bhtn_ct': float(row[14]) if row[14] else 0,
+                    'x_tbh_ct': float(row[15]) if row[15] else 0,
+                    'x_cdp_ct': float(row[16]) if row[16] else 0,
+                    'x_cdp_nld': float(row[17]) if row[17] else 0,
+                    'x_tncn': float(row[18]) if row[18] else 0,
                     'note': row[19],
                 }
                 res.append(value)
@@ -682,21 +684,21 @@ class ImportSalaryRecord(models.TransientModel):
                     'asset_id': project_by_code.get(project_code) or False,
                     'production_id': manufacturing_by_code.get(manufacturing_code) or False,
                     'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
-                    'x_kq': float(row[9]),
-                    'x_tkdp': float(row[10]),
-                    'x_pvp': float(row[11]),
-                    'x_tthh': float(row[12]),
-                    'x_thl': float(row[13]),
-                    'x_dpfm': float(row[14]),
-                    'x_pds': float(row[15]),
-                    'x_ttl': float(row[16]),
-                    'x_ttpc': float(row[17]),
-                    'x_tu': float(row[18]),
-                    'x_tk': float(row[19]),
-                    'x_bhxh_cn': float(row[20]),
-                    'x_bhyt_cn': float(row[21]),
-                    'x_bhxh_bhbnn_tnld_cn': float(row[22]),
-                    'x_ttbh': float(row[23]),
+                    'x_kq': float(row[9]) if row[9] else 0,
+                    'x_tkdp': float(row[10]) if row[10] else 0,
+                    'x_pvp': float(row[11]) if row[11] else 0,
+                    'x_tthh': float(row[12]) if row[12] else 0,
+                    'x_thl': float(row[13]) if row[13] else 0,
+                    'x_dpfm': float(row[14]) if row[14] else 0,
+                    'x_pds': float(row[15]) if row[15] else 0,
+                    'x_ttl': float(row[16]) if row[16] else 0,
+                    'x_ttpc': float(row[17]) if row[17] else 0,
+                    'x_tu': float(row[18]) if row[18] else 0,
+                    'x_tk': float(row[19]) if row[19] else 0,
+                    'x_bhxh_cn': float(row[20]) if row[20] else 0,
+                    'x_bhyt_cn': float(row[21]) if row[21] else 0,
+                    'x_bhxh_bhbnn_tnld_cn': float(row[22]) if row[22] else 0,
+                    'x_ttbh': float(row[23]) if row[23] else 0,
                     'note': row[24],
                 }
                 res.append(value)
