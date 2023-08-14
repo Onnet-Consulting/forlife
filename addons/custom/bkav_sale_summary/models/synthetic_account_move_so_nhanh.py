@@ -147,9 +147,9 @@ class SyntheticAccountMoveSoNhanh(models.Model):
                 "Invoice": {
                     "InvoiceTypeID": 1,
                     "InvoiceDate": str(invoice_date).replace(' ', 'T'),
-                    "BuyerName": 'Khách lẻ',
+                    "BuyerName": 'Khách hàng không lấy hoá đơn',
                     "BuyerTaxCode": '',
-                    "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
+                    "BuyerUnitName": '',
                     "BuyerAddress": '',
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
@@ -171,7 +171,13 @@ class SyntheticAccountMoveSoNhanh(models.Model):
                 "PartnerInvoiceStringID": ln.code,
             }
             for line in ln.line_ids:
-                if line.product_id.voucher or line.product_id.is_voucher_auto:
+                if not line.product_id:
+                    continue
+                if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
+                    continue
+                
+                product_tmpl_id =  line.product_id.product_tmpl_id
+                if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
                     continue
                     
                 line_invoice = {

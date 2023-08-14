@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num32</field>
         <field name="arch" type="xml">
-            <form string="Tra cứu thông tin khách hàng" create="0">
+            <form string="Tra cứu thông tin điểm tích lũy" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
@@ -21,7 +21,7 @@
     </record>
 
     <record id="report_num32_window_action" model="ir.actions.act_window">
-        <field name="name">Tra cứu thông tin khách hàng</field>
+        <field name="name">Tra cứu thông tin điểm tích lũy</field>
         <field name="res_model">report.num32</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

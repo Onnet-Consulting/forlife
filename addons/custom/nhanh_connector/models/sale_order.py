@@ -661,63 +661,19 @@ class SaleOrderNhanh(models.Model):
 
     def create_stock_picking_so_from_nhanh_with_return_so(self):
         so_id = self.x_origin
-        picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
-        for picking in picking_ids:
-            product_ids = {}
-            for line in self.order_line:
-                product_ids[line.product_id.id] = line.product_uom_qty
-            move_ids = picking.move_ids.filtered(lambda r: r.product_id.id in list(product_ids.keys()))
-            if len(move_ids):
-                stock_return_picking_form = Form(
-                    self.env['stock.return.picking'].with_context(active_id=picking.id,
-                                                                  active_model='stock.picking')
-                )
-                return_wiz = stock_return_picking_form.save()
-                quantity = 0
-                for product_return_move in return_wiz.product_return_moves:
-                    if not product_ids.get(product_return_move.product_id.id):
-                        product_return_move.unlink()
-                    else:
-                        qty = product_ids[product_return_move.product_id.id]
-                        if qty > 0:
-                            if product_return_move.quantity >= qty:
-                                product_return_move.write({"quantity": qty})
-                                product_ids.pop(product_return_move.product_id.id)
-                            else:
-                                product_ids[product_return_move.product_id.id] = qty - product_return_move.quantity
-
-                        quantity += product_return_move.quantity
-                return_wiz.product_return_moves.quantity = quantity
-                return_wiz.product_return_moves.to_refund = True
-                new_picking_id, pick_type_id = return_wiz.with_context(so_return=self.id)._create_returns()
-                new_picking = self.env['stock.picking'].sudo().browse([new_picking_id])
-                for item in new_picking:
-                    
-                    item.write({"location_dest_id": picking.location_id.id})
+        picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done' and p.company_id.id == self.company_id.id)
+        for picking_id in picking_ids:
+            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(
+                active_ids=picking_id.ids, 
+                active_id=picking_id.id, 
+                active_model='stock.picking', 
+                so_return=self.id
+            ))
+            ctx = {
+                'so_return': self.id,
+                'x_return': True,
+                'picking_id': picking_id.id,
+            }
+            return_wiz = stock_return_picking_form.save()
+            stock_return_picking_action = return_wiz.with_context(ctx)._create_returns()
         self.state = 'sale'
-        # new_picking_ids = self.picking_ids.filtered(lambda r: r.company_id.id == self.company_id.id)
-        # for item in new_picking_ids:
-        #     is_create_invoice_out_refund = True
-        #     for line in item.move_line_ids:
-        #         res_id = f"product.category,{line.product_id.product_tmpl_id.categ_id.id}"
-        #         ir_property = self.env['ir.property'].sudo().search([
-        #             ('name', '=', 'x_property_account_return_id'),
-        #             ('res_id', '=', res_id),
-        #             ('company_id', '=', self.company_id.id)
-        #         ],limit=1)
-        #         if not ir_property:
-        #             is_create_invoice_out_refund = False
-        #             break
-
-        #     if is_create_invoice_out_refund:
-        #         try:
-        #             item.create_invoice_out_refund()
-        #         except Exception as e:
-        #             pass
-
-    
-
-                
-
-
-                                

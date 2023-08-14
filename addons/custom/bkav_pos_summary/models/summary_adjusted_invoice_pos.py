@@ -229,7 +229,13 @@ class SummaryAdjustedInvoicePos(models.Model):
                 "PartnerInvoiceStringID": ln.code,
             }
             for line in ln.line_ids:
-                if line.product_id.voucher or line.product_id.is_voucher_auto:
+                if not line.product_id:
+                    continue
+                if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
+                    continue
+                
+                product_tmpl_id =  line.product_id.product_tmpl_id
+                if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
                     continue
 
                 line_invoice = {
@@ -280,6 +286,7 @@ class SummaryAdjustedInvoicePosLine(models.Model):
 
     line_pk = fields.Char('Line primary key')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.pos')
+    adjusted_code = fields.Char('Mã hóa đơn điều chỉnh', related="adjusted_invoice_id.code")
     product_id = fields.Many2one('product.product', string="Sản phẩm")
     description = fields.Char('Mô tả')
     account_id = fields.Many2one('account.account', 'Tài khoản')
@@ -299,6 +306,7 @@ class SummaryAdjustedInvoicePosLine(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
     
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', 'adjusted_line_id')
+    synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn gốc')
 
 
     @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
@@ -331,7 +339,7 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
     )
 
     def get_tax_amount(self):
-        return (1 + sum(line.tax_ids.mapped("amount"))/100)
+        return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
 
     @api.depends('tax_ids', 'price_unit_incl')
