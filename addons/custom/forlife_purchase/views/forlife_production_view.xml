@@ -56,9 +56,9 @@
                             <field name="management_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="production_department" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="brand_id" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
-
                             <field name="produced_from_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                             <field name="to_date" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
+                            <field name="production_price" attrs="{'readonly':[ ('state', '=', 'approved')]}"/>
                         </group>
                     </group>
                     <div style="text-align: right;">
