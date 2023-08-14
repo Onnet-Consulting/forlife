@@ -99,9 +99,9 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
                 "Invoice": {
                     "InvoiceTypeID": 1,
                     "InvoiceDate": str(invoice_date).replace(' ', 'T'),
-                    "BuyerName": 'Khách lẻ',
+                    "BuyerName": 'Khách hàng không lấy hoá đơn',
                     "BuyerTaxCode": '',
-                    "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
+                    "BuyerUnitName": '',
                     "BuyerAddress": '',
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
