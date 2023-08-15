@@ -12,6 +12,7 @@
                     <field name="month"/>
                     <field name="year"/>
                     <field name="is_tc"/>
+                    <field name="department_id"/>
                     <field name="create_date"/>
                     <field name="create_uid"/>
                     <field name="version"/>
@@ -64,6 +65,7 @@
                             <field name="version"/>
                             <field name="note"/>
                             <field name="is_tc"/>
+                            <field name="department_id"/>
                         </group>
                         <group>
                             <field name="create_date"/>
@@ -107,6 +109,8 @@
                 <search string="Search">
                     <field name="name"/>
                     <field name="company_id"/>
+                    <field name="is_tc"/>
+                    <field name="department_id"/>
                     <field name="type_id"/>
                     <field name="month"/>
                     <field name="year"/>

@@ -62,12 +62,13 @@ class AccountMoveBKAV(models.Model):
         return super().copy(default)
 
     def _get_vat_line_bkav(self,vat_id, price_unit):
-        vat = False
+        vat = -1
+        tax_rate_id = 4
         if vat_id:
             vat = vat_id.amount
             if vat_id.price_include:
                 price_unit = round(price_unit/(1+vat_id.amount/100))
-        if vat == 0 and vat != False:
+        if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
@@ -75,8 +76,6 @@ class AccountMoveBKAV(models.Model):
             tax_rate_id = 9
         elif vat == 10:
             tax_rate_id = 3
-        else:
-            tax_rate_id = 4
         return vat, tax_rate_id, price_unit
 
 
@@ -88,6 +87,7 @@ class AccountMoveBKAV(models.Model):
             else:
                 invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
+            sign = 1 if (invoice.move_type == 'out_invoice') else -1
             exchange_rate = invoice.exchange_rate or 1.0
             for line in invoice.invoice_line_ids:
                 item_name = (line.product_id.name or line.name) if (
@@ -99,15 +99,18 @@ class AccountMoveBKAV(models.Model):
                 item = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": abs(line.quantity) or 0.0,
-                    "Price": abs(price_unit),
-                    "Amount": line.price_subtotal,
-                    "TaxAmount": (line.tax_amount or 0.0),
+                    "Qty": abs(line.quantity)*sign,
+                    "Price": abs(price_unit)*sign,
+                    "Amount": abs(line.price_subtotal)*sign,
+                    "TaxAmount": 0,
                     "ItemTypeID": 0,
-                    "IsDiscount": 0
+                    "IsDiscount": 0,
+                    "TaxRateID": 4,
+                    "TaxRate": -1
                 }
-                if vat != False:
+                if vat != -1:
                     item.update({
+                        "TaxAmount": abs(line.tax_amount or 0.0)*sign,
                         "TaxRateID": tax_rate_id,
                         "TaxRate": vat
                     })

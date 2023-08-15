@@ -182,6 +182,16 @@ class PurchaseRequest(models.Model):
             raise ValidationError("Bạn chỉ có thể xóa một bản ghi trong trạng thái nháp và hủy")
         return super(PurchaseRequest, self).unlink()
 
+    def wizard_create_purchase_orders(self):
+        return {
+            'name': ('Tạo đơn mua hàng'),
+            'view_mode': 'form',
+            'view_id': self.env.ref('purchase_request.select_type_wizard_from').id,
+            'res_model': 'select.type.po',
+            'type': 'ir.actions.act_window',
+            'target': 'new'
+        }
+
     def create_purchase_orders(self):
         self.is_check_button_orders_smart_button = True
         order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False)
@@ -226,7 +236,7 @@ class PurchaseRequest(models.Model):
                     'request_purchases': line.purchase_request,
                     'production_id': line.production_id.id,
                     'account_analytic_id': line.account_analytic_id.id,
-                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
+                    'occasion_code_id': self[0].occasion_code_id.id if self[0].occasion_code_id else False,
                     'date_planned': line.date_planned,
                 }))
             if po_line_data:
@@ -236,20 +246,20 @@ class PurchaseRequest(models.Model):
                 source_document = ', '.join(name_pr)
                 po_data = {
                     'is_inter_company': False,
-                    'type_po_cost': self.type_po,
+                    'type_po_cost': self[0].type_po,
                     'is_check_readonly_partner_id': True if vendor_id else False,
                     'is_check_readonly_purchase_type': True if product_type else False,
                     'is_purchase_request': True,
                     'partner_id': vendor_id,
                     'purchase_type': product_type,
-                    'purchase_request_ids': [(6, 0, lines[0].request_id.ids)],
+                    'purchase_request_ids': [(6, 0, self.ids)],
                     'order_line': po_line_data,
-                    'occasion_code_id': self.occasion_code_id.id if self.occasion_code_id else False,
-                    'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
-                    'production_id': self.production_id.id if self.production_id else False,
+                    'occasion_code_id': self[0].occasion_code_id.id if self[0].occasion_code_id else False,
+                    'account_analytic_id': self[0].account_analytic_id.id if self[0].account_analytic_id else False,
+                    'production_id': self[0].production_id.id if self[0].production_id else False,
                     'source_document': source_document,
-                    'date_planned': self.date_planned if len(self) == 1 else False,
-                    'currency_id': lines[0].currency_id.id if lines[0].currency_id else self.env.company.currency_id.id,
+                    'date_planned': self[0].date_planned if len(self) == 1 else False,
+                    'currency_id': lines[0].currency_id.id if lines[0].currency_id else self[0].env.company.currency_id.id,
                 }
                 purchase_order |= purchase_order.create(po_data)
         return {
@@ -287,7 +297,7 @@ class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
-    is_close = fields.Boolean(string='Is Close', default=False)
+    is_close = fields.Boolean(string='Is Close', default=False, copy=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     purchase_product_type = fields.Selection(related='product_id.product_type', string='Type', store=0)
@@ -352,9 +362,7 @@ class PurchaseRequestLine(models.Model):
     @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty', 'purchase_order_line_ids.order_id.custom_state')
     def _compute_order_quantity(self):
         for rec in self:
-            if rec.purchase_order_line_ids.order_id.filtered(lambda r: r.custom_state == 'approved'):
-                rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
-                ### sửa thành vào hàm approved ở po
+            rec.order_quantity = sum(rec.purchase_order_line_ids.filtered(lambda r: r.order_id.custom_state == 'approved').mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):

@@ -48,7 +48,36 @@ class InheritPosOrder(models.Model):
             # else:
             credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
             credit_account_id = (credit_account['income'] or credit_account['expense']).id
-
+        compute_all_taxes = order_line.tax_ids.compute_all(
+            price_unit=order_line.price_unit,
+            currency=order_line.currency_id,
+            quantity=order_line.qty,
+            product=order_line.product_id,
+            partner=order_line.order_id.partner_id or False,
+            is_refund=order_line.price_unit*order_line.qty < 0 or False,
+            handle_price_include=True,
+            include_caba_tags=True,
+            fixed_multiplicator=1,
+        )
+        tax_lines = [{
+            **{
+                'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                'group_tax_id': tax['group'] and tax['group'].id or False,
+                'account_id': tax['account_id'],
+                'currency_id': order_line.order_id.pricelist_id.currency_id.id,
+                'tax_ids': [(6, 0, tax['tax_ids'])],
+                'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                'partner_id': order_line.order_id.partner_id.id or partner_id or False,
+                'display_type': 'tax',
+            }, **{
+                'name': tax['name'] + ' (Dòng thuế)',
+                'balance': -tax['amount'],
+                'amount_currency': -tax['amount'],
+                'tax_base_amount': tax['base'],
+            }
+        }
+            for tax in compute_all_taxes['taxes']
+            if tax['amount']]
         return [
             (0, 0, {
                 'partner_id': partner_id,
@@ -64,24 +93,24 @@ class InheritPosOrder(models.Model):
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'product',
                 'account_id': credit_account_id or None,
-                'credit': 0,
-                'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
+                'debit': -order_line.price_subtotal if order_line.price_subtotal < 0 else 0.0,
+                'credit': order_line.price_subtotal if order_line.price_subtotal >= 0 else 0.0,
             }), (0, 0, {
                 'partner_id': customer_id or False,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
-                'product_id': order_line.product_id.id,
-                'quantity': 1,
-                'discount': order_line.discount,
-                'price_unit': order_line.price_subtotal_incl,
+                # 'product_id': order_line.product_id.id,
+                # 'quantity': 1,
+                # 'discount': order_line.discount,
+                # 'price_unit': order_line.price_subtotal_incl,
                 'name': name,
-                'product_uom_id': order_line.product_uom_id.id,
+                # 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'payment_term',
                 'account_id': order_line.order_id.partner_id.property_account_receivable_id.id,
-                'credit': order_line.price_subtotal_incl if order_line.price_subtotal_incl >= 0 else -order_line.price_subtotal_incl,
-                'debit': 0,
-            })
-        ]
+                'credit': -order_line.price_subtotal_incl if order_line.price_subtotal_incl < 0 else 0.0,
+                'debit': order_line.price_subtotal_incl if order_line.price_subtotal_incl >= 0 else 0.0
+            }),
+        ] + [(0, 0, tax_val) for tax_val in tax_lines]
 
     def create_promotion_account_move(self):
         self.ensure_one()
@@ -125,8 +154,9 @@ class InheritPosOrder(models.Model):
                 }
 
         if values:
-            results = results.create([values[k] for k in values])
-            results._post()
+            results = results.with_context(pos_entry=True).create([values[k] for k in values])
+            results.line_ids.filtered(lambda l: l.display_type == 'tax').partner_id = self.session_id.config_id.store_id.contact_id.id
+            results.with_context(pos_entry=False)._post()
         return results
 
     @api.model
@@ -302,6 +332,23 @@ class InheritPosOrder(models.Model):
         })
         return action
 
+    def show_journal_items(self):
+        self.ensure_one()
+        return {
+            'name': _('Journal Items'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move.line',
+            'view_mode': 'tree',
+            'view_id': self.env.ref('account.view_move_line_tree').id,
+            'domain': [('id', 'in', self.invoice_ids.mapped('line_ids').ids)],
+            'context': {
+                'journal_type': 'general',
+                'search_default_group_by_move': 1,
+                'group_by': 'move_id', 'search_default_posted': 1,
+            },
+        }
+
+
 
 class InheritPosOrderLine(models.Model):
     _inherit = 'pos.order.line'
@@ -342,20 +389,22 @@ class InheritPosOrderLine(models.Model):
                 is_state_registration = point_promotion.check_validity_state_registration()
         self.is_state_registration = is_state_registration
 
-    def _prepare_pol_promotion_line(self, product_id, price, promotion, is_state_registration=False, promotion_type=None):
+    def _prepare_pol_promotion_line(self, product_id, price, qty, promotion, is_state_registration=False, promotion_type=None):
         if promotion._name == 'promotion.program' and not product_id:
             raise ValidationError(_('No product that represent the promotion %s!', promotion.name))
         taxes = self.product_id.taxes_id if is_state_registration else product_id.taxes_id
-        price_unit = taxes.compute_all(price)['total_excluded']
+        tax_result = taxes.compute_all(price_unit=price, quantity=qty)
+        total_excluded = tax_result['total_excluded']
+        total_included = tax_result['total_included']
         return {
             'order_id': self.order_id.id,
             'product_src_id': self.id,
             'promotion_id': promotion.id,
             'promotion_model': promotion._name,
             'qty': 1 if not self.refunded_orderline_id else -1,
-            'price_unit': price_unit,
-            'price_subtotal': price_unit,
-            'price_subtotal_incl': price,
+            'price_unit': price,
+            'price_subtotal': total_excluded,
+            'price_subtotal_incl': total_included,
             'discount': 0,
             'product_id': product_id.id,
             'tax_ids': [[6, False, taxes.ids]],
@@ -395,7 +444,8 @@ class InheritPosOrderLine(models.Model):
         return [
             self._prepare_pol_promotion_line(
                 product_id=promotion.program_id.product_discount_id,
-                price=-promotion.discount_total,
+                price=-abs(promotion.discount_total),
+                qty=self.qty,
                 promotion=promotion.program_id,
                 promotion_type='ctkm',
                 is_state_registration=promotion.registering_tax
@@ -410,7 +460,8 @@ class InheritPosOrderLine(models.Model):
                     'product_default_pos_handle_discount_id' if discount.type == 'handle' else
                     'product_default_pos_return_goods_id'
                 ],
-                price=-discount.money_reduced,
+                price=-abs(discount.money_reduced),
+                qty=self.qty,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
                 if discount.type == 'point' else pol.order_id.card_rank_program_id.check_registering_tax()

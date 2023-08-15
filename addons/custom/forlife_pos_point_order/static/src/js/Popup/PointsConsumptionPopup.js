@@ -53,9 +53,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             var points_of_customer = this.props.points_of_customer;
             var quantity_product_apply_all = 0;
             var quantity_product_valid = 0;
-            for (let index = 0; index < this.env.pos.selectedOrder.orderlines.length; index++) {
-                if(!this.env.pos.selectedOrder.orderlines[index].is_product_defective){
-                    quantity_product_apply_all += this.env.pos.selectedOrder.orderlines[index].quantity
+            for (let index = 0; index < product_valid_apply_all.length; index++) {
+                if(!product_valid_apply_all[index].is_product_defective){
+                    quantity_product_apply_all += product_valid_apply_all[index].quantity
                 }
 
             }

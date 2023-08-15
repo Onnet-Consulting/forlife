@@ -2438,34 +2438,13 @@ class PurchaseOrderLine(models.Model):
 
     def compute_received(self):
         for item in self:
-            if item.order_id:
-                st_picking = self.env['stock.picking'].search(
-                    [('origin', '=', item.order_id.name), ('state', '=', 'done')])
-                if st_picking:
-                    acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
-                        'quantity_done')
-                    if item.qty_returned:
-                        item.received = sum(acc_move_line) - item.qty_returned
-                    else:
-                        item.received = sum(acc_move_line)
-                else:
-                    item.received = False
-            else:
-                item.received = False
+            qty_received = sum(item._get_po_line_moves().filtered(lambda x: not x.to_refund and x.state == 'done').mapped('quantity_done'))
+            qty_returned = item.qty_returned or 0
+            item.received = qty_received/item.exchange_quantity - qty_returned if qty_received and item.exchange_quantity else 0
 
     def compute_billed(self):
         for item in self:
-            if item.order_id:
-                acc_move = self.env['account.move'].search([('purchase_order_product_id', 'in', item.order_id.ids), ('state', '=', 'posted'), ('select_type_inv', '=', 'normal')])
-                if acc_move:
-                    acc_move_line = self.env['account.move.line'].search(
-                        [('move_id', 'in', acc_move.ids), ('product_id', '=', item.product_id.id), ('po_id', '=', str(item.id))]).mapped('quantity')
-                    item.billed = sum(acc_move_line)
-                else:
-                    item.billed = False
-            else:
-                item.billed = False
+            item.billed = item.qty_invoiced/item.exchange_quantity if item.exchange_quantity else 0
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
@@ -3364,7 +3343,6 @@ class StockPicking(models.Model):
                         if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                         if material_line.price_unit > 0:
-                            # pbo = material_line.price_unit * r.quantity_done/item.product_qty
                             pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
@@ -3387,7 +3365,6 @@ class StockPicking(models.Model):
                             'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
-                            # 'reason_type_id': reason_type_6.id,
                             'reason_id': export_production_order.id,
                         }))
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
