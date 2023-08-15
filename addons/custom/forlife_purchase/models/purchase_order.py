@@ -84,9 +84,17 @@ class PurchaseOrder(models.Model):
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    trade_tax_id = fields.Many2one(comodel_name='account.tax', string='Thuế VAT cùa chiết khấu(%)', domain="[('type_tax_use', '=', 'purchase'), ('company_id', '=', company_id)]")
     x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
     x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+    total_trade_discounted = fields.Float(string='Tổng chiết khấu thương mại đã lên hóa đơn', compute='compute_total_trade_discounted')
     location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
+
+
+    def compute_total_trade_discounted(self):
+        for r in self:
+            move_ids = r.order_line.invoice_lines.move_id.filtered(lambda x: x.state == 'posted')
+            r.total_trade_discounted = sum(move_ids.mapped('total_trade_discount'))
 
     def _get_department_default(self):
         user_id = self.env['res.users'].browse(self._uid)
@@ -207,6 +215,13 @@ class PurchaseOrder(models.Model):
     def onchange_date_planned(self):
         if self.date_planned:
             self.order_line.filtered(lambda line: not line.display_type).date_planned = self.date_planned
+
+    @api.onchange('trade_tax_id')
+    def onchange_trade_tax_id(self):
+        if self.trade_tax_id:
+            self.x_tax = self.trade_tax_id.amount
+        else:
+            self.x_tax = 0
 
     @api.onchange('partner_id')
     def onchange_vendor_code(self):
@@ -451,14 +466,14 @@ class PurchaseOrder(models.Model):
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
         if self.trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_total') * (self.trade_discount / 100)
+            if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+                self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
         if self.total_trade_discount:
-            if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
-                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
+            if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
 
     def action_confirm(self):
         for record in self:
@@ -1700,10 +1715,11 @@ class PurchaseOrder(models.Model):
                     'type_inv': self.type_po_cost,
                     'select_type_inv': self.select_type_inv,
                     'is_check_select_type_inv': True,
-                    'trade_discount': self.trade_discount,
-                    'total_trade_discount': self.total_trade_discount,
-                    'x_tax': self.x_tax,
-                    'x_amount_tax': self.x_amount_tax,
+                    'trade_discount': self.trade_discount if self.total_trade_discounted == 0 else 0,
+                    'total_trade_discount': self.total_trade_discount if self.total_trade_discounted == 0 else 0,
+                    'x_tax': self.x_tax if self.total_trade_discounted == 0 else 0,
+                    'trade_tax_id': self.trade_tax_id.id if self.total_trade_discounted == 0 else False,
+                    'x_amount_tax': self.x_amount_tax if self.total_trade_discounted == 0 else 0,
                     'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
