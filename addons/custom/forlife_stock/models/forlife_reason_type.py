@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 class ForlifeReasonType(models.Model):
     _name = 'forlife.reason.type'
     _description = "Forlife reason"
+    _rec_name = 'name'
+    _rec_names_search = ['code']
 
     name = fields.Char(string="Name")
     code = fields.Char(string="Code")
