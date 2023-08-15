@@ -2,7 +2,14 @@
 <templates id="template" xml:space="preserve">
     <t t-name="forlife_pos_point_order.EditListPopup" t-inherit="point_of_sale.EditListPopup" t-inherit-mode="extension" owl="1">
         <xpath expr="//main" position="inside">
+            <t t-if="!this.state.isBarcodeInput">
                 <a href="#" style="color: #8D7069; margin-left: -254px;font-size: 15px;" t-on-click="createNewItem">Thêm số lô/seri</a>
+            </t>
+        </xpath>
+    </t>
+    <t t-name="forlife_pos_point_order.EditListInput" t-inherit="point_of_sale.EditListInput" t-inherit-mode="extension" owl="1">
+        <xpath expr="//input" position="attributes">
+            <attribute name="placeholder"></attribute>
         </xpath>
     </t>
 </templates>
