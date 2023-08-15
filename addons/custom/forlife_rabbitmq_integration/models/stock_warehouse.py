@@ -13,7 +13,9 @@ class StockWarehouse(models.Model):
 
     @api.model
     def domain_record_sync_info(self):
-        return [('whs_type.code', 'in', ('3', '4', '5'))]
+        return ['|', '&', ('company_id.code', '!=', False), '&',
+                ('company_id.code', '=', '1400'), ('whs_type.code', 'in', ('3', '4')),
+                '&', ('company_id.code', '!=', '1400'), ('whs_type.code', 'in', ('1', '2', '5'))]
 
     def get_sync_info_value(self):
         return [{
