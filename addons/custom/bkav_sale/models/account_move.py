@@ -62,12 +62,13 @@ class AccountMoveBKAV(models.Model):
         return super().copy(default)
 
     def _get_vat_line_bkav(self,vat_id, price_unit):
-        vat = False
+        vat = -1
+        tax_rate_id = 4
         if vat_id:
             vat = vat_id.amount
             if vat_id.price_include:
                 price_unit = round(price_unit/(1+vat_id.amount/100))
-        if vat == 0 and vat != False:
+        if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
@@ -75,8 +76,6 @@ class AccountMoveBKAV(models.Model):
             tax_rate_id = 9
         elif vat == 10:
             tax_rate_id = 3
-        else:
-            tax_rate_id = 4
         return vat, tax_rate_id, price_unit
 
 
@@ -105,9 +104,11 @@ class AccountMoveBKAV(models.Model):
                     "Amount": abs(line.price_subtotal)*sign,
                     "TaxAmount": 0,
                     "ItemTypeID": 0,
-                    "IsDiscount": 0
+                    "IsDiscount": 0,
+                    "TaxRateID": 4,
+                    "TaxRate": -1
                 }
-                if vat != False:
+                if vat != -1:
                     item.update({
                         "TaxAmount": abs(line.tax_amount or 0.0)*sign,
                         "TaxRateID": tax_rate_id,
