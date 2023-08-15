@@ -45,7 +45,7 @@ class PosOrderLine(models.Model):
                 sum_km = sum(r.discount_details_lines.filtered(
                     lambda x: x.type in ('ctkm', ' make_price', 'product_defactive', 'handle')).mapped('money_reduced')
                 )
-                price_unit_incl = (r.price_subtotal_incl - sum_km)/r.qty
+                price_unit_incl = (r.price_subtotal_incl - sum_km * r.qty)/r.qty
                 if r.tax_ids_after_fiscal_position:
                     taxes_res = r.tax_ids_after_fiscal_position.compute_all(price_unit_incl)
                     price_unit_excl = taxes_res["total_excluded"]
