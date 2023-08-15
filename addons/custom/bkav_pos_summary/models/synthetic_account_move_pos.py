@@ -241,9 +241,14 @@ class SyntheticAccountMovePos(models.Model):
                 product_tmpl_id =  line.product_id.product_tmpl_id
                 if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
                     continue
-                    
+                
+                item_name = line.product_id.name if line.product_id.name else ''
+                if line.x_free_good:
+                    item_name += '(Hàng tặng khuyến mại không thu tiền)'
+
+
                 line_invoice = {
-                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
                     "Price": line.price_unit,
