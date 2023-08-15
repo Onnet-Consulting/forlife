@@ -50,6 +50,7 @@ class PosOrderReturn(models.Model):
                 "Qty": -abs(self.pay_point),
                 "Price": 0,
                 "Amount": 0,
+                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -88,7 +89,7 @@ class PosOrderReturn(models.Model):
                 "Qty": -abs(value/1000),
                 "Price": -round(1000/(1+int_vat/100)),
                 "Amount": -abs(value_not_tax),
-                "TaxAmount": -abs(value - value_not_tax),
+                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -104,6 +105,7 @@ class PosOrderReturn(models.Model):
                 tax_rate_id = 4
             if vat != False:
                 line_invoice.update({
+                    "TaxAmount": -abs(value - value_not_tax),
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
                 })
@@ -118,7 +120,7 @@ class PosOrderReturn(models.Model):
                 "Qty": 0,
                 "Price": 0,
                 "Amount": -abs(value_not_tax),
-                "TaxAmount": -abs(value - value_not_tax),
+                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
             }
@@ -134,6 +136,7 @@ class PosOrderReturn(models.Model):
                 tax_rate_id = 4
             if vat != False:
                 line_invoice.update({
+                    "TaxAmount": -abs(value - value_not_tax),
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
                 })
