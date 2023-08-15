@@ -1414,6 +1414,10 @@ class PurchaseOrder(models.Model):
                 purchase_type = order.purchase_type
                 if order.select_type_inv in ('expense', 'labor'):
                     purchase_type = 'service'
+                    # invoice_vals.update({
+                    #     'partner_id': False,
+                    #     'currency_id': False
+                    # })
                 invoice_vals.update({
                     'purchase_type': purchase_type,
                     'invoice_date': datetime.now(),
@@ -1507,14 +1511,6 @@ class PurchaseOrder(models.Model):
 
                     if order.cost_line:
                         for cost_line in order.cost_line:
-                            # invoice_vals['invoice_line_ids'].append((0, 0, {
-                            #     'product_id': cost.product_id.id,
-                            #     'price_unit': cost.actual_cost,
-                            #     'tax_ids': []
-                            # }))
-                            # sequence += 1
-                            # invoice_vals_list.append(invoice_vals)
-                            # cp = 0
                             for line in order.order_line:
                                 # if not order.is_return:
                                 #     wave = picking_expense_in.move_line_ids_without_package.filtered(
