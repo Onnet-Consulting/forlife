@@ -16,6 +16,7 @@ class RabbitmqQueue(models.Model):
     rabbitmq_connection_id = fields.Many2one('rabbitmq.connection', 'Rabbitmq connection', required=True, domain="[('is_connected', '=', True)]")
     active = fields.Boolean('Active', default=True)
     sync_manual = fields.Boolean('Sync Manual', default=False)
+    with_multi_company = fields.Boolean('Trên nhiều công ty', default=False, help='Nếu tích chọn hệ thống tự động chạy tất cả dữ liệu của tất cả công ty')
     sequence = fields.Integer('Sequence', default=0)
 
     _sql_constraints = [

@@ -195,7 +195,7 @@ class StockTransferRequest(models.Model):
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
         res = super(StockTransferRequest, self).create(vals_list)
-        res.write({'state': 'draft'})
+        # res.write({'state': 'draft'})
         return res
 
     def write(self, values):
