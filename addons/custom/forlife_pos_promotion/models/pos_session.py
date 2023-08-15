@@ -27,7 +27,7 @@ class PosSession(models.Model):
         return {
             'search_params': {
                 'domain': [('active', '=', True), ('program_id.active', '=', True)],
-                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price', 'lst_price', 'with_code']
+                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price', 'lst_price', 'with_code', 'reward_type']
             }
         }
 
@@ -44,7 +44,8 @@ class PosSession(models.Model):
         for item in items:
             product_id = item.get('product_id') and item.get('product_id')[0] or None
             with_code = item.get('with_code', False)
-            if with_code and item.get('program_id')[0] in program_ids:
+            reward_type = item.get('reward_type')
+            if (with_code or reward_type == 'cart_pricelist') and item.get('program_id')[0] in program_ids:
                 res.append(item)
             elif product_id not in product_set and item.get('lst_price') > item.get('fixed_price') \
                     and product_id in product_ids\
@@ -126,7 +127,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_program(self):
         return {
             'search_params': {
-                'domain': [],
+                'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
                 'fields': [
                     'active',
                     'state',
