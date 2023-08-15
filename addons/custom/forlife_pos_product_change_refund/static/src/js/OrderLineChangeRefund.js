@@ -80,7 +80,7 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 
 			isShowChangeProduct() {
 			    let line = this.props.line;
-			    if (line.quantity && !line.get_alternative_lines().length && line.refunded_orderline_id) return true;
+			    if (line.order.is_change_product && line.quantity && !line.get_alternative_lines().length && line.refunded_orderline_id) return true;
 			    return false;
 			}
 
