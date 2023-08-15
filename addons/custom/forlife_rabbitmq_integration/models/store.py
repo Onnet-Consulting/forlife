@@ -12,7 +12,9 @@ class Store(models.Model):
 
     @api.model
     def domain_record_sync_info(self):
-        return [('warehouse_id.whs_type.code', 'in', ('3', '4', '5'))]
+        return ['|', '&', ('warehouse_id.company_id.code', '!=', False), '&',
+                ('warehouse_id.company_id.code', '=', '1400'), ('warehouse_id.whs_type.code', 'in', ('3', '4')),
+                '&', ('warehouse_id.company_id.code', '!=', '1400'), ('warehouse_id.whs_type.code', 'in', ('1', '2', '5'))]
 
     def get_sync_info_value(self):
         return [{
