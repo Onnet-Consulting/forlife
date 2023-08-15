@@ -144,8 +144,20 @@ class ImportProductionFromExcel(models.TransientModel):
                     if not uom_dict.get(m[6], False):
                         raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[6]))
 
-                    if (m[1].strip() == order[9] or not m[1]) or \
-                            (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
+                    # if (m[1].strip() == order[9] or m[1] != '') or \
+                    #         (not m[1].strip() == '' and (m[3] or m[4])) or \
+                    #         (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
+                    if (m[1].strip() == order[9] or m[1] == '') and (m[3].strip() == '' and m[3].strip() == ''):
+                        list_material.append((0, 0, {
+                            'product_id': product_dict.get(m[0], False),
+                            'product_finish_id': product_dict.get(m[1], False),
+                            'product_backup_id': product_dict.get(m[2], False),
+                            'production_uom_id': uom_dict.get(m[6], False),
+                            'conversion_coefficient': m[7],
+                            'rated_level': m[8],
+                            'loss': m[9],
+                        }))
+                    elif (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
                         list_material.append((0, 0, {
                             'product_id': product_dict.get(m[0], False),
                             'product_finish_id': product_dict.get(m[1], False),

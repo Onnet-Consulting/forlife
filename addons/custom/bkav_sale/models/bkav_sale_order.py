@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 class AccountMoveSaleOrder(models.Model):
     _inherit = 'account.move'
 
-    def _get_promotion_in_sale(self):
+    def _get_promotion_in_sale(self,sign):
         list_invoice_detail = []
         vip_amount = {}
         reward_amount = {}
@@ -44,8 +44,8 @@ class AccountMoveSaleOrder(models.Model):
                 "UnitName": '',
                 "Qty": 0,
                 "Price": 0,
-                "Amount": abs(value_not_tax),
-                "TaxAmount": abs(value - value_not_tax),
+                "Amount": abs(value_not_tax)*sign,
+                "TaxAmount": 0,
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
@@ -61,6 +61,7 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 4
             if vat_value != False:
                 item.update({
+                    "TaxAmount": abs(value - value_not_tax)*sign,
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat_value
                 })
@@ -78,8 +79,8 @@ class AccountMoveSaleOrder(models.Model):
                 "UnitName": '',
                 "Qty": 0,
                 "Price": 0,
-                "Amount": abs(value_not_tax),
-                "TaxAmount": abs(value - value_not_tax),
+                "Amount": abs(value_not_tax)*sign,
+                "TaxAmount": 0,
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
             }
@@ -95,6 +96,7 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 4
             if vat_value != False:
                 item.update({
+                    "TaxAmount": abs(value - value_not_tax)*sign,
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat_value
                 })
@@ -110,6 +112,7 @@ class AccountMoveSaleOrder(models.Model):
             else:
                 invoice_date = datetime.combine(invoice.invoice_date, (datetime.now() + timedelta(hours=7)).time())
             list_invoice_detail = []
+            sign = 1 if (invoice.move_type == 'out_invoice') else -1
             for line in invoice.invoice_line_ids:
                 #SP Voucher k đẩy BKAV
                 if line.product_id.voucher:continue
@@ -117,8 +120,10 @@ class AccountMoveSaleOrder(models.Model):
                             line.product_id.name or line.description) else ''
                 if line.sale_line_ids and line.sale_line_ids[0].order_id.x_sale_type == 'asset':
                     ItemName = line.sale_line_ids[0].x_product_code_id.name if line.sale_line_ids[0].x_product_code_id else line.sale_line_ids[0].product_id.name
+                x_free_good = False
                 if line.sale_line_ids and line.sale_line_ids[0].x_free_good:
                     ItemName += " (Hàng tặng không thu tiền)"
+                    x_free_good = True
                 vat_id = False
                 if line.tax_ids:
                     vat_id = line.tax_ids[0]
@@ -126,15 +131,16 @@ class AccountMoveSaleOrder(models.Model):
                 item = {
                     "ItemName": ItemName,
                     "UnitName": line.product_uom_id.name or '',
-                    "Qty": abs(line.quantity),
-                    "Price": abs(price_unit),
-                    "Amount": line.price_subtotal,
-                    "TaxAmount": line.tax_amount or 0.0,
+                    "Qty": abs(line.quantity)*sign,
+                    "Price": abs(price_unit)*sign,
+                    "Amount": abs(line.price_subtotal)*sign,
+                    "TaxAmount": 0,
                     "ItemTypeID": 0,
                     "IsDiscount": 0
                 }
-                if vat != False:
+                if vat != False and not x_free_good:
                     item.update({
+                        "TaxAmount": abs(line.tax_amount or 0.0)*sign,
                         "TaxRateID": tax_rate_id,
                         "TaxRate": vat
                     })
@@ -143,7 +149,7 @@ class AccountMoveSaleOrder(models.Model):
 
                 list_invoice_detail.append(item)
 
-            list_invoice_detail.extend(self._get_promotion_in_sale())
+            list_invoice_detail.extend(self._get_promotion_in_sale(sign))
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
 

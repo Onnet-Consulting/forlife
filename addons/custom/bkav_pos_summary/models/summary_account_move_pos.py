@@ -326,10 +326,10 @@ class SummaryAccountMovePos(models.Model):
 
 
     def create_an_invoice_bkav(self):
-        synthetic_account_move = self.env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
         synthetic_account_move.create_an_invoice()
 
-        adjusted_move = self.env['summary.adjusted.invoice.pos'].search([
+        adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
             ('exists_bkav', '=', False),
             ('source_invoice', '!=', False)
         ])
@@ -386,7 +386,7 @@ class SummaryAccountMovePos(models.Model):
                     for line in lines:
                         row = v
                         if abs(line.remaining_quantity) >= abs(v["quantity"]):
-                            row["quantity"] = abs(row["quantity"])
+                            row["quantity"] = -abs(row["quantity"])
                             row["price_unit"] = -abs(row["price_unit"])
                             row["price_unit_incl"] = -abs(row["price_unit_incl"])
                             row["synthetic_id"] = line.synthetic_id.id
@@ -408,7 +408,7 @@ class SummaryAccountMovePos(models.Model):
                             })
                             break
                         else:
-                            row["quantity"] = abs(line.remaining_quantity)
+                            row["quantity"] = -abs(line.remaining_quantity)
                             v["quantity"] += line.remaining_quantity
                             adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
                             row["price_unit"] = -abs(row["price_unit"])
@@ -443,7 +443,7 @@ class SummaryAccountMovePos(models.Model):
                 #         remaining_records[store_id] = {'adjusted': [row]}
             if not is_adjusted:
                 row = v
-                row["quantity"] = abs(row["quantity"])
+                row["quantity"] = -abs(row["quantity"])
                 row["price_unit"] = -abs(row["price_unit"])
                 row["price_unit_incl"] = -abs(row["price_unit_incl"])
                 row["synthetic_id"] = None
@@ -512,6 +512,7 @@ class SummaryAccountMovePos(models.Model):
                                     store_id
                                 )
                         else:
+                            v["quantity"] = abs(v["quantity"])
                             self.handle_invoice_difference(
                                 remaining_records,
                                 synthetic_lines,
@@ -524,6 +525,7 @@ class SummaryAccountMovePos(models.Model):
                         sales.pop(store_id)
                 else:
                     for k, v in refund.items():
+                        v["quantity"] = abs(v["quantity"])
                         self.handle_invoice_difference(
                             remaining_records,
                             synthetic_lines,
