@@ -12,11 +12,11 @@
             <ul class="custom-info-list" style="font-size: 14px">
                 <li class="product-name" style="width: 100%">
                     <t t-esc="props.line.get_full_product_name()"/>
-                    <t t-if="!props.line.is_new_line">
+                    <t t-if="!props.line.is_new_line and props.line.order.is_change_product">
                         <span t-esc="props.line.cid"
                               style="margin-left: 5px; color: orange; text-transform: uppercase"/>
                     </t>
-                    <t t-if="props.line.is_new_line and props.line.related_refund_line_cid">
+                    <t t-if="props.line.is_new_line and props.line.related_refund_line_cid and props.line.order.is_change_product">
                         <span t-esc="props.line.related_refund_line_cid"
                               style="margin-left: 5px; color: orange; text-transform: uppercase"/>
                     </t>
