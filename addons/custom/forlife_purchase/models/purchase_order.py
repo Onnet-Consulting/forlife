@@ -2925,7 +2925,7 @@ class StockPicking(models.Model):
                             quantity = self.env['quantity.production.order'].search(
                                 [('product_id', '=', rec.product_id.id),
                                  ('location_id', '=', rec.picking_id.location_dest_id.id),
-                                 ('production_id', '=', rec.work_production.id)])
+                                 ('production_id.code', '=', rec.work_production.code)])
                             if quantity:
                                 quantity.write({
                                     'quantity': quantity.quantity + rec.quantity_done

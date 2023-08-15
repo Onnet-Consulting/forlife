@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 02:51+0000\n"
-"PO-Revision-Date: 2023-06-02 02:51+0000\n"
+"POT-Creation-Date: 2023-08-15 09:54+0000\n"
+"PO-Revision-Date: 2023-08-15 09:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,6 +31,7 @@ msgid "Banner Success"
 msgstr "Banner lời nhắn"
 
 #. module: forlife_net_promoter_score
+#: model:ir.model,name:forlife_net_promoter_score.model_res_brand
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__brand
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__brand_id
 msgid "Brand"
@@ -58,6 +59,11 @@ msgstr "Ngày đánh giá"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__company_id
 msgid "Company"
 msgstr "Công ty"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_res_brand__is_nps
+msgid "Create NPS ?"
+msgstr "Đánh giá NPS ?"
 
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_uid
@@ -267,13 +273,6 @@ msgid "Question ID"
 msgstr "ID câu hỏi"
 
 #. module: forlife_net_promoter_score
-#. odoo-python
-#: code:addons/forlife_net_promoter_score/models/pos_order.py:0
-#, python-format
-msgid "Question not found !"
-msgstr "Không tìm thấy câu hỏi !"
-
-#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__rate
 msgid "Rate"
 msgstr "Mức độ đánh giá"
@@ -375,6 +374,12 @@ msgstr "Loại"
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__view_report
 msgid "View Report"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+msgid "Xem log"
 msgstr ""
 
 #. module: forlife_net_promoter_score
