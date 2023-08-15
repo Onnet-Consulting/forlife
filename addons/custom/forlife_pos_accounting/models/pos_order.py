@@ -445,7 +445,7 @@ class InheritPosOrderLine(models.Model):
             self._prepare_pol_promotion_line(
                 product_id=promotion.program_id.product_discount_id,
                 price=-abs(promotion.discount_total),
-                qty=self.qty,
+                qty=1 if not self.refunded_orderline_id else -1,
                 promotion=promotion.program_id,
                 promotion_type='ctkm',
                 is_state_registration=promotion.registering_tax
@@ -461,7 +461,7 @@ class InheritPosOrderLine(models.Model):
                     'product_default_pos_return_goods_id'
                 ],
                 price=-abs(discount.money_reduced),
-                qty=self.qty,
+                qty=1 if not self.refunded_orderline_id else -1,
                 promotion=pol.order_id.card_rank_program_id if discount.type == 'card' else pol.order_id.program_store_point_id if discount.type == 'point' else self.env['promotion.program'],
                 is_state_registration=pol.order_id.program_store_point_id.check_validity_state_registration()
                 if discount.type == 'point' else pol.order_id.card_rank_program_id.check_registering_tax()
