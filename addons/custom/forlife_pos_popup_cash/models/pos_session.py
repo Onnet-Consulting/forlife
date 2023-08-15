@@ -103,6 +103,7 @@ class PosSession(models.Model):
         if not sessions:
             raise UserError(_("There is no cash payment method for this PoS Session"))
         payment_ref = ''
+        expense = self.env['pos.expense.label']
         if extras['type_tranfer'] == 4 and extras['expense_label']:
             expense = self.env['pos.expense.label'].browse(extras['expense_label'])
             payment_ref = ' '.join([s.name for s in sessions]) + ': ' + expense.display_name if expense else ''
@@ -118,8 +119,8 @@ class PosSession(models.Model):
                 if 'shop' in extras and _type == 'out' and extras['shop'] and extras['type_tranfer'] == 2 else False,
                 'is_reference': True if 'reference' in extras and extras['reference'] else False,
                 'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') != 0 else False,
-                'expense_label_id': extras.get('expense_label', False),
                 'reason': reason or '',
+                'expense_label_id': expense and expense.id or False
             }
             for session in sessions
         ])
