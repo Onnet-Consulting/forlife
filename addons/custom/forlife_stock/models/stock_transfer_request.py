@@ -26,7 +26,7 @@ class StockTransferRequest(models.Model):
         selection=[('draft', 'Draft'),
                    ('wait_confirm', 'Wait Confirm'),
                    ('approved', 'Approved'),
-                    ('done', 'Done'),
+                   ('done', 'Done'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft', copy=False)
     request_lines = fields.One2many('transfer.request.line', 'request_id', string='Chi tiết', copy=True)
@@ -55,8 +55,9 @@ class StockTransferRequest(models.Model):
 
     @api.onchange('user_id')
     def _onchange_user_id(self):
-        if self.user_id.department_default_id:
-            self.department_id = self.user_id.department_default_id.id
+        if not self.user_id.department_default_id:
+            raise ValidationError("Vui lòng báo quản trị viên cấu hình phòng ban mặc định cho Người dùng %s!" % self.user_id.name)
+        self.department_id = self.user_id.department_default_id.id
 
     @api.constrains('request_date', 'date_planned')
     def constrains_request_planed_dated(self):
@@ -66,7 +67,10 @@ class StockTransferRequest(models.Model):
 
     @api.onchange('production_id')
     def _onchange_production_id(self):
-        request_lines = [(5, 0, 0)]
+        if self.request_lines:
+            self.request_lines = False
+
+        request_lines = []
         if self.production_id.material_import_ids:
             for production_material_id in self.production_id.material_import_ids:
                 request_lines.append((0, 0, {
@@ -77,9 +81,9 @@ class StockTransferRequest(models.Model):
                     'location_id': self.location_id.id or False,
                     'location_dest_id': self.location_dest_id.id or False,
                 }))
-        self.write({
-            'request_lines': request_lines
-        })
+            self.write({
+                'request_lines': request_lines
+            })
 
     @api.onchange('location_id')
     def onchange_location_id(self):
@@ -190,7 +194,16 @@ class StockTransferRequest(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.request.name.sequence') or 'STR'
-        return super(StockTransferRequest, self).create(vals_list)
+        res = super(StockTransferRequest, self).create(vals_list)
+        res.write({'state': 'draft'})
+        return res
+
+    def write(self, values):
+        res = super(StockTransferRequest, self).write(values)
+        for r in self:
+            if not r.request_lines:
+                raise ValidationError("Vui lòng nhập ít nhất 1 dòng chi tiết Sản phẩm!")
+        return res
 
     def unlink(self):
         for rec in self:
