@@ -157,13 +157,13 @@ class SyntheticAccountMovePos(models.Model):
                         line_discount_point_taxs[line_pk] = row
                     else:
                         price = 1000/line.get_tax_amount()
-
+                        price = int(round(1000/line.get_tax_amount()))
                         vat, tax_rate_id = self.get_vat(line)
                         line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
                             "Qty": abs(line.price_unit_incl)/1000,
-                            "Price": round(price, 2),
+                            "Price": price,
                             "Amount": abs(line.price_unit),
                             "TaxAmount": abs(line.tax_amount),
                             "IsDiscount": 1,

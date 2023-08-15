@@ -153,13 +153,13 @@ class SummaryAdjustedInvoicePos(models.Model):
                         row["TaxAmount"] += -abs(line.tax_amount)
                         line_discount_point_taxs[line_pk] = row
                     else:
-                        price = 1000/ (1 + line.tax_ids[0].amount/100)
+                        price = int(round(1000/line.get_tax_amount()))
                         vat, tax_rate_id = self.get_vat(line)
                         line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
                             "Qty": -abs(line.price_unit_incl)/1000,
-                            "Price": -abs(round(price, 2)),
+                            "Price": -abs(price),
                             "Amount": -abs(line.price_unit),
                             "TaxAmount": -abs(line.tax_amount),
                             "IsDiscount": 1,
@@ -241,7 +241,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                 item_name = line.product_id.name if line.product_id.name else ''
                 if line.x_free_good:
                     item_name += '(Hàng tặng khuyến mại không thu tiền)'
-                    
+
                 line_invoice = {
                     "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
