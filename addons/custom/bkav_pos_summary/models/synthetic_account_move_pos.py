@@ -337,6 +337,9 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
         string='Promotion Type', index=True, readonly=True
     )
 
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
+
     def get_tax_amount(self):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
