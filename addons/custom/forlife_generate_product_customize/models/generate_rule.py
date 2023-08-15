@@ -24,7 +24,7 @@ class GenerateRule(models.Model):
 
     brand_id = fields.Many2one('res.brand', 'Thương hiệu')
 
-    attribute_required_ids = fields.Many2many('product.attribute', 'attribute_required_rel', 'generate_rule_1_id', 'attribute_id', string='Thuộc tính bắt buộc', domain=domain_for_attribute_required, required=True)
+    attribute_required_ids = fields.Many2many('product.attribute', 'attribute_required_rel', 'generate_rule_1_id', 'attribute_id', string='Thuộc tính bắt buộc', domain=domain_for_attribute_required)
 
     attribute_check_sku_ids = fields.Many2many('product.attribute', 'attribute_check_sku_rel', 'generate_rule_2_id', 'attribute_check_sku_id',
                                                string='Thuộc tính check tạo SKU')
