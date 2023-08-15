@@ -234,7 +234,7 @@ class ImportSalaryRecord(models.TransientModel):
         for purpose in data:
             code = self.get_purpose_code(purpose)
             if code and not purpose_by_code.get(code):
-                error_message = _('Mục đích tính lương %s không tồn tại') % purpose
+                error_message = 'Mục đích tính lương %s không tồn tại' % purpose
                 error_by_code[code] = error_message
         return purpose_by_code, error_by_code
 
@@ -251,8 +251,7 @@ class ImportSalaryRecord(models.TransientModel):
         for import_code, import_name in data.items():
             db_data = employee_data_by_code.get(import_code)
             if not db_data or import_name != db_data[0]:
-                error_by_code[import_code] = _('Tên-mã nhân viên không tồn tại hoặc không khớp: "%s" "%s"') \
-                                             % (import_name, import_code)
+                error_by_code[import_code] = 'Tên-mã nhân viên không tồn tại hoặc không khớp: "%s" "%s"' % (import_name, import_code)
                 continue
             employee_by_code[import_code] = db_data[1]
 
@@ -269,8 +268,7 @@ class ImportSalaryRecord(models.TransientModel):
         for import_code, import_name in data.items():
             db_data = department_data_by_code.get(import_code)
             if not db_data or import_name != db_data[0]:
-                error_by_code[import_code] = _('Tên-Mã phòng ban/bộ phận không tồn tại hoặc không khớp:  "%s" "%s"') \
-                                             % (import_name, import_code)
+                error_by_code[import_code] = 'Tên-Mã phòng ban/bộ phận không tồn tại hoặc không khớp:  "%s" "%s"' % (import_name, import_code)
                 continue
             department_by_code[import_code] = db_data[1]
 
@@ -284,7 +282,7 @@ class ImportSalaryRecord(models.TransientModel):
         error_by_code = {}
         for code in data:
             if code and not analytic_by_code.get(code):
-                error_by_code[code] = _('Mã cost center %s không tồn tại') % code
+                error_by_code[code] = 'Mã cost center %s không tồn tại' % code
         return analytic_by_code, error_by_code
 
     def map_project_data(self, data):
@@ -295,7 +293,7 @@ class ImportSalaryRecord(models.TransientModel):
         error_by_code = {}
         for code in data:
             if code and not asset_by_code.get(code):
-                error_by_code[code] = _('Mã dự án %s không tồn tại') % code
+                error_by_code[code] = 'Mã dự án %s không tồn tại' % code
         return asset_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
@@ -306,7 +304,7 @@ class ImportSalaryRecord(models.TransientModel):
         error_by_code = {}
         for code in data:
             if code and not production_by_code.get(code):
-                error_by_code[code] = _("Mã lệnh sản xuất %s không tồn tại") % code
+                error_by_code[code] = "Mã lệnh sản xuất %s không tồn tại" % code
         return production_by_code, error_by_code
 
     def map_internal_order_data(self, data):
@@ -317,7 +315,7 @@ class ImportSalaryRecord(models.TransientModel):
         error_by_code = {}
         for code in data:
             if code and not occasion_by_code.get(code):
-                error_by_code[code] = _("Mã vụ việc %s không tồn tại") % code
+                error_by_code[code] = "Mã vụ việc %s không tồn tại" % code
         return occasion_by_code, error_by_code
 
     def map_data(self, **kwargs):
@@ -330,13 +328,16 @@ class ImportSalaryRecord(models.TransientModel):
         res = {}
         self = self.sudo()
         for key in kwargs.keys():
-            res[key] = getattr(self, ''.join(['map_', key, '_data']))(kwargs.get(key) or [])
+            if not kwargs.get(key):
+                res[key] = [{}, {}]
+            else:
+                res[key] = getattr(self, ''.join(['map_', key, '_data']))(kwargs.get(key))
         return res
 
     @api.model
     def generate_sheet_error_by_index(self, line_errors, workbook, sheet_index):
         sheet_name = workbook.sheet_by_index(sheet_index).name
-        return _('\n\n======\tSheet - %s\t========== \n%s\n') % (sheet_name, line_errors)
+        return '\n\n======\tSheet - %s\t========== \n%s\n' % (sheet_name, line_errors)
 
     @api.model
     def read_file_data(self):
@@ -371,11 +372,19 @@ class ImportSalaryRecord(models.TransientModel):
         data = [x for x in data]
         data = data[1:2]
         errors = ''
+        xls_departments_name_and_code = {}
+        for row_idx, row in enumerate(data):
+            xls_departments_name_and_code.update({row[5]: row[6]})
+        xls_data = dict(department=xls_departments_name_and_code)
+        mapped_data = self.map_data(**xls_data)
+        department_by_code, department_error_by_code = mapped_data.get('department')
         res = []
         for index, value in enumerate(data, start=2):
             type_code = self.get_type_code(value[0])
             year = value[1]
             month = value[2]
+            is_tc = (value[4] or '').strip() == 'TC'
+            department_code = value[5]
 
             salary_record_type = self.env['salary.record.type'].search([('code', '=', type_code)])
             try:
@@ -387,15 +396,18 @@ class ImportSalaryRecord(models.TransientModel):
             except (TypeError, ValueError):
                 month = False
 
-            errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (
-                index, type_code) if not salary_record_type else ''
-            errors += _('Line %r, %r is an invalid year\n') % (index, year) if not year else ''
-            errors += _('Line %r, %r is an invalid month\n') % (index, month) if month not in MONTH else ''
+            errors += f"Dòng %r, Loại lương '%s' không hợp lệ\n" % (index, type_code) if not salary_record_type else ''
+            errors += 'Dòng %r, năm %r không hợp lệ\n' % (index, year) if not year else ''
+            errors += 'Dòng %r, tháng %r không hợp lệ\n' % (index, month) if month not in MONTH else ''
 
+            department_error = department_error_by_code.get(department_code)
+            if department_error:
+                errors += f'Dòng {index}, {department_error}\n'
             if not errors:
                 salary_record_exits = self.env['salary.record'].search([
                     ('company_id', '=', self.company_id.id), ('type_id', '=', salary_record_type.id),
-                    ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted'))])
+                    ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted')),
+                    ('is_tc', '=', is_tc), ('department_id', '=', department_by_code.get(department_code) or False)])
                 if salary_record_exits:
                     message = _(
                         'Salary records could not be imported, some previous versions were approved or posted: %s') \
@@ -406,7 +418,8 @@ class ImportSalaryRecord(models.TransientModel):
                     'year': year,
                     'month': month,
                     'note': value[3],
-                    'is_tc': (value[4] or '').strip() == 'TC',
+                    'is_tc': is_tc,
+                    'department_id': department_by_code.get(department_code),
                 })
             else:
                 res = []
@@ -451,7 +464,7 @@ class ImportSalaryRecord(models.TransientModel):
             line_error = [purpose_error, department_error, analytic_error, project_error]
             line_error = list(filter(None, line_error))
             if line_error:
-                line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
+                line_error = ['Dòng %s, ' % row_idx + error for error in line_error]
                 errors.append('\n'.join(line_error))
             else:
                 value = {
@@ -518,7 +531,7 @@ class ImportSalaryRecord(models.TransientModel):
                           internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
-                line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
+                line_error = ['Dòng %s, ' % row_idx + error for error in line_error]
                 errors.append('\n'.join(line_error))
             else:
                 value = {
@@ -587,7 +600,7 @@ class ImportSalaryRecord(models.TransientModel):
                           internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
-                line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
+                line_error = ['Dòng %s, ' % row_idx + error for error in line_error]
                 errors.append('\n'.join(line_error))
             else:
                 value = {
@@ -673,7 +686,7 @@ class ImportSalaryRecord(models.TransientModel):
                           manufacturing_error, internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
-                line_error = [_('Line %d - %s') % (row_idx, error_message) for error_message in line_error]
+                line_error = ['Dòng %d - %s' % (row_idx, error_message) for error_message in line_error]
                 errors.append('\n'.join(line_error))
             else:
                 value = {
@@ -735,7 +748,7 @@ class ImportSalaryRecord(models.TransientModel):
             line_error = [employee_error, department_error]
             line_error = list(filter(None, line_error))
             if line_error:
-                line_error = [_('Line %d - %s') % (row_idx, error_message) for error_message in line_error]
+                line_error = ['Dòng %d - %s' % (row_idx, error_message) for error_message in line_error]
                 errors.append('\n'.join(line_error))
             else:
                 value = {

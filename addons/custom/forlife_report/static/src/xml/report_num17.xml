@@ -39,7 +39,7 @@
                             <td class="right"><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0) - line.tien_sp_voucher"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_the, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>

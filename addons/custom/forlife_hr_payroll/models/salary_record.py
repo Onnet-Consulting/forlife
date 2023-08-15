@@ -63,6 +63,7 @@ class SalaryRecord(models.Model):
     move_ids = fields.One2many('account.move', 'salary_record_id', string='Account Moves', copy=False, readonly=False)
     move_count = fields.Integer(compute='_compute_move_count')
     is_tc = fields.Boolean('TC', default=False)
+    department_id = fields.Many2one('hr.department', string='Department in charge', ondelete="restrict")
 
     _sql_constraints = [
         ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
@@ -115,7 +116,8 @@ class SalaryRecord(models.Model):
             value['name'] = company.salary_record_sequence_id.next_by_id()
             next_version = self.search_count([
                 ('company_id', '=', company.id), ('type_id', '=', value.get('type_id')),
-                ('month', '=', value.get('month')), ('year', '=', value.get('year'))
+                ('month', '=', value.get('month')), ('year', '=', value.get('year')),
+                ('is_tc', '=', value.get('is_tc')), ('department_id', '=', value.get('department_id'))
             ]) + 1
             value['version'] = next_version
         return super(SalaryRecord, self).create(vals_list)
