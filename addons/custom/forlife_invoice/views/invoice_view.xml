@@ -68,7 +68,8 @@
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
-                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1" invisible="1"/>
+                    <field name="trade_tax_id" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                     <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
