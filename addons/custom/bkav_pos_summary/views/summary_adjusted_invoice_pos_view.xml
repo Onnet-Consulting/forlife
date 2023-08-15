@@ -103,7 +103,7 @@
 
     <menuitem id="summary_adjusted_invoice_pos_menu"
               parent="bkav_connector.menu_master_bkav_pos"
-              name="Invoice adjusted at the end of the day"
+              name="Hóa đơn điều chỉnh cuối ngày"
               action="summary_adjusted_invoice_pos_action"
               sequence="10"/>
 </odoo>

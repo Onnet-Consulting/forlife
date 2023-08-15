@@ -194,15 +194,16 @@ class SummaryAdjustedInvoiceSoNhanhLine(models.Model):
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     invoice_ids = fields.Many2many('account.move', string='Hóa đơn')
 
+    synthetic_id = fields.Many2one('synthetic.account.move.so.nhanh', string='Hóa đơn gốc')
     line_ids = fields.One2many('adjusted.so.nhanh.line.discount', 'adjusted_line_id')
 
     @api.depends('tax_ids', 'price_unit_incl', 'price_unit')
     def _compute_amount(self):
         for r in self:
-            tax_results = r.tax_ids.compute_all(r.price_unit_incl, quantity=r.quantity)
-            r.price_subtotal = tax_results["total_excluded"]
-            r.amount_total = tax_results["total_included"]
-            r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+            tax_results = r.tax_ids.compute_all(abs(r.price_unit_incl), quantity=abs(r.quantity))
+            r.price_subtotal = -tax_results["total_excluded"]
+            r.amount_total = -tax_results["total_included"]
+            r.tax_amount = -(tax_results["total_included"] - tax_results["total_excluded"])
 
 
 class SummaryAdjustedInvoiceSoNhanhLineDiscount(models.Model):
