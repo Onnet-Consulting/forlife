@@ -66,7 +66,7 @@ class SalaryRecord(models.Model):
     department_id = fields.Many2one('hr.department', string='Department in charge', ondelete="restrict")
 
     _sql_constraints = [
-        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
+        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version, is_tc, department_id)',
          'The combination of Company, Type, Month, Year and Version must be unique !')
     ]
 
