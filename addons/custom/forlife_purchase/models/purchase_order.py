@@ -1176,7 +1176,7 @@ class PurchaseOrder(models.Model):
             'quantity_purchased': line.purchase_quantity,
             'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
-            'tax_amount': line.price_tax * (line.qty_received / line.product_qty),
+            'tax_amount': line.price_tax * (line.qty_received / line.product_qty) if line.product_qty > 0 else 0,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
             'total_vnd_amount': line.price_subtotal * self.exchange_rate,
