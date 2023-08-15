@@ -8,7 +8,8 @@ class PosOrder(models.Model):
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
-        self.create_forlife_comment()
+        if self.brand_id.is_nps:
+            self.create_forlife_comment()
         return res
 
     def create_forlife_comment(self):

@@ -34,7 +34,7 @@ class AccountMoveSaleOrder(models.Model):
                     reward_amount[vat] += promotion_id.value
         for vat, value in vip_amount.items():
             value_not_tax = value
-            vat_value = False
+            vat_value = -1
             if vat:
                 vat_value = vat.amount
                 if vat.price_include:
@@ -48,8 +48,10 @@ class AccountMoveSaleOrder(models.Model):
                 "TaxAmount": 0,
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
-            if vat_value == 0 and vat_value != False:
+            if vat_value == 0:
                 tax_rate_id = 1
             elif vat_value == 5:
                 tax_rate_id = 2
@@ -57,9 +59,7 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 9
             elif vat_value == 10:
                 tax_rate_id = 3
-            else:
-                tax_rate_id = 4
-            if vat_value != False:
+            if vat_value != -1:
                 item.update({
                     "TaxAmount": abs(value - value_not_tax)*sign,
                     "TaxRateID": tax_rate_id,
@@ -69,7 +69,7 @@ class AccountMoveSaleOrder(models.Model):
         
         for vat, value in reward_amount.items():
             value_not_tax = value
-            vat_value = False
+            vat_value = -1
             if vat:
                 vat_value = vat.amount
                 if vat.price_include:
@@ -83,6 +83,8 @@ class AccountMoveSaleOrder(models.Model):
                 "TaxAmount": 0,
                 "ItemTypeID": 0,
                 "IsDiscount": 1,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
             if vat_value == 0 and vat_value != False:
                 tax_rate_id = 1
@@ -92,9 +94,7 @@ class AccountMoveSaleOrder(models.Model):
                 tax_rate_id = 9
             elif vat_value == 10:
                 tax_rate_id = 3
-            else:
-                tax_rate_id = 4
-            if vat_value != False:
+            if vat_value != -1:
                 item.update({
                     "TaxAmount": abs(value - value_not_tax)*sign,
                     "TaxRateID": tax_rate_id,
@@ -136,9 +136,11 @@ class AccountMoveSaleOrder(models.Model):
                     "Amount": abs(line.price_subtotal)*sign,
                     "TaxAmount": 0,
                     "ItemTypeID": 0,
-                    "IsDiscount": 0
+                    "IsDiscount": 1 if x_free_good else 0,
+                    "TaxRateID": 4,
+                    "TaxRate": -1
                 }
-                if vat != False and not x_free_good:
+                if vat != -1:
                     item.update({
                         "TaxAmount": abs(line.tax_amount or 0.0)*sign,
                         "TaxRateID": tax_rate_id,

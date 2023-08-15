@@ -77,8 +77,9 @@ class ProductProduct(models.Model):
             "SeasonCode"
         ]
         bravo_column_names.extend(attribute_column_names)
+        attr_value = self.env['res.utility'].get_attribute_code_config()
         attribute_column_name_code_mapping = {
-            "SeasonCode": "AT027",
+            "SeasonCode": attr_value.get('mua_vu'),
         }
         if not self:
             if to_update:
