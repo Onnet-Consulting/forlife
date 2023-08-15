@@ -125,17 +125,17 @@ class ImportProductionFromExcel(models.TransientModel):
                         raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.', m[1]))
                     if not product_dict.get(m[2], False) and m[2] != '':
                         raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[2]))
-                    if not uom_dict.get(m[6], False):
-                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[6]))
+                    if not uom_dict.get(m[5], False):
+                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[5]))
 
                     common_data = {
                         'product_id': product_dict.get(m[0], False),
                         'product_finish_id': product_dict.get(m[1], False),
                         'product_backup_id': product_dict.get(m[2], False),
-                        'production_uom_id': uom_dict.get(m[6], False),
-                        'conversion_coefficient': m[7],
-                        'rated_level': m[8],
-                        'loss': m[9],
+                        'production_uom_id': uom_dict.get(m[5], False),
+                        'conversion_coefficient': m[6],
+                        'rated_level': m[7],
+                        'loss': m[8],
                     }
                     if (m[1].strip() == order[8] or m[1] == '') and (m[3].strip() == '' and m[4].strip() == ''):
                         list_material.append((0, 0, common_data))
@@ -148,13 +148,12 @@ class ImportProductionFromExcel(models.TransientModel):
                         'product_backup_id': product_dict.get(m[2], False),
                         'size': m[3],
                         'color': m[4],
-                        'uom_id': uom_dict.get(m[5], False),
-                        'production_uom_id': uom_dict.get(m[6], False),
-                        'conversion_coefficient': m[7],
-                        'rated_level': m[8],
-                        'loss': m[9],
-                        'qty': m[10],
-                        'total': round(float(m[11]), 0),
+                        'production_uom_id': uom_dict.get(m[5], False),
+                        'conversion_coefficient': m[6],
+                        'rated_level': m[7],
+                        'loss': m[8],
+                        'qty': m[9],
+                        'total': round(float(m[10]), 0),
                     }))
                 create_list_expense = []
                 create_list_by_production_expense = []

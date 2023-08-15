@@ -354,7 +354,7 @@ class SummaryAccountMovePos(models.Model):
             and r.line_pk == line_pk
         )
 
-        sale_data["line_ids"].extend(v["line_ids"])
+        # sale_data["line_ids"].extend(v["line_ids"])
 
         sale_data["quantity"] += v["quantity"]
         sale_data["remaining_quantity"] = sale_data["quantity"]
