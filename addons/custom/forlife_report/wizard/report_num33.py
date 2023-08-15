@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-
+from forlife_report.wizard.report_base import format_date_query
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import copy
@@ -592,7 +592,7 @@ class ReportNum30(models.TransientModel):
                     1=1
             """
         if self.date_from and self.date_to:
-            query += f" and por.date_order between '{self.date_from}' and '{self.date_to}'"
+            query += f" and {format_date_query('por.date_order', tz_offset)} between '{self.date_from}' and '{self.date_to}'"
         if self.product_ids:
             query += f" and por.product_id = any(array{self.product_ids.ids})"
         if self.warehouse_ids:
