@@ -194,6 +194,10 @@ class PosOrderReturn(models.Model):
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos_return())
             origin_id = invoice.origin_move_id
+            
+            if invoice.invoice_info_tax_number and (not invoice.invoice_info_company_name or not invoice.invoice_info_address):
+                invoice.search_infor_bkav(invoice.invoice_info_tax_number)
+
             BuyerName = origin_id.partner_id.name if origin_id.partner_id.name else ''
 
             BuyerTaxCode =origin_id.partner_id.vat or '' if origin_id.partner_id.vat else ''
