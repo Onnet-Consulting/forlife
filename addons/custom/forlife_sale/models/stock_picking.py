@@ -137,7 +137,7 @@ class StockPicking(models.Model):
         """
 
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
-            domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+            domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
             quantity_prodution = self.env['quantity.production.order'].search(domain)
             if quantity_prodution:
                 quantity = quantity_prodution.quantity - rec.quantity_done
