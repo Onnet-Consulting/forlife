@@ -107,7 +107,9 @@ with po_datas as (select po.id  as po_id,
                                        and pul.code_id notnull), 0)::float                  as tien_the_gg,
                            coalesce((select sum(detail.recipe * 1000)
                                      from pos_order_line_discount_details detail
-                                     where detail.pos_order_line_id = pol.id and type = 'point'), 0)::float as tru_tich_luy
+                                     where detail.pos_order_line_id = pol.id and type = 'point'), 0)::float as tru_tich_luy,
+                           case when pt.voucher = true or pt.is_voucher_auto = true
+                                then (pol.qty * pol.original_price) else 0 end              as tien_sp_voucher
                     from pos_order_line pol
                              join product_product pp on pp.id = pol.product_id
                              join product_template pt on pt.id = pp.product_tmpl_id
@@ -125,7 +127,10 @@ with po_datas as (select po.id  as po_id,
                                 case when sl_tra > 0 then tien_giam_gia else 0 end))::float            as cong,
                            sum(case when sl_mua > 0 then tien_giam_gia else 0 end)::float              as tien_giam_gia,
                            sum(tien_the_gg)::float                                                     as tien_the_gg,
-                           sum(tru_tich_luy)::float                                                     as tru_tich_luy
+                           sum(tru_tich_luy)::float                                                    as tru_tich_luy,
+                           sum(case when tien_sp_voucher < 0 then tien_sp_voucher + tien_giam_gia
+                                    when tien_sp_voucher > 0 then tien_sp_voucher - tien_giam_gia
+                                    else 0 end)                                                        as tien_sp_voucher
                     from chi_tiet_x
                     group by po_id)
 """
@@ -159,6 +164,7 @@ select row_number() over (order by po.id)                                       
                  from partner_history_point
                  where pos_order_id = po.id), 0) * 1000                                      as tich_luy_hd,
        sl_x.tru_tich_luy                                                                     as tru_tich_luy,
+       sl_x.tien_sp_voucher                                                                  as tien_sp_voucher,
        coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
        coalesce(po.amount_total, 0)::float                                                   as phai_thu,
        coalesce((select sum(amount)
@@ -315,7 +321,7 @@ order by num
             sheet.write(row, 22, value.get('tru_tich_luy', 0), formats.get('int_number_format'))
             sheet.write(row, 23, value.get('tien_the_gg', 0), formats.get('int_number_format'))
             sheet.write(row, 24, value.get('phai_thu', 0), formats.get('int_number_format'))
-            sheet.write(row, 25, value.get('phai_thu', 0) - (value.get('tien_voucher', 0) / 2), formats.get('int_number_format'))
+            sheet.write(row, 25, value.get('phai_thu', 0) - (value.get('tien_voucher', 0) / 2) - value.get('tien_sp_voucher', 0), formats.get('int_number_format'))
             sheet.write(row, 26, value.get('tien_mat', 0), formats.get('int_number_format'))
             sheet.write(row, 27, value.get('tien_the', 0), formats.get('int_number_format'))
             sheet.write(row, 28, value.get('tien_vnpay', 0), formats.get('int_number_format'))
