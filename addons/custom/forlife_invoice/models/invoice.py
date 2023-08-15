@@ -804,7 +804,7 @@ class AccountMove(models.Model):
     def create_trade_discount(self):
         self.ensure_one()
         is_in = self.move_type in ('in_invoice', 'in_receipt')
-        account_expense_id = self.env.ref('forlife_purchase.product_vat_discount_tax_default').with_company(self.company_id).property_account_expense_id
+        account_expense_id = self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id
         if not account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí ở tab kế toán trong danh sản phẩm có tên là Chiết khấu tổng đơn!!")
         account_tax_id = self.trade_tax_id.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').account_id
@@ -838,7 +838,6 @@ class AccountMove(models.Model):
                     'account_id': account_tax_id.id,
                     'name': account_tax_id.name,
                     'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
-                    'product_id': self.env.ref('forlife_purchase.product_vat_discount_tax_default').id,
                     'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
                 })
             ]
