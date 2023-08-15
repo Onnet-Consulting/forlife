@@ -211,6 +211,8 @@ class PosOrder(models.Model):
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos())
+            if invoice.invoice_info_tax_number and (not invoice.invoice_info_company_name or not invoice.invoice_info_address):
+                invoice.search_infor_bkav(invoice.invoice_info_tax_number)
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
             # if invoice.invoice_info_company_name:
@@ -311,6 +313,14 @@ class PosOrder(models.Model):
 
     def download_invoice_bkav(self):
         return bkav_action.download_invoice_bkav(self)
+    
+    def search_infor_bkav(self,mst):
+        response_action = bkav_action.search_infor_bkav(self, mst)
+        if 'TenChinhThuc' in response_action:
+            self.write({
+                'invoice_info_company_name': response_action.get('TenChinhThuc'),
+                'invoice_info_address': response_action.get('DiaChiGiaoDichChinh'),
+            })
 
     def unlink(self):
         for item in self:
