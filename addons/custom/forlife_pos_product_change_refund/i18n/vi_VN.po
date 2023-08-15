@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-18 11:36+0000\n"
-"PO-Revision-Date: 2023-07-18 11:36+0000\n"
+"POT-Creation-Date: 2023-08-09 03:35+0000\n"
+"PO-Revision-Date: 2023-08-09 03:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -169,6 +169,11 @@ msgid "Bộ phận"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__promotion_string_code
+msgid "CTKM"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
 #, python-format
@@ -213,12 +218,31 @@ msgstr ""
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
 #, python-format
 msgid "Cashier"
-msgstr ""
+msgstr "Thu ngân"
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
+#, python-format
+msgid "Change"
+msgstr "Đổi"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__detail_defective
 msgid "Chi tiết lỗi"
 msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.actions.act_window,name:forlife_pos_product_change_refund.pos_order_line_action
+msgid "Chi tiết đơn hàng"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
+#, python-format
+msgid "Choose New Alternative Product"
+msgstr "Chọn sản phẩm thay thế mới"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
@@ -279,6 +303,12 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_pos_product_change_refund.field_handle_change_refund__access_url
 #: model:ir.model.fields,help:forlife_pos_product_change_refund.field_product_defective__access_url
 msgid "Customer Portal URL"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__company_id
+#: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.product_defective_form_view
+msgid "Công ty"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
@@ -453,6 +483,11 @@ msgid "Handle Change Refund"
 msgstr "Xử lý đổi trả"
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model,name:forlife_pos_product_change_refund.model_handle_change_refund_line
+msgid "Handle Change refund line"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__has_message
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__has_message
 msgid "Has Message"
@@ -550,6 +585,11 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_pos_product_change_refund.field_product_defective__message_has_error
 #: model:ir.model.fields,help:forlife_pos_product_change_refund.field_product_defective__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,help:forlife_pos_product_change_refund.field_pos_order_line__product_barcode
+msgid "International Article Number used for product identification."
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
@@ -723,6 +763,7 @@ msgstr ""
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Popups/PosOrderRefundDetailPopup.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__product_barcode
 #, python-format
 msgid "Mã vạch"
 msgstr ""
@@ -1355,6 +1396,11 @@ msgid "Total"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__total_amount_discount
+msgid "Total Amount Discount"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__state
 msgid "Trạng thái"
 msgstr ""
@@ -1397,6 +1443,7 @@ msgstr ""
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Popups/PosOrderRefundDetailPopup.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__product_name
 #, python-format
 msgid "Tên sản phẩm"
 msgstr ""
@@ -1534,8 +1581,8 @@ msgid "You can't create record handle Change Refund!"
 msgstr "Không thể tạo bản ghi xử lý đổi trả hàng quá hạn!"
 
 #. module: forlife_pos_product_change_refund
-#: model:ir.model,name:forlife_pos_product_change_refund.model_handle_change_refund_line
-msgid "handle.change.refund.line"
+#: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.pos_order_line_view_tree
+msgid "pos_order_line_tree"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund

@@ -17,6 +17,12 @@
                     </div>
                 </t>
             </t>
+            <t t-if="this.isShowChangeProduct()">
+                <div class="control-button" t-on-click="actChangeProduct"
+                     style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none; line-height: 30px; min-width: 55px !important; font-size: 12px">
+                    Đổi SP
+                </div>
+            </t>
         </xpath>
 
         <xpath expr="//li[hasclass('btn-change-refund')]" position="after">
