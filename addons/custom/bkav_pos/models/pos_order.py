@@ -44,10 +44,11 @@ class PosOrder(models.Model):
         return super().copy(default)
 
     def _get_vat_line_bkav(self, line):
-        vat = False
+        vat = -1
+        tax_rate_id = 4
         if line.tax_ids:
             vat = line.tax_ids[0].amount  
-        if vat == 0 and vat != False:
+        if vat == 0:
             tax_rate_id = 1
         elif vat == 5:
             tax_rate_id = 2
@@ -55,8 +56,6 @@ class PosOrder(models.Model):
             tax_rate_id = 9
         elif vat == 10:
             tax_rate_id = 3
-        else:
-            tax_rate_id = 4
         return vat, tax_rate_id
     
     
@@ -72,6 +71,8 @@ class PosOrder(models.Model):
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
             list_invoice_detail.append(line_invoice)
         
@@ -80,7 +81,7 @@ class PosOrder(models.Model):
         refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id and x.qty != 0).ids
         for promotion_id in self.lines.filtered(lambda x: x.product_src_id.id not in refunded_orderline_ids):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
-                vat = False
+                vat = -1
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
@@ -90,7 +91,7 @@ class PosOrder(models.Model):
                 else:
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
-                vat = False
+                vat = -1
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
@@ -100,7 +101,7 @@ class PosOrder(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            int_vat = (vat if vat != False else 0)
+            int_vat = (vat if vat != -1 else 0)
             value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
@@ -111,8 +112,10 @@ class PosOrder(models.Model):
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
-            if vat == 0 and vat != False:
+            if vat == 0:
                 tax_rate_id = 1
             elif vat == 5:
                 tax_rate_id = 2
@@ -120,9 +123,7 @@ class PosOrder(models.Model):
                 tax_rate_id = 9
             elif vat == 10:
                 tax_rate_id = 3
-            else:
-                tax_rate_id = 4
-            if vat != False:
+            if vat != -1:
                 line_invoice.update({
                     "TaxAmount": abs(value - value_not_tax),
                     "TaxRateID": tax_rate_id,
@@ -131,7 +132,7 @@ class PosOrder(models.Model):
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            int_vat = (vat if vat != False else 0)
+            int_vat = (vat if vat != -1 else 0)
             value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
@@ -142,8 +143,10 @@ class PosOrder(models.Model):
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
-            if vat == 0 and vat != False:
+            if vat == 0:
                 tax_rate_id = 1
             elif vat == 5:
                 tax_rate_id = 2
@@ -153,7 +156,7 @@ class PosOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            if vat != False:
+            if vat != -1:
                 line_invoice.update({
                     "TaxAmount": abs(value - value_not_tax),
                     "TaxRateID": tax_rate_id,
@@ -195,11 +198,11 @@ class PosOrder(models.Model):
                     "Amount": abs(price_subtotal),
                     "TaxAmount": 0,
                     "ItemTypeID": 0,
-                    # "DiscountRate": line.discount/100,
-                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
-                    "IsDiscount": 1 if line.is_promotion else 0
+                    "IsDiscount": 1 if line.is_promotion else 0,
+                    "TaxRateID": 4,
+                    "TaxRate": -1
                 }
-                if vat != False and not line.is_reward_line:
+                if vat != -1 and not line.is_reward_line:
                     item.update({
                         "TaxAmount": abs((price_subtotal_incl - price_subtotal or 0.0)),
                         "TaxRateID": tax_rate_id,
