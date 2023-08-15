@@ -430,7 +430,7 @@ class StockPicking(models.Model):
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
             # Nhập khác
             if picking_id.other_import:
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity = self.env['quantity.production.order'].search(domain)
                 if quantity:
                     quantity.write({
@@ -446,7 +446,7 @@ class StockPicking(models.Model):
 
             # Xuất khác
             if picking_id.other_export:
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity_prodution = self.env['quantity.production.order'].search(domain)
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
@@ -477,7 +477,7 @@ class StockPicking(models.Model):
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
             if picking_id.location_id.id == picking_id.transfer_id.location_id.id and picking_id.work_from:
                 # Trừ tồn ở lệnh work_from
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity_prodution = self.env['quantity.production.order'].search(domain)
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
@@ -493,7 +493,7 @@ class StockPicking(models.Model):
 
             if picking_id.location_dest_id.id == picking_id.transfer_id.location_dest_id.id and picking_id.work_to:
                 # Thêm tồn ở lệnh work_to
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_dest_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity = self.env['quantity.production.order'].search(domain)
                 if quantity:
                     quantity.write({

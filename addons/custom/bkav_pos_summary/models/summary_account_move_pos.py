@@ -37,6 +37,7 @@ class SummaryAccountMovePos(models.Model):
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
             "promotion_type": line.promotion_type,
             "amount_total": line.price_subtotal_incl,
+            "invoice_ids": [line.order_id.id],
         }
         return item
 
@@ -622,6 +623,8 @@ class SummaryAccountMovePosLineDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
 
     @api.depends('tax_ids', 'price_unit_incl')
     def _compute_amount(self):
