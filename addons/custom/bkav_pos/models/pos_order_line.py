@@ -5,6 +5,8 @@ class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     price_bkav = fields.Monetary(compute="_compute_price_bkav")
+    is_general = fields.Boolean(string="Đã chạy tổng hợp cuối ngày", related="order_id.is_general")
+
 
     @api.depends('price_subtotal_incl')
     def _compute_price_bkav(self):
