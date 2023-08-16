@@ -128,6 +128,8 @@ class SummaryExpenseLaborAccount(models.Model):
                 qty_return = sum(move_ids.filtered(lambda x: x.product_id == item.product_id)
                                  .mapped('returned_move_ids').filtered(lambda x: x.state == 'done').mapped('quantity_done'))
                 item.qty_actual = qty - qty_return
+            else:
+                item.qty_actual = 0
 
     @api.depends('product_id', 'move_id.purchase_order_product_id')
     def _compute_quantity_po(self):
