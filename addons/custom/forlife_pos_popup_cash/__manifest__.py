@@ -17,7 +17,8 @@
 
     'depends': [
         'point_of_sale',
-        'forlife_point_of_sale'
+        'forlife_point_of_sale',
+        'account_accountant'
     ],
 
     'data': [
@@ -25,6 +26,7 @@
         'views/store.xml',
         'views/pos_expense_label_views.xml',
         'views/account_move_views.xml',
+        'views/view_bank_statement_line_tree_bank_rec_widget.xml'
     ],
     'installable': True,
     'application': True,
