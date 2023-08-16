@@ -44,7 +44,7 @@ class ProductTemplate(models.Model):
         #     return res
 
         for line in res:
-            if line.brand_id.id or line.categ_id.category_type_id.x_sync_nhanh:
+            if line.brand_id.id and line.categ_id.category_type_id.x_sync_nhanh:
                 self.sudo().with_delay(
                     description="Sync product to NhanhVn", channel="root.NhanhMQ"
                 ).synchronized_create_product(line)
