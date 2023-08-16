@@ -215,7 +215,7 @@ class SummaryAccountMovePos(models.Model):
                     "card_point": discount_items
                 }
                 store_discount_items[store.id] = discount_items
-
+it
             for k, v in items.items():
                 res_line = model_line.create(v["line_ids"])
                 v["line_ids"] = res_line.ids
@@ -237,7 +237,7 @@ class SummaryAccountMovePos(models.Model):
 
             model_line_discount.create(discount_vals_list)
 
-        return data, res_pos, move_ids
+        return data, res_pos, pos_order_synthetic
 
 
     def include_line_by_product(self, lines):
