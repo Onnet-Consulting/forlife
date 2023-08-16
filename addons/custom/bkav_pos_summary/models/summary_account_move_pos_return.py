@@ -163,7 +163,7 @@ class SummaryAccountMovePosReturn(models.Model):
 
         last_day = date.today()
         domain = [
-            # ('is_general', '=', False),
+            ('is_general', '=', False),
             ('is_post_bkav_store', '=', True),
             ('exists_bkav', '=', False),
             ('pos_order_id', '!=', False),
