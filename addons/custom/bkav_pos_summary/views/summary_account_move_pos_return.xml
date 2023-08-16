@@ -62,16 +62,29 @@
                             <field name="einvoice_date"/>
                         </page> -->
                         <page name="other_info" string="Other Information">
-                            <field name="line_discount_ids">
-                                <tree editable="bottom" create="0">
-                                    <field name="promotion_type"/>
-                                    <field name="invoice_ids" widget="many2many_tags"/>
-                                    <field name="price_unit"/>
-                                    <field name="tax_ids" widget="many2many_tags"/>
-                                    <field name="tax_amount"/>
-                                    <field name="amount_total"/>
-                                </tree>
-                            </field>
+                            <group>
+                                <field name="line_discount_ids">
+                                    <tree editable="bottom" create="0">
+                                        <field name="promotion_type"/>
+                                        <field name="invoice_ids" widget="many2many_tags"/>
+                                        <field name="price_unit"/>
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="tax_amount"/>
+                                        <field name="amount_total"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="discount_ids" string="Tổng Chiêt khấu"> 
+                                    <tree editable="bottom" create="0">
+                                        <field name="promotion_type"/>
+                                        <field name="price_unit"/>
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="tax_amount"/>
+                                        <field name="amount_total"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -94,5 +107,5 @@
               parent="bkav_connector.menu_master_bkav_pos"
               name="Hóa đơn đổi trả tổng cuối ngày"
               action="summary_account_move_pos_return_action"
-              sequence="10"/>
+              sequence="20"/>
 </odoo>

@@ -35,14 +35,13 @@ class PartnerCardRank(models.Model):
     @api.depends('line_ids')
     def compute_value(self):
         for line in self:
-            line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id
+            line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id or False
             records = line.line_ids.sorted().filtered(lambda f: f.value_to_upper != 0)
             record = records and records[0] or False
             if record:
                 line.last_order_date = record.order_date
                 line.accumulated_sales = sum(records.filtered(lambda f: f.order_date >= (
-                            record.order_date - timedelta(record.program_cr_id.time_set_rank))).mapped(
-                    'value_to_upper'))
+                        record.order_date - timedelta(record.program_cr_id.time_set_rank))).mapped('value_to_upper'))
             else:
                 line.last_order_date = False
                 line.accumulated_sales = 0
@@ -53,7 +52,7 @@ class PartnerCardRank(models.Model):
             _detail = ''
             for detail in line.line_ids:
                 _detail += f"<tr style=\"text-align: center;\">" \
-                           f"<td>{detail.order_id and detail.order_id.name or ''}</td>" \
+                           f"<td>{detail.name or ''}</td>" \
                            f"<td>{detail.order_date and detail.order_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') or ''}</td>" \
                            f"<td style=\"text-align: right !important;\">{'{:,.0f}'.format(detail.value_orders or 0)}</td>" \
                            f"<td style=\"text-align: right !important;\">{'{:,.0f}'.format(detail.value_to_upper or 0)}</td>" \
@@ -75,23 +74,66 @@ class PartnerCardRank(models.Model):
             })
         return res
 
+    @api.model
+    def create_partner_card_rank(self, pos_order, invoice, value_to_upper_order, program_id, rank_id):
+        if pos_order:
+            customer_id = pos_order.partner_id.id
+            brand_id = pos_order.config_id.store_id.brand_id.id
+            name = pos_order.name
+            order_id = pos_order.id
+            invoice_id = False
+            order_date = pos_order.date_order
+            real_date = pos_order.create_date
+            value_orders = pos_order.amount_total
+        elif invoice:
+            sale_id = invoice.line_ids.sale_line_ids.order_id
+            sale_id = sale_id and sale_id[0] or sale_id
+            customer_id = sale_id.order_partner_id.id
+            brand_id = sale_id.x_location_id.warehouse_id.brand_id.id
+            name = invoice.name or ''
+            order_id = False
+            invoice_id = invoice.id
+            order_date = invoice.invoice_date
+            real_date = invoice.invoice_date
+            value_orders = invoice.amount_residual
+        else:
+            return False
+        self.sudo().create({
+            'customer_id': customer_id,
+            'brand_id': brand_id,
+            'line_ids': [(0, 0, {
+                'name': name,
+                'order_id': order_id,
+                'invoice_id': invoice_id,
+                'order_date': order_date,
+                'real_date': real_date,
+                'value_orders': value_orders,
+                'value_to_upper': value_to_upper_order,
+                'old_card_rank_id': rank_id,
+                'new_card_rank_id': rank_id,
+                'value_up_rank': 0,
+                'program_cr_id': program_id,
+                'status': True
+            })]
+        })
+        return True
+
 
 class PartnerCardRankLine(models.Model):
     _name = 'partner.card.rank.line'
     _description = 'Partner Card Rank Line'
     _order = 'real_date desc, id desc'
 
-    partner_card_rank_id = fields.Many2one("partner.card.rank", string="Partner Card Rank", required=True,
-                                           ondelete='restrict')
+    name = fields.Char('Order', default='')
+    partner_card_rank_id = fields.Many2one("partner.card.rank", string="Partner Card Rank", required=True, ondelete='restrict')
     order_id = fields.Many2one('pos.order', string="Pos Order", ondelete='restrict')
+    invoice_id = fields.Many2one('account.move', string="Nhanh Order", ondelete='restrict')
     order_date = fields.Datetime('Order Date', default=fields.Datetime.now)
     real_date = fields.Datetime('Real Date', default=fields.Datetime.now)
     value_orders = fields.Integer('Value Orders')
     value_to_upper = fields.Integer('Value to upper')
     value_up_rank = fields.Integer('Value up rank')
-    old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True,
-                                       default=lambda self: self.env['card.rank'].search([], order='priority asc',
-                                                                                         limit=1))
+    old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
     program_cr_id = fields.Many2one('member.card', string='Program Card Rank', required=True)
     status = fields.Boolean('Status', default=False, copy=False)
@@ -121,3 +163,38 @@ class PartnerCardRankLine(models.Model):
             line_id.write({
                 'status': False
             })
+
+    @api.model
+    def create_partner_card_rank_detail(self, pos_order, invoice, pcr_id, value_to_upper, old_rank_id, new_rank_id, total_value_to_up, program_id):
+        self.sudo().browse(pcr_id).filtered(lambda f: f.status).write({'status': False})
+        if pos_order:
+            name = pos_order.name
+            order_id = pos_order.id
+            invoice_id = False
+            order_date = pos_order.date_order
+            real_date = pos_order.create_date
+            value_orders = pos_order.amount_total
+        elif invoice:
+            name = invoice.name or ''
+            order_id = False
+            invoice_id = invoice.id
+            order_date = invoice.invoice_date
+            real_date = invoice.invoice_date
+            value_orders = invoice.amount_residual
+        else:
+            return False
+        self.sudo().create({
+            'partner_card_rank_id': pcr_id,
+            'name': name,
+            'order_id': order_id,
+            'invoice_id': invoice_id,
+            'order_date': order_date,
+            'real_date': real_date,
+            'value_orders': value_orders,
+            'value_to_upper': value_to_upper,
+            'old_card_rank_id': old_rank_id,
+            'new_card_rank_id': new_rank_id,
+            'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
+            'program_cr_id': program_id,
+            'status': True if old_rank_id != new_rank_id else False
+        })
