@@ -77,7 +77,9 @@
             <field name="arch" type="xml">
                 <tree string="partner_card_rank_line_tree">
                     <field name="partner_card_rank_id" invisible="1"/>
-                    <field name="order_id"/>
+                    <field name="order_id" invisible="1"/>
+                    <field name="invoice_id" invisible="1"/>
+                    <field name="name"/>
                     <field name="order_date"/>
                     <field name="value_orders"/>
                     <field name="value_to_upper"/>
@@ -94,9 +96,9 @@
             <field name="arch" type="xml">
                 <form string="partner_card_rank_line_form">
                     <sheet>
-                        <group>
+                        <group string="Thông tin chung">
                             <group>
-                                <field name="order_id"/>
+                                <field name="name"/>
                                 <field name="order_date"/>
                                 <field name="value_orders"/>
                             </group>
@@ -104,6 +106,14 @@
                                 <field name="old_card_rank_id"/>
                                 <field name="new_card_rank_id"/>
                                 <field name="value_to_upper"/>
+                            </group>
+                        </group>
+                        <group string="Nguồn đơn hàng">
+                            <group>
+                                <field name="order_id"/>
+                            </group>
+                            <group>
+                                <field name="invoice_id"/>
                             </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>

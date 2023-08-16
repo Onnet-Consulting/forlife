@@ -6,6 +6,7 @@ from . import partner_card_rank
 from . import partner_history_point
 from . import res_partner
 from . import pos_order
+from . import account_move
 from . import pos_session
 from . import pos_order_line_discount_details
 from . import promotion_program
