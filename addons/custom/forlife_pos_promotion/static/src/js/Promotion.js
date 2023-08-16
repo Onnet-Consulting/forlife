@@ -185,11 +185,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         }
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
-            this.pro_pricelist_item_by_id[str_id] = item;
+            selfItem.pro_pricelist_item_by_id[str_id] = item;
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
-            item.program = this.promotion_program_by_id[item.program_id];
+            item.program = selfItem.promotion_program_by_id[item.program_id];
             item.program.pricelistItems.push(item);
             item.program.productPricelistItems.add(item.product_id);
             item.display_name = item.display_name;
@@ -200,7 +200,6 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             item = Object.assign(item, program_clone);
             this.promotionPricelistItems.push(item)
         };
-        // this.promotionPricelistItems.push(...promotionItems);
     }
 
     get_reward_product_ids(program) {
