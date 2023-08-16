@@ -79,6 +79,9 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
     else:
         result_data = json.loads(response.get('Object', []))[0]
         try:
+            if result_data.get('MessLog'):
+                self.message_post(body=result_data.get('MessLog'))
+                return
             # ghi dữ liệu
             self.write({
                 'exists_bkav': True,
@@ -88,8 +91,6 @@ def create_invoice_bkav(self,data,is_publish=True,origin_id=False,issue_invoice_
                 'invoice_serial': result_data.get('InvoiceSerial'),
                 'invoice_e_date': (datetime.strptime(result_data.get('InvoiceDate').split('.')[0], '%Y-%m-%dT%H:%M:%S.%f')).date() if result_data.get('InvoiceDate') else None
             })
-            if result_data.get('MessLog'):
-                self.message_post(body=result_data.get('MessLog'))
             if is_publish:
                 publish_invoice_bkav(self)
             get_invoice_bkav(self)
@@ -124,6 +125,8 @@ def publish_invoice_bkav(self):
 
 
 def update_invoice_bkav(self,data):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return create_invoice_bkav(self,data,False,False,issue_invoice_type='')
     if self.is_post_bkav:
         return
     configs = get_bkav_config(self)
@@ -264,5 +267,6 @@ def search_infor_bkav(self, mst):
     response_action = connect_bkav(data, configs)
     if response_action.get('Status') == '1':
         self.message_post(body=(response_action.get('Object')))
+        return False
     else:
         return response_action.get('Object')
