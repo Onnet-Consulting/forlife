@@ -154,9 +154,9 @@ class InheritPosOrder(models.Model):
                 }
 
         if values:
-            results = results.with_context(pos_entry=True).create([values[k] for k in values])
+            results = results.create([values[k] for k in values])
             results.line_ids.filtered(lambda l: l.display_type == 'tax').partner_id = self.session_id.config_id.store_id.contact_id.id
-            results.with_context(pos_entry=False)._post()
+            results._post()
         return results
 
     @api.model
@@ -181,9 +181,6 @@ class InheritPosOrder(models.Model):
             'partner_id': order_line.order_id.partner_id.id,
             'price_unit': (order_line.original_price or invoice_line['price_unit']) if not order_line.is_reward_line else 0
         })
-        if not order_line.refunded_orderline_id.order_id.real_to_invoice:
-            invoice_line['partner_id'] = self.session_id.config_id.invoice_journal_id.company_consignment_id.id or \
-                                         invoice_line['partner_id']
         if order_line.refunded_orderline_id:
             invoice_line.update({
                 'account_id': order_line.product_id.product_tmpl_id.categ_id.x_property_account_return_id.id
@@ -193,6 +190,8 @@ class InheritPosOrder(models.Model):
                     'Product categories "%s" has not configured refund account!',
                     order_line.product_id.product_tmpl_id.categ_id.display_name
                 ))
+            invoice_line['partner_id'] = self.session_id.config_id.invoice_journal_id.company_consignment_id.id or \
+                                         invoice_line['partner_id']
             return invoice_line
         journal = self.session_id.config_id.invoice_journal_id
         if journal.company_consignment_id:
@@ -230,7 +229,8 @@ class InheritPosOrder(models.Model):
         result = super(InheritPosOrder, self)._prepare_invoice_vals()
         if self.to_invoice and self.real_to_invoice:
             result.update({'exists_bkav': True, 'is_post_bkav': True})
-        if not any(to_invoice for to_invoice in self.refunded_order_ids.mapped('real_to_invoice')):
+        to_invoices = self.refunded_order_ids.mapped('real_to_invoice')
+        if (self.refunded_order_ids and not any(to_invoice for to_invoice in to_invoices)) or (not self.refunded_order_ids and not self.real_to_invoice):
             partner_id = self.session_id.config_id.store_id.contact_id.id
             if not partner_id:
                 raise ValidationError(_("Cannot found contact's store (%s)") % self.pos_session_id.config_id.store_id.name)
