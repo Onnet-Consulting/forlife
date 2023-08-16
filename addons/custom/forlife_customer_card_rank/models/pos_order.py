@@ -15,15 +15,18 @@ class PosOrder(models.Model):
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
-        self.update_partner_card_rank()
+        for order in self:
+            order.update_partner_card_rank()
         return res
 
     def update_partner_card_rank(self):
-        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, self.config_id.store_id.brand_id.id)
+        self.ensure_one()
+        brand_id = self.config_id.store_id.brand_id
+        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, brand_id.id)
         if not member_cards:
             return False
         is_rank = False
-        partner_card_rank = self.partner_id.card_rank_ids.filtered(lambda f: f.brand_id == self.config_id.store_id.brand_id)
+        partner_card_rank = self.partner_id.card_rank_ids.filtered(lambda f: f.brand_id.id == brand_id.id)
         if partner_card_rank:
             new_rank = partner_card_rank.card_rank_id
             for program in member_cards:
@@ -33,13 +36,11 @@ class PosOrder(models.Model):
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
                     if new_rank.priority >= program.card_rank_id.priority:
-                        self.update_status_card_rank(partner_card_rank)
-                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
+                        self.env['partner.card.rank.line'].create_partner_card_rank_detail(self, False, partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
                         break
                     else:
                         if total_value_to_up >= program.min_turnover:
-                            self.update_status_card_rank(partner_card_rank)
-                            self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
+                            self.env['partner.card.rank.line'].create_partner_card_rank_detail(self, False, partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
                             break
         else:
             for program in member_cards:
@@ -48,54 +49,10 @@ class PosOrder(models.Model):
                     is_rank = True
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     if value_to_upper_order >= program.min_turnover:
-                        self.create_partner_card_rank(value_to_upper_order, program.id, program.card_rank_id.id)
+                        self.env['partner.card.rank'].create_partner_card_rank(self, False, value_to_upper_order, program.id, program.card_rank_id.id)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
-
-    def create_partner_card_rank(self, value_to_upper_order, program_id, rank_id):
-        res = self.env['partner.card.rank'].sudo().create({
-            'customer_id': self.partner_id.id,
-            'brand_id': self.config_id.store_id.brand_id.id,
-            'line_ids': [(0, 0, {
-                'order_id': self.id,
-                'order_date': self.date_order,
-                'real_date': self.create_date,
-                'value_orders': self.amount_total,
-                'value_to_upper': value_to_upper_order,
-                'old_card_rank_id': rank_id,
-                'new_card_rank_id': rank_id,
-                'value_up_rank': 0,
-                'program_cr_id': program_id,
-                'status': True
-            })]
-        })
-        return res
-
-    def update_status_card_rank(self, partner_card_rank_id):
-        PartnerCardRankLine = self.env['partner.card.rank.line'].sudo()
-        partner_card_rank_line_ids = PartnerCardRankLine.search(
-            [('partner_card_rank_id', '=', partner_card_rank_id.id), ('status', '=', True)])
-        if partner_card_rank_line_ids:
-            for partner_card_rank_line_id in partner_card_rank_line_ids:
-                partner_card_rank_line_id.write({
-                    'status': False
-                })
-    def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id,
-                                        total_value_to_up, program_id):
-         self.env['partner.card.rank.line'].sudo().create({
-            'partner_card_rank_id': partner_card_rank_id,
-            'order_id': self.id,
-            'order_date': self.date_order,
-            'real_date': self.create_date,
-            'value_orders': self.amount_total,
-            'value_to_upper': value_to_upper,
-            'old_card_rank_id': old_rank_id,
-            'new_card_rank_id': new_rank_id,
-            'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
-            'program_cr_id': program_id,
-            'status': True if old_rank_id != new_rank_id else False
-        })
 
     @api.model
     def _order_fields(self, ui_order):
@@ -128,7 +85,7 @@ class PosOrder(models.Model):
     #             pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
     #                                               store)
     #     return pos_id
-    
+
     def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
         vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
         pos = self
