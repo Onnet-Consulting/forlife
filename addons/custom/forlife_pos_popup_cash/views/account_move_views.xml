@@ -12,6 +12,10 @@
                            widget='monetary' options="{'currency_field': 'currency_id'}"
                            attrs="{'invisible': [('pos_transfer_cash_2office', '=', False)]}"/>
                 </field>
+                <xpath expr="//page[@id='aml_tab']/field[@name='line_ids']/tree/field[@name='credit']" position="after">
+                    <field name="expense_label_id" optional="show"
+                           attrs="{'column_invisible': [('parent.move_type', '!=', 'entry')]}"/>
+                </xpath>
             </field>
         </record>
         <record id="account_move_view_filter_inherit" model="ir.ui.view">
