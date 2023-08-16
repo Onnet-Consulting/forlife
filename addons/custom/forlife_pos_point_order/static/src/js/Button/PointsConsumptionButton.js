@@ -139,7 +139,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                                     let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
                                     let line_new = OrderCurrent.createNewLinePoint(line)
                                     // Set remaining quantity for the original orderline
+                                    this.env.pos.no_reset_program = true;
                                     order_lines[j].set_quantity(order_lines[j].quantity - line_new.quantity)
+                                    this.env.pos.no_reset_program = false;
                                     list_order_line_new.push({id: line_new.id, point:data[i].point})
                                     this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
                                 }
@@ -163,7 +165,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                                     let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
                                     let line_new = OrderCurrent.createNewLinePoint(line)
                                     // Set remaining quantity for the original orderline
+                                    this.env.pos.no_reset_program = true;
                                     order_lines[j].set_quantity(order_lines[j].quantity - line_new.quantity)
+                                    this.env.pos.no_reset_program = false;
                                     list_order_line_new.push({id: line_new.id, point:data[i].point})
                                     this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
                                 }else if(order_lines[j].is_new_line_point == true && data[i].id == order_lines[j].id && data[i].point == 0){
