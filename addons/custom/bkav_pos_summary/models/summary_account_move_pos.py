@@ -215,7 +215,7 @@ class SummaryAccountMovePos(models.Model):
                     "card_point": discount_items
                 }
                 store_discount_items[store.id] = discount_items
-it
+
             for k, v in items.items():
                 res_line = model_line.create(v["line_ids"])
                 v["line_ids"] = res_line.ids
