@@ -18,13 +18,13 @@ def _validate_accounting_entries(self):
         auto_export_check = self.env['forlife.reason.type'].sudo().search([('code','=','X1101'), ('company_id','=',company_id)])
         if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
             continue
-        if svl.currency_id.is_zero(svl.value):
-            if location_check_id and location_dest_check_id and svl.stock_move_id.picking_id.location_id.id != location_check_id.id and \
-                    svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id.id and \
-                    svl.stock_move_id.picking_id.reason_type_id.id != reason_type_check or (
-                    svl.stock_move_id.picking_id.location_id.id == auto_import_check or
-                    svl.stock_move_id.picking_id.location_dest_id.id == auto_export_check):
-                continue
+        # if svl.currency_id.is_zero(svl.value):
+        #     if location_check_id and location_dest_check_id and svl.stock_move_id.picking_id.location_id.id != location_check_id.id and \
+        #             svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id.id and \
+        #             svl.stock_move_id.picking_id.reason_type_id.id != reason_type_check or (
+        #             svl.stock_move_id.picking_id.location_id.id == auto_import_check or
+        #             svl.stock_move_id.picking_id.location_dest_id.id == auto_export_check):
+        #         continue
         company_code = svl.stock_move_id.picking_id.company_id.code
         if svl.stock_move_id.picking_id.from_po_give and company_code == '1400':
             continue

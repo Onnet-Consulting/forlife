@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='notes']" position="after">
                     <field name="is_refund_order" invisible="1"/>
+                    <field name="invoice_info_tax_number" invisible="1"/>
                     <field name="is_change_order" invisible="1"/>
                     <page id="bkav_invoice" string="BKAV Invoice">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
@@ -30,6 +31,9 @@
                                 string="Cancel eInvoice"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 groups="account.group_account_invoice"/> -->
+                        <button name="search_infor_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_info_tax_number', '=', False)]}"
+                                string="Search by taxcode" groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Download eInvoice" groups="account.group_account_invoice"/>
@@ -71,6 +75,9 @@
                                 string="Cancel eInvoice"
                                 attrs="{'invisible':[('invoice_guid_return', '=', False)]}"
                                 groups="account.group_account_invoice"/> -->
+                        <button name="search_infor_bkav" type="object" class="btn btn-primary"
+                                attrs="{'invisible':[('invoice_info_tax_number', '=', False)]}"
+                                string="Search by taxcode" groups="account.group_account_invoice"/>
                         <button name="download_invoice_bkav_return" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid_return', '=', False)]}"
                                 string="Download eInvoice" groups="account.group_account_invoice"/>

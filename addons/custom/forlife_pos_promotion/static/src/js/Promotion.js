@@ -198,8 +198,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.str_id;
             delete program_clone.display_name;
             item = Object.assign(item, program_clone);
+            this.promotionPricelistItems.push(item)
         };
-        this.promotionPricelistItems.push(...promotionItems);
+        // this.promotionPricelistItems.push(...promotionItems);
     }
 
     get_reward_product_ids(program) {

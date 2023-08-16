@@ -33,8 +33,8 @@ class SaleOrder(models.Model):
          ('intercompany', 'Đơn bán hàng liên công ty'),
          ('online', 'Đơn bán hàng online')],
         string='Kênh bán', default='wholesale')
-    x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
-    x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
+    x_account_analytic_id = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
+    x_occasion_code_id = fields.Many2many('occasion.code', string='Mã vụ việc')
     x_punish = fields.Boolean(string='Đơn phạt', copy=False)
     # x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)

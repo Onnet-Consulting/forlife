@@ -92,6 +92,11 @@ msgid "Download eInvoice"
 msgstr "Tai HDDT"
 
 #. module: bkav_pos
+#: model_terms:ir.ui.view,arch_db:bkav_pos.bkav_invoice_pos_form_view
+msgid "Search by taxcode"
+msgstr "Lấy TT qua MST"
+
+#. module: bkav_pos
 #: model:ir.model.fields.selection,name:bkav_pos.selection__pos_order__issue_invoice_type__vat
 msgid "GTGT"
 msgstr ""

@@ -40,12 +40,14 @@ class ProductTemplate(models.Model):
     @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)
-        if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
-            return res
+        # if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
+        #     return res
 
-        self.sudo().with_delay(
-            description="Sync product to NhanhVn", channel="root.NhanhMQ"
-        ).synchronized_create_product(res)
+        for line in res:
+            if line.brand_id.id and line.categ_id.category_type_id.x_sync_nhanh:
+                self.sudo().with_delay(
+                    description="Sync product to NhanhVn", channel="root.NhanhMQ"
+                ).synchronized_create_product(line)
             # self.synchronized_create_product(res)
         return res
 
@@ -66,7 +68,7 @@ class ProductTemplate(models.Model):
         return price
 
     def synchronized_create_product(self, res):
-        if res.check_data_odoo and res.brand_id.id:
+        if res.check_data_odoo and res.brand_id.id and res.categ_id.category_type_id.x_sync_nhanh:
             nhanh_config = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
             if nhanh_config.get('nhanh_connector.nhanh_app_id', '') \
                 or nhanh_config.get('nhanh_connector.nhanh_business_id', '') \
@@ -137,11 +139,14 @@ class ProductTemplate(models.Model):
         if len(last_fields) == len(require_fields):
             return res
         data = []
-        is_create = False
+        # is_create = False
         for item in self:
             if not item.nhanh_id:
                 if item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
-                    is_create = True
+                    # is_create = True
+                    self.sudo().with_delay(
+                        description="Sync product to NhanhVn", channel="root.NhanhMQ"
+                    ).synchronized_create_product(item)
 
             elif item.brand_id.id and item.categ_id.category_type_id.x_sync_nhanh:
                 price = self.get_pcpc_price_list_by_product(item)
@@ -163,10 +168,10 @@ class ProductTemplate(models.Model):
                 description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
             ).synchronized_price_nhanh(data)
             # self.synchronized_price_nhanh(data)
-        if is_create:
-            self.sudo().with_delay(
-                description="Sync product to NhanhVn", channel="root.NhanhMQ"
-            ).synchronized_create_product(self)
+        # if is_create:
+        #     self.sudo().with_delay(
+        #         description="Sync product to NhanhVn", channel="root.NhanhMQ"
+        #     ).synchronized_create_product(self)
             # self.synchronized_create_product(self)
         
         return res

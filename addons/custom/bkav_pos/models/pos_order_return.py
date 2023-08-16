@@ -196,7 +196,7 @@ class PosOrderReturn(models.Model):
             origin_id = invoice.origin_move_id
             
             if invoice.invoice_info_tax_number and (not invoice.invoice_info_company_name or not invoice.invoice_info_address):
-                invoice.search_infor_bkav(invoice.invoice_info_tax_number)
+                invoice.search_infor_bkav()
 
             BuyerName = origin_id.partner_id.name if origin_id.partner_id.name else ''
 
