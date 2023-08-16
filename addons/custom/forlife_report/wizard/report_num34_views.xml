@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num34</field>
         <field name="arch" type="xml">
-            <form string="Report sales and refund" create="0">
+            <form string="Danh sách hóa đơn TMĐT" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
