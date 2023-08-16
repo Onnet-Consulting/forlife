@@ -162,7 +162,7 @@ class SummaryAccountMovePos(models.Model):
         last_day = date.today()
 
         domain = [
-            ('is_general', '=', False),
+            # ('is_general', '=', False),
             ('is_post_bkav_store', '=', True),
             ('exists_bkav', '=', False),
             ('pos_order_id', '!=', False),
@@ -183,7 +183,8 @@ class SummaryAccountMovePos(models.Model):
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '=', False),
             ('qty', '>', 0),
-            ('is_promotion', '=', False)
+            ('is_promotion', '=', False),
+            ('is_general', '=', False),
         ])
 
         data = {}
