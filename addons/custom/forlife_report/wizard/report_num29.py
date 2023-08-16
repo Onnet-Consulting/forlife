@@ -25,6 +25,7 @@ class ReportNum28(models.TransientModel):
     def _get_query(self):
         self.ensure_one()
         attr_value = self.env['res.utility'].get_attribute_code_config()
+        tz_offset = self.tz_offset
         query = f"""
             select 
                 aa.type as phan_loai,
@@ -45,7 +46,7 @@ class ReportNum28(models.TransientModel):
             left join account_analytic_account aaa on aa.dept_code = aaa.id
             left join asset_location al on aa.location = al.id 
             
-            where aa.type in ('TSCD', 'CCDC') and aa.doc_date between '{self.date_from}' and '{self.date_to}'
+            where aa.type in ('TSCD', 'CCDC') and {format_date_query('aa.doc_date', tz_offset)} between '{self.date_from}' and '{self.date_to}'
         """
 
         if self.company_id:

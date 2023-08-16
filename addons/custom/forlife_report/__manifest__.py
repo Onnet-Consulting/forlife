@@ -70,6 +70,7 @@
         'wizard/report_num33.xml',
         'wizard/report_num34_views.xml',
         'wizard/report_num35_views.xml',
+        'wizard/report_num36.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',
