@@ -63,6 +63,24 @@
                                 </tree>
                             </field>
                         </page>
+                        <page name="detail_adjusted" string="Detail Adjusted">
+                            <field name="line_adjusted_ids">
+                                <tree editable="bottom" create="0">
+                                    <field name="product_id"/>
+                                    <field name="adjusted_code"/>
+                                    <field name="invoice_ids" widget="many2many_tags" readonly="1"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="price_unit"/>
+                                     <field name="price_unit_incl"/>
+                                    <field name="x_free_good"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_amount"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="amount_total"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page name="HĐĐT" string="Invoices">
                             <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
@@ -70,18 +88,19 @@
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>
-                                <field name="invoice_no"/>
-                                <field name="invoice_state_e"/>
-                                <field name="invoice_e_date"/>
-                                <field name="invoice_serial"/>
-                                <field name="invoice_guid"/>
-                                <field name="invoice_form"/>
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_state_e" readonly="1"/>
+                                <field name="invoice_e_date" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
+                                <field name="invoice_guid" readonly="1"/>
+                                <field name="invoice_form" readonly="1"/>
                             </group>
                         </page>
                         <page name="other_info" string="Other Information">
                             <field name="line_discount_ids">
                                 <tree editable="bottom" create="0">
                                     <field name="promotion_type"/>
+                                    <field name="invoice_ids" widget="many2many_tags"/>
                                     <field name="price_unit"/>
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="tax_amount"/>

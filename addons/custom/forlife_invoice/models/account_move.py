@@ -55,7 +55,7 @@ class AccountExpenseLaborDetail(models.Model):
     company_id = fields.Many2one(related='move_id.company_id', string='Công ty', store=True)
     qty = fields.Float('Số lượng')
     price_subtotal_back = fields.Float(string='Thành tiền', currency_field='currency_id')
-    tax_back = fields.Float(string='Tiền thuế', compute='compute_tax', currency_field='currency_id')
+    tax_back = fields.Float(string='Tiền thuế', currency_field='currency_id')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', currency_field='currency_id')
     tax_percent = fields.Many2one('account.tax', string='% Thuế')
 
@@ -64,10 +64,10 @@ class AccountExpenseLaborDetail(models.Model):
         res = super(AccountExpenseLaborDetail, self).create(vals_list)
         return res
 
-    @api.depends('tax_percent', 'price_subtotal_back')
-    def compute_tax(self):
-        for rec in self:
-            rec.tax_back = rec.price_subtotal_back * rec.tax_percent.amount * 0.01
+    # @api.depends('tax_percent', 'price_subtotal_back')
+    # def compute_tax(self):
+    #     for rec in self:
+    #         rec.tax_back = rec.price_subtotal_back * rec.tax_percent.amount * 0.01
 
     @api.depends('tax_back', 'price_subtotal_back')
     def compute_totals_back(self):
@@ -89,15 +89,22 @@ class SummaryExpenseLaborAccount(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, related='move_id.currency_id')
     company_id = fields.Many2one(related='move_id.company_id', string='Company', store=True)
 
-    before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', currency_field='currency_id')
-    after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', currency_field='currency_id')
-    expense_labor = fields.Float(string='Chi phí nhân công', compute='_compute_expense_labor')
+    before_tax = fields.Float(string='CP thực tế trước thuế', compute='_compute_before_tax', currency_field='currency_id')
+    after_tax = fields.Float(string='CP thực tế sau thuế', compute='_compute_after_tax', currency_field='currency_id')
+    expense_labor = fields.Float(string='CP thưc tế nhân công', compute='_compute_expense_labor')
+    qty_actual = fields.Float(string='SL(thực nhập)', compute='_compute_qty_actual')
+    before_est_tax = fields.Float(string='CP ước tính trước thuế', currency_field='currency_id')
+    after_est_tax = fields.Float(string='CP ước tính sau thuế', currency_field='currency_id')
+    expense_est_labor = fields.Float(string='CP ước tính nhân công', currency_field='currency_id')
     # total_product = fields.Float(string='Tổng giá trị tiền hàng',
     #                              compute='_compute_total_product')
 
     @api.model_create_multi
     def create(self, vals_list):
         res = super(SummaryExpenseLaborAccount, self).create(vals_list)
+        for item in res:
+            item.before_est_tax = item.before_tax
+            item.after_est_tax = item.after_tax
         return res
 
 
@@ -111,6 +118,18 @@ class SummaryExpenseLaborAccount(models.Model):
     # def _compute_total_vnd_amount(self):
     #     for rec in self:
     #         rec.total_vnd_amount = rec.price_unit * rec.product_qty * rec.move_id.exchange_rate
+
+    @api.depends('move_id.receiving_warehouse_id', 'product_id')
+    def _compute_qty_actual(self):
+        for item in self:
+            if item.move_id.receiving_warehouse_id:
+                move_ids = item.move_id.receiving_warehouse_id.mapped('move_ids')
+                qty = sum(move_ids.filtered(lambda x: x.product_id == item.product_id).mapped('quantity_done'))
+                qty_return = sum(move_ids.filtered(lambda x: x.product_id == item.product_id)
+                                 .mapped('returned_move_ids').filtered(lambda x: x.state == 'done').mapped('quantity_done'))
+                item.qty_actual = qty - qty_return
+            else:
+                item.qty_actual = 0
 
     @api.depends('product_id', 'move_id.purchase_order_product_id')
     def _compute_quantity_po(self):

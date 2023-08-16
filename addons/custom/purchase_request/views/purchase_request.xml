@@ -8,7 +8,7 @@
     </record>
 
     <record id="action_create_purchase_order" model="ir.actions.server">
-        <field name="name">Create Sale Order</field>
+        <field name="name">Tạo đơn mua hàng</field>
         <field name="type">ir.actions.server</field>
         <field name="model_id" ref="model_purchase_request"/>
         <field name="binding_model_id" ref="model_purchase_request"/>
@@ -16,7 +16,7 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                action = records.action_create_purchase_order()
+                action = records.wizard_create_purchase_orders()
         </field>
     </record>
 
@@ -121,9 +121,9 @@
                                     <field name="purchase_product_type" optional="show" string="Loại hàng hóa"/>
                                     <field name="asset_code" attrs="{'invisible': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="asset_description" attrs="{'readonly': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
+                                    <field name="product_uom" optional="show" readonly="0" string="ĐVT"/>
                                     <field name="purchase_quantity" optional="show"/>
                                     <field name="exchange_quantity" optional="show" string="Tỷ lệ quy đổi" invisible="1"/>
-                                    <field name="product_uom" optional="show" readonly="0" string="ĐVT"/>
                                     <field name="product_qty" invisible="1" force_save="1"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
                                     <field name="currency_id" optional="show" invisible="1" force_save="1"/>

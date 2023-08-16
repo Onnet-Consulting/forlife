@@ -57,7 +57,7 @@
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('is_check_line_material_line', '=', False)]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('is_check_line_material_line', '=', False), ('purchase_type', '=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
                      <field name="invoice_status_fake" />
@@ -133,6 +133,7 @@
 <!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
                                         <field name="type_cost_product" invisible="1"/>
                                         <field name="price_unit" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
+                                        <field name="total_amount" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
                                     </tree>
                                 </field>
                             </page>

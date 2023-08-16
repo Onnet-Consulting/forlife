@@ -65,25 +65,26 @@
                             <button name="action_download_view_e_invoice" type="object" class="btn btn-primary"
                                     string="Download eInvoice"/>
                             <group>
-                                <field name="invoice_no"/>
-                                <field name="invoice_state_e"/>
-                                <field name="invoice_e_date"/>
-                                <field name="invoice_serial"/>
-                                <field name="invoice_guid"/>
-                                <field name="invoice_form"/>
+                                <field name="invoice_no" readonly="1"/>
+                                <field name="invoice_state_e" readonly="1"/>
+                                <field name="invoice_e_date" readonly="1"/>
+                                <field name="invoice_serial" readonly="1"/>
+                                <field name="invoice_guid" readonly="1"/>
+                                <field name="invoice_form" readonly="1"/>
                             </group>
                         </page>
-                        <!--page name="other_info" string="Other Information">
+                        <page name="other_info" string="Other Information">
                             <field name="line_discount_ids">
                                 <tree editable="bottom" create="0">
                                     <field name="promotion_type"/>
+                                    <field name="invoice_ids" widget="many2many_tags"/>
                                     <field name="price_unit"/>
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="tax_amount"/>
                                     <field name="amount_total"/>
                                 </tree>
                             </field>
-                        </page-->
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -103,7 +104,7 @@
 
     <menuitem id="summary_adjusted_invoice_pos_menu"
               parent="bkav_connector.menu_master_bkav_pos"
-              name="Invoice adjusted at the end of the day"
+              name="Hóa đơn điều chỉnh cuối ngày"
               action="summary_adjusted_invoice_pos_action"
               sequence="10"/>
 </odoo>

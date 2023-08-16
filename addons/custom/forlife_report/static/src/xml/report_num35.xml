@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum35Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum35MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum35MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.stt"/></td>
+                        <td><t t-esc="line.ma_cn"/></td>
+                        <td><t t-esc="line.ten_cn"/></td>
+                        <td><t t-esc="line.ngay_lp"/></td>
+                        <td><t t-esc="line.ngay_hd"/></td>
+                        <td><t t-esc="line.so_hd"/></td>
+                        <td><t t-esc="line.ma_khach"/></td>
+                        <td><t t-esc="line.ten_khach"/></td>
+                        <td><t t-esc="line.ma_vach"/></td>
+                        <td><t t-esc="line.ten_hang"/></td>
+                        <td><t t-esc="line.nhom_hang"/></td>
+                        <td><t t-esc="line.nhan_hieu"/></td>
+                        <td><t t-esc="line.kick_co"/></td>
+                        <td><t t-esc="line.mau_sac"/></td>
+                        <td><t t-esc="line.don_vi"/></td>
+                        <td><t t-esc="line.dong_hang"/></td>
+                        <td><t t-esc="line.ket_cau"/></td>
+                        <td><t t-esc="line.bo_suu_tap"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_ban, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.giam_tren_hd, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tt_chua_tru_gg - line.giam_gia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tt_ntl_chua_tru_gg - line.giam_gia, 0)"/></td>
+                        <td><t t-esc="line.mo_ta"/></td>
+                        <td><t t-esc="line.hang"/></td>
+                        <td><t t-esc="line.ctkm"/></td>
+                        <td><t t-esc="line.ma_the_gg"/></td>
+                        <td><t t-esc="line.voucher"/></td>
+                        <td><t t-esc="line.nhan_vien"/></td>
+                        <td><t t-esc="line.don_hang_goc"/></td>
+                        <td><t t-esc="line.ma_loai"/></td>
+                        <td><t t-esc="line.kenh_ban"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

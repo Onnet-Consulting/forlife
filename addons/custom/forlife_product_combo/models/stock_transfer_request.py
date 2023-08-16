@@ -15,7 +15,7 @@ class StockTransferRequest(models.Model):
             else:
                 item.is_expiration_date = False
 
-def check_wait_confirm_stock_transfer_request(self):
+    def check_wait_confirm_stock_transfer_request(self):
         date_check = datetime.now() - relativedelta(days=7)
         stocks = self.search([('date_planned', '<=', date_check), ('state', '=', 'wait_confirm')])
 

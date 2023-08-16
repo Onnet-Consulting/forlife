@@ -50,12 +50,25 @@ class RabbitmqConnection(models.Model):
 
     @api.model
     def sync_all_master_data_for_rabbitmq(self):
-        models = self.env['rabbitmq.queue'].search([('active', 'in', (True, False)), ('sync_manual', '=', True)]).mapped('queue_key')
-        for model in models:
-            _self = self.env[model]
-            domain = _self.domain_record_sync_info()
-            records = _self.search(domain)
-            while records:
-                record = records[:min(500, len(records))]
-                record.sudo().with_delay(description="Create '%s'" % _self._name, channel='root.RabbitMQ', priority=_self._priority).action_sync_info_data(action=_self._create_action)
-                records = records - record
+        queues = self.env['rabbitmq.queue'].search([('active', 'in', (True, False)), ('sync_manual', '=', True)])
+        for queue in queues:
+            model = self.env[queue.queue_key].sudo()
+            domain = model.domain_record_sync_info()
+            if queue.with_multi_company:
+                companies = self.env['res.company'].search([('code', '!=', False)])
+                for company in companies:
+                    records = model.search(domain + [('company_id', '=', company.id)])
+                    if records:
+                        self._action_sync(company, records, model._name, model._priority, model._create_action)
+            else:
+                records = model.search(domain)
+                if records:
+                    self._action_sync(self.env.company, records, model._name, model._priority, model._create_action)
+
+    @api.model
+    def _action_sync(self, company, records, model_name, priority, action):
+        while records:
+            record = records[:min(500, len(records))]
+            record.sudo().with_company(company).with_delay(
+                description=f"RabbitMQ: Đồng bộ thủ công '{model_name}'", channel='root.RabbitMQ', priority=priority).action_sync_info_data(action=action)
+            records = records - record

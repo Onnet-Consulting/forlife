@@ -67,7 +67,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
 
     @api.model
     def _check_active_queue_rabbit(self):
-        return self.env['rabbitmq.queue'].sudo().search_count([('queue_key', '=', self._name)]) > 0
+        return self.env['rabbitmq.queue'].search_count([('queue_key', '=', self._name), ('active', '=', True)]) > 0
 
 
 class SyncInfoRabbitmqCreate(models.AbstractModel):
@@ -81,7 +81,7 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
         res = super().create(vals_list)
         record = res.action_filter_records()
         if record and self._check_active_queue_rabbit():
-            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
+            record.sudo().with_delay(description="RabbitMQ: Tạo '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
         return res
 
 
@@ -104,7 +104,7 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
         check = self.check_update_info(self.get_field_update(), values)
         record = self.action_filter_records()
         if check and record and self._check_active_queue_rabbit():
-            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
+            record.sudo().with_delay(description="RabbitMQ: Sửa '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._update_action)
         return res
 
 
@@ -123,7 +123,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.action_filter_records().ids
         res = super().unlink()
         if record_ids and self._check_active_queue_rabbit():
-            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
+            self.sudo().with_delay(description="RabbitMQ: Xóa '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 
 

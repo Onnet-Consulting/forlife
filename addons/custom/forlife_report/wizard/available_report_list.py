@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 
 AVAILABLE_REPORT = {
-    'report.num1': {
-        'module': 'Bán hàng',
-        'name': 'Doanh thu theo sản phẩm',
-        'reportTemplate': 'ReportNum1Template',
-        'reportPager': True,
-    },
+    # 'report.num1': {
+    #     'module': 'Bán hàng',
+    #     'name': 'Doanh thu theo sản phẩm',
+    #     'reportTemplate': 'ReportNum1Template',
+    #     'reportPager': True,
+    # },
     'report.num2': {
         'module': 'Kho',
         'name': 'Tồn kho theo giá bán',
@@ -205,6 +205,12 @@ AVAILABLE_REPORT = {
         'name': 'Danh sách hóa đơn TMĐT',
         'reportTemplate': 'ReportNum34Template',
         'tag': 'report_num34_action',
+    },
+    'report.num35': {
+        'module': 'Bán hàng',
+        'name': 'Bảng kê chi tiết hóa đơn TMĐT',
+        'reportTemplate': 'ReportNum35Template',
+        'reportPager': True,
     },
     'report.num36': {
         'module': 'Kho',

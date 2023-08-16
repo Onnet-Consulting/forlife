@@ -26,17 +26,17 @@
     </record>
 
     <record id="res_supplier_group_view_search" model="ir.ui.view">
-            <field name="name">res.supplier.group.view.search</field>
-            <field name="model">res.supplier.group</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <separator/>
-                    <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
-                </search>
-            </field>
-        </record>
+        <field name="name">res.supplier.group.view.search</field>
+        <field name="model">res.supplier.group</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
 
     <record id="res_supplier_group_action" model="ir.actions.act_window">
         <field name="name">Supplier Group</field>

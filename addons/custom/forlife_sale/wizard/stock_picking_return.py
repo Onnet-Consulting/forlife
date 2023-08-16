@@ -73,7 +73,6 @@ class ReturnPicking(models.TransientModel):
         res = super(ReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)
         context = self.env.context
         SaleOL = self.env['sale.order.line']
-        SaleO = self.env['sale.order']
         if self.picking_id.sale_id:
             if stock_move.sale_line_id:
                 if 'so_return' in context and context.get('so_return'):

@@ -56,6 +56,8 @@ class SyntheticAccountMovePos(models.Model):
 
     line_discount_ids = fields.One2many('synthetic.account.move.pos.line.discount', compute="_compute_line_discount")
 
+    line_adjusted_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'synthetic_id')
+
     def _compute_line_discount(self):
         for r in self:
             r.line_discount_ids = self.env["synthetic.account.move.pos.line.discount"].search([
@@ -155,13 +157,13 @@ class SyntheticAccountMovePos(models.Model):
                         line_discount_point_taxs[line_pk] = row
                     else:
                         price = 1000/line.get_tax_amount()
-
+                        price = int(round(1000/line.get_tax_amount()))
                         vat, tax_rate_id = self.get_vat(line)
                         line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
                             "Qty": abs(line.price_unit_incl)/1000,
-                            "Price": round(price, 2),
+                            "Price": price,
                             "Amount": abs(line.price_unit),
                             "TaxAmount": abs(line.tax_amount),
                             "IsDiscount": 1,
@@ -231,11 +233,22 @@ class SyntheticAccountMovePos(models.Model):
                 "PartnerInvoiceStringID": ln.code,
             }
             for line in ln.line_ids:
-                if line.product_id.voucher or line.product_id.is_voucher_auto:
+                if not line.product_id:
                     continue
-                    
+                if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
+                    continue
+                
+                product_tmpl_id =  line.product_id.product_tmpl_id
+                if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
+                    continue
+                
+                item_name = line.product_id.name if line.product_id.name else ''
+                if line.x_free_good:
+                    item_name += '(Hàng tặng khuyến mại không thu tiền)'
+
+
                 line_invoice = {
-                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
                     "Price": line.price_unit,
@@ -329,8 +342,11 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
         string='Promotion Type', index=True, readonly=True
     )
 
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
+
     def get_tax_amount(self):
-        return (1 + sum(line.tax_ids.mapped("amount"))/100)
+        return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
     @api.depends('tax_ids', 'price_unit_incl')
     def _compute_amount(self):
