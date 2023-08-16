@@ -2856,8 +2856,13 @@ class StockPicking(models.Model):
             qty_po_done = sum(move.mapped('quantity_done'))
             if tax_type != 'special':
                 product_tax = self.env.ref('forlife_purchase.product_import_tax_default')
+                if not product_tax.categ_id.with_company(po.company_id).property_stock_account_input_categ_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm tên là 'Thuế nhập khẩu'")
             else:
                 product_tax = self.env.ref('forlife_purchase.product_excise_tax_default')
+                if not product_tax.categ_id.with_company(po.company_id).property_stock_account_input_categ_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm tên là 'Thuế tiêu thụ đặc biệt'")
+
             move_value = {
                 'ref': f"{self.name} - {line.product_id.name}",
                 'purchase_type': po.purchase_type,
