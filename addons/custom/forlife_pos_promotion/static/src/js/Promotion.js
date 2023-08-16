@@ -2639,7 +2639,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (!new_ol) {
             let to_check_orderlines = this.get_orderlines_to_check().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
-                if (this._programIsApplicableAutomatically(line.pricelist_item) && !is_with_code(line.pricelist_item)) {
+                if (this._programIsApplicableAutomatically(line.pricelist_item, line.matched_finished_program) && !is_with_code(line.pricelist_item)) {
                     this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
                 };
             };
