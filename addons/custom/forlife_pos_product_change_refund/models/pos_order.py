@@ -93,10 +93,9 @@ class PosOrder(models.Model):
                     if store is not None:
                         history_values = pos._prepare_history_point_back_order_value(store, points_back=pos.pay_point)
                         HistoryPoint.sudo().create(history_values)
-                        if not pos.program_store_point_id:
-                            return pos.id
-                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
-                                                          store)
+                        if pos.program_store_point_id:
+                            pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
+                                                              store)
 
         # create voucher
         line_voucher_id = pos.lines.filtered(lambda x: x.product_id.is_voucher_auto)
