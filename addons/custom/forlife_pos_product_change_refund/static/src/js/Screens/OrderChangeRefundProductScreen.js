@@ -144,6 +144,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         }
 
         async _onClickOrder({ detail: clickedOrder }) {
+            clickedOrder.allow_for_point = false;
             var payment_method = [];
             const partner = clickedOrder.get_partner();
             const orderlines = clickedOrder.orderlines;
