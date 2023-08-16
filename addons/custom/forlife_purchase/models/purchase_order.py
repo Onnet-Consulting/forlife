@@ -755,49 +755,68 @@ class PurchaseOrder(models.Model):
                 record.write({'custom_state': 'approved'})
             else:
                 if not record.is_return:
-                    self.action_approve_inter_company()
+                    record.action_approve_inter_company()
                 else:
-                    self.action_approve_inter_company_return()
+                    record.action_approve_inter_company_return()
 
                 return True
 
     def action_approve_inter_company(self):
         self.sudo().with_context(inter_company=True)
-        self.validate_inter_purchase_order()
         self.button_confirm()
-        picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
-        if picking_in:
-            picking_in.move_line_ids_without_package.write({
-                'location_dest_id': self.location_id.id
-            })
-            picking_in.action_set_quantities_to_reservation()
-            picking_in.button_validate()
-            if picking_in.state == 'done':
-                self.write({
-                    'select_type_inv': 'normal',
-                    'custom_state': 'approved',
-                    'inventory_status': 'done',
+        if self.purchase_type == 'product':
+            self.validate_inter_purchase_order()
+            picking_in = self.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+            if picking_in:
+                picking_in.move_line_ids_without_package.write({
+                    'location_dest_id': self.location_id.id
                 })
-                invoice = self.action_create_invoice()
-                invoice.action_post()
+                picking_in.action_set_quantities_to_reservation()
+                picking_in.button_validate()
+                if picking_in.state == 'done':
+                    self.write({
+                        'select_type_inv': 'normal',
+                        'custom_state': 'approved',
+                        'inventory_status': 'done',
+                    })
+                    invoice = self.action_create_invoice()
+                    invoice.x_root = 'other'
+                    invoice.action_post()
+            else:
+                raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
         else:
-            raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
+            self.write({
+                'select_type_inv': 'normal',
+                'custom_state': 'approved',
+                'inventory_status': 'done',
+            })
+            invoice = self.action_create_invoice()
+            invoice.x_root = 'other'
+            invoice.action_post()
 
         sale_id = self.sudo()._create_sale_order_another_company()
         sale_id.action_create_picking()
-        picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
-        if picking_out:
-            picking_out.action_set_quantities_to_reservation()
-            picking_out.button_validate()
-            if picking_out.state == 'done':
-                for move_id in picking_out.move_ids:
-                    move_id.sale_line_id.qty_delivered = move_id.quantity_done
-                invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
-                    'sale_order_ids': [(6, 0, sale_id.ids)],
-                    'advance_payment_method': 'delivered',
-                    'deduct_down_payments': True,
-                }).forlife_create_invoices()
-                invoice_customer.action_post()
+        if self.purchase_type == 'product':
+            picking_out = sale_id.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+            if picking_out:
+                picking_out.action_set_quantities_to_reservation()
+                picking_out.button_validate()
+                if picking_out.state == 'done':
+                    for move_id in picking_out.move_ids:
+                        move_id.sale_line_id.qty_delivered = move_id.quantity_done
+                    invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                        'sale_order_ids': [(6, 0, sale_id.ids)],
+                        'advance_payment_method': 'delivered',
+                        'deduct_down_payments': True,
+                    }).forlife_create_invoices()
+                    invoice_customer.action_post()
+        else:
+            invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                'sale_order_ids': [(6, 0, sale_id.ids)],
+                'advance_payment_method': 'delivered',
+                'deduct_down_payments': True,
+            }).forlife_create_invoices()
+            invoice_customer.action_post()
 
     def action_approve_inter_company_return(self):
         self.sudo().with_context(inter_company=True)
