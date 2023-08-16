@@ -141,7 +141,7 @@ class ReportNum31(models.TransientModel):
             ) as p_cate on
                 p_cate.id = pt.categ_id
                 
-            join res_partner rp on prl.vendor_code = rp.id
+            left join res_partner rp on prl.vendor_code = rp.id
             left join uom_uom uu on prl.purchase_uom = uu.id 
             where 1 = 1 and {format_date_query('pr.request_date', tz_offset)} between '{self.date_from}' and '{self.date_to}'
 
