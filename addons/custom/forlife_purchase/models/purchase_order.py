@@ -1065,17 +1065,17 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_normal(self, line):
+    def _prepare_invoice_normal(self, line, move_line_id):
         data_line = {
-            # 'ware_id': move_line_id.id,
-            # 'ware_name': move_line_id.picking_id.name,
+            'ware_id': move_line_id.id,
+            'ware_name': move_line_id.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
             'purchase_uom': line.purchase_uom.id,
-            # 'quantity': wave_item.qty_done,
+            'quantity': move_line_id.qty_done,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
             'discount': line.discount_percent,
@@ -1468,18 +1468,15 @@ class PurchaseOrder(models.Model):
                         raise UserError(_('Đơn mua không có chi phí!'))
                 else:
                     if self.purchase_type not in ('service', 'asset'):
-                        domain_normal = [('purchase_id', '=', order.id),
-                                         ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'incoming')
-                                         ]
-                        domain_normal_out = [('purchase_id', '=', order.id),
-                                         ('state', '=', 'done'),
-                                         ('picking_type_id.code', '=', 'outgoing')
-                                         ]
-                        picking_in = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', False)])
+                        domain_normal = [('purchase_id', '=', order.id), ('state', '=', 'done'), ('picking_type_id.code', '=', 'incoming')]
+                        domain_normal_out = [('purchase_id', '=', order.id), ('state', '=', 'done'), ('picking_type_id.code', '=', 'outgoing')]
+                        picking_ids = order.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return and not x.ware_check)
+                        if not picking_ids:
+                            return UserError(_('Không có đơn nhập kho nào để lên hóa đơn,. Vui lòng kiểm tra lại!'))
                         picking_in_return = self.env['stock.picking'].search(domain_normal_out + [('ware_check', '=', False)])
                         picking_in_true = self.env['stock.picking'].search(domain_normal + [('ware_check', '=', True)])
                         for line in order.order_line:
+                            move_line_ids = picking_ids.move_line_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
                             # nếu ko phải order return
                             # if not order.is_return:
                                     # tìm move line gán với pol, sản phẩm, picking nhập, và ko phải return
@@ -1505,22 +1502,23 @@ class PurchaseOrder(models.Model):
                             #                 if wave_item.picking_id.name == x_return.picking_id.relation_return:
                             #                     data_line = self.create_invoice_normal_yes_return(order, line, wave_item, x_return)
                             #         else:
-                            data_line = self._prepare_invoice_normal(line)
-                            if line.display_type == 'line_section':
-                                pending_section = line
-                                continue
-                            if pending_section:
-                                line_vals = pending_section._prepare_account_move_line()
+                            for move_line_id in move_line_ids:
+                                data_line = self._prepare_invoice_normal(line, move_line_id)
+                                if line.display_type == 'line_section':
+                                    pending_section = line
+                                    continue
+                                if pending_section:
+                                    line_vals = pending_section._prepare_account_move_line()
+                                    line_vals.update(data_line)
+                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                    sequence += 1
+                                    pending_section = None
+                                # wave_item.picking_id.ware_check = True
+                                line_vals = line._prepare_account_move_line()
                                 line_vals.update(data_line)
                                 invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                                 sequence += 1
-                                pending_section = None
-                            # wave_item.picking_id.ware_check = True
-                            line_vals = line._prepare_account_move_line()
-                            line_vals.update(data_line)
-                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                            sequence += 1
-                            invoice_vals_list.append(invoice_vals)
+                                invoice_vals_list.append(invoice_vals)
                             # elif picking_in_true:
                             #     invoice_relationship = self.env['account.move.line'].search(
                             #         [('ware_id', '=', picking_in_true.move_line_ids_without_package.mapped('id'))])
