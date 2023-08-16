@@ -106,5 +106,5 @@
               parent="bkav_connector.menu_master_bkav_pos"
               name="Hóa đơn điều chỉnh cuối ngày"
               action="summary_adjusted_invoice_pos_action"
-              sequence="10"/>
+              sequence="40"/>
 </odoo>

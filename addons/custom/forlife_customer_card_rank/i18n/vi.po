@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-13 09:44+0000\n"
-"PO-Revision-Date: 2023-07-13 09:44+0000\n"
+"POT-Creation-Date: 2023-08-16 07:19+0000\n"
+"PO-Revision-Date: 2023-08-16 07:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -294,6 +294,11 @@ msgid "Card rank program '%s' not found."
 msgstr "Không tìm thấy chương trình hạng thẻ '%s'"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__is_change_rank
+msgid "Change rank"
+msgstr "Hạng thay đổi"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__coefficient
 #: model:ir.model.fields.selection,name:forlife_customer_card_rank.selection__partner_history_point__point_order_type__coefficient
 msgid "Coefficient"
@@ -443,6 +448,7 @@ msgstr "Từ ngày"
 
 #. module: forlife_customer_card_rank
 #. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineChangeRefund.xml:0
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
 #, python-format
 msgid "Giảm giá hàng lỗi"
@@ -651,6 +657,11 @@ msgid "New Rank"
 msgstr "Hạng mới"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__invoice_id
+msgid "Nhanh Order"
+msgstr "Đơn hàng nhanh"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_needaction_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_needaction_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_needaction_counter
@@ -668,7 +679,7 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_needaction_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_needaction_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_needaction_counter
-msgid "Number of messages which requires an action"
+msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: forlife_customer_card_rank
@@ -682,6 +693,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__old_card_rank_id
 msgid "Old Rank"
 msgstr "Hạng hiện tại"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__name
+msgid "Order"
+msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_date
@@ -733,6 +749,11 @@ msgstr "Nguyên giá"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__payment_method_ids
 msgid "POS Payment Method"
 msgstr "Phương thức thanh toán"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line_discount_details
+msgid "POS discount details"
+msgstr ""
 
 #. module: forlife_customer_card_rank
 #. odoo-python
@@ -812,7 +833,7 @@ msgstr "Chương trình tích điểm"
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_id
 msgid "Pos Order"
-msgstr "Đơn hàng"
+msgstr "Đơn hàng POS"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__priority
@@ -994,6 +1015,11 @@ msgid "Upload file"
 msgstr "Tải lên tệp"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_res_utility
+msgid "Utility Methods"
+msgstr "Hàm tiện ích"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value1
 msgid "Value 1"
 msgstr ""
@@ -1133,11 +1159,13 @@ msgid "partner_card_rank_tree"
 msgstr ""
 
 #. module: forlife_customer_card_rank
-#: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line_discount_details
-msgid "pos.order.line.discount.details"
-msgstr ""
-
-#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "to"
 msgstr "đến"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/ShowDiscountDetailPopup.xml:0
+#, python-format
+msgid "Áp dụng hạng thẻ"
+msgstr ""
