@@ -59,11 +59,19 @@ class SummaryAdjustedInvoicePos(models.Model):
     
 
     line_discount_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', compute="_compute_line_discount")
+    discount_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', compute="_compute_line_discount")
 
+    @api.model
     def _compute_line_discount(self):
+        model_line_discount = self.env["summary.adjusted.invoice.pos.line.discount"]
         for r in self:
-            r.line_discount_ids = self.env["summary.adjusted.invoice.pos.line.discount"].search([
+            r.line_discount_ids = model_line_discount.search([
                 ('adjusted_invoice_id', '=', r.id)
+            ])
+            r.discount_ids = model_line_discount.search([
+                ('adjusted_ids', 'in', [r.id]),
+                ('adjusted_line_id', '=', False),
+                ('store_id', '=', r.store_id.id)
             ])
 
 
@@ -337,6 +345,11 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+
+    adjusted_ids = fields.Many2many('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh', relation='summary_adjusted_invoice_pos_card_point_line_discount_rel')
+    bkav_adjusted_id = fields.Many2one('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh')
+    store_id = fields.Many2one('store')
+
 
     def get_tax_amount(self):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)

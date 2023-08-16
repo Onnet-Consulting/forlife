@@ -58,10 +58,19 @@ class SyntheticAccountMovePos(models.Model):
 
     line_adjusted_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'synthetic_id')
 
+    discount_ids = fields.One2many('synthetic.account.move.pos.line.discount', compute="_compute_line_discount")
+
+    @api.model
     def _compute_line_discount(self):
+        model_line_discount = self.env["synthetic.account.move.pos.line.discount"]
         for r in self:
-            r.line_discount_ids = self.env["synthetic.account.move.pos.line.discount"].search([
+            r.line_discount_ids = model_line_discount.search([
                 ('synthetic_id', '=', r.id)
+            ])
+            r.discount_ids = model_line_discount.search([
+                ('synthetic_ids', 'in', [r.id]),
+                ('synthetic_line_id', '=', False),
+                ('store_id', '=', r.store_id.id)
             ])
 
     @api.depends('data_compare_status')
@@ -336,6 +345,10 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+    synthetic_ids = fields.Many2many('synthetic.account.move.pos', string='Hóa đơn bù trừ', relation='synthetic_account_move_pos_card_point_line_discount_rel')
+    bkav_synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn bù trừ')
+    store_id = fields.Many2one('store')
+
 
     def get_tax_amount(self):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)
