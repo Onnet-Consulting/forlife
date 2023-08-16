@@ -125,6 +125,8 @@ def publish_invoice_bkav(self):
 
 
 def update_invoice_bkav(self,data):
+    if not self.invoice_guid or self.invoice_guid == '00000000-0000-0000-0000-000000000000':
+        return create_invoice_bkav(self,data,False,False,issue_invoice_type='')
     if self.is_post_bkav:
         return
     configs = get_bkav_config(self)
