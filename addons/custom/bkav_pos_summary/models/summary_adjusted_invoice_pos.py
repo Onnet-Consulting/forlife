@@ -104,7 +104,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                 vat = line.tax_ids[0].amount
             else:
                 tax_amount = 1
-                for tax in r.tax_ids:
+                for tax in line.tax_ids:
                     tax_amount = tax_amount * tax.amount
                 vat = tax_amount / 100
 
@@ -161,13 +161,13 @@ class SummaryAdjustedInvoicePos(models.Model):
                         row["TaxAmount"] += -abs(line.tax_amount)
                         line_discount_point_taxs[line_pk] = row
                     else:
-                        price = 1000/ (1 + line.tax_ids[0].amount/100)
+                        price = int(round(1000/line.get_tax_amount()))
                         vat, tax_rate_id = self.get_vat(line)
                         line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
                             "Qty": -abs(line.price_unit_incl)/1000,
-                            "Price": -abs(round(price, 2)),
+                            "Price": -abs(price),
                             "Amount": -abs(line.price_unit),
                             "TaxAmount": -abs(line.tax_amount),
                             "IsDiscount": 1,
@@ -246,8 +246,12 @@ class SummaryAdjustedInvoicePos(models.Model):
                 if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
                     continue
 
+                item_name = line.product_id.name if line.product_id.name else ''
+                if line.x_free_good:
+                    item_name += '(Hàng tặng khuyến mại không thu tiền)'
+
                 line_invoice = {
-                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
                     "Price": line.price_unit,
@@ -345,6 +349,8 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
 
     adjusted_ids = fields.Many2many('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh', relation='summary_adjusted_invoice_pos_card_point_line_discount_rel')
     bkav_adjusted_id = fields.Many2one('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh')

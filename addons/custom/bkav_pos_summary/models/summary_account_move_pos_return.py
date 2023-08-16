@@ -46,6 +46,7 @@ class SummaryAccountMovePosReturn(models.Model):
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
             "promotion_type": line.promotion_type,
             "amount_total": line.price_subtotal_incl,
+            "invoice_ids": [line.order_id.id],
         }
         return item
 
@@ -296,6 +297,8 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
     )
     return_ids = fields.Many2many('summary.account.move.pos.return', string='Hóa đơn Trả', relation='summary_account_move_pos_return_card_point_line_discount_rel')
     store_id = fields.Many2one('store')
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
 
     @api.depends('tax_ids', 'price_unit_incl')
     def _compute_amount(self):

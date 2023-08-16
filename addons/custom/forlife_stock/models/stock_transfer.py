@@ -140,7 +140,7 @@ class StockTransfer(models.Model):
             product = line.product_id
             domain = [('location_id', '=', location_id.id), ('product_id', '=', line.product_id.id)]
             if work_from:
-                domain.append(('production_id', '=', work_from.id))
+                domain.append(('production_id.code', '=', work_from.code))
                 qty_prod_order_ids = QuantityProductionOrder.search(domain)
                 if qty_prod_order_ids:
                     total_qty_production = sum(x.quantity for x in qty_prod_order_ids)
@@ -705,9 +705,9 @@ class StockTransferLine(models.Model):
         #      ('production_id', '=', self.work_from.id)])
         quantity_prodution_to = QuantityProductionOrder.search(
             [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
-             ('production_id', '=', self.work_to.id)])
+             ('production_id.code', '=', self.work_to.code)])
         if self.work_from:
-            domain.append(('production_id', '=', self.work_from.id))
+            domain.append(('production_id.code', '=', self.work_from.code))
             quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
 
             if quantity_prodution:

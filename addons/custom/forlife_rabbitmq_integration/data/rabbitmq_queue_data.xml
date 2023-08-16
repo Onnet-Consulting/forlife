@@ -69,6 +69,7 @@
             <field name="target">store_info</field>
             <field name="sequence">7</field>
             <field name="sync_manual">True</field>
+            <field name="with_multi_company">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -79,6 +80,7 @@
             <field name="target">store_info</field>
             <field name="sequence">8</field>
             <field name="sync_manual">True</field>
+            <field name="with_multi_company">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -89,6 +91,7 @@
             <field name="target">store_info</field>
             <field name="sequence">9</field>
             <field name="sync_manual">True</field>
+            <field name="with_multi_company">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 

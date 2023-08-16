@@ -47,6 +47,7 @@ class SummaryAccountMovePos(models.Model):
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
             "promotion_type": line.promotion_type,
             "amount_total": line.price_subtotal_incl,
+            "invoice_ids": [line.order_id.id],
         }
         return item
 
@@ -397,7 +398,7 @@ class SummaryAccountMovePos(models.Model):
             and r.line_pk == line_pk
         )
 
-        # sale_data["line_ids"].extend(v["line_ids"])
+        sale_data["line_ids"].extend(v["line_ids"])
 
         sale_data["quantity"] += v["quantity"]
         sale_data["remaining_quantity"] = sale_data["quantity"]
@@ -722,6 +723,8 @@ class SummaryAccountMovePosLineDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
+
 
     summary_ids = fields.Many2many('summary.account.move.pos', string='Hóa đơn bán', relation='summary_account_move_pos_card_point_line_discount_rel')
     store_id = fields.Many2one('store')

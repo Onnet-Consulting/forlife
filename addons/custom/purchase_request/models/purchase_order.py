@@ -190,6 +190,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure') # ghi lại price ở đính kèm sản phẩm ứng product
     price_unit = fields.Float(string='Giá', compute='_compute_price_unit', store=1)
+    total_amount = fields.Float(string='Thành tiền', compute='_compute_total_amount', store=True)
     compute_flag = fields.Boolean(default=True)
 
     @api.depends('production_line_price_unit', 'product_qty')
@@ -211,6 +212,12 @@ class PurchaseOrderLineMaterialLine(models.Model):
                     rec.product_qty = 0
             else:
                 pass
+
+    @api.depends('price_unit', 'product_qty')
+    def _compute_total_amount(self):
+        for item in self:
+            item.total_amount = item.price_unit * item.product_qty
+
 
     @api.onchange('product_qty')
     def onchange_product_qty_pppp(self):

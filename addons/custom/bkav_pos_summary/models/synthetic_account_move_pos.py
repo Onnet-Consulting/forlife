@@ -166,13 +166,13 @@ class SyntheticAccountMovePos(models.Model):
                         line_discount_point_taxs[line_pk] = row
                     else:
                         price = 1000/line.get_tax_amount()
-
+                        price = int(round(1000/line.get_tax_amount()))
                         vat, tax_rate_id = self.get_vat(line)
                         line_discount_point_taxs[line_pk] = {
                             "ItemName": "Tiêu điểm",
                             "UnitName": 'Điểm',
                             "Qty": abs(line.price_unit_incl)/1000,
-                            "Price": round(price, 2),
+                            "Price": price,
                             "Amount": abs(line.price_unit),
                             "TaxAmount": abs(line.tax_amount),
                             "IsDiscount": 1,
@@ -250,9 +250,14 @@ class SyntheticAccountMovePos(models.Model):
                 product_tmpl_id =  line.product_id.product_tmpl_id
                 if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
                     continue
-                    
+                
+                item_name = line.product_id.name if line.product_id.name else ''
+                if line.x_free_good:
+                    item_name += '(Hàng tặng khuyến mại không thu tiền)'
+
+
                 line_invoice = {
-                    "ItemName": line.product_id.name if line.product_id.name else '',
+                    "ItemName": item_name,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": line.quantity or 0.0,
                     "Price": line.price_unit,
@@ -348,6 +353,9 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
     synthetic_ids = fields.Many2many('synthetic.account.move.pos', string='Hóa đơn bù trừ', relation='synthetic_account_move_pos_card_point_line_discount_rel')
     bkav_synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn bù trừ')
     store_id = fields.Many2one('store')
+
+
+    invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 
     def get_tax_amount(self):

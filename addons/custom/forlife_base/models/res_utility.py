@@ -504,3 +504,16 @@ where rp.id in (select id from customers)
             return {"message": f"Kích hoạt thành công mã voucher '{voucher_code}'"}
         else:
             return {"message": f"Kích hoạt không thành công, mã voucher '{voucher_code}' không được tìm thấy"}
+
+    @api.model
+    def get_country_state_with_brand_code(self, brand_code):
+        sql = f"""
+            select rcs.id as id, rcs.code as code, rcs.name as name
+            from res_country_state rcs
+                     join res_country rc on rcs.country_id = rc.id and rc.code = 'VN'
+                     join stock_warehouse wh on rcs.id = wh.state_id
+                     join store on wh.id = store.warehouse_id
+                     join res_brand rb on store.brand_id = rb.id and rb.code = '{brand_code}'
+            group by rcs.id, rcs.code, rcs.name;
+        """
+        return self.execute_postgresql(sql, [], True)
