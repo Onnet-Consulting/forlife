@@ -163,7 +163,7 @@ class SummaryAccountMovePosReturn(models.Model):
 
         last_day = date.today()
         domain = [
-            ('is_general', '=', False),
+            # ('is_general', '=', False),
             ('is_post_bkav_store', '=', True),
             ('exists_bkav', '=', False),
             ('pos_order_id', '!=', False),
@@ -185,7 +185,8 @@ class SummaryAccountMovePosReturn(models.Model):
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '!=', False),
             ('qty', '<', 0),
-            ('is_promotion', '=', False)
+            ('is_promotion', '=', False),
+            ('is_general', '=', False),
         ])
         data = {}
         items = {}
@@ -234,7 +235,7 @@ class SummaryAccountMovePosReturn(models.Model):
                     discount_vals_list.append(v_item)
             model_line_discount.create(discount_vals_list)
 
-        return data, res_pos, move_ids
+        return data, res_pos, pos_order_synthetic
 
 
 
