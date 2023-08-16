@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
-from forlife_report.wizard.report_base import format_date_query
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import copy
 from datetime import datetime, timedelta, date
+from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'STT',

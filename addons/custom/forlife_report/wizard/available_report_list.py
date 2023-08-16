@@ -206,4 +206,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum34Template',
         'tag': 'report_num34_action',
     },
+    'report.num36': {
+        'module': 'Kho',
+        'name': 'Báo cáo nhập kho thành phẩm sản xuất',
+        'reportTemplate': 'ReportNum36Template',
+        'reportPager': True,
+    },
 }
