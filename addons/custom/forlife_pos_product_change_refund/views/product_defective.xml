@@ -10,6 +10,7 @@
                     <field name="product_id" required="1"/>
                     <field name="quantity_defective_approved" required="1"/>
                     <field name="quantity_inventory_store" required="1"/>
+                    <field name="quantity_require" required="1"/>
                     <field name="quantity_can_be_sale" required="1"/>
                     <field name="price"/>
                     <field name="money_reduce"/>

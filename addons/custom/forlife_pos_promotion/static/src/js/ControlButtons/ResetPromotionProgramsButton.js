@@ -12,6 +12,7 @@ export class ResetPromotionProgramsButton extends PosComponent {
     }
 
     async onClick() {
+        console.log('======================', this.env.pos);
         this.env.pos.get_order()._resetPromotionPrograms();
     }
 }

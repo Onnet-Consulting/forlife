@@ -160,3 +160,10 @@ class ProductDefective(models.Model):
                 'id': i
             })
         return data
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu'),
+            'template': '/forlife_pos_product_change_refund/static/src/xlsx/Mau_Xu_ly_hang_loi.xlsx?download=true'
+        }]

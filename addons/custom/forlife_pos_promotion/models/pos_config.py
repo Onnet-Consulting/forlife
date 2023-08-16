@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 from ast import literal_eval
 from itertools import groupby
 
@@ -152,4 +153,38 @@ class PosConfig(models.Model):
                 'reward_program_id': has_reward and code_id.reward_program_id.id,
                 'reward_program_name': code_id.reward_program_id.name or ''
             },
+        }
+
+    def check_promotion_for_change_products(self, refunded_orderline_id, change_products):
+        if not change_products or any(not isinstance(prod_id, int) for prod_id in change_products):
+            return False
+        PosSession = self.env['pos.session']
+        PromotionPricelistItem = self.env['promotion.pricelist.item']
+        PromotionProgram =self.env['promotion.program']
+        pricelist_data = []
+        program_data = []
+
+        refunded_orderline = self.env['pos.order.line'].browse(refunded_orderline_id)
+        applied_programs = refunded_orderline.promotion_usage_ids.mapped('program_id')
+        for program in applied_programs:
+            if program.promotion_type == 'pricelist':
+                query = """
+                SELECT id
+                FROM promotion_pricelist_item
+                WHERE program_id = %(program_id)s AND product_id in %(product_ids)s
+                """
+                self.env.cr.execute(query, {'program_id': program.id, 'product_ids': tuple(change_products)})
+                item_ids = self.env.cr.fetchall()
+                item_ids = list(itertools.chain(*item_ids))
+                domain = [('active', '=', True), ('program_id', '=', program.id), ('id', 'in', item_ids)]
+                pricelist_data += PromotionPricelistItem.search_read(
+                    domain=domain,
+                    fields=PosSession._loader_params_promotion_pricelist_item()['search_params']['fields'])
+                program_data += PromotionProgram.search_read(
+                    domain=[('id', '=', program.id)],
+                    fields=PosSession._loader_params_promotion_program()['search_params']['fields']
+                )
+        return {
+            'program_data': program_data,
+            'pricelist_data': pricelist_data
         }
