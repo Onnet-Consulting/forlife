@@ -76,7 +76,7 @@
                      <attribute name="context">{'default_state': 'draft', 'default_location_id': location_id}</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
-                    <page string="Nguyên phụ liệu" name="production_order_domain"
+                    <page string="Chi phí hoàn thiện" name="production_order_domain"
                           attrs="{'invisible': ['|', ('is_check_line_material_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="order_line_production_order" class="width-hh" widget="one2many" mode="tree"
                                options="{'no_create': True}">
@@ -119,7 +119,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Nguyên phụ liệu">
+                            <page string="Chi phí hoàn thiện">
                                 <field name="purchase_order_line_material_line_ids" mode="tree" force_save="1">
                                     <tree editable="bottom">
                                         <field name="is_from_po" invisible="1"/>
