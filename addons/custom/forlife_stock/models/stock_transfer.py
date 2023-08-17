@@ -736,7 +736,7 @@ class StockTransferLine(models.Model):
             if quantity_prodution:
                 if self.qty_out > quantity_prodution.quantity:
                     raise ValidationError(
-                        'Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
+                        '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
                         product.name, self.work_from.code))
                 else:
                     quantity_prodution.update({
