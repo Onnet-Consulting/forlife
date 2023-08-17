@@ -63,4 +63,5 @@ class ResUsers(models.Model):
             store_ids = self.store_ids.with_context(active_test=False).search([]).mapped('id')
         else:
             store_ids = self.store_ids.mapped('id')
+
         return store_ids
