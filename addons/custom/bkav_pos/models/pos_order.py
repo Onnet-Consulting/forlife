@@ -6,8 +6,8 @@ from ...bkav_connector.models import bkav_action
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
-    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
-    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
+    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV (HD bán hàng)")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV (HD bán hàng)")
     is_check_cancel = fields.Boolean(default=False, copy=False, string="Đã hủy")
     is_general = fields.Boolean(default=False, copy=False, string="Đã chạy tổng hợp cuối ngày")
     ###trạng thái và số hdđt từ bkav trả về
