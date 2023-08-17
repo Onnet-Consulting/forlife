@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num1_form" model="ir.ui.view">
+    <record id="report_num35_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num1</field>
+        <field name="model">report.num35</field>
         <field name="arch" type="xml">
-            <form string="Revenue by Product" create="0">
+            <form string="Bảng kê chi tiết hóa đơn TMĐT" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -12,17 +12,20 @@
                     </div>
                     <group>
                         <group>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
+                            <field name="lock_date" class="oe_inline"/>
                             <label for="from_date" string="Date"/>
                             <div>from
                                 <field name="from_date" class="oe_inline" required="1"/>
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="warehouse_id" domain="[('brand_id', '=', brand_id), ('brand_id', '!=', False)]"/>
                         </group>
                         <group>
-                            <field name="picking_type" widget="radio" options="{'horizontal': True}"/>
-                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="nhanh_order"/>
+                            <field name="customer"/>
+                            <field name="order_filter"/>
                         </group>
                     </group>
                 </sheet>
@@ -30,15 +33,15 @@
         </field>
     </record>
 
-    <record id="report_num1_window_action" model="ir.actions.act_window">
-        <field name="name">Report revenue by product</field>
-        <field name="res_model">report.num1</field>
+    <record id="report_num35_window_action" model="ir.actions.act_window">
+        <field name="name">Bảng kê chi tiết hóa đơn TMĐT</field>
+        <field name="res_model">report.num35</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <!--<menuitem id="report_num1_menu"
-              action="report_num1_window_action"
+    <menuitem id="report_num35_menu"
+              action="report_num35_window_action"
               parent="report_menu_sale"
-              sequence="1"/>-->
+              sequence="35"/>
 </odoo>

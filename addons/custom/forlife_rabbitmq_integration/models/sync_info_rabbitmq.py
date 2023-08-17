@@ -67,7 +67,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
 
     @api.model
     def _check_active_queue_rabbit(self):
-        return self.env['rabbitmq.queue'].sudo().search_count([('queue_key', '=', self._name)]) > 0
+        return self.env['rabbitmq.queue'].search_count([('queue_key', '=', self._name), ('active', '=', True)]) > 0
 
 
 class SyncInfoRabbitmqCreate(models.AbstractModel):

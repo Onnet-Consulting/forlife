@@ -61,8 +61,8 @@
                     <field name="x_sale_type"/>
                     <field name="x_sale_chanel" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
                     <field name="x_location_id" attrs="{'readonly': [('state', '=', 'sale')], 'required': [('x_sale_type', '=', 'product')]}"/>
-                    <field name="x_account_analytic_ids" widget="many2many_tags" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
-                    <field name="x_occasion_code_ids" widget="many2many_tags"/>
+                    <field name="x_account_analytic_id" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
+                    <field name="x_occasion_code_id"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
