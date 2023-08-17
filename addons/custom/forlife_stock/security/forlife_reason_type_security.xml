@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record model="ir.rule" id="forlife_reason_type_multi_company_rule">
             <field name="name">Reason Type multi-company</field>
             <field name="model_id" ref="model_forlife_reason_type"/>
@@ -19,28 +19,6 @@
             <field name="model_id" ref="model_transfer_stock_inventory"/>
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', '=', company_id)]</field>
         </record>
-
-        <!-- OVERRIDE Multi - Company Rule Locations-->
-<!--        <function name="write" model="ir.model.data">-->
-<!--            <function name="search" model="ir.model.data">-->
-<!--                <value eval="[('module', '=', 'stock'), ('name', '=', 'stock_warehouse_comp_rule')]"/>-->
-<!--            </function>-->
-<!--            <value eval="{'noupdate': False}"/>-->
-<!--        </function>-->
-
-<!--        <record model="ir.rule" id="stock.stock_warehouse_comp_rule">-->
-<!--            <field name="name">Location multi-company</field>-->
-<!--            <field name="model_id" ref="stock.model_stock_location"/>-->
-<!--            <field name="domain_force"> ['|', ('company_id','=', company_id), ('company_id','=',False)]</field>-->
-<!--            <field name="active" eval="True"/>-->
-<!--        </record>-->
-
-<!--        <function name="write" model="ir.model.data">-->
-<!--            <function name="search" model="ir.model.data">-->
-<!--                <value eval="[('module', '=', 'stock'), ('name', '=', 'stock_warehouse_comp_rule')]"/>-->
-<!--            </function>-->
-<!--            <value eval="{'noupdate': True}"/>-->
-<!--        </function>-->
 
     </data>
 </odoo>

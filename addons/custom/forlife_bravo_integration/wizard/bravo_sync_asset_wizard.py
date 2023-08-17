@@ -198,19 +198,35 @@ class BravoSyncAssetWizard(models.TransientModel):
 
     @api.model
     def generate_odoo_data(self, company_data):
+        _type = {
+            '1': 'CCDC',
+            '0': 'TSCD',
+        }
         bravo_data = self.get_new_bravo_data_by_company(company_data)
         if not bravo_data:
             return False
         mapping_bravo_odoo_fields = self.mapping_bravo_with_odoo_fields()
         odoo_values = []
+        self._cr.execute(f"""select json_object_agg(code, id) from assets_assets where code notnull and company_id = {company_data.get('id')}""")
+        asset_code_exist = self._cr.fetchone()[0] or {}
         for rec in bravo_data:
             value = {}
             for bravo_column, odoo_column in mapping_bravo_odoo_fields.items():
-                value.update({odoo_column: rec.get(bravo_column)})
+                if odoo_column == 'type':
+                    value.update({odoo_column: _type.get(rec.get(bravo_column)) or rec.get(bravo_column)})
+                else:
+                    value.update({odoo_column: rec.get(bravo_column)})
                 value.update({
                     "state": "using"
                 })
-            odoo_values.append(value)
+            asset_id = asset_code_exist.get(rec['Code'])
+            if asset_id:
+                value.pop('location')
+                value.pop('dept_code')
+                value.pop('employee')
+                self.env['assets.assets'].browse(asset_id).sudo().with_context(from_bravo=True).write(value)
+            else:
+                odoo_values.append(value)
         return odoo_values
 
     def create_odoo_data(self, company_data):

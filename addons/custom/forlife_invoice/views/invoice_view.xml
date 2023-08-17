@@ -61,9 +61,6 @@
                 <xpath expr="//field[@name='date']" position="attributes">
                     <attribute name="required">0</attribute>
                 </xpath>
-                <xpath expr="//field[@name='company_type']" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('active', '=', True)]</attribute>
                     <!--                    <attribute name="required">[('is_check_required_partner_id', '=', True)]</attribute>-->
@@ -71,11 +68,11 @@
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
-                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
+                    <field name="x_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1" invisible="1"/>
+                    <field name="trade_tax_id" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                     <field name="x_amount_tax" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="company_type" readonly="1" string="Loại hình doanh nghiệp"/>
                     <field name="purchase_type" attrs="{'readonly': ['|', ('state', '=', 'posted'),('is_check_select_type_inv', '=', True)]}"/>
                     <field name="is_check_select_type_inv" invisible="1"/>
                     <field name="select_type_inv" widget="radio" attrs="{'readonly': ['|',('state', '=', 'posted'),('is_check_select_type_inv', '=', True)]}"/>
@@ -122,8 +119,9 @@
 <!--                           domain="domain_receiving_warehouse_id"-->
 <!--                           options="{'no_open': False}"-->
 <!--                           attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>-->
-                    <field name="x_asset_fin" widget="radio"/>
-                    <field name="x_root" widget="radio" invisible="context.get('default_move_type', False) == 'out_invoice'"/>
+                    <!--<field name="x_asset_fin" widget="radio"/> todo: bỏ trường này sau golive. giữ lại để backup cho trường is_tc-->
+                    <field name="is_tc"/>
+                    <field name="x_root" widget="radio" options="{'horizontal': True}" invisible="context.get('default_move_type', False) == 'out_invoice'" required="context.get('default_move_type', False) != 'out_invoice'"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
                 </xpath>
@@ -260,7 +258,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
                     <page string="Thông tin thuế"
-                          attrs="{'invisible': [('is_check_invoice_tnk', '=', False)]}">
+                          attrs="{'invisible': ['|', ('is_check_invoice_tnk', '=', False), ('select_type_inv', '!=', 'normal')]}">
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
@@ -280,7 +278,8 @@
                             </tree>
                         </field>
                     </page>
-                    <page string="Chi phí" invisible="context.get('default_move_type', False) == 'out_invoice'" name="product_cost" attrs="{'invisible': [('move_type', '=', 'entry')]}">
+                    <page string="Chi phí" invisible="context.get('default_move_type', False) == 'out_invoice'" name="product_cost"
+                          attrs="{'invisible': ['|', ('move_type', '=', 'entry'), ('select_type_inv', '!=', 'normal')]}">
                         <field name="cost_line" widget="section_and_note_one2many"
                                attrs="{'readonly': [('state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
@@ -305,6 +304,7 @@
                         </div>
                     </page>
                     <page string="Kê khai hóa đơn GTGT" name="supplier_info" attrs="{'invisible':[('move_type', '=', 'entry')]}">
+                        <field name="product_expense_ids" invisible="1"/>
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
@@ -317,7 +317,7 @@
                                 <field name="company_id"/>
                                 <field name="currency_id" optional="hide"/>
                                 <field name="invoice_reference"/>
-                                <field name="invoice_description"/>
+                                <field name="invoice_description" domain="[('id', 'in', parent.product_expense_ids)]"/>
                                 <field name="price_subtotal_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="tax_percent" force_save="1"/>
                                 <field name="tax_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -360,9 +360,25 @@
 <!--                                <field name="discount_percent"/>-->
                                 <field name="currency_id" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
-                                <field name="before_tax" sum="Sum Before Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="after_tax" sum="Sum After Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="expense_labor" sum="Sum Expense Labor" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="qty_actual"/>
+                                <field name="before_est_tax" sum="Sum Estimate Before Tax" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="after_est_tax" sum="Sum Estimate After Tax" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="expense_est_labor" sum="Sum Estimate Expense Labor" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'labor')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="before_tax" sum="Sum Actual Before Tax" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="after_tax" sum="Sum After Tax" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="expense_labor" sum="Sum Expense Labor" widget="monetary"
+                                       attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'labor')]}"
+                                       options="{'currency_field': 'currency_id'}"/>
 <!--                                <field name="amount_tax" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
 <!--                                <field name="special_consumption_tax_amount" attrs="{'column_invisible': [('parent.type_inv', '=', 'cost')]}"/>-->
 <!--                                <field name="total_product"/>-->

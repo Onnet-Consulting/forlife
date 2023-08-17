@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num35_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num35</field>
+        <field name="arch" type="xml">
+            <form string="Bảng kê chi tiết hóa đơn TMĐT" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
+                            <field name="lock_date" class="oe_inline"/>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="warehouse_id" domain="[('brand_id', '=', brand_id), ('brand_id', '!=', False)]"/>
+                        </group>
+                        <group>
+                            <field name="nhanh_order"/>
+                            <field name="customer"/>
+                            <field name="order_filter"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num35_window_action" model="ir.actions.act_window">
+        <field name="name">Bảng kê chi tiết hóa đơn TMĐT</field>
+        <field name="res_model">report.num35</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num35_menu"
+              action="report_num35_window_action"
+              parent="report_menu_sale"
+              sequence="35"/>
+</odoo>

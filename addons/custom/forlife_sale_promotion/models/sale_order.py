@@ -161,8 +161,8 @@ class SaleOrder(models.Model):
                         if vip_number and str(vip_number).isnumeric() and int(vip_number) != 0:
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.code
-                                if rec.source_record and rec.x_account_analytic_ids:
-                                    analytic_account_id = rec.x_account_analytic_ids[0]
+                                if rec.source_record and rec.x_account_analytic_id:
+                                    analytic_account_id = rec.x_account_analytic_id
                                 else:
                                     analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
                                 ghn_price_unit = ln.price_unit
@@ -212,8 +212,8 @@ class SaleOrder(models.Model):
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
-                        if rec.source_record and rec.x_account_analytic_ids:
-                            analytic_account_id = rec.x_account_analytic_ids[0]
+                        if rec.source_record and rec.x_account_analytic_id:
+                            analytic_account_id = rec.x_account_analytic_id
                         else:
                             analytic_account_id = warehouse_code and self.env['account.analytic.account'].sudo().search([('code', 'like', '%' + warehouse_code)], limit=1)
                         odoo_price_unit = ln.odoo_price_unit
@@ -258,7 +258,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_income_id'),
+                                    ('name', '=', 'property_account_expense_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -267,19 +267,18 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_income_id.id
+                                account_id = product_id.property_account_expense_id.id
                         except Exception as e:
                             account_id = None
                         
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
                             
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí vận chuyển"
                         })]
 
@@ -290,7 +289,7 @@ class SaleOrder(models.Model):
                             if rec.source_record:
                                 res_id = f'product.template,{product_id.product_tmpl_id.id}'
                                 ir_property = self.env['ir.property'].sudo().search([
-                                    ('name', '=', 'property_account_expense_id'),
+                                    ('name', '=', 'property_account_income_id'),
                                     ('res_id', '=', res_id),
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
@@ -299,20 +298,19 @@ class SaleOrder(models.Model):
                                 else:
                                     account_id = None
                             else:
-                                account_id = product_id.property_account_expense_id
+                                account_id = product_id.property_account_income_id
                         except Exception as e:
                             account_id = None
 
 
                         if not account_id:
-                            raise UserError("Chưa cấu hình Tài khoản chi phí cho sản phầm %s!" % product_id.name)
+                            raise UserError("Chưa cấu hình Tài khoản doanh thu cho sản phầm %s!" % product_id.name)
 
                         rec.promotion_ids = [(0, 0, {
                             'product_id': product_id and product_id.id,
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
-                            # 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                             'description': "Phí ship báo khách hàng"
                         })]
 
@@ -325,7 +323,7 @@ class SaleOrder(models.Model):
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
-                                'default_message': _("Voucher %s invalid or wrong value!" % rec.x_code_voucher),
+                                'default_message': _("Voucher %s không tồn tại trong hệ thống. Vui lòng kiểm tra lại!" % rec.x_code_voucher),
                                 'default_voucher_name': rec.x_code_voucher
                             }
                             return action
@@ -354,11 +352,12 @@ class SaleOrder(models.Model):
                 # đơn bán buôn
                 elif rec.x_sale_chanel == "wholesale":
                     product_domain = []
+                    list_line_promotion = []
                     for line in rec.order_line:
                         # check khuyên mãi để tạo promotion
                         if line.reward_id.reward_type == "discount":
                             product_domain += line.reward_id._get_discount_product_domain()
-                            for line_promotion in rec.order_line:
+                            for line_promotion in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                 warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
 
@@ -379,17 +378,16 @@ class SaleOrder(models.Model):
                                         'order_line_id': line_promotion.id,
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
-                            line.write({'state': 'draft'})
-                            line.unlink()
+                            list_line_promotion.append(line)
                         else:
                             sub_total = 0
-                            for line_pri in rec.order_line:
+                            for line_pri in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                 if line_pri.product_id.filtered_domain(
                                         product_domain) and not line_pri.x_free_good and not line_pri.is_reward_line and not (
                                         line_pri.product_id.detailed_type == 'service' and line_pri.product_id.x_negative_value):
                                     sub_total += line_pri.price_subtotal
                             if line.product_id.detailed_type == 'service' and line.product_id.x_negative_value:
-                                for line_promotion in rec.order_line:
+                                for line_promotion in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                     warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                     analytic_account_id = warehouse_code and self.env[
                                         'account.analytic.account'].search([('code', 'like', '%' + warehouse_code)],
@@ -411,8 +409,11 @@ class SaleOrder(models.Model):
                                             'order_line_id': line_promotion.id
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
-                                line.write({'state': 'draft'})
-                                line.unlink()
+                                        list_line_promotion.append(line)
+                    for line in list_line_promotion:
+                        line.write({'state': 'draft'})
+                        line.unlink()
+                        break
                 rec.write({"state": "done_sale"})
 
     def action_open_reward_wizard(self):

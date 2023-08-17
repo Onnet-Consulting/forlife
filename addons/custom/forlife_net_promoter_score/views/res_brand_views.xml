@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="brand_view_nps_tree_inherit" model="ir.ui.view">
+        <field name="name">brand_view_nps_tree_inherit</field>
+        <field name="model">res.brand</field>
+        <field name="inherit_id" ref="forlife_point_of_sale.brand_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="is_nps"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="res_brand_nps_form_inherit" model="ir.ui.view">
+        <field name="name">nps_form</field>
+        <field name="model">res.brand</field>
+        <field name="inherit_id" ref="forlife_point_of_sale.brand_view_form"/>
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="is_nps"/>
+            </field>
+        </field>
+    </record>
+</odoo>

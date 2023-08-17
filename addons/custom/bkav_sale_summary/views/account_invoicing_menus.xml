@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_summary_invoice_so_sell_nhanh"
+        parent="bkav_connector.menu_master_bkav_nhanh" 
+        name="Tổng hợp hóa đơn bán Nhanh.vn"
+        action="summary_invoice_so_sell_nhanh_action"
+        sequence="10"/>
+    <menuitem id="menu_summary_invoice_so_return_nhanh"
+        parent="bkav_connector.menu_master_bkav_nhanh" 
+        name="Tổng hợp hóa đơn trả Nhanh.vn"
+        action="summary_invoice_so_return_nhanh_action"
+        sequence="20"/>
+    <menuitem id="menu_synthetic_account_move_so_nhanh"
+        parent="bkav_connector.menu_master_bkav_nhanh" 
+        name="Tổng hợp hóa đơn bù trừ Nhanh.vn"
+        action="synthetic_account_move_so_nhanh_action"
+        sequence="30"/>
+    <menuitem id="menu_summary_adjusted_invoice_so_nhanh"
+        parent="bkav_connector.menu_master_bkav_nhanh" 
+        name="Tổng hợp hóa đơn điều chỉnh Nhanh.vn"
+        action="summary_adjusted_invoice_so_nhanh_action"
+        sequence="30"/>
+</odoo>

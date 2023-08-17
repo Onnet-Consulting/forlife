@@ -1,30 +1,13 @@
 from odoo import api, fields, models
 from datetime import date, datetime, timedelta
 from ...bkav_connector.models import bkav_action
-from odoo.exceptions import ValidationError
 
 
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
-
-    is_post_bkav_store = fields.Boolean(
-        string='Có phát hành hóa đơn bkav', 
-        related="store_id.is_post_bkav"
-    )
-    invoice_date = fields.Date(
-        string='Invoice/Bill Date',
-        related="account_move.invoice_date"
-    )
-    invoice_exists_bkav = fields.Boolean(
-        string="Đã tồn tại trên BKAV", 
-        related="account_move.exists_bkav"
-    )
-    is_synthetic = fields.Boolean(string='Synthetic', default=False)
-
-
-    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
-    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
+    exists_bkav = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV (HD bán hàng)")
+    is_post_bkav = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV (HD bán hàng)")
     is_check_cancel = fields.Boolean(default=False, copy=False, string="Đã hủy")
     is_general = fields.Boolean(default=False, copy=False, string="Đã chạy tổng hợp cuối ngày")
     ###trạng thái và số hdđt từ bkav trả về
@@ -51,15 +34,6 @@ class PosOrder(models.Model):
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
-    exists_total_point = fields.Boolean(default=False, copy=False, string="Exists total point")
-
-    def get_total_point(self):
-        total_point = self.total_point
-        if self.exists_total_point:
-            total_point = 0
-        else:
-            self.write({"exists_total_point": True})
-        return total_point
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -70,7 +44,8 @@ class PosOrder(models.Model):
         return super().copy(default)
 
     def _get_vat_line_bkav(self, line):
-        vat = 0
+        vat = -1
+        tax_rate_id = 4
         if line.tax_ids:
             vat = line.tax_ids[0].amount  
         if vat == 0:
@@ -81,8 +56,6 @@ class PosOrder(models.Model):
             tax_rate_id = 9
         elif vat == 10:
             tax_rate_id = 3
-        else:
-            tax_rate_id = 4
         return vat, tax_rate_id
     
     
@@ -98,14 +71,17 @@ class PosOrder(models.Model):
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
             list_invoice_detail.append(line_invoice)
         
         use_point = {}
         rank_total = {}
-        for promotion_id in self.lines:
+        refunded_orderline_ids = self.lines.filtered(lambda x: x.refunded_orderline_id and x.qty != 0).ids
+        for promotion_id in self.lines.filtered(lambda x: x.product_src_id.id not in refunded_orderline_ids):
             if promotion_id.is_promotion and promotion_id.promotion_type == 'point':
-                vat = 0
+                vat = -1
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(use_point.keys()):
@@ -115,7 +91,7 @@ class PosOrder(models.Model):
                 else:
                     use_point[vat] += promotion_id.subtotal_paid
             if promotion_id.is_promotion and promotion_id.promotion_type == 'card':
-                vat = 0
+                vat = -1
                 if promotion_id.tax_ids:
                     vat = promotion_id.tax_ids[0].amount
                 if vat not in list(rank_total.keys()):
@@ -125,16 +101,19 @@ class PosOrder(models.Model):
                 else:
                     rank_total[vat] += promotion_id.subtotal_paid
         for vat, value in use_point.items():
-            value_not_tax = round(value/(1+vat/100))
+            int_vat = (vat if vat != -1 else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Tiêu điểm",
                 "UnitName": 'Điểm',
                 "Qty": abs(value/1000),
-                "Price": round(1000/(1+vat/100)),
+                "Price": abs(round(1000/(1+int_vat/100))),
                 "Amount": abs(value_not_tax),
-                "TaxAmount": abs(value - value_not_tax),
+                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
             if vat == 0:
                 tax_rate_id = 1
@@ -144,25 +123,28 @@ class PosOrder(models.Model):
                 tax_rate_id = 9
             elif vat == 10:
                 tax_rate_id = 3
-            else:
-                tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != -1:
+                line_invoice.update({
+                    "TaxAmount": abs(value - value_not_tax),
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
 
         for vat, value in rank_total.items():
-            value_not_tax = round(value/(1+vat/100))
+            int_vat = (vat if vat != -1 else 0)
+            value_not_tax = round(value/(1+int_vat/100))
             line_invoice = {
                 "ItemName": "Chiết khấu hạng thẻ",
-                "UnitName": 'Đơn vị',
+                "UnitName": '',
                 "Qty": 0,
-                "Price": abs(value_not_tax),
+                "Price": 0,
                 "Amount": abs(value_not_tax),
-                "TaxAmount": abs(value - value_not_tax),
+                "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 4,
+                "TaxRate": -1
             }
             if vat == 0:
                 tax_rate_id = 1
@@ -174,10 +156,12 @@ class PosOrder(models.Model):
                 tax_rate_id = 3
             else:
                 tax_rate_id = 4
-            line_invoice.update({
-                "TaxRateID": tax_rate_id,
-                "TaxRate": vat
-            })
+            if vat != -1:
+                line_invoice.update({
+                    "TaxAmount": abs(value - value_not_tax),
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
             list_invoice_detail.append(line_invoice)
         return list_invoice_detail
 
@@ -191,7 +175,7 @@ class PosOrder(models.Model):
                 invoice_date = datetime.combine(invoice.date_order, (datetime.now() + timedelta(hours=7)).time())       
             # invoice_date = fields.Datetime.context_timestamp(invoice, datetime.combine(invoice.date_order,datetime.now().time())) 
             list_invoice_detail = []
-            for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id):
+            for line in invoice.lines.filtered(lambda x: not x.refunded_orderline_id and x.qty != 0):
                 #SP KM k đẩy BKAV
                 if line.is_promotion or line.product_id.voucher or line.product_id.is_product_auto or line.product_id.is_voucher_auto:
                     continue
@@ -201,7 +185,7 @@ class PosOrder(models.Model):
                 for l in sublines:
                     price_subtotal += l.price_subtotal
                     price_subtotal_incl += l.price_subtotal_incl
-                price_bkav = round(price_subtotal/line.qty)
+                price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
                 if line.is_reward_line:
@@ -210,21 +194,25 @@ class PosOrder(models.Model):
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
                     "Qty": abs(line.qty),
-                    "Price": price_bkav,
-                    "Amount": price_subtotal,
-                    "TaxAmount": (price_subtotal_incl - price_subtotal or 0.0),
+                    "Price": abs(price_bkav),
+                    "Amount": abs(price_subtotal),
+                    "TaxAmount": 0,
                     "ItemTypeID": 0,
-                    # "DiscountRate": line.discount/100,
-                    # "DiscountAmount": round(line.price_subtotal/(1+line.discount/100) * line.discount/100),
-                    "IsDiscount": 1 if line.is_promotion else 0
+                    "IsDiscount": 1 if line.is_promotion else 0,
+                    "TaxRateID": 4,
+                    "TaxRate": -1
                 }
-                item.update({
-                    "TaxRateID": tax_rate_id,
-                    "TaxRate": vat
-                })
+                if vat != -1 and not line.is_reward_line:
+                    item.update({
+                        "TaxAmount": abs((price_subtotal_incl - price_subtotal or 0.0)),
+                        "TaxRateID": tax_rate_id,
+                        "TaxRate": vat
+                    })
                 list_invoice_detail.append(item)
             #Them cac SP khuyen mai
             list_invoice_detail.extend(self._get_promotion_in_pos())
+            if invoice.invoice_info_tax_number and (not invoice.invoice_info_company_name or not invoice.invoice_info_address):
+                invoice.search_infor_bkav()
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
             # if invoice.invoice_info_company_name:
@@ -306,7 +294,7 @@ class PosOrder(models.Model):
         return bkav_action.publish_invoice_bkav(self)
     
     def create_publish_invoice_bkav(self):
-        return self.with_context({'is_publish': True}).create_invoice_bkav(self)
+        return self.with_context({'is_publish': True}).create_invoice_bkav()
 
     def get_invoice_bkav(self):
         return bkav_action.get_invoice_bkav(self)
@@ -325,10 +313,39 @@ class PosOrder(models.Model):
 
     def download_invoice_bkav(self):
         return bkav_action.download_invoice_bkav(self)
+    
+    def search_infor_bkav(self):
+        mst = self.invoice_info_tax_number
+        if mst:
+            response_action = bkav_action.search_infor_bkav(self, mst)
+            if response_action and 'TenChinhThuc' in response_action:
+                if not self.invoice_info_company_name:
+                    self.write({
+                        'invoice_info_company_name': response_action.get('TenChinhThuc'),
+                    })
+                if not self.invoice_info_address:
+                    self.write({
+                        'invoice_info_address': response_action.get('DiaChiGiaoDichChinh'),
+                    })
 
     def unlink(self):
         for item in self:
             item.delete_invoice_bkav()
         return super(PosOrder, self).unlink()
+    
+
+    @api.model
+    def _process_order(self, order, draft, existing_order):
+        pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
+        if not existing_order:
+            pos = self.env['pos.order'].browse(pos_id)
+            if pos.invoice_info_tax_number:
+                if not pos.is_refund_order:
+                    pos.create_publish_invoice_bkav()
+                else:
+                    pos.create_publish_invoice_bkav_return()
+                    if pos.is_change_order:
+                        pos.create_publish_invoice_bkav()
+        return pos_id
     
     

@@ -321,23 +321,84 @@ order by php.date_order desc
         tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz)).utcoffset().total_seconds() / 3600)
 
         sql = f"""
-select po.name                                                             as ma_don_hang,
+select po.pos_reference                                                    as ma_don_hang,
        store.code                                                          as ma_cua_hang,
        store.name                                                          as ten_cua_hang,
        to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY') as ngay_mua_hang,
        coalesce(po.amount_total, 0)                                        as so_tien_phai_tra,
-       coalesce(po.point_order, 0)                                         as diem_tich_luy
-
+       coalesce(po.point_order, 0)                                         as diem_tich_luy,
+       coalesce(wh.street, '')                                             as dia_chi
 from pos_order po
          join res_partner rp on rp.id = po.partner_id
          join pos_session ps on ps.id = po.session_id
          join pos_config pc on pc.id = ps.config_id
          join store on store.id = pc.store_id
+         left join stock_warehouse wh on wh.id = store.warehouse_id
          join res_brand rb on rb.id = po.brand_id and rb.code = '{brand}'
 where rp.phone = '{phone_number}'
   and to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY') = '{"%.2d/%.4d" % (month, year)}'
 """
         return self.execute_postgresql(sql, [], True)
+
+    @api.model
+    def get_pos_order_detail_information(self, pos_reference):
+        order = self.env['pos.order'].search([('pos_reference', '=', pos_reference)], limit=1)
+        if not order:
+            return []
+        tz_offset = int(datetime.now(pytz.timezone(self.env.user.tz or 'Asia/Saigon')).utcoffset().total_seconds() / 3600)
+        result = {
+            'date_order': (order.date_order + timedelta(hours=tz_offset)).strftime('%d/%m/%Y %H:%M:%S') if order.date_order else '',
+            'pos_reference': pos_reference or '',
+            'cashier': order.user_id.name or '',
+            'note': order.note or '',
+        }
+        promotion_code = set()
+        promotion_amount = 0
+        voucher_code = set()
+        voucher_amount = 0
+        amount_total = 0
+        discount_total = 0
+        qty_total = 0
+        abs_qty_total = 0
+        product_detail = dict()
+        for line in order.lines.filtered(lambda f: not f.is_promotion and f.qty != 0):
+            key = f"{'-' if line.qty < 0 else ''}{line.product_id.id}|{line.promotion_usage_ids.ids}|{int(line.original_price)}"
+            product_detail.update({
+                key: {
+                    'product_name': (product_detail.get(key) or {}).get('product_name') or line.product_id.name or '',
+                    'product_barcode': (product_detail.get(key) or {}).get('product_barcode') or line.product_id.barcode or '',
+                    'qty': ((product_detail.get(key) or {}).get('qty') or 0) + line.qty,
+                    'unit_price': (product_detail.get(key) or {}).get('unit_price') or line.original_price,
+                    'discount': ((product_detail.get(key) or {}).get('discount') or 0) + line.money_is_reduced,
+                    'amount': ((product_detail.get(key) or {}).get('amount') or 0) + line.subtotal_paid,
+                }
+            })
+            amount_total += (line.qty * line.original_price) if line.qty > 0 else (line.subtotal_paid or 0)
+            discount_total += (line.money_is_reduced or 0) if line.qty > 0 else 0
+            qty_total += line.qty
+            abs_qty_total += abs(line.qty)
+            for promotion in line.promotion_usage_ids:
+                if promotion.program_id.promotion_type == 'code' and promotion.code_id:
+                    promotion_code.add(promotion.code_id.name) if promotion.code_id.name else None
+                    promotion_amount += promotion.discount_total or 0
+        for voucher in order.pos_voucher_line_ids:
+            voucher_code.add(voucher.voucher_id.name)
+            voucher_amount += voucher.price_residual_no_compute
+        result.update({
+            'promotion_code': ','.join(list(promotion_code)),
+            'promotion_amount': promotion_amount,
+            'voucher_code': ','.join(list(voucher_code)),
+            'voucher_amount': voucher_amount,
+            'qty_total': qty_total,
+            'abs_qty_total': abs_qty_total,
+            'amount_total': amount_total,
+            'discount_total': discount_total,
+            'product_detail': list(product_detail.values()),
+            'amount_total_paid': amount_total - discount_total,
+            'voucher_paid': sum(order.payment_ids.filtered(lambda s: s.payment_method_id.is_voucher).mapped('amount')),
+            'point_total': order.total_point or 0,
+        })
+        return [result]
 
     @api.model
     def get_stock_quant_in_store(self, brand, barcode, province_id, district_id=False):
@@ -443,3 +504,16 @@ where rp.id in (select id from customers)
             return {"message": f"Kích hoạt thành công mã voucher '{voucher_code}'"}
         else:
             return {"message": f"Kích hoạt không thành công, mã voucher '{voucher_code}' không được tìm thấy"}
+
+    @api.model
+    def get_country_state_with_brand_code(self, brand_code):
+        sql = f"""
+            select rcs.id as id, rcs.code as code, rcs.name as name
+            from res_country_state rcs
+                     join res_country rc on rcs.country_id = rc.id and rc.code = 'VN'
+                     join stock_warehouse wh on rcs.id = wh.state_id
+                     join store on wh.id = store.warehouse_id
+                     join res_brand rb on store.brand_id = rb.id and rb.code = '{brand_code}'
+            group by rcs.id, rcs.code, rcs.name;
+        """
+        return self.execute_postgresql(sql, [], True)

@@ -27,12 +27,12 @@
                         <field name="wizard_id" invisible="1"/>
                         <field name="is_selected"/>
                         <field name="product_id" readonly="1" options="{'no_create': True, 'no_open': True}" force_save="1"/>
-                        <field name="exchange_quantity" readonly="1" force_save="1"/>
                         <field name="purchase_received" readonly="1" force_save="1"/>
                         <field name="purchase_returned" readonly="1" force_save="1"/>
                         <field name="purchase_remain" readonly="1" force_save="1"/>
                         <field name="quantity" attrs="{'readonly': [('is_selected', '=', False)], 'required': [('is_selected', '=', True)]}"/>
                         <field name="uom_id" groups="uom.group_uom" string="Đơn vị mua" readonly="1" force_save="1"/>
+                        <field name="exchange_quantity" readonly="1" force_save="1" string="Tỷ lệ quy đổi"/>
                         <field name="vendor_price" invisible="1"/>
                         <field name="purchase_line_id" invisible="1"/>
                     </tree>

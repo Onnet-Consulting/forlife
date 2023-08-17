@@ -33,8 +33,8 @@ class SaleOrder(models.Model):
          ('intercompany', 'Đơn bán hàng liên công ty'),
          ('online', 'Đơn bán hàng online')],
         string='Kênh bán', default='wholesale')
-    x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
-    x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
+    x_account_analytic_id = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
+    x_occasion_code_id = fields.Many2many('occasion.code', string='Mã vụ việc')
     x_punish = fields.Boolean(string='Đơn phạt', copy=False)
     # x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
@@ -105,12 +105,15 @@ class SaleOrder(models.Model):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
         if picking_ids and len(picking_ids) == 1:
-            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids, active_id=picking_ids[0].id, active_model='stock.picking'))
             ctx = {
                 'so_return': self.id,
                 'x_return': True,
-                'picking_id': picking_ids.id
+                'picking_id': picking_ids.id,
+                'active_ids':picking_ids.ids,
+                'active_id':picking_ids[0].id, 
+                'active_model':'stock.picking',
             }
+            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
             return_wiz = stock_return_picking_form.save()
             return {
                 'name': _('Trả hàng phiếu %s' % (picking_ids[0].name)),
@@ -427,7 +430,7 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
+        self.x_account_analytic_id = self.order_id.x_account_analytic_id._origin if self.order_id.x_account_analytic_id else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id

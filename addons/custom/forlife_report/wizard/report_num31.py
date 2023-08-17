@@ -60,12 +60,13 @@ class ReportNum31(models.TransientModel):
     request_id = fields.Many2one('res.users', string='Người yêu cầu')
     receive_id = fields.Many2one('hr.employee', string='Người nhận')
     brand_id = fields.Many2one('product.category', string='Thương hiệu', domain=[('parent_id', '=', False)])
-    group_id = fields.Many2one('product.category', string='Nhóm hàng', domain="[('parent_id', '=', brand_id)]")
-    line_id = fields.Many2one('product.category', string='Dòng hàng', domain="[('parent_id', '=', group_id)]")
-    structure_id = fields.Many2one('product.category', string='Kết cấu', domain="[('parent_id', '=', line_id)]")
+    group_id = fields.Many2one('product.category', string='Nhóm hàng', domain="[('parent_id', '=', brand_id), ('parent_id', '!=', False)]")
+    line_id = fields.Many2one('product.category', string='Dòng hàng', domain="[('parent_id', '=', group_id), ('parent_id', '!=', False)]")
+    structure_id = fields.Many2one('product.category', string='Kết cấu', domain="[('parent_id', '=', line_id), ('parent_id', '!=', False)]")
 
     def _get_query(self):
         self.ensure_one()
+        tz_offset = self.tz_offset
         query = f"""
             select 
                 rp.name as nha_cc,
@@ -140,9 +141,9 @@ class ReportNum31(models.TransientModel):
             ) as p_cate on
                 p_cate.id = pt.categ_id
                 
-            join res_partner rp on prl.vendor_code = rp.id
+            left join res_partner rp on prl.vendor_code = rp.id
             left join uom_uom uu on prl.purchase_uom = uu.id 
-            where 1 = 1 and pr.request_date between '{self.date_from}' and '{self.date_to}'
+            where 1 = 1 and {format_date_query('pr.request_date', tz_offset)} between '{self.date_from}' and '{self.date_to}'
 
         """
 

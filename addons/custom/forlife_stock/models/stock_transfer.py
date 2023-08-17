@@ -140,7 +140,7 @@ class StockTransfer(models.Model):
             product = line.product_id
             domain = [('location_id', '=', location_id.id), ('product_id', '=', line.product_id.id)]
             if work_from:
-                domain.append(('production_id', '=', work_from.id))
+                domain.append(('production_id.code', '=', work_from.code))
                 qty_prod_order_ids = QuantityProductionOrder.search(domain)
                 if qty_prod_order_ids:
                     total_qty_production = sum(x.quantity for x in qty_prod_order_ids)
@@ -188,6 +188,8 @@ class StockTransfer(models.Model):
 
     def action_out_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
+        if self._context.get('skip_confirm'):
+            return self._action_out_approve()
         if any(line.qty_out == 0 for line in self.stock_transfer_line):
             view = self.env.ref('forlife_stock.stock_transfer_popup_out_confirm_view_form')
             return {
@@ -627,6 +629,27 @@ class StockTransfer(models.Model):
                         stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
         return super().load(fields, data)
 
+    def mass_export_confirmation(self):
+        for rec in self:
+            if rec.state != 'approved':
+                msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: Trạng thái khác Đã phê duyệt" % (rec.name)
+                raise ValidationError(msg)
+            try:
+                rec._out_approve_with_confirm()
+            except Exception as e:
+                msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: %s" % (rec.name, e.name)
+                raise ValidationError(msg)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': 'Xác nhận xuất thành công %s bản ghi' % len(self),
+                'type': 'success',
+                'sticky': False,
+                'next': self.env.ref('forlife_stock.stock_transfer_action').read()[0],
+            }
+        }
+
 
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
@@ -705,9 +728,9 @@ class StockTransferLine(models.Model):
         #      ('production_id', '=', self.work_from.id)])
         quantity_prodution_to = QuantityProductionOrder.search(
             [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
-             ('production_id', '=', self.work_to.id)])
+             ('production_id.code', '=', self.work_to.code)])
         if self.work_from:
-            domain.append(('production_id', '=', self.work_from.id))
+            domain.append(('production_id.code', '=', self.work_from.code))
             quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
 
             if quantity_prodution:

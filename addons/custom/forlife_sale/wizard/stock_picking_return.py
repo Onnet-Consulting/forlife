@@ -67,3 +67,19 @@ class ReturnPicking(models.TransientModel):
         }
         so_id = self.env['sale.order'].create(vals)
         return so_id
+    
+    @api.model
+    def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
+        res = super(ReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)
+        context = self.env.context
+        SaleOL = self.env['sale.order.line']
+        if self.picking_id.sale_id:
+            if stock_move.sale_line_id:
+                if 'so_return' in context and context.get('so_return'):
+                    so_return = context.get('so_return')
+                    new_sale_line_id = SaleOL.search([('product_id','=',stock_move.product_id.id),('order_id','=',so_return)],limit=1)
+                    quantity_returned = new_sale_line_id.product_uom_qty
+                    res.update({
+                        'quantity': quantity_returned,
+                    })
+        return res

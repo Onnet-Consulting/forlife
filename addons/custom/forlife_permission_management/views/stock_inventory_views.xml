@@ -12,9 +12,6 @@
                 <xpath expr="//button[@name='action_approved_first'][2]" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_approved_first</attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_validate']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_approved_second,stock.group_stock_manager</attribute>
-                </xpath>
                 <xpath expr="//button[@name='action_cancel_draft'][2]" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_inventory_cancel</attribute>
                 </xpath>

@@ -4,29 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e-20230512\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 02:46+0000\n"
-"PO-Revision-Date: 2023-06-02 10:00+0700\n"
+"POT-Creation-Date: 2023-08-15 02:47+0000\n"
+"PO-Revision-Date: 2023-08-15 02:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.3.1\n"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid ""
-"\n"
-"\n"
-"======\tSheet - %s\t========== \n"
-"%s\n"
-msgstr ""
 
 #. module: forlife_hr_payroll
 #. odoo-python
@@ -164,6 +151,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhyt_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhyt_nld
 msgid "BHYT NLĐ chi trả"
+msgstr ""
+
+#. module: forlife_hr_payroll
+#. odoo-python
+#: code:addons/forlife_hr_payroll/models/salary_record.py:0
+#, python-format
+msgid "Bút toán không được phép nhiều nợ - nhiều có!"
 msgstr ""
 
 #. module: forlife_hr_payroll
@@ -411,6 +405,11 @@ msgid "Department"
 msgstr "Phòng/Ban"
 
 #. module: forlife_hr_payroll
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__department_id
+msgid "Department in charge"
+msgstr "Phòng ban phụ trách"
+
+#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__note
 msgid "Description"
 msgstr "Mô tả"
@@ -471,6 +470,13 @@ msgstr "Nhật ký lỗi"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_error_log_wizard__error_file
 msgid "Error file"
 msgstr "Tệp lỗi"
+
+#. module: forlife_hr_payroll
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_account_move_line__expense_item_id
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__expense_item_id
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_entry__expense_item_id
+msgid "Expense Item"
+msgstr "Khoản mục phí"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_entry__salary_field_id
@@ -572,12 +578,19 @@ msgstr "Bút toán"
 #. module: forlife_hr_payroll
 #: model:ir.model,name:forlife_hr_payroll.model_account_move_line
 msgid "Journal Item"
-msgstr "Bút toán"
+msgstr "Hạng mục bút toán"
 
 #. module: forlife_hr_payroll
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_view_form
 msgid "Journals"
 msgstr "Sổ nhật ký"
+
+#. module: forlife_hr_payroll
+#. odoo-python
+#: code:addons/forlife_hr_payroll/models/salary_record.py:0
+#, python-format
+msgid "Không tìm thấy sổ nhật ký có mã %s"
+msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_kq
@@ -643,41 +656,6 @@ msgid "Last Updated on"
 msgstr "Ngày cập nhật"
 
 #. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Line %d - %s"
-msgstr "Dòng %d - %s"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Line %r, %r is an invalid month\n"
-msgstr "Dòng %r, tháng %r không hợp lệ\n"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Line %r, %r is an invalid year\n"
-msgstr "Dòng %r, năm %r không hợp lệ\n"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Line %r, Salary Record Type \"%s\" is invalid\n"
-msgstr "Dòng  %r, Loại lương \"%s\" không hợp lệ\n"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Line %s, "
-msgstr "Dòng %s, "
-
-#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__log
 msgid "Log"
 msgstr "Nhật ký"
@@ -706,41 +684,6 @@ msgstr "Tháng"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__move_count
 msgid "Move Count"
 msgstr "Số lượng bút toán"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Mã cost center %s không tồn tại"
-msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Mã dự án %s không tồn tại"
-msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Mã lệnh sản xuất %s không tồn tại"
-msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Mã vụ việc %s không tồn tại"
-msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Mục đích tính lương %s không tồn tại"
-msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhxh_level
@@ -1079,6 +1022,11 @@ msgid "Số lượng nhân sự"
 msgstr ""
 
 #. module: forlife_hr_payroll
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__is_tc
+msgid "TC"
+msgstr "Là TC"
+
+#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__is_tc_entry
 msgid "TC Entry"
 msgstr "Khoản mục TC"
@@ -1100,20 +1048,25 @@ msgid "Table"
 msgstr "Bảng"
 
 #. module: forlife_hr_payroll
-#: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_accounting_config_unique_combination_2
+#: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_accounting_config_unique_combination_credit
 msgid ""
-"The combination of Company, Entry, Credit account and Credit partner must "
-"be unique !"
+"The combination of Company, Entry, Purpose, Credit account and Credit "
+"partner must be unique !"
 msgstr ""
-"Tổ hợp giá trị Công ty, Khoản mục, Tài khoản có và Liên hệ tài khoản có "
-"phải là duy nhất !"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_accounting_config_unique_combination
 msgid ""
-"The combination of Company, Entry, Purpose, Debit account and Credit "
-"account must be unique !"
+"The combination of Company, Entry, Purpose, Debit account and Credit account"
+" must be unique !"
 msgstr "Tổ hợp Công ty, Khoản mục và Mục đích tính lương phải là duy nhất !"
+
+#. module: forlife_hr_payroll
+#: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_accounting_config_unique_combination_debit
+msgid ""
+"The combination of Company, Entry, Purpose, Debit account and Debit partner "
+"must be unique !"
+msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_record_unique_combination
@@ -1142,8 +1095,8 @@ msgstr ""
 #: model:ir.model.constraint,message:forlife_hr_payroll.constraint_salary_total_income_unique_value
 msgid ""
 "The combination of Reference, Salary calculation purpose, Department, Cost "
-"Center, Project Code, Manufacture Order Code and Internal Order Code must "
-"be unique !"
+"Center, Project Code, Manufacture Order Code and Internal Order Code must be"
+" unique !"
 msgstr ""
 "Tổ hợp giá trị Tham chiếu, Mục đích tính Lương, Phòng ban, Trung tâm chi "
 "phí, Mã dự án, Mã lệnh SX và Mã vụ việc phải là duy nhất !"
@@ -1249,20 +1202,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_filter
 msgid "Type"
 msgstr "Loại"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Tên-Mã phòng ban/bộ phận không tồn tại hoặc không khớp:  \"%s\" \"%s\""
-msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
-#, python-format
-msgid "Tên-mã nhân viên không tồn tại hoặc không khớp: \"%s\" \"%s\""
-msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_tu

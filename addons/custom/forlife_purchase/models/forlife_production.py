@@ -40,7 +40,9 @@ class ForlifeProduction(models.Model):
         ('done', 'Hoàn thành'),
     ], compute='compute_check_status')
     check_status = fields.Boolean(default=False)
-    order_manager_id = fields.Many2one('res.partner', string='Quản lý đơn hàng')
+    machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
+    leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
+    production_price = fields.Float(string='Đơn giá nhân công')
 
     def action_draft(self):
         for record in self:
@@ -156,10 +158,11 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     @api.depends('product_id')
     def compute_attribute_value(self):
+        attrs = self.env['res.utility'].get_attribute_code_config()
         for rec in self:
-            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT004').value_ids.id
-            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT006').value_ids.id
-            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == 'AT008').value_ids.id
+            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('mau_sac')).value_ids.id
+            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('size')).value_ids.id
+            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('chat_luong')).value_ids.id
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -238,7 +241,8 @@ class ForlifeProductionMaterial(models.Model):
 
     forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade')
     product_id = fields.Many2one('product.product', required=True, string='Mã NPL')
-    product_backup_id = fields.Many2one('product.product', required=True, string='Mã NPL thay thế')
+    product_backup_id = fields.Many2one('product.product', string='Mã NPL thay thế')
+    product_finish_id = fields.Many2one('product.product', string='Mã thành phẩm')
     description = fields.Char(string='Description', related="product_id.name")
     quantity = fields.Integer()
     uom_id = fields.Many2one(related="product_id.uom_id", string='Unit')

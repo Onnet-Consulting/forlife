@@ -63,9 +63,10 @@ class SalaryRecord(models.Model):
     move_ids = fields.One2many('account.move', 'salary_record_id', string='Account Moves', copy=False, readonly=False)
     move_count = fields.Integer(compute='_compute_move_count')
     is_tc = fields.Boolean('TC', default=False)
+    department_id = fields.Many2one('hr.department', string='Department in charge', ondelete="restrict")
 
     _sql_constraints = [
-        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
+        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version, is_tc, department_id)',
          'The combination of Company, Type, Month, Year and Version must be unique !')
     ]
 
@@ -115,7 +116,8 @@ class SalaryRecord(models.Model):
             value['name'] = company.salary_record_sequence_id.next_by_id()
             next_version = self.search_count([
                 ('company_id', '=', company.id), ('type_id', '=', value.get('type_id')),
-                ('month', '=', value.get('month')), ('year', '=', value.get('year'))
+                ('month', '=', value.get('month')), ('year', '=', value.get('year')),
+                ('is_tc', '=', value.get('is_tc')), ('department_id', '=', value.get('department_id'))
             ]) + 1
             value['version'] = next_version
         return super(SalaryRecord, self).create(vals_list)
@@ -279,7 +281,7 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if (is_tc_entry or self.is_tc) else 'QT',
+            'is_tc': is_tc_entry or self.is_tc,
             'journal_id': default_journal_id
         }
 

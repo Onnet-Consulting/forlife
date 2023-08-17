@@ -49,7 +49,6 @@ class StockPickingOverPopupConfirm(models.TransientModel):
     def process(self):
         self.ensure_one()
         list_line_over = []
-        list_line_less = []
         for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
             tolerance_id = pk.product_id.tolerance_ids.filtered(lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id)
             if tolerance_id:
@@ -86,8 +85,7 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                     'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
                 })
 
-        if any(pk.qty_done > pk_od.product_uom_qty for pk, pk_od in
-               zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package)):
+        if list_line_over:
             master_data_over = {
                 'reason_type_id': self.picking_id.reason_type_id.id,
                 'location_id': self.picking_id.location_id.id,
@@ -102,28 +100,13 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                 'picking_type_id': self.picking_id.picking_type_id.id,
                 'move_ids_without_package': list_line_over,
             }
-            xk_picking = self.env['stock.picking'].create(master_data_over)
+            data_pk_over = self.env['stock.picking'].create(master_data_over)
 
-        # Comment code cho phần if lên vòng for trên
-        # for pk, pk_od in zip(self.picking_id.move_line_ids_without_package, self.picking_id.move_ids_without_package):
-        #     # tolerance = pk.product_id.tolerance
-        #     tolerance = pk.product_id.tolerance_ids.filtered(
-        #         lambda x: x.partner_id.id == self.picking_id.purchase_id.partner_id.id).sorted(key=lambda x: x.id,
-        #                                                                                        reverse=False)[
-        #         -1].mapped('tolerance')[0] if pk.product_id.tolerance_ids else 0
-        #     if pk.qty_done > pk_od.product_uom_qty:
-        #         pk.write({
-        #             'qty_done': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
-        #         })
-        #         pk_od.write({
-        #             'product_uom_qty': (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty,
-        #         })
-        data_pk_over = self.env['stock.picking'].search([('leftovers_id', '=', self.picking_id.id)])
-        for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
-            pk.write({
-                'quantity_change': pk_od.quantity_change,
-                'quantity_purchase_done': pk.qty_done
-            })
+            for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
+                pk.write({
+                    'quantity_change': pk_od.quantity_change,
+                    'quantity_purchase_done': pk.qty_done
+                })
         return self.picking_id.button_validate()
 
 
@@ -447,7 +430,7 @@ class StockPicking(models.Model):
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
             # Nhập khác
             if picking_id.other_import:
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity = self.env['quantity.production.order'].search(domain)
                 if quantity:
                     quantity.write({
@@ -463,7 +446,7 @@ class StockPicking(models.Model):
 
             # Xuất khác
             if picking_id.other_export:
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity_prodution = self.env['quantity.production.order'].search(domain)
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
@@ -494,7 +477,7 @@ class StockPicking(models.Model):
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
             if picking_id.location_id.id == picking_id.transfer_id.location_id.id and picking_id.work_from:
                 # Trừ tồn ở lệnh work_from
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity_prodution = self.env['quantity.production.order'].search(domain)
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
@@ -510,7 +493,7 @@ class StockPicking(models.Model):
 
             if picking_id.location_dest_id.id == picking_id.transfer_id.location_dest_id.id and picking_id.work_to:
                 # Thêm tồn ở lệnh work_to
-                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_dest_id.id), ('production_id', '=', rec.work_production.id)]
+                domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_dest_id.id), ('production_id.code', '=', rec.work_production.code)]
                 quantity = self.env['quantity.production.order'].search(domain)
                 if quantity:
                     quantity.write({
@@ -731,28 +714,28 @@ class StockMoveLine(models.Model):
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
 
-    def process(self):
-        res = super().process()
-        for item in self:
-            for rec in item.pick_ids:
-                data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
-                for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
-                    pk.write({
-                        'po_id': pk_od.po_id,
-                        'qty_done': pk.reserved_qty,
-                        'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.reserved_qty
-                    })
-                for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
-                    pk.write({
-                        'po_l_id': pk_od.po_l_id,
-                    })
-                for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
-                    pk_od.write({
-                        'quantity_purchase_done': pk.quantity_purchase_done,
-                    })
-                for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
-                    pk_od.write({
-                        'quantity_purchase_done': pk.quantity_purchase_done,
-                    })
-        return res
+    # def process(self):
+    #     res = super().process()
+    #     for item in self:
+    #         for rec in item.pick_ids:
+    #             data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
+    #             for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
+    #                 pk.write({
+    #                     'po_id': pk_od.po_id,
+    #                     'qty_done': pk.reserved_qty,
+    #                     'quantity_change': pk_od.quantity_change,
+    #                     'quantity_purchase_done': pk.reserved_qty
+    #                 })
+    #             for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
+    #                 pk.write({
+    #                     'po_l_id': pk_od.po_l_id,
+    #                 })
+    #             for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
+    #                 pk_od.write({
+    #                     'quantity_purchase_done': pk.quantity_purchase_done,
+    #                 })
+    #             for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
+    #                 pk_od.write({
+    #                     'quantity_purchase_done': pk.quantity_purchase_done,
+    #                 })
+    #     return res

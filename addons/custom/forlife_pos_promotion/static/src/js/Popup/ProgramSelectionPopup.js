@@ -156,7 +156,8 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                             promotion_usage_ids: [...line.promotion_usage_ids],
                             quantity: line.quantity,
                             selectedReward: line.selectedReward,
-                            is_reward_line: line.is_reward_line
+                            is_reward_line: line.is_reward_line,
+                            pricelist_item: line.pricelist_item
                         }
                     });
                 };
