@@ -332,6 +332,12 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
+
+        if "import_file" in self.env.context:
+            for line in self.move_line_ids_without_package:
+                if line.qty_done != line.quantity_purchase_done * line.quantity_change:
+                    line.qty_done = line.quantity_purchase_done * line.quantity_change
+
         return res
 
     def action_back_to_draft(self):
