@@ -7,8 +7,8 @@ from odoo.exceptions import ValidationError
 class PosOrderReturn(models.Model):
     _inherit = "pos.order"
 
-    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV")
-    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV")
+    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV (HD trả hàng)")
+    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV (HD trả hàng)")
     ###trạng thái và số hdđt từ bkav trả về
     invoice_state_e_return = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_return', store=True,copy=False)
     invoice_guid_return = fields.Char('GUID HDDT', copy=False)

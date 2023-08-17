@@ -16,18 +16,19 @@ class InventorySession(models.Model):
     line_ids = fields.One2many('inventory.session.line', 'inv_session_id', string='Chi tiết')
     type = fields.Selection([('app', 'Từ app kiểm kê'), ('web', 'Nhập bổ sung từ web'), ('other', 'Nhập dữ liệu khác'), ('add', 'Nhập bổ sung lần 2')], 'Loại', default='app')
     updated = fields.Boolean('Đã đồng bộ', default=False)
+    qty_total = fields.Integer('Tổng số lượng', compute='_compute_qty_total', store=True)
 
     @api.model
     def action_inactive_session(self):
         self.sudo().write({'active': False})
-        # if not self._context.get('not_update_inv'):
-        #     self.inv_id.update_inventory_detail()
 
-    # @api.model_create_multi
-    # def create(self, values):
-    #     res = super().create(values)
-    #     res.inv_id.update_inventory_detail()
-    #     return res
+    @api.depends('line_ids')
+    def _compute_qty_total(self):
+        for line in self:
+            line.qty_total = sum([i.kiem_ke_thuc_te + i.phien_dem_bo_sung + i.hang_khong_kiem_dem + i.tui_ban_hang + i.hang_khong_tem
+                                  + i.hang_khong_cheat_duoc + i.hang_loi_chua_duyet + i.hang_loi_da_duyet + i.them1 - i.bot1 + i.cong_hang_ban_ntl_chua_kiem
+                                  - i.tru_hang_ban_da_kiem + i.bo_sung_hang_chua_cheat - i.tru_hang_kiem_dup + i.them2 - i.bot2
+                                  for i in line.line_ids])
 
 
 class InventorySessionLine(models.Model):
