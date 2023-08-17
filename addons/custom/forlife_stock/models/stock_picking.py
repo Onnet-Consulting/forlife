@@ -451,7 +451,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                            '[01] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
                             'quantity': quantity_prodution.quantity - rec.quantity_done
@@ -482,7 +482,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                            '[03] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
                                 rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
