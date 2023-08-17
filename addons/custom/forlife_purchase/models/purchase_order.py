@@ -508,6 +508,12 @@ class PurchaseOrder(models.Model):
                     continue
                 if orl.price_subtotal <= 0:
                     raise UserError(_('Đơn hàng chứa sản phẩm %s có tổng tiền bằng 0!') % orl.product_id.name)
+
+            # Validate trường hợp k có Sản phẩm hoặc tài khoản kế toán ở sản phẩm trong tab Chi phí
+            for cost_line_id in record.cost_line:
+                if not cost_line_id.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm %s" % cost_line_id.product_id.display_name)
+
             record.write({'custom_state': 'confirm'})
 
     def action_approved_vendor(self, data, order_line, invoice_line_ids):
