@@ -74,18 +74,12 @@ class InheritStockPicking(models.Model):
         qty_remain = product_uom_qty
         if product_qty >= product_uom_qty:
             val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_uom_qty, material, reason_type_id)
-            product_prodution_quantity.update({
-                'quantity': product_prodution_quantity.quantity - product_uom_qty
-            })
             move_outgoing_value.append(val)
             return move_outgoing_value
 
         if product_qty:
             qty_need = float_round(product_qty, precision_rounding=material.production_uom_id.rounding)
             val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, qty_need, material, reason_type_id)
-            product_prodution_quantity.update({
-                'quantity': product_prodution_quantity.quantity - qty_need
-            })
             move_outgoing_value.append(val)
             qty_remain = float_round(product_uom_qty - qty_need, precision_rounding=material.production_uom_id.rounding)
 
@@ -101,9 +95,6 @@ class InheritStockPicking(models.Model):
                     qty_need = float_round(qty_remain, precision_rounding=material_backup_01.production_uom_id.rounding)
                     val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
-                    product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
-                    })
                     return move_outgoing_value
 
                 if material_backup_01_qty:
@@ -111,9 +102,6 @@ class InheritStockPicking(models.Model):
                     val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
                     qty_remain = float_round(qty_remain - qty_need, precision_rounding=material_backup_01.production_uom_id.rounding)
-                    product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
-                    })
 
                 if qty_remain:
                     # Check sản phẩm thay thế Level 2
@@ -126,9 +114,6 @@ class InheritStockPicking(models.Model):
                         if material_backup_02_qty >= qty_remain:
                             val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
                             move_outgoing_value.append(val)
-                            product_backup_02_prodution_quantity.update({
-                                'quantity': product_backup_02_prodution_quantity.quantity - qty_remain
-                            })
                         else:
                             raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
 
