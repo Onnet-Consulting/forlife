@@ -51,7 +51,7 @@ class ReportNum36(models.TransientModel):
                 uu.name->>'en_US') as dvt,
                 fpfp.produce_qty as sl_sanxuat,
                 fpfp.stock_qty as sl_nhapkho,
-                fpfp.remaining_qty as sl_conlai
+                (fpfp.produce_qty - fpfp.stock_qty) as sl_conlai
             from
                 forlife_production fp
             join forlife_production_finished_product fpfp on
