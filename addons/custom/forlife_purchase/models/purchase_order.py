@@ -2896,6 +2896,10 @@ class StockPicking(models.Model):
                     'company_id': self.env.company.id,
                     'stock_move_id': move.id
                 }))
+
+                if not move.product_id.categ_id.property_stock_valuation_account_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm %s" % move.product_id.display_name)
+
                 move_lines += [(0, 0, {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
@@ -2938,6 +2942,10 @@ class StockPicking(models.Model):
 
                 if sp_total_qty == 0:
                     continue
+
+                if not expense.product_id.categ_id.property_stock_account_input_categ_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm %s" % expense.product_id.display_name)
+
                 entries_values += [{
                     'ref': f"{self.name}",
                     'purchase_type': po.purchase_type,

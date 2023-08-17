@@ -24,7 +24,9 @@ class ResUsers(models.Model):
             if user.oauth_provider_id != auth_1office_provider and user.oauth_uid != username:
                 raise AccessDenied()
         except AccessDenied:
-            # if created user don't related to 1office yet => update 1office info to user
+            pass
+        # if created user don't related to 1office yet => update 1office info to user
+        if not user.oauth_provider_id and auth_1office_provider:
             user.write({'oauth_provider_id': auth_1office_provider.id, 'oauth_uid': username})
 
     @api.model

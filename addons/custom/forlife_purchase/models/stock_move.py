@@ -101,6 +101,10 @@ class StockMoveLine(models.Model):
     def onchange_quantity_purchase_done(self):
         self.qty_done = self.quantity_purchase_done * self.quantity_change
 
+    @api.onchange('qty_done')
+    def onchange_qty_done(self):
+        self.quantity_purchase_done = self.qty_done/self.quantity_change
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

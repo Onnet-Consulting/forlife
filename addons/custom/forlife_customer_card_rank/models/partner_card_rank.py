@@ -166,7 +166,6 @@ class PartnerCardRankLine(models.Model):
 
     @api.model
     def create_partner_card_rank_detail(self, pos_order, invoice, pcr_id, value_to_upper, old_rank_id, new_rank_id, total_value_to_up, program_id):
-        self.sudo().browse(pcr_id).filtered(lambda f: f.status).write({'status': False})
         if pos_order:
             name = pos_order.name
             order_id = pos_order.id

@@ -19,15 +19,16 @@ class AccountMove(models.Model):
         sale_id = self.line_ids.sale_line_ids.order_id
         sale_id = sale_id and sale_id[0] or sale_id
         brand_id = sale_id.x_location_id.warehouse_id.brand_id
+        source_record = sale_id.source_record
+        partner_id = sale_id.order_partner_id
         member_cards = self.env['member.card'].get_member_card_by_date(self.invoice_date, brand_id.id)
-        if not member_cards:
+        if not member_cards or not source_record or not partner_id:
             return False
-        partner_card_rank = sale_id.order_partner_id.card_rank_ids.filtered(lambda f: f.brand_id.id == brand_id.id)
+        partner_card_rank = partner_id.card_rank_ids.filtered(lambda f: f.brand_id.id == brand_id.id)
         if partner_card_rank:
             new_rank = partner_card_rank.card_rank_id
             for program in member_cards:
-                if sale_id.order_partner_id.group_id.id == program.customer_group_id.id and \
-                        (sale_id.order_partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in sale_id.order_partner_id.retail_type_ids)):
+                if partner_id.group_id.id == program.customer_group_id.id and (partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in partner_id.retail_type_ids)):
                     value_to_upper_order = self.amount_residual - sale_id.x_voucher
                     total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date.date() >= (self.invoice_date - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
                     if new_rank.priority >= program.card_rank_id.priority:
@@ -39,8 +40,7 @@ class AccountMove(models.Model):
                             break
         else:
             for program in member_cards:
-                if sale_id.order_partner_id.group_id.id == program.customer_group_id.id and \
-                        (sale_id.order_partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in sale_id.order_partner_id.retail_type_ids)):
+                if partner_id.group_id.id == program.customer_group_id.id and (partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in partner_id.retail_type_ids)):
                     value_to_upper_order = self.amount_residual - sale_id.x_voucher
                     if value_to_upper_order >= program.min_turnover:
                         self.env['partner.card.rank'].create_partner_card_rank(False, self, value_to_upper_order, program.id, program.card_rank_id.id)
