@@ -10,7 +10,6 @@
                 <field name="company_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
-                <field name="total_point" string="Tổng tích điểm"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -33,7 +32,6 @@
                             <field name="store_id"/>
                             <field name="partner_id"/>
                             <field name="invoice_date"/>
-                            <field name="total_point" string="Tổng tích điểm"/>
                         </group>
                     </group>
                     <notebook>
@@ -113,10 +111,23 @@
                                 <field name="discount_ids" string="Tổng Chiêt khấu"> 
                                     <tree editable="bottom" create="0">
                                         <field name="promotion_type"/>
+                                        <field name="bkav_synthetic_id"/>
                                         <field name="price_unit"/>
                                         <field name="tax_ids" widget="many2many_tags"/>
                                         <field name="tax_amount"/>
                                         <field name="amount_total"/>
+                                        <field name="adjusted_amount_total"/>
+                                        <field name="remaining_amount_total"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="accumulate_point_ids"> 
+                                    <tree editable="bottom" create="0">
+                                        <field name="bkav_synthetic_id"/>
+                                        <field name="total_point"/>
+                                        <field name="adjusted_total_point"/>
+                                        <field name="remaining_total_point"/>
                                     </tree>
                                 </field>
                             </group>
