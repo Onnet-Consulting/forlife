@@ -185,11 +185,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         }
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
-            selfItem.pro_pricelist_item_by_id[str_id] = item;
+            this.pro_pricelist_item_by_id[str_id] = item;
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
-            item.program = selfItem.promotion_program_by_id[item.program_id];
+            item.program = this.promotion_program_by_id[item.program_id];
             item.program.pricelistItems.push(item);
             item.program.productPricelistItems.add(item.product_id);
             item.display_name = item.display_name;
