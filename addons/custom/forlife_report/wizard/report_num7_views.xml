@@ -14,7 +14,7 @@
                         <group>
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
                             <field name="all_warehouses"/>
-                            <field name="warehouse_ids" widget="many2many_tags" domain="[('brand_id', '=', brand_id)]"
+                            <field name="warehouse_ids" widget="many2many_tags" domain="[('brand_id', '=', brand_id)]" context="{'show_code_name': True}"
                                    attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
                         </group>
                         <group>
