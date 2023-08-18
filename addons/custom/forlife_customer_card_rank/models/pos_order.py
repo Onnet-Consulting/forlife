@@ -87,7 +87,7 @@ class PosOrder(models.Model):
     #     return pos_id
 
     def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
-        vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
+        vals = super()._prepare_history_point_value(store, point_type=point_type, reason=reason, points_used=points_used, points_back=points_back)
         pos = self
         vals['points_coefficient'] = (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
         vals['points_store'] += (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
@@ -141,10 +141,12 @@ class PosOrder(models.Model):
         }
 
     def get_point_order(self, money_value, brand_id, is_purchased):
+        # compensate_point: kiểm tra có phải tích bù điểm bằng tay hay không
+        compensate_point = self.env['pos.compensate.point.order'].search_count([('order_ids', '=', self.id)]) > 0
         partner_rank_detail = self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).line_ids.filtered(lambda x: x.order_id.id == self.id)
         current_rank_of_customer = partner_rank_detail.old_card_rank_id.ids or self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).card_rank_id.ids
         program = self.program_store_point_id
-        if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
+        if (compensate_point or self.allow_for_point) and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
