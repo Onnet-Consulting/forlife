@@ -308,14 +308,7 @@ class PurchaseOrder(models.Model):
 
     def compute_is_done_picking(self):
         for record in self:
-            pk = self.env['stock.picking'].search([('origin', '=', record.name)]).mapped('state')
-            if pk:
-                if 'done' in pk:
-                    record.is_done_picking = True
-                else:
-                    record.is_done_picking = False
-            else:
-                record.is_done_picking = False
+            record.is_done_picking = True if record.picking_ids.filtered(lambda x: x.state == 'done') else False
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
@@ -561,49 +554,9 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.is_inter_company:
                 record.button_confirm()
-                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
-                picking_in.write({
-                    'is_pk_purchase': True
-                })
-                picking_in.picking_type_id.write({
+                record.picking_ids.picking_type_id.write({
                     'show_operations': True
                 })
-                picking_in.write({'state': 'assigned'})
-                if picking_in:
-                    orl_l_ids = []
-                    for orl, pkl in zip(record.order_line, picking_in.move_ids_without_package):
-                        if orl.product_id == pkl.product_id:
-                            po_l_id = orl.id
-                            while po_l_id in orl_l_ids:
-                                po_l_id += 1
-                            orl_l_ids.append(po_l_id)
-                            pkl.write({
-                                'po_l_id': po_l_id,
-                                'free_good': orl.free_good,
-                                'quantity_change': orl.exchange_quantity,
-                                'quantity_purchase_done': orl.purchase_quantity,
-                                'quantity_done': orl.product_qty,
-                                'occasion_code_id': orl.occasion_code_id.id,
-                                'work_production': orl.production_id.id,
-                                'account_analytic_id': orl.account_analytic_id.id,
-                            })
-                    orl_ids = []
-                    for orl, pk in zip(record.order_line, picking_in.move_line_ids_without_package):
-                        if orl.product_id == pk.product_id:
-                            po_id = orl.id
-                            while po_id in orl_ids:
-                                po_id += 1
-                            orl_ids.append(po_id)
-                            pk.write({
-                                'po_id': po_id,
-                                'free_good': orl.free_good,
-                                'purchase_uom': orl.purchase_uom.id,
-                                'quantity_change': orl.exchange_quantity,
-                                'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False,
-                                'occasion_code_id': orl.occasion_code_id.id,
-                                'work_production': orl.production_id.id,
-                                'account_analytic_id': orl.account_analytic_id.id,
-                            })
                 record.write({'custom_state': 'approved'})
             else:
                 if not record.is_return:
@@ -1766,6 +1719,7 @@ class PurchaseOrder(models.Model):
                 'location_dest_id': location.id,
                 'location_id': self.partner_id.property_stock_supplier.id,
                 'company_id': self.company_id.id,
+                'is_pk_purchase': True
             })
         return vals
 
@@ -2114,6 +2068,21 @@ class PurchaseOrderLine(models.Model):
     def search_product_sup(self, domain):
         supplier_info = self.env['product.supplierinfo'].search(domain)
         return supplier_info
+
+    # Update fields từ Po line sang stock_move
+    def _prepare_stock_moves(self, picking):
+        res = super(PurchaseOrderLine, self)._prepare_stock_moves(picking)
+        for re in res:
+            re.update({
+                'free_good': self.free_good,
+                'quantity_change': self.exchange_quantity,
+                'quantity_purchase_done': self.purchase_quantity,
+                'quantity_done': self.product_qty,
+                'occasion_code_id': self.occasion_code_id.id or False,
+                'work_production': self.production_id.id or False,
+                'account_analytic_id': self.account_analytic_id.id or False,
+            })
+        return res
 
     @api.onchange('asset_code')
     def onchange_asset_code(self):

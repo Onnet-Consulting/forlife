@@ -144,7 +144,8 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
                 'location_id': location_id.id,
-                'location_dest_id': record.warehouse_in_id.id
+                'location_dest_id': record.warehouse_in_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()
@@ -174,6 +175,7 @@ class SplitProduct(models.Model):
                 'move_ids_without_package': data,
                 'location_id': record.warehouse_out_id.id,
                 'location_dest_id': location_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()
