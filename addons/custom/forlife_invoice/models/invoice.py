@@ -131,11 +131,11 @@ class AccountMove(models.Model):
         for rec in self:
             rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
 
-    @api.depends('total_trade_discount', 'x_tax')
+    @api.depends('total_trade_discount', 'trade_tax_id', 'trade_discount')
     def compute_x_amount_tax(self):
         for rec in self:
-            if rec.total_trade_discount > 0 and rec.x_tax > 0:
-                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+            if rec.total_trade_discount != 0 and rec.trade_tax_id:
+                rec.x_amount_tax = rec.trade_tax_id.amount / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
