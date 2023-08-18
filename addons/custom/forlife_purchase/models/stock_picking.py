@@ -304,8 +304,8 @@ class StockPicking(models.Model):
                         else:
                             debit = line[-1]['debit'] - round(line[-1]['debit'])
                             line[-1]['debit'] = round(line[-1]['debit'])
-                if move.product.cost_method == 'average':
-                    self.add_cost_product(move.product, round(unit_cost * sp_total_qty))
+                if move.product_id.cost_method == 'average':
+                    self.add_cost_product(move.product_id, round(unit_cost * sp_total_qty))
         results = results.create(entries_values)
         results._post()
         return results
