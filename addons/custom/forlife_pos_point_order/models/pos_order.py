@@ -141,10 +141,11 @@ class PosOrder(models.Model):
             brand_pos_id = pos_order.config_id.store_id.brand_id.id
             if not pos_order.partner_id:
                 list_partner_empty.append(pos_order.name)
-            elif (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format',raise_if_not_found=False).id
-                  and self.env.ref('forlife_pos_app_member.res_partner_retail_format_app',raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids) \
-                    or (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife',raise_if_not_found=False).id
-                        and self.env.ref('forlife_pos_app_member.res_partner_retail_tokyolife_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids):
+            elif (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+                  and self.env.ref('forlife_pos_app_member.res_partner_retail_format_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids) \
+                    or (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
+                        and self.env.ref('forlife_pos_app_member.res_partner_retail_tokyolife_app',
+                                         raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids):
                 list_partner_empty_app.append(pos_order.partner_id.name)
                 list_order_empty_app.append(pos_order.name)
                 # raise UserError(_('Khách hàng chưa cài app!'))
@@ -156,7 +157,7 @@ class PosOrder(models.Model):
         if list_partner_empty:
             raise UserError(_('Đơn hàng {} chưa chọn khách hàng !'.format(', '.join(list_order_has_point))))
         elif list_partner_empty_app:
-            raise UserError(_('Khách hàng {} tại đơn hàng {} chưa cài app! !'.format(', '.join(list_partner_empty_app),', '.join(list_order_empty_app))))
+            raise UserError(_('Khách hàng {} tại đơn hàng {} chưa cài app! !'.format(', '.join(list_partner_empty_app), ', '.join(list_order_empty_app))))
         elif list_order_has_point:
             raise UserError(_('Đơn hàng {} đã được tích điểm!'.format(', '.join(list_order_has_point))))
         elif list_order_no_program_points_order:
@@ -197,6 +198,15 @@ class PosOrder(models.Model):
         if self.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
             return 'format'
         elif self.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
+            return 'forlife'
+        else:
+            return None
+
+    def _get_store_brand_from_order(self):
+        self.ensure_one()
+        if self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
+            return 'format'
+        elif self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
             return 'forlife'
         else:
             return None
@@ -272,7 +282,7 @@ class PosOrder(models.Model):
 
     def get_event_match(self, pos_order):
         point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date and x.state == 'effective' and (
-                    not x.store_ids or pos_order.config_id.store_id.id in x.store_ids.ids))
+                not x.store_ids or pos_order.config_id.store_id.id in x.store_ids.ids))
         time = pos_order.date_order
         time = time.strftime("%Y-%m-%d %H:%M:%S")
         create_Date = self._format_time_zone(time)
@@ -306,8 +316,17 @@ class PosOrder(models.Model):
 
     @api.model
     def _order_fields(self, ui_order):
+        flag_check_scan_3code = False
+        for u in ui_order.get('lines'):
+            if u[2]['is_new_line']:
+                product = self.env['product.product'].search([('id', '=', u[2]['product_id'])])
+                if not product.is_product_auto and 'allow_for_point' in ui_order and ui_order.get(
+                        'allow_for_point') is True and 'is_change_product' in ui_order and ui_order.get('is_change_product'):
+                    flag_check_scan_3code = True
+                    break
         data = super(PosOrder, self)._order_fields(ui_order)
-        if (data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True) or ('is_refund_product' in ui_order and ui_order.get('is_refund_product')) or ('is_change_product' in ui_order and ui_order['is_change_product']):
+        if (data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True) or (
+                'is_refund_product' in ui_order and ui_order.get('is_refund_product')) or flag_check_scan_3code:
             program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id

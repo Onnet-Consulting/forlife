@@ -68,6 +68,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     points_of_customer = this.env.pos.selectedOrder.partner.total_points_available_forlife
                 }
             }
+            var Order = this.env.pos.selectedOrder
             var order_lines = this.order_lines;
             var promotion = await this.promotion;
             var product_valid_apply_all = [];
@@ -76,14 +77,14 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
 //                các sản phẩm hợp lệ được cấu hình
             for (let i=0; i< order_lines.length;i++){
                     for(let j=0;j<promotion.point_consumption_ids.length;j++){
-                        if(order_lines[i].product.id == promotion.point_consumption_ids[j].id && !order_lines[i].is_product_defective){
+                        if(order_lines[i].product.id == promotion.point_consumption_ids[j].id && !order_lines[i].is_product_defective && !order_lines[i].refunded_orderline_id){
                             product_valid.push(order_lines[i]);
                         }
                     }
             };
 
             for (let i=0; i< order_lines.length;i++){
-                    if(!order_lines[i].is_product_defective){
+                    if(!order_lines[i].is_product_defective && !order_lines[i].refunded_orderline_id){
                        product_valid_apply_all.push(order_lines[i])
                     }
             };
@@ -138,7 +139,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                                     let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
                                     let line_new = OrderCurrent.createNewLinePoint(line)
                                     // Set remaining quantity for the original orderline
+                                    this.env.pos.no_reset_program = true;
                                     order_lines[j].set_quantity(order_lines[j].quantity - line_new.quantity)
+                                    this.env.pos.no_reset_program = false;
                                     list_order_line_new.push({id: line_new.id, point:data[i].point})
                                     this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
                                 }
@@ -162,7 +165,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                                     let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
                                     let line_new = OrderCurrent.createNewLinePoint(line)
                                     // Set remaining quantity for the original orderline
+                                    this.env.pos.no_reset_program = true;
                                     order_lines[j].set_quantity(order_lines[j].quantity - line_new.quantity)
+                                    this.env.pos.no_reset_program = false;
                                     list_order_line_new.push({id: line_new.id, point:data[i].point})
                                     this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
                                 }else if(order_lines[j].is_new_line_point == true && data[i].id == order_lines[j].id && data[i].point == 0){

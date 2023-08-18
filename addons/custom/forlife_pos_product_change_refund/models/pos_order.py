@@ -89,12 +89,10 @@ class PosOrder(models.Model):
             # update history back order
             if pos.refund_point > 0 or pos.pay_point > 0:
                 if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
-                    if not pos.program_store_point_id:
-                        return pos.id
                     store = pos._get_store_brand_from_program()
-                    if store is not None:
-                        history_values = pos._prepare_history_point_back_order_value(store, points_back=pos.pay_point)
-                        HistoryPoint.sudo().create(history_values)
+                    history_values = pos._prepare_history_point_back_order_value(store=pos._get_store_brand_from_order(), points_back=pos.pay_point)
+                    HistoryPoint.sudo().create(history_values)
+                    if pos.program_store_point_id and store is not None:
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
                                                           store)
 
