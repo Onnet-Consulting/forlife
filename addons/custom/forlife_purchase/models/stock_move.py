@@ -36,9 +36,8 @@ class StockMoveLine(models.Model):
 
     @api.onchange('qty_done')
     def onchange_qty_done(self):
-        self.quantity_purchase_done = self.qty_done/self.quantity_change
-        self.move_id.quantity_purchase_done = self.qty_done/self.quantity_change
-
+        self.quantity_purchase_done = self.qty_done/self.quantity_change if self.quantity_change > 0 else self.qty_done
+        self.move_id.quantity_purchase_done = self.qty_done/self.quantity_change if self.quantity_change > 0 else self.qty_done
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
