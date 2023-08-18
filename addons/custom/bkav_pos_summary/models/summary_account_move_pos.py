@@ -601,8 +601,8 @@ class SummaryAccountMovePos(models.Model):
                                 v_item["amount_total"] = 0
                                 break
                             else:
-                                v_item["amount_total"] += line.remaining_total_point
-                                adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_total_point)
+                                v_item["amount_total"] += line.remaining_amount_total
+                                adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
 
                                 if store_adjusted:
                                     v_item["bkav_adjusted_id"] = store_adjusted.id
