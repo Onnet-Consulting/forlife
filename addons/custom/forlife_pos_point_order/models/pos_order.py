@@ -201,6 +201,15 @@ class PosOrder(models.Model):
         else:
             return None
 
+    def _get_store_brand_from_order(self):
+        self.ensure_one()
+        if self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
+            return 'format'
+        elif self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
+            return 'forlife'
+        else:
+            return None
+
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
         valid_money_payment_method = 0  # X
