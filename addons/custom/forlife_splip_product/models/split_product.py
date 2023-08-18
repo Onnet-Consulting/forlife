@@ -26,7 +26,7 @@ class SplitProduct(models.Model):
             pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])
             rec.count_picking = pickings
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
         if vals_list.get('name', 'New') == 'New':
             vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
