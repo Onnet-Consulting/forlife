@@ -38,6 +38,7 @@ class StockMoveLine(models.Model):
     @api.onchange('qty_done')
     def onchange_qty_done(self):
         self.quantity_purchase_done = self.qty_done/self.quantity_change
+        self.move_id.quantity_purchase_done = self.qty_done/self.quantity_change
 
 
 class StockMove(models.Model):
