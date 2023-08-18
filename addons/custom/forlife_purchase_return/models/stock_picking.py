@@ -155,6 +155,9 @@ class StockPicking(models.Model):
                         'company_id': self.env.company.id,
                         'stock_move_id': move.id
                     }))
+                    #TienNQ
+                    if move.product_id.cost_method == 'average':
+                        self.add_cost_product(move.product_id, - (amount / qty_po_origin) * move.quantity_done)
 
                 credit = (amount / qty_po_origin) * move.quantity_purchase_done
                 after_digit = credit - int(credit)
