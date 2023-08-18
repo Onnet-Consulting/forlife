@@ -18,8 +18,7 @@ class StockMoveLine(models.Model):
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
-                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
@@ -99,3 +98,15 @@ class StockMove(models.Model):
                 price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self),
                 round=False)
         return price_unit
+
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        vals = super(StockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
+        vals.update({
+            'free_good': self.free_good,
+            'quantity_change': self.quantity_change,
+            'quantity_purchase_done': self.quantity_purchase_done,
+            'occasion_code_id': self.occasion_code_id.id or False,
+            'work_production': self.work_production.id or False,
+            'account_analytic_id': self.account_analytic_id.id or False,
+        })
+        return vals
