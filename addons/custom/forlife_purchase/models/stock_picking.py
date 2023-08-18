@@ -247,6 +247,7 @@ class StockPicking(models.Model):
             for expense in po.cost_line:
                 expense_vnd_amount = round(expense.vnd_amount * amount_rate, 0)
                 sp_total_qty = move.quantity_done
+                unit_cost = expense_vnd_amount / po_total_qty
 
                 if sp_total_qty == 0:
                     continue
@@ -266,8 +267,8 @@ class StockPicking(models.Model):
                     'invoice_date_due': po.date_planned,
                     'restrict_mode_hash_table': False,
                     'stock_valuation_layer_ids': [(0, 0, {
-                        'value': expense_vnd_amount / po_total_qty * move.quantity_done,
-                        'unit_cost': expense_vnd_amount / po_total_qty,
+                        'value': round(unit_cost * sp_total_qty),
+                        'unit_cost': unit_cost,
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {expense.product_id.name}",
@@ -281,7 +282,7 @@ class StockPicking(models.Model):
                         'product_id': move.product_id.id,
                         'name': expense.product_id.name,
                         'text_check_cp_normal': expense.product_id.name,
-                        'credit': round(expense_vnd_amount / po_total_qty * sp_total_qty),
+                        'credit': round(unit_cost * sp_total_qty),
                         'debit': 0
                     }),
                     (0, 0, {
@@ -291,7 +292,7 @@ class StockPicking(models.Model):
                          'name': move.product_id.name,
                          'text_check_cp_normal': move.product_id.name,
                          'credit': 0,
-                         'debit': round(expense_vnd_amount / po_total_qty * move.quantity_done)
+                         'debit': round(unit_cost * sp_total_qty)
                     })],
                 }]
                 for value in entries_values:
@@ -303,9 +304,16 @@ class StockPicking(models.Model):
                         else:
                             debit = line[-1]['debit'] - round(line[-1]['debit'])
                             line[-1]['debit'] = round(line[-1]['debit'])
+                if move.product.cost_method == 'average':
+                    self.add_cost_product(move.product, round(unit_cost * sp_total_qty))
         results = results.create(entries_values)
         results._post()
         return results
+    
+    #TienNQ add recompute standard_price in product
+    def add_cost_product(self, product, cost):
+        if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
+            product.with_company(self.company_id).sudo().with_context(disable_auto_svl=True).standard_price += cost / product.quantity_svl
 
     # Xử lý nhập kho sinh bút toán ở tab chi phí po theo số lượng nhập kho
     def create_invoice_po_cost(self, po, record):
