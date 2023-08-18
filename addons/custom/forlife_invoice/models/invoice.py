@@ -1209,8 +1209,8 @@ class AccountMoveLine(models.Model):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
 
-        if self.quantity_purchased > self.ware_id.qty_done/self.exchange_quantity:
-            qty_in = self.ware_id.qty_done/self.exchange_quantity
+        if self.quantity_purchased > self.ware_id.qty_done/(self.exchange_quantity or 1) and self.ware_id and self.ware_id.qty_done:
+            qty_in = self.ware_id.qty_done/(self.exchange_quantity or 1)
             raise ValidationError(_('Số lượng vượt quá số lượng hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
