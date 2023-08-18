@@ -1,0 +1,102 @@
+<odoo>
+    <data>
+        <!-- Yêu cầu -->
+        <menuitem id="forlife_stock_request" parent="stock.menu_stock_warehouse_mgmt" name="Yêu cầu" sequence="5"/>
+
+            <record id="forlife_stock.stock_transfer_request_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_request"/>
+                <field name="sequence" eval="5"/>
+            </record>
+            <record id="forlife_stock.other_in_out_request" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_request"/>
+                <field name="sequence" eval="10"/>
+            </record>
+        <!-- Phiếu kho -->
+        <menuitem id="forlife_stock" parent="stock.menu_stock_warehouse_mgmt" name="Phiếu kho" sequence="10"/>
+
+            <record id="stock.all_picking" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock"/>
+                <field name="sequence" eval="5"/>
+            </record>
+            <record id="forlife_stock.stock_transfer" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock"/>
+                <field name="sequence" eval="10"/>
+            </record>
+            <record id="forlife_stock.stock_picking_other_import_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock"/>
+                <field name="sequence" eval="15"/>
+            </record>
+            <record id="forlife_stock.stock_picking_other_export_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock"/>
+                <field name="sequence" eval="20"/>
+            </record>
+            <record id="forlife_bravo_integration.synthetic_daily_transfer_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock"/>
+                <field name="sequence" eval="25"/>
+            </record>
+
+        <!-- Sản xuất -->
+        <menuitem id="forlife_stock_mrp" parent="stock.menu_stock_root" name="Sản xuất" sequence="3"/>
+
+            <record id="purchase_request.forlife_production_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_mrp"/>
+                <field name="sequence" eval="5"/>
+            </record>
+            <record id="purchase_request.forlife_bom_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_mrp"/>
+                <field name="sequence" eval="10"/>
+            </record>
+            <record id="forlife_stock_exchange.menu_forlife_stock_exchange" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_mrp"/>
+                <field name="sequence" eval="15"/>
+            </record>
+            <record id="forlife_stock.quantity_production_order" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_mrp"/>
+                <field name="sequence" eval="20"/>
+            </record>
+        
+        <!-- Kiem ke -->
+        <menuitem id="forlife_stock_inventory" parent="stock.menu_stock_warehouse_mgmt" name="Kiểm kê" sequence="15"/>
+
+            <record id="forlife_stock.asset_transfer_stock_inventory_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_inventory"/>
+                <field name="sequence" eval="5"/>
+            </record>
+            <record id="stock_inventory.menu_action_inventory_form_inherit" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_inventory"/>
+                <field name="sequence" eval="10"/>
+            </record>
+            <record id="stock_inventory.menu_inventory_session" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_inventory"/>
+                <field name="sequence" eval="15"/>
+            </record>
+
+        <!-- Khác -->
+        <menuitem id="forlife_stock_other" parent="stock.menu_stock_warehouse_mgmt" name="Khác" sequence="20"/>
+
+            <record id="forlife_stock.transfer_stock_inventory_classify_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_other"/>
+                <field name="sequence" eval="5"/>
+            </record>
+            <record id="forlife_stock.asset_transfer" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_other"/>
+                <field name="sequence" eval="10"/>
+            </record>
+            <record id="nhanh_connector.transportation_management_menu" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_other"/>
+                <field name="sequence" eval="15"/>
+            </record>
+            <record id="forlife_splip_product.split_product" model="ir.ui.menu">
+                <field name="parent_id" ref="forlife_stock_other"/>
+                <field name="sequence" eval="20"/>
+            </record>
+        
+
+        <record id="stock.menu_reordering_rules_replenish" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="stock.menu_procurement_compute" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>

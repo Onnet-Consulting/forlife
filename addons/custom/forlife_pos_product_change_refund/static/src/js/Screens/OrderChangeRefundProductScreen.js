@@ -391,7 +391,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 }
             }
             order.old_id_employee = old_id_employee
-
+            destinationOrder.allow_for_point = false;
+            order.allow_for_point = false;
             if (this.env.pos.get_order().cid !== destinationOrder.cid) {
                 this.env.pos.set_order(destinationOrder);
             }
