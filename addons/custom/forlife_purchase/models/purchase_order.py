@@ -2343,12 +2343,10 @@ class PurchaseOrderLine(models.Model):
         self._check_orderpoint_picking_type()
         product = self.product_id.with_context(lang=self.order_id.dest_address_id.lang or self.env.user.lang)
         date_planned = self.date_planned or self.order_id.date_planned
-        location_dest_id = self.location_id.id if self.location_id else (
-            self.order_id.location_id.id if self.order_id.location_id else False)
+        location_dest_id = self.location_id.id if self.location_id else (self.order_id.location_id.id if self.order_id.location_id else False)
         if not location_dest_id:
             location_dest_id = (self.orderpoint_id and not (
                 self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
-        picking_line = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
         return {
             # truncate to 2000 to avoid triggering index limit error
             # TODO: remove index in master?
@@ -2358,7 +2356,7 @@ class PurchaseOrderLine(models.Model):
             'date_deadline': date_planned,
             'location_id': self.order_id.partner_id.property_stock_supplier.id,
             'location_dest_id': location_dest_id,
-            'picking_id': picking_line.id,
+            'picking_id': picking.id,
             'partner_id': self.order_id.dest_address_id.id,
             'move_dest_ids': [(4, x) for x in self.move_dest_ids.ids],
             'state': 'draft',
