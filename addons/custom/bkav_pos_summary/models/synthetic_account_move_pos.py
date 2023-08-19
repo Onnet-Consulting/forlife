@@ -69,7 +69,9 @@ class SyntheticAccountMovePos(models.Model):
                 ('synthetic_id', '=', r.id)
             ])
             r.discount_ids = model_line_discount.search([
+                '|',
                 ('synthetic_ids', 'in', [r.id]),
+                ('bkav_synthetic_id', '=', r.id),
                 ('synthetic_line_id', '=', False),
                 ('store_id', '=', r.store_id.id)
             ])
@@ -83,7 +85,9 @@ class SyntheticAccountMovePos(models.Model):
     def _compute_accumulate_point(self):
         for r in self:
             r.accumulate_point_ids = self.env["synthetic.accumulate.point"].search([
+                '|',
                 ('synthetic_ids', 'in', [r.id]),
+                ('bkav_synthetic_id', '=', r.id),
                 ('store_id', '=', r.store_id.id)
             ])
 

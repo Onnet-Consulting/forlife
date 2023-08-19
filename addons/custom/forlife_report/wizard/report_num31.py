@@ -55,7 +55,7 @@ class ReportNum31(models.TransientModel):
     company_id = fields.Many2one('res.company', string='Công ty')
     date_from = fields.Date(string='Từ ngày', required=1)
     date_to = fields.Date(string='Đến ngày', required=1)
-    purchase_rq_id = fields.Many2many('purchase.request', 'rp3_pr', string='Số PR')
+    purchase_rq_id = fields.Many2many('purchase.request', 'rp3_pr', string='Số PR', domain="[('company_id', '=', company_id)]")
     status = fields.Selection([('open', 'Mở'), ('close', 'Đóng'), ('all', 'Tất cả')], string='Trạng thái')
     request_id = fields.Many2one('res.users', string='Người yêu cầu')
     receive_id = fields.Many2one('hr.employee', string='Người nhận')

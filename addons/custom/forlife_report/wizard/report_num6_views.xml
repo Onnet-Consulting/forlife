@@ -25,7 +25,7 @@
                         </group>
                     </group>
                     <group>
-                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]" context="{'show_code_name': True}"/>
                     </group>
                 </sheet>
             </form>

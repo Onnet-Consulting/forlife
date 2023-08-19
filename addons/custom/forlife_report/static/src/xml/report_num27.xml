@@ -20,10 +20,10 @@
                         <td><t t-esc="line.so_phieu"/></td>
                         <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.sl_yc"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.mau"/></td>
                         <td><t t-esc="line.size"/></td>
-                        <td><t t-esc="line.sl_yc"/></td>
                         <td><t t-esc="line.dvt"/></td>
                         <td><t t-esc="line.sl_xn"/></td>
                         <td><t t-esc="line.ly_do"/></td>

@@ -6,8 +6,8 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'Số PO', 'Ngày tạo PO', 'Ngày nhận hàng dự kiến', 'Ghi chú',
-    'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Tên SP',
-    'Màu', 'Size', 'Số lượng đặt hàng', 'Đơn vị tính (*)', 'Số lượng xác nhận',
+    'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng nhu cầu', 'Tên SP',
+    'Màu', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
     'Phần dở dang của',
 ]
 
@@ -129,10 +129,10 @@ class ReportNum28(models.TransientModel):
             sheet.write(row, 5, value.get('so_phieu_kho'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('num'), formats.get('int_number_format'))
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('ten_sp'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('mau'), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('size'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('sl_nhu_cau'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('sl_nhu_cau'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('mau'), formats.get('int_number_format'))
+            sheet.write(row, 11, value.get('size'), formats.get('int_number_format'))
             sheet.write(row, 12, value.get('dvt'), formats.get('int_number_format'))
             sheet.write(row, 13, value.get('sl_nhan'), formats.get('normal_format'))
             sheet.write(row, 14, value.get('phan_do_dang'), formats.get('int_number_format'))
