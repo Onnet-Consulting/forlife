@@ -72,7 +72,9 @@ class SummaryAdjustedInvoicePos(models.Model):
                 ('adjusted_invoice_id', '=', r.id)
             ])
             r.discount_ids = model_line_discount.search([
+                '|',
                 ('adjusted_ids', 'in', [r.id]),
+                ('bkav_adjusted_id', '=', r.id),
                 ('adjusted_line_id', '=', False),
                 ('store_id', '=', r.store_id.id)
             ])
@@ -87,7 +89,9 @@ class SummaryAdjustedInvoicePos(models.Model):
     def _compute_accumulate_point(self):
         for r in self:
             r.accumulate_point_ids = self.env["adjusted.accumulate.point"].search([
+                '|',
                 ('adjusted_ids', 'in', [r.id]),
+                ('bkav_adjusted_id', '=', r.id),
                 ('store_id', '=', r.store_id.id)
             ])
 
