@@ -131,11 +131,11 @@ class AccountMove(models.Model):
         for rec in self:
             rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
 
-    @api.depends('total_trade_discount', 'x_tax')
+    @api.depends('total_trade_discount', 'trade_tax_id', 'trade_discount')
     def compute_x_amount_tax(self):
         for rec in self:
-            if rec.total_trade_discount > 0 and rec.x_tax > 0:
-                rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+            if rec.total_trade_discount != 0 and rec.trade_tax_id:
+                rec.x_amount_tax = rec.trade_tax_id.amount / 100 * rec.total_trade_discount
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -1209,8 +1209,8 @@ class AccountMoveLine(models.Model):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
 
-        if self.quantity_purchased > self.ware_id.qty_done/self.exchange_quantity:
-            qty_in = self.ware_id.qty_done/self.exchange_quantity
+        if self.quantity_purchased > self.ware_id.qty_done/(self.exchange_quantity or 1) and self.ware_id and self.ware_id.qty_done:
+            qty_in = self.ware_id.qty_done/(self.exchange_quantity or 1)
             raise ValidationError(_('Số lượng vượt quá số lượng hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
