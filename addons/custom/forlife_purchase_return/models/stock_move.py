@@ -20,7 +20,6 @@ class StockMove(models.Model):
             if self.picking_id.x_is_check_return:
                 vals.update({
                     'quantity_change': self.purchase_line_id.exchange_quantity,
-                    'qty_done': self.product_qty
                 })
         return vals
 
