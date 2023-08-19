@@ -26,6 +26,8 @@ class SelectTypeInvoice(models.TransientModel):
                         'select_type_inv': rec.select_type_inv,
                     })
                 moves = current_purchase.action_create_invoice()
+                if not moves:
+                    raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
                 return {
                     'name': 'Hóa đơn nhà cung cấp',
                     'type': 'ir.actions.act_window',
@@ -43,6 +45,8 @@ class SelectTypeInvoice(models.TransientModel):
                         'select_type_inv': rec.select_type_inv,
                     })
                 moves = current_purchase.create_multi_invoice_vendor()
+                if not moves:
+                    raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
                 return {
                     'name': 'Hóa đơn nhà cung cấp',
                     'type': 'ir.actions.act_window',
