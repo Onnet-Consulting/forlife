@@ -13,7 +13,7 @@
                     <group>
                         <group>
                             <field name="report_by" widget="radio" options="{'horizontal': True}"/>
-                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" attrs="{'invisible': [('report_by', '=', 'area')]}"/>
+                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" attrs="{'invisible': [('report_by', '=', 'area')]}" context="{'show_code_name': True}"/>
                             <field name="all_areas" attrs="{'invisible': [('report_by', '=', 'branch')]}"/>
                             <field name="area_ids" widget="many2many_tags" attrs="{'invisible': ['|', ('all_areas', '=', True), ('report_by', '=', 'branch')]}"/>
                         </group>

@@ -1,12 +1,7 @@
 from odoo import api, fields, models, _
-from datetime import datetime, timedelta, time
-from odoo.exceptions import UserError
+from datetime import datetime
 from odoo.exceptions import ValidationError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_date, formatLang, get_lang, groupby, float_round
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
-import json
-from lxml import etree
 
 
 class StockPicking(models.Model):
@@ -38,7 +33,7 @@ class StockPicking(models.Model):
             'name': _('Forlife Account'),
             'view_mode': 'tree,form',
             'res_model': 'account.move',
-            'res_id': self.picking_xk_id.id,
+            'res_id': self.account_xk_id.id,
             'type': 'ir.actions.act_window',
             'target': 'current',
             'domain': domain
@@ -46,26 +41,23 @@ class StockPicking(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            if rec.picking_xk_id:
-                rec.picking_xk_id.action_cancel()
-                rec.picking_xk_id.action_back_to_draft()
-                rec.picking_xk_id.unlink()
-            if rec.account_xk_id:
-                rec.account_xk_id.button_draft()
-                rec.account_xk_id.button_cancel()
+            rec.back_data_picking_account_xk()
         return super(StockPicking, self).action_cancel()
 
     def action_back_to_draft(self):
         for rec in self:
-            if rec.picking_xk_id:
-                rec.picking_xk_id.action_cancel()
-                rec.picking_xk_id.action_back_to_draft()
-                rec.picking_xk_id.unlink()
-            if rec.account_xk_id:
-                rec.account_xk_id.button_draft()
-                rec.account_xk_id.button_cancel()
-                rec.account_xk_id.unlink()
+            rec.back_data_picking_account_xk()
         return super(StockPicking, self).action_back_to_draft()
+
+    def back_data_picking_account_xk(self):
+        if self.picking_xk_id:
+            self.picking_xk_id.action_cancel()
+            self.picking_xk_id.action_back_to_draft()
+            self.picking_xk_id.unlink()
+        if self.account_xk_id:
+            self.account_xk_id.button_draft()
+            self.account_xk_id.button_cancel()
+            self.account_xk_id.unlink()
 
     def check_quant_goods_import(self, po):
         self.ensure_one()
@@ -564,9 +556,7 @@ class StockPicking(models.Model):
         if record.state == 'done':
             move = False
             ### Tìm bản ghi Xuât Nguyên Phụ Liệu
-            export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id),
-                                                                         ('code', '=', 'X1201')
-                                                                         ], limit=1)
+            export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id), ('code', '=', 'X1201')], limit=1)
             if not export_production_order.x_property_valuation_in_account_id:
                 raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do xuất nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có mã: X1201')
             else:
@@ -574,8 +564,7 @@ class StockPicking(models.Model):
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
-                move = self.env['stock.move'].search(
-                    [('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
+                move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
@@ -676,7 +665,6 @@ class StockPicking(models.Model):
                     for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
                         invoice_line_ids.extend(sublist_lines_cp_after_tax)
 
-
                     qty_po_done = sum(move.mapped('quantity_done'))
                     svl_values = []
                     svl_values.append((0, 0, {
@@ -758,8 +746,7 @@ class StockPicking(models.Model):
                             'credit': allowcation_npl[2]['credit'],
                         }
                     total_npl_amount += allowcation_npl[2]['debit']
-                merged_records_list_allowcation_npl = [(0, 0, record) for record in
-                                                       merged_records_allowcation_npl.values()]
+                merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
                 if merged_records_list_allowcation_npl:
                     qty_po_done = sum(move.mapped('quantity_done'))
                     svl_allowcation_values = []
@@ -792,14 +779,11 @@ class StockPicking(models.Model):
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, export_production_order, account_move=None):
         company_id = self.env.company.id
-        picking_type_out = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing'),
-            ('company_id', '=', company_id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('company_id', '=', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
             'location_id': po.location_export_material_id.id,
-            # 'reason_type_id': reason_type_6.id,
             'location_dest_id': export_production_order.id,
             'scheduled_date': datetime.now(),
             'origin': po.name,
