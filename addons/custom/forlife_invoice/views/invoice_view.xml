@@ -139,7 +139,7 @@
                             </control>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_currency" invisible="1"/>
-                            <field name="ware_id" invisible="1"/>
+                            <field name="stock_move_id" invisible="1"/>
                             <field name="ware_name" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
                             <field name="readonly_discount_value" invisible="1"/>

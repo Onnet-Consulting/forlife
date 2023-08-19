@@ -23,9 +23,6 @@ class StockMoveLine(models.Model):
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
-    # Thêm field check số lượng lên hóa đơn
-    qty_invoiced = fields.Float('Qty Invoiced')
-    qty_refunded = fields.Float('Qty refunded')
 
     @api.depends('reason_id')
     def compute_production_order(self):
@@ -48,6 +45,9 @@ class StockMove(models.Model):
     free_good = fields.Boolean(string="Hàng tặng")
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
+    # Thêm field check số lượng lên hóa đơn
+    qty_invoiced = fields.Float('Qty Invoiced')
+    qty_refunded = fields.Float('Qty refunded')
 
     def _get_price_unit(self):
         """ Returns the unit price for the move"""
