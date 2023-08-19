@@ -425,22 +425,38 @@ class AccountMove(models.Model):
                 sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
         else:
             vals_lst = []
+            picking_ids = purchase_order_id.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
+            return_picking_ids = purchase_order_id.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
             for po_line in purchase_order_id.order_line:
-                data_line = purchase_order_id._prepare_invoice_normal(po_line)
-                if po_line.display_type == 'line_section':
-                    pending_section = po_line
-                    continue
-                if pending_section:
-                    line_vals = pending_section._prepare_account_move_line()
+                move_line_ids = picking_ids.move_line_ids_without_package.filtered(lambda x: x.product_id.id == po_line.product_id.id and x.state == 'done')
+                move_line_refund_ids = return_picking_ids.move_line_ids_without_package.filtered(lambda x: x.product_id.id == po_line.product_id.id and x.state == 'done')
+                qty_refunded = sum(move_line_ids.mapped('qty_refunded'))
+                qty_to_refund = sum(move_line_refund_ids.mapped('qty_done')) - qty_refunded
+
+                for move_line_id in move_line_ids.filtered(lambda x: x.qty_done - x.qty_invoiced - qty_to_refund > 0):
+                    data_line = purchase_order_id._prepare_invoice_normal(po_line, move_line_id)
+                    quantity = move_line_id.qty_done - qty_to_refund
+                    move_line_id.write({
+                        'qty_invoiced': quantity,
+                        'qty_refunded': qty_to_refund,
+                    })
+                    if po_line.display_type == 'line_section':
+                        pending_section = po_line
+                        continue
+                    if pending_section:
+                        line_vals = pending_section._prepare_account_move_line()
+                        line_vals['quantity'] = quantity
+                        line_vals.update(data_line)
+                        line_vals.update({'move_id': self.id})
+                        pending_section = None
+                        vals_lst.append(line_vals)
+                    line_vals = po_line._prepare_account_move_line()
+                    line_vals['quantity'] = quantity
                     line_vals.update(data_line)
                     line_vals.update({'move_id': self.id})
-                    pending_section = None
                     vals_lst.append(line_vals)
-                line_vals = po_line._prepare_account_move_line()
-                line_vals.update(data_line)
-                line_vals.update({'move_id': self.id})
-                vals_lst.append(line_vals)
             aml_ids = AccountMoveLine.create(vals_lst)
+
     @api.onchange('receiving_warehouse_id', 'select_type_inv')
     def onchange_invoice_line_ids_by_type(self):
         for rec in self:

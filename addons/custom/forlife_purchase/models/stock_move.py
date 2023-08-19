@@ -23,6 +23,9 @@ class StockMoveLine(models.Model):
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
+    # Thêm field check số lượng lên hóa đơn
+    qty_invoiced = fields.Float('Qty Invoiced')
+    qty_refunded = fields.Float('Qty refunded')
 
     @api.depends('reason_id')
     def compute_production_order(self):
