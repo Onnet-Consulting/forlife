@@ -122,7 +122,7 @@
                                     <field name="asset_code" attrs="{'invisible': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="asset_description" attrs="{'readonly': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="product_uom" optional="show" readonly="0" string="ĐVT"/>
-                                    <field name="purchase_quantity" optional="show"/>
+                                    <field name="purchase_quantity" string="Số lượng yêu cầu" optional="show"/>
                                     <field name="exchange_quantity" optional="show" string="Tỷ lệ quy đổi" invisible="1"/>
                                     <field name="product_qty" invisible="1" force_save="1"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
