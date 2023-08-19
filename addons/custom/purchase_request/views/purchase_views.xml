@@ -57,12 +57,11 @@
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('is_check_line_material_line', '=', False), ('purchase_type', '=', 'product')]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
                      <field name="invoice_status_fake" />
                     <field name="invoice_status" invisible="1"/>
-                    <!--                    <field name="picking_type_id"/>-->
                     <field name="has_contract" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="has_contract_commerce" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="note" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -130,7 +129,6 @@
                                         <field name="name" string="Mô tả"/>
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
                                         <field name="product_qty" string="Số lượng" force_save="1"/>
-<!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
                                         <field name="type_cost_product" invisible="1"/>
                                         <field name="price_unit" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
                                         <field name="total_amount" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>

@@ -72,12 +72,12 @@ class PurchaseOrder(models.Model):
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES,
                                  change_default=True, tracking=True, domain=False,
                                  help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
-    occasion_code_id = fields.Many2one('occasion.code', string="Case Code", copy=False)
-    account_analytic_id = fields.Many2one('account.analytic.account', copy=False, string="Cost Center")
+    occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc", copy=False)
+    account_analytic_id = fields.Many2one('account.analytic.account', copy=False, string="Trung tâm chi phí")
     is_purchase_request = fields.Boolean(default=False, copy=False)
     is_check_readonly_partner_id = fields.Boolean(copy=False)
     is_check_readonly_purchase_type = fields.Boolean(copy=False)
-    source_document = fields.Char(string="Source Document")
+    source_document = fields.Char(string="Source Document", copy=False)
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
@@ -738,6 +738,14 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
+    @api.model_create_multi
+    def create(self, vals):
+        purchases = super(PurchaseOrder, self).create(vals)
+        for purchase_id in purchases.filtered(lambda x: not x.is_inter_company):
+            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
+                message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
+                raise ValidationError(message)
+        return purchases
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
