@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import search_by_name_code
 from . import hr_team
 from . import res_users
 from . import res_company
@@ -29,7 +30,6 @@ from . import forlife_app_api_link
 from . import attribute_code_config
 from . import ir_model
 from . import ir_ui_menu
-from . import search_by_name_code
 from . import res_groups
 from . import ir_model_access
 from . import stock_picking

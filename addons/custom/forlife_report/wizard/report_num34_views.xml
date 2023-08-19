@@ -20,7 +20,7 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="warehouse_id" domain="[('brand_id', '=', brand_id), ('brand_id', '!=', False)]"/>
+                            <field name="warehouse_id" domain="[('brand_id', '=', brand_id), ('brand_id', '!=', False)]" context="{'show_code_name': True}"/>
                         </group>
                         <group>
                             <field name="nhanh_order"/>
