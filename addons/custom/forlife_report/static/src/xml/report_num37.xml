@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum37Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum37MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum37MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.id"/></td>
+                        <td><t t-esc="line.barcode"/></td>
+                        <td><t t-esc="line.sku_code"/></td>
+                        <td><t t-esc="line.makithuat"/></td>
+                        <td><t t-esc="line.default_code"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.tenhangcu"/></td>
+                        <td><t t-esc="line.loai_sp"/></td>
+                        <td><t t-esc="line.loai_mua_hang"/></td>
+                        <td><t t-esc="line.cs_tinh_phi"/></td>
+                        <td><t t-esc="line.cs_kiem_soat"/></td>
+                        <td><t t-esc="line.thuong_hieu"/></td>
+                        <td><t t-esc="line.dm_sanpham"/></td>
+                        <td><t t-esc="line.nhomhang"/></td>
+                        <td><t t-esc="line.donghang"/></td>
+                        <td><t t-esc="line.ketcau"/></td>
+                        <td><t t-esc="line.doi_tuong"/></td>
+                        <td><t t-esc="line.nhan_hieu"/></td>
+                        <td><t t-esc="line.donvi"/></td>
+                        <td><t t-esc="line.dv_muahang"/></td>
+                        <td><t t-esc="line.don_vi_tinh2"/></td>
+                        <td><t t-esc="line.hs_quydoi"/></td>
+                        <td><t t-esc="line.mau_co_ban"/></td>
+                        <td><t t-esc="line.mau_sac"/></td>
+                        <td><t t-esc="line.anh_mau"/></td>
+                        <td><t t-esc="line.mau_phoi"/></td>
+                        <td><t t-esc="line.pantone"/></td>
+                        <td><t t-esc="line.mau_ncc"/></td>
+                        <td><t t-esc="line.mau_cu"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td><t t-esc="line.daisize"/></td>
+                        <td><t t-esc="line.kich_thuoc"/></td>
+                        <td><t t-esc="line.trongluong"/></td>
+                        <td><t t-esc="line.khovai"/></td>
+                        <td><t t-esc="line.tai_san_xuat"/></td>
+                        <td><t t-esc="line.expiration_date"/></td>
+                        <td><t t-esc="line.warning_date"/></td>
+                        <td><t t-esc="line.number_days_change_refund"/></td>
+                        <td><t t-esc="line.chat_luong"/></td>
+                        <td><t t-esc="line.nam_san_xuat"/></td>
+                        <td><t t-esc="line.mathietke"/></td>
+                        <td><t t-esc="line.mota_thietke"/></td>
+                        <td><t t-esc="line.nganh_vai"/></td>
+                        <td><t t-esc="line.chat_lieu_vai_chinh"/></td>
+                        <td><t t-esc="line.material_composition"/></td>
+                        <td><t t-esc="line.subclass1"/></td>
+                        <td><t t-esc="line.subclass2"/></td>
+                        <td><t t-esc="line.subclass3"/></td>
+                        <td><t t-esc="line.subclass4"/></td>
+                        <td><t t-esc="line.subclass5"/></td>
+                        <td><t t-esc="line.subclass6"/></td>
+                        <td><t t-esc="line.subclass7"/></td>
+                        <td><t t-esc="line.subclass8"/></td>
+                        <td><t t-esc="line.subclass9"/></td>
+                        <td><t t-esc="line.subclass10"/></td>
+                        <td><t t-esc="line.thuoc_tinh1"/></td>
+                        <td><t t-esc="line.thuoc_tinh2"/></td>
+                        <td><t t-esc="line.muc_dich_su_dung"/></td>
+                        <td><t t-esc="line.bosuutap"/></td>
+                        <td><t t-esc="line.nha_thiet_ke"/></td>
+                        <td><t t-esc="line.xuat_xu"/></td>
+                        <td><t t-esc="line.mua_vu"/></td>
+                        <td><t t-esc="line.loai_hang_hoa"/></td>
+                        <td><t t-esc="line.user_manual"/></td>
+                        <td><t t-esc="line.nguon_hang"/></td>
+                        <td><t t-esc="line.nhom_sp_dactrung"/></td>
+                        <td><t t-esc="line.kenh_ban_hang"/></td>
+                        <td><t t-esc="line.vung_ban_hang"/></td>
+                        <td><t t-esc="line.tem_nhan"/></td>
+                        <td><t t-esc="line.ghichu"/></td>
+                        <td><t t-esc="line.san_pham_tach_ma"/></td>
+                        <td><t t-esc="line.menh_gia"/></td>
+                        <td><t t-esc="line.cotheban"/></td>
+                        <td><t t-esc="line.cothemua"/></td>
+                        <td><t t-esc="line.khadung_pos"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

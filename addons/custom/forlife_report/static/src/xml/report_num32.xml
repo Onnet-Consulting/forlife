@@ -79,6 +79,7 @@
                         <tr>
                             <th style="text-align: center;">STT</th>
                             <th>Chi nhánh</th>
+                            <th>Ngày</th>
                             <th>Số CT</th>
                             <th style="text-align: center;">Số lượng</th>
                             <th style="text-align: right;">Thành tiền đơn hàng</th>
@@ -99,6 +100,7 @@
                             <tr class="show-history-point-detail" t-att-id="line.id" style="cursor: pointer">
                                 <td style="text-align: center;"><t t-esc="index"/></td>
                                 <td><t t-esc="line.store"/></td>
+                                <td><t t-esc="line.date_order"/></td>
                                 <td><t t-esc="line.ct"/></td>
                                 <td style="text-align: center;"><t t-esc="line.qty"/></td>
                                 <td style="text-align: right;"><t t-esc="format_decimal(line.amount_total,0)"/></td>
