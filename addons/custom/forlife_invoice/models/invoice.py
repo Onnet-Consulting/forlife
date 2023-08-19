@@ -572,16 +572,16 @@ class AccountMove(models.Model):
                            sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
 
 
-    @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
-    def constrains_quantity_line(self):
-        for rec in self:
-            for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
-                for item in nine.move_line_ids_without_package:
-                    if line.ware_id == item.id and (line.quantity < 0 or item.qty_done < 0):
-                        raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
-                    if line.ware_id == item.id and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
-                        if line.quantity > item.qty_done:
-                            raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+    # @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
+    # def constrains_quantity_line(self):
+    #     for rec in self:
+    #         for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
+    #             for item in nine.move_line_ids_without_package:
+    #                 if line.ware_id == item.id and (line.quantity < 0 or item.qty_done < 0):
+    #                     raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
+    #                 if line.ware_id == item.id and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+    #                     if line.quantity > item.qty_done:
+    #                         raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
 
     # @api.onchange('invoice_line_ids')
@@ -940,7 +940,7 @@ class AccountMoveLine(models.Model):
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
     po_id = fields.Char('')
-    ware_id = fields.Many2one('stock.move.line')
+    stock_move_id = fields.Many2one('stock.move')
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
@@ -1225,9 +1225,9 @@ class AccountMoveLine(models.Model):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
 
-        if self.quantity_purchased > self.ware_id.qty_done/(self.exchange_quantity or 1) and self.ware_id and self.ware_id.qty_done:
-            qty_in = self.ware_id.qty_done/(self.exchange_quantity or 1)
-            raise ValidationError(_('Số lượng vượt quá số lượng hoàn thành nhập kho (%s)!' % str(qty_in)))
+        if self.quantity_purchased > self.stock_move_id.quantity_done/(self.exchange_quantity or 1) and self.stock_move_id and self.stock_move_id.quantity_done:
+            qty_in = self.stock_move_id.quantity_done/(self.exchange_quantity or 1)
+            raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
     def create(self, list_vals):

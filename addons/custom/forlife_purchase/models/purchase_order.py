@@ -823,7 +823,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_normal_yes_return(self, order, line, wave_item):
         data_line = {
-            'ware_id': wave_item.id,
+            # 'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
@@ -854,17 +854,17 @@ class PurchaseOrder(models.Model):
         }
         return data_line
 
-    def _prepare_invoice_normal(self, line, move_line_id):
+    def _prepare_invoice_normal(self, line, stock_move_id):
         data_line = {
-            'ware_id': move_line_id.id,
-            'ware_name': move_line_id.picking_id.name,
+            'stock_move_id': stock_move_id.id,
+            'ware_name': stock_move_id.picking_id.name,
             'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
             'purchase_uom': line.purchase_uom.id,
-            'quantity': move_line_id.qty_done,
+            'quantity': stock_move_id.quantity_done,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
             'discount': line.discount_percent,
@@ -872,7 +872,7 @@ class PurchaseOrder(models.Model):
             'quantity_purchased': line.purchase_quantity,
             'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
-            'tax_amount': line.price_tax * (line.qty_received / line.product_qty) if line.product_qty > 0 else 0,
+            'tax_amount': line.price_tax * (stock_move_id.quantity_done / line.product_qty) if line.product_qty > 0 else 0,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
             'total_vnd_amount': line.price_subtotal * self.exchange_rate,
@@ -889,7 +889,7 @@ class PurchaseOrder(models.Model):
         cp += ((line.total_vnd_amount / sum(order.order_line.mapped('total_vnd_amount'))) * (
                     (wave_item.qty_done - x_return.qty_done) / line.purchase_quantity)) * nine.vnd_amount
         data_line = {
-            'ware_id': wave_item.id,
+            # 'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line.id,
             'product_id': nine.product_id.id,
@@ -936,8 +936,8 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_labor_no_return(self, line_id, material_line, wave_item, x_return):
         data_line = {
-            'ware_id': wave_item.id,
-            'ware_name': wave_item.picking_id.name,
+            # 'ware_id': wave_item.id,
+            # 'ware_name': wave_item.picking_id.name,
             'po_id': line_id.id,
             'product_id': material_line.product_id.id,
             'description': material_line.product_id.name,
@@ -959,7 +959,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_labor(self, line_id, material_line, wave_item):
         data_line = {
-            'ware_id': wave_item.id,
+            # 'ware_id': wave_item.id,
             'ware_name': wave_item.picking_id.name,
             'po_id': line_id.id,
             'product_id': material_line.product_id.id,
@@ -1036,7 +1036,7 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_normal_control_len(self, order, line, matching_item, quantity):
         data_line = {
-            'ware_id': matching_item.id,
+            # 'ware_id': matching_item.id,
             'ware_name': matching_item.picking_id.name,
             'po_id': line.id,
             'product_id': matching_item.product_id.id,
@@ -1412,41 +1412,44 @@ class PurchaseOrder(models.Model):
         sequence = 10
         picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
         return_picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
+        return_po_picking_ids = self.return_purchase_ids.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         pending_section = None
-        if not picking_ids:
-            return UserError(_('Không có đơn nhập kho nào để lên hóa đơn,. Vui lòng kiểm tra lại!'))
         for line in self.order_line:
-            move_line_ids = picking_ids.move_line_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            move_line_refund_ids = return_picking_ids.move_line_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            qty_refunded = sum(move_line_ids.mapped('qty_refunded'))
-            qty_to_refund = sum(move_line_refund_ids.mapped('qty_done')) - qty_refunded
-            for move_line_id in move_line_ids.filtered(lambda x: x.qty_done - x.qty_invoiced - qty_to_refund > 0):
-                if move_line_id.qty_done - move_line_id.qty_invoiced - qty_to_refund > 0:
-                    data_line = self._prepare_invoice_normal(line, move_line_id)
-                    quantity = move_line_id.qty_done - qty_to_refund
-                    move_line_id.write({
-                        'qty_invoiced': quantity,
-                        'qty_refunded': qty_to_refund,
-                    })
-                    if line.display_type == 'line_section':
-                        pending_section = line
-                        continue
-                    if pending_section:
-                        line_vals = pending_section._prepare_account_move_line()
-                        line_vals['quantity'] = quantity
-                        line_vals.update(data_line)
-                        line_vals.update({'sequence': sequence})
-                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                        sequence += 1
-                        pending_section = None
-
-                    line_vals = line._prepare_account_move_line()
-                    line_vals['quantity'] = quantity
+            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            move_refund_ids = return_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            move_po_refund_ids = return_po_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
+            qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) + sum(move_po_refund_ids.mapped('quantity_done')) - qty_refunded
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+                data_line = self._prepare_invoice_normal(line, move_id)
+                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
+                move_id.write({
+                    'qty_invoiced': quantity,
+                    'qty_refunded': qty_to_refund,
+                })
+                if line.display_type == 'line_section':
+                    pending_section = line
+                    continue
+                if pending_section:
+                    line_vals = pending_section._prepare_account_move_line()
                     line_vals.update(data_line)
+                    line_vals['quantity'] = quantity
+                    line_vals['quantity_purchased'] = quantity/line_vals['exchange_quantity']
                     line_vals.update({'sequence': sequence})
                     invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                     sequence += 1
-                    invoice_vals_list.append(invoice_vals)
+                    pending_section = None
+
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                line_vals['quantity'] = quantity
+                line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
+                line_vals.update({'sequence': sequence})
+                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                sequence += 1
+        if not invoice_vals.get('invoice_line_ids', False):
+            raise UserError(_('Tất cả các phiếu nhập kho đã được lên hóa đơn. Vui lòng kiểm tra lại!'))
+        invoice_vals_list.append(invoice_vals)
 
     def create_multi_invoice_vendor(self):
         sequence = 10
@@ -1646,8 +1649,8 @@ class PurchaseOrder(models.Model):
         if not self.partner_id.property_stock_supplier.id:
             raise UserError(_("You must set a Vendor Location for this partner %s", self.partner_id.name))
         location_ids = self.order_line.mapped('location_id')
-        if self.location_id:
-            location_ids |= self.location_id
+        # if self.location_id:
+        #     location_ids |= self.location_id
         if not location_ids:
             return {
                 'picking_type_id': self.picking_type_id.id,
@@ -2347,6 +2350,11 @@ class PurchaseOrderLine(models.Model):
         if not location_dest_id:
             location_dest_id = (self.orderpoint_id and not (
                 self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+        if not self.order_id.is_return:
+            picking_id = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
+        else:
+            picking_id = picking.filtered(lambda p: p.location_id and p.location_id.id == location_dest_id)
+
         return {
             # truncate to 2000 to avoid triggering index limit error
             # TODO: remove index in master?
@@ -2356,7 +2364,7 @@ class PurchaseOrderLine(models.Model):
             'date_deadline': date_planned,
             'location_id': self.order_id.partner_id.property_stock_supplier.id,
             'location_dest_id': location_dest_id,
-            'picking_id': picking.id,
+            'picking_id': picking_id.id,
             'partner_id': self.order_id.dest_address_id.id,
             'move_dest_ids': [(4, x) for x in self.move_dest_ids.ids],
             'state': 'draft',
