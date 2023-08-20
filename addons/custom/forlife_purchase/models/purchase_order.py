@@ -1342,23 +1342,23 @@ class PurchaseOrder(models.Model):
             for vals in invoice_vals_list:
                 moves |= AccountMove.with_company(vals['company_id']).create(vals)
             for master in moves:
-                master.purchase_order_product_id = [(6, 0, [self.id])]
-                domain = [('origin', 'in', master.purchase_order_product_id.mapped('name')),
-                          ('state', '=', 'done'),
-                          ('x_is_check_return', '=', False),
-                          ('picking_type_id.code', '=', 'incoming')
-                          ]
-                picking_expense_in = self.env['stock.picking'].search(domain + [('expense_check', '=', True)])
-                picking_labor_in = self.env['stock.picking'].search(domain + [('labor_check', '=', True)])
-                picking_normal_in = self.env['stock.picking'].search(domain + [('ware_check', '=', True)])
-                if picking_expense_in:
-                    master.receiving_warehouse_id = [(6, 0, picking_expense_in.ids)]
-                if picking_labor_in:
-                    master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
-                if picking_normal_in:
-                    master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
-                if not picking_expense_in and not picking_labor_in and not picking_normal_in:
-                    master.receiving_warehouse_id = [(6, 0, [])]
+                # master.purchase_order_product_id = [(6, 0, [self.id])]
+                # domain = [('origin', 'in', master.purchase_order_product_id.mapped('name')),
+                #           ('state', '=', 'done'),
+                #           ('x_is_check_return', '=', False),
+                #           ('picking_type_id.code', '=', 'incoming')
+                #           ]
+                # picking_expense_in = self.env['stock.picking'].search(domain + [('expense_check', '=', True)])
+                # picking_labor_in = self.env['stock.picking'].search(domain + [('labor_check', '=', True)])
+                # picking_normal_in = self.env['stock.picking'].search(domain + [('ware_check', '=', True)])
+                # if picking_expense_in:
+                #     master.receiving_warehouse_id = [(6, 0, picking_expense_in.ids)]
+                # if picking_labor_in:
+                #     master.receiving_warehouse_id = [(6, 0, picking_labor_in.ids)]
+                # if picking_normal_in:
+                #     master.receiving_warehouse_id = [(6, 0, picking_normal_in.ids)]
+                # if not picking_expense_in and not picking_labor_in and not picking_normal_in:
+                #     master.receiving_warehouse_id = [(6, 0, [])]
 
                 products = []
                 product_expenses = []
@@ -1420,11 +1420,13 @@ class PurchaseOrder(models.Model):
         picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
         return_picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         pending_section = None
+        receiving_warehouse_ids = []
         for line in self.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             move_refund_ids = return_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
             qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) - qty_refunded
+            receiving_warehouse_ids += move_refund_ids.picking_id.ids
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0).sorted():
                 data_line = self._prepare_invoice_normal(line, move_id)
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
@@ -1435,6 +1437,7 @@ class PurchaseOrder(models.Model):
                     })
                     qty_to_refund -= move_id.quantity_done - move_id.qty_invoiced
                     continue
+                receiving_warehouse_ids.append(move_id.picking_id.id)
                 move_id.write({
                     'qty_invoiced': quantity,
                     'qty_refunded': qty_to_refund,
@@ -1463,6 +1466,7 @@ class PurchaseOrder(models.Model):
                 sequence += 1
         if not invoice_vals.get('invoice_line_ids', False):
             raise UserError(_('Tất cả các phiếu nhập kho đã được lên hóa đơn. Vui lòng kiểm tra lại!'))
+        invoice_vals['receiving_warehouse_id'] = [(6, 0, receiving_warehouse_ids)]
         invoice_vals_list.append(invoice_vals)
 
     def create_multi_invoice_vendor(self):
