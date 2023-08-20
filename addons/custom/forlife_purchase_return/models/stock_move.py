@@ -16,6 +16,7 @@ class StockMove(models.Model):
                 'occasion_code_id': self.purchase_line_id.occasion_code_id.id,
                 'work_production': self.purchase_line_id.production_id.id,
                 'account_analytic_id': self.purchase_line_id.account_analytic_id.id,
+                'quantity_purchase_done': quantity / self.quantity_change,
             })
             if self.picking_id.x_is_check_return:
                 vals.update({
