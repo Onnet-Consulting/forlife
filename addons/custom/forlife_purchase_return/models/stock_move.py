@@ -18,10 +18,6 @@ class StockMove(models.Model):
                 'account_analytic_id': self.purchase_line_id.account_analytic_id.id,
                 'quantity_purchase_done': quantity / self.quantity_change,
             })
-            if not self.purchase_line_id.order_id.is_return:
-                vals.update({
-                    'qty_done': quantity,
-                })
             if self.picking_id.x_is_check_return:
                 vals.update({
                     'quantity_change': self.purchase_line_id.exchange_quantity,
