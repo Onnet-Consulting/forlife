@@ -1424,32 +1424,20 @@ class PurchaseOrder(models.Model):
     def _create_invoice_normal_purchase_type_product(self, invoice_vals_list, invoice_vals):
         sequence = 10
         picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
-        return_picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         pending_section = None
         receiving_warehouse_ids = []
         for line in self.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            move_refund_ids = return_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
-            qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) - qty_refunded
-            receiving_warehouse_ids += move_refund_ids.picking_id.ids
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0).sorted():
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = self._prepare_invoice_normal(line, move_id)
-                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
+                qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
+                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
                 if quantity <= 0:
-                    move_id.write({
-                        'qty_invoiced': 0,
-                        'qty_refunded': move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded,
-                    })
-                    qty_to_refund -= move_id.quantity_done - move_id.qty_invoiced
                     continue
                 receiving_warehouse_ids.append(move_id.picking_id.id)
-                move_id.write({
-                    'qty_invoiced': quantity,
-                    'qty_refunded': qty_to_refund,
-                })
-                if quantity > 0:
-                    qty_to_refund = 0
+                receiving_warehouse_ids += move_id.returned_move_ids.filtered(lambda x: x.state == 'done').picking_id.ids
+                move_id.qty_invoiced += quantity
+                move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
                     continue
