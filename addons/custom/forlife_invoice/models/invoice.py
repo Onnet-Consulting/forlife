@@ -246,11 +246,14 @@ class AccountMove(models.Model):
 
     def insert_data(self):
         self.ensure_one()
+        if not self.receiving_warehouse_id:
+            raise ValidationError('Vui lòng chọn phiếu Nhập kho!')
+        purchase_order_id = self.purchase_order_product_id or self.receiving_warehouse_id.purchase_id
+        if not self.purchase_order_product_id:
+            self.purchase_order_product_id = [(6, 0, purchase_order_id.ids)]
         AccountMoveLine = self.env['account.move.line']
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
-
-        purchase_order_id = self.purchase_order_product_id
         self.write({
             'invoice_line_ids': False,
             'account_expense_labor_detail_ids': False,
@@ -258,13 +261,11 @@ class AccountMove(models.Model):
             'vendor_back_ids': False,
             'cost_line': False,
         })
-        if not self.purchase_order_product_id:
-            self.purchase_order_product_id = [(6, 0, purchase_order_id.ids)]
         picking_ids = self.receiving_warehouse_id
         pending_section = None
         if not self.partner_id:
             raise ValidationError('Vui lòng chọn Nhà cung cấp!')
-        if not purchase_order_id:
+        if not self.purchase_order_product_id:
             raise ValidationError('Vui lòng chọn ít nhất 1 Đơn mua hàng!')
         #  nếu tạo hoá đơn chi phí
         if self.select_type_inv == 'expense':
@@ -562,6 +563,13 @@ class AccountMove(models.Model):
                     rec.purchase_type = 'service'
                 else:
                     rec.purchase_type = 'product'
+            if rec.receiving_warehouse_id:
+                picking_id = rec.receiving_warehouse_id[-1]
+                if not picking_id.x_is_check_return:
+                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True)])
+                    rec.receiving_warehouse_id |= picking_return_id
+
+
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
     def constrains_total_vnd_amount(self):
