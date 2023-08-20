@@ -22,10 +22,6 @@ class AccountMove(models.Model):
                 rec.receiving_warehouse_id.write({
                     'ware_check': True
                 })
-            for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
-                invoice_line_id.stock_move_id.write({
-                    'qty_invoiced': invoice_line_id.quantity
-                })
         res = super(AccountMove, self).action_post()
         return res
 
@@ -36,8 +32,11 @@ class AccountMove(models.Model):
                     'ware_check': False
                 })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
+                qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
+                if qty_invoiced <= 0:
+                    qty_invoiced = 0
                 invoice_line_id.stock_move_id.write({
-                    'qty_invoiced': 0,
+                    'qty_invoiced': qty_invoiced,
                     'qty_refunded': 0,
                 })
         return super(AccountMove, self).button_cancel()
@@ -49,8 +48,11 @@ class AccountMove(models.Model):
                     'ware_check': False
                 })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
+                qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
+                if qty_invoiced <= 0:
+                    qty_invoiced = 0
                 invoice_line_id.stock_move_id.write({
-                    'qty_invoiced': 0,
+                    'qty_invoiced': qty_invoiced,
                     'qty_refunded': 0,
                 })
         return super(AccountMove, self).unlink()

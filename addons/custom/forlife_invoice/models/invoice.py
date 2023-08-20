@@ -421,26 +421,14 @@ class AccountMove(models.Model):
             return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
             for line in purchase_order_id.order_line:
                 stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-                move_refund_ids = return_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-                qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
-                qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) - qty_refunded
-
-                for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0).sorted():
+                for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
                     data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
-                    quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
+                    qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
+                    quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
                     if quantity <= 0:
-                        move_id.write({
-                            'qty_invoiced': 0,
-                            'qty_refunded': move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded,
-                        })
-                        qty_to_refund -= move_id.quantity_done - move_id.qty_invoiced
                         continue
-                    move_id.write({
-                        'qty_invoiced': quantity,
-                        'qty_refunded': qty_to_refund,
-                    })
-                    if quantity > 0:
-                        qty_to_refund = 0
+                    move_id.qty_invoiced += quantity
+                    move_id.qty_refunded = qty_returned
                     if line.display_type == 'line_section':
                         pending_section = line
                         continue
@@ -1241,10 +1229,15 @@ class AccountMoveLine(models.Model):
     def onchange_quantity(self):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
+        if self.stock_move_id:
+            if self.quantity != self._origin.quantity:
+                quantity_diff = self.quantity - self._origin.quantity
+                self.stock_move_id.qty_invoiced += quantity_diff
+            qty_returned = sum(self.stock_move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
 
-        if self.quantity_purchased > self.stock_move_id.quantity_done/(self.exchange_quantity or 1) and self.stock_move_id and self.stock_move_id.quantity_done:
-            qty_in = self.stock_move_id.quantity_done/(self.exchange_quantity or 1)
-            raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
+            if self.quantity_purchased > (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1):
+                qty_in = (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1)
+                raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
     def create(self, list_vals):
