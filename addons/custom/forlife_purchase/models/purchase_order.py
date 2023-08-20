@@ -388,8 +388,7 @@ class PurchaseOrder(models.Model):
 
     def compute_count_delivery_import_inter_company(self):
         for item in self:
-            item.count_delivery_import_inter_company = self.env['stock.picking'].search_count(
-                [('origin', '=', item.name)])
+            item.count_delivery_import_inter_company = self.env['stock.picking'].search_count([('origin', '=', item.name)])
 
     def compute_count_invoice_inter_company_ncc(self):
         for item in self:
@@ -401,18 +400,18 @@ class PurchaseOrder(models.Model):
 
     def compute_count_invoice_inter_normal_fix(self):
         for rec in self:
-            domain_moves_normal = [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]
+            domain_moves_normal = [('purchase_order_product_id', 'in', rec.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'normal')]
             rec.count_invoice_inter_normal_fix = self.env['account.move'].search_count(domain_moves_normal)
 
     def compute_count_invoice_inter_expense_fix(self):
         for rec in self:
-            rec.count_invoice_inter_expense_fix = self.env['account.move'].search_count(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'expense')])
+            domain = [('purchase_order_product_id', 'in', rec.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'expense')]
+            rec.count_invoice_inter_expense_fix = self.env['account.move'].search_count(domain)
 
     def compute_count_invoice_inter_labor_fix(self):
         for rec in self:
-            rec.count_invoice_inter_labor_fix = self.env['account.move'].search_count(
-                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'labor')])
+            domain = [('purchase_order_product_id', 'in', rec.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'labor')]
+            rec.count_invoice_inter_labor_fix = self.env['account.move'].search_count(domain)
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
@@ -747,6 +746,14 @@ class PurchaseOrder(models.Model):
                 raise ValidationError(message)
         return purchases
 
+    def write(self, vals):
+        res = super(PurchaseOrder, self).write(vals)
+        for purchase_id in self.filtered(lambda x: not x.is_inter_company and x.state == 'draft'):
+            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
+                message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
+                raise ValidationError(message)
+        return res
+
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
         order_line_ids = []
@@ -816,7 +823,6 @@ class PurchaseOrder(models.Model):
 
     def action_view_invoice_service_new(self):
         move_ids = self.env['account.move'].search([
-            ('purchase_order_product_id', 'in', self.ids),
             ('move_type', '=', 'in_invoice'),
             ('select_type_inv', '=', 'service')]
         )
