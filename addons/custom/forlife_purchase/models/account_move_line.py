@@ -7,3 +7,11 @@ class AccountMoveLine(models.Model):
 
     # fields lưu giá trị product chi phí cho hac toán phân bổ chi phí mua hàng
     product_expense_origin_id = fields.Many2one('product.product', string='Product Expense Origin')
+
+    def unlink(self):
+        for invoice_line_id in self.filtered(lambda x: x.stock_move_id):
+            invoice_line_id.stock_move_id.write({
+                'qty_invoiced': 0,
+                'qty_refunded': 0,
+            })
+        return super(AccountMoveLine, self).unlink()
