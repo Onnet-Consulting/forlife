@@ -1200,7 +1200,7 @@ class PurchaseOrder(models.Model):
                     #                     invoice_vals_list.append(invoice_vals)
                     else:
                         raise UserError(_('Đơn mua không có chi phí nhân công và npl!'))
-                elif order.select_type_inv == 'expense':
+                if order.select_type_inv == 'expense':
                     domain_expense = [('origin', '=', order.name),
                                       ('state', '=', 'done'),
                                       ('expense_check', '=', True),
@@ -1259,7 +1259,6 @@ class PurchaseOrder(models.Model):
                             invoice_vals_list.append(invoice_vals)
                     else:
                         raise UserError(_('Đơn mua không có chi phí!'))
-
                 if order.select_type_inv == 'normal':
                     if self.purchase_type not in ('service', 'asset'):
                         order._create_invoice_normal_purchase_type_product(invoice_vals_list, invoice_vals)
@@ -1420,14 +1419,12 @@ class PurchaseOrder(models.Model):
         sequence = 10
         picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
         return_picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
-        return_po_picking_ids = self.return_purchase_ids.picking_ids.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         pending_section = None
         for line in self.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             move_refund_ids = return_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            move_po_refund_ids = return_po_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
-            qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) + sum(move_po_refund_ids.mapped('quantity_done')) - qty_refunded
+            qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) - qty_refunded
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0).sorted():
                 data_line = self._prepare_invoice_normal(line, move_id)
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
