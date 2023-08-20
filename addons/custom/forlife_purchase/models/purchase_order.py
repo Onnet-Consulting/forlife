@@ -1428,13 +1428,22 @@ class PurchaseOrder(models.Model):
             move_po_refund_ids = return_po_picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             qty_refunded = sum(stock_move_ids.mapped('qty_refunded'))
             qty_to_refund = sum(move_refund_ids.mapped('quantity_done')) + sum(move_po_refund_ids.mapped('quantity_done')) - qty_refunded
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0).sorted():
                 data_line = self._prepare_invoice_normal(line, move_id)
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded - qty_to_refund
+                if quantity <= 0:
+                    move_id.write({
+                        'qty_invoiced': 0,
+                        'qty_refunded': move_id.quantity_done - move_id.qty_invoiced - move_id.qty_refunded,
+                    })
+                    qty_to_refund -= move_id.quantity_done - move_id.qty_invoiced
+                    continue
                 move_id.write({
                     'qty_invoiced': quantity,
                     'qty_refunded': qty_to_refund,
                 })
+                if quantity > 0:
+                    qty_to_refund = 0
                 if line.display_type == 'line_section':
                     pending_section = line
                     continue
