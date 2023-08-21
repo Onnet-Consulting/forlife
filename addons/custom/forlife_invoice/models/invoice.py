@@ -897,20 +897,12 @@ class AccountMoveLine(models.Model):
                                       store=1)
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
-    amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_amount_tax',
-                              store=1)
+    amount_tax = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_amount_tax', store=1, readonly=0)
     special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
-    special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
-                                                  compute='_compute_special_consumption_tax_amount',
-                                                  store=1)
+    special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt', compute='_compute_special_consumption_tax_amount', store=1, readonly=0)
     vat_tax = fields.Float(string='% Thuế GTGT')
-    vat_tax_amount = fields.Float(string='Thuế GTGT',
-                                  compute='_compute_vat_tax_amount',
-                                  store=1)
-    total_tax_amount = fields.Float(string='Tổng tiền thuế',
-                                    compute='compute_total_tax_amount',
-                                    store=1)
+    vat_tax_amount = fields.Float(string='Thuế GTGT', compute='_compute_vat_tax_amount', store=1, readonly=0)
+    total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_total_tax_amount', store=1, readonly=0)
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
                               compute='_compute_before_tax',
@@ -1012,12 +1004,14 @@ class AccountMoveLine(models.Model):
     @api.depends('amount_tax', 'special_consumption_tax')
     def _compute_special_consumption_tax_amount(self):
         for rec in self:
-            rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
+            if rec.amount_tax == rec.total_vnd_exchange * rec.import_tax / 100:
+                rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
 
     @api.depends('special_consumption_tax_amount', 'vat_tax')
     def _compute_vat_tax_amount(self):
         for rec in self:
-            rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
+            if rec.special_consumption_tax_amount == (rec.total_vnd_exchange + (rec.total_vnd_exchange * rec.import_tax / 100)) * rec.special_consumption_tax / 100:
+                rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
 
     @api.depends('vat_tax_amount')
     def compute_total_tax_amount(self):
@@ -1061,8 +1055,9 @@ class AccountMoveLine(models.Model):
                 sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
                 if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
-                        total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        line.after_tax = total_cost
+                        if sum_vnd_amount + sum_tnk + sum_db > 0:
+                            total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                            line.after_tax = total_cost
                 else:
                     line.after_tax = 0
 

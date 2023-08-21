@@ -26,7 +26,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vat_tax
 #: model_terms:ir.ui.view,arch_db:forlife_invoice.inherit_vendor_invoice_form_view
 msgid "% Thuế GTGT"
-msgstr "Tiền thuế"
+msgstr "% Thuế GTGT"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__import_tax
@@ -926,7 +926,7 @@ msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vat_tax_amount
-msgid "Thuế GTGT"
+msgid "Tiền thuế GTGT"
 msgstr ""
 
 #. module: forlife_invoice
