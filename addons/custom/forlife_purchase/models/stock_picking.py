@@ -322,6 +322,7 @@ class StockPicking(models.Model):
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
                 move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
+                qty_po_done = sum(move.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
@@ -407,8 +408,6 @@ class StockPicking(models.Model):
                     new_lines_cp_after_tax = [lines for text_check, lines in separated_lists.items()]
                     for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
                         invoice_line_ids.extend(sublist_lines_cp_after_tax)
-
-                    qty_po_done = sum(move.mapped('quantity_done'))
                     svl_values = []
                     svl_values.append((0, 0, {
                         'value': debit_cost,
@@ -460,7 +459,6 @@ class StockPicking(models.Model):
                         total_npl_amount += allowcation_npl[2]['debit']
                     merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
                     if merged_records_list_allowcation_npl:
-                        qty_po_done = sum(move.mapped('quantity_done'))
                         svl_allowcation_values = []
                         svl_allowcation_values.append((0, 0, {
                             'value': total_npl_amount,
