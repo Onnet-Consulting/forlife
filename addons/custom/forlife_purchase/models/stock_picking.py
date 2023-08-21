@@ -321,7 +321,9 @@ class StockPicking(models.Model):
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
             for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
-                move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
+                # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', record.id)])
+                move = record.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
+                if not move: continue
                 qty_po_done = sum(move.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
