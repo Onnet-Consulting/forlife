@@ -2315,6 +2315,11 @@ class PurchaseOrderLine(models.Model):
             if not line.name or line.name in default_names:
                 product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
                 line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+                
+            line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                               self.env[
+                                                                                   'decimal.precision'].precision_get(
+                                                                                   'Product Price')))
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):

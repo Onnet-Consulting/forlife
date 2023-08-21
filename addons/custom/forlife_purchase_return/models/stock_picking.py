@@ -60,7 +60,7 @@ class StockPicking(models.Model):
     def prepare_move_values(self, line, amount, product_tax):
         qty_po_origin = line.product_qty
         move_values = []
-        moves = self.move_ids.filtered(lambda x: x.purchase_line_id.id in line.id)
+        moves = self.move_ids.filtered(lambda x: x.purchase_line_id.id == line.id)
         for move in moves:
             qty_po_done = sum(move.mapped('quantity_done'))
             po = line.order_id

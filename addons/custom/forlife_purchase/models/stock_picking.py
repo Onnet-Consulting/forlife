@@ -352,13 +352,11 @@ class StockPicking(models.Model):
                             'price_unit': material_line.price_unit,
                             'location_id': po.location_export_material_id.id,
                             'location_dest_id': export_production_order.id,
-                            'product_uom_qty': r.quantity_done / item.purchase_quantity * material_line.product_qty,
-                            'quantity_done': r.quantity_done / item.purchase_quantity * material_line.product_qty,
+                            'product_uom_qty': r.quantity_done / item.product_qty * material_line.product_qty,
+                            'quantity_done': r.quantity_done / item.product_qty * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
                             'reason_id': export_production_order.id,
                         }))
-                        if record.state == 'done':
-                            self.create_xk_picking(po, record, list_line_xk, export_production_order)
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
@@ -381,7 +379,8 @@ class StockPicking(models.Model):
                                     'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                                 })
                                 list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
-
+                if record.state == 'done':
+                    self.create_xk_picking(po, record, list_line_xk, export_production_order)
                 if debit_cost > 0:
                     debit_cp = (0, 0, {
                         'sequence': 9,
