@@ -304,7 +304,7 @@ class Voucher(models.Model):
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
         if 'import_file' in self._context and self._context.get('import_file'):
             if 'phone_number' in vals_list and vals_list['phone_number']:
