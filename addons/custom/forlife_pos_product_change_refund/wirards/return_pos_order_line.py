@@ -8,11 +8,16 @@ class InheritPosOrderLine(models.Model):
     product_barcode = fields.Char(related='product_id.barcode', string='Mã vạch')
     product_name = fields.Char(related='product_id.name', string='Tên sản phẩm')
     total_amount_discount = fields.Float(compute='compute_total_amount_discount')
+    qty_unreturned = fields.Float(string='Số lượng được trả', compute='compute_unreturned')
 
     @api.depends('discount_details_lines.money_reduced')
     def compute_total_amount_discount(self):
         for rec in self:
             rec.total_amount_discount = sum(rec.discount_details_lines.mapped('money_reduced'))
+
+    def compute_unreturned(self):
+        for rec in self:
+            rec.qty_unreturned = rec.qty - rec.refunded_qty
 
     @api.depends('promotion_usage_ids.program_id')
     def get_code_promotion_code(self):
