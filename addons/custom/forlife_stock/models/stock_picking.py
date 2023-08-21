@@ -334,7 +334,7 @@ class StockPicking(models.Model):
                 item.move_line_ids.write({'date': item.date_done})
 
         if "import_file" in self.env.context:
-            for line in self.move_line_ids_without_package:
+            for line in self.move_line_ids_without_package.filtered(lambda x: x.quantity_purchase_done and x.quantity_change):
                 if line.qty_done != line.quantity_purchase_done * line.quantity_change:
                     line.qty_done = line.quantity_purchase_done * line.quantity_change
 
