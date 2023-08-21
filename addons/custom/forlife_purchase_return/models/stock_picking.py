@@ -277,7 +277,7 @@ class StockPicking(models.Model):
             move = False
             ### Tìm kho xuất
             picking_type_id, export_production_order = self._get_picking_info_return(po)
-            account_export_production_order = export_production_order.x_property_valuation_in_account_id
+            account_export_production_order = export_production_order.x_property_valuation_out_account_id
             for item, r in zip(po.order_line_production_order, self.move_ids_without_package):
                 move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
