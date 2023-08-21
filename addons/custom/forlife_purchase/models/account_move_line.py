@@ -15,6 +15,7 @@ class AccountMoveLine(models.Model):
                 qty_invoiced = 0
             invoice_line_id.stock_move_id.write({
                 'qty_invoiced': qty_invoiced,
+                'qty_to_invoice': 0,
                 'qty_refunded': 0,
             })
         return super(AccountMoveLine, self).unlink()
