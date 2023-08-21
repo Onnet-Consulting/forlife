@@ -1132,8 +1132,8 @@ class AccountMoveLine(models.Model):
                 self.stock_move_id.qty_invoiced += quantity_diff
             qty_returned = sum(self.stock_move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
 
-            if self.quantity_purchased > (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1):
-                qty_in = (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1)
+            if self.quantity_purchased > (self.stock_move_id.quantity_done - (self.stock_move_id.qty_invoiced + qty_returned))/(self.exchange_quantity or 1):
+                qty_in = (self.stock_move_id.quantity_done - (self.stock_move_id.qty_invoiced + qty_returned))/(self.exchange_quantity or 1)
                 raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi

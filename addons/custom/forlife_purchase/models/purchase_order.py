@@ -737,15 +737,6 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
-    @api.model_create_multi
-    def create(self, vals):
-        purchases = super(PurchaseOrder, self).create(vals)
-        for purchase_id in purchases.filtered(lambda x: not x.is_inter_company):
-            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
-                message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
-                raise ValidationError(message)
-        return purchases
-
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         for purchase_id in self.filtered(lambda x: not x.is_inter_company and x.state == 'draft'):
