@@ -160,6 +160,7 @@ class StockPicking(models.Model):
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
+                'stock_move_id': move.id,
                 'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
                 'exchange_rate': po.exchange_rate,
                 'date': datetime.now(),
@@ -252,6 +253,7 @@ class StockPicking(models.Model):
                     'invoice_payment_term_id': po.payment_term_id.id,
                     'invoice_date_due': po.date_planned,
                     'restrict_mode_hash_table': False,
+                    'stock_move_id': move.id,
                     'stock_valuation_layer_ids': [(0, 0, {
                         'value': round(unit_cost * sp_total_qty),
                         'unit_cost': unit_cost,
@@ -430,6 +432,7 @@ class StockPicking(models.Model):
                         'date': datetime.now(),
                         'invoice_payment_term_id': po.payment_term_id.id,
                         'invoice_date_due': po.date_planned,
+                        'stock_move_id': move.id,
                         'invoice_line_ids': invoice_line_ids,
                         'restrict_mode_hash_table': False,
                         'stock_valuation_layer_ids': svl_values
@@ -483,6 +486,7 @@ class StockPicking(models.Model):
                         'invoice_date_due': po.date_planned,
                         'invoice_line_ids': merged_records_list_allowcation_npl,
                         'restrict_mode_hash_table': False,
+                        'stock_move_id': move.id,
                         'stock_valuation_layer_ids': svl_allowcation_values
                     })
                     entry_allowcation_npls._post()
