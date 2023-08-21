@@ -53,14 +53,17 @@ class PromotionCampaign(models.Model):
             ('from_date', '<=', fields.Datetime.now()),
         ]
         pl_res_in_progress = self.env["promotion.pricelist.item"].sudo().search(domain)
-        p_tmpl_in_progress = pl_res_in_progress.mapped("product_tmpl_id")
+        not_product_in_progress = False
+        if pl_res_in_progress:
+            product_in_progress = pl_res_in_progress.mapped("product_id")
+            if product_in_progress: 
+                pl_res_close = self.env["promotion.pricelist.item"].sudo().search([
+                    ('campaign_id', 'in', self.ids),
+                    ('product_id', 'not in', product_in_progress.ids)
+                ])
+                not_product_in_progress = True
 
-        if p_tmpl_in_progress: 
-            pl_res_close = self.env["promotion.pricelist.item"].sudo().search([
-                ('campaign_id', 'in', self.ids),
-                ('product_tmpl_id', 'nin', p_tmpl_in_progress.ids)
-            ])
-        else:
+        if not not_product_in_progress:
             pl_res_close = self.env["promotion.pricelist.item"].sudo().search([
                 ('campaign_id', 'in', self.ids)
             ])
