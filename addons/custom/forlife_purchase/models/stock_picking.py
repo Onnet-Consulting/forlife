@@ -172,7 +172,7 @@ class StockPicking(models.Model):
             move_lines = [(0, 0, {
                 'sequence': 1,
                 'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
-                'product_id': line.product_id.id,
+                'product_id': move.product_id.id,
                 'name': product_tax.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': round((amount / qty_po_origin) * qty_po_done),
@@ -267,7 +267,7 @@ class StockPicking(models.Model):
                     'invoice_line_ids': [(0, 0, {
                         'sequence': 1,
                         'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
-                        'product_id': expense.product_id.id,
+                        'product_id': move.product_id.id,
                         'name': expense.product_id.name,
                         'text_check_cp_normal': expense.product_id.name,
                         'credit': round(unit_cost * sp_total_qty),
@@ -339,7 +339,7 @@ class StockPicking(models.Model):
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
-                                'product_id': material_line.product_id.id,
+                                'product_id': move.product_id.id,
                                 'name': material_line.product_id.name,
                                 'text_check_cp_normal': move.product_id.name,
                                 'debit': 0,
@@ -439,57 +439,57 @@ class StockPicking(models.Model):
                     })
                     entry_cp._post()
 
-            if list_allowcation_npls:
-                merged_records_allowcation_npl = {}
-                total_npl_amount = 0
-                for allowcation_npl in list_allowcation_npls:
-                    key = (
-                    allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
-                    if key in merged_records_allowcation_npl:
-                        merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
-                        merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
-                    else:
-                        merged_records_allowcation_npl[key] = {
-                            'sequence': allowcation_npl[2]['sequence'],
-                            'product_id': allowcation_npl[2]['product_id'],
-                            'account_id': allowcation_npl[2]['account_id'],
-                            'name': allowcation_npl[2]['name'],
-                            'debit': allowcation_npl[2]['debit'],
-                            'credit': allowcation_npl[2]['credit'],
-                        }
-                    total_npl_amount += allowcation_npl[2]['debit']
-                merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
-                if merged_records_list_allowcation_npl:
-                    qty_po_done = sum(move.mapped('quantity_done'))
-                    svl_allowcation_values = []
-                    svl_allowcation_values.append((0, 0, {
-                        'value': total_npl_amount,
-                        'unit_cost': total_npl_amount / qty_po_done,
-                        'quantity': 0,
-                        'remaining_qty': 0,
-                        'description': f"{self.name} - {item.product_id.name}",
-                        'product_id': move.product_id.id,
-                        'company_id': self.env.company.id,
-                        'stock_move_id': move.id
-                    }))
-                    if move.product_id.cost_method == 'average':
-                        self.add_cost_product(move.product_id, total_npl_amount)
-                    entry_allowcation_npls = self.env['account.move'].create({
-                        'ref': f"{record.name} - Phân bổ nguyên phụ liệu",
-                        'purchase_type': po.purchase_type,
-                        'move_type': 'entry',
-                        # 'x_entry_types': 'entry_material',
-                        'reference': po.name,
-                        'exchange_rate': po.exchange_rate,
-                        'date': datetime.now(),
-                        'invoice_payment_term_id': po.payment_term_id.id,
-                        'invoice_date_due': po.date_planned,
-                        'invoice_line_ids': merged_records_list_allowcation_npl,
-                        'restrict_mode_hash_table': False,
-                        'stock_move_id': move.id,
-                        'stock_valuation_layer_ids': svl_allowcation_values
-                    })
-                    entry_allowcation_npls._post()
+                if list_allowcation_npls:
+                    merged_records_allowcation_npl = {}
+                    total_npl_amount = 0
+                    for allowcation_npl in list_allowcation_npls:
+                        key = (
+                        allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
+                        if key in merged_records_allowcation_npl:
+                            merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
+                            merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
+                        else:
+                            merged_records_allowcation_npl[key] = {
+                                'sequence': allowcation_npl[2]['sequence'],
+                                'product_id': allowcation_npl[2]['product_id'],
+                                'account_id': allowcation_npl[2]['account_id'],
+                                'name': allowcation_npl[2]['name'],
+                                'debit': allowcation_npl[2]['debit'],
+                                'credit': allowcation_npl[2]['credit'],
+                            }
+                        total_npl_amount += allowcation_npl[2]['debit']
+                    merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
+                    if merged_records_list_allowcation_npl:
+                        qty_po_done = sum(move.mapped('quantity_done'))
+                        svl_allowcation_values = []
+                        svl_allowcation_values.append((0, 0, {
+                            'value': total_npl_amount,
+                            'unit_cost': total_npl_amount / qty_po_done,
+                            'quantity': 0,
+                            'remaining_qty': 0,
+                            'description': f"{self.name} - {item.product_id.name}",
+                            'product_id': move.product_id.id,
+                            'company_id': self.env.company.id,
+                            'stock_move_id': move.id
+                        }))
+                        if move.product_id.cost_method == 'average':
+                            self.add_cost_product(move.product_id, total_npl_amount)
+                        entry_allowcation_npls = self.env['account.move'].create({
+                            'ref': f"{record.name} - Phân bổ nguyên phụ liệu",
+                            'purchase_type': po.purchase_type,
+                            'move_type': 'entry',
+                            # 'x_entry_types': 'entry_material',
+                            'reference': po.name,
+                            'exchange_rate': po.exchange_rate,
+                            'date': datetime.now(),
+                            'invoice_payment_term_id': po.payment_term_id.id,
+                            'invoice_date_due': po.date_planned,
+                            'invoice_line_ids': merged_records_list_allowcation_npl,
+                            'restrict_mode_hash_table': False,
+                            'stock_move_id': move.id,
+                            'stock_valuation_layer_ids': svl_allowcation_values
+                        })
+                        entry_allowcation_npls._post()
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, export_production_order, account_move=None):
