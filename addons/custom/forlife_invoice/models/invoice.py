@@ -858,7 +858,7 @@ class AccountMoveLine(models.Model):
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
     po_id = fields.Char('')
-    stock_move_id = fields.Many2one('stock.move')
+    stock_move_id = fields.Many2one('stock.move', copy=False)
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
