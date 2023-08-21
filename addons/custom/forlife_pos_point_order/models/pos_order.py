@@ -20,6 +20,8 @@ class PosOrder(models.Model):
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point', store=True)
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+    point_usage_move_ids = fields.Many2many(
+        'account.move', 'pos_order_account_move_point_usage', string='Point Usage Move', readonly=True)
     total_order_line_point_used = fields.Integer()
     total_order_line_redisual = fields.Integer()
     allow_for_point = fields.Boolean()
@@ -351,7 +353,6 @@ class PosOrder(models.Model):
             ['|', ('store_ids', 'in', store.id), ('store_ids', '=', False), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date),
              ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
-        print(program_promotion)
         if self._context.get('from_PointsConsumptionPos'):
             dict_point_consumption_ids = []
             for r in program_promotion.point_consumption_ids:
@@ -379,35 +380,62 @@ class PosOrder(models.Model):
     def action_point_addition(self):
         if self.point_addition_move_ids.filtered(lambda m: m.state == 'posted'):
             raise UserError(_('Order had already point addition journal entry posted!'))
-        move_vals = {
+        move_val_default = {
             'ref': self.name,
             'pos_order_id': self.id,
             'move_type': 'entry',
             'date': self.date_order,
             'journal_id': self.program_store_point_id.account_journal_id.id,
-            'company_id': self.company_id.id,
-            'line_ids': [
-                # debit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
-                    'partner_id': self.program_store_point_id.point_customer_id.id,
-                    'debit': (self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines])) * 1000,
-                    'credit': 0.0,
-                }),
-                # credit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.point_customer_id.property_account_receivable_id.id,
-                    'partner_id': self.program_store_point_id.point_customer_id.id,
-                    'debit': 0.0,
-                    'credit': (self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines])) * 1000,
-                }),
-            ]
-
+            'company_id': self.company_id.id
         }
-        move = self.env['account.move'].create(move_vals)._post()
-        self.point_addition_move_ids |= move
+        accumulate_point = (self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
+                        [x.point_addition_event for x in self.lines]))
+        if accumulate_point > 0.0:
+            accumulate_point_move_val = {
+                **move_val_default,
+                'ref': self.name + ' - Tích điểm',
+                'line_ids': [
+                    # debit line
+                    (0, 0, {
+                        'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
+                        'partner_id': self.program_store_point_id.point_customer_id.id,
+                        'debit': accumulate_point * 1000,
+                        'credit': 0.0,
+                    }),
+                    # credit line
+                    (0, 0, {
+                        'account_id': self.program_store_point_id.point_customer_id.property_account_receivable_id.id,
+                        'partner_id': self.program_store_point_id.point_customer_id.id,
+                        'debit': 0.0,
+                        'credit': accumulate_point * 1000,
+                    }),
+                ]
+            }
+            move = self.env['account.move'].create(accumulate_point_move_val)._post()
+            self.point_addition_move_ids |= move
+
+        usage_point = abs(sum([line.point / 1000 for line in self.lines]))
+        if usage_point > 0.0:
+            usage_point_move_val = {
+                **move_val_default,
+                'ref': self.name + ' - Tiêu điểm',
+                'line_ids': [
+                    (0, 0, {
+                        'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
+                        'partner_id': self.program_store_point_id.point_customer_id.id,
+                        'debit': 0.0,
+                        'credit': usage_point * 1000,
+                    }),
+                    (0, 0, {
+                        'account_id': self.program_store_point_id.point_customer_id.property_account_receivable_id.id,
+                        'partner_id': self.program_store_point_id.point_customer_id.id,
+                        'debit': usage_point * 1000,
+                        'credit': 0.0,
+                    }),
+                ]
+            }
+            move = self.env['account.move'].create(usage_point_move_val)._post()
+            self.point_usage_move_ids |= move
         return True
 
     def _export_for_ui(self, order):
