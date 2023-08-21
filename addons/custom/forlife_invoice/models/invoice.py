@@ -249,8 +249,6 @@ class AccountMove(models.Model):
         if not self.receiving_warehouse_id:
             raise ValidationError('Vui lòng chọn phiếu Nhập kho!')
         purchase_order_id = self.purchase_order_product_id or self.receiving_warehouse_id.purchase_id
-        if not self.purchase_order_product_id:
-            self.purchase_order_product_id = [(6, 0, purchase_order_id.ids)]
         AccountMoveLine = self.env['account.move.line']
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
@@ -260,6 +258,7 @@ class AccountMove(models.Model):
             'sum_expense_labor_ids': False,
             'vendor_back_ids': False,
             'cost_line': False,
+            'purchase_order_product_id': [(6, 0, purchase_order_id.ids)],
         })
         picking_ids = self.receiving_warehouse_id
         pending_section = None
@@ -413,47 +412,64 @@ class AccountMove(models.Model):
                     product_lst.append(product_vals)
                 sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
         else:
-            vals_lst = []
-            sequence = 10
-            picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
-            if not picking_ids:
-                raise ValidationError('Vui lòng chọn ít nhất 1 phiếu nhập kho!')
-            return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
-            for line in purchase_order_id.order_line:
-                stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-                for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
-                    data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
-                    qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
-                    quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
-                    if quantity <= 0:
-                        continue
-                    move_id.qty_invoiced += quantity
-                    move_id.qty_refunded = qty_returned
-                    if line.display_type == 'line_section':
-                        pending_section = line
-                        continue
-                    if pending_section:
-                        line_vals = pending_section._prepare_account_move_line()
-                        line_vals.update(data_line)
-                        line_vals['quantity'] = quantity
-                        line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
-                        line_vals.update({'sequence': sequence})
-                        line_vals.update({'move_id': self.id})
-                        pending_section = None
-                        vals_lst.append(line_vals)
-                        sequence += 1
+            self.prepare_move_line_type_invoice_product(purchase_order_id)
 
-                    line_vals = line._prepare_account_move_line()
+    def prepare_move_line_type_invoice_product(self, purchase_order_id):
+        vals_lst = []
+        sequence = 10
+        AccountMoveLine = self.env['account.move.line']
+        pending_section = None
+        picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
+        if not picking_ids:
+            raise ValidationError('Vui lòng chọn ít nhất 1 phiếu nhập kho!')
+        return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
+        for line in purchase_order_id.order_line:
+            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+                data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
+                qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
+                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
+                if quantity <= 0:
+                    continue
+                move_id.qty_invoiced += quantity
+                move_id.qty_refunded = qty_returned
+                if line.display_type == 'line_section':
+                    pending_section = line
+                    continue
+                if pending_section:
+                    line_vals = pending_section._prepare_account_move_line()
                     line_vals.update(data_line)
-                    line_vals['quantity'] = quantity
-                    line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
-                    line_vals.update({'sequence': sequence})
-                    line_vals.update({'move_id': self.id})
+                    line_vals.update({
+                        'quantity': quantity,
+                        'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                        'sequence': sequence,
+                        'move_id': self.id,
+                    })
+                    pending_section = None
                     vals_lst.append(line_vals)
                     sequence += 1
-            if not vals_lst:
-                raise ValidationError('Tất cả phiếu nhập đã được lên hóa đơn, vui lòng kiểm tra lại')
-            aml_ids = AccountMoveLine.create(vals_lst)
+                    # line_vals['quantity'] = quantity
+                    # line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
+                    # line_vals.update({'sequence': sequence})
+                    # line_vals.update({'move_id': self.id})
+
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                line_vals.update({
+                    'quantity': quantity,
+                    'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                    'sequence': sequence,
+                    'move_id': self.id,
+                })
+                # line_vals['quantity'] = quantity
+                # line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
+                # line_vals.update({'sequence': sequence})
+                # line_vals.update({'move_id': self.id})
+                vals_lst.append(line_vals)
+                sequence += 1
+        if not vals_lst:
+            raise ValidationError('Tất cả phiếu nhập đã được lên hóa đơn, vui lòng kiểm tra lại')
+        aml_ids = AccountMoveLine.create(vals_lst)
 
     @api.onchange('receiving_warehouse_id', 'select_type_inv')
     def onchange_invoice_line_ids_by_type(self):
