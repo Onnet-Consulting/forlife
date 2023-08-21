@@ -46,9 +46,9 @@ class StockMove(models.Model):
     quantity_change = fields.Float(string="Tỷ lệ quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     # Thêm field check số lượng lên hóa đơn
-    qty_to_invoice = fields.Float('Qty to invoice')
-    qty_invoiced = fields.Float('Qty Invoiced')
-    qty_refunded = fields.Float('Qty refunded')
+    qty_to_invoice = fields.Float('Qty to invoice', copy=False)
+    qty_invoiced = fields.Float('Qty Invoiced', copy=False)
+    qty_refunded = fields.Float('Qty refunded', copy=False)
 
     def _get_price_unit(self):
         """ Returns the unit price for the move"""
