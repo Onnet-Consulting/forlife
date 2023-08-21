@@ -2,13 +2,202 @@
 <odoo>
     <data noupdate="1">
 
-       <record id="accountant_print_stock_group" model="res.groups">
-           <field name="name">Accountant Print Stock</field>
-       </record>
+        <record id="accountant_print_stock_group" model="res.groups">
+            <field name="name">Accountant Print Stock</field>
+        </record>
 
-       <record id="warehouse_print_stock_group" model="res.groups">
-           <field name="name">Warehouse Print Stock</field>
-       </record>
+        <record id="warehouse_print_stock_group" model="res.groups">
+            <field name="name">Warehouse Print Stock</field>
+        </record>
 
+    </data>
+
+    <data noupdate="1">
+        <!--Group chức năng xem báo cáo-->
+
+        <record model="ir.module.category" id="module_category_forlife_report">
+            <field name="name">Báo cáo ForLife</field>
+            <field name="sequence">1000</field>
+        </record>
+
+        <record id="group_report_num2" model="res.groups">
+            <field name="name">Tồn kho theo giá bán</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num3" model="res.groups">
+            <field name="name">Tồn kho theo chi nhánh/khu vực</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num4" model="res.groups">
+            <field name="name">Tồn kho theo sản phẩm</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num5" model="res.groups">
+            <field name="name">Doanh thu theo nhân viên</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num6" model="res.groups">
+            <field name="name">Bán - trưng hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num7" model="res.groups">
+            <field name="name">Doanh thu tại cửa hàng theo dòng hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num8" model="res.groups">
+            <field name="name">Chi tiết hóa đơn áp dụng voucher</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num9" model="res.groups">
+            <field name="name">Voucher phát hành</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num10" model="res.groups">
+            <field name="name">Lịch sử nâng hạng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num11" model="res.groups">
+            <field name="name">Sắp lên hạng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num12" model="res.groups">
+            <field name="name">Khách hàng không mua hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num13" model="res.groups">
+            <field name="name">Tình hình thực hiện đơn hàng mua</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num14" model="res.groups">
+            <field name="name">Tra cứu mã Code đã sử dụng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num15" model="res.groups">
+            <field name="name">Tra cứu mã Voucher đã sử dụng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num16" model="res.groups">
+            <field name="name">Chi tiết xuất nhập hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num17" model="res.groups">
+            <field name="name">Danh sách hóa đơn bán - đổi - trả</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num18" model="res.groups">
+            <field name="name">Báo cáo chi tiết PR</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num19" model="res.groups">
+            <field name="name">Báo cáo tình hình thực hiện yêu cầu chuyển kho</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num20" model="res.groups">
+            <field name="name">Bảng kê chi tiết hóa đơn bán - đổi - trả</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num21" model="res.groups">
+            <field name="name">Chi tiết hàng hóa luân chuyển</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num22" model="res.groups">
+            <field name="name">Báo cáo thu chi tiền mặt tại cửa hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num23" model="res.groups">
+            <field name="name">Báo cáo giá trị chiết khấu hạng thẻ</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num24" model="res.groups">
+            <field name="name">Báo cáo tích - tiêu điểm theo cửa hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num25" model="res.groups">
+            <field name="name">Báo cáo dự tính thu nhập nhân viên bán hàng theo doanh thu</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num26" model="res.groups">
+            <field name="name">Báo cáo danh sách phiếu điều chuyển</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num27" model="res.groups">
+            <field name="name">Báo cáo danh sách phiếu nhập/xuất khác</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num28" model="res.groups">
+            <field name="name">Báo cáo danh sách phiếu nhập kho mua hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num29" model="res.groups">
+            <field name="name">Báo cáo danh sách CCDC và TSCD</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num30" model="res.groups">
+            <field name="name">Bảng kê hàng hóa xuất hóa đơn</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num31" model="res.groups">
+            <field name="name">Báo cáo template import PO</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num32" model="res.groups">
+            <field name="name">Tra cứu thông tin khách hàng</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num33" model="res.groups">
+            <field name="name">Báo cáo doanh thu sản phẩm</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num34" model="res.groups">
+            <field name="name">Danh sách hóa đơn TMĐT</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num35" model="res.groups">
+            <field name="name">Bảng kê chi tiết hóa đơn TMĐT</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num36" model="res.groups">
+            <field name="name">Báo cáo nhập kho thành phẩm sản xuất</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num37" model="res.groups">
+            <field name="name">Báo cáo thông tin sản phẩm</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>
