@@ -1444,18 +1444,22 @@ class PurchaseOrder(models.Model):
                 if pending_section:
                     line_vals = pending_section._prepare_account_move_line()
                     line_vals.update(data_line)
-                    line_vals['quantity'] = quantity
-                    line_vals['quantity_purchased'] = quantity/line_vals['exchange_quantity']
-                    line_vals.update({'sequence': sequence})
+                    line_vals.update({
+                        'quantity': quantity,
+                        'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                        'sequence': sequence
+                    })
                     invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                     sequence += 1
                     pending_section = None
 
                 line_vals = line._prepare_account_move_line()
                 line_vals.update(data_line)
-                line_vals['quantity'] = quantity
-                line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
-                line_vals.update({'sequence': sequence})
+                line_vals.update({
+                    'quantity': quantity,
+                    'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                    'sequence': sequence
+                })
                 invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                 sequence += 1
         if not invoice_vals.get('invoice_line_ids', False):
