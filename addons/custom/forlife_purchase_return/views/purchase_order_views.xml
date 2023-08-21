@@ -71,12 +71,15 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase_request.purchase_order_form_forlife_inherit"/>
             <field name="arch" type="xml">
-
                 <xpath expr="//field[@name='location_export_material_id']" position="replace">
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
                            string="Địa điểm xuất NPL"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)], 'required': [('is_check_line_material_line', '=', False), ('purchase_type', '=', 'product')]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)]}"/>
+                <field name="location_export_material_id"
+                           domain="[('usage', '=', 'internal')]"
+                           string="Địa điểm nhập NPL"
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', False)]}"/>
                 </xpath>
             </field>
         </record>

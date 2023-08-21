@@ -11,7 +11,6 @@
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
                 <field name="source_invoice"/>
-                <field name="total_point" string="Tổng tích điểm"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -33,7 +32,6 @@
                             <field name="partner_id"/>
                             <field name="invoice_date"/>
                             <field name="source_invoice"/>
-                            <field name="total_point" string="Tổng tích điểm"/>
                         </group>
                     </group>
                     <notebook>
@@ -74,16 +72,37 @@
                             </group>
                         </page>
                         <page name="other_info" string="Other Information">
-                            <field name="line_discount_ids">
-                                <tree editable="bottom" create="0">
-                                    <field name="promotion_type"/>
-                                    <field name="invoice_ids" widget="many2many_tags"/>
-                                    <field name="price_unit"/>
-                                    <field name="tax_ids" widget="many2many_tags"/>
-                                    <field name="tax_amount"/>
-                                    <field name="amount_total"/>
-                                </tree>
-                            </field>
+                            <group>
+                                <field name="line_discount_ids">
+                                    <tree editable="bottom" create="0">
+                                        <field name="promotion_type"/>
+                                        <field name="invoice_ids" widget="many2many_tags"/>
+                                        <field name="price_unit"/>
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="tax_amount"/>
+                                        <field name="amount_total"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="discount_ids" string="Tổng Chiêt khấu"> 
+                                    <tree editable="bottom" create="0">
+                                        <field name="promotion_type"/>
+                                        <field name="price_unit"/>
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="tax_amount"/>
+                                        <field name="amount_total"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="accumulate_point_ids"> 
+                                    <tree editable="bottom" create="0">
+                                        <field name="bkav_adjusted_id"/>
+                                        <field name="total_point"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -106,5 +125,5 @@
               parent="bkav_connector.menu_master_bkav_pos"
               name="Hóa đơn điều chỉnh cuối ngày"
               action="summary_adjusted_invoice_pos_action"
-              sequence="10"/>
+              sequence="40"/>
 </odoo>

@@ -201,6 +201,15 @@ class PosOrder(models.Model):
         else:
             return None
 
+    def _get_store_brand_from_order(self):
+        self.ensure_one()
+        if self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
+            return 'format'
+        elif self.session_id.config_id.store_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
+            return 'forlife'
+        else:
+            return None
+
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
         valid_money_payment_method = 0  # X
@@ -306,8 +315,17 @@ class PosOrder(models.Model):
 
     @api.model
     def _order_fields(self, ui_order):
+        flag_check_scan_3code = False
+        for u in ui_order.get('lines'):
+            if u[2]['is_new_line']:
+                product = self.env['product.product'].search([('id', '=', u[2]['product_id'])])
+                if not product.is_product_auto and 'allow_for_point' in ui_order and ui_order.get(
+                        'allow_for_point') is True and 'is_change_product' in ui_order and ui_order.get('is_change_product'):
+                    flag_check_scan_3code = True
+                    break
         data = super(PosOrder, self)._order_fields(ui_order)
-        if data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True:
+        if (data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True) or (
+                'is_refund_product' in ui_order and ui_order.get('is_refund_product')) or flag_check_scan_3code:
             program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id

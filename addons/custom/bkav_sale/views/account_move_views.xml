@@ -17,7 +17,7 @@
                           attrs="{'invisible': ['|','|',('state','=','draft'),('pos_order_id','!=',False),('move_type','not in',('out_invoice','out_refund'))]}">
                         <field name="eivoice_file" attrs="{'invisible':[('eivoice_file', '=', False)]}"/>
                         <button name="create_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
+                                attrs="{'invisible':['|','|',('exists_bkav', '!=', False),('invoice_guid', '!=', False),('is_general', '=', True)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
                         <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"

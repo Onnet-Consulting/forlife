@@ -86,7 +86,7 @@ class StockPicking(models.Model):
         })]
         if move.product_id.type in ('product', 'consu'):
             svl_values.append((0, 0, {
-                'value': (amount / qty_po_origin) * qty_po_done,
+                'value': -abs((amount / qty_po_origin) * qty_po_done),
                 'unit_cost': amount / qty_po_origin,
                 'quantity': 0,
                 'remaining_qty': 0,
@@ -95,6 +95,8 @@ class StockPicking(models.Model):
                 'company_id': self.env.company.id,
                 'stock_move_id': move.id
             }))
+            if move.product_id.cost_method == 'average':
+                    self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
             move_lines += [(0, 0, {
                 'sequence': 2,
                 'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
@@ -130,6 +132,8 @@ class StockPicking(models.Model):
                 'restrict_mode_hash_table': False,
             }
             svl_values = []
+            debit_amount = round((amount / qty_po_origin) * qty_po_done)
+            total_credit = 0
             move_lines = [(0, 0, {
                 'sequence': 1,
                 'account_id': line.product_id.categ_id.property_stock_account_input_categ_id.id,
@@ -137,7 +141,7 @@ class StockPicking(models.Model):
                 'name': line.product_id.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': 0.0,
-                'debit': (amount / qty_po_origin) * qty_po_done
+                'debit': debit_amount
             })]
             total_after_credit = 0
             length_move = len(self.move_ids)
@@ -146,7 +150,7 @@ class StockPicking(models.Model):
                 i += 1
                 if move.product_id.type in ('product', 'consu'):
                     svl_values.append((0, 0, {
-                        'value': - (amount / qty_po_origin) * move.quantity_done,
+                        'value': - round((amount / qty_po_origin) * qty_po_done),
                         'unit_cost': amount / qty_po_origin,
                         'quantity': 0,
                         'remaining_qty': 0,
@@ -155,13 +159,17 @@ class StockPicking(models.Model):
                         'company_id': self.env.company.id,
                         'stock_move_id': move.id
                     }))
+                    #TienNQ
+                    if move.product_id.cost_method == 'average':
+                        self.add_cost_product(move.product_id, - round((amount / qty_po_origin) * qty_po_done))
 
-                credit = (amount / qty_po_origin) * move.quantity_purchase_done
-                after_digit = credit - int(credit)
+                credit = round((amount / qty_po_origin) * move.quantity_purchase_done)
+                # after_digit = credit - int(credit)
                 if i < length_move:
-                    total_after_credit += after_digit
+                    total_credit += round(credit)
+                    # total_after_credit += after_digit
                 else:
-                    credit += total_after_credit
+                    credit = debit_amount - total_credit
 
                 vals = {
                     'sequence': 2,

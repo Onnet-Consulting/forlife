@@ -15,15 +15,18 @@ class PosOrder(models.Model):
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
-        self.update_partner_card_rank()
+        for order in self:
+            order.update_partner_card_rank()
         return res
 
     def update_partner_card_rank(self):
-        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, self.config_id.store_id.brand_id.id)
+        self.ensure_one()
+        brand_id = self.config_id.store_id.brand_id
+        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, brand_id.id)
         if not member_cards:
             return False
         is_rank = False
-        partner_card_rank = self.partner_id.card_rank_ids.filtered(lambda f: f.brand_id == self.config_id.store_id.brand_id)
+        partner_card_rank = self.partner_id.card_rank_ids.filtered(lambda f: f.brand_id.id == brand_id.id)
         if partner_card_rank:
             new_rank = partner_card_rank.card_rank_id
             for program in member_cards:
@@ -33,13 +36,11 @@ class PosOrder(models.Model):
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
                     if new_rank.priority >= program.card_rank_id.priority:
-                        self.update_status_card_rank(partner_card_rank)
-                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
+                        self.env['partner.card.rank.line'].create_partner_card_rank_detail(self, False, partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
                         break
                     else:
                         if total_value_to_up >= program.min_turnover:
-                            self.update_status_card_rank(partner_card_rank)
-                            self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
+                            self.env['partner.card.rank.line'].create_partner_card_rank_detail(self, False, partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
                             break
         else:
             for program in member_cards:
@@ -48,54 +49,10 @@ class PosOrder(models.Model):
                     is_rank = True
                     value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                     if value_to_upper_order >= program.min_turnover:
-                        self.create_partner_card_rank(value_to_upper_order, program.id, program.card_rank_id.id)
+                        self.env['partner.card.rank'].create_partner_card_rank(self, False, value_to_upper_order, program.id, program.card_rank_id.id)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
-
-    def create_partner_card_rank(self, value_to_upper_order, program_id, rank_id):
-        res = self.env['partner.card.rank'].sudo().create({
-            'customer_id': self.partner_id.id,
-            'brand_id': self.config_id.store_id.brand_id.id,
-            'line_ids': [(0, 0, {
-                'order_id': self.id,
-                'order_date': self.date_order,
-                'real_date': self.create_date,
-                'value_orders': self.amount_total,
-                'value_to_upper': value_to_upper_order,
-                'old_card_rank_id': rank_id,
-                'new_card_rank_id': rank_id,
-                'value_up_rank': 0,
-                'program_cr_id': program_id,
-                'status': True
-            })]
-        })
-        return res
-
-    def update_status_card_rank(self, partner_card_rank_id):
-        PartnerCardRankLine = self.env['partner.card.rank.line'].sudo()
-        partner_card_rank_line_ids = PartnerCardRankLine.search(
-            [('partner_card_rank_id', '=', partner_card_rank_id.id), ('status', '=', True)])
-        if partner_card_rank_line_ids:
-            for partner_card_rank_line_id in partner_card_rank_line_ids:
-                partner_card_rank_line_id.write({
-                    'status': False
-                })
-    def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id,
-                                        total_value_to_up, program_id):
-         self.env['partner.card.rank.line'].sudo().create({
-            'partner_card_rank_id': partner_card_rank_id,
-            'order_id': self.id,
-            'order_date': self.date_order,
-            'real_date': self.create_date,
-            'value_orders': self.amount_total,
-            'value_to_upper': value_to_upper,
-            'old_card_rank_id': old_rank_id,
-            'new_card_rank_id': new_rank_id,
-            'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
-            'program_cr_id': program_id,
-            'status': True if old_rank_id != new_rank_id else False
-        })
 
     @api.model
     def _order_fields(self, ui_order):
@@ -128,9 +85,9 @@ class PosOrder(models.Model):
     #             pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
     #                                               store)
     #     return pos_id
-    
+
     def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
-        vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
+        vals = super()._prepare_history_point_value(store, point_type=point_type, reason=reason, points_used=points_used, points_back=points_back)
         pos = self
         vals['points_coefficient'] = (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
         vals['points_store'] += (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
@@ -144,14 +101,14 @@ class PosOrder(models.Model):
             pos_session = item.session_id
             brand_id = pos_session.config_id.store_id.brand_id
 
-            if (item.order_status_format and brand_id.code == 'FMT') or (
-                    item.order_status_tokyolife and brand_id.code == 'TKL'):
+            if brand_id.code in ('FMT', 'TKL'):
                 member_card_ids = self.env['member.card'].get_member_card_by_date(item.date_order, brand_id.id)
                 card_rank_line_ids = item.partner_id.card_rank_ids.mapped('line_ids').sorted(lambda x: (x.real_date, x.id), reverse=True)
                 if card_rank_line_ids:
                     card_rank_line_id = card_rank_line_ids[0]
-                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
-                    if member_card_id:
+                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.new_card_rank_id)
+                    # Cộng điểm hệ số cho đơn hàng làm tăng hạng và có flag 'status' is True
+                    if member_card_id and card_rank_line_id.status and card_rank_line_id.order_id.id == item.id:
                         if member_card_id.retail_type_not_apply_ids:
                             if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.partner_id.retail_type_ids):
                                 return
@@ -184,10 +141,12 @@ class PosOrder(models.Model):
         }
 
     def get_point_order(self, money_value, brand_id, is_purchased):
+        # compensate_point: kiểm tra có phải tích bù điểm bằng tay hay không
+        compensate_point = self.env['pos.compensate.point.order'].search_count([('order_ids', '=', self.id)]) > 0
         partner_rank_detail = self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).line_ids.filtered(lambda x: x.order_id.id == self.id)
         current_rank_of_customer = partner_rank_detail.old_card_rank_id.ids or self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).card_rank_id.ids
         program = self.program_store_point_id
-        if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
+        if (compensate_point or self.allow_for_point) and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
@@ -223,15 +182,14 @@ class PosOrderLine(models.Model):
             total = 0
             pos_session = item.order_id.session_id
             brand_id = pos_session.config_id.store_id.brand_id
-
-            if (item.order_id.order_status_format and brand_id.code == 'FMT') or (
-                    item.order_id.order_status_tokyolife and brand_id.code == 'TKL'):
+            if brand_id.code in ('FMT', 'TKL'):
                 member_card_ids = self.env['member.card'].get_member_card_by_date(item.order_id.date_order, brand_id.id)
                 card_rank_line_ids = item.order_id.partner_id.card_rank_ids.mapped('line_ids').sorted(lambda x: (x.real_date, x.id), reverse=True)
                 if card_rank_line_ids:
                     card_rank_line_id = card_rank_line_ids[0]
-                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
-                    if member_card_id:
+                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.new_card_rank_id)
+                    # Cộng điểm hệ số cho đơn hàng làm tăng hạng và có flag 'status' is True
+                    if member_card_id and card_rank_line_id.status and card_rank_line_id.order_id.id == item.order_id.id:
                         if member_card_id.retail_type_not_apply_ids:
                             if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.order_id.partner_id.retail_type_ids):
                                 return

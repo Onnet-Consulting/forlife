@@ -49,21 +49,34 @@ class SummaryAdjustedInvoicePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
-    total_point = fields.Integer(
-        string='Total Point', 
+    accumulate_point_ids = fields.One2many(
+        'adjusted.accumulate.point',
+        string='Tổng tích điểm', 
         readonly=True, 
-        compute='_compute_total_point', 
-        store=True,
+        compute='_compute_accumulate_point', 
         help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
     )
     
 
     line_discount_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', compute="_compute_line_discount")
+    discount_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', compute="_compute_line_discount")
 
+    adjusted_discount_ids = fields.One2many('summary.adjusted.invoice.pos.line.discount', 'bkav_adjusted_id')
+    accumulate_ids = fields.One2many('adjusted.accumulate.point', 'bkav_adjusted_id')
+
+    @api.model
     def _compute_line_discount(self):
+        model_line_discount = self.env["summary.adjusted.invoice.pos.line.discount"]
         for r in self:
-            r.line_discount_ids = self.env["summary.adjusted.invoice.pos.line.discount"].search([
+            r.line_discount_ids = model_line_discount.search([
                 ('adjusted_invoice_id', '=', r.id)
+            ])
+            r.discount_ids = model_line_discount.search([
+                '|',
+                ('adjusted_ids', 'in', [r.id]),
+                ('bkav_adjusted_id', '=', r.id),
+                ('adjusted_line_id', '=', False),
+                ('store_id', '=', r.store_id.id)
             ])
 
 
@@ -72,17 +85,15 @@ class SummaryAdjustedInvoicePos(models.Model):
         for rec in self:
             rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
-    @api.depends('line_ids.invoice_ids')
-    def _compute_total_point(self):
-        for res in self:
-            total_point = 0
-            exists_pos = {}
-            for pos in res.line_ids.invoice_ids:
-                if not exists_pos.get(pos.id):
-                    exists_pos[pos.id] = True
-                    total_point += pos.get_total_point()
-
-            res.total_point = -total_point
+    @api.model
+    def _compute_accumulate_point(self):
+        for r in self:
+            r.accumulate_point_ids = self.env["adjusted.accumulate.point"].search([
+                '|',
+                ('adjusted_ids', 'in', [r.id]),
+                ('bkav_adjusted_id', '=', r.id),
+                ('store_id', '=', r.store_id.id)
+            ])
 
 
     def action_download_view_e_invoice(self):
@@ -126,18 +137,21 @@ class SummaryAdjustedInvoicePos(models.Model):
     def get_promotion(self, ln):
         list_invoice_details_ws = []
         line_discount_ids = self.env["summary.adjusted.invoice.pos.line.discount"].search([
-            ('adjusted_invoice_id', '=', ln.id)
+            ('bkav_adjusted_id', '=', ln.id)
         ])
-        if ln.total_point > 0:
+        total_point = sum(ln.accumulate_ids.mapped("total_point"))
+        if total_point < 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
                 "UnitName": 'Điểm',
-                "Qty": ln.total_point,
+                "Qty": total_point,
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
                 "IsDiscount": 1,
                 "ItemTypeID": 0,
+                "TaxRateID": 1,
+                "TaxRate": 0,
             }
             list_invoice_details_ws.append(line_invoice)
         if line_discount_ids:
@@ -282,7 +296,8 @@ class SummaryAdjustedInvoicePos(models.Model):
             #     line.message_post(body=str(e))
     
     def get_invoice_bkav(self):
-        bkav_action.get_invoice_bkav(self)
+        for line in self:
+            bkav_action.get_invoice_bkav(self)
 
  
 class SummaryAdjustedInvoicePosLine(models.Model):
@@ -344,6 +359,12 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 
+    adjusted_ids = fields.Many2many('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh', relation='summary_adjusted_invoice_pos_card_point_line_discount_rel')
+    bkav_adjusted_id = fields.Many2one('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh')
+    source_invoice = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn gốc', related="bkav_adjusted_id.source_invoice")
+    store_id = fields.Many2one('store')
+
+
     def get_tax_amount(self):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
@@ -357,4 +378,19 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
             else:
                 r.tax_amount = 0
 
+
+
+class AdjustedAccumulatePoint(models.Model):
+    _name = 'adjusted.accumulate.point'
+
+    total_point = fields.Integer(
+        string='Total Point', 
+        readonly=True,  
+        help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
+    )
+
+    adjusted_ids = fields.Many2many('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh', relation='adjusted_account_move_pos_accumulate_point_rel')
+    bkav_adjusted_id = fields.Many2one('summary.adjusted.invoice.pos', string='Hóa đơn điều chỉnh')
+    source_invoice = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn gốc', related="bkav_adjusted_id.source_invoice")
+    store_id = fields.Many2one('store')
 

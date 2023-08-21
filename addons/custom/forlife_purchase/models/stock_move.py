@@ -6,72 +6,6 @@ from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_round, float_is_zero, float_compare
 
-
-class StockPicking(models.Model):
-    _inherit = 'stock.picking'
-
-    is_pk_purchase = fields.Boolean(string="Là phiếu của Po", default=False)
-    picking_xk_id = fields.Many2one('stock.picking', index=True, copy=False)
-    account_xk_id = fields.Many2one('account.move', copy=False)
-
-    def _check_company(self, fnames=None):
-        if self._context.get('inter_company'):
-            return
-        return super(StockPicking, self)._check_company(fnames=fnames)
-
-    def view_xk_picking(self):
-        # context = { 'create': True, 'delete': True, 'edit': True}
-        return {
-            'name': _('Forlife Stock Exchange'),
-            'view_mode': 'form',
-            'res_model': self._name,
-            'res_id': self.picking_xk_id.id,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-            # 'context': context
-        }
-
-    def view_xk_account(self):
-        # context = { 'create': True, 'delete': True, 'edit': True}
-        account_ids = self.account_xk_id.ids if self.account_xk_id else []
-        # stock_valuation_account = self.move_ids.mapped('stock_valuation_layer_ids').mapped('account_move_id')
-        # account_ids += stock_valuation_account.ids
-        domain = [('id', 'in', account_ids)]
-        return {
-            'name': _('Forlife Account'),
-            'view_mode': 'tree,form',
-            'res_model': 'account.move',
-            'res_id': self.picking_xk_id.id,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-            'domain': domain,
-            # 'context': context
-        }
-
-    def action_cancel(self):
-        for rec in self:
-            if rec.picking_xk_id:
-                rec.picking_xk_id.action_cancel()
-                rec.picking_xk_id.action_back_to_draft()
-                rec.picking_xk_id.unlink()
-            if rec.account_xk_id:
-                rec.account_xk_id.button_draft()
-                rec.account_xk_id.button_cancel()
-        return super(StockPicking, self).action_cancel()
-
-    def action_back_to_draft(self):
-        for rec in self:
-            if rec.picking_xk_id:
-                rec.picking_xk_id.action_cancel()
-                rec.picking_xk_id.action_back_to_draft()
-                rec.picking_xk_id.unlink()
-            if rec.account_xk_id:
-                rec.account_xk_id.button_draft()
-                rec.account_xk_id.button_cancel()
-                rec.account_xk_id.unlink()
-        return super(StockPicking, self).action_back_to_draft()
-
-
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
@@ -84,8 +18,7 @@ class StockMoveLine(models.Model):
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất',
-                                      domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
@@ -101,6 +34,10 @@ class StockMoveLine(models.Model):
     def onchange_quantity_purchase_done(self):
         self.qty_done = self.quantity_purchase_done * self.quantity_change
 
+    @api.onchange('qty_done')
+    def onchange_qty_done(self):
+        self.quantity_purchase_done = self.qty_done/self.quantity_change if self.quantity_change > 0 else self.qty_done
+        self.move_id.quantity_purchase_done = self.qty_done/self.quantity_change if self.quantity_change > 0 else self.qty_done
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -108,6 +45,9 @@ class StockMove(models.Model):
     free_good = fields.Boolean(string="Hàng tặng")
     quantity_change = fields.Float(string="Số lượng quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
+    # Thêm field check số lượng lên hóa đơn
+    qty_invoiced = fields.Float('Qty Invoiced')
+    qty_refunded = fields.Float('Qty refunded')
 
     def _get_price_unit(self):
         """ Returns the unit price for the move"""
@@ -160,3 +100,15 @@ class StockMove(models.Model):
                 price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self),
                 round=False)
         return price_unit
+
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        vals = super(StockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
+        vals.update({
+            'free_good': self.free_good,
+            'quantity_change': self.quantity_change,
+            'quantity_purchase_done': self.quantity_purchase_done,
+            'occasion_code_id': self.occasion_code_id.id or False,
+            'work_production': self.work_production.id or False,
+            'account_analytic_id': self.account_analytic_id.id or False,
+        })
+        return vals

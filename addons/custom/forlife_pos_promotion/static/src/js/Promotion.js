@@ -198,8 +198,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.str_id;
             delete program_clone.display_name;
             item = Object.assign(item, program_clone);
+            this.promotionPricelistItems.push(item)
         };
-        this.promotionPricelistItems.push(...promotionItems);
+        // this.promotionPricelistItems.push(...promotionItems);
     }
 
     get_reward_product_ids(program) {
@@ -218,8 +219,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         let available_products = this.get_reward_product_ids(program);
         let valid_products_in_order = this.env.pos.get_order().get_orderlines_to_check().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
         let ref_product = valid_products_in_order.sort((a,b) => b.lst_price - a.lst_price).at(0);
-        let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
-        return valid_rewards
+        if (ref_product) {
+            let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
+            return valid_rewards;
+        };
+        return [];
     }
 
     get_program_by_id(str_id) {

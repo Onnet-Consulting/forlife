@@ -62,19 +62,6 @@
                             <span class="o_stat_text">Nhân công</span>
                         </div>
                     </button>
-<!--                    <button name="action_view_invoice_service_new"-->
-<!--                        string="Dịch vụ và Tài sản"-->
-<!--                        type="object"-->
-<!--                        class="oe_stat_button"-->
-<!--                        icon="fa-pencil-square-o"-->
-<!--                        attrs="{'invisible': [('count_invoice_inter_service_fix', '=', 0)]}">-->
-<!--                        <div class="o_field_widget o_stat_info">-->
-<!--                            <span class="o_stat_value">-->
-<!--                                <field name="count_invoice_inter_service_fix"/>-->
-<!--                            </span>-->
-<!--                            <span class="o_stat_text">Dịch vụ và Tài sản</span>-->
-<!--                        </div>-->
-<!--                    </button>-->
                     <button
                             class="oe_stat_button" name="action_view_picking_inter_company"
                             type="object" icon="fa-truck"
@@ -111,11 +98,6 @@
                                 name="%(forlife_purchase.action_select_type_invoice_wizard)d"
                                 type="action"
                                 attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
-
-
-                        <!--                        <button name="action_create_invoice" string="Create Invoice"-->
-<!--                                class="btn btn-primary ms-md-2" type="object"-->
-<!--                                attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>-->
                         <button string="Gửi duyệt" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
@@ -277,8 +259,6 @@
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" required="1" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
-
-
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
@@ -286,7 +266,6 @@
                     <field name="x_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1" invisible="1"/>
                     <field name="x_amount_tax" attrs="{'readonly': [('custom_state', 'in', ('approved', 'confirm'))]}" force_save="1"/>
                     <field name="is_done_picking" invisible="1"/>
-<!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">
@@ -302,6 +281,11 @@
                         <field name="product_uom_category_id" invisible="1"/>
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
+                        <field name="asset_code"
+                               string="Thẻ tài sản"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="asset_name"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_id"
                                context="{'supplier_id': parent.partner_id, 'company_id': parent.company_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"
@@ -309,28 +293,13 @@
                         <field name="name" invisible="1"/>
                         <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
-<!--                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}" sum="discounted subtotal" force_save="1" string="Số lượng đề nghị"/>-->
                         <field name="purchase_uom" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" string="Tỷ lệ quy đổi" force_save="1"/>
                         <field name="purchase_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
                         <field name="request_purchases" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
-                        <field name="asset_code"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="asset_name"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="free_good"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-<!--                        <field name="purchase_quantity"-->
-<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
-<!--                        <field name="domain_uom" invisible="1"/>-->
-<!--                        <field name="purchase_uom"-->
-<!--                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>-->
-<!--                        <field name="exchange_quantity"-->
-<!--                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"-->
-<!--                               decoration-danger="is_red_color == True"-->
-<!--                               string="Tỷ lệ quy đổi"-->
-<!--                               force_save="1"/>-->
                         <field name="product_qty"
                                attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal"
@@ -381,32 +350,20 @@
                         <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                        <field name="tolerance" string="Tolerance"/>
-                        <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}"
-                               sum="discounted subtotal" force_save="1"/>
+                        <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}" sum="discounted subtotal" force_save="1"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
                         <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}" force_save="1"/>
                         <field name="analytic_distribution" widget="analytic_distribution"
-                               invisible="1"
-                               groups="analytic.group_analytic_accounting"
+                               invisible="1" groups="analytic.group_analytic_accounting"
                                options="{'product_field': 'product_id', 'business_domain': 'purchase_order'}"/>
                         <field name="qty_received_manual" invisible="1"/>
                         <field name="qty_received_method" invisible="1"/>
                         <field name="received" string="Đã nhận"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"
                                invisible="0"/>
-                        <field name="billed" string="Billed"
-                               attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"
-                               invisible="0"/>
-                        <field name="product_packaging_qty"
-                               attrs="{'invisible': ['|', ('product_id', '=', False), ('product_packaging_id', '=', False)]}"
-                               groups="product.group_stock_packaging" invisible="1"/>
-                        <field name="product_packaging_id" attrs="{'invisible': [('product_id', '=', False)]}"
-                               context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}"
-                               groups="product.group_stock_packaging" optional="show"/>
-                        <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History"
-                                attrs="{'invisible': [('id', '=', False)]}"/>
+                        <field name="billed" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}" invisible="0"/>
+                        <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History" attrs="{'invisible': [('id', '=', False)]}"/>
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
                         <field name="company_id" invisible="1"/>
@@ -431,6 +388,7 @@
                 </xpath>
             </field>
         </record>
+
         <!-- Inherit purchase order tree view -->
         <record id="inherit_purchase_order_tree_view" model="ir.ui.view">
             <field name="name">purchase.order.tree.inherit</field>
@@ -460,10 +418,10 @@
                     <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}" force_save="1"/>
                     <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
-
                 </xpath>
             </field>
         </record>
+
         <record id="action_purchase_order_is_inter_company" model="ir.actions.act_window">
             <field name="name">Purchase Order Inter Company</field>
             <field name="res_model">purchase.order</field>
@@ -475,6 +433,7 @@
             <field name="context">{'default_is_inter_company':True}
             </field>
         </record>
+
         <record id="action_purchase_order_not_inter_company_cost" model="ir.actions.act_window">
             <field name="name">Đơn mua hàng nội địa</field>
             <field name="res_model">purchase.order</field>
@@ -486,6 +445,7 @@
             <field name="context">{'default_is_inter_company':False, 'default_type_po_cost': 'cost'}
             </field>
         </record>
+
         <record id="action_purchase_order_not_inter_company_tax" model="ir.actions.act_window">
             <field name="name">Đơn mua hàng nhập khẩu</field>
             <field name="res_model">purchase.order</field>
@@ -497,6 +457,7 @@
             <field name="context">{'default_is_inter_company':False, 'default_type_po_cost': 'tax'}
             </field>
         </record>
+
         <!--        Menu Is Inter Company-->
         <menuitem id="menu_purchase_order_is_inter_company" parent="purchase.menu_procurement_management"
                   action="forlife_purchase.action_purchase_order_is_inter_company" name="Purchase Order Inter Company" sequence="1"/>
@@ -512,8 +473,6 @@
         <menuitem id="stock_landed_costs.menu_stock_landed_cost" active="False"/>
         <menuitem id="stock.menu_stock_scrap" active="False"/>
         <menuitem id="studio_customization.ton_kho_ghep_bo_c3501856-3eed-4d11-bfaa-a90b1416d93b" active="False"/>
-<!--        <menuitem id="purchase_request.forlife_event_menu" active="True"/>-->
-<!--        <menuitem id="purchase_request.purchase_material_menu" active="False"/>-->
         <!--Inactive menu purchase order-->
         <menuitem id="purchase.menu_purchase_form_action" parent="purchase.menu_procurement_management" active="False"/>
         <!-- Inactive menu Request for quatation-->

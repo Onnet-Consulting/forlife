@@ -88,8 +88,8 @@ class StockTranfer(models.Model):
         company = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_match'))])
         warehouse_type_id_tl = self.env.ref('forlife_base.stock_warehouse_type_03', raise_if_not_found=False).id
         warehouse_type_id_fm = self.env.ref('forlife_base.stock_warehouse_type_04', raise_if_not_found=False).id
-        warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
-        warehouse_type_id_ec = warehouse_type_id_ec.id if warehouse_type_id_ec else 0
+        # warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
+        # warehouse_type_id_ec = warehouse_type_id_ec.id if warehouse_type_id_ec else 0
         s_location_pos = self.env.ref('forlife_stock.warehouse_for_pos', raise_if_not_found=False).id
         s_location_error = self.env.ref('forlife_stock.warehouse_error', raise_if_not_found=False).id
         s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
@@ -99,8 +99,8 @@ class StockTranfer(models.Model):
         warehouse_dest_id = location_dest_id.warehouse_id.whs_type.id
         s_location_type_id = location_id.stock_location_type_id.id
         s_location_dest_type_id = location_dest_id.stock_location_type_id.id
-        if warehouse_id in [warehouse_type_id_tl, warehouse_type_id_fm,warehouse_type_id_ec] \
-                and warehouse_dest_id in [warehouse_type_id_tl,warehouse_type_id_fm, warehouse_type_id_ec] \
+        if warehouse_id in [warehouse_type_id_tl, warehouse_type_id_fm] \
+                and warehouse_dest_id in [warehouse_type_id_tl,warehouse_type_id_fm] \
                 and s_location_type_id in [s_location_pos, s_location_error, s_location_sell_ecommerce] \
                 and s_location_dest_type_id in [s_location_pos, s_location_error, s_location_sell_ecommerce]:
             if company.code == '1300':

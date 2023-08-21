@@ -22,12 +22,21 @@ class SummaryAccountMovePosReturn(models.Model):
     einvoice_date = fields.Date(string="Ngày phát hành")
 
     line_discount_ids = fields.One2many('summary.account.move.pos.return.line.discount', compute="_compute_line_discount")
+    discount_ids = fields.One2many('summary.account.move.pos.return.line.discount', compute="_compute_line_discount")
 
+    @api.model
     def _compute_line_discount(self):
+        model_line_discount = self.env['summary.account.move.pos.return.line.discount']
         for r in self:
-            r.line_discount_ids = self.env["summary.account.move.pos.return.line.discount"].search([
+            r.line_discount_ids = model_line_discount.search([
                 ('return_id', '=', r.id)
             ])
+            r.discount_ids = model_line_discount.search([
+                ('return_ids', 'in', [r.id]),
+                ('summary_line_id', '=', False),
+                ('store_id', '=', r.store_id.id)
+            ])
+
 
     def get_line_discount_detail(self, line):
         item = {
@@ -41,7 +50,7 @@ class SummaryAccountMovePosReturn(models.Model):
         }
         return item
 
-    def get_line_discount(self, line):
+    def get_line_discount(self, line, discount_items):
         line_discount_details = line.order_id.lines.filtered(
             lambda r: r.is_promotion == True and r.promotion_type in ['card','point'] and r.product_src_id.id == line.id
         )
@@ -49,12 +58,22 @@ class SummaryAccountMovePosReturn(models.Model):
         if line_discount_details:
             for line_discount_detail in line_discount_details:
                 item = self.get_line_discount_detail(line_discount_detail)
+                line_pk = f'{item["promotion_type"]}_{item["line_pk"]}'
+                if discount_items.get(line_pk):
+                    row = discount_items[line_pk]
+                    row["price_unit"] += item["price_unit"]
+                    row["price_unit_incl"] += item["price_unit_incl"]
+                    row["amount_total"] += item["amount_total"]
+                else:
+                    discount_items[line_pk] = item.copy()
+                    discount_items[line_pk]["line_pk"] = line_pk
+
                 items.append((0,0,item))
         return items
 
 
-    def get_move_line(self, line):
-        line_discount_item = self.get_line_discount(line)
+    def get_move_line(self, line, discount_items):
+        line_discount_item = self.get_line_discount(line, discount_items)
         item = {
             "product_id": line.product_id.id,
             "quantity": line.qty,
@@ -71,9 +90,19 @@ class SummaryAccountMovePosReturn(models.Model):
 
     def include_line_by_product_and_price_bkav(self, lines):
         items = {}
+        discount_items = {}
         for line in lines:
+            if not line.product_id:
+                continue
+            if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
+                continue
+            
+            product_tmpl_id =  line.product_id.product_tmpl_id
+            if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
+                continue
+
             pk = line.get_pk_synthetic()
-            item = self.get_move_line(line)
+            item = self.get_move_line(line, discount_items)
             item["line_pk"] = pk
             if items.get(pk):
                 row = items[pk]
@@ -86,7 +115,7 @@ class SummaryAccountMovePosReturn(models.Model):
                 items[pk] = row
             else:
                 items[pk] = item
-        return items
+        return items, discount_items
 
 
     def recursive_move_line_items(
@@ -136,11 +165,14 @@ class SummaryAccountMovePosReturn(models.Model):
     def get_items(self, *args, **kwargs):
         model = self.env['summary.account.move.pos.return']
         model_line = self.env['summary.account.move.pos.return.line']
+        model_line_discount = self.env['summary.account.move.pos.return.line.discount']
+
+
         pos_code = None
 
         last_day = date.today()
         domain = [
-            ('is_general', '=', False),
+            # ('is_general', '=', False),
             ('is_post_bkav_store', '=', True),
             ('exists_bkav', '=', False),
             ('pos_order_id', '!=', False),
@@ -162,19 +194,22 @@ class SummaryAccountMovePosReturn(models.Model):
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '!=', False),
             ('qty', '<', 0),
-            ('is_promotion', '=', False)
+            ('is_promotion', '=', False),
+            ('is_general', '=', False),
         ])
         data = {}
         items = {}
         pos_order_synthetic = None
         res_pos = None
-
+        store_discount_items = {}
+        total_point = 0
         if lines:
             pos_order_synthetic = lines.mapped("order_id")
             stores = pos_order_synthetic.mapped("store_id")
             for store in stores:
                 res = lines.filtered(lambda r: r.order_id.store_id.id == store.id)
-                line_items = self.include_line_by_product_and_price_bkav(res)
+                total_point = sum(pos_order_synthetic.filtered(lambda r: r.store_id.id == store.id).mapped("pay_point"))
+                line_items, discount_items = self.include_line_by_product_and_price_bkav(res)
                 self.recursive_move_line_items(
                     items=items,
                     lines=list(line_items.values()),
@@ -183,8 +218,12 @@ class SummaryAccountMovePosReturn(models.Model):
                     limit=limit,
                     company_id=res[0].company_id
                 )
-                data[store.id] = line_items
-
+                data[store.id] = {
+                    "items": line_items,
+                    "total_point": total_point,
+                    "card_point": discount_items
+                }
+                store_discount_items[store.id] = discount_items
 
             for k, v in items.items():
                 res_line = model_line.create(v["line_ids"])
@@ -194,7 +233,18 @@ class SummaryAccountMovePosReturn(models.Model):
 
             res_pos = model.create(vals_list)
 
-        return data, res_pos, move_ids
+            discount_vals_list = []
+            for k, v in store_discount_items.items():
+                return_ids = res_pos.filtered(lambda r: r.store_id.id == k)
+                for pk, item in v.items():
+                    v_item = item.copy()
+                    v_item["return_ids"] = return_ids.ids
+                    v_item["summary_line_id"] = None
+                    v_item["store_id"] = k
+                    discount_vals_list.append(v_item)
+            model_line_discount.create(discount_vals_list)
+
+        return data, res_pos, pos_order_synthetic
 
 
 
@@ -255,6 +305,8 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
+    return_ids = fields.Many2many('summary.account.move.pos.return', string='Hóa đơn Trả', relation='summary_account_move_pos_return_card_point_line_discount_rel')
+    store_id = fields.Many2one('store')
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 

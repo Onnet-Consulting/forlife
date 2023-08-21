@@ -39,7 +39,7 @@
                         </group>
                     </group>
                     <group>
-                        <field name="warehouse_ids" widget="many2many_tags" domain="[('loc_province_id', 'in', (location_province_ids or [False]))]"/>
+                        <field name="warehouse_ids" widget="many2many_tags" domain="[('loc_province_id', 'in', (location_province_ids or [False]))]" context="{'show_code_name': True}" options="{'no_create': True}"/>
                         <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="category_type_id" options="{'no_create': True}"/>
                         <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>

@@ -33,12 +33,11 @@ class SaleOrder(models.Model):
          ('intercompany', 'Đơn bán hàng liên công ty'),
          ('online', 'Đơn bán hàng online')],
         string='Kênh bán', default='wholesale')
-    x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
-    x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
+    x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
+    x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     x_punish = fields.Boolean(string='Đơn phạt', copy=False)
-    # x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
-    x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất', check_company=True)
+    x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
     x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
     x_origin = fields.Many2one('sale.order', 'Tài liệu gốc', copy=False)
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
@@ -430,8 +429,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
-        self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
+        self.x_account_analytic_id = self.order_id.x_account_analytic_id._origin if self.order_id.x_account_analytic_id else None
+        self.x_occasion_code_id = self.order_id.x_occasion_code_id._origin if self.order_id.x_occasion_code_id else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_manufacture_order_code_id:

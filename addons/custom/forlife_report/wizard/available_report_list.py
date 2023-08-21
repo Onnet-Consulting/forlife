@@ -1,12 +1,6 @@
 # -*- coding:utf-8 -*-
 
 AVAILABLE_REPORT = {
-    # 'report.num1': {
-    #     'module': 'Bán hàng',
-    #     'name': 'Doanh thu theo sản phẩm',
-    #     'reportTemplate': 'ReportNum1Template',
-    #     'reportPager': True,
-    # },
     'report.num2': {
         'module': 'Kho',
         'name': 'Tồn kho theo giá bán',

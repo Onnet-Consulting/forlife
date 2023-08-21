@@ -245,6 +245,8 @@
                     <page string="Sản phẩm" name="product" attrs="{'invisible': [('state', '!=', 'draft')]}">
                         <button name="action_filter_product" type="object" class="oe_highlight margin_btn"
                                 string="Filter product" context="{'default_inventory_id': id}" states="draft"/>
+                        <button name="action_filter_product" type="object" class="oe_highlight margin_btn"
+                                string="Xóa sản phẩm" context="{'remove_all_product': 1}" states="draft"/>
                         <field name="product_ids" context="{'default_type': 'product'}" attrs="{'readonly': [('state','!=','draft')]}" force_save="1">
                             <tree create="0">
                                 <field name="default_code" optional="show"/>
@@ -265,6 +267,7 @@
                         </field>
                     </page>
                     <page string="Chi tiết kiểm kê" name="page_line_ids">
+                        <button name="btn_export_inventory_line" states="waiting,first_inv,second_inv,confirm,done" type="object" class="oe_highlight margin_btn" string="Xuất Excel"/>
                         <field name="line_ids" nolabel="1" readonly="1">
                             <tree editable="bottom">
                                 <field name="product_id"/>

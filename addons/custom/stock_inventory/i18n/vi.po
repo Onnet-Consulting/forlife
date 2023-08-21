@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 09:44+0000\n"
-"PO-Revision-Date: 2023-07-24 09:44+0000\n"
+"POT-Creation-Date: 2023-08-17 03:19+0000\n"
+"PO-Revision-Date: 2023-08-17 03:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -168,6 +168,11 @@ msgid "Bớt lần 2"
 msgstr ""
 
 #. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_type_id
+msgid "Category Type"
+msgstr ""
+
+#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__line_ids
 #: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
 msgid "Chi tiết"
@@ -263,7 +268,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__create_date
 #: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__create_date
 #: model:ir.model.fields,field_description:stock_inventory.field_request_confirmation_picking_wizard__create_date
-#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__create_date
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__create_date
 msgid "Created on"
 msgstr ""
@@ -323,8 +327,18 @@ msgid "Dịch chuyển đi"
 msgstr ""
 
 #. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_out_count1
+msgid "Dịch chuyển đi 1"
+msgstr ""
+
+#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_in_count
 msgid "Dịch chuyển đến"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__move_in_count1
+msgid "Dịch chuyển đến 1"
 msgstr ""
 
 #. module: stock_inventory
@@ -541,6 +555,11 @@ msgid "Inventory Session Line"
 msgstr ""
 
 #. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_move__inv_state
+msgid "Inventory state"
+msgstr ""
+
+#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__is_editable
 msgid "Is Editable"
 msgstr ""
@@ -576,6 +595,11 @@ msgstr ""
 #: code:addons/stock_inventory/static/src/js/inventory_validate_button_controller.js:0
 #, python-format
 msgid "Kiểm kê đã được xác nhận"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Kết thúc đếm kiểm"
 msgstr ""
 
 #. module: stock_inventory
@@ -615,7 +639,7 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: stock_inventory
-#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_brand_id
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_brand_ids
 msgid "Level 1"
 msgstr "Danh mục cấp 1"
 
@@ -737,6 +761,10 @@ msgstr ""
 
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__date
+msgid "Ngày chốt tồn"
+msgstr ""
+
+#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__inventory_date
 msgid "Ngày kiểm kho"
 msgstr ""
@@ -750,6 +778,21 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_form
 #: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_view_tree
 msgid "Ngày tạo"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__create_date
+msgid "Ngày tạo phiếu"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__date_confirm1
+msgid "Ngày xác nhận lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__date_confirm2
+msgid "Ngày xác nhận lần 2"
 msgstr ""
 
 #. module: stock_inventory
@@ -795,7 +838,6 @@ msgstr ""
 #. module: stock_inventory
 #. odoo-python
 #: code:addons/stock_inventory/models/stock_inventory.py:0
-#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
 #, python-format
 msgid "Nhập hàng"
 msgstr ""
@@ -803,6 +845,16 @@ msgstr ""
 #. module: stock_inventory
 #: model:ir.actions.act_window,name:stock_inventory.import_inventory_session_action
 msgid "Nhập liệu kiểm kê"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Nhập lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Nhập lần 2"
 msgstr ""
 
 #. module: stock_inventory
@@ -827,7 +879,7 @@ msgstr ""
 
 #. module: stock_inventory
 #: model:ir.model.fields,help:stock_inventory.field_stock_inventory__message_needaction_counter
-msgid "Number of messages which requires an action"
+msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: stock_inventory
@@ -931,15 +983,15 @@ msgid "Product"
 msgstr ""
 
 #. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__product_brand_id
+msgid "Product Brand"
+msgstr ""
+
+#. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__categ_id
 #: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_line_search
 msgid "Product Category"
 msgstr ""
-
-#. module: stock_inventory
-#: model:ir.model,name:stock_inventory.model_product_product
-msgid "Product Variant"
-msgstr "Biến thể sản phẩm"
 
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_domain
@@ -1032,12 +1084,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__product_ids
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__product_id
 #: model_terms:ir.ui.view,arch_db:stock_inventory.inventory_session_line_view_filter
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
 msgid "Sản phẩm"
 msgstr ""
 
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__prefill_counted_quantity
 msgid "Số lượng đã đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__sync_number
+msgid "Số phiếu đồng bộ Bravo"
 msgstr ""
 
 #. module: stock_inventory
@@ -1100,7 +1158,7 @@ msgid "Trừ hàng bán đã kiểm"
 msgstr ""
 
 #. module: stock_inventory
-#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_type_id
+#: model:ir.model.fields,field_description:stock_inventory.field_filter_product_wizard__category_type_ids
 msgid "Type of Product Category"
 msgstr "Loại nhóm sản phẩm"
 
@@ -1159,6 +1217,11 @@ msgstr ""
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_inventory_detail__tong_kiem_dem_thuc_te
 msgid "Tổng kiểm đếm thực tế"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__qty_total
+msgid "Tổng số lượng"
 msgstr ""
 
 #. module: stock_inventory
@@ -1236,9 +1299,18 @@ msgstr ""
 #. module: stock_inventory
 #. odoo-python
 #: code:addons/stock_inventory/models/stock_inventory.py:0
-#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
 #, python-format
 msgid "Xuất hàng"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xuất lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xuất lần 2"
 msgstr ""
 
 #. module: stock_inventory
@@ -1253,12 +1325,33 @@ msgstr ""
 
 #. module: stock_inventory
 #: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid ""
+"Xác nhận kết thúc nhập phiên, cập nhật dữ liệu từ phiên về chi tiết đếm kiểm"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
 msgid "Xác nhận lần 1"
 msgstr ""
 
 #. module: stock_inventory
 #: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
 msgid "Xác nhận lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xác nhận quá trình đếm kiểm lần 1"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xác nhận quá trình đếm kiểm lần 2"
+msgstr ""
+
+#. module: stock_inventory
+#: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_form
+msgid "Xóa sản phẩm"
 msgstr ""
 
 #. module: stock_inventory
@@ -1279,6 +1372,7 @@ msgstr ""
 
 #. module: stock_inventory
 #. odoo-python
+#: code:addons/stock_inventory/models/stock_inventory.py:0
 #: code:addons/stock_inventory/models/stock_inventory.py:0
 #, python-format
 msgid ""
@@ -1344,6 +1438,12 @@ msgstr ""
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory_line__x_first_qty
 msgid "Đã đếm"
+msgstr ""
+
+#. module: stock_inventory
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session__updated
+#: model:ir.model.fields,field_description:stock_inventory.field_inventory_session_line__updated
+msgid "Đã đồng bộ"
 msgstr ""
 
 #. module: stock_inventory

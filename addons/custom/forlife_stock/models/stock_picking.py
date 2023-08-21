@@ -332,6 +332,12 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
+
+        if "import_file" in self.env.context:
+            for line in self.move_line_ids_without_package:
+                if line.qty_done != line.quantity_purchase_done * line.quantity_change:
+                    line.qty_done = line.quantity_purchase_done * line.quantity_change
+
         return res
 
     def action_back_to_draft(self):
@@ -451,7 +457,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                            '[01] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
                             'quantity': quantity_prodution.quantity - rec.quantity_done
@@ -482,7 +488,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                            '[03] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
                                 rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
@@ -724,7 +730,7 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                         'po_id': pk_od.po_id,
                         'qty_done': pk.reserved_qty,
                         'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.reserved_qty
+                        'quantity_purchase_done': pk.reserved_qty/pk_od.quantity_change
                     })
                 for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
                     pk.write({

@@ -46,22 +46,34 @@ class SyntheticAccountMovePos(models.Model):
     partner_invoice_id = fields.Integer(string='Số hóa đơn')
     eivoice_file = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
 
-    total_point = fields.Integer(
-        string='Total Point', 
+    accumulate_point_ids = fields.One2many(
+        'synthetic.accumulate.point',
+        string='Tổng tích điểm', 
         readonly=True, 
-        compute='_compute_total_point', 
-        store=True,
+        compute='_compute_accumulate_point', 
         help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện'
     )
+    accumulate_ids = fields.One2many('synthetic.accumulate.point', 'bkav_synthetic_id')
 
     line_discount_ids = fields.One2many('synthetic.account.move.pos.line.discount', compute="_compute_line_discount")
 
     line_adjusted_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'synthetic_id')
 
+    discount_ids = fields.One2many('synthetic.account.move.pos.line.discount', compute="_compute_line_discount")
+
+    @api.model
     def _compute_line_discount(self):
+        model_line_discount = self.env["synthetic.account.move.pos.line.discount"]
         for r in self:
-            r.line_discount_ids = self.env["synthetic.account.move.pos.line.discount"].search([
+            r.line_discount_ids = model_line_discount.search([
                 ('synthetic_id', '=', r.id)
+            ])
+            r.discount_ids = model_line_discount.search([
+                '|',
+                ('synthetic_ids', 'in', [r.id]),
+                ('bkav_synthetic_id', '=', r.id),
+                ('synthetic_line_id', '=', False),
+                ('store_id', '=', r.store_id.id)
             ])
 
     @api.depends('data_compare_status')
@@ -69,17 +81,15 @@ class SyntheticAccountMovePos(models.Model):
         for rec in self:
             rec.invoice_state_e = dict(self._fields['data_compare_status'].selection).get(rec.data_compare_status)
 
-    @api.depends('line_ids.invoice_ids')
-    def _compute_total_point(self):
-        for res in self:
-            total_point = 0
-            exists_pos = {}
-            for pos in res.line_ids.invoice_ids:
-                if not exists_pos.get(pos.id):
-                    exists_pos[pos.id] = True
-                    total_point += pos.get_total_point()
-
-            res.total_point = abs(total_point)
+    @api.model
+    def _compute_accumulate_point(self):
+        for r in self:
+            r.accumulate_point_ids = self.env["synthetic.accumulate.point"].search([
+                '|',
+                ('synthetic_ids', 'in', [r.id]),
+                ('bkav_synthetic_id', '=', r.id),
+                ('store_id', '=', r.store_id.id)
+            ])
 
 
     def get_invoice_identify(self):
@@ -126,13 +136,15 @@ class SyntheticAccountMovePos(models.Model):
     def get_promotion(self, ln):
         list_invoice_details_ws = []
         line_discount_ids = self.env["synthetic.account.move.pos.line.discount"].search([
-            ('synthetic_id', '=', ln.id)
+            ('bkav_synthetic_id', '=', ln.id)
         ])
-        if ln.total_point > 0:
+
+        total_point = sum(ln.accumulate_ids.mapped("total_point"))
+        if total_point > 0:
             line_invoice = {
                 "ItemName": "Tích điểm",
                 "UnitName": 'Điểm',
-                "Qty": ln.total_point,
+                "Qty": total_point,
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
@@ -280,7 +292,8 @@ class SyntheticAccountMovePos(models.Model):
             
 
     def get_invoice_bkav(self):
-        bkav_action.get_invoice_bkav(self)
+        for line in self:
+            bkav_action.get_invoice_bkav(line)
         
 class SyntheticAccountMovePosLine(models.Model):
     _name = 'synthetic.account.move.pos.line'
@@ -333,6 +346,9 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
     amount_total = fields.Monetary('Thành tiền')
+    adjusted_amount_total = fields.Integer('Thành tiền điều chỉnh', default=0, copy=False)
+    remaining_amount_total = fields.Integer('Thành tiền còn lại', default=0, copy=False)
+
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     promotion_type = fields.Selection(
         selection=[
@@ -341,7 +357,11 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
         ],
         string='Promotion Type', index=True, readonly=True
     )
-
+    synthetic_ids = fields.Many2many('synthetic.account.move.pos', string='Hóa đơn bù trừ', relation='synthetic_account_move_pos_card_point_line_discount_rel')
+    bkav_synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn bù trừ')
+    store_id = fields.Many2one('store')
+    invoice_date = fields.Date('Date', related="bkav_synthetic_id.invoice_date", store=True)
+    exists_bkav = fields.Boolean(string="Đã tồn tại trên BKAV", related="bkav_synthetic_id.exists_bkav")
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 
@@ -356,4 +376,18 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
                 r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
             else:
                 r.tax_amount = 0
+
+
+class SyntheticAccumulatePoint(models.Model):
+    _name = 'synthetic.accumulate.point'
+
+    total_point = fields.Integer(string='Điểm', default=0, copy=False)
+    adjusted_total_point = fields.Integer('Điểm điều chỉnh', default=0, copy=False)
+    remaining_total_point = fields.Integer('Điểm còn lại', default=0, copy=False)
+
+    synthetic_ids = fields.Many2many('synthetic.account.move.pos', string='Hóa đơn bù trừ', relation='synthetic_account_move_pos_accumulate_point_rel')
+    bkav_synthetic_id = fields.Many2one('synthetic.account.move.pos', string='Hóa đơn bù trừ')
+    invoice_date = fields.Date('Date', related="bkav_synthetic_id.invoice_date", store=True)
+    exists_bkav = fields.Boolean(string="Đã tồn tại trên BKAV", related="bkav_synthetic_id.exists_bkav")
+    store_id = fields.Many2one('store')
 
