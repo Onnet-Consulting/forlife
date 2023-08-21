@@ -19,3 +19,4 @@ from . import delivery_carrier
 from . import stock_picking
 from . import sale_channel
 from . import transportation_management
+from . import product_attribute
