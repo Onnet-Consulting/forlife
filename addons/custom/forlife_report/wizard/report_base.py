@@ -49,10 +49,11 @@ class ReportBase(models.AbstractModel):
     def get_available_report(self):
         res = []
         for k, v in AVAILABLE_REPORT.items():
-            val = dict(v)
-            val.update({'do_action': f'forlife_report.{k.replace(".", "_")}_window_action'})
-            res.extend([val])
-        return res
+            if self.env.user.has_group(f'forlife_report.group_{k.replace(".", "_")}'):
+                val = dict(v)
+                val.update({'do_action': f'forlife_report.{k.replace(".", "_")}_window_action'})
+                res.extend([val])
+        return sorted(res, key=lambda d: d['module'])
 
     def get_data(self, allowed_company):
         report_data = AVAILABLE_REPORT.get(self._name, {})

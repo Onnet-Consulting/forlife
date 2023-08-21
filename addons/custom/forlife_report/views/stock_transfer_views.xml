@@ -2,6 +2,45 @@
 <odoo>
     <data>
 
+        <record id="print_stock_transfer_view_form" model="ir.ui.view">
+            <field name="name">print_stock_transfer_view_form</field>
+            <field name="model">stock.transfer</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="print_stock_transfer_form">
+                    <sheet>
+                        <div>
+                            <button name="%(accountant_print_stock_transfer_ingoing)d" string="Print Receive (Accounting)"
+                                    icon="fa-file-pdf-o" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                        </div>
+                        <div>
+                            <button name="%(accountant_print_stock_transfer_outgoing)d" string="Print Delivery (Accounting)"
+                                    icon="fa-file-pdf-o" type="action" groups="forlife_report.accountant_print_stock_group"/>
+                        </div>
+                        <div>
+                            <button name="%(warehouse_print_stock_transfer_ingoing)d" string="Print Receive (Warehouse)"
+                                    icon="fa-file-pdf-o" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                        </div>
+                        <div>
+                            <button name="%(warehouse_print_stock_transfer_outgoing)d" string="Print Delivery (Warehouse)"
+                                    icon="fa-file-pdf-o" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="Close"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="popup_print_stock_transfer_action" model="ir.actions.act_window">
+            <field name="name">In phiếu</field>
+            <field name="res_model">stock.transfer</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="print_stock_transfer_view_form"/>
+        </record>
+
         <record id="stock_transfer_form_view_inherit" model="ir.ui.view">
             <field name="name">stock_transfer_form_view_inherit</field>
             <field name="model">stock.transfer</field>
@@ -9,10 +48,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//header" position="inside">
-                    <button name="%(accountant_print_stock_transfer_ingoing)d" string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
-                    <button name="%(warehouse_print_stock_transfer_ingoing)d" string="Print Receive" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
-                    <button name="%(accountant_print_stock_transfer_outgoing)d" string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.accountant_print_stock_group"/>
-                    <button name="%(warehouse_print_stock_transfer_outgoing)d" string="Print Delivery" class="oe_highlight" type="action" groups="forlife_report.warehouse_print_stock_group"/>
+                    <button name="open_popup_print_stock_transfer" icon="fa-print" string="In phiếu" class="oe_highlight" type="object"
+                            groups="forlife_report.accountant_print_stock_group,forlife_report.warehouse_print_stock_group"/>
                 </xpath>
 
             </field>
