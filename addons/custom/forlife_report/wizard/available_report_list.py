@@ -218,4 +218,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum37Template',
         'reportPager': True,
     },
+    'report.num38': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách kho hàng/địa điểm',
+        'reportTemplate': 'ReportNum38Template',
+        'reportPager': True,
+    },
 }
