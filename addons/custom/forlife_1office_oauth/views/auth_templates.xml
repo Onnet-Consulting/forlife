@@ -26,6 +26,8 @@
                         </div>
                     </div>
 
+                    <h4 style="font-weight: bold;padding-bottom: 1.1rem;color: teal;">Sử dụng tài khoản 1Office</h4>
+
                     <div class="mb-3 field-login">
                         <label for="login" class="form-label">Tên đăng nhập</label>
                         <input type="text" placeholder="Tên đăng nhập" name="login" t-att-value="login" id="login"

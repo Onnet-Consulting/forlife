@@ -87,7 +87,7 @@ class PosOrder(models.Model):
     #     return pos_id
 
     def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
-        vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
+        vals = super()._prepare_history_point_value(store, point_type=point_type, reason=reason, points_used=points_used, points_back=points_back)
         pos = self
         vals['points_coefficient'] = (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
         vals['points_store'] += (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
@@ -101,14 +101,14 @@ class PosOrder(models.Model):
             pos_session = item.session_id
             brand_id = pos_session.config_id.store_id.brand_id
 
-            if (item.order_status_format and brand_id.code == 'FMT') or (
-                    item.order_status_tokyolife and brand_id.code == 'TKL'):
+            if brand_id.code in ('FMT', 'TKL'):
                 member_card_ids = self.env['member.card'].get_member_card_by_date(item.date_order, brand_id.id)
                 card_rank_line_ids = item.partner_id.card_rank_ids.mapped('line_ids').sorted(lambda x: (x.real_date, x.id), reverse=True)
                 if card_rank_line_ids:
                     card_rank_line_id = card_rank_line_ids[0]
-                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
-                    if member_card_id:
+                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.new_card_rank_id)
+                    # Cộng điểm hệ số cho đơn hàng làm tăng hạng và có flag 'status' is True
+                    if member_card_id and card_rank_line_id.status and card_rank_line_id.order_id.id == item.id:
                         if member_card_id.retail_type_not_apply_ids:
                             if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.partner_id.retail_type_ids):
                                 return
@@ -141,10 +141,12 @@ class PosOrder(models.Model):
         }
 
     def get_point_order(self, money_value, brand_id, is_purchased):
+        # compensate_point: kiểm tra có phải tích bù điểm bằng tay hay không
+        compensate_point = self.env['pos.compensate.point.order'].search_count([('order_ids', '=', self.id)]) > 0
         partner_rank_detail = self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).line_ids.filtered(lambda x: x.order_id.id == self.id)
         current_rank_of_customer = partner_rank_detail.old_card_rank_id.ids or self.partner_id.card_rank_ids.filtered(lambda s: s.brand_id.id == brand_id).card_rank_id.ids
         program = self.program_store_point_id
-        if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
+        if (compensate_point or self.allow_for_point) and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
@@ -180,15 +182,14 @@ class PosOrderLine(models.Model):
             total = 0
             pos_session = item.order_id.session_id
             brand_id = pos_session.config_id.store_id.brand_id
-
-            if (item.order_id.order_status_format and brand_id.code == 'FMT') or (
-                    item.order_id.order_status_tokyolife and brand_id.code == 'TKL'):
+            if brand_id.code in ('FMT', 'TKL'):
                 member_card_ids = self.env['member.card'].get_member_card_by_date(item.order_id.date_order, brand_id.id)
                 card_rank_line_ids = item.order_id.partner_id.card_rank_ids.mapped('line_ids').sorted(lambda x: (x.real_date, x.id), reverse=True)
                 if card_rank_line_ids:
                     card_rank_line_id = card_rank_line_ids[0]
-                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
-                    if member_card_id:
+                    member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.new_card_rank_id)
+                    # Cộng điểm hệ số cho đơn hàng làm tăng hạng và có flag 'status' is True
+                    if member_card_id and card_rank_line_id.status and card_rank_line_id.order_id.id == item.order_id.id:
                         if member_card_id.retail_type_not_apply_ids:
                             if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.order_id.partner_id.retail_type_ids):
                                 return

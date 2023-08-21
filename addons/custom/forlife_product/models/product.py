@@ -9,7 +9,7 @@ class Product(models.Model):
     default_code = fields.Char(string='Mã hiển thị')
     special_group_product = fields.Char('Nhóm sản phẩm đặc trưng')
     stamp = fields.Char('Tem nhãm')
-    heso = fields.Float('Hệ số quy đổi')
+    heso = fields.Char('Hệ số quy đổi')
     trongluong = fields.Float('Trọng lượng')
     kichthuoc = fields.Float('Kích thước')
     khovai = fields.Char('Khổ vải')

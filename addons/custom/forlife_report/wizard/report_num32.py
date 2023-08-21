@@ -108,7 +108,10 @@ class ReportNum28(models.TransientModel):
                             select
                                 st.name as store,
                                 po.name as ct,
-                                php.date_order,
+                                TO_CHAR(
+                                    php.date_order,
+                                    'dd/mm/yyyy hh:mm:ss'
+                                ) as date_order,
                                 php.id,
                                 php.partner_id,
                                 sum(pol.qty) as qty,
@@ -140,7 +143,7 @@ class ReportNum28(models.TransientModel):
                                 ps.config_id = pc.id
                             left join store st on
                                 pc.store_id = st.id
-                            join pos_order_line pol on
+                            left join pos_order_line pol on
                                 po.id = pol.order_id
                             left join pos_order_line_discount_details poldd on
                                 pol.id = poldd.pos_order_line_id
@@ -148,7 +151,7 @@ class ReportNum28(models.TransientModel):
                                 p.id = po.id
                             where
                                 php.store = '{'forlife' if self.brand == 'tokyolife' else 'format'}'
-                                and rp.phone = '{self.phone}'
+                                and rp.phone = '{self.phone}' and (pol.is_promotion is false or pol.is_promotion is null)
                             group by
                                 st.name,
                                 po.name,
@@ -174,7 +177,10 @@ class ReportNum28(models.TransientModel):
                     )
                     select
                         h.*,
-                        lh.date_order,
+                        TO_CHAR(
+                            lh.date_order,
+                            'dd/mm/yyyy hh:mm:ss'
+                        ) as date_order,
                         lh.last_point
                     from
                         history h,
@@ -195,33 +201,34 @@ class ReportNum28(models.TransientModel):
 
     @api.model
     def get_history_detail(self, history_id):
+        data = []
         history = self.env['partner.history.point'].browse(int(history_id))
-        sql = f"""
-            with dpos_order as (select
-                pp.barcode  as barcode,
-                coalesce (pt.name->>'vi_VN', pt.name->>'en_US') as name,
-                coalesce (uu.name->>'vi_VN', uu.name->>'en_US') as uom_name,
-                pol.qty as qty,
-                case when pt.is_voucher_auto then pol.price_unit else pol.original_price end as price,
-                pold.money_reduced as money_reduced
+        if history.pos_order_id:
+            sql = f"""
+                with dpos_order as (select
+                    pp.barcode  as barcode,
+                    coalesce (pt.name->>'vi_VN', pt.name->>'en_US') as name,
+                    coalesce (uu.name->>'vi_VN', uu.name->>'en_US') as uom_name,
+                    pol.qty as qty,
+                    case when pt.is_voucher_auto then pol.price_unit else pol.original_price end as price,
+                    pold.money_reduced as money_reduced
+                    
+                from pos_order po 
+                join pos_order_line pol on po.id = pol.order_id 
+                join product_product pp on pol.product_id = pp.id
+                join product_template pt on pp.product_tmpl_id = pt.id
+                join uom_uom uu on pt.uom_id = uu.id
+                left join (
+                    select pos_order_line_id, sum(money_reduced) as money_reduced from pos_order_line_discount_details group by pos_order_line_id
+                ) pold on pol.id = pold.pos_order_line_id
+                where po.id = {history.pos_order_id.id} and (pol.is_promotion is false or pol.is_promotion is null)
+                )
                 
-            from pos_order po 
-            join pos_order_line pol on po.id = pol.order_id 
-            join product_product pp on pol.product_id = pp.id
-            join product_template pt on pp.product_tmpl_id = pt.id
-            join uom_uom uu on pt.uom_id = uu.id
-            left join (
-                select pos_order_line_id, sum(money_reduced) as money_reduced from pos_order_line_discount_details group by pos_order_line_id
-            ) pold on pol.id = pold.pos_order_line_id
-            where po.id = {history.pos_order_id.id}
-            )
-            
-            select 
-            round((ddo.money_reduced/ddo.price) * 100, 0) as rate,
-            (ddo.price * ddo.qty) - ddo.money_reduced as amount_total,
-            ddo.* 
-            from dpos_order ddo;
-        """
-
-        data = self.env['res.utility'].execute_postgresql(query=sql, param=[], build_dict=True)
+                select 
+                round((ddo.money_reduced/ddo.price) * 100, 0) as rate,
+                (ddo.price * ddo.qty) - ddo.money_reduced as amount_total,
+                ddo.* 
+                from dpos_order ddo;
+            """
+            data = self.env['res.utility'].execute_postgresql(query=sql, param=[], build_dict=True)
         return data

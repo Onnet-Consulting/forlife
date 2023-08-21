@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num37_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num37</field>
+        <field name="arch" type="xml">
+            <form string="Báo cáo thông tin sản phẩm" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num37_window_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo thông tin sản phẩm</field>
+        <field name="res_model">report.num37</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num37_menu"
+              action="report_num37_window_action"
+              parent="report_menu_stock"
+              sequence="37"/>
+</odoo>

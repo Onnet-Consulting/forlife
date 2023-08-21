@@ -218,4 +218,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum36Template',
         'reportPager': True,
     },
+    'report.num37': {
+        'module': 'Kho',
+        'name': 'Báo cáo thông tin sản phẩm',
+        'reportTemplate': 'ReportNum37Template',
+        'reportPager': True,
+    },
 }

@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class AccountTax(models.Model):
     _inherit = 'account.tax'
+    _rec_names_search = ['code', 'name']
 
     code = fields.Char(string='Code')
 

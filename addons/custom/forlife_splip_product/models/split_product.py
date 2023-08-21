@@ -26,7 +26,7 @@ class SplitProduct(models.Model):
             pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])
             rec.count_picking = pickings
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
         if vals_list.get('name', 'New') == 'New':
             vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
@@ -144,7 +144,8 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
                 'location_id': location_id.id,
-                'location_dest_id': record.warehouse_in_id.id
+                'location_dest_id': record.warehouse_in_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()
@@ -174,6 +175,7 @@ class SplitProduct(models.Model):
                 'move_ids_without_package': data,
                 'location_id': record.warehouse_out_id.id,
                 'location_dest_id': location_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()

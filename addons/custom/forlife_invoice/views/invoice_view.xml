@@ -101,9 +101,8 @@
                     <field name="purchase_order_product_id"
                            widget="many2many_tags"
                            options="{'no_open': False}"
-                           domain="[('custom_state','=', 'approved')]"
+                           domain="[('custom_state','=', 'approved'), ('partner_id', '=', partner_id)]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
-
                     <label for="receiving_warehouse_id"/>
                     <div class="o_row">
                         <field name="receiving_warehouse_id"
@@ -139,7 +138,7 @@
                             </control>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_currency" invisible="1"/>
-                            <field name="ware_id" invisible="1"/>
+                            <field name="stock_move_id" invisible="1"/>
                             <field name="ware_name" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
                             <field name="readonly_discount_value" invisible="1"/>
