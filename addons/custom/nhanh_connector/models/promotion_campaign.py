@@ -28,7 +28,7 @@ class PromotionCampaign(models.Model):
             ('to_date', '>=', fields.Datetime.now()),
             ('from_date', '<=', fields.Datetime.now()),
         ]
-        pl_res = self.env["promotion.pricelist.item"].sudo().search(domain, order="fixed_price ASC")
+        pl_res = self.env["promotion.pricelist.item"].with_context({"lang": "vi_VN"}).sudo().search(domain, order="fixed_price ASC")
         lines = pl_res.filtered(
             lambda r: r.product_tmpl_id.nhanh_id != False 
             and r.product_tmpl_id.categ_id.category_type_id.x_sync_nhanh

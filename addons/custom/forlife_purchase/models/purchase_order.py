@@ -1419,15 +1419,15 @@ class PurchaseOrder(models.Model):
         receiving_warehouse_ids = []
         for line in self.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_to_invoice - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = self._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
-                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
+                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
                 receiving_warehouse_ids.append(move_id.picking_id.id)
                 receiving_warehouse_ids += move_id.returned_move_ids.filtered(lambda x: x.state == 'done').picking_id.ids
-                move_id.qty_invoiced += quantity
+                move_id.qty_to_invoice += quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line

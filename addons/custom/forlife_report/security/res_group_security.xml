@@ -199,5 +199,10 @@
             <field name="name">Báo cáo thông tin sản phẩm</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+
+        <record id="group_report_num38" model="res.groups">
+            <field name="name">Báo cáo danh sách kho hàng/địa điểm</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>

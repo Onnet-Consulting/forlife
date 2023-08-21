@@ -372,13 +372,13 @@ class AccountMove(models.Model):
         return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         for line in purchase_order_id.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_to_invoice - x.qty_refunded > 0):
                 data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
-                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
+                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
-                move_id.qty_invoiced += quantity
+                move_id.qty_to_invoice = quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
@@ -689,6 +689,7 @@ class AccountMove(models.Model):
                     merged_records_tnk[key] = {
                         'sequence': tnk[2]['sequence'],
                         'account_id': tnk[2]['account_id'],
+                        'product_id': tnk[2]['product_id'],
                         'name': tnk[2]['name'],
                         'debit': tnk[2]['debit'],
                         'credit': tnk[2]['credit'],
@@ -702,6 +703,7 @@ class AccountMove(models.Model):
                     merged_records_db[key] = {
                         'sequence': db[2]['sequence'],
                         'account_id': db[2]['account_id'],
+                        'product_id': db[2]['product_id'],
                         'name': db[2]['name'],
                         'debit': db[2]['debit'],
                         'credit': db[2]['credit'],
@@ -1122,13 +1124,10 @@ class AccountMoveLine(models.Model):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
         if self.stock_move_id:
-            if self.quantity != self._origin.quantity:
-                quantity_diff = self.quantity - self._origin.quantity
-                self.stock_move_id.qty_invoiced += quantity_diff
+            self.stock_move_id.qty_to_invoice = self.quantity
             qty_returned = sum(self.stock_move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
-
-            if self.quantity_purchased > (self.stock_move_id.quantity_done - (self.stock_move_id.qty_invoiced + qty_returned))/(self.exchange_quantity or 1):
-                qty_in = (self.stock_move_id.quantity_done - (self.stock_move_id.qty_invoiced + qty_returned))/(self.exchange_quantity or 1)
+            if self.quantity_purchased > (self.stock_move_id.quantity_done - self.stock_move_id.qty_invoiced - qty_returned) / (self.exchange_quantity or 1):
+                qty_in = (self.stock_move_id.quantity_done - self.stock_move_id.qty_invoiced - qty_returned) / (self.exchange_quantity or 1)
                 raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
