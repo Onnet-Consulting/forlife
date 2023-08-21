@@ -44,11 +44,11 @@ class StockPicking(models.Model):
             if line.tax_amount > 0:
                 amount = line.tax_amount
                 product_tax = self.env.ref('forlife_purchase.product_import_tax_default')
-                move_values.append(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
+                move_values.extend(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
             if line.special_consumption_tax_amount > 0:
                 amount = line.special_consumption_tax_amount
                 product_tax = self.env.ref('forlife_purchase.product_excise_tax_default')
-                move_values.append(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
+                move_values.extend(self.prepare_move_values(line=line, amount=amount, product_tax=product_tax))
         if type and type == 'inv':
             cost_move_values = self.prepare_move_value_with_cost(po)
             move_values += cost_move_values
@@ -59,72 +59,17 @@ class StockPicking(models.Model):
 
     def prepare_move_values(self, line, amount, product_tax):
         qty_po_origin = line.product_qty
-        move = self.env['stock.move'].search([('purchase_line_id', '=', line.id), ('picking_id', '=', self.id)])
-        qty_po_done = sum(move.mapped('quantity_purchase_done'))
-        po = line.order_id
-        move_value = {
-            'ref': f"{self.name} - {line.product_id.name}",
-            'purchase_type': po.purchase_type,
-            'move_type': 'entry',
-            'reference': po.name,
-            'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
-            'exchange_rate': po.exchange_rate,
-            'date': datetime.now(),
-            'invoice_payment_term_id': po.payment_term_id.id,
-            'invoice_date_due': po.date_planned,
-            'restrict_mode_hash_table': False,
-        }
-        svl_values = []
-        move_lines = [(0, 0, {
-            'sequence': 1,
-            'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
-            'product_id': line.product_id.id,
-            'name': line.product_id.name,
-            'text_check_cp_normal': line.product_id.name,
-            'credit': 0,
-            'debit': (amount / qty_po_origin) * qty_po_done
-        })]
-        if move.product_id.type in ('product', 'consu'):
-            svl_values.append((0, 0, {
-                'value': -abs((amount / qty_po_origin) * qty_po_done),
-                'unit_cost': amount / qty_po_origin,
-                'quantity': 0,
-                'remaining_qty': 0,
-                'description': f"{self.name} - {line.product_id.name}",
-                'product_id': move.product_id.id,
-                'company_id': self.env.company.id,
-                'stock_move_id': move.id
-            }))
-            if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
-            move_lines += [(0, 0, {
-                'sequence': 2,
-                'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
-                'product_id': move.product_id.id,
-                'name': move.product_id.name,
-                'text_check_cp_normal': line.product_id.name,
-                'credit': (amount / qty_po_origin) * qty_po_done,
-                'debit': 0,
-            })]
-
-        move_value.update({
-            'stock_valuation_layer_ids': svl_values,
-            'line_ids': move_lines
-        })
-        return move_value
-
-    def prepare_move_value_with_cost(self, po):
-        qty_po_done = sum(self.mapped('move_ids.quantity_purchase_done'))
-        qty_po_origin = sum(po.mapped('order_line.product_qty'))
         move_values = []
-
-        for line in po.cost_line:
-            amount = line.vnd_amount
+        moves = self.move_ids.filtered(lambda x: x.purchase_line_id.id in line.id)
+        for move in moves:
+            qty_po_done = sum(move.mapped('quantity_done'))
+            po = line.order_id
             move_value = {
                 'ref': f"{self.name} - {line.product_id.name}",
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
+                'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
                 'exchange_rate': po.exchange_rate,
                 'date': datetime.now(),
                 'invoice_payment_term_id': po.payment_term_id.id,
@@ -132,63 +77,117 @@ class StockPicking(models.Model):
                 'restrict_mode_hash_table': False,
             }
             svl_values = []
-            debit_amount = round((amount / qty_po_origin) * qty_po_done)
-            total_credit = 0
             move_lines = [(0, 0, {
                 'sequence': 1,
-                'account_id': line.product_id.categ_id.property_stock_account_input_categ_id.id,
+                'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
                 'product_id': line.product_id.id,
                 'name': line.product_id.name,
                 'text_check_cp_normal': line.product_id.name,
-                'credit': 0.0,
-                'debit': debit_amount
+                'credit': 0,
+                'debit': (amount / qty_po_origin) * qty_po_done
             })]
-            total_after_credit = 0
-            length_move = len(self.move_ids)
-            i = 0
-            for move in self.move_ids:
-                i += 1
-                if move.product_id.type in ('product', 'consu'):
-                    svl_values.append((0, 0, {
-                        'value': - round((amount / qty_po_origin) * qty_po_done),
-                        'unit_cost': amount / qty_po_origin,
-                        'quantity': 0,
-                        'remaining_qty': 0,
-                        'description': f"{self.name} - {line.product_id.name}",
-                        'product_id': move.product_id.id,
-                        'company_id': self.env.company.id,
-                        'stock_move_id': move.id
-                    }))
-                    #TienNQ
-                    if move.product_id.cost_method == 'average':
-                        self.add_cost_product(move.product_id, - round((amount / qty_po_origin) * qty_po_done))
-
-                credit = round((amount / qty_po_origin) * move.quantity_purchase_done)
-                # after_digit = credit - int(credit)
-                if i < length_move:
-                    total_credit += round(credit)
-                    # total_after_credit += after_digit
-                else:
-                    credit = debit_amount - total_credit
-
-                vals = {
+            if move.product_id.type in ('product', 'consu'):
+                svl_values.append((0, 0, {
+                    'value': -abs((amount / qty_po_origin) * qty_po_done),
+                    'unit_cost': amount / qty_po_origin,
+                    'quantity': 0,
+                    'remaining_qty': 0,
+                    'description': f"{self.name} - {line.product_id.name}",
+                    'product_id': move.product_id.id,
+                    'company_id': self.env.company.id,
+                    'stock_move_id': move.id
+                }))
+                if move.product_id.cost_method == 'average':
+                        self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
+                move_lines += [(0, 0, {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
-                    'product_id':  move.product_id.id,
-                    'name':  move.product_id.name,
+                    'product_id': move.product_id.id,
+                    'name': move.product_id.name,
                     'text_check_cp_normal': line.product_id.name,
-                    'credit': credit,
-                    'debit': 0.0,
-                }
-
-                move_lines += [(0, 0, vals)]
+                    'credit': (amount / qty_po_origin) * qty_po_done,
+                    'debit': 0,
+                })]
 
             move_value.update({
                 'stock_valuation_layer_ids': svl_values,
                 'line_ids': move_lines
             })
             move_values.append(move_value)
-        return move_values
+        return move_value
+
+    def prepare_move_value_with_cost(self, po):
+        self.ensure_one()
+        entries_values = []
+        for move in self.move_ids:
+            if move.product_id.type not in ('product', 'consu'):
+                continue
+            product_po = po.order_line.filtered(lambda x: x.product_id == move.product_id)
+            po_total_qty = sum(product_po.mapped('product_qty'))
+            amount_rate = sum(product_po.mapped('total_vnd_amount')) / sum(po.order_line.mapped('total_vnd_amount'))
+            for expense in po.cost_line:
+                expense_vnd_amount = round(expense.vnd_amount * amount_rate, 0)
+                sp_total_qty = - move.quantity_done
+                unit_cost = expense_vnd_amount / po_total_qty
+
+                if sp_total_qty == 0:
+                    continue
+
+                if not expense.product_id.categ_id.property_stock_account_input_categ_id:
+                    raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm %s" % expense.product_id.display_name)
+
+                entries_values += [{
+                    'ref': f"{self.name}",
+                    'purchase_type': po.purchase_type,
+                    'move_type': 'entry',
+                    'x_entry_types': 'entry_cost',
+                    'reference': po.name,
+                    'exchange_rate': po.exchange_rate,
+                    'date': datetime.utcnow(),
+                    'invoice_payment_term_id': po.payment_term_id.id,
+                    'invoice_date_due': po.date_planned,
+                    'restrict_mode_hash_table': False,
+                    'stock_valuation_layer_ids': [(0, 0, {
+                        'value': round(unit_cost * sp_total_qty),
+                        'unit_cost': unit_cost,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {expense.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    })],
+                    'invoice_line_ids': [(0, 0, {
+                        'sequence': 1,
+                        'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
+                        'product_id': expense.product_id.id,
+                        'name': expense.product_id.name,
+                        'text_check_cp_normal': expense.product_id.name,
+                        'debit': abs(round(unit_cost * sp_total_qty)),
+                        'credit': 0
+                    }),
+                    (0, 0, {
+                         'sequence': 2,
+                         'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                         'product_id': move.product_id.id,
+                         'name': move.product_id.name,
+                         'text_check_cp_normal': move.product_id.name,
+                         'debit': 0,
+                         'credit': abs(round(unit_cost * sp_total_qty))
+                    })],
+                }]
+                for value in entries_values:
+                    credit = 0.0
+                    for line in value['invoice_line_ids'][1:]:
+                        if credit:
+                            line[-1]['credit'] += round(credit)
+                            credit = 0.0
+                        else:
+                            credit = line[-1]['credit'] - round(line[-1]['credit'])
+                            line[-1]['credit'] = round(line[-1]['credit'])
+                if move.product_id.cost_method == 'average':
+                    self.add_cost_product(move.product_id, round(unit_cost * sp_total_qty))
+        return entries_values
 
     def _get_picking_info_return(self, po):
         if po and po.picking_type_id:

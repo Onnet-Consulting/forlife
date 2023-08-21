@@ -265,7 +265,7 @@ class StockPicking(models.Model):
                     'invoice_line_ids': [(0, 0, {
                         'sequence': 1,
                         'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
-                        'product_id': move.product_id.id,
+                        'product_id': expense.product_id.id,
                         'name': expense.product_id.name,
                         'text_check_cp_normal': expense.product_id.name,
                         'credit': round(unit_cost * sp_total_qty),
