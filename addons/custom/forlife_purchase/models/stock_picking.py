@@ -699,15 +699,15 @@ class StockPicking(models.Model):
                 for npl in list_npls:
                     key = (npl[2]['account_id'], npl[2]['name'], npl[2]['sequence'])
                     if key in merged_records_npl:
-                        merged_records_npl[key]['debit'] += npl[2]['debit']
-                        merged_records_npl[key]['credit'] += npl[2]['credit']
+                        merged_records_npl[key]['debit'] += round(npl[2]['debit'])
+                        merged_records_npl[key]['credit'] += round(npl[2]['credit'])
                     else:
                         merged_records_npl[key] = {
                             'sequence': npl[2]['sequence'],
                             'account_id': npl[2]['account_id'],
                             'name': npl[2]['name'],
-                            'debit': npl[2]['debit'],
-                            'credit': npl[2]['credit'],
+                            'debit': round(npl[2]['debit']),
+                            'credit': round(npl[2]['credit']),
                         }
                 merged_records_list_npl = [(0, 0, record) for record in merged_records_npl.values()]
                 if merged_records_list_npl:

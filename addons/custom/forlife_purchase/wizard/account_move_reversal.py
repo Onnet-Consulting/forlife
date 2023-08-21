@@ -13,9 +13,12 @@ class AccountMoveReversal(models.TransientModel):
     def reverse_moves(self):
         self.ensure_one()
         res = super(AccountMoveReversal, self).reverse_moves()
-        for invoice_line_id in self.move_ids.invoice_line_ids.filtered(lambda x: x.ware_id):
-            invoice_line_id.ware_id.write({
-                'qty_invoiced': invoice_line_id.ware_id.qty_invoiced - invoice_line_id.quantity,
+        for invoice_line_id in self.move_ids.invoice_line_ids.filtered(lambda x: x.stock_move_id):
+            qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
+            if qty_invoiced <= 0:
+                qty_invoiced = 0
+            invoice_line_id.stock_move_id.write({
+                'qty_invoiced': qty_invoiced,
                 'qty_refunded': 0,
             })
         return res
