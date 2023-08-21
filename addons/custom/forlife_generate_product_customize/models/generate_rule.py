@@ -9,14 +9,14 @@ class GenerateRule(models.Model):
     name = fields.Char('Đầu mã')
 
     def domain_for_type_product(self):
-        attribute = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+        attribute = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT028')], limit=1)
         if attribute:
             value_ids = attribute.value_ids.ids
             return [('id','in', value_ids)]
         return []
 
     def domain_for_attribute_required(self):
-        value = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+        value = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT028')], limit=1)
         if value:
             return [('id','!=', value.id)]
         return []

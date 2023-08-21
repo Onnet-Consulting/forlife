@@ -328,7 +328,7 @@ class SaleOrder(models.Model):
                             }
                             return action
 
-                        if voucher_id.state not in ['sold', 'valid']:
+                        if voucher_id.state not in ['sold', 'valid', 'off value']:
                             rec.write({
                                 "state": "check_promotion"
                             })
@@ -390,8 +390,7 @@ class SaleOrder(models.Model):
                                 for line_promotion in rec.order_line.filtered(lambda x: x not in list_line_promotion):
                                     warehouse_code = line_promotion.x_location_id.warehouse_id.code
                                     analytic_account_id = warehouse_code and self.env[
-                                        'account.analytic.account'].search([('code', 'like', '%' + warehouse_code)],
-                                                                           limit=1)
+                                        'account.analytic.account'].search([('code', 'like', '%' + warehouse_code)], limit=1)
 
                                     if line_promotion.product_id.filtered_domain(
                                             product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line and not (
@@ -414,6 +413,9 @@ class SaleOrder(models.Model):
                         line.write({'state': 'draft'})
                         line.unlink()
                         break
+                if rec.x_code_voucher:
+                    voucher_id = self.env['voucher.voucher'].search([('name', '=', rec.x_code_voucher)])
+                    voucher_id.sale_order_use_ids = [(4, rec.id)]
                 rec.write({"state": "done_sale"})
 
     def action_open_reward_wizard(self):

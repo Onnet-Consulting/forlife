@@ -11,7 +11,7 @@ class ProductTemplate(models.Model):
         if ('barcode' not in vals_list or ('barcode' in vals_list and vals_list['barcode'] is False)) and (
                 'sku_code' not in vals_list or ('sku_code' in vals_list and vals_list['sku_code'] is False)):
             if 'brand_id' in vals_list and 'attribute_line_ids' in vals_list and vals_list['brand_id'] and vals_list['attribute_line_ids']:
-                attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+                attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT028')], limit=1)
                 rule = False
 
                 for rec in vals_list['attribute_line_ids']:
@@ -183,7 +183,7 @@ class ProductTemplate(models.Model):
     def convert_diff_attribute_line_to_dict(self, vals_list, check_sku):
         list_attribute_id, list_value_id = [], []
         rslt = {}
-        attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+        attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT028')], limit=1)
         for rec in vals_list['attribute_line_ids']:
             if rec[2]['attribute_id'] != attribute_id.id and not check_sku:
                 list_attribute_id.append(rec[2]['attribute_id'])
@@ -199,7 +199,7 @@ class ProductTemplate(models.Model):
 
     @api.depends('attribute_line_ids', 'brand_id')
     def compute_rule(self):
-        attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT027')], limit=1)
+        attribute_id = self.env['product.attribute'].sudo().search([('attrs_code', '=', 'AT028')], limit=1)
         for rec in self:
             if rec.brand_id and rec.attribute_line_ids:
                 att = rec.attribute_line_ids.filtered(lambda x: x.attribute_id.id == attribute_id.id)
