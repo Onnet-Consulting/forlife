@@ -25,6 +25,7 @@
                     <field name="purchase_id"/>
                     <field name="order_pos"/>
                     <field name="order_use_ids" widget="many2many_tags"/>
+                    <field name="sale_order_use_ids" widget="many2many_tags"/>
                     <field name="state_app"/>
                     <field name="product_voucher_id"/>
                     <field name="phone_number"/>
@@ -69,6 +70,7 @@
                             <field name="order_pos" readonly="1"/>
                             <field name="purchase_id" readonly="1"/>
                             <field name="order_use_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="sale_order_use_ids" widget="many2many_tags" readonly="1"/>
                             <field name="state_app"/>
                             <field name="phone_number"/>
                             <field name="notification_id"/>

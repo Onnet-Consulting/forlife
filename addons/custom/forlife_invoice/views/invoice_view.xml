@@ -268,11 +268,11 @@
                                 <field name="total_vnd_exchange" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="quantity" readonly="0" force_save="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="amount_tax" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="amount_tax" readonly="0" force_save="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="special_consumption_tax_amount" readonly="0" force_save="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="vat_tax" string="% Thuế GTGT"/>
-                                <field name="vat_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="vat_tax_amount" readonly="0" force_save="1" string="Tiền thuế GTGT" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="total_tax_amount" force_save="1" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                             </tree>
                         </field>

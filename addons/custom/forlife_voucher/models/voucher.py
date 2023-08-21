@@ -45,6 +45,8 @@ class Voucher(models.Model):
 
     order_use_ids = fields.Many2many('pos.order', string='Đơn hàng sử dụng')
 
+    sale_order_use_ids = fields.Many2many('sale.order', string='Đơn SO sử dụng')
+
     partner_id = fields.Many2one('res.partner')
     phone_number = fields.Char(copy=False, string='Phone')
 
