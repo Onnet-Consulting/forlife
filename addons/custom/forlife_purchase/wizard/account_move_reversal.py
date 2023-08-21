@@ -20,5 +20,6 @@ class AccountMoveReversal(models.TransientModel):
             invoice_line_id.stock_move_id.write({
                 'qty_invoiced': qty_invoiced,
                 'qty_refunded': 0,
+                'qty_to_invoice': 0,
             })
         return res
