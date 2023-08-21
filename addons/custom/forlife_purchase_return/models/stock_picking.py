@@ -26,6 +26,7 @@ class StockPicking(models.Model):
                 material_line = order_line.purchase_order_line_material_line_ids.filtered(lambda x: not x.type_cost_product)
                 if material_line:
                     picking.create_return_valuation_npl()
+                    picking.create_return_valuation_entries()
             if picking.x_is_check_return and picking.state == 'done':
                 self.tax_return_by_return_goods()
         return res
@@ -69,6 +70,7 @@ class StockPicking(models.Model):
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
+                'stock_move_id': move.id,
                 'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
                 'exchange_rate': po.exchange_rate,
                 'date': datetime.now(),
@@ -147,6 +149,7 @@ class StockPicking(models.Model):
                     'invoice_payment_term_id': po.payment_term_id.id,
                     'invoice_date_due': po.date_planned,
                     'restrict_mode_hash_table': False,
+                    'stock_move_id': move.id,
                     'stock_valuation_layer_ids': [(0, 0, {
                         'value': round(unit_cost * sp_total_qty),
                         'unit_cost': unit_cost,
@@ -263,3 +266,172 @@ class StockPicking(models.Model):
             'reason_id': npl_location_id.id,
             'include_move_id': move.id
         })
+    
+    def create_return_valuation_entries(self):
+        list_allowcation_npls = []
+        cost_labor_internal_costs = []
+        po = self.purchase_id
+        if not po:
+            return
+        if self.state == 'done':
+            move = False
+            ### Tìm kho xuất
+            picking_type_id, export_production_order = self._get_picking_info_return(po)
+            account_export_production_order = export_production_order.x_property_valuation_in_account_id
+            for item, r in zip(po.order_line_production_order, self.move_ids_without_package):
+                move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
+                material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
+
+                if item.product_id.categ_id and item.product_id.categ_id.with_company(self.company_id).property_stock_valuation_account_id:
+                    account_1561 = item.product_id.categ_id.with_company(self.company_id).property_stock_valuation_account_id.id
+                else:
+                    raise ValidationError(_("Bạn chưa cấu hình tài khoản định giá tồn kho trong danh mục sản phẩm của sản phẩm có tên %s") % item.product_id.name)
+
+                credit_cost = 0
+                for material_line in material:
+                    if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                        if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
+                            raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
+                        if material_line.price_unit > 0:
+                            pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
+                            debit_cp = (0, 0, {
+                                'sequence': 99991,
+                                'account_id': material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
+                                'product_id': material_line.product_id.id,
+                                'name': material_line.product_id.name,
+                                'text_check_cp_normal': move.product_id.name,
+                                'debit': pbo,
+                                'credit': 0,
+                            })
+                            cost_labor_internal_costs.append(debit_cp)
+                            credit_cost += pbo
+                    else:
+                        #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
+                        if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
+                            if material_line.product_id.standard_price > 0:
+                                #xử lý phân bổ nguyên vật liệu
+                                debit_allowcation_npl = (0, 0, {
+                                    'sequence': 1,
+                                    'product_id': move.product_id.id,
+                                    'account_id': account_export_production_order.id, #tiennq
+                                    'name': item.product_id.name,
+                                    'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'credit': 0,
+                                })
+
+                                credit_allowcation_npl = (0, 0, {
+                                    'sequence': 2,
+                                    'product_id': move.product_id.id,
+                                    'account_id': account_1561,
+                                    'name': account_export_production_order.name,
+                                    'debit': 0,
+                                    'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                })
+                                list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
+                if credit_cost > 0:
+                    credit_cp = (0, 0, {
+                        'sequence': 9,
+                        'account_id': account_1561,
+                        'product_id': move.product_id.id,
+                        'name': item.product_id.name,
+                        'text_check_cp_normal': item.product_id.name,
+                        'debit': 0,
+                        'credit': credit_cost,
+                    })
+                    cost_labor_internal_costs.append(credit_cp)
+                    separated_lists = {}
+                    invoice_line_ids = []
+                    target_items = item.product_id.name
+                    for lines_new in cost_labor_internal_costs:
+                        text_check_cp_normal = lines_new[2]['text_check_cp_normal']
+                        if text_check_cp_normal in target_items:
+                            if text_check_cp_normal in separated_lists:
+                                separated_lists[text_check_cp_normal].append(lines_new)
+                            else:
+                                separated_lists[text_check_cp_normal] = [lines_new]
+                    new_lines_cp_after_tax = [lines for text_check, lines in separated_lists.items()]
+                    for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
+                        invoice_line_ids.extend(sublist_lines_cp_after_tax)
+
+                    qty_po_done = sum(move.mapped('quantity_done'))
+                    svl_values = []
+                    svl_values.append((0, 0, {
+                        'value': - credit_cost,
+                        'unit_cost': credit_cost / qty_po_done,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {item.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
+                    if move.product_id.cost_method == 'average':
+                        self.add_cost_product(move.product_id, -credit_cost)
+                    entry_cp = self.env['account.move'].create({
+                        'ref': f"{self.name} - Chi phí nhân công thuê ngoài/nội bộ - {target_items}",
+                        'purchase_type': po.purchase_type,
+                        'move_type': 'entry',
+                        'x_entry_types': 'entry_cost_labor',
+                        'reference': po.name,
+                        'exchange_rate': po.exchange_rate,
+                        'date': datetime.now(),
+                        'invoice_payment_term_id': po.payment_term_id.id,
+                        'invoice_date_due': po.date_planned,
+                        'stock_move_id': move.id,
+                        'invoice_line_ids': invoice_line_ids,
+                        'restrict_mode_hash_table': False,
+                        'stock_valuation_layer_ids': svl_values
+                    })
+                    entry_cp._post()
+
+            if list_allowcation_npls:
+                merged_records_allowcation_npl = {}
+                total_npl_amount = 0
+                for allowcation_npl in list_allowcation_npls:
+                    key = (
+                    allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
+                    if key in merged_records_allowcation_npl:
+                        merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
+                        merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
+                    else:
+                        merged_records_allowcation_npl[key] = {
+                            'sequence': allowcation_npl[2]['sequence'],
+                            'product_id': allowcation_npl[2]['product_id'],
+                            'account_id': allowcation_npl[2]['account_id'],
+                            'name': allowcation_npl[2]['name'],
+                            'debit': allowcation_npl[2]['debit'],
+                            'credit': allowcation_npl[2]['credit'],
+                        }
+                    total_npl_amount += allowcation_npl[2]['debit']
+                merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
+                if merged_records_list_allowcation_npl:
+                    qty_po_done = sum(move.mapped('quantity_done'))
+                    svl_allowcation_values = []
+                    svl_allowcation_values.append((0, 0, {
+                        'value': -total_npl_amount,
+                        'unit_cost': total_npl_amount / qty_po_done,
+                        'quantity': 0,
+                        'remaining_qty': 0,
+                        'description': f"{self.name} - {item.product_id.name}",
+                        'product_id': move.product_id.id,
+                        'company_id': self.env.company.id,
+                        'stock_move_id': move.id
+                    }))
+                    if move.product_id.cost_method == 'average':
+                        self.add_cost_product(move.product_id, -total_npl_amount)
+                    entry_allowcation_npls = self.env['account.move'].create({
+                        'ref': f"{self.name} - Phân bổ nguyên phụ liệu",
+                        'purchase_type': po.purchase_type,
+                        'move_type': 'entry',
+                        # 'x_entry_types': 'entry_material',
+                        'reference': po.name,
+                        'exchange_rate': po.exchange_rate,
+                        'date': datetime.now(),
+                        'invoice_payment_term_id': po.payment_term_id.id,
+                        'invoice_date_due': po.date_planned,
+                        'invoice_line_ids': merged_records_list_allowcation_npl,
+                        'restrict_mode_hash_table': False,
+                        'stock_move_id': move.id,
+                        'stock_valuation_layer_ids': svl_allowcation_values
+                    })
+                    entry_allowcation_npls._post()
