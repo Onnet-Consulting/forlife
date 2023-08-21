@@ -73,8 +73,8 @@ class AccountMove(models.Model):
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
 
     # field domain cho 2 field đơn mua hàng và phiếu nhập kho
-    purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
-    receiving_warehouse_id = fields.Many2many('stock.picking')
+    purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order', copy=False)
+    receiving_warehouse_id = fields.Many2many('stock.picking', copy=False)
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id', string='Invoice Cost Line', store=1)
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back', store=1, readonly=False)
     # Field check k cho tạo addline khi hóa đơn đã có PO
@@ -199,8 +199,16 @@ class AccountMove(models.Model):
         AccountMoveLine = self.env['account.move.line']
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
+        type_po_cost = purchase_order_id.mapped('type_po_cost')[0] if purchase_order_id.mapped('type_po_cost') else False
         self.write({
             'invoice_line_ids': False,
+            'type_inv': type_po_cost if type_po_cost else False,
+            'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
+            'exchange_rate': purchase_order_id[0].exchange_rate if purchase_order_id else 1,
+            'currency_id': purchase_order_id[0].currency_id.id if purchase_order_id else False,
+            'invoice_date': datetime.now(),
+            'reference': ', '.join(purchase_order_id.mapped('name')) if purchase_order_id else '',
+            'is_check_select_type_inv': True,
             'account_expense_labor_detail_ids': False,
             'sum_expense_labor_ids': False,
             'vendor_back_ids': False,
