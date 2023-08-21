@@ -82,7 +82,7 @@ class StockPicking(models.Model):
             move_lines = [(0, 0, {
                 'sequence': 1,
                 'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
-                'product_id': line.product_id.id,
+                'product_id': move.product_id.id,
                 'name': line.product_id.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': 0,
@@ -163,7 +163,7 @@ class StockPicking(models.Model):
                     'invoice_line_ids': [(0, 0, {
                         'sequence': 1,
                         'account_id': expense.product_id.categ_id.property_stock_account_input_categ_id.id,
-                        'product_id': expense.product_id.id,
+                        'product_id': move.product_id.id,
                         'name': expense.product_id.name,
                         'text_check_cp_normal': expense.product_id.name,
                         'debit': abs(round(unit_cost * sp_total_qty)),
@@ -277,6 +277,11 @@ class StockPicking(models.Model):
             move = False
             ### Tìm kho xuất
             picking_type_id, export_production_order = self._get_picking_info_return(po)
+            if not export_production_order.x_property_valuation_out_account_id:
+                raise ValidationError('Bạn chưa có hoặc chưa cấu hình tài khoản trong lý do nhập nguyên phụ liệu \n Gợi ý: Tạo lý do trong cấu hình Lý do nhập khác và xuất khác có mã: N0701')
+            else:
+                if not export_production_order.reason_type_id:
+                    raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: N0701')
             account_export_production_order = export_production_order.x_property_valuation_out_account_id
             for item, r in zip(po.order_line_production_order, self.move_ids_without_package):
                 move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
@@ -297,7 +302,7 @@ class StockPicking(models.Model):
                             debit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
-                                'product_id': material_line.product_id.id,
+                                'product_id': move.product_id.id,
                                 'name': material_line.product_id.name,
                                 'text_check_cp_normal': move.product_id.name,
                                 'debit': pbo,
