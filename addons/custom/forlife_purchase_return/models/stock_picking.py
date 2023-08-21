@@ -114,7 +114,7 @@ class StockPicking(models.Model):
                 'line_ids': move_lines
             })
             move_values.append(move_value)
-        return move_value
+        return move_values
 
     def prepare_move_value_with_cost(self, po):
         self.ensure_one()
