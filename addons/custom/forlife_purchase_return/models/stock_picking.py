@@ -86,7 +86,7 @@ class StockPicking(models.Model):
         })]
         if move.product_id.type in ('product', 'consu'):
             svl_values.append((0, 0, {
-                'value': (amount / qty_po_origin) * qty_po_done,
+                'value': -abs((amount / qty_po_origin) * qty_po_done),
                 'unit_cost': amount / qty_po_origin,
                 'quantity': 0,
                 'remaining_qty': 0,
@@ -95,6 +95,8 @@ class StockPicking(models.Model):
                 'company_id': self.env.company.id,
                 'stock_move_id': move.id
             }))
+            if move.product_id.cost_method == 'average':
+                    self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
             move_lines += [(0, 0, {
                 'sequence': 2,
                 'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
@@ -148,7 +150,7 @@ class StockPicking(models.Model):
                 i += 1
                 if move.product_id.type in ('product', 'consu'):
                     svl_values.append((0, 0, {
-                        'value': - (amount / qty_po_origin) * move.quantity_done,
+                        'value': - round((amount / qty_po_origin) * qty_po_done),
                         'unit_cost': amount / qty_po_origin,
                         'quantity': 0,
                         'remaining_qty': 0,
@@ -159,7 +161,7 @@ class StockPicking(models.Model):
                     }))
                     #TienNQ
                     if move.product_id.cost_method == 'average':
-                        self.add_cost_product(move.product_id, - (amount / qty_po_origin) * move.quantity_done)
+                        self.add_cost_product(move.product_id, - round((amount / qty_po_origin) * qty_po_done))
 
                 credit = round((amount / qty_po_origin) * move.quantity_purchase_done)
                 # after_digit = credit - int(credit)
