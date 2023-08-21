@@ -737,15 +737,6 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
-    @api.model_create_multi
-    def create(self, vals):
-        purchases = super(PurchaseOrder, self).create(vals)
-        for purchase_id in purchases.filtered(lambda x: not x.is_inter_company):
-            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
-                message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
-                raise ValidationError(message)
-        return purchases
-
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         for purchase_id in self.filtered(lambda x: not x.is_inter_company and x.state == 'draft'):
@@ -1428,15 +1419,15 @@ class PurchaseOrder(models.Model):
         receiving_warehouse_ids = []
         for line in self.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_to_invoice - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = self._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
-                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
+                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
                 receiving_warehouse_ids.append(move_id.picking_id.id)
                 receiving_warehouse_ids += move_id.returned_move_ids.filtered(lambda x: x.state == 'done').picking_id.ids
-                move_id.qty_invoiced += quantity
+                move_id.qty_to_invoice += quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
@@ -1444,18 +1435,22 @@ class PurchaseOrder(models.Model):
                 if pending_section:
                     line_vals = pending_section._prepare_account_move_line()
                     line_vals.update(data_line)
-                    line_vals['quantity'] = quantity
-                    line_vals['quantity_purchased'] = quantity/line_vals['exchange_quantity']
-                    line_vals.update({'sequence': sequence})
+                    line_vals.update({
+                        'quantity': quantity,
+                        'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                        'sequence': sequence
+                    })
                     invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                     sequence += 1
                     pending_section = None
 
                 line_vals = line._prepare_account_move_line()
                 line_vals.update(data_line)
-                line_vals['quantity'] = quantity
-                line_vals['quantity_purchased'] = quantity / line_vals['exchange_quantity']
-                line_vals.update({'sequence': sequence})
+                line_vals.update({
+                    'quantity': quantity,
+                    'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                    'sequence': sequence
+                })
                 invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                 sequence += 1
         if not invoice_vals.get('invoice_line_ids', False):
@@ -2320,6 +2315,11 @@ class PurchaseOrderLine(models.Model):
             if not line.name or line.name in default_names:
                 product_ctx = {'seller_id': seller.id, 'lang': get_lang(line.env, line.partner_id.lang).code}
                 line.name = line._get_product_purchase_description(line.product_id.with_context(product_ctx))
+                
+            line.price_unit = float_round(price_unit, precision_digits=max(line.currency_id.decimal_places,
+                                                                               self.env[
+                                                                                   'decimal.precision'].precision_get(
+                                                                                   'Product Price')))
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):

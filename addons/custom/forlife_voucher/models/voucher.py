@@ -45,6 +45,8 @@ class Voucher(models.Model):
 
     order_use_ids = fields.Many2many('pos.order', string='Đơn hàng sử dụng')
 
+    sale_order_use_ids = fields.Many2many('sale.order', string='Đơn SO sử dụng')
+
     partner_id = fields.Many2one('res.partner')
     phone_number = fields.Char(copy=False, string='Phone')
 
@@ -302,7 +304,7 @@ class Voucher(models.Model):
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
         if 'import_file' in self._context and self._context.get('import_file'):
             if 'phone_number' in vals_list and vals_list['phone_number']:

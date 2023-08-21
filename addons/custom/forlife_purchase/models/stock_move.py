@@ -15,7 +15,7 @@ class StockMoveLine(models.Model):
 
     free_good = fields.Boolean(string="Hàng tặng")
     purchase_uom = fields.Many2one('uom.uom', string="Đơn vị mua")
-    quantity_change = fields.Float(string="Số lượng quy đổi")
+    quantity_change = fields.Float(string="Tỷ lệ quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
@@ -43,9 +43,10 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     free_good = fields.Boolean(string="Hàng tặng")
-    quantity_change = fields.Float(string="Số lượng quy đổi")
+    quantity_change = fields.Float(string="Tỷ lệ quy đổi")
     quantity_purchase_done = fields.Float(string="Số lượng mua hoàn thành")
     # Thêm field check số lượng lên hóa đơn
+    qty_to_invoice = fields.Float('Qty to invoice')
     qty_invoiced = fields.Float('Qty Invoiced')
     qty_refunded = fields.Float('Qty refunded')
 

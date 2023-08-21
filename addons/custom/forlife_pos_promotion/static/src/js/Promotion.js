@@ -896,7 +896,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }, []);
             let validPricelistItems = this.validOnOrderPricelistItem.filter(str_id => {
                     let pro = this.pos.pro_pricelist_item_by_id[str_id];
-                    return pro && products.has(pro.product_id) && PricelistItemsAssigned.includes(str_id)
+                    return pro
+                            && products.has(pro.product_id)
+                            && (!pro.with_code ? PricelistItemsAssigned.includes(str_id) : true)
                 }
             );
             result.push(...validPricelistItems.map(proID => this.pos.pro_pricelist_item_by_id[proID]).filter(pl => pl));
@@ -1097,6 +1099,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let filtered_orderline = order_lines.filter(l => {
             return !l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false;
         });
+        if (pricelistItem.with_code == true) {
+            return filtered_orderline.filter(line => line.product.id==pricelistItem.product_id);
+        };
         return filtered_orderline.filter(line => line.product.id==pricelistItem.product_id
                                                 && line.pricelist_item
                                                 && line.pricelist_item.id == pricelistItem.id);
