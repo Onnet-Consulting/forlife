@@ -40,6 +40,7 @@
         'data/queue_job_data.xml',
         'views/transportation_management.xml',
         'report/print_transport.xml',
+        'views/product_attribute_views.xml',
     ],
     "assets": {
         "web.assets_backend": [
