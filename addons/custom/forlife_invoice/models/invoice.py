@@ -472,27 +472,7 @@ class AccountMove(models.Model):
                 for product in invoice_description:
                     backs = rec.vendor_back_ids.filtered(lambda x: x.invoice_description == product)
                     if backs:
-                        for back_id in backs:
-                            if back_id.tax_percent:
-                                price_unit = back_id.price_subtotal_back * rec.exchange_rate
-                                taxes = back_id.tax_percent.compute_all(price_unit, quantity=1, currency=rec.currency_id, product=product, partner=rec.partner_id, is_refund=False,)
-                                if taxes.get('taxes') and taxes.get('taxes')[0]:
-                                    tax = taxes.get('taxes')[0]
-                                    tax_lines.append((0, 0, {
-                                        'name': tax['name'],
-                                        'tax_ids':[(6, 0, tax['tax_ids'])],
-                                        'tax_tag_ids': [(6, 0, tax['tag_ids'])],
-                                        'balance': tax['amount'],
-                                        'debit': tax['amount'],
-                                        'credit': 0,
-                                        'account_id': tax['account_id'] or False,
-                                        'amount_currency': tax['amount'],
-                                        'tax_amount': tax['amount'],
-                                        'tax_base_amount': tax['base'],
-                                        'tax_repartition_line_id': tax['tax_repartition_line_id'],
-                                        'group_tax_id': tax['group'] and tax['group'].id or False,
-                                        'display_type': 'tax'
-                                    }))
+                        tax_lines = rec._prepare_tax_line_to_expense_invoice(backs, product)
                         sum_price_subtotal_back = sum(backs.mapped('price_subtotal_back'))
                         sum_tax_back = sum(backs.mapped('tax_back'))
                         expense_detail = rec.account_expense_labor_detail_ids.filtered(lambda x: x.product_id == product)
@@ -501,15 +481,14 @@ class AccountMove(models.Model):
                                 'price_subtotal_back': sum_price_subtotal_back,
                                 'tax_back': sum_tax_back
                             })
-
                         invoice_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id == product)
-
                         sum_price = sum(invoice_lines.mapped('price_unit'))
                         for invoice_line in invoice_lines:
                             invoice_line.write({
                                 'price_unit': (sum_price_subtotal_back * invoice_line.price_unit) / sum_price if sum_price > 0 else 0,
                             })
 
+                #Update các chi phí k được nhập ở Tab
                 expense_invalid_detail = rec.account_expense_labor_detail_ids.filtered(lambda x: x.product_id not in invoice_description)
                 if expense_invalid_detail:
                     expense_invalid_detail.write({
@@ -517,23 +496,21 @@ class AccountMove(models.Model):
                         'tax_back': 0
                     })
 
-                invoice_invalid_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id not in invoice_description)
-                if invoice_invalid_lines:
-                    for invoice_invalid_line in invoice_invalid_lines:
-                        invoice_invalid_line.unlink()
+                invoice_invalid_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id not in invoice_description).unlink()
 
+                # Thêm line thuế
                 if tax_lines:
                     rec.write({
                         'line_ids': tax_lines
                     })
-            # check
+            # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
-                for line in rec.invoice_line_ids:
-                    if line.product_id and line.display_type == 'product':
-                        line.write({
-                            'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                            'name': line.product_id.name
-                        })
+                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id):
+                    line.write({
+                        'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
+                        'name': line.product_id.name
+                    })
+
             ### ghi key search bút toán liên quan cho invocie:
             entry_relation_ship_id = self.search([('move_type', '=', 'entry'), ('e_in_check', '=', str(rec.id)),])
             if not entry_relation_ship_id:
@@ -544,6 +521,32 @@ class AccountMove(models.Model):
                         'ref': f"{str(rec.name)} - {str(line.invoice_description)}",
                     })
         return res
+
+    # Dữ liệu Thuế cho hóa đơn chi phí mua hàng
+    def _prepare_tax_line_to_expense_invoice(self, vendor_backs, product_id):
+        tax_lines = []
+        for back_id in vendor_backs:
+            if back_id.tax_percent:
+                price_unit = back_id.price_subtotal_back * self.exchange_rate
+                taxes = back_id.tax_percent.compute_all(price_unit, quantity=1, currency=self.currency_id, product=product_id, partner=self.partner_id, is_refund=False, )
+                if taxes.get('taxes') and taxes.get('taxes')[0]:
+                    tax = taxes.get('taxes')[0]
+                    tax_lines.append((0, 0, {
+                        'name': tax['name'],
+                        'tax_ids': [(6, 0, tax['tax_ids'])],
+                        'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                        'balance': tax['amount'],
+                        'debit': tax['amount'],
+                        'credit': 0,
+                        'account_id': tax['account_id'] or False,
+                        'amount_currency': tax['amount'],
+                        'tax_amount': tax['amount'],
+                        'tax_base_amount': tax['base'],
+                        'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                        'group_tax_id': tax['group'] and tax['group'].id or False,
+                        'display_type': 'tax'
+                    }))
+        return tax_lines
 
     @api.constrains('exchange_rate', 'trade_discount')
     def constrains_exchange_rare(self):
