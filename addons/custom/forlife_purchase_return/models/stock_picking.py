@@ -11,9 +11,14 @@ class StockPickingType(models.Model):
     other_picking_type_id = fields.Many2one('stock.picking.type', string="Kiểu giao nhận xuất/nhập khác")
     other_location_id = fields.Many2one('stock.location', string="Lý do xuất/nhập khác mặc định")
 
-
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+
+    return_reason = fields.Selection([
+        ('invalid', 'Nhập sai'),
+        ('faulty', 'Trả hàng do lỗi'),
+        ('diff', 'Trả hàng do chênh lệch')
+    ], string='Lí do trả hàng')
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()

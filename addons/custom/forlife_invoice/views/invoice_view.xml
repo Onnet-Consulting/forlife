@@ -257,7 +257,8 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
                     <page string="Thông tin thuế"
-                          attrs="{'invisible': ['|', ('is_check_invoice_tnk', '=', False), ('select_type_inv', '!=', 'normal')]}">
+                          attrs="{'invisible': ['|', '|', ('is_check_invoice_tnk', '=', False), ('select_type_inv', '!=', 'normal'), ('is_purchase_internal', '=', True)]}">
+                        <field name="is_purchase_internal" invisible="1"/>
                         <field name="exchange_rate_line_ids" attrs="{'readonly': [('state', 'not in', ('draft'))]}"
                                widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh" create="0" delete="0">
