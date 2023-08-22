@@ -144,6 +144,8 @@ class InheritStockPicking(models.Model):
         picking_outgoing_id._generate_outgoing_move(picking, self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
+        if picking_outgoing_id.state != 'assigned':
+            raise ValidationError("Lỗi trạng thái phiếu xuất nguyên phụ liệu")
         materials_not_enough = '\n\t- '.join([
             sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
             for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'

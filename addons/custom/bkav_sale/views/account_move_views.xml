@@ -20,10 +20,10 @@
                                 attrs="{'invisible':['|','|',('exists_bkav', '!=', False),('invoice_guid', '!=', False),('is_general', '=', True)]}"
                                 string="Create eInvoice" groups="account.group_account_invoice"/>
                         <button name="publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('invoice_guid', '=', False),('is_post_bkav', '=', True)]}"
+                                attrs="{'invisible':['|','|',('invoice_guid', '=', False),('is_post_bkav', '=', True),('is_general', '=', True)]}"
                                 string="Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="create_publish_invoice_bkav" type="object" class="btn btn-primary"
-                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('is_post_bkav', '=', True)]}"
+                                attrs="{'invisible':['|','|',('exists_bkav', '!=', False),('is_post_bkav', '=', True),('is_general', '=', True)]}"
                                 string="Create &amp; Publish eInvoice" groups="account.group_account_invoice"/>
                         <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"

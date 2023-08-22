@@ -73,8 +73,8 @@ class AccountMove(models.Model):
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
 
     # field domain cho 2 field đơn mua hàng và phiếu nhập kho
-    purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
-    receiving_warehouse_id = fields.Many2many('stock.picking')
+    purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order', copy=False)
+    receiving_warehouse_id = fields.Many2many('stock.picking', copy=False)
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id', string='Invoice Cost Line', store=1)
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back', store=1, readonly=False)
     # Field check k cho tạo addline khi hóa đơn đã có PO
@@ -199,8 +199,16 @@ class AccountMove(models.Model):
         AccountMoveLine = self.env['account.move.line']
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
+        type_po_cost = purchase_order_id.mapped('type_po_cost')[0] if purchase_order_id.mapped('type_po_cost') else False
         self.write({
             'invoice_line_ids': False,
+            'type_inv': type_po_cost if type_po_cost else False,
+            'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
+            'exchange_rate': purchase_order_id[0].exchange_rate if purchase_order_id else 1,
+            'currency_id': purchase_order_id[0].currency_id.id if purchase_order_id else False,
+            'invoice_date': datetime.now(),
+            'reference': ', '.join(purchase_order_id.mapped('name')) if purchase_order_id else '',
+            'is_check_select_type_inv': True,
             'account_expense_labor_detail_ids': False,
             'sum_expense_labor_ids': False,
             'vendor_back_ids': False,
@@ -372,13 +380,13 @@ class AccountMove(models.Model):
         return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
         for line in purchase_order_id.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_refunded > 0):
+            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_to_invoice - x.qty_refunded > 0):
                 data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
-                quantity = move_id.quantity_done - move_id.qty_invoiced - qty_returned
+                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
-                move_id.qty_invoiced += quantity
+                move_id.qty_to_invoice = quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
@@ -689,6 +697,7 @@ class AccountMove(models.Model):
                     merged_records_tnk[key] = {
                         'sequence': tnk[2]['sequence'],
                         'account_id': tnk[2]['account_id'],
+                        'product_id': tnk[2]['product_id'],
                         'name': tnk[2]['name'],
                         'debit': tnk[2]['debit'],
                         'credit': tnk[2]['credit'],
@@ -702,6 +711,7 @@ class AccountMove(models.Model):
                     merged_records_db[key] = {
                         'sequence': db[2]['sequence'],
                         'account_id': db[2]['account_id'],
+                        'product_id': db[2]['product_id'],
                         'name': db[2]['name'],
                         'debit': db[2]['debit'],
                         'credit': db[2]['credit'],
@@ -848,7 +858,7 @@ class AccountMoveLine(models.Model):
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
     po_id = fields.Char('')
-    stock_move_id = fields.Many2one('stock.move')
+    stock_move_id = fields.Many2one('stock.move', copy=False)
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
@@ -897,20 +907,12 @@ class AccountMoveLine(models.Model):
                                       store=1)
     #field tab tnk:
     import_tax = fields.Float(string='% Thuế nhập khẩu')
-    amount_tax = fields.Float(string='Tiền thuế nhập khẩu',
-                              compute='_compute_amount_tax',
-                              store=1)
+    amount_tax = fields.Float(string='Tiền thuế nhập khẩu', compute='_compute_amount_tax', store=1, readonly=0)
     special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
-    special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
-                                                  compute='_compute_special_consumption_tax_amount',
-                                                  store=1)
+    special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt', compute='_compute_special_consumption_tax_amount', store=1, readonly=0)
     vat_tax = fields.Float(string='% Thuế GTGT')
-    vat_tax_amount = fields.Float(string='Thuế GTGT',
-                                  compute='_compute_vat_tax_amount',
-                                  store=1)
-    total_tax_amount = fields.Float(string='Tổng tiền thuế',
-                                    compute='compute_total_tax_amount',
-                                    store=1)
+    vat_tax_amount = fields.Float(string='Thuế GTGT', compute='_compute_vat_tax_amount', store=1, readonly=0)
+    total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_total_tax_amount', store=1, readonly=0)
     # field tab tổng hợp:
     before_tax = fields.Float(string='Chi phí trước tính thuế',
                               compute='_compute_before_tax',
@@ -1012,12 +1014,14 @@ class AccountMoveLine(models.Model):
     @api.depends('amount_tax', 'special_consumption_tax')
     def _compute_special_consumption_tax_amount(self):
         for rec in self:
-            rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
+            if rec.amount_tax == rec.total_vnd_exchange * rec.import_tax / 100:
+                rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.amount_tax) * rec.special_consumption_tax / 100
 
     @api.depends('special_consumption_tax_amount', 'vat_tax')
     def _compute_vat_tax_amount(self):
         for rec in self:
-            rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
+            if rec.special_consumption_tax_amount == (rec.total_vnd_exchange + (rec.total_vnd_exchange * rec.import_tax / 100)) * rec.special_consumption_tax / 100:
+                rec.vat_tax_amount = (rec.total_vnd_exchange + rec.amount_tax + rec.special_consumption_tax_amount) * rec.vat_tax / 100
 
     @api.depends('vat_tax_amount')
     def compute_total_tax_amount(self):
@@ -1061,8 +1065,9 @@ class AccountMoveLine(models.Model):
                 sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
                 if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
-                        total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                        line.after_tax = total_cost
+                        if sum_vnd_amount + sum_tnk + sum_db > 0:
+                            total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                            line.after_tax = total_cost
                 else:
                     line.after_tax = 0
 
@@ -1127,13 +1132,10 @@ class AccountMoveLine(models.Model):
         if self.exchange_quantity > 0:
             self.quantity_purchased = self.quantity / self.exchange_quantity
         if self.stock_move_id:
-            if self.quantity != self._origin.quantity:
-                quantity_diff = self.quantity - self._origin.quantity
-                self.stock_move_id.qty_invoiced += quantity_diff
+            self.stock_move_id.qty_to_invoice = self.quantity
             qty_returned = sum(self.stock_move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))
-
-            if self.quantity_purchased > (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1):
-                qty_in = (self.stock_move_id.quantity_done - qty_returned)/(self.exchange_quantity or 1)
+            if self.quantity_purchased > (self.stock_move_id.quantity_done - self.stock_move_id.qty_invoiced - qty_returned) / (self.exchange_quantity or 1):
+                qty_in = (self.stock_move_id.quantity_done - self.stock_move_id.qty_invoiced - qty_returned) / (self.exchange_quantity or 1)
                 raise ValidationError(_('Số lượng vượt quá số lượng mua hoàn thành nhập kho (%s)!' % str(qty_in)))
 
     @api.model_create_multi
