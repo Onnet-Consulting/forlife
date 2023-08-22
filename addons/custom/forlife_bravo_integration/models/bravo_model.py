@@ -429,8 +429,18 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
+        if self._context.get('import_file'):
+            return res
         if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             res.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
+        return res
+
+    @api.model
+    def load(self, fields, data):
+        res = super().load(fields, data)
+        res_ids = res.get('ids')
+        if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up") and self._context.get('import_file') and res_ids and not res.get('messages'):
+            self.env[self._name].sudo().browse(res_ids).with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
         return res
 
 

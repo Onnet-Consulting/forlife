@@ -78,9 +78,9 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
 
     @api.model_create_multi
     def create(self, vals_list):
-        if self._context.get('import_file'):
-            return super().create(vals_list)
         res = super().create(vals_list)
+        if self._context.get('import_file'):
+            return res
         record = res.action_filter_records()
         if record and self._check_active_queue_rabbit():
             record.action_sync_new_data()
