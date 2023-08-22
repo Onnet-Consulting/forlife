@@ -334,7 +334,7 @@ class StockPicking(models.Model):
                 item.move_line_ids.write({'date': item.date_done})
 
         if "import_file" in self.env.context:
-            for line in self.move_line_ids_without_package:
+            for line in self.move_line_ids_without_package.filtered(lambda x: x.quantity_purchase_done and x.quantity_change):
                 if line.qty_done != line.quantity_purchase_done * line.quantity_change:
                     line.qty_done = line.quantity_purchase_done * line.quantity_change
 
@@ -730,7 +730,7 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                         'po_id': pk_od.po_id,
                         'qty_done': pk.reserved_qty,
                         'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.reserved_qty/pk_od.quantity_change
+                        'quantity_purchase_done': pk.reserved_qty/pk_od.quantity_change if pk_od.quantity_change else 1
                     })
                 for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
                     pk.write({

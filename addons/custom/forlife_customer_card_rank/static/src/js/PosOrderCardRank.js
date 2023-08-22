@@ -197,12 +197,12 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         }
         if (check_skip_cr === false) {
             card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
-            let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
-            if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id) && this.promotion_usage_ids.find(p => p.program_id === promotion_pricelist.program_id)) {
-                let pricelist_disc = (1 - (promotion_pricelist.fixed_price / original_price)) * 100;
+            let promotion_pricelist = this.promotion_usage_ids.find(p => p.promotion_type === 'pricelist');
+            if (promotion_pricelist) {
+                let pricelist_disc = (1 - (promotion_pricelist.new_price / original_price)) * 100;
                 for (let line of cr_program.extra_discount) {
                     if (pricelist_disc > line.from && pricelist_disc <= line.to) {
-                        extra_card_rank_disc = line.disc * quantity * promotion_pricelist.fixed_price / 100;
+                        extra_card_rank_disc = line.disc * quantity * promotion_pricelist.new_price / 100;
                         break;
                     }
                 }

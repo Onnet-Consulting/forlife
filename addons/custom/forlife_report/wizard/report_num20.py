@@ -141,7 +141,8 @@ from pos_order po
     left join account_by_categ_id acc on acc.cate_id = pc.id
     left join attribute_data ad on ad.product_id = pp.id
 where po.company_id = any( array{allowed_company}) and pt.detailed_type <> 'service' and (pt.voucher = false or pt.voucher is null)
-    and pol.is_promotion = any (array[false, null]) and pt.is_product_auto = any (array[false, null])
+    and (pol.is_promotion is false or pol.is_promotion is null)
+    and (pt.is_product_auto is false or pt.is_product_auto is null)
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and sto.id = any(array{store_ids})
     and pol.qty <> 0

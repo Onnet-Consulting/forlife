@@ -11,6 +11,19 @@ class AccountMove(models.Model):
     is_trade_discount_move = fields.Boolean('Is trade discount move', default=False)
     is_check = fields.Boolean()
 
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {})
+        if self.purchase_order_product_id:
+            default.update({
+                'invoice_line_ids': False,
+                'line_ids': [],
+                'purchase_order_product_id': False,
+                'receiving_warehouse_id': False,
+            })
+        return super().copy(default)
+
     def action_post(self):
         for rec in self:
             if rec.purchase_order_product_id:
@@ -21,6 +34,13 @@ class AccountMove(models.Model):
             if rec.receiving_warehouse_id:
                 rec.receiving_warehouse_id.write({
                     'ware_check': True
+                })
+            for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
+                qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced + invoice_line_id.stock_move_id.qty_to_invoice
+                invoice_line_id.stock_move_id.write({
+                    'qty_invoiced': qty_invoiced,
+                    'qty_to_invoice': 0,
+                    'qty_refunded': 0,
                 })
         res = super(AccountMove, self).action_post()
         return res
@@ -37,6 +57,7 @@ class AccountMove(models.Model):
                     qty_invoiced = 0
                 invoice_line_id.stock_move_id.write({
                     'qty_invoiced': qty_invoiced,
+                    'qty_to_invoice': 0,
                     'qty_refunded': 0,
                 })
         return super(AccountMove, self).button_cancel()
@@ -53,6 +74,7 @@ class AccountMove(models.Model):
                     qty_invoiced = 0
                 invoice_line_id.stock_move_id.write({
                     'qty_invoiced': qty_invoiced,
+                    'qty_to_invoice': 0,
                     'qty_refunded': 0,
                 })
         return super(AccountMove, self).unlink()
@@ -62,6 +84,10 @@ class AccountMove(models.Model):
             if rec.receiving_warehouse_id:
                 rec.receiving_warehouse_id.write({
                     'ware_check': False
+                })
+            for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
+                invoice_line_id.stock_move_id.write({
+                    'qty_to_invoice': invoice_line_id.quantity
                 })
         return super(AccountMove, self).button_draft()
 

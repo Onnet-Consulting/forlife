@@ -30,12 +30,11 @@
     ],
 
     'data': [
-        'security/ir.model.access.csv',
         'security/res_group_security.xml',
+        'security/ir.model.access.csv',
 
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',
-        'wizard/report_num1_views.xml',
         'wizard/report_num2_views.xml',
         'wizard/report_num3_views.xml',
         'wizard/report_num4_views.xml',
@@ -72,6 +71,7 @@
         'wizard/report_num35_views.xml',
         'wizard/report_num36.xml',
         'wizard/report_num37.xml',
+        'wizard/report_num38.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',

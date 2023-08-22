@@ -24,6 +24,7 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                 if (total_price < 0) {
                     if (product.is_voucher_auto) {
                         data.price = Math.abs(total_price);
+                        data.original_price = Math.abs(total_price);
                     }
                 }
             }
