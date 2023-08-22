@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <function model="pos.order" name="migrate_voucher_program_many2one_to_many2many">
+            <value model="account.tax" eval="obj()"/>
+        </function>
+    </data>
+</odoo>
