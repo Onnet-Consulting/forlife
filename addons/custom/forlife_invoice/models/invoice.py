@@ -227,24 +227,26 @@ class AccountMove(models.Model):
                 return
             vals_lst = []
             cost_line_vals = []
+
+            if not purchase_order_id.cost_line:
+                raise UserError(_('Không có thông tin ở Tab Chi phí để lên hóa đơn. Vui lòng kiểm tra lại!'))
+
+            total_amount_po = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
             for cost_line in purchase_order_id.cost_line:
                 cost_actual_from_po = 0
 
                 # luồng hóa đơn chi phí
                 for po_line in purchase_order_id.order_line:
-                    move_ids = po_line.move_ids.filtered(
-                        lambda x: x.picking_id in picking_ids and x.state == 'done')
+                    move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
                     move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
 
                     # SL trên đơn PO
                     product_qty = po_line.product_qty
                     # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
-                    move_qty = sum([x.quantity_done for x in move_ids]) - sum(
-                        [y.quantity_done for y in move_return_ids])
+                    move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                     amount_pol = po_line.total_vnd_amount
-                    total_amount_po = sum(po_line.order_id.order_line.mapped('total_vnd_amount'))
-                    if not total_amount_po or not product_qty:
+                    if not total_amount_po or not product_qty or move_qty <= 0:
                         return
                     cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
                     cost_actual_from_po += cost_actual
@@ -309,6 +311,7 @@ class AccountMove(models.Model):
             # tạo dữ liệu tab chi phí
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
+
         elif self.select_type_inv == 'labor':
             if not purchase_order_id.order_line_production_order:
                 return
@@ -424,96 +427,10 @@ class AccountMove(models.Model):
             rec.invoice_line_ids = False
             rec.account_expense_labor_detail_ids = False
             rec.sum_expense_labor_ids = False
-            if rec.partner_id:
-                invoice_line_ids = rec.invoice_line_ids.filtered(lambda line: line.product_id)  # Lọc các dòng có product_id
-                if rec.select_type_inv == 'expense':
-                    pass
-                    # if rec.receiving_warehouse_id:
-                    #     rec.purchase_type = 'product'
-                    #     purchase_order_ids = rec.purchase_order_product_id
-                    #     for cost in purchase_order_ids.cost_line:
-                    #         if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                    #             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % cost.product_id.name)
-                    #         for item in purchase_order_ids.order_line:
-                    #             for pk_l in rec.receiving_warehouse_id.move_ids_without_package:
-                    #                 if item.id == pk_l.purchase_line_id.id:
-                    #                     if cost.is_check_pre_tax_costs:
-                    #                         cost_total = (item.total_vnd_amount / sum(purchase_order_ids.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
-                    #                     else:
-                    #                         cost_total = (item.total_vnd_amount / sum(purchase_order_ids.order_line.mapped('total_vnd_amount')) * (pk_l.quantity_done / item.purchase_quantity)) * cost.vnd_amount
-                    #                     existing_line = invoice_line_ids.filtered(
-                    #                         lambda line: line.product_id.id == cost.product_id.id)
-                    #                     if not existing_line:
-                    #                         invoice_line_ids += self.env['account.move.line'].new({
-                    #                             'product_id': cost.product_id.id,
-                    #                             'description': cost.name,
-                    #                             'price_unit': cost_total,
-                    #                             'cost_id': cost.id,
-                    #                         })
-                    #                     else:
-                    #                         existing_line.price_unit += cost_total
-                    #                 rec.invoice_line_ids = invoice_line_ids
-                elif rec.select_type_inv == 'labor':
-                    pass
-                    # if rec.receiving_warehouse_id:
-                    #     rec.purchase_type = 'product'
-                    #     product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
-                    #     for out_source, pnk_l in zip(product_cost.order_line_production_order, rec.receiving_warehouse_id.move_ids_without_package):
-                    #         for out_source_line in out_source.purchase_order_line_material_line_ids:
-                    #             if out_source_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs':
-                    #                 if not out_source_line.product_id.categ_id and out_source_line.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                    #                     raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % out_source_line.product_id.name)
-                    #                 else:
-                    #                     existing_line = invoice_line_ids.filtered(
-                    #                         lambda line: line.product_id.id == out_source_line.product_id.id)
-                    #                     if not existing_line:
-                    #                         invoice_line_ids += self.env['account.move.line'].new({
-                    #                             'product_id': out_source_line.product_id.id,
-                    #                             'description': out_source_line.name,
-                    #                             'price_unit': out_source_line.price_unit * (pnk_l.quantity_done / out_source.product_qty),
-                    #                             'cost_id': out_source_line.id,
-                    #                         })
-                    #                     else:
-                    #                         existing_line.price_unit += out_source_line.price_unit * (pnk_l.quantity_done / out_source.product_qty)
-                    #             rec.invoice_line_ids = invoice_line_ids
-                else:
-                    pass
-                    # if rec.receiving_warehouse_id:
-                    #     rec.purchase_type = 'product'
-                    #     product_cost = self.env['purchase.order'].search([('id', 'in', rec.purchase_order_product_id.ids)])
-                    #     for product in product_cost.order_line:
-                    #         if not product.product_id.categ_id and not product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                    #             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % product.product_id.name)
-                    #         for pnk in rec.receiving_warehouse_id.move_line_ids_without_package:
-                    #             if product.id == pnk.move_id.purchase_line_id.id:
-                    #                 invoice_line_ids += self.env['account.move.line'].new({
-                    #                     'purchase_line_id': product.id,
-                    #                     'product_id': product.product_id.id,
-                    #                     'description': product.name,
-                    #                     'request_code': product.request_purchases,
-                    #                     'promotions': product.free_good,
-                    #                     'quantity_purchased': pnk.quantity_purchase_done,
-                    #                     'product_uom_id': product.product_uom.id,
-                    #                     'exchange_quantity': pnk.quantity_change,
-                    #                     'quantity': pnk.qty_done,
-                    #                     'vendor_price': product.vendor_price,
-                    #                     'price_unit': product.price_unit,
-                    #                     'warehouse': product.location_id.id,
-                    #                     'tax_ids': product.taxes_id.ids,
-                    #                     'tax_amount': product.price_tax,
-                    #                     'price_subtotal': product.price_subtotal,
-                    #                     'discount_value': product.discount,
-                    #                     'discount': product.discount_percent,
-                    #                     'event_id': product.free_good,
-                    #                     'work_order': product.production_id.id,
-                    #                     'account_analytic_id': product.account_analytic_id.id,
-                    #                 })
-                    #             rec.invoice_line_ids = invoice_line_ids
+            if rec.select_type_inv == 'service':
+                rec.purchase_type = 'service'
             else:
-                if rec.select_type_inv == 'service':
-                    rec.purchase_type = 'service'
-                else:
-                    rec.purchase_type = 'product'
+                rec.purchase_type = 'product'
 
             # Khi chọn picking nhập kho -> tự động add picking xuất kho
             if rec.receiving_warehouse_id:
