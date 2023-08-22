@@ -128,7 +128,7 @@ class ProductTemplate(models.Model):
             else:
                 price = fixed_price
 
-            data = {
+            data = [{
                 "id": res._origin.id,
                 "idNhanh": res.nhanh_id,
                 "name": res.get_nhanh_name(),
@@ -138,8 +138,8 @@ class ProductTemplate(models.Model):
                 "price": price,
                 "shippingWeight": res.weight if res.weight > 0 else 200,
                 "status": status
-            }
-
+            }]
+            
             self.synchronized_price_nhanh(data)
 
     def write(self, vals):
@@ -264,7 +264,6 @@ class ProductTemplate(models.Model):
 
     def synchronized_product_exists_nhanh(self, line, pl_list_price=False):
         if self.nhanh_id and self.brand_id.id and self.categ_id.category_type_id.x_sync_nhanh:
-            data = []
             price = self.list_price
             if pl_list_price:
                 price = line.fixed_price
