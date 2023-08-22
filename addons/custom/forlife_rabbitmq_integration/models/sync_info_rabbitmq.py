@@ -78,11 +78,24 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
 
     @api.model_create_multi
     def create(self, vals_list):
+        if self._context.get('import_file'):
+            return super().create(vals_list)
         res = super().create(vals_list)
         record = res.action_filter_records()
         if record and self._check_active_queue_rabbit():
-            record.sudo().with_delay(description="RabbitMQ: Tạo '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
+            record.action_sync_new_data()
         return res
+
+    @api.model
+    def load(self, fields, data):
+        res = super().load(fields, data)
+        res_ids = res.get('ids')
+        if self._context.get('import_file') and res_ids and not res.get('messages'):
+            self.sudo().search([('id', 'in', res_ids)] + self.domain_record_sync_info()).action_sync_new_data()
+        return res
+
+    def action_sync_new_data(self):
+        self.sudo().with_delay(description="RabbitMQ: Tạo '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_sync_info_data(action=self._create_action)
 
 
 class SyncInfoRabbitmqUpdate(models.AbstractModel):
@@ -123,7 +136,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.action_filter_records().ids
         res = super().unlink()
         if record_ids and self._check_active_queue_rabbit():
-            self.sudo().with_delay(description="RabbitMQ: Xóa '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
+            self.env[self._name].sudo().with_delay(description="RabbitMQ: Xóa '%s'" % self._name, channel='root.RabbitMQ', priority=self._priority).action_delete_record(record_ids)
         return res
 
 
