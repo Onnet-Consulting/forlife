@@ -11,6 +11,19 @@ class AccountMove(models.Model):
     is_trade_discount_move = fields.Boolean('Is trade discount move', default=False)
     is_check = fields.Boolean()
 
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {})
+        if self.purchase_order_product_id:
+            default.update({
+                'invoice_line_ids': False,
+                'line_ids': [],
+                'purchase_order_product_id': False,
+                'receiving_warehouse_id': False,
+            })
+        return super().copy(default)
+
     def action_post(self):
         for rec in self:
             if rec.purchase_order_product_id:
