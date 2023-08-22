@@ -68,6 +68,7 @@
     'data': [
         # Data
         'data/ir_cron_data.xml',
+        'data/pos_order_func.xml',
         # Security
         'security/ir.model.access.csv',
         # Wizards
