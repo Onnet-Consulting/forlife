@@ -165,12 +165,22 @@
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
+        <record id="sync_promotion_condition_product_queue" model="rabbitmq.queue">
+            <field name="queue_key">promotion.condition.product</field>
+            <field name="queue_name">sync_promotion_queue</field>
+            <field name="description">Đồng bộ sản phẩm áp dụng cho Promotion</field>
+            <field name="target">sync_promotion_queue</field>
+            <field name="sequence">17</field>
+            <field name="sync_manual">False</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
         <record id="sync_coupon_queue" model="rabbitmq.queue">
             <field name="queue_key">promotion.code</field>
             <field name="queue_name">sync_coupon_queue</field>
             <field name="description">Đồng bộ thông tin Coupon</field>
             <field name="target">coupon_info</field>
-            <field name="sequence">17</field>
+            <field name="sequence">18</field>
             <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
@@ -180,7 +190,7 @@
             <field name="queue_name">sync_change_fixed_pricing_product_queue</field>
             <field name="description">Đồng bộ thông tin thay đổi giá niêm yết</field>
             <field name="target">fixed_pricing_change</field>
-            <field name="sequence">18</field>
+            <field name="sequence">19</field>
             <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
@@ -190,7 +200,7 @@
             <field name="queue_name">sync_order_info_queue</field>
             <field name="description">Đồng bộ thông tin đơn hàng</field>
             <field name="target">order_info</field>
-            <field name="sequence">19</field>
+            <field name="sequence">20</field>
             <field name="sync_manual">False</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
@@ -200,7 +210,7 @@
             <field name="queue_name">sync_order_info_queue</field>
             <field name="description">Đồng bộ thông tin đơn hàng</field>
             <field name="target">order_info</field>
-            <field name="sequence">20</field>
+            <field name="sequence">21</field>
             <field name="sync_manual">False</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
@@ -210,7 +220,7 @@
             <field name="queue_name">sync_voucher_program_queue</field>
             <field name="description">Đồng bộ dữ liệu Voucher</field>
             <field name="target">voucher_program</field>
-            <field name="sequence">21</field>
+            <field name="sequence">22</field>
             <field name="sync_manual">True</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
@@ -220,7 +230,7 @@
             <field name="queue_name">notification_plan_queue</field>
             <field name="description">Gửi Notification Voucher</field>
             <field name="target">voucher_code</field>
-            <field name="sequence">22</field>
+            <field name="sequence">23</field>
             <field name="sync_manual">False</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>

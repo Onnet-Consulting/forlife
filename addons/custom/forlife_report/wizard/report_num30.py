@@ -83,7 +83,7 @@ with order_lines as (select pol.id                    as order_line_id,
                               left join pos_order_line org_pol on org_pol.id = pol.refunded_orderline_id
                               left join pos_order org_po on org_po.id = org_pol.order_id
                      where to_char(po.date_order + interval '{tz_offset} h', 'MM/YYYY') = '{"%.2d/%.4d" % (int(self.month.code), self.year)}'
-                       and pol.is_promotion = any (array [false, null])
+                       and (pol.is_promotion is false or pol.is_promotion is null)
                        and pol.qty <> 0
                        and (pt.detailed_type = 'product' or (pt.detailed_type = 'service' and pt.voucher = true))),
      refunded_order_lines as (select pol.id                 as order_line_id,
@@ -189,7 +189,7 @@ with order_lines as (select pol.id                    as order_line_id,
                                 when pol.is_reward_line = true
                                     and pol.with_purchase_condition = true then 3
                                 when pol.is_reward_line = true
-                                    and pol.with_purchase_condition = any (array [false, null]) then 2
+                                    and (pol.with_purchase_condition is false or pol.with_purchase_condition is null) then 2
                                 else 1 end                                                                                            as loai_hang,
                             to_date(to_char(coalesce(org_po.date_order, po.date_order) + interval '{tz_offset} h', 'YYYY-MM-01'), 'YYYY-MM-DD') as thang
                      from pos_order_line pol
