@@ -91,6 +91,9 @@ class ImportProductionFromExcel(models.TransientModel):
         create_list_order = []
         production_code = ''
         for order in orders:
+            check_exist = self._check_exist_production(order[0])
+            if check_exist:
+                raise ValidationError('Lệnh sản xuất mã %s đã có hành động nhập kho thành phẩm. Vui lòng kiểm tra lại!', order[0])
             master = {
                 'forlife_production_finished_product_ids': [],
                 'material_import_ids': [],
@@ -202,4 +205,14 @@ class ImportProductionFromExcel(models.TransientModel):
                 'next': action,
             }
         }
+    
+    def _check_exist_production(self, code):
+        productions = self.env['forlife.production'].search([('code','=', code),('active','=', True)])
+        result = False
+        for production in productions:
+            for line in production.forlife_production_finished_product_ids:
+                if line.stock_qty != 0:
+                    result = True
+        return result
+
 
