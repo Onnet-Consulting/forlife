@@ -114,6 +114,8 @@ class StockPicking(models.Model):
                     if po.order_line_production_order and not po.is_inter_company:
                         npl = self.create_invoice_npl(po, record)
                     for rec in record.move_ids_without_package:
+                        if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                            continue
                         if rec.work_production:
                             quantity = self.env['quantity.production.order'].search(
                                 [('product_id', '=', rec.product_id.id),
