@@ -61,9 +61,10 @@ with po_datas as (select po.id  as po_id,
                            join product_template pt on pt.id = pp.product_tmpl_id
                   where po.brand_id = {self.brand_id.id}
                     and po.company_id = any (array {allowed_company})
-                    and pt.detailed_type <> 'service'
-                    and (pt.voucher = false or pt.voucher is null)
-                    and pol.qty <> 0 and pol.is_promotion = any (array[false, null]) and pt.is_product_auto = any (array[false, null])
+                    and pt.detailed_type <> 'service' and pol.qty <> 0
+                    and (pt.voucher is false or pt.voucher is null)
+                    and (pol.is_promotion is false or pol.is_promotion is null)
+                    and (pt.is_product_auto is false or pt.is_product_auto is null)
                     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
                     {order_filter_condition}
                     and po.session_id in (select id

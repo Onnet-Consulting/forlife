@@ -1330,7 +1330,6 @@ class PurchaseOrder(models.Model):
                 if not total_vnd_amount_order or not line.product_qty or move_qty <= 0:
                     return
 
-
                 amount_rate = line.total_vnd_amount / total_vnd_amount_order
                 cp = ((amount_rate * cost_line.vnd_amount) / line.product_qty) * move_qty
                 if line.currency_id != line.company_currency:

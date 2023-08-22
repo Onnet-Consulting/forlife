@@ -71,3 +71,20 @@ class PromotionProgram(models.Model):
             'state', 'promotion_type', 'combo_code', 'combo_name', 'discount_based_on', 'product_domain', 'reward_type', 'product_ids',
             'combo_line_ids',
         ]
+
+
+class PromotionConditionProduct(models.Model):
+    _name = 'promotion.condition.product'
+    _inherit = ['promotion.condition.product', 'sync.info.rabbitmq.create']
+    _create_action = 'create'
+
+    def get_sync_info_value(self):
+        rec = self.mapped('promotion_program_id')
+        return rec.get_sync_info_value()
+
+    def unlink(self):
+        promotion = self.mapped('promotion_program_id')
+        res = super().unlink()
+        if promotion and promotion._check_active_queue_rabbit():
+            promotion.sudo().with_delay(description="RabbitMQ: Sửa '%s'" % promotion._name, channel='root.RabbitMQ', priority=promotion._priority).action_sync_info_data(action=promotion._update_action)
+        return res
