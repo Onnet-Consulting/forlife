@@ -90,7 +90,7 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
     def load(self, fields, data):
         res = super().load(fields, data)
         res_ids = res.get('ids')
-        if self._context.get('import_file') and res_ids and not res.get('messages'):
+        if self._check_active_queue_rabbit() and self._context.get('import_file') and res_ids and not res.get('messages'):
             self.sudo().search([('id', 'in', res_ids)] + self.domain_record_sync_info()).action_sync_new_data()
         return res
 
