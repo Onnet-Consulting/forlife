@@ -40,9 +40,9 @@ class StockTransferRequest(models.Model):
     location_dest_id = fields.Many2one('stock.location', "Đến kho", check_company=True)
     note = fields.Text(string='Ghi chú')
     purchase_id = fields.Many2one('purchase.order', string='Đơn mua hàng', domain=[('is_return', '=', False)])
-    total_request_qty = fields.Float(string='Tổng số lượng yc', compute='_compute_total_qty', store=True)
-    total_in_qty = fields.Float(string='Tổng số lượng thực xuất', compute='_compute_total_qty', store=True)
-    total_out_qty = fields.Float(string='Tổng số lượng thực nhận', compute='_compute_total_qty', store=True)
+    total_request_qty = fields.Float(string='Tổng số lượng yc', compute='_compute_total_qty')
+    total_in_qty = fields.Float(string='Tổng số lượng thực xuất', compute='_compute_total_qty')
+    total_out_qty = fields.Float(string='Tổng số lượng thực nhận', compute='_compute_total_qty')
 
     @api.depends('request_lines.plan_quantity', 'request_lines.quantity_reality_receive', 'request_lines.quantity_reality_transfer')
     def _compute_total_qty(self):
