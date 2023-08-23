@@ -8,6 +8,11 @@
             <xpath expr="//field[@name='location_id'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': [('picking_type_code', '=', 'incoming'), ('is_pk_purchase', '=', False)]}</attribute>
             </xpath>
+
+            <field name="user_id" position="after">
+                <field name="return_reason" attrs="{'invisible': [('return_reason', '=', False)]}"/>
+                <field name="is_picking_return" invisible="1"/>
+            </field>
         </field>
     </record>
 </odoo>

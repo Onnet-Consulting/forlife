@@ -1,29 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <record id="purchase_order_action" model="ir.actions.act_window">-->
-<!--        <field name="name">Purchase order</field>-->
-<!--        <field name="res_model">purchase.order</field>-->
-<!--        <field name="view_mode">tree,form</field>-->
-<!--    </record>-->
-<!--    <record id="purchase_order_form_inherit" model="ir.ui.view">-->
-<!--        <field name="name">Purchase Order from</field>-->
-<!--        <field name="model">purchase.order</field>-->
-<!--        <field name="inherit_id" ref="purchase.purchase_order_form"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//field[@name='partner_id']" position="after">-->
-<!--                <field name="request_id"/>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
-<!--    <record id="purchase_order_search_inherit" model="ir.ui.view">-->
-<!--        <field name="name">Purchase Order search</field>-->
-<!--        <field name="model">purchase.order</field>-->
-<!--        <field name="inherit_id" ref="purchase.purchase_order_view_search"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//filter[@name='representative']" position="after">-->
-<!--                <filter string="Purchase Requests" name="request" domain="[]"-->
-<!--                        context="{'group_by': 'request_id'}"/>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
+    <data>
+        <record id="purchase_order_view_tree_add_total_qty" model="ir.ui.view">
+            <field name="name">purchase order</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+            <field name="arch" type="xml">
 
+                <xpath expr="//field[@name='amount_total']" position="after">
+                    <!-- Add new fields here -->
+                    <field name="total_qty" optional="show"/>
+                </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
 </odoo>

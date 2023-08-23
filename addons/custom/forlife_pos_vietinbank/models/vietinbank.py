@@ -38,13 +38,13 @@ class ApisVietinBank(models.AbstractModel):
         return b64encode(sig).decode('utf-8')
 
     def _prepare_body(self, pos_id):
-        params = self.env['ir.config_parameter'].sudo()
         date_to = datetime.now().strftime('%d/%m/%Y')
-        date_from = (datetime.now() - timedelta(days=30)).strftime('%d/%m/%Y')
+        date_from = (datetime.now() - timedelta(days=7)).strftime('%d/%m/%Y')
         request_id = self._ramdom_request()
-        provider_id = params.get_param('vietinbank.provider')
         merchant_id = ""
-        account_id = self.env['pos.config'].browse(pos_id).vietinbank_account_no
+        pos_config = self.env['pos.config'].browse(pos_id)
+        account_id = pos_config.vietinbank_account_no
+        provider_id = pos_config.vietinbank_provider
         # Get the client's IP address from the request headers
         vals = {
             "requestId": request_id,
@@ -99,13 +99,14 @@ class ApisVietinBank(models.AbstractModel):
             ('session_id', '=', args[2]),
         ]).unlink()
         virtual_account = self.env['pos.config'].browse(args[0]).vietinbank_virtual_account
+        virtual_account = virtual_account.split(',')
         if not trans_data['data']:
             return trans_data
         vals = []
         for item in data.get('transactions', []):
             if 'order' not in item or not item['order']:
                 continue
-            if virtual_account and item['virtualAccount'] != virtual_account:
+            if virtual_account and item['virtualAccount'] in virtual_account:
                 continue
             vals.append({
                 'pos_order_id': args[0],

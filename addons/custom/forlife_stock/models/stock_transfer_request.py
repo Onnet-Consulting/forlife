@@ -38,6 +38,25 @@ class StockTransferRequest(models.Model):
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
     location_id = fields.Many2one('stock.location', "Từ kho", check_company=True)
     location_dest_id = fields.Many2one('stock.location', "Đến kho", check_company=True)
+    note = fields.Text(string='Ghi chú')
+    purchase_id = fields.Many2one('purchase.order', string='Đơn mua hàng', domain=[('is_return', '=', False)])
+    total_request_qty = fields.Float(string='Tổng số lượng yc', compute='_compute_total_qty')
+    total_in_qty = fields.Float(string='Tổng số lượng thực xuất', compute='_compute_total_qty')
+    total_out_qty = fields.Float(string='Tổng số lượng thực nhận', compute='_compute_total_qty')
+
+    @api.depends('request_lines.plan_quantity', 'request_lines.quantity_reality_receive', 'request_lines.quantity_reality_transfer')
+    def _compute_total_qty(self):
+        for rec in self:
+            total_request_qty = 0
+            total_in_qty = 0
+            total_out_qty = 0
+            for line in rec.request_lines:
+                total_request_qty += line.plan_quantity
+                total_in_qty += line.quantity_reality_receive
+                total_out_qty += line.quantity_reality_transfer
+            rec.total_request_qty = total_request_qty
+            rec.total_in_qty = total_in_qty
+            rec.total_out_qty = total_out_qty
 
     @api.model
     def default_get(self, default_fields):

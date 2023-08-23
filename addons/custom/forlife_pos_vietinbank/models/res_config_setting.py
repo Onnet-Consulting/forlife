@@ -9,5 +9,3 @@ class ResConfigSettings(models.TransientModel):
     vietinbank_uri = fields.Char(string='Vietinbank Uri', config_parameter='vietinbank.uri')
     vietinbank_client_id = fields.Char(string='Vietinbank Client ID', config_parameter='vietinbank.client.id')
     vietinbank_client_secret = fields.Char(string='Vietinbank Client secret', config_parameter='vietinbank.client.secret')
-    vietinbank_provider = fields.Char(string='Vietinbank Provider', config_parameter='vietinbank.provider')
-
