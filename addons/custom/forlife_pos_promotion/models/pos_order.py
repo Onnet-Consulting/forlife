@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 
 from odoo import models, fields, _, api
 
@@ -9,6 +10,20 @@ class PosOrder(models.Model):
     cart_promotion_program_id = fields.Many2one('promotion.program', 'Applied Cart Promotion', readonly=True)
     reward_voucher_id = fields.Many2one('voucher.voucher', 'Reward Voucher', readonly=True)
     ref_reward_code_ids = fields.One2many('promotion.code', 'original_order_id', readonly=True)
+    cart_promotion_program_ids = fields.Many2many(
+        'promotion.program',
+        'pos_order_applied_cart_promotion_program_rel',
+        'pos_order_id',
+        'cart_program_id',
+        'Applied Cart Promotion'
+    )
+    reward_voucher_ids = fields.Many2many(
+        'voucher.voucher',
+        'pos_order_voucher_voucher_reward_rel',
+        'pos_order_id',
+        'voucher_id',
+        'Reward Vouchers'
+    )
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -49,10 +64,9 @@ class PosOrder(models.Model):
                 codes = self.env['promotion.code'].sudo().browse(code_ids)
                 codes.used_partner_ids |= partner
         # Kiểm tra và tạo mã Voucher cho khách hàng từ CTKM
-        reward_voucher_program_id = order['data'].get('reward_voucher_program_id', 0)
-        cart_promotion_program_id = order['data'].get('cart_promotion_program_id', 0)
-        if reward_voucher_program_id and cart_promotion_program_id:
-            self.issue_promotion_voucher(order_id, reward_voucher_program_id, cart_promotion_program_id)
+        cart_promotion_reward_voucher = order['data'].get('cart_promotion_reward_voucher', [])
+        if cart_promotion_reward_voucher:
+            self.issue_promotion_voucher(order_id, cart_promotion_reward_voucher)
         # Kiểm tra và tạo Mã KM cho CT giới thiệu
 
         if order['data'].get('reward_for_referring', 0) and order['data'].get('referred_code_id', {}):
@@ -120,33 +134,66 @@ class PosOrder(models.Model):
                     code_obj.consumed_amount += consumed_amount
         return order_id
 
-    def issue_promotion_voucher(self, order_id, reward_voucher_program_id, program_id):
+    def issue_promotion_voucher(self, order_id, cart_promotion_reward_voucher):
         pos_order = self.env['pos.order'].browse(order_id)
-        voucher_program = self.env['program.voucher'].browse(reward_voucher_program_id)
-        program = self.env['promotion.program'].browse(program_id)
+        VoucherProgram = self.env['program.voucher'].sudo()
+        Program = self.env['promotion.program'].sudo()
+        vouchers = self.env['voucher.voucher']
+        programs = Program
+        for program_id, reward_voucher_program_id in cart_promotion_reward_voucher:
+            voucher_program = VoucherProgram.browse(reward_voucher_program_id)
+            program = Program.browse(program_id)
+            if not voucher_program.exists() or not voucher_program.exists():
+                continue
+            voucher = self.env['voucher.voucher'].sudo().create({
+                'program_voucher_id': voucher_program.id,
+                'type': voucher_program.type,
+                'brand_id': voucher_program.brand_id.id,
+                'store_ids': [(6, False, voucher_program.store_ids.ids)],
+                'start_date': voucher_program.start_date,
+                'state': 'sold',
+                'partner_id': pos_order.partner_id.id,
+                'price': program.voucher_price,
+                'price_used': 0,
+                'price_residual': program.voucher_price - 0,
+                'derpartment_id': voucher_program.derpartment_id.id,
+                'end_date': voucher_program.end_date,
+                'apply_many_times': voucher_program.apply_many_times,
+                'apply_contemp_time': voucher_program.apply_contemp_time,
+                'product_voucher_id': voucher_program.product_id.id,
+                'purpose_id': voucher_program.purpose_id.id,
+                'product_apply_ids': [(6, False, voucher_program.product_apply_ids.ids)],
+                'is_full_price_applies': voucher_program.is_full_price_applies,
+                'promotion_program_id': program.id,
+                'orig_pos_order_id': pos_order.id,
+                'notification_id': voucher_program.product_id.get_notification_id(program.voucher_price),
+            })
+            pos_order.cart_promotion_program_id = program
+            pos_order.reward_voucher_id = voucher
+            vouchers |= voucher
+            programs |= program
 
-        voucher = self.env['voucher.voucher'].sudo().create({
-            'program_voucher_id': voucher_program.id,
-            'type': voucher_program.type,
-            'brand_id': voucher_program.brand_id.id,
-            'store_ids': [(6, False, voucher_program.store_ids.ids)],
-            'start_date': voucher_program.start_date,
-            'state': 'sold',
-            'partner_id': pos_order.partner_id.id,
-            'price': program.voucher_price,
-            'price_used': 0,
-            'price_residual': program.voucher_price - 0,
-            'derpartment_id': voucher_program.derpartment_id.id,
-            'end_date': voucher_program.end_date,
-            'apply_many_times': voucher_program.apply_many_times,
-            'apply_contemp_time': voucher_program.apply_contemp_time,
-            'product_voucher_id': voucher_program.product_id.id,
-            'purpose_id': voucher_program.purpose_id.id,
-            'product_apply_ids': [(6, False, voucher_program.product_apply_ids.ids)],
-            'is_full_price_applies': voucher_program.is_full_price_applies,
-            'promotion_program_id': program.id,
-            'orig_pos_order_id': pos_order.id,
-            'notification_id': voucher_program.product_id.get_notification_id(program.voucher_price),
-        })
-        pos_order.cart_promotion_program_id = program
-        pos_order.reward_voucher_id = voucher
+        pos_order.reward_voucher_ids = vouchers
+        pos_order.cart_promotion_program_ids = programs
+
+    def migrate_voucher_program_many2one_to_many2many(self):
+        check_orders = self.search_read([
+            ('cart_promotion_program_id', '!=', False),
+            ('reward_voucher_id', '!=', False)], fields=['id', 'cart_promotion_program_id', 'reward_voucher_id'])
+        check_order_ids_list = [order['id'] for order in check_orders]
+        self.env.cr.execute("""
+        select pos_order_id from pos_order_applied_cart_promotion_program_rel
+        where pos_order_id in %(ids)s""", {'ids': tuple(check_order_ids_list)})
+        order_ids_updated = list(set(itertools.chain(*self.env.cr.fetchall())))
+        insert_program_vals = [(order['id'], order['cart_promotion_program_id'][0])
+                               for order in check_orders if order['id'] not in order_ids_updated]
+        insert_voucher_vals = [(order['id'], order['reward_voucher_id'][0])
+                               for order in check_orders if order['id'] not in order_ids_updated]
+        program_query = """
+        INSERT INTO pos_order_applied_cart_promotion_program_rel (pos_order_id, cart_program_id) 
+        VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_program_vals)))
+        self.env.cr.execute(program_query, insert_program_vals)
+        voucher_query = """
+        INSERT INTO pos_order_voucher_voucher_reward_rel (pos_order_id, voucher_id) 
+        VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_voucher_vals)))
+        self.env.cr.execute(voucher_query, insert_voucher_vals)
