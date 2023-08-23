@@ -22,7 +22,7 @@
                         </group>
                         <group>
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
                 </sheet>
