@@ -58,6 +58,7 @@ export class CartPromotionButton extends PosComponent {
             if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
                 order.reward_voucher_program_id = optionPro.voucher_program_id[0];
                 order.cart_promotion_program_id = optionPro.program.id;
+                order.cart_promotion_reward_voucher.push([optionPro.program.id, optionPro.voucher_program_id[0]]);
             }
         };
 
