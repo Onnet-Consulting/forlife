@@ -114,6 +114,32 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
+    total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
+    total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
+
+    @api.depends('move_ids.quantity_purchase_done', 'move_ids.quantity_done')
+    def _compute_total_qty(self):
+        for rec in self:
+            total_purchase_qty = 0
+            total_qty_done = 0
+            for move in rec.move_ids:
+                total_purchase_qty += move.quantity_purchase_done
+                total_qty_done += move.quantity_done
+            rec.total_purchase_qty = total_purchase_qty
+            rec.total_qty_done = total_qty_done
+
+    def compute_is_picking_return(self):
+        for rec in self:
+            if self.move_ids.filtered(lambda x: x.origin_returned_move_id):
+                rec.is_picking_return = True
+            elif rec.x_hide_return:
+                rec.is_picking_return = True
+            elif (rec.other_export or (not rec.other_export and rec.state != 'done')):
+                rec.is_picking_return = True
+            else:
+                rec.is_picking_return = False
+
     def open_scan_barcode(self):
         self.ensure_one()
         stock_picking_scan_line_ids = [(0, 0, {

@@ -438,50 +438,54 @@ class SummaryAccountMovePos(models.Model):
                     # line = lines[0]
                     # row = v
                     for line in lines:
-                        row = v.copy()
-                        if abs(line.remaining_quantity) >= abs(v["quantity"]):
-                            row["quantity"] = -abs(row["quantity"])
-                            row["price_unit"] = -abs(row["price_unit"])
-                            row["price_unit_incl"] = -abs(row["price_unit_incl"])
-                            row["synthetic_id"] = line.synthetic_id.id
-                            adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
-                            remaining_quantity = line.remaining_quantity - abs(v["quantity"])
-                            if remaining_records.get(store_id):
-                                rows = remaining_records[store_id]
-                                if rows.get(line.synthetic_id.id):
-                                    rows[line.synthetic_id.id].append(row)
+                        if abs(v["quantity"]) > 0:
+                            row = v.copy()
+                            if abs(line.remaining_quantity) >= abs(v["quantity"]):
+                                row["quantity"] = -abs(row["quantity"])
+                                row["price_unit"] = -abs(row["price_unit"])
+                                row["price_unit_incl"] = -abs(row["price_unit_incl"])
+                                row["synthetic_id"] = line.synthetic_id.id
+                                adjusted_quantity = line.adjusted_quantity + abs(v["quantity"])
+                                remaining_quantity = line.remaining_quantity - abs(v["quantity"])
+                                if remaining_records.get(store_id):
+                                    rows = remaining_records[store_id]
+                                    if rows.get(line.synthetic_id.id):
+                                        rows[line.synthetic_id.id].append(row)
+                                    else:
+                                        rows[line.synthetic_id.id] = [row]
                                 else:
-                                    rows[line.synthetic_id.id] = [row]
+                                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                                line.with_delay(
+                                    description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
+                                ).write({
+                                    "remaining_quantity": remaining_quantity,
+                                    "adjusted_quantity": adjusted_quantity
+                                })
+                                v["quantity"] = 0
+                                break
                             else:
-                                remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                            line.with_delay(
-                                description="Adjusted invoice for POS and Nhanh.vn", channel="root.NhanhMQ"
-                            ).write({
-                                "remaining_quantity": remaining_quantity,
-                                "adjusted_quantity": adjusted_quantity
-                            })
-                            break
-                        else:
-                            row["quantity"] = -abs(line.remaining_quantity)
-                            v["quantity"] += line.remaining_quantity
-                            adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
-                            row["price_unit"] = -abs(row["price_unit"])
-                            row["synthetic_id"] = line.synthetic_id.id
+                                row["quantity"] = -abs(line.remaining_quantity)
+                                v["quantity"] -= abs(line.remaining_quantity)
+                                adjusted_quantity = line.adjusted_quantity + abs(line.remaining_quantity)
+                                row["price_unit"] = -abs(row["price_unit"])
+                                row["synthetic_id"] = line.synthetic_id.id
 
-                            if remaining_records.get(store_id):
-                                rows = remaining_records[store_id]
-                                if rows.get(line.synthetic_id.id):
-                                    rows[line.synthetic_id.id].append(row)
+                                if remaining_records.get(store_id):
+                                    rows = remaining_records[store_id]
+                                    if rows.get(line.synthetic_id.id):
+                                        rows[line.synthetic_id.id].append(row)
+                                    else:
+                                        rows[line.synthetic_id.id] = [row]
                                 else:
-                                    rows[line.synthetic_id.id] = [row]
-                            else:
-                                remaining_records[store_id] = {line.synthetic_id.id: [row]}
-                            line.sudo().with_delay(
-                                description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                            ).write({
-                                "remaining_quantity": 0,
-                                "adjusted_quantity": adjusted_quantity
-                            })
+                                    remaining_records[store_id] = {line.synthetic_id.id: [row]}
+                                line.sudo().with_delay(
+                                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                                ).write({
+                                    "remaining_quantity": 0,
+                                    "adjusted_quantity": adjusted_quantity
+                                })
+                        else:
+                            break
                     is_adjusted = True
                 # else:
                 #     row = v
@@ -566,78 +570,81 @@ class SummaryAccountMovePos(models.Model):
                     v_item["adjusted_line_id"] = None
                     lines = synthetic_line_discounts.filtered(lambda r: r.store_id.id == store_id and r.line_pk == k)
                     if lines:
-
                         for line in lines:
-                            store_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice.id == line.bkav_synthetic_id.id)
-                            if abs(line.remaining_amount_total) >= abs(v_item["amount_total"]):
-                                remaining_amount_total = line.remaining_amount_total + v_item["amount_total"]
-                                adjusted_amount_total = line.adjusted_amount_total + v_item["amount_total"]
-                                if store_adjusted:
-                                    v_item["bkav_adjusted_id"] = store_adjusted.id
-                                    remaining_discounts.append(v_item.copy())
-                                else:
-                                    if vals_list.get(line.bkav_synthetic_id.id):
-                                        row = vals_list[line.bkav_synthetic_id.id]
-                                        row["adjusted_discount_ids"].append((0,0, v_item))
+                            if abs(v_item["amount_total"]) > 0:
+                                store_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice.id == line.bkav_synthetic_id.id)
+                                if abs(line.remaining_amount_total) >= abs(v_item["amount_total"]):
+                                    remaining_amount_total = line.remaining_amount_total + v_item["amount_total"]
+                                    adjusted_amount_total = line.adjusted_amount_total + v_item["amount_total"]
+                                    if store_adjusted:
+                                        v_item["bkav_adjusted_id"] = store_adjusted.id
+                                        remaining_discounts.append(v_item.copy())
                                     else:
-                                        pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-                                        vals_list[line.bkav_synthetic_id.id] = {
-                                            'code': pos_license_bkav,
-                                            'company_id': company_id.id,
-                                            'store_id': store.id,
-                                            'partner_id': store.contact_id.id,
-                                            'invoice_date': date.today(),
-                                            'line_ids': [],
-                                            'source_invoice': line.bkav_synthetic_id.id,
-                                            'accumulate_ids': [],
-                                            'adjusted_discount_ids': [(0,0, v_item.copy())],
-                                        }
-                                line.sudo().with_delay(
-                                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                                ).write({
-                                    "remaining_amount_total": remaining_amount_total,
-                                    "adjusted_amount_total": adjusted_amount_total
-                                })
-                                v_item["amount_total"] = 0
-                                break
+                                        if vals_list.get(line.bkav_synthetic_id.id):
+                                            row = vals_list[line.bkav_synthetic_id.id]
+                                            row["adjusted_discount_ids"].append((0,0, v_item.copy()))
+                                        else:
+                                            pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                            vals_list[line.bkav_synthetic_id.id] = {
+                                                'code': pos_license_bkav,
+                                                'company_id': company_id.id,
+                                                'store_id': store.id,
+                                                'partner_id': store.contact_id.id,
+                                                'invoice_date': date.today(),
+                                                'line_ids': [],
+                                                'source_invoice': line.bkav_synthetic_id.id,
+                                                'accumulate_ids': [],
+                                                'adjusted_discount_ids': [(0,0, v_item.copy())],
+                                            }
+                                    line.sudo().with_delay(
+                                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                                    ).write({
+                                        "remaining_amount_total": remaining_amount_total,
+                                        "adjusted_amount_total": adjusted_amount_total
+                                    })
+                                    v_item["amount_total"] = 0
+                                    break
+                                else:
+                                    v_item["amount_total"] -= abs(line.remaining_amount_total)
+                                    adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
+                                    v[""]
+                                    if store_adjusted:
+                                        v_item["bkav_adjusted_id"] = store_adjusted.id
+                                        remaining_discounts.append(v_item.copy())
+                                    else:
+                                        if vals_list.get(line.bkav_synthetic_id.id):
+                                            row = vals_list[line.bkav_synthetic_id.id]
+                                            row["adjusted_discount_ids"].append((0,0, v_item.copy()))
+                                        else:
+                                            pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                            vals_list[line.bkav_synthetic_id.id] = {
+                                                'code': pos_license_bkav,
+                                                'company_id': company_id.id,
+                                                'store_id': store.id,
+                                                'partner_id': store.contact_id.id,
+                                                'invoice_date': date.today(),
+                                                'line_ids': [],
+                                                'source_invoice': line.bkav_synthetic_id.id,
+                                                'accumulate_ids': [],
+                                                'adjusted_discount_ids': [(0,0, v_item.copy())],
+                                            }
+                                    line.sudo().with_delay(
+                                        description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                                    ).write({
+                                        "remaining_amount_total": 0,
+                                        "adjusted_amount_total": adjusted_amount_total
+                                    })
                             else:
-                                v_item["amount_total"] += line.remaining_amount_total
-                                adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
+                                break
 
-                                if store_adjusted:
-                                    v_item["bkav_adjusted_id"] = store_adjusted.id
-                                    remaining_discounts.append(v_item)
-                                else:
-                                    if vals_list.get(line.bkav_synthetic_id.id):
-                                        row = vals_list[line.bkav_synthetic_id.id]
-                                        row["adjusted_discount_ids"].append((0,0, v_item))
-                                    else:
-                                        pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-                                        vals_list[line.bkav_synthetic_id.id] = {
-                                            'code': pos_license_bkav,
-                                            'company_id': company_id.id,
-                                            'store_id': store.id,
-                                            'partner_id': store.contact_id.id,
-                                            'invoice_date': date.today(),
-                                            'line_ids': [],
-                                            'source_invoice': line.bkav_synthetic_id.id,
-                                            'accumulate_ids': [],
-                                            'adjusted_discount_ids': [(0,0, v_item)],
-                                        }
-                                line.sudo().with_delay(
-                                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                                ).write({
-                                    "remaining_amount_total": 0,
-                                    "adjusted_amount_total": adjusted_amount_total
-                                })
                         if v_item["amount_total"] > 0:
                             not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                             v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
-                            remaining_discounts.append(v_item)
+                            remaining_discounts.append(v_item.copy())
                     else:
                         not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                         v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
-                        remaining_discounts.append(v_item)
+                        remaining_discounts.append(v_item.copy())
 
             if accumulate_point > 0:
                 matching_accumulates.append({
@@ -651,80 +658,84 @@ class SummaryAccountMovePos(models.Model):
                 lines = synthetic_accumulates.filtered(lambda r: r.store_id.id == store_id)
                 if lines:
                     for line in lines:
-                        store_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice.id == line.bkav_synthetic_id.id)
-                        if abs(line.remaining_total_point) >= abs(accumulate_point):
-                            remaining_total_point = line.remaining_total_point + accumulate_point
-                            adjusted_quantity = line.adjusted_total_point + accumulate_point
-                            accumulate_item = {
-                                "total_point": accumulate_point,
-                                "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
-                                "store_id": store_id
-                            }
-                            if store_adjusted:
-                                accumulate_item["bkav_adjusted_id"] = store_adjusted.id
-                                remaining_accumulates.append(accumulate_item)
-                            else:
-                                if vals_list.get(line.bkav_synthetic_id.id):
-                                    row = vals_list[line.bkav_synthetic_id.id]
-                                    row["accumulate_ids"].append((0,0, accumulate_item))
+                        if abs(accumulate_point) > 0:
+                            store_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice.id == line.bkav_synthetic_id.id)
+                            if abs(line.remaining_total_point) >= abs(accumulate_point):
+                                remaining_total_point = line.remaining_total_point + accumulate_point
+                                adjusted_quantity = line.adjusted_total_point + accumulate_point
+                                accumulate_item = {
+                                    "total_point": accumulate_point,
+                                    "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
+                                    "store_id": store_id
+                                }
+                                if store_adjusted:
+                                    accumulate_item["bkav_adjusted_id"] = store_adjusted.id
+                                    remaining_accumulates.append(accumulate_item)
                                 else:
-                                    pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-                                    vals_list[line.bkav_synthetic_id.id] = {
-                                        'code': pos_license_bkav,
-                                        'company_id': company_id.id,
-                                        'store_id': store.id,
-                                        'partner_id': store.contact_id.id,
-                                        'invoice_date': date.today(),
-                                        'line_ids': [],
-                                        'source_invoice': line.bkav_synthetic_id.id,
-                                        'accumulate_ids': [(0,0, accumulate_item)],
-                                        'adjusted_discount_ids': []
-                                    }
+                                    if vals_list.get(line.bkav_synthetic_id.id):
+                                        row = vals_list[line.bkav_synthetic_id.id]
+                                        row["accumulate_ids"].append((0,0, accumulate_item))
+                                    else:
+                                        pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                        vals_list[line.bkav_synthetic_id.id] = {
+                                            'code': pos_license_bkav,
+                                            'company_id': company_id.id,
+                                            'store_id': store.id,
+                                            'partner_id': store.contact_id.id,
+                                            'invoice_date': date.today(),
+                                            'line_ids': [],
+                                            'source_invoice': line.bkav_synthetic_id.id,
+                                            'accumulate_ids': [(0,0, accumulate_item)],
+                                            'adjusted_discount_ids': []
+                                        }
 
-                            line.sudo().with_delay(
-                                description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                            ).write({
-                                "remaining_total_point": remaining_total_point,
-                                "adjusted_total_point": adjusted_quantity
-                            })
-                            accumulate_point = 0
-                            break
+                                line.sudo().with_delay(
+                                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                                ).write({
+                                    "remaining_total_point": remaining_total_point,
+                                    "adjusted_total_point": adjusted_quantity
+                                })
+                                accumulate_point = 0
+                                break
+                            else:
+                                accumulate_point += abs(line.remaining_total_point)
+                                adjusted_quantity = line.adjusted_total_point - abs(line.remaining_total_point)
+                                accumulate_item = {
+                                    "total_point": -abs(line.remaining_total_point),
+                                    "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
+                                    "store_id": store_id
+                                }
+
+                                if store_adjusted:
+                                    accumulate_item["bkav_adjusted_id"] = store_adjusted.id
+                                    remaining_accumulates.append(accumulate_item)
+                                else:
+                                    if vals_list.get(line.bkav_synthetic_id.id):
+                                        row = vals_list[line.bkav_synthetic_id.id]
+                                        row["accumulate_ids"].append((0,0, accumulate_item))
+                                        vals_list[line.bkav_synthetic_id.id] = row
+                                    else:
+                                        pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                        vals_list.append({
+                                            'code': pos_license_bkav,
+                                            'company_id': company_id.id,
+                                            'store_id': store.id,
+                                            'partner_id': store.contact_id.id,
+                                            'invoice_date': date.today(),
+                                            'line_ids': [],
+                                            'source_invoice': line.bkav_synthetic_id.id,
+                                            'accumulate_ids': [(0,0, accumulate_item)]
+                                        })
+
+                                line.sudo().with_delay(
+                                    description="Adjusted invoice for POS", channel="root.NhanhMQ"
+                                ).write({
+                                    "remaining_total_point": 0,
+                                    "adjusted_total_point": adjusted_quantity
+                                })
                         else:
-                            accumulate_point += line.remaining_total_point
-                            adjusted_quantity = line.adjusted_total_point - abs(line.remaining_total_point)
-                            accumulate_item = {
-                                "total_point": -abs(line.remaining_total_point),
-                                "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
-                                "store_id": store_id
-                            }
+                            break
 
-                            if store_adjusted:
-                                accumulate_item["bkav_adjusted_id"] = store_adjusted.id
-                                remaining_accumulates.append(accumulate_item)
-                            else:
-                                if vals_list.get(line.bkav_synthetic_id.id):
-                                    row = vals_list[line.bkav_synthetic_id.id]
-                                    row["accumulate_ids"].append((0,0, accumulate_item))
-                                    vals_list[line.bkav_synthetic_id.id] = row
-                                else:
-                                    pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-                                    vals_list.append({
-                                        'code': pos_license_bkav,
-                                        'company_id': company_id.id,
-                                        'store_id': store.id,
-                                        'partner_id': store.contact_id.id,
-                                        'invoice_date': date.today(),
-                                        'line_ids': [],
-                                        'source_invoice': line.bkav_synthetic_id.id,
-                                        'accumulate_ids': [(0,0, accumulate_item)]
-                                    })
-
-                            line.sudo().with_delay(
-                                description="Adjusted invoice for POS", channel="root.NhanhMQ"
-                            ).write({
-                                "remaining_total_point": 0,
-                                "adjusted_total_point": adjusted_quantity
-                            })
                     if accumulate_point < 0:
                         not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                         accumulate_item = {

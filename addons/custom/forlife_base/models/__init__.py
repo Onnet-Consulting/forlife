@@ -34,3 +34,4 @@ from . import res_groups
 from . import ir_model_access
 from . import stock_picking
 from . import odoo_app_logging
+from . import stock_location

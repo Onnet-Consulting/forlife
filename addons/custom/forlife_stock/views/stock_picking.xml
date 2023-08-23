@@ -9,6 +9,10 @@
             <xpath expr="//field[@name='scheduled_date']" position="after">
                 <field name="date_done"/>
             </xpath>
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="total_purchase_qty"/>
+                <field name="total_qty_done"/>
+            </xpath>
         </field>
     </record>
     <record id="forlife_stock_stock_picking_form_view" model="ir.ui.view">
@@ -28,11 +32,12 @@
                 <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="after">
+                <field name="is_picking_return" invisible="1"/>
                 <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '!=', True)]}" string="Xác nhận" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
             </xpath>
             <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
-                   <attribute name="attrs">{'invisible':[('x_hide_return', '=', True)]}</attribute>
-                </xpath>
+               <attribute name="attrs">{'invisible':['|', ('is_picking_return', '=', True), ('state', '!=', 'done')]}</attribute>
+            </xpath>
             <xpath expr="//field[@name='date_done']" position="replace">
                 <field name="date_done"/>
             </xpath>

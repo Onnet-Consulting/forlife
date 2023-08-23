@@ -124,19 +124,19 @@
                                 <field name="product_id" readonly="1"/>
                                 <field name="description" readonly="1"/>
                                 <field name="company_currency" invisible="1"/>
-                                <field name="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
+                                <field name="total_vnd_exchange" sum="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
                                 <field name="total_vnd_exchange_import" invisible="1"/>
                                 <field name="product_qty" readonly="1" string="Số lượng"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="tax_amount_import" invisible="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="special_consumption_tax_amount_import" invisible="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                <field name="vat_tax_amount" sum="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                                 <field name="vat_tax_amount_import" invisible="1"/>
-                                <field name="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                <field name="total_tax_amount" sum="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
                             </tree>
                         </field>
                     </page>
@@ -231,7 +231,7 @@
                     <field name="partner_domain" invisible="1" />
                     <field name="partner_id" string="Nhà cung cấp"
                            attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
-                           domain="[('is_purchase_inter_company', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                           domain="[('is_purchase_inter_company', '=', is_inter_company), ('company_id', '=', False), ('group_id.code', 'not in', ['C', False])]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" required="1" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="currency_id" required="1"
