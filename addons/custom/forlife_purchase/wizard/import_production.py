@@ -93,7 +93,7 @@ class ImportProductionFromExcel(models.TransientModel):
         for order in orders:
             check_exist = self._check_exist_production(order[0])
             if check_exist:
-                raise ValidationError('Lệnh sản xuất mã %s đã có hành động nhập kho thành phẩm. Vui lòng kiểm tra lại!', order[0])
+                raise ValidationError('Lệnh sản xuất mã %s đã có hành động nhập kho thành phẩm. Vui lòng kiểm tra lại!' %order[0])
             master = {
                 'forlife_production_finished_product_ids': [],
                 'material_import_ids': [],
@@ -123,13 +123,13 @@ class ImportProductionFromExcel(models.TransientModel):
                 create_material_vals = []
                 for m in data_material_good.get(production_code, []):
                     if not product_dict.get(m[0], False):
-                        raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.', m[0]))
+                        raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.' %m[0]))
                     if not product_dict.get(m[1], False) and m[1] != '':
-                        raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.', m[1]))
+                        raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.' %m[1]))
                     if not product_dict.get(m[2], False) and m[2] != '':
-                        raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.', m[2]))
+                        raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.'%m[2]))
                     if not uom_dict.get(m[5], False):
-                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.', m[5]))
+                        raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.'%m[5]))
 
                     common_data = {
                         'product_id': product_dict.get(m[0], False),

@@ -58,6 +58,7 @@ class PosOrderLine(models.Model):
         return super(PosOrderLine, self).create(vals_list)
 
     def _export_for_ui(self, orderline):
+        orderline = orderline.sudo()
         result = super()._export_for_ui(orderline)
         result['point'] = orderline.point
         result['is_new_line_point'] = orderline.is_new_line_point
