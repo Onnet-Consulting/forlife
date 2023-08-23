@@ -21,8 +21,8 @@
                             <field name="str_number" placeholder="STR001,STR002,..."/>
                         </group>
                         <group>
-                            <field name="location_ids" widget="many2many_tags"/>
-                            <field name="location_dest_ids" widget="many2many_tags"/>
+                            <field name="location_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="location_dest_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
                 </sheet>

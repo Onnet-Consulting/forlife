@@ -18,13 +18,13 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
-                            <field name="from_rank_id" class="oe_inline"/>
-                            <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]"/>
+                            <field name="from_rank_id" class="oe_inline" options="{'no_create': True}"/>
+                            <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]" options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
-                            <field name="customer_ids" widget="many2many_tags"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
                 </sheet>
