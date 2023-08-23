@@ -19,6 +19,13 @@ class StockReturnPicking(models.TransientModel):
 
     select_all = fields.Boolean(string='Chọn tất cả', default=False)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for val in vals_list:
+            val['product_return_moves'] = [item for item in val.get('product_return_moves', []) if 'quantity' in item[2] and item[2]['quantity'] >= 1]
+        res = super().create(vals_list)
+        return res
+
     @api.onchange('select_all')
     def _onchange_select_all(self):
         for rec in self.product_return_moves:
