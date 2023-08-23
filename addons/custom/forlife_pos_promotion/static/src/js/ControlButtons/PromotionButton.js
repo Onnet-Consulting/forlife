@@ -30,7 +30,7 @@ export class PromotionButton extends PosComponent {
             };
         });
 
-        order.orderlines = order.orderlines.filter(line => line.quantity);
+        order.orderlines = order.orderlines.filter(line => line.quantity || (order.is_change_product && !line.is_new_line));
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
