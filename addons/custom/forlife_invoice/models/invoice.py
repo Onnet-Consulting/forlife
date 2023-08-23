@@ -232,7 +232,6 @@ class AccountMove(models.Model):
             'is_check_select_type_inv': True,
             'account_expense_labor_detail_ids': False,
             'sum_expense_labor_ids': False,
-            'vendor_back_ids': False,
             'cost_line': False,
             'purchase_order_product_id': [(6, 0, purchase_order_id.ids)],
         })
@@ -244,8 +243,10 @@ class AccountMove(models.Model):
             raise ValidationError('Vui lòng chọn ít nhất 1 Đơn mua hàng!')
         #  nếu tạo hoá đơn chi phí
         if self.select_type_inv == 'expense':
-            if not picking_ids:
-                return
+            picking_in_ids = picking_ids.filtered(lambda x: not x.x_is_check_return)
+            if not picking_in_ids:
+                raise UserError(_('Vui lòng chọn ít nhất 1 phiếu nhập kho để lên hóa đơn. Vui lòng kiểm tra lại!'))
+
             vals_lst = []
             cost_line_vals = []
 
@@ -259,7 +260,7 @@ class AccountMove(models.Model):
                 # luồng hóa đơn chi phí
                 for po_line in purchase_order_id.order_line:
                     move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                     # SL trên đơn PO
                     product_qty = po_line.product_qty
@@ -272,9 +273,9 @@ class AccountMove(models.Model):
                     cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
                     cost_actual_from_po += cost_actual
 
-                    cost_actual_currency = cost_line.currency_id._convert(cost_actual, self.currency_id, self.company_id, self.date, round=False)
+                    # cost_actual_currency = round(cost_line.currency_id._convert(cost_actual, self.currency_id, self.company_id, self.date, round=False))
 
-                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cost_actual_currency)
+                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cost_actual)
                     if po_line.display_type == 'line_section':
                         pending_section = po_line
                         continue
@@ -298,7 +299,8 @@ class AccountMove(models.Model):
 
                 data.update({
                     'vnd_amount': cost_actual_from_po,
-                    'invoice_cost_id': self.id})
+                    'invoice_cost_id': self.id
+                })
                 cost_line_vals.append(data)
             aml_ids = AccountMoveLine.create(vals_lst)
 
@@ -316,7 +318,7 @@ class AccountMove(models.Model):
                 expense_lst = []
                 for product_expense in product_expenses:
                     sum_product_expense_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_expense)
-                    price_subtotal = sum([x.price_unit for x in sum_product_expense_moves])
+                    price_subtotal = sum(sum_product_expense_moves.mapped('price_unit'))
                     expense_vals = self._prepare_account_expense_labor_detail(product_expense, price_subtotal)
                     expense_lst.append(expense_vals)
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
