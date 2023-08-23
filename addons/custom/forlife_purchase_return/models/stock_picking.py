@@ -37,8 +37,7 @@ class StockPicking(models.Model):
         return res
 
     def tax_return_by_return_goods(self):
-        picking = self.move_ids.origin_returned_move_id.picking_id or self
-        po = picking.purchase_id
+        po = self.move_ids.origin_returned_move_id.purchase_line_id.order_id
         if not po:
             return
         if self.move_ids.origin_returned_move_id:
