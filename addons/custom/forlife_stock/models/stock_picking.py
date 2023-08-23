@@ -121,13 +121,18 @@ class StockPicking(models.Model):
     @api.depends('move_ids.quantity_purchase_done', 'move_ids.quantity_done')
     def _compute_total_qty(self):
         for rec in self:
-            total_purchase_qty = 0
-            total_qty_done = 0
-            for move in rec.move_ids:
-                total_purchase_qty += move.quantity_purchase_done
-                total_qty_done += move.quantity_done
-            rec.total_purchase_qty = total_purchase_qty
-            rec.total_qty_done = total_qty_done
+            self._cr.execute("""
+                select
+                    sum(quantity_purchase_done) as quantity_purchase_done,
+                    sum(quantity_done) as quantity_done
+                from
+                    stock_move sm
+                where
+                    picking_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_purchase_qty = data.get('quantity_purchase_done', 0)
+            rec.total_qty_done = data.get('quantity_done', 0)
 
     def compute_is_picking_return(self):
         for rec in self:
