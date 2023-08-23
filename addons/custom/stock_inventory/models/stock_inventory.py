@@ -93,6 +93,10 @@ class Inventory(models.Model):
     #     for line in self.line_ids:
     #         self.total_valorisation += line.total
 
+    @api.onchange('warehouse_id')
+    def onchange_warehouse(self):
+        self.location_id = False
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
         # If the multilocation group is not active, default the location to the one of the main
@@ -486,9 +490,9 @@ class Inventory(models.Model):
         for data in quants_groups:
             line = {
                 'inventory_id': self.id,
-                'product_qty': 0, # 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
+                'product_qty': 0,  # 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
                 'theoretical_qty': data.get('quanty'),
-                'x_first_qty': 0, # data.get('quanty'),
+                'x_first_qty': 0,  # data.get('quanty'),
                 'product_id': data.get('product_id'),
                 'location_id': data.get('location_id'),
                 'product_uom_id': data.get('uom_id')
@@ -596,6 +600,12 @@ from detail_product_not_exits;
         if not self.detail_ids:
             raise ValidationError('Xuất excel không thành công. Thông tin chi tiết đếm kiểm chưa được nhập.')
         return self.env['import.inventory.session.wizard'].create({'inv_id': self.id}).print_xlsx()
+
+    def btn_export_inventory_line(self):
+        self.ensure_one()
+        if not self.line_ids:
+            raise ValidationError('Xuất excel không thành công. Thông tin chi tiết kiểm kê trống.')
+        return self.env['filter.product.wizard'].create({'inventory_id': self.id}).print_xlsx()
 
     def update_inventory_detail(self):
         self.ensure_one()
@@ -710,6 +720,9 @@ from (select isl.product_id                       as product_id,
         return values
 
     def action_filter_product(self):
+        if self._context.get('remove_all_product'):
+            self.product_ids = [(5, 0, 0)]
+            return True
         action = self.env.ref('stock_inventory.filter_product_wizard_action').read()[0]
         action['res_id'] = self.env['filter.product.wizard'].search([('inventory_id', '=', self.id)], limit=1).id
         return action

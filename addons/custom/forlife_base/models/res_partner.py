@@ -22,3 +22,15 @@ class ResPartner(models.Model):
     supplier_group_id = fields.Many2one('res.supplier.group', string="Supplier Group", copy=False)
     sup_product_type_id = fields.Many2one('supplier.product.type', string="Type of Supplier Product", copy=False)
 
+    def name_get(self):
+        result = super().name_get()
+        for partner in self:
+            if partner.ref:
+                name = f'[{partner.ref}] {partner.name}'
+            else:
+                name = f'{partner.name}'
+            result.append((partner.id, name))
+        return result
+
+
+

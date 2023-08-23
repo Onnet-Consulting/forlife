@@ -6,8 +6,8 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'Số PO', 'Ngày tạo PO', 'Ngày nhận hàng dự kiến', 'Ghi chú',
-    'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Tên SP',
-    'Màu', 'Size', 'Số lượng đặt hàng', 'Đơn vị tính (*)', 'Số lượng xác nhận',
+    'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng nhu cầu', 'Tên SP',
+    'Màu', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
     'Phần dở dang của',
 ]
 
@@ -20,7 +20,7 @@ class ReportNum28(models.TransientModel):
     request_id = fields.Many2many('purchase.order', string='Số PO',
                                   domain=[('custom_state', 'not in', ('cancel', 'close'))])
     location_id = fields.Many2one('stock.location', string='Kho')
-    status = fields.Selection([('to invoice', 'Chưa hoàn thành'), ('invoiced', 'Đã hoàn thành')], string='Trạng thái')
+    status = fields.Selection([('not_done', 'Chưa hoàn thành'), ('done', 'Đã hoàn thành')], string='Trạng thái')
 
     def _get_query(self):
         self.ensure_one()
@@ -90,8 +90,10 @@ class ReportNum28(models.TransientModel):
             query += f""" and po.id = any(array{self.request_id.ids})"""
         if self.location_id:
             query += f""" and sp.location_dest_id = {self.location_id.id}"""
-        if self.status:
-            query += f""" and po.invoice_status_fake = '{self.status}'"""
+        if self.status and self.status == 'done':
+            query += f""" and sp.state = 'done'"""
+        if self.status and self.status != 'done':
+            query += f""" and sp.state not in ('done', 'cancel')"""
         query += " ORDER BY sp.name, num;"
         return query
 
@@ -129,10 +131,10 @@ class ReportNum28(models.TransientModel):
             sheet.write(row, 5, value.get('so_phieu_kho'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('num'), formats.get('int_number_format'))
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('ten_sp'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('mau'), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('size'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('sl_nhu_cau'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('sl_nhu_cau'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('mau'), formats.get('int_number_format'))
+            sheet.write(row, 11, value.get('size'), formats.get('int_number_format'))
             sheet.write(row, 12, value.get('dvt'), formats.get('int_number_format'))
             sheet.write(row, 13, value.get('sl_nhan'), formats.get('normal_format'))
             sheet.write(row, 14, value.get('phan_do_dang'), formats.get('int_number_format'))

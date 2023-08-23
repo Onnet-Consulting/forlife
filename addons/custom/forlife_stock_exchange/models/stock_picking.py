@@ -68,24 +68,19 @@ class InheritStockPicking(models.Model):
     def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
         product_qty = sum(product_prodution_quantity.mapped('quantity'))
-        material_total = float_round(material.total, precision_rounding=material.production_uom_id.rounding)
+        m_total = material.conversion_coefficient * material.rated_level * material.loss
+        material_total = float_round(m_total, precision_rounding=material.production_uom_id.rounding)
         product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding)
         move_outgoing_value = []
         qty_remain = product_uom_qty
         if product_qty >= product_uom_qty:
             val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, product_uom_qty, material, reason_type_id)
-            product_prodution_quantity.update({
-                'quantity': product_prodution_quantity.quantity - product_uom_qty
-            })
             move_outgoing_value.append(val)
             return move_outgoing_value
 
         if product_qty:
             qty_need = float_round(product_qty, precision_rounding=material.production_uom_id.rounding)
             val = self.prepare_data_stock_move_material(material.product_id, reason_export_id, qty_need, material, reason_type_id)
-            product_prodution_quantity.update({
-                'quantity': product_prodution_quantity.quantity - qty_need
-            })
             move_outgoing_value.append(val)
             qty_remain = float_round(product_uom_qty - qty_need, precision_rounding=material.production_uom_id.rounding)
 
@@ -101,9 +96,6 @@ class InheritStockPicking(models.Model):
                     qty_need = float_round(qty_remain, precision_rounding=material_backup_01.production_uom_id.rounding)
                     val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
-                    product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
-                    })
                     return move_outgoing_value
 
                 if material_backup_01_qty:
@@ -111,9 +103,6 @@ class InheritStockPicking(models.Model):
                     val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_need, material_backup_01, reason_type_id)
                     move_outgoing_value.append(val)
                     qty_remain = float_round(qty_remain - qty_need, precision_rounding=material_backup_01.production_uom_id.rounding)
-                    product_backup_01_prodution_quantity.update({
-                        'quantity': product_backup_01_prodution_quantity.quantity - qty_need
-                    })
 
                 if qty_remain:
                     # Check sản phẩm thay thế Level 2
@@ -126,9 +115,6 @@ class InheritStockPicking(models.Model):
                         if material_backup_02_qty >= qty_remain:
                             val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
                             move_outgoing_value.append(val)
-                            product_backup_02_prodution_quantity.update({
-                                'quantity': product_backup_02_prodution_quantity.quantity - qty_remain
-                            })
                         else:
                             raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
 
@@ -159,6 +145,8 @@ class InheritStockPicking(models.Model):
         picking_outgoing_id._generate_outgoing_move(picking, self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
+        if picking_outgoing_id.state != 'assigned':
+            raise ValidationError("Lỗi trạng thái phiếu xuất nguyên phụ liệu")
         materials_not_enough = '\n\t- '.join([
             sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
             for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'
@@ -169,7 +157,7 @@ class InheritStockPicking(models.Model):
                 picking_outgoing_id.location_id.complete_name,
                 materials_not_enough
             ))
-        picking_outgoing_id.button_validate()
+        # picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
     def button_validate(self):

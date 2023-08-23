@@ -114,6 +114,32 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
+    total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
+    total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
+
+    @api.depends('move_ids.quantity_purchase_done', 'move_ids.quantity_done')
+    def _compute_total_qty(self):
+        for rec in self:
+            total_purchase_qty = 0
+            total_qty_done = 0
+            for move in rec.move_ids:
+                total_purchase_qty += move.quantity_purchase_done
+                total_qty_done += move.quantity_done
+            rec.total_purchase_qty = total_purchase_qty
+            rec.total_qty_done = total_qty_done
+
+    def compute_is_picking_return(self):
+        for rec in self:
+            if self.move_ids.filtered(lambda x: x.origin_returned_move_id):
+                rec.is_picking_return = True
+            elif rec.x_hide_return:
+                rec.is_picking_return = True
+            elif (rec.other_export or (not rec.other_export and rec.state != 'done')):
+                rec.is_picking_return = True
+            else:
+                rec.is_picking_return = False
+
     def open_scan_barcode(self):
         self.ensure_one()
         stock_picking_scan_line_ids = [(0, 0, {
@@ -332,6 +358,12 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
+
+        if "import_file" in self.env.context:
+            for line in self.move_line_ids_without_package.filtered(lambda x: x.quantity_purchase_done and x.quantity_change):
+                if line.qty_done != line.quantity_purchase_done * line.quantity_change:
+                    line.qty_done = line.quantity_purchase_done * line.quantity_change
+
         return res
 
     def action_back_to_draft(self):
@@ -451,7 +483,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
+                            '[01] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
                             'quantity': quantity_prodution.quantity - rec.quantity_done
@@ -482,7 +514,7 @@ class StockPicking(models.Model):
                 if quantity_prodution:
                     if rec.quantity_done > quantity_prodution.quantity:
                         raise ValidationError(
-                            'Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
+                            '[03] - Số lượng tồn kho sản phẩm [%s] %s trong lệnh sản xuất %s không đủ để điều chuyển!' % (
                                 rec.product_id.code, rec.product_id.name, rec.work_production.code))
                     else:
                         quantity_prodution.update({
@@ -714,28 +746,28 @@ class StockMoveLine(models.Model):
 class StockBackorderConfirmationInherit(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
 
-    # def process(self):
-    #     res = super().process()
-    #     for item in self:
-    #         for rec in item.pick_ids:
-    #             data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
-    #             for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
-    #                 pk.write({
-    #                     'po_id': pk_od.po_id,
-    #                     'qty_done': pk.reserved_qty,
-    #                     'quantity_change': pk_od.quantity_change,
-    #                     'quantity_purchase_done': pk.reserved_qty
-    #                 })
-    #             for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
-    #                 pk.write({
-    #                     'po_l_id': pk_od.po_l_id,
-    #                 })
-    #             for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
-    #                 pk_od.write({
-    #                     'quantity_purchase_done': pk.quantity_purchase_done,
-    #                 })
-    #             for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
-    #                 pk_od.write({
-    #                     'quantity_purchase_done': pk.quantity_purchase_done,
-    #                 })
-    #     return res
+    def process(self):
+        res = super().process()
+        for item in self:
+            for rec in item.pick_ids:
+                data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
+                    pk.write({
+                        'po_id': pk_od.po_id,
+                        'qty_done': pk.reserved_qty,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk.reserved_qty/pk_od.quantity_change if pk_od.quantity_change else 1
+                    })
+                for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
+                    pk.write({
+                        'po_l_id': pk_od.po_l_id,
+                    })
+                for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
+                    })
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, data_pk.move_ids_without_package):
+                    pk_od.write({
+                        'quantity_purchase_done': pk.quantity_purchase_done,
+                    })
+        return res

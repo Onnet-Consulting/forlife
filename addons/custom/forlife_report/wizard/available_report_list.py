@@ -1,12 +1,6 @@
 # -*- coding:utf-8 -*-
 
 AVAILABLE_REPORT = {
-    # 'report.num1': {
-    #     'module': 'Bán hàng',
-    #     'name': 'Doanh thu theo sản phẩm',
-    #     'reportTemplate': 'ReportNum1Template',
-    #     'reportPager': True,
-    # },
     'report.num2': {
         'module': 'Kho',
         'name': 'Tồn kho theo giá bán',
@@ -216,6 +210,18 @@ AVAILABLE_REPORT = {
         'module': 'Kho',
         'name': 'Báo cáo nhập kho thành phẩm sản xuất',
         'reportTemplate': 'ReportNum36Template',
+        'reportPager': True,
+    },
+    'report.num37': {
+        'module': 'Kho',
+        'name': 'Báo cáo thông tin sản phẩm',
+        'reportTemplate': 'ReportNum37Template',
+        'reportPager': True,
+    },
+    'report.num38': {
+        'module': 'Kho',
+        'name': 'Báo cáo danh sách kho hàng/địa điểm',
+        'reportTemplate': 'ReportNum38Template',
         'reportPager': True,
     },
 }

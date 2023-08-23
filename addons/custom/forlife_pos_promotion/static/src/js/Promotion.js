@@ -219,8 +219,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         let available_products = this.get_reward_product_ids(program);
         let valid_products_in_order = this.env.pos.get_order().get_orderlines_to_check().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
         let ref_product = valid_products_in_order.sort((a,b) => b.lst_price - a.lst_price).at(0);
-        let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
-        return valid_rewards
+        if (ref_product) {
+            let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
+            return valid_rewards;
+        };
+        return [];
     }
 
     get_program_by_id(str_id) {
@@ -893,7 +896,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }, []);
             let validPricelistItems = this.validOnOrderPricelistItem.filter(str_id => {
                     let pro = this.pos.pro_pricelist_item_by_id[str_id];
-                    return pro && products.has(pro.product_id) && PricelistItemsAssigned.includes(str_id)
+                    return pro
+                            && products.has(pro.product_id)
+                            && (!pro.with_code ? PricelistItemsAssigned.includes(str_id) : true)
                 }
             );
             result.push(...validPricelistItems.map(proID => this.pos.pro_pricelist_item_by_id[proID]).filter(pl => pl));
@@ -1094,6 +1099,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let filtered_orderline = order_lines.filter(l => {
             return !l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false;
         });
+        if (pricelistItem.with_code == true) {
+            return filtered_orderline.filter(line => line.product.id==pricelistItem.product_id);
+        };
         return filtered_orderline.filter(line => line.product.id==pricelistItem.product_id
                                                 && line.pricelist_item
                                                 && line.pricelist_item.id == pricelistItem.id);

@@ -466,7 +466,7 @@ msgstr "Trung tâm chi phí"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
 msgid "Quantity"
-msgstr "Số lượng quy đổi tồn kho"
+msgstr "Tỷ lệ quy đổi tồn kho"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__confirm
@@ -508,7 +508,7 @@ msgstr "Số lượng đặt mua"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__exchange_quantity
 msgid "Exchange Quantity"
-msgstr "Số lượng quy đổi"
+msgstr "Tỷ lệ quy đổi"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_uom
@@ -653,7 +653,7 @@ msgstr "Số lượng đặt mua phải lớn hơn 0"
 #: code:addons/purchase_request/models/purchase_request.py:0
 #, python-format
 msgid "Exchange quantity must be greater than 0!"
-msgstr "Số lượng quy đổi phải lớn hơn 0!"
+msgstr "Tỷ lệ quy đổi phải lớn hơn 0!"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view

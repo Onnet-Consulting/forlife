@@ -10,6 +10,7 @@
                     <field name="product_barcode"/>
                     <field name="product_name"/>
                     <field name="qty"/>
+                    <field name="qty_unreturned"/>
                     <field name="original_price"/>
                     <field name="subtotal_paid"/>
                     <field name="promotion_string_code"/>

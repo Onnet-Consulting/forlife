@@ -92,6 +92,15 @@ class SummaryAccountMovePosReturn(models.Model):
         items = {}
         discount_items = {}
         for line in lines:
+            if not line.product_id:
+                continue
+            if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
+                continue
+            
+            product_tmpl_id =  line.product_id.product_tmpl_id
+            if product_tmpl_id.voucher or product_tmpl_id.is_voucher_auto or product_tmpl_id.is_product_auto:
+                continue
+
             pk = line.get_pk_synthetic()
             item = self.get_move_line(line, discount_items)
             item["line_pk"] = pk

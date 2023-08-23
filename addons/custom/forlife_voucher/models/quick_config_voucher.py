@@ -11,7 +11,7 @@ class QuickConfigVoucher(models.Model):
     _description = "Quick Config Voucher"
 
     name = fields.Char(string='Name', default='Đổi trạng thái voucher', readonly=True)
-    method = fields.Selection([('active', 'Hiệu lực'), ('in_active', 'Vô hiệu')],
+    method = fields.Selection([('active', 'Hiệu lực'), ('in_active', 'Vô hiệu')], default='in_active',
                               string='Phương thức đổi', required=True)
     voucher_ids = fields.Many2many('voucher.voucher', string='Voucher')
     file_import = fields.Binary(string='File Excel')

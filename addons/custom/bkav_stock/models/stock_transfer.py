@@ -224,7 +224,8 @@ class StockTransfer(models.Model):
     #     self.cancel_invoice_bkav()
     #     return res
     
-    def unlink(self):
-        for item in self:
-            item.delete_invoice_bkav()
-        return super(StockTransfer, self).unlink()
+    # def unlink(self):
+    #     for item in self:
+    #         if item.state != 'draft':
+    #             item.delete_invoice_bkav()
+    #     return super(StockTransfer, self).unlink()

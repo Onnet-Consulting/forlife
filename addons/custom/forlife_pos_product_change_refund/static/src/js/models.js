@@ -87,7 +87,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             if(options.pos_order_line_discount_details){
                 orderline.pos_order_line_discount_details = options.pos_order_line_discount_details;
             }
-            if (options.original_price !== 0 && orderline.product.is_product_auto) {
+            if (options.original_price !== 0 && (orderline.product.is_product_auto || orderline.product.is_voucher_auto)) {
                 orderline._set_original_price(options.original_price);
             }
             orderline.related_refund_line_cid = options.related_refund_line_cid || null;

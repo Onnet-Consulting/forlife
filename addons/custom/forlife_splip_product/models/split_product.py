@@ -26,7 +26,7 @@ class SplitProduct(models.Model):
             pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])
             rec.count_picking = pickings
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals_list):
         if vals_list.get('name', 'New') == 'New':
             vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
@@ -56,7 +56,7 @@ class SplitProduct(models.Model):
                     'product_id': rec.product_id.id,
                     'warehouse_in_id': rec.warehouse_in_id.id,
                     'quantity': 1,
-                    'product_uom_split': rec.product_uom_split.id,
+                    # 'product_uom_split': rec.product_uom_split.id,
                     'parent_id': rec.id
                 })
         self.env['split.product.line.sub'].create(vals_list)
@@ -144,7 +144,8 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
                 'location_id': location_id.id,
-                'location_dest_id': record.warehouse_in_id.id
+                'location_dest_id': record.warehouse_in_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()
@@ -174,6 +175,7 @@ class SplitProduct(models.Model):
                 'move_ids_without_package': data,
                 'location_id': record.warehouse_out_id.id,
                 'location_dest_id': location_id.id,
+                'origin': self.name
             })
         for pick in pickings:
             pick.button_validate()
@@ -215,11 +217,11 @@ class SpilitProductLineSub(models.Model):
         related='split_product_id.state',
         string='Trạng thái')
     split_product_id = fields.Many2one('split.product')
-    product_id = fields.Many2one('product.product', 'Sản phẩm chính', readonly=True, required=True)
+    product_id = fields.Many2one('product.product', 'Sản phẩm chính')
     product_split_id = fields.Many2one('product.product', string='Sản phẩm phân tách')
-    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', readonly=True, required=True)
+    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập')
     quantity = fields.Integer('Số lượng', required=True)
-    product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', readonly=True)
+    product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', related='product_id.uom_id')
     unit_price = fields.Float('Đơn giá', readonly=True, related='product_split_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
     parent_id = fields.Many2one('split.product.line')

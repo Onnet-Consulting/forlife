@@ -26,14 +26,14 @@
                 <xpath expr="//field[@name='purchase_code']" position="replace">
                     <field name="purchase_code" attrs="{'invisible': True}"/>
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
-                    <field name="account_analytic_id"
-                           attrs="{'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="account_analytic_id" force_save="1"
+                           attrs="{'readonly': ['|',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="production_id"
-                           attrs="{'invisible': [('purchase_type', '=', 'asset')], 'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                           attrs="{'invisible': [('purchase_type', '=', 'asset')], 'readonly': ['|',('production_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
 <!--                    <field name="event_id"-->
 <!--                           attrs="{'invisible': [('purchase_type', '!=', 'product')], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>-->
                     <field name="occasion_code_id"
-                           attrs="{'readonly': ['|',('is_purchase_request', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                           attrs="{'readonly': ['|',('occasion_code_id', '!=', False), ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="is_check_line_material_line" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='has_contract']" position="attributes">
@@ -57,12 +57,11 @@
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('is_check_line_material_line', '=', False), ('purchase_type', '=', 'product')]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
                      <field name="invoice_status_fake" />
                     <field name="invoice_status" invisible="1"/>
-                    <!--                    <field name="picking_type_id"/>-->
                     <field name="has_contract" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="has_contract_commerce" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="note" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -76,7 +75,7 @@
                      <attribute name="context">{'default_state': 'draft', 'default_location_id': location_id}</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
-                    <page string="Nguyên phụ liệu" name="production_order_domain"
+                    <page string="Chi phí hoàn thiện" name="production_order_domain"
                           attrs="{'invisible': ['|', ('is_check_line_material_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="order_line_production_order" class="width-hh" widget="one2many" mode="tree"
                                options="{'no_create': True}">
@@ -119,7 +118,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Nguyên phụ liệu">
+                            <page string="Chi phí hoàn thiện">
                                 <field name="purchase_order_line_material_line_ids" mode="tree" force_save="1">
                                     <tree editable="bottom">
                                         <field name="is_from_po" invisible="1"/>
@@ -130,7 +129,6 @@
                                         <field name="name" string="Mô tả"/>
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
                                         <field name="product_qty" string="Số lượng" force_save="1"/>
-<!--                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>-->
                                         <field name="type_cost_product" invisible="1"/>
                                         <field name="price_unit" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
                                         <field name="total_amount" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>

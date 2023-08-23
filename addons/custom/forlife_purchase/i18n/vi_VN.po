@@ -447,7 +447,7 @@ msgstr "Tài khoản"
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__exchange_quantity
 msgid "Exchange Quantity"
-msgstr "Số lượng quy đổi"
+msgstr "Tỷ lệ quy đổi"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vendor_price
@@ -585,7 +585,7 @@ msgstr "Đơn vị mua"
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__exchange_quantity
 msgid "Exchange Quantity"
-msgstr "Số lượng quy đổi"
+msgstr "Tỷ lệ quy đổi"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__vendor_price
@@ -958,7 +958,7 @@ msgstr "Không có dòng nào có thể lập hóa đơn. Nếu một sản ph�
 #: code:addons/forlife_purchase/models/purchase_order.py:0
 #, python-format
 msgid "The number of exchanges is not filled with negative numbers !!"
-msgstr "Số lượng quy đổi không được nhỏ hơn 0"
+msgstr "Tỷ lệ quy đổi không được nhỏ hơn 0"
 
 #. module: forlife_purchase
 #. odoo-python

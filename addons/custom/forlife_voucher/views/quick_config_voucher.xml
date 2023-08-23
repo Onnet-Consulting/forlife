@@ -95,7 +95,7 @@
 
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="quick_config_voucher_menu"
-                  parent="sale.product_menu_catalog"
+                  parent="sale.sale_menu_root"
                   groups="sales_team.group_sale_manager"
                   action="quick_config_voucher_action"
                   sequence="60"
