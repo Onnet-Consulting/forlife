@@ -20,7 +20,13 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.purchase_quantity')
     def compute_total_qty(self):
         for rec in self:
-            rec.total_qty = sum(rec.order_line.mapped('purchase_quantity'))
+            self._cr.execute("""
+                SELECT 
+                    sum(pol.purchase_quantity) as purchase_quantity
+                FROM purchase_order_line pol where pol.order_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_qty = data.get('purchase_quantity', 0)
 
     @api.depends('order_line')
     def _compute_order_line_production_order(self):

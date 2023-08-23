@@ -17,6 +17,9 @@
             <tree string="Stock Transfer">
                 <field name="name"/>
                 <field name="stock_request_id"/>
+                <field name="total_request_qty" optional="show"/>
+                <field name="total_out_qty" optional="show"/>
+                <field name="total_in_qty" optional="show"/>
                 <field name="employee_id"/>
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
