@@ -1726,6 +1726,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         else if (program.reward_type == 'cart_discount_amount') {
             let base_total_amount = to_discount_lines.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             let disc_total_amount = program.disc_amount;
+            if (disc_total_amount > base_total_amount) {
+                disc_total_amount = base_total_amount;
+            };
             for (let line of to_discount_lines) {
                 let originalPrice = line.price;
                 if (to_discount_lines.indexOf(line) == to_discount_lines.length-1) {
