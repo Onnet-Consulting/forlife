@@ -253,7 +253,7 @@ class AccountMove(models.Model):
             if not purchase_order_id.cost_line:
                 raise UserError(_('Không có thông tin ở Tab Chi phí để lên hóa đơn. Vui lòng kiểm tra lại!'))
 
-            total_amount_po = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
+            total_vnd_amount_order = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
             for cost_line in purchase_order_id.cost_line:
                 cost_actual_from_po = 0
 
@@ -267,15 +267,13 @@ class AccountMove(models.Model):
                     # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                     move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
-                    amount_pol = po_line.total_vnd_amount
-                    if not total_amount_po or not product_qty or move_qty <= 0:
+                    if not total_vnd_amount_order or not product_qty or move_qty <= 0:
                         return
-                    cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
-                    cost_actual_from_po += cost_actual
+                    amount_rate = po_line.total_vnd_amount / total_vnd_amount_order
+                    cp = ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * move_qty
+                    cost_actual_from_po += cp
 
-                    # cost_actual_currency = round(cost_line.currency_id._convert(cost_actual, self.currency_id, self.company_id, self.date, round=False))
-
-                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cost_actual)
+                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cp)
                     if po_line.display_type == 'line_section':
                         pending_section = po_line
                         continue
@@ -334,6 +332,9 @@ class AccountMove(models.Model):
             # tạo dữ liệu tab chi phí
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
+
+            self.vendor_back_ids = self.vendor_back_ids
+
 
         elif self.select_type_inv == 'labor':
             labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
@@ -462,7 +463,7 @@ class AccountMove(models.Model):
             if rec.receiving_warehouse_id:
                 picking_id = rec.receiving_warehouse_id[-1]
                 if not picking_id.x_is_check_return:
-                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True)])
+                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
