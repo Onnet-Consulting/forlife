@@ -488,6 +488,7 @@ Registries.Model.extend(Orderline, PosPromotionOrderline);
 const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     constructor() {
         super(...arguments);
+        this.cart_promotion_reward_voucher = this.cart_promotion_reward_voucher || [];
         this._initializePromotionPrograms({});
     }
     export_as_JSON() {
@@ -808,16 +809,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
                 return true;
             };
-            if (this.reward_voucher_program_id || this.cart_promotion_program_id || this.cart_promotion_reward_voucher.length) {
-                return true;
-            };
+        };
+        if (this.reward_voucher_program_id || this.cart_promotion_program_id || !_.isEmpty(this.cart_promotion_reward_voucher)) {
+            return true;
         };
         return false;
     }
 
     _resetCartPromotionPrograms() {
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
-        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id || this.cart_promotion_reward_voucher;
+        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id || !_.isEmpty(this.cart_promotion_reward_voucher);
         for (let line of to_remove_lines) {
 //            this.remove_orderline(line);
             line.is_reward_line = false;
