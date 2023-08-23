@@ -29,8 +29,8 @@ class PosOrder(models.Model):
             default_domain = [('date_order', '>=', start_date), ('date_order', '<=', end_date)] + default_domain
 
         real_domain = AND([domain, default_domain])
-        ids = self.search(AND([domain, default_domain]), limit=limit, offset=offset).ids
-        totalCount = self.search_count(real_domain)
+        ids = self.sudo().search(AND([domain, default_domain]), limit=limit, offset=offset).ids
+        totalCount = self.sudo().search_count(real_domain)
         return {'ids': ids, 'totalCount': totalCount}
 
     @api.model

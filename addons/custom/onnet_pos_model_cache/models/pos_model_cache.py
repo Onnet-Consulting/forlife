@@ -63,7 +63,7 @@ class PosModelCache(models.Model):
         if changed_records:
             # Lock table for update
             model_table_name = self.model.replace(".", "_")
-            self.lock_table_for_cache_refresh(model_table_name, changed_records)
+            # self.lock_table_for_cache_refresh(model_table_name, changed_records)
 
             cached_records = self.cache2json()
             # Update records

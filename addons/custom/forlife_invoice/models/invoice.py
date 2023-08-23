@@ -1021,30 +1021,30 @@ class AccountMoveLine(models.Model):
                         before_tax = line.total_vnd_amount / sum(rec.move_id.invoice_line_ids.mapped('total_vnd_amount')) * item.vnd_amount
                         total_cost_true += before_tax
                         line.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
-                else:
-                    if line.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
-                    else:
-                        line.total_vnd_exchange = line.total_vnd_amount
+                   # line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
+               # else:
+                    # line.before_tax = 0
+                   # if line.before_tax != 0:
+                   #     line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
+                   # else:
+                   #     line.total_vnd_exchange = line.total_vnd_amount
 
     @api.depends('move_id.cost_line.is_check_pre_tax_costs', 'move_id.exchange_rate_line_ids')
     def _compute_after_tax(self):
         for rec in self:
             rec.after_tax = 0
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-            for line in rec.move_id.invoice_line_ids:
-                total_cost = 0
-                sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
-                sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
-                sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
-                if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
-                    for item in cost_line_false:
-                        if sum_vnd_amount + sum_tnk + sum_db > 0:
-                            total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
-                            line.after_tax = total_cost
-                else:
-                    line.after_tax = 0
+            #for line in rec.move_id.invoice_line_ids:
+            total_cost = 0
+            sum_vnd_amount = sum(rec.move_id.exchange_rate_line_ids.mapped('total_vnd_exchange'))
+            sum_tnk = sum(rec.move_id.exchange_rate_line_ids.mapped('tax_amount'))
+            sum_db = sum(rec.move_id.exchange_rate_line_ids.mapped('special_consumption_tax_amount'))
+            if rec.move_id.type_inv == 'tax' and cost_line_false and rec.total_vnd_exchange > 0:
+                for item in cost_line_false:
+                    total_cost += (rec.total_vnd_exchange + rec.tax_amount + rec.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                    rec.after_tax = total_cost
+            #else:
+            #    line.after_tax = 0
 
     @api.depends('total_vnd_amount', 'before_tax', 'tax_amount', 'special_consumption_tax_amount', 'after_tax')
     def _compute_total_product(self):

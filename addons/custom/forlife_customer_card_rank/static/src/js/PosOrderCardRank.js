@@ -148,7 +148,11 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_apply_card_rank(line_data) {
-        if (line_data && line_data.apply_cr_discount === true) {
+        if (line_data && line_data.extra_card_rank_disc > 0) {
+            this.card_rank_discount = line_data.extra_card_rank_disc;
+            this.card_rank_applied = true;
+            this.old_point = this.point;
+        } else if (line_data && line_data.apply_cr_discount === true) {
             this.card_rank_discount = line_data.card_rank_disc;
             this.card_rank_applied = true;
             this.old_point = this.point;
@@ -156,11 +160,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             this.reset_unit_price();
             this.promotion_usage_ids = [];
             this.set_discount(0);
-
-        } else if (line_data && line_data.extra_card_rank_disc > 0) {
-            this.card_rank_discount = line_data.extra_card_rank_disc;
-            this.card_rank_applied = true;
-            this.old_point = this.point;
         }
     }
 
