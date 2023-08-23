@@ -42,6 +42,7 @@
         'data/menu.xml',
         'data/groups.xml',
         'data/rules.xml',
+        'data/ir_model_data.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
         'views/hr_team_views.xml',
