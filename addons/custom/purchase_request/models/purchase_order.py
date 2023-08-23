@@ -18,6 +18,13 @@ class PurchaseOrder(models.Model):
     order_line_production_order = fields.One2many(comodel_name='purchase.order.line',
                                                   compute='_compute_order_line_production_order')
 
+    total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
+
+    @api.depends('order_line.purchase_quantity')
+    def compute_total_qty(self):
+        for rec in self:
+            rec.total_qty = sum(rec.order_line.mapped('purchase_quantity'))
+
     @api.depends('order_line')
     def _compute_order_line_production_order(self):
         for order in self:

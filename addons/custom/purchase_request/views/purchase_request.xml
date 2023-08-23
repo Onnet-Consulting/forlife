@@ -38,6 +38,7 @@
                         <button string="TẠO ĐƠN MUA HÀNG" name="%(purchase_request.action_select_type_wizard)d" type="action"/>
                     </header>
                      <field name="name" string="Reference" decoration-bf="1"/>
+                     <field name="total_qty" optional="show"/>
                     <field name="user_id"/>
                     <field name="department_id" force_save="1"/>
                     <field name="request_date" align="center"/>

@@ -86,6 +86,12 @@ class AccountMove(models.Model):
     is_tc = fields.Boolean('Phân loại tài chính', default=False)
     x_root = fields.Selection([('Intel', 'INT'), ('Winning', 'WIN'), ('other', 'Khác'),], string='Phân loại nguồn')
     domain_receiving_warehouse_id = fields.Char(compute='_compute_domain_receiving_warehouse_id', store=1)
+    is_purchase_internal = fields.Boolean(compute='compute_is_purchase_internal')
+
+    @api.depends('purchase_order_product_id')
+    def compute_is_purchase_internal(self):
+        for rec in self:
+            rec.is_purchase_internal = bool(rec.purchase_order_product_id.filtered(lambda x: x.type_po_cost == 'cost'))
 
     @api.depends('cost_line', 'cost_line.product_id')
     def _compute_product_expense_ids(self):
@@ -752,6 +758,9 @@ class AccountMove(models.Model):
             'invoice_date': self.invoice_date,
             'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
             'move_type': 'entry',
+            'purchase_order_product_id': self.purchase_order_product_id,
+            'x_root': self.x_root,
+            'is_tc': self.is_tc,
             'invoice_line_ids': [
                 (0, 0, {
                     'account_id': self.partner_id.property_account_payable_id.id,

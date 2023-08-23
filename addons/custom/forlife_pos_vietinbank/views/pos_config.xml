@@ -12,6 +12,7 @@
                     <group string="Account">
                         <group>
                             <field name="vietinbank_account_no"/>
+                            <field name="vietinbank_provider"/>
                             <field name="vietinbank_virtual_account"/>
                         </group>
                     </group>

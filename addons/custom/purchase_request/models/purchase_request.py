@@ -60,6 +60,12 @@ class PurchaseRequest(models.Model):
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
+    total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
+
+    @api.depends('order_lines.purchase_quantity')
+    def compute_total_qty(self):
+        for rec in self:
+            rec.total_qty = sum(rec.order_lines.mapped('purchase_quantity'))
 
     @api.onchange('date_planned')
     def _onchange_line_date_planned(self):

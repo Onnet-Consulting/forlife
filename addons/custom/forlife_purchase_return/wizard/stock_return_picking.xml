@@ -9,11 +9,22 @@
             <field name="arch" type="xml">
                 <field name="company_id" position="after">
                     <field name="for_po" invisible="1"/>
+                    <label for="select_all"/>
+                    <field name="select_all"/>
                 </field>
                 <xpath expr="//field[@name='product_return_moves']//tree/field[@name='quantity']" position="before">
                     <field name="quantity_init" readonly="1" force_save="1" attrs="{'column_invisible': [('parent.for_po', '=', False)]}"/>
                     <field name="quantity_returned" readonly="1" force_save="1" attrs="{'column_invisible': [('parent.for_po', '=', False)]}"/>
                     <field name="quantity_remain" readonly="1" force_save="1" attrs="{'column_invisible': [('parent.for_po', '=', False)]}"/>
+                </xpath>
+                <field name="location_id" position="after">
+                    <field name="return_reason"/>
+                </field>
+                <xpath expr="//field[@name='product_return_moves']//tree/field[@name='product_id']" position="before">
+                    <field name="select_line"/>
+                </xpath>
+                <xpath expr="//field[@name='product_return_moves']//tree/field[@name='quantity']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('select_line', '=', False)]}</attribute>
                 </xpath>
             </field>
         </record>
