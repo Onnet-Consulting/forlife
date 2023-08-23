@@ -168,8 +168,6 @@ class PosOrder(models.Model):
                 'orig_pos_order_id': pos_order.id,
                 'notification_id': voucher_program.product_id.get_notification_id(program.voucher_price),
             })
-            pos_order.cart_promotion_program_id = program
-            pos_order.reward_voucher_id = voucher
             vouchers |= voucher
             programs |= program
 
@@ -189,11 +187,13 @@ class PosOrder(models.Model):
                                for order in check_orders if order['id'] not in order_ids_updated]
         insert_voucher_vals = [(order['id'], order['reward_voucher_id'][0])
                                for order in check_orders if order['id'] not in order_ids_updated]
-        program_query = """
-        INSERT INTO pos_order_applied_cart_promotion_program_rel (pos_order_id, cart_program_id) 
-        VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_program_vals)))
-        self.env.cr.execute(program_query, insert_program_vals)
-        voucher_query = """
-        INSERT INTO pos_order_voucher_voucher_reward_rel (pos_order_id, voucher_id) 
-        VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_voucher_vals)))
-        self.env.cr.execute(voucher_query, insert_voucher_vals)
+        if insert_program_vals:
+            program_query = """
+            INSERT INTO pos_order_applied_cart_promotion_program_rel (pos_order_id, cart_program_id) 
+            VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_program_vals)))
+            self.env.cr.execute(program_query, insert_program_vals)
+        if insert_voucher_vals:
+            voucher_query = """
+            INSERT INTO pos_order_voucher_voucher_reward_rel (pos_order_id, voucher_id) 
+            VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_voucher_vals)))
+            self.env.cr.execute(voucher_query, insert_voucher_vals)
