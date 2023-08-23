@@ -8,7 +8,8 @@ import random
 import time
 import json
 from Crypto.PublicKey import RSA
-from odoo.exceptions import ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class ApisVietinBank(models.AbstractModel):
@@ -77,9 +78,11 @@ class ApisVietinBank(models.AbstractModel):
             json=self._prepare_body(pos_id)
         )
         if req.status_code != 200:
+            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank")}
         data = json.loads(req.text)
         if data['status']['code'] != '1':
+            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank: Error: %s" % data['status']['message'])}
         return {
             'status': True,
