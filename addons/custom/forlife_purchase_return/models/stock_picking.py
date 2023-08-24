@@ -419,7 +419,6 @@ class StockPicking(models.Model):
                     total_npl_amount += allowcation_npl[2]['debit']
                 merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
                 if merged_records_list_allowcation_npl:
-                    qty_po_done = sum(move.mapped('quantity_done'))
                     svl_allowcation_values = []
                     svl_allowcation_values.append((0, 0, {
                         'value': -total_npl_amount,
