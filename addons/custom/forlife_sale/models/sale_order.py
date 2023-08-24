@@ -112,15 +112,15 @@ class SaleOrder(models.Model):
                 'active_id':picking_ids[0].id, 
                 'active_model':'stock.picking',
             }
-            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
-            return_wiz = stock_return_picking_form.save()
+            # stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
+            # return_wiz = stock_return_picking_form.save()
             return {
                 'name': _('Trả hàng phiếu %s' % (picking_ids[0].name)),
                 'view_mode': 'form',
                 'res_model': 'stock.return.picking',
                 'type': 'ir.actions.act_window',
                 'views': [(False, 'form')],
-                'res_id': return_wiz.id,
+                # 'res_id': return_wiz.id,
                 'context': ctx,
                 'target': 'new'
             }
