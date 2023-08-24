@@ -531,7 +531,7 @@ class AccountMove(models.Model):
                     })
             # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
-                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id):
+                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != x.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id):
                     line.write({
                         'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
                         'name': line.product_id.name
