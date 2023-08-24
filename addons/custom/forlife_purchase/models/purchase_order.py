@@ -943,6 +943,7 @@ class PurchaseOrder(models.Model):
         """Create the invoice associated to the PO.
         """
         if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
+            raise UserError(_('Tính năng đang hoàn thiện, vui lòng tạo hóa đơn cho từng Đơn mua hàng'))
             result = self.create_multi_invoice_vendor()
             move_ids = [move.id for move in result]
             return {
@@ -1792,8 +1793,16 @@ class PurchaseOrderLine(models.Model):
                 rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
                 rec.total_vnd_exchange = rec.total_vnd_exchange_import
 
+    def _compute_tax_id(self):
+        if self.filtered(lambda x: x.order_id.type_po_cost == 'tax'):
+            self.write({
+                'taxes_id': False
+            })
+        else:
+            return super(PurchaseOrderLine, self)._compute_tax_id()
+
     @api.onchange('product_id', 'is_change_vendor')
-    def onchange_product_id(self):
+    def onchange_product_vendor_id(self):
         if self.product_id and self.product_id.uom_po_id:
             self.purchase_uom = self.product_id.uom_po_id.id
         if self.product_id and self.currency_id:
