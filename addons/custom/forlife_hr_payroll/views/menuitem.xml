@@ -17,6 +17,9 @@
         <menuitem id="menu_salary_record_type" name="Salary Record Type" parent="menu_payroll_entries"
                   action="salary_record_type_action" sequence="20"/>
 
+        <menuitem id="menu_department_in_charge" parent="menu_payroll_entries"
+                  action="department_in_charge_action" sequence="25"/>
+
         <menuitem id="menu_salary_record_purpose" name="Salary Record Purpose" parent="menu_payroll_entries"
                   action="salary_record_purpose_action" sequence="30"/>
 

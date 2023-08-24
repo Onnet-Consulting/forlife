@@ -5,7 +5,7 @@
             <field name="name">salary_record_main_view_tree</field>
             <field name="model">salary.record.main</field>
             <field name="arch" type="xml">
-                <tree string="salary_record_main_tree">
+                <tree string="salary_record_main_tree" class="set-width-custom">
                     <field name="salary_record_id" invisible="1"/>
                     <field name="company_id" invisible="1"/>
                     <field name="purpose_id"/>

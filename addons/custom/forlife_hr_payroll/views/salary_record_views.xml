@@ -41,63 +41,65 @@
                         <button name="btn_cancel_post" string="Cancel Post" class="oe_highlight" states="posted" type="object" groups="account.group_account_manager"/>
                         <field name="state" widget="statusbar"/>
                     </header>
-                    <div class="oe_button_box" name="button_box">
-                        <button type="object" name="action_view_journals" class="oe_stat_button" icon="fa-pencil-square-o"
-                                attrs="{'invisible':['|', ('move_count', '=', 0), ('state', 'in', ('waiting','confirm'))]}" groups="account.group_account_manager">
-                            <field name="move_count" widget="statinfo" string="Journals"/>
-                            <field name="move_ids" invisible="1"/>
-                        </button>
-                        <button type="object" name="action_view_group_accounting" class="oe_stat_button" icon="fa-grav" string="Salary accounting aggregation"
-                                attrs="{'invisible':[('state', 'not in', ('approved','posted', 'cancel_post'))]}" groups="account.group_account_manager"/>
-                        <button type="object" name="action_view_change_Log" class="oe_stat_button" icon="fa-eye" string="Logs"/>
-                    </div>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name"/>
-                        </h1>
-                    </div>
-                    <group>
+                    <div class="padding-form-custom">
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_view_journals" class="oe_stat_button" icon="fa-pencil-square-o"
+                                    attrs="{'invisible':['|', ('move_count', '=', 0), ('state', 'in', ('waiting','confirm'))]}" groups="account.group_account_manager">
+                                <field name="move_count" widget="statinfo" string="Journals"/>
+                                <field name="move_ids" invisible="1"/>
+                            </button>
+                            <button type="object" name="action_view_group_accounting" class="oe_stat_button" icon="fa-grav" string="Salary accounting aggregation"
+                                    attrs="{'invisible':[('state', 'not in', ('approved','posted', 'cancel_post'))]}" groups="account.group_account_manager"/>
+                            <button type="object" name="action_view_change_Log" class="oe_stat_button" icon="fa-eye" string="Logs"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
                         <group>
-                            <field name="company_id"/>
-                            <field name="type_id"/>
-                            <field name="month"/>
-                            <field name="year"/>
-                            <field name="version"/>
-                            <field name="note"/>
-                            <field name="is_tc"/>
-                            <field name="department_id"/>
+                            <group>
+                                <field name="company_id" readonly="1"/>
+                                <field name="type_id" readonly="1"/>
+                                <field name="month" readonly="1"/>
+                                <field name="year" readonly="1"/>
+                                <field name="version" readonly="1"/>
+                                <field name="note" readonly="1"/>
+                                <field name="is_tc" readonly="1"/>
+                                <field name="department_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="create_date" readonly="1"/>
+                                <field name="create_uid" readonly="1"/>
+                                <field name="confirm_date" readonly="1"/>
+                                <field name="confirm_user" readonly="1"/>
+                                <field name="confirm_date_accounting" readonly="1"/>
+                                <field name="confirm_user_accounting" readonly="1"/>
+                                <field name="cancel_date" readonly="1"/>
+                                <field name="cancel_user" readonly="1"/>
+                            </group>
                         </group>
-                        <group>
-                            <field name="create_date"/>
-                            <field name="create_uid"/>
-                            <field name="confirm_date"/>
-                            <field name="confirm_user"/>
-                            <field name="confirm_date_accounting"/>
-                            <field name="confirm_user_accounting"/>
-                            <field name="cancel_date"/>
-                            <field name="cancel_user"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="salary_record_main" string="Salary Record Main">
-                            <field name="salary_record_main_ids"/>
-                        </page>
-                        <page name="salary_total_income" string="Salary Total Income">
-                            <field name="salary_total_income_ids"/>
-                        </page>
-                        <page name="salary_supplementary" string="Salary Supplementary">
-                            <field name="salary_supplementary_ids"/>
-                        </page>
-                        <page name="salary_arrears" string="Salary Arrears">
-                            <field name="salary_arrears_ids"/>
-                        </page>
-                        <page name="salary_accounting" string="Salary Accounting" states="approved,posted,cancel_post" groups="account.group_account_manager">
-                            <field name="salary_accounting_ids"/>
-                        </page>
-                        <page name="salary_backlog" string="Salary Backlog">
-                            <field name="salary_backlog_ids"/>
-                        </page>
-                    </notebook>
+                        <notebook>
+                            <page name="salary_record_main" string="Salary Record Main">
+                                <field name="salary_record_main_ids" readonly="1"/>
+                            </page>
+                            <page name="salary_total_income" string="Salary Total Income">
+                                <field name="salary_total_income_ids" readonly="1"/>
+                            </page>
+                            <page name="salary_supplementary" string="Salary Supplementary">
+                                <field name="salary_supplementary_ids" readonly="1"/>
+                            </page>
+                            <page name="salary_arrears" string="Salary Arrears">
+                                <field name="salary_arrears_ids" readonly="1"/>
+                            </page>
+                            <page name="salary_accounting" string="Salary Accounting" states="approved,posted,cancel_post" groups="account.group_account_manager">
+                                <field name="salary_accounting_ids" readonly="1"/>
+                            </page>
+                            <page name="salary_backlog" string="Salary Backlog">
+                                <field name="salary_backlog_ids"/>
+                            </page>
+                        </notebook>
+                    </div>
                 </form>
             </field>
         </record>
