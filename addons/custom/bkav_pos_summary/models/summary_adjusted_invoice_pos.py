@@ -148,10 +148,10 @@ class SummaryAdjustedInvoicePos(models.Model):
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
-                "IsDiscount": 1,
-                "ItemTypeID": 0,
-                "TaxRateID": 1,
-                "TaxRate": 0,
+                "IsDiscount": 0,
+                "ItemTypeID": 4,
+                "TaxRateID": 4,
+                "TaxRate": -1,
             }
             list_invoice_details_ws.append(line_invoice)
         if line_discount_ids:
@@ -270,6 +270,8 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "IsIncrease": 0,
                 }
                 vat, tax_rate_id = self.get_vat(line)
+                if line.x_free_good:
+                    vat, tax_rate_id = -1, 4
                 line_invoice.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat

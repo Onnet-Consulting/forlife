@@ -196,6 +196,7 @@ class SummaryAccountMovePosReturn(models.Model):
             ('qty', '<', 0),
             ('is_promotion', '=', False),
             ('is_general', '=', False),
+            ('exists_bkav', '=', False),
         ])
         data = {}
         items = {}
