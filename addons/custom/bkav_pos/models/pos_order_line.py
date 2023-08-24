@@ -6,6 +6,7 @@ class PosOrderLine(models.Model):
 
     price_bkav = fields.Monetary(compute="_compute_price_bkav")
     is_general = fields.Boolean(string="Đã chạy tổng hợp cuối ngày", related="order_id.is_general")
+    exists_bkav = fields.Boolean(string="Đã tồn tại trên BKAV (HD bán hàng)", related="order_id.exists_bkav")
 
 
     @api.depends('price_subtotal_incl')

@@ -149,9 +149,9 @@ class SyntheticAccountMovePos(models.Model):
                 "Amount": 0,
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
-                "TaxRateID": 1,
-                "TaxRate": 0,
+                "ItemTypeID": 4,
+                "TaxRateID": 4,
+                "TaxRate": -1,
             }
             list_invoice_details_ws.append(line_invoice)
 
@@ -272,6 +272,8 @@ class SyntheticAccountMovePos(models.Model):
                     "ItemTypeID": self.get_item_type_bkav(line),
                 }
                 vat, tax_rate_id = self.get_vat(line)
+                if line.x_free_good:
+                    vat, tax_rate_id = -1, 4
                 line_invoice.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
@@ -381,6 +383,15 @@ class SyntheticAccountMovePosLineDiscount(models.Model):
             else:
                 r.tax_amount = 0
 
+    def get_amount_total(self, price_unit_incl):
+        if self.tax_ids:
+            tax_results = self.tax_ids.compute_all(price_unit_incl)
+        else:
+            tax_results = {
+                "total_included": price_unit_incl,
+                "total_excluded": price_unit_incl,
+            }
+        return tax_results
 
 class SyntheticAccumulatePoint(models.Model):
     _name = 'synthetic.accumulate.point'
