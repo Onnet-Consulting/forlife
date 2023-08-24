@@ -78,7 +78,7 @@ class StockReturnPicking(models.TransientModel):
         ('invalid', 'Nhập sai'),
         ('faulty', 'Trả hàng do lỗi'),
         ('diff', 'Trả hàng do chênh lệch')
-    ], string='Lí do trả hàng', required=True)
+    ], string='Lí do trả hàng')
 
     select_all = fields.Boolean(string='Chọn tất cả', default=False)
 
