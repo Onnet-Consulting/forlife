@@ -60,6 +60,18 @@ class PurchaseRequest(models.Model):
     delivery_address = fields.Char('Delivery Address')
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
+    total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
+
+    @api.depends('order_lines.purchase_quantity')
+    def compute_total_qty(self):
+        for rec in self:
+            self._cr.execute("""
+                SELECT 
+                    sum(prl.purchase_quantity) as purchase_quantity
+                FROM purchase_request_line prl where prl.request_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_qty = data.get('purchase_quantity', 0)
 
     @api.onchange('date_planned')
     def _onchange_line_date_planned(self):

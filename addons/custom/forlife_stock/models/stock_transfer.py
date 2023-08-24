@@ -66,6 +66,25 @@ class StockTransfer(models.Model):
     picking_count = fields.Integer(compute='_compute_picking_count')
     backorder_count = fields.Integer(compute='_compute_backorder_count')
 
+    total_request_qty = fields.Float(string='Tổng số lượng điều chuyển', compute='_compute_total_qty')
+    total_in_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
+    total_out_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
+
+    @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
+    def _compute_total_qty(self):
+        for rec in self:
+            self._cr.execute("""
+                SELECT 
+                    sum(stl.qty_plan) as qty_plan,
+                    sum(stl.qty_in) as qty_in,
+                    sum(stl.qty_out) as qty_out
+                FROM stock_transfer_line stl where stock_transfer_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_request_qty = data.get('qty_plan', 0)
+            rec.total_in_qty = data.get('qty_in', 0)
+            rec.total_out_qty = data.get('qty_out', 0)
+
     def _compute_picking_count(self):
         for transfer in self:
             transfer.picking_count = self.env['stock.picking'].search_count([('transfer_id', '=', transfer.id)])
@@ -546,8 +565,8 @@ class StockTransfer(models.Model):
         return super(StockTransfer, self).create(vals_list)
 
     def unlink(self):
-        if any(item.state not in ('draft', 'cancel') for item in self):
-            raise ValidationError("You only delete a record in draft or cancel status !!")
+        if any(item.state not in ('draft') for item in self):
+            raise ValidationError("Không thể xóa phiếu điều chuyển ở trạng thái khác dự thảo !!")
         return super(StockTransfer, self).unlink()
 
     @api.depends('location_id', 'location_dest_id')

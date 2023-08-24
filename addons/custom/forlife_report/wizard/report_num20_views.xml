@@ -22,7 +22,7 @@
                             </div>
                         </group>
                         <group>
-                            <field name="store_id" domain="[('brand_id', '=', brand_id)]"/>
+                            <field name="store_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True}"/>
                             <field name="customer"/>
                             <field name="order_filter"/>
                         </group>

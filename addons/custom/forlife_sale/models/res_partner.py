@@ -11,4 +11,4 @@ class ResPartner(models.Model):
     def name_get(self):
         if self._context.get('res_partner_search_mode'):
             return [(record.id, f"{record.name} - {record.ref}") for record in self]
-        return [(record.id, f"{record.name}") for record in self]
+        return super().name_get()

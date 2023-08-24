@@ -488,6 +488,7 @@ Registries.Model.extend(Orderline, PosPromotionOrderline);
 const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     constructor() {
         super(...arguments);
+        this.cart_promotion_reward_voucher = this.cart_promotion_reward_voucher || [];
         this._initializePromotionPrograms({});
     }
     export_as_JSON() {
@@ -500,8 +501,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.activatedPricelistItem = [...activatedPricelistItem];
         json.validOnOrderPricelistItem = this.validOnOrderPricelistItem || [];
         json.activatedInputCodes = this.activatedInputCodes;
-        json.reward_voucher_program_id = this.reward_voucher_program_id || null;
-        json.cart_promotion_program_id = this.cart_promotion_program_id || null;
+        json.cart_promotion_reward_voucher = this.cart_promotion_reward_voucher || [];
         json.reward_for_referring = this.reward_for_referring || null;
         json.referred_code_id = this.referred_code_id || null;
         json.surprise_reward_program_id = this.surprise_reward_program_id || null;
@@ -518,8 +518,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedInputCodes = json.activatedInputCodes;
         this.get_history_program_usages();
         this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {all_usage_promotions: {}};
-        this.reward_voucher_program_id = json.reward_promotion_voucher_id;
-        this.cart_promotion_program_id = json.cart_promotion_program_id || null;
+        this.cart_promotion_reward_voucher = json.cart_promotion_reward_voucher || [];
         this.reward_for_referring = json.reward_for_referring || null;
         this.referred_code_id = json.referred_code_id || null;
         this.surprise_reward_program_id = json.surprise_reward_program_id || null;
@@ -806,23 +805,22 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
                 return true;
             };
-            if (this.reward_voucher_program_id || this.cart_promotion_program_id) {
-                return true;
-            };
+        };
+        if (!_.isEmpty(this.cart_promotion_reward_voucher)) {
+            return true;
         };
         return false;
     }
 
     _resetCartPromotionPrograms() {
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
-        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id;
+        let has_cart_program = to_remove_lines.length > 0 || !_.isEmpty(this.cart_promotion_reward_voucher);
         for (let line of to_remove_lines) {
 //            this.remove_orderline(line);
             line.is_reward_line = false;
             line.reset_unit_price();
         };
-        this.reward_voucher_program_id = null;
-        this.cart_promotion_program_id = null;
+        this.cart_promotion_reward_voucher = [];
         // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line.is_cart_discounted);
         orderlines.forEach(line => line.reset_unit_price());

@@ -31,7 +31,7 @@ export class CartPromotionButton extends PosComponent {
         let [newLines, remainingOrderLines] = order.computeForListOfCartProgram(orderLines, selections);
 
         this.env.pos.no_reset_program = true;
-        order.orderlines = order.orderlines.filter(line => line.quantity > 0)
+        order.orderlines = order.orderlines.filter(line => line.quantity || (order.is_change_product && !line.is_new_line));
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -56,8 +56,7 @@ export class CartPromotionButton extends PosComponent {
 //                });
 //            } else
             if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
-                order.reward_voucher_program_id = optionPro.voucher_program_id[0];
-                order.cart_promotion_program_id = optionPro.program.id;
+                order.cart_promotion_reward_voucher.push([optionPro.program.id, optionPro.voucher_program_id[0]]);
             }
         };
 

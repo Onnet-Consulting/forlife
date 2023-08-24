@@ -57,7 +57,7 @@ class AccountMove(models.Model):
                                                 ('entry_normal', 'Bút toán chi tiết hàng hóa'),
                                                 ('entry_material', 'Bút toán nguyên phụ liệu'),
                                                 ])
-    product_expense_ids = fields.Many2many('product.product', string='Chi phí', compute='_compute_product_expense_ids')
+    product_expense_ids = fields.Many2many('product.product', string='Chi phí', compute='_compute_product_expense_labor_ids')
 
     # Chiết khấu tổng đơn
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
@@ -86,11 +86,20 @@ class AccountMove(models.Model):
     is_tc = fields.Boolean('Phân loại tài chính', default=False)
     x_root = fields.Selection([('Intel', 'INT'), ('Winning', 'WIN'), ('other', 'Khác'),], string='Phân loại nguồn')
     domain_receiving_warehouse_id = fields.Char(compute='_compute_domain_receiving_warehouse_id', store=1)
+    is_purchase_internal = fields.Boolean(compute='compute_is_purchase_internal')
 
-    @api.depends('cost_line', 'cost_line.product_id')
-    def _compute_product_expense_ids(self):
+    @api.depends('purchase_order_product_id')
+    def compute_is_purchase_internal(self):
         for rec in self:
-            rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
+            rec.is_purchase_internal = bool(rec.purchase_order_product_id.filtered(lambda x: x.type_po_cost == 'cost'))
+
+    @api.depends('cost_line', 'cost_line.product_id', 'account_expense_labor_detail_ids', 'account_expense_labor_detail_ids.product_id')
+    def _compute_product_expense_labor_ids(self):
+        for rec in self:
+            if rec.select_type_inv == 'labor':
+                rec.product_expense_ids = [(6, 0, rec.account_expense_labor_detail_ids.mapped('product_id').ids)]
+            else:
+                rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
 
     @api.depends('total_trade_discount', 'trade_tax_id', 'trade_discount')
     def compute_x_amount_tax(self):
@@ -180,7 +189,9 @@ class AccountMove(models.Model):
             'description': product_expense.name,
             'uom_id': product_expense.uom_id.id,
             'qty': 1,
-            'price_subtotal_back': price_subtotal
+            'price_subtotal_back': price_subtotal,
+            'origin_currency_id': self.currency_id.id,
+            'origin_price_subtotal_back': price_subtotal
         }
         return vals
 
@@ -202,18 +213,25 @@ class AccountMove(models.Model):
         AccountExpenseLaborDetail = self.env['account.expense.labor.detail']
         SummaryExpenseLaborAccount = self.env['summary.expense.labor.account']
         type_po_cost = purchase_order_id.mapped('type_po_cost')[0] if purchase_order_id.mapped('type_po_cost') else False
+
+        if self.select_type_inv == 'normal' and purchase_order_id:
+            currency_id = purchase_order_id[0].currency_id.id if purchase_order_id else False
+            exchange_rate = purchase_order_id[0].exchange_rate if purchase_order_id else 1
+        else:
+            currency_id = self.currency_id.id or False
+            exchange_rate = self.exchange_rate or 0
+
         self.write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
-            'exchange_rate': purchase_order_id[0].exchange_rate if purchase_order_id else 1,
-            'currency_id': purchase_order_id[0].currency_id.id if purchase_order_id else False,
+            'exchange_rate': exchange_rate,
+            'currency_id': currency_id,
             'invoice_date': datetime.now(),
             'reference': ', '.join(purchase_order_id.mapped('name')) if purchase_order_id else '',
             'is_check_select_type_inv': True,
             'account_expense_labor_detail_ids': False,
             'sum_expense_labor_ids': False,
-            'vendor_back_ids': False,
             'cost_line': False,
             'purchase_order_product_id': [(6, 0, purchase_order_id.ids)],
         })
@@ -225,37 +243,37 @@ class AccountMove(models.Model):
             raise ValidationError('Vui lòng chọn ít nhất 1 Đơn mua hàng!')
         #  nếu tạo hoá đơn chi phí
         if self.select_type_inv == 'expense':
-            if not picking_ids:
-                return
+            picking_in_ids = picking_ids.filtered(lambda x: not x.x_is_check_return)
+            if not picking_in_ids:
+                raise UserError(_('Vui lòng chọn ít nhất 1 phiếu nhập kho để lên hóa đơn. Vui lòng kiểm tra lại!'))
+
             vals_lst = []
             cost_line_vals = []
 
             if not purchase_order_id.cost_line:
                 raise UserError(_('Không có thông tin ở Tab Chi phí để lên hóa đơn. Vui lòng kiểm tra lại!'))
 
-            total_amount_po = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
+            total_vnd_amount_order = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
             for cost_line in purchase_order_id.cost_line:
                 cost_actual_from_po = 0
 
                 # luồng hóa đơn chi phí
                 for po_line in purchase_order_id.order_line:
                     move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                     # SL trên đơn PO
                     product_qty = po_line.product_qty
                     # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                     move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
-                    amount_pol = po_line.total_vnd_amount
-                    if not total_amount_po or not product_qty or move_qty <= 0:
+                    if not total_vnd_amount_order or not product_qty or move_qty <= 0:
                         return
-                    cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
-                    cost_actual_from_po += cost_actual
+                    amount_rate = po_line.total_vnd_amount / total_vnd_amount_order
+                    cp = ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * move_qty
+                    cost_actual_from_po += cp
 
-                    cost_actual_currency = cost_line.currency_id._convert(cost_actual, self.currency_id, self.company_id, self.date, round=False)
-
-                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cost_actual_currency)
+                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cp)
                     if po_line.display_type == 'line_section':
                         pending_section = po_line
                         continue
@@ -279,7 +297,8 @@ class AccountMove(models.Model):
 
                 data.update({
                     'vnd_amount': cost_actual_from_po,
-                    'invoice_cost_id': self.id})
+                    'invoice_cost_id': self.id
+                })
                 cost_line_vals.append(data)
             aml_ids = AccountMoveLine.create(vals_lst)
 
@@ -297,7 +316,7 @@ class AccountMove(models.Model):
                 expense_lst = []
                 for product_expense in product_expenses:
                     sum_product_expense_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_expense)
-                    price_subtotal = sum([x.price_unit for x in sum_product_expense_moves])
+                    price_subtotal = sum(sum_product_expense_moves.mapped('price_unit'))
                     expense_vals = self._prepare_account_expense_labor_detail(product_expense, price_subtotal)
                     expense_lst.append(expense_vals)
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
@@ -314,21 +333,28 @@ class AccountMove(models.Model):
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
 
-        elif self.select_type_inv == 'labor':
-            if not purchase_order_id.order_line_production_order:
-                return
-            if not purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids:
-                return
+            if self.vendor_back_ids:
+                self.vendor_back_ids = self.vendor_back_ids
 
-            material_line_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids
-            labor_cost_ids = material_line_ids.filtered(
-                lambda x: x.product_id.x_type_cost_product == 'labor_costs')
+
+        elif self.select_type_inv == 'labor':
+            labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
             if not labor_cost_ids:
-                return
+                raise UserError(_('Đơn mua không có Chi phí nhân công và nguyên phụ liệu!'))
             vals_lst = []
             for labor_cost_id in labor_cost_ids:
                 pol_id = labor_cost_id.purchase_order_line_id
-                data_line = purchase_order_id._prepare_invoice_labor(labor_cost_id)
+
+                move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+
+                # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
+                move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
+
+                if not pol_id.product_qty or move_qty <= 0:
+                    return
+
+                data_line = purchase_order_id._prepare_invoice_labor(labor_cost_id, move_qty)
                 if pol_id.display_type == 'line_section':
                     pending_section = pol_id
                     continue
@@ -438,7 +464,7 @@ class AccountMove(models.Model):
             if rec.receiving_warehouse_id:
                 picking_id = rec.receiving_warehouse_id[-1]
                 if not picking_id.x_is_check_return:
-                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True)])
+                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
@@ -505,7 +531,7 @@ class AccountMove(models.Model):
                     })
             # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
-                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id):
+                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != x.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id):
                     line.write({
                         'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
                         'name': line.product_id.name
@@ -752,6 +778,9 @@ class AccountMove(models.Model):
             'invoice_date': self.invoice_date,
             'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
             'move_type': 'entry',
+            'purchase_order_product_id': self.purchase_order_product_id,
+            'x_root': self.x_root,
+            'is_tc': self.is_tc,
             'invoice_line_ids': [
                 (0, 0, {
                     'account_id': self.partner_id.property_account_payable_id.id,
@@ -1211,42 +1240,6 @@ class RespartnerVendor(models.Model):
     tax_percent = fields.Many2one('account.tax', string='% Thuế')
     date_due = fields.Date(string='Hạn xử lý')
     currency_id = fields.Many2one('res.currency', related='vendor_back_id.currency_id', string='Currency')
-
-    # def inverse_account_move_line(self):
-    #     for rec in self:
-    #         if rec.vendor_back_id.select_type_inv in ('expense', 'labor') and rec.invoice_description:
-    #             invoice_lines = rec.vendor_back_id.invoice_line_ids.filtered(
-    #                 lambda x: x.product_expense_origin_id == rec.invoice_description)
-    #
-    #             invoice_invalid_lines = rec.vendor_back_id.invoice_line_ids - invoice_lines
-    #
-    #             expense_detail = rec.vendor_back_id.account_expense_labor_detail_ids.filtered(
-    #                 lambda x: x.product_id == rec.invoice_description)
-    #             if expense_detail:
-    #                 expense_detail.write({
-    #                     'price_subtotal_back': rec.price_subtotal_back,
-    #                     'tax_percent':  rec.tax_percent.id if rec.tax_percent else False
-    #                 })
-    #
-    #             sum_price = sum(invoice_lines.mapped('price_unit'))
-    #             for invoice_line in invoice_lines:
-    #                 if rec.invoice_description and invoice_line:
-    #                     invoice_line.write({
-    #                         'price_unit': (rec.price_subtotal_back * invoice_line.price_unit) / sum_price if sum_price > 0 else 0,
-    #                         'tax_ids': [(6, 0, rec.tax_percent.ids)],
-    #                     })
-    #                 else:
-    #                     new_line = self.env['account.move.line'].new({
-    #                         'move_id': rec.vendor_back_id.id,
-    #                         'product_id': rec.invoice_description.id,
-    #                         'price_unit': rec.price_subtotal_back,
-    #                         'price_subtotal': rec.price_subtotal_back,
-    #                         'tax_ids': [Command.set(rec.tax_percent.ids)],
-    #                     })
-    #                     rec.vendor_back_id['invoice_line_ids'] += new_line
-    #
-    #             for invoice_invalid_line in invoice_invalid_lines:
-    #                 invoice_invalid_line.unlink()
 
     def unlink(self):
         for rec in self:

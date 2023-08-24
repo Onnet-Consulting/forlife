@@ -11,9 +11,14 @@ class StockPickingType(models.Model):
     other_picking_type_id = fields.Many2one('stock.picking.type', string="Kiểu giao nhận xuất/nhập khác")
     other_location_id = fields.Many2one('stock.location', string="Lý do xuất/nhập khác mặc định")
 
-
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+
+    return_reason = fields.Selection([
+        ('invalid', 'Nhập sai'),
+        ('faulty', 'Trả hàng do lỗi'),
+        ('diff', 'Trả hàng do chênh lệch')
+    ], string='Lí do trả hàng')
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
@@ -32,10 +37,11 @@ class StockPicking(models.Model):
         return res
 
     def tax_return_by_return_goods(self):
-        picking = self.move_ids.origin_returned_move_id.picking_id or self
-        po = picking.purchase_id
-        if not po:
+        if self.move_ids.sale_line_id or self.move_ids.origin_returned_move_id.sale_line_id:
             return
+        po = self.move_ids.origin_returned_move_id.purchase_line_id.order_id or self.move_ids.purchase_line_id.order_id
+        # if not po:
+        #     return
         if self.move_ids.origin_returned_move_id:
             self.revert_tax_by_return_goods(po, 'inv')
         else:
