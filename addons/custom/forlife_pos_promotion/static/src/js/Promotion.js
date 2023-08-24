@@ -2267,6 +2267,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             let disc_total_amount = program.disc_amount;
+            if (disc_total_amount > base_total_amount) {
+                disc_total_amount = base_total_amount;
+            };
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
