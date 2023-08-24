@@ -297,9 +297,12 @@ class SummaryAdjustedInvoicePos(models.Model):
     
     def get_invoice_bkav(self):
         for line in self:
-            bkav_action.get_invoice_bkav(self)
+            try:
+                bkav_action.get_invoice_bkav(self)
+            except Exception as e:
+                line.message_post(body=str(e))
 
- 
+
 class SummaryAdjustedInvoicePosLine(models.Model):
     _name = 'summary.adjusted.invoice.pos.line'
 

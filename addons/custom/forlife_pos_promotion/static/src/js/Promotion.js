@@ -501,8 +501,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.activatedPricelistItem = [...activatedPricelistItem];
         json.validOnOrderPricelistItem = this.validOnOrderPricelistItem || [];
         json.activatedInputCodes = this.activatedInputCodes;
-        json.reward_voucher_program_id = this.reward_voucher_program_id || null;
-        json.cart_promotion_program_id = this.cart_promotion_program_id || null;
         json.cart_promotion_reward_voucher = this.cart_promotion_reward_voucher || [];
         json.reward_for_referring = this.reward_for_referring || null;
         json.referred_code_id = this.referred_code_id || null;
@@ -520,8 +518,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedInputCodes = json.activatedInputCodes;
         this.get_history_program_usages();
         this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {all_usage_promotions: {}};
-        this.reward_voucher_program_id = json.reward_promotion_voucher_id;
-        this.cart_promotion_program_id = json.cart_promotion_program_id || null;
         this.cart_promotion_reward_voucher = json.cart_promotion_reward_voucher || [];
         this.reward_for_referring = json.reward_for_referring || null;
         this.referred_code_id = json.referred_code_id || null;
@@ -810,7 +806,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 return true;
             };
         };
-        if (this.reward_voucher_program_id || this.cart_promotion_program_id || !_.isEmpty(this.cart_promotion_reward_voucher)) {
+        if (!_.isEmpty(this.cart_promotion_reward_voucher)) {
             return true;
         };
         return false;
@@ -818,14 +814,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _resetCartPromotionPrograms() {
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
-        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id || !_.isEmpty(this.cart_promotion_reward_voucher);
+        let has_cart_program = to_remove_lines.length > 0 || !_.isEmpty(this.cart_promotion_reward_voucher);
         for (let line of to_remove_lines) {
 //            this.remove_orderline(line);
             line.is_reward_line = false;
             line.reset_unit_price();
         };
-        this.reward_voucher_program_id = null;
-        this.cart_promotion_program_id = null;
         this.cart_promotion_reward_voucher = [];
         // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line.is_cart_discounted);
@@ -1727,6 +1721,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         else if (program.reward_type == 'cart_discount_amount') {
             let base_total_amount = to_discount_lines.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             let disc_total_amount = program.disc_amount;
+            if (disc_total_amount > base_total_amount) {
+                disc_total_amount = base_total_amount;
+            };
             for (let line of to_discount_lines) {
                 let originalPrice = line.price;
                 if (to_discount_lines.indexOf(line) == to_discount_lines.length-1) {
@@ -2265,6 +2262,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             let disc_total_amount = program.disc_amount;
+            if (disc_total_amount > base_total_amount) {
+                disc_total_amount = base_total_amount;
+            };
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;

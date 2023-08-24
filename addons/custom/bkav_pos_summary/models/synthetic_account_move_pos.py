@@ -293,8 +293,12 @@ class SyntheticAccountMovePos(models.Model):
 
     def get_invoice_bkav(self):
         for line in self:
-            bkav_action.get_invoice_bkav(line)
-        
+            try:
+                bkav_action.get_invoice_bkav(line)
+            except Exception as e:
+                line.message_post(body=str(e))
+
+
 class SyntheticAccountMovePosLine(models.Model):
     _name = 'synthetic.account.move.pos.line'
 

@@ -7,6 +7,7 @@
             <tree string="Stock Transfer Request" default_order="create_date desc" limit="25">
                 <field name="name"/>
                 <field name="user_id"/>
+                <field name="total_request_qty" optional="show"/>
                 <field name="request_date"/>
                 <field name="date_planned"/>
                 <field name="state" widget="badge"/>
@@ -67,8 +68,9 @@
                         <group>
                             <field name="request_date"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
                             <field name="date_planned"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
-                            <field name="location_id" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="location_dest_id" domain="[('usage', '=', 'internal')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="location_id" domain="[('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_dest_id" domain="[('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

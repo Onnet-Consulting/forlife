@@ -40,7 +40,7 @@ class ApisVietinBank(models.AbstractModel):
 
     def _prepare_body(self, pos_id):
         date_to = datetime.now().strftime('%d/%m/%Y')
-        date_from = (datetime.now() - timedelta(days=7)).strftime('%d/%m/%Y')
+        date_from = (datetime.now() - timedelta(hours=4)).strftime('%d/%m/%Y')
         request_id = self._ramdom_request()
         merchant_id = ""
         pos_config = self.env['pos.config'].browse(pos_id)

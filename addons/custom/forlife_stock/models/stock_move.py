@@ -18,6 +18,8 @@ class StockMove(models.Model):
         return res
 
     def _get_price_unit(self):
+        if self.amount_total != 0 and self.product_uom_qty != 0:
+            self.price_unit = round(self.amount_total/self.product_uom_qty)
         res = super()._get_price_unit()
         order = self.purchase_line_id.order_id
         if (order.currency_id != self.env.company.currency_id and order.exchange_rate > 0) and not (self.origin_returned_move_id or self.purchase_line_id.order_id.is_return):

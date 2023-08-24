@@ -37,9 +37,11 @@ class StockPicking(models.Model):
         return res
 
     def tax_return_by_return_goods(self):
-        po = self.move_ids.origin_returned_move_id.purchase_line_id.order_id
-        if not po:
+        if self.move_ids.sale_line_id or self.move_ids.origin_returned_move_id.sale_line_id:
             return
+        po = self.move_ids.origin_returned_move_id.purchase_line_id.order_id or self.move_ids.purchase_line_id.order_id
+        # if not po:
+        #     return
         if self.move_ids.origin_returned_move_id:
             self.revert_tax_by_return_goods(po, 'inv')
         else:
@@ -289,9 +291,10 @@ class StockPicking(models.Model):
                 if not export_production_order.reason_type_id:
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: N0701')
             account_export_production_order = export_production_order.x_property_valuation_out_account_id
-            for item, r in zip(po.order_line_production_order, self.move_ids_without_package):
+            for item, r in zip(po.order_line_production_order, self.move_ids):
                 # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 move = self.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
+                if not move: continue
                 qty_po_done = sum(move.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
@@ -417,7 +420,6 @@ class StockPicking(models.Model):
                     total_npl_amount += allowcation_npl[2]['debit']
                 merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
                 if merged_records_list_allowcation_npl:
-                    qty_po_done = sum(move.mapped('quantity_done'))
                     svl_allowcation_values = []
                     svl_allowcation_values.append((0, 0, {
                         'value': -total_npl_amount,

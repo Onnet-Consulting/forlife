@@ -232,7 +232,6 @@ class AccountMove(models.Model):
             'is_check_select_type_inv': True,
             'account_expense_labor_detail_ids': False,
             'sum_expense_labor_ids': False,
-            'vendor_back_ids': False,
             'cost_line': False,
             'purchase_order_product_id': [(6, 0, purchase_order_id.ids)],
         })
@@ -244,37 +243,37 @@ class AccountMove(models.Model):
             raise ValidationError('Vui lòng chọn ít nhất 1 Đơn mua hàng!')
         #  nếu tạo hoá đơn chi phí
         if self.select_type_inv == 'expense':
-            if not picking_ids:
-                return
+            picking_in_ids = picking_ids.filtered(lambda x: not x.x_is_check_return)
+            if not picking_in_ids:
+                raise UserError(_('Vui lòng chọn ít nhất 1 phiếu nhập kho để lên hóa đơn. Vui lòng kiểm tra lại!'))
+
             vals_lst = []
             cost_line_vals = []
 
             if not purchase_order_id.cost_line:
                 raise UserError(_('Không có thông tin ở Tab Chi phí để lên hóa đơn. Vui lòng kiểm tra lại!'))
 
-            total_amount_po = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
+            total_vnd_amount_order = sum(purchase_order_id.order_line.mapped('total_vnd_amount'))
             for cost_line in purchase_order_id.cost_line:
                 cost_actual_from_po = 0
 
                 # luồng hóa đơn chi phí
                 for po_line in purchase_order_id.order_line:
                     move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+                    move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                     # SL trên đơn PO
                     product_qty = po_line.product_qty
                     # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                     move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
-                    amount_pol = po_line.total_vnd_amount
-                    if not total_amount_po or not product_qty or move_qty <= 0:
+                    if not total_vnd_amount_order or not product_qty or move_qty <= 0:
                         return
-                    cost_actual = (((amount_pol / total_amount_po) * cost_line.vnd_amount) * move_qty) / product_qty
-                    cost_actual_from_po += cost_actual
+                    amount_rate = po_line.total_vnd_amount / total_vnd_amount_order
+                    cp = ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * move_qty
+                    cost_actual_from_po += cp
 
-                    cost_actual_currency = cost_line.currency_id._convert(cost_actual, self.currency_id, self.company_id, self.date, round=False)
-
-                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cost_actual_currency)
+                    data = purchase_order_id._prepare_invoice_expense(cost_line, po_line, cp)
                     if po_line.display_type == 'line_section':
                         pending_section = po_line
                         continue
@@ -298,7 +297,8 @@ class AccountMove(models.Model):
 
                 data.update({
                     'vnd_amount': cost_actual_from_po,
-                    'invoice_cost_id': self.id})
+                    'invoice_cost_id': self.id
+                })
                 cost_line_vals.append(data)
             aml_ids = AccountMoveLine.create(vals_lst)
 
@@ -316,7 +316,7 @@ class AccountMove(models.Model):
                 expense_lst = []
                 for product_expense in product_expenses:
                     sum_product_expense_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_expense)
-                    price_subtotal = sum([x.price_unit for x in sum_product_expense_moves])
+                    price_subtotal = sum(sum_product_expense_moves.mapped('price_unit'))
                     expense_vals = self._prepare_account_expense_labor_detail(product_expense, price_subtotal)
                     expense_lst.append(expense_vals)
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
@@ -332,6 +332,10 @@ class AccountMove(models.Model):
             # tạo dữ liệu tab chi phí
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
+
+            if self.vendor_back_ids:
+                self.vendor_back_ids = self.vendor_back_ids
+
 
         elif self.select_type_inv == 'labor':
             labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
@@ -460,7 +464,7 @@ class AccountMove(models.Model):
             if rec.receiving_warehouse_id:
                 picking_id = rec.receiving_warehouse_id[-1]
                 if not picking_id.x_is_check_return:
-                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True)])
+                    picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
 
     @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
@@ -527,7 +531,7 @@ class AccountMove(models.Model):
                     })
             # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
-                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id):
+                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != x.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id):
                     line.write({
                         'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
                         'name': line.product_id.name
