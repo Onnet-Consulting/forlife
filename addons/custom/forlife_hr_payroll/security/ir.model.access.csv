@@ -37,10 +37,12 @@ payroll_employee_salary_accounting,salary.accounting payroll_employee,model_sala
 payroll_leader_salary_accounting,salary.accounting payroll_leader,model_salary_accounting,payroll_leader,1,1,1,1
 accounting_salary_accounting,salary.accounting accounting,model_salary_accounting,account.group_account_manager,1,1,0,0
 payroll_save_change_log,save.change.log,model_save_change_log,base.group_user,1,0,0,0
-base_group_system_payroll_save_change_log,save.change.log,model_save_change_log,base.group_system,1,1,1,1
+base_group_system_payroll_save_change_log,save.change.log manager,model_save_change_log,base.group_system,1,1,1,1
 error_log_wizard,error.log.wizard,model_error_log_wizard,,1,1,1,0
 payroll_employee_import_salary_record,import.salary.record,model_import_salary_record,payroll_employee,1,1,1,1
 payroll_employee_salary_tc_entry,salary.tc.entry payroll_employee,model_salary_tc_entry,payroll_employee,1,0,0,0
 payroll_leader_salary_tc_entry,salary.tc.entry payroll_leader,model_salary_tc_entry,payroll_leader,1,0,0,0
 accounting_salary_tc_entry,salary.tc.entry accounting,model_salary_tc_entry,account.group_account_manager,1,0,0,0
 base_group_system_salary_tc_entry,salary.tc.entry base.group_user,model_salary_tc_entry,base.group_system,1,1,1,1
+payroll_department_in_charge,department.in.charge,model_department_in_charge,base.group_user,1,0,0,0
+base_group_system_payroll_department_in_charge,department.in.charge manager,model_department_in_charge,base.group_system,1,1,1,1
