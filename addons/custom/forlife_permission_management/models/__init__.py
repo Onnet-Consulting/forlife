@@ -4,3 +4,4 @@ from . import purchase_request
 from . import product_supplierinfo
 from . import defective_type
 from . import print_stamps_barcode
+from . import ir_model_data
