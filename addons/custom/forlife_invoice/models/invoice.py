@@ -302,6 +302,10 @@ class AccountMove(models.Model):
                 cost_line_vals.append(data)
             aml_ids = AccountMoveLine.create(vals_lst)
 
+            # tạo dữ liệu tab chi phí
+            if cost_line_vals:
+                invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
+
             product_expenses = []
             products = []
             for aml_id in aml_ids:
@@ -310,6 +314,14 @@ class AccountMove(models.Model):
 
                 if aml_id.product_id not in products:
                     products.append(aml_id.product_id)
+
+            # tạo dữ liệu tổng hợp
+            if products:
+                product_lst = []
+                for product in products:
+                    product_vals = self._prepare_sum_expense_labor_value(product)
+                    product_lst.append(product_vals)
+                sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
 
             # tạo dữ liệu chi tiết hóa đơn custom
             if product_expenses:
@@ -321,21 +333,8 @@ class AccountMove(models.Model):
                     expense_lst.append(expense_vals)
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
 
-            # tạo dữ liệu tổng hợp
-            if products:
-                product_lst = []
-                for product in products:
-                    product_vals = self._prepare_sum_expense_labor_value(product)
-                    product_lst.append(product_vals)
-                sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
-
-            # tạo dữ liệu tab chi phí
-            if cost_line_vals:
-                invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
-
             if self.vendor_back_ids:
                 self.vendor_back_ids = self.vendor_back_ids
-
 
         elif self.select_type_inv == 'labor':
             labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
