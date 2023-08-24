@@ -333,7 +333,8 @@ class AccountMove(models.Model):
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
 
-            self.vendor_back_ids = self.vendor_back_ids
+            if self.vendor_back_ids:
+                self.vendor_back_ids = self.vendor_back_ids
 
 
         elif self.select_type_inv == 'labor':
