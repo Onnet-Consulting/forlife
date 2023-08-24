@@ -291,7 +291,7 @@ class StockPicking(models.Model):
                 if not export_production_order.reason_type_id:
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: N0701')
             account_export_production_order = export_production_order.x_property_valuation_out_account_id
-            for item, r in zip(po.order_line_production_order, self.move_ids_without_package):
+            for item, r in zip(po.order_line_production_order, self.move_ids):
                 # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 move = self.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
                 qty_po_done = sum(move.mapped('quantity_done'))
@@ -371,7 +371,7 @@ class StockPicking(models.Model):
                     svl_values = []
                     svl_values.append((0, 0, {
                         'value': - credit_cost,
-                        'unit_cost': credit_cost / qty_po_done,
+                        'unit_cost': credit_cost / qty_po_done if qty_po_done else credit_cost,
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
@@ -422,7 +422,7 @@ class StockPicking(models.Model):
                     svl_allowcation_values = []
                     svl_allowcation_values.append((0, 0, {
                         'value': -total_npl_amount,
-                        'unit_cost': total_npl_amount / qty_po_done,
+                        'unit_cost': total_npl_amount / qty_po_done if qty_po_done else total_npl_amount,
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
