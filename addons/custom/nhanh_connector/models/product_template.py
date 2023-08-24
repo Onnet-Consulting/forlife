@@ -38,17 +38,17 @@ class ProductTemplate(models.Model):
         return product_name
 
     @api.model_create_multi
-    def create(self, vals):
-        res = super().create(vals)
+    def create(self, vals_list):
+        res = super(ProductTemplate, self.with_context(skip_sync_nhanh=True)).create(vals_list)
         # if not res.brand_id.id or not res.categ_id.category_type_id.x_sync_nhanh:
         #     return res
 
         for line in res:
             if line.brand_id.id and line.categ_id.category_type_id.x_sync_nhanh:
-                self.sudo().with_delay(
+                line.sudo().with_delay(
                     description="Sync product to NhanhVn", channel="root.NhanhMQ"
                 ).synchronized_create_product(line)
-            # self.synchronized_create_product(res)
+
         return res
 
     def get_pcpc_price_list_by_product(self, product_id):
@@ -67,6 +67,7 @@ class ProductTemplate(models.Model):
             price = product_id.list_price
         return price
 
+
     def synchronized_create_product(self, res):
         if res.check_data_odoo and res.brand_id.id and res.categ_id.category_type_id.x_sync_nhanh:
             nhanh_config = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
@@ -75,7 +76,6 @@ class ProductTemplate(models.Model):
                 or nhanh_config.get('nhanh_connector.nhanh_access_token',''):
 
                 price = self.get_pcpc_price_list_by_product(res)
-
                 data = [{
                     "id": res.id,
                     "name": res.get_nhanh_name(),
@@ -145,7 +145,7 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         res = super().write(vals)
 
-        if vals.get("check_data_odoo"):
+        if vals.get("check_data_odoo") or self._context.get("skip_sync_nhanh"):
             return res
 
         fields_up = vals.keys()
@@ -176,31 +176,6 @@ class ProductTemplate(models.Model):
                 self.sudo().with_delay(
                     description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
                 ).synchronized_update_product(item, status="New", list_price=False)
-                # price = self.get_pcpc_price_list_by_product(item)
-
-                # data.append({
-                #     "id": item._origin.id,
-                #     "idNhanh": item.nhanh_id,
-                #     "name": item.get_nhanh_name(),
-                #     "code": item.barcode if item.barcode else '',
-                #     "barcode": item.barcode if item.barcode else '',
-                #     "importPrice": item.list_price,
-                #     "price": price,
-                #     "shippingWeight": item.weight if item.weight > 0 else 200,
-                #     "status": 'New'
-                # })
-
-        # if len(data):
-        #     self.sudo().with_delay(
-        #         description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
-        #     ).synchronized_price_nhanh(data)
-            # self.synchronized_price_nhanh(data)
-        # if is_create:
-        #     self.sudo().with_delay(
-        #         description="Sync product to NhanhVn", channel="root.NhanhMQ"
-        #     ).synchronized_create_product(self)
-            # self.synchronized_create_product(self)
-        
         return res
 
     def unlink(self):
@@ -212,21 +187,6 @@ class ProductTemplate(models.Model):
             self.sudo().with_delay(
                 description="Update & Sync product to NhanhVn", channel="root.NhanhMQ"
             ).synchronized_update_product(item, status="Inactive", list_price=True)
-
-            # data.append({
-            #     "id": item._origin.id,
-            #     "idNhanh": item.nhanh_id,
-            #     "name": item.get_nhanh_name(),
-            #     "code": item.barcode if item.barcode else '',
-            #     "barcode": item.barcode if item.barcode else '',
-            #     "importPrice": item.list_price,
-            #     "price": item.list_price,
-            #     "shippingWeight": item.weight if item.weight > 0 else 200,
-            #     "status": 'Inactive'
-            # })
-        # if not data:
-        #     return super().unlink()
-        # self.synchronized_price_nhanh(data)
         return super().unlink()
 
     def synchronized_price_nhanh(self, data):

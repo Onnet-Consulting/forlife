@@ -399,13 +399,12 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             for(let i=0;i<data.length;i++){
                 let self = this;
                 if(data[i].value != false){
-                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
-                        if(data[i].value.has_condition == false){
-                            data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change;
-                        }else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0) && data[i].value.is_full_price_applies) && !item.refunded_orderline_id){
-                            data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change + self._compute_price_of_refund_product();
-                        }
-                    })
+                   if (data[i].value.price_change != 0) {
+                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change + self._compute_price_of_refund_product();
+                   }
+                   if (data[i].value.price_change == 0) {
+                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
+                   }
                 }
             }
 //            for(let i = 0; i < data.length; i ++){
