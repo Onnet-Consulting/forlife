@@ -939,7 +939,7 @@ class PurchaseOrder(models.Model):
         }
         return data
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, partner_id=False, currency_id=False, exchange_rate=False):
         """Create the invoice associated to the PO.
         """
         if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
@@ -971,8 +971,9 @@ class PurchaseOrder(models.Model):
                 invoice_vals.update({
                     'purchase_type': purchase_type,
                     'invoice_date': datetime.now(),
-                    'exchange_rate': order.exchange_rate,
-                    'currency_id': order.currency_id.id
+                    'exchange_rate': exchange_rate if exchange_rate else order.exchange_rate,
+                    'currency_id': currency_id.id if currency_id else order.currency_id.id,
+                    'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
                 })
                 # Invoice line values (keep only necessary sections).
 
@@ -1185,10 +1186,11 @@ class PurchaseOrder(models.Model):
                     return
 
                 amount_rate = line.total_vnd_amount / total_vnd_amount_order
-                cp = ((amount_rate * cost_line.vnd_amount) / line.product_qty) * move_qty
-                if line.currency_id != line.company_currency:
-                    rates = line.currency_id._get_rates(line.company_id, self.date_order)
-                    cp = cp * rates.get(line.currency_id.id)
+                cp = ((amount_rate * cost_line.foreign_amount) / line.product_qty) * move_qty
+                currency_id = invoice_vals['currency_id']
+                if cost_line.currency_id.id != currency_id:
+                    rate = cost_line.exchange_rate/invoice_vals['exchange_rate']
+                    cp = cp * rate
 
                 data_line = self._prepare_invoice_expense(cost_line, line, cp)
                 if line.display_type == 'line_section':
