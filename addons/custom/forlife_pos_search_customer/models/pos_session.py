@@ -12,7 +12,7 @@ class PosSession(models.Model):
         search_params = self._loader_params_res_partner()
         domain = expression.AND([search_params['search_params']['domain'], params['domain']])
         search_params['search_params']['domain'] = domain
-        partner = self.env['res.partner'].with_context(ignore_order_by=True)
+        partner = self.env['res.partner'].sudo().with_context(ignore_order_by=True)
         return partner.search_read(**search_params['search_params'], limit=80)
 
     def _load_model(self, model):
