@@ -52,7 +52,7 @@ class PosOrderReturn(models.Model):
                 "Amount": 0,
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -93,7 +93,7 @@ class PosOrderReturn(models.Model):
                 "Amount": -abs(value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -124,7 +124,7 @@ class PosOrderReturn(models.Model):
                 "Amount": -abs(value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -168,8 +168,10 @@ class PosOrderReturn(models.Model):
                 price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
+                ItemTypeID = 0
                 if line.is_reward_line:
                     itemname += '(Hàng tặng khuyến mại không thu tiền)'
+                    ItemTypeID = 4
                 item = {
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
@@ -177,7 +179,7 @@ class PosOrderReturn(models.Model):
                     "Price": -abs(price_bkav),
                     "Amount": -abs(price_subtotal),
                     "TaxAmount":0,
-                    "ItemTypeID": 0,
+                    "ItemTypeID": ItemTypeID,
                     "IsDiscount": 1 if line.is_promotion else 0,
                     "TaxRateID": 4,
                     "TaxRate": -1

@@ -7,33 +7,33 @@ class AccountMove(models.Model):
     account_expense_labor_detail_ids = fields.One2many('account.expense.labor.detail', 'move_id', string='Account Expense Labor Detail')
     sum_expense_labor_ids = fields.One2many('summary.expense.labor.account', 'move_id', string='Summary Expense Labor')
 
-    @api.onchange('currency_id')
-    def onchange_exchange_rate(self):
-        if self.currency_id:
-            new_exchange_rate = self.currency_id.inverse_rate if self.type_inv != 'cost' else 1
-            rate = self.exchange_rate/new_exchange_rate
-            if self.sum_expense_labor_ids and rate != 1:
-                for sum_expense_labor_id in self.sum_expense_labor_ids:
-                    if self.currency_id == sum_expense_labor_id.origin_currency_id:
-                        sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax
-                        sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax
-                        sum_expense_labor_id.before_tax = sum_expense_labor_id.origin_before_est_tax
-                        sum_expense_labor_id.after_tax = sum_expense_labor_id.origin_after_est_tax
-                    else:
-                        sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax * rate
-                        sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax * rate
-                        sum_expense_labor_id.before_tax = sum_expense_labor_id.before_tax * rate
-                        sum_expense_labor_id.after_tax = sum_expense_labor_id.after_tax * rate
-
-            if self.account_expense_labor_detail_ids and rate != 1:
-                for labor_detail_id in self.account_expense_labor_detail_ids:
-                    if self.currency_id == labor_detail_id.origin_currency_id:
-                        labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
-                        labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
-                    else:
-                        labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
-                        labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
-        return super(AccountMove, self).onchange_exchange_rate()
+    # @api.onchange('currency_id')
+    # def onchange_exchange_rate(self):
+    #     if self.currency_id:
+    #         new_exchange_rate = self.currency_id.inverse_rate if self.type_inv != 'cost' else 1
+    #         rate = self.exchange_rate/new_exchange_rate
+    #         if self.sum_expense_labor_ids and rate != 1:
+    #             for sum_expense_labor_id in self.sum_expense_labor_ids:
+    #                 if self.currency_id == sum_expense_labor_id.origin_currency_id:
+    #                     sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax
+    #                     sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax
+    #                     sum_expense_labor_id.before_tax = sum_expense_labor_id.origin_before_est_tax
+    #                     sum_expense_labor_id.after_tax = sum_expense_labor_id.origin_after_est_tax
+    #                 else:
+    #                     sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax * rate
+    #                     sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax * rate
+    #                     sum_expense_labor_id.before_tax = sum_expense_labor_id.before_tax * rate
+    #                     sum_expense_labor_id.after_tax = sum_expense_labor_id.after_tax * rate
+    #
+    #         if self.account_expense_labor_detail_ids and rate != 1:
+    #             for labor_detail_id in self.account_expense_labor_detail_ids:
+    #                 if self.currency_id == labor_detail_id.origin_currency_id:
+    #                     labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
+    #                     labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
+    #                 else:
+    #                     labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
+    #                     labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
+    #     return super(AccountMove, self).onchange_exchange_rate()
 
     @api.model_create_multi
     def create(self, vals):
@@ -128,8 +128,8 @@ class SummaryExpenseLaborAccount(models.Model):
         res = super(SummaryExpenseLaborAccount, self).create(vals_list)
         for item in res:
             item.before_est_tax = item.before_tax
-            item.origin_before_est_tax = item.before_tax
             item.after_est_tax = item.after_tax
+            item.origin_before_est_tax = item.before_tax
             item.origin_after_est_tax = item.after_tax
             item.origin_currency_id = item.move_id.currency_id
         return res

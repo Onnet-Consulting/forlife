@@ -194,6 +194,7 @@ class SummaryAccountMovePos(models.Model):
             ('qty', '>', 0),
             ('is_promotion', '=', False),
             ('is_general', '=', False),
+            ('exists_bkav', '=', False),
         ])
 
         data = {}
@@ -608,13 +609,18 @@ class SummaryAccountMovePos(models.Model):
                                 else:
                                     v_item["amount_total"] -= abs(line.remaining_amount_total)
                                     adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
+                                    v_item_copy = v_item.copy()
+                                    v_item_copy["price_unit_incl"] = v_item_copy["amount_total"] = abs(line.remaining_amount_total)
+                                    tax_results = line.get_amount_total(v_item_copy["price_unit_incl"])
+                                    v_item_copy["price_unit"] = tax_results["total_excluded"]
+
                                     if store_adjusted:
-                                        v_item["bkav_adjusted_id"] = store_adjusted.id
-                                        remaining_discounts.append(v_item.copy())
+                                        v_item_copy["bkav_adjusted_id"] = store_adjusted.id
+                                        remaining_discounts.append(v_item_copy)
                                     else:
                                         if vals_list.get(line.bkav_synthetic_id.id):
                                             row = vals_list[line.bkav_synthetic_id.id]
-                                            row["adjusted_discount_ids"].append((0,0, v_item.copy()))
+                                            row["adjusted_discount_ids"].append((0,0, v_item_copy))
                                         else:
                                             pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
                                             vals_list[line.bkav_synthetic_id.id] = {
@@ -626,7 +632,7 @@ class SummaryAccountMovePos(models.Model):
                                                 'line_ids': [],
                                                 'source_invoice': line.bkav_synthetic_id.id,
                                                 'accumulate_ids': [],
-                                                'adjusted_discount_ids': [(0,0, v_item.copy())],
+                                                'adjusted_discount_ids': [(0,0, v_item_copy)],
                                             }
                                     line.sudo().with_delay(
                                         description="Adjusted invoice for POS", channel="root.NhanhMQ"

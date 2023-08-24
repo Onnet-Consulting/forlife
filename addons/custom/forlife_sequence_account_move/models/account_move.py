@@ -8,6 +8,7 @@ class AccountMove(models.Model):
 
     def _get_starting_sequence(self):
         self.ensure_one()
+        self = self.sudo()
         res = super(AccountMove, self)._get_starting_sequence()
         if self.pos_order_ids:
             warehouse_code = self.pos_order_ids[0].config_id.picking_type_id.warehouse_id.code
@@ -22,6 +23,7 @@ class AccountMove(models.Model):
 
     def _get_last_sequence(self, relaxed=False, with_prefix=None, lock=False):
         self.ensure_one()
+        self = self.sudo()
         if self.pos_order_id or self.pos_order_ids or (self.stock_valuation_layer_ids and self.stock_valuation_layer_ids[0].stock_move_id.picking_id and self.stock_valuation_layer_ids[0].stock_move_id.picking_id.picking_type_id.warehouse_id):
             if self.pos_order_ids:
                 warehouse_code = self.pos_order_ids[0].config_id.picking_type_id.warehouse_id.code

@@ -46,7 +46,7 @@ class AccountMoveSaleOrder(models.Model):
                 "Price": 0,
                 "Amount": abs(value_not_tax)*sign,
                 "TaxAmount": 0,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "IsDiscount": 1,
                 "TaxRateID": 4,
                 "TaxRate": -1
@@ -81,7 +81,7 @@ class AccountMoveSaleOrder(models.Model):
                 "Price": 0,
                 "Amount": abs(value_not_tax)*sign,
                 "TaxAmount": 0,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "IsDiscount": 1,
                 "TaxRateID": 4,
                 "TaxRate": -1
@@ -135,7 +135,7 @@ class AccountMoveSaleOrder(models.Model):
                     "Price": abs(price_unit)*sign,
                     "Amount": abs(line.price_subtotal)*sign,
                     "TaxAmount": 0,
-                    "ItemTypeID": 0,
+                    "ItemTypeID": 4 if x_free_good else 0,
                     "IsDiscount": 1 if x_free_good else 0,
                     "TaxRateID": 4,
                     "TaxRate": -1

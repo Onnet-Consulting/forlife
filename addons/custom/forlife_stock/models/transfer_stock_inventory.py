@@ -18,7 +18,7 @@ class TransferStockInventory(models.Model):
     employee_id = fields.Many2one('hr.employee', string="User")
     location_id = fields.Many2one('stock.location', string='Location')
     note = fields.Text(string="Note")
-    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id', copy=True)
+    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id', copy=True, string='Sản phẩm')
     x_classify = fields.Boolean('Phân loại hàng lỗi',copy=False)
     state = fields.Selection(
         tracking=True,
@@ -32,6 +32,13 @@ class TransferStockInventory(models.Model):
     reason_cancel = fields.Text('Reason Cancel')
     is_nk_xk = fields.Boolean(default=False, copy=False)
     company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu import kiểm kê cân tồn'),
+            'template': '/forlife_stock/static/src/xlsx/Temp_kiem_ke_can_ton.xlsx?download=true'
+        }]
 
 
     def action_import_other(self):

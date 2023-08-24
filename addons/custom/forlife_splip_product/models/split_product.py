@@ -21,6 +21,13 @@ class SplitProduct(models.Model):
     note = fields.Text()
     count_picking = fields.Integer(compute='compute_count_picking', string='Các phiếu nhập xuất')
 
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu import kiểm kê cân tồn'),
+            'template': '/forlife_splip_product/static/src/xlsx/Temp_phan_gia_hang_hoa.xlsx?download=true'
+        }]
+
     def compute_count_picking(self):
         for rec in self:
             pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])

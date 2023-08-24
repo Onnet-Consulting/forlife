@@ -5,13 +5,20 @@
             <field name="model">select.type.invoice</field>
             <field name="arch" type="xml">
                 <form string="Chọn type PO">
+                    <group>
+                        <group>
+                            <field name="select_type_inv" widget="radio" string="Chọn loại"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" string="Đối tác" attrs="{'invisible': [('select_type_inv','=','normal')], 'required': [('select_type_inv','!=','normal')]}"/>
+                            <field name="currency_id" string="Tiền tệ" attrs="{'invisible': [('select_type_inv','=','normal')], 'required': [('select_type_inv','!=','normal')]}"/>
+                            <field name="exchange_rate" string="Tỷ giá" attrs="{'invisible': [('select_type_inv','=','normal')], 'required': [('select_type_inv','!=','normal')]}"/>
+                        </group>
+                    </group>
                     <footer>
                         <button name="select_type_invoice" string="Đồng ý" type="object" class="btn-primary"/>
                         <button name="cancel" string="Từ chối" type="object" class="btn-primary"/>
                     </footer>
-                    <group>
-                        <field name="select_type_inv" widget="radio" string="Chọn loại"/>
-                    </group>
                 </form>
             </field>
         </record>
