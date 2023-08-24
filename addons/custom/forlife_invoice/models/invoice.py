@@ -219,9 +219,9 @@ class AccountMove(models.Model):
             exchange_rate = purchase_order_id[0].exchange_rate if purchase_order_id else 1
         else:
             currency_id = self.currency_id.id or False
-            exchange_rate = self.exchange_rate or 0
-
-        self.write({
+            exchange_rate = self.exchange_rate or 1
+        self.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
+        self.sudo().write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
