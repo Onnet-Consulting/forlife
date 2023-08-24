@@ -379,16 +379,6 @@ class SummaryAccountMovePos(models.Model):
         return res
 
 
-    def create_an_invoice_bkav(self):
-        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
-        synthetic_account_move.create_an_invoice()
-
-        adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
-            ('exists_bkav', '=', False),
-            ('source_invoice', '!=', False)
-        ])
-        adjusted_move.create_an_invoice()
-
     def handle_invoice_balance_clearing(
         self, 
         matching_records,
@@ -516,16 +506,27 @@ class SummaryAccountMovePos(models.Model):
                     remaining_records[store_id] = {'adjusted': [row]}
 
 
+    def create_an_invoice_bkav(self):
+        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+        synthetic_account_move.create_an_invoice()
+
+        adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
+            ('exists_bkav', '=', False),
+            ('source_invoice', '!=', False)
+        ])
+        adjusted_move.create_an_invoice()
+
+
     def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         self.collect_invoice_to_bkav_end_day(*args, **kwargs)
         self.create_an_invoice_bkav()
 
     def cronjob_get_all_invoice_info(self):
-        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', True)])
         synthetic_account_move.get_invoice_bkav()
 
         adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
-            ('exists_bkav', '=', False),
+            ('exists_bkav', '=', True),
             ('source_invoice', '!=', False)
         ])
         adjusted_move.get_invoice_bkav()
@@ -607,7 +608,6 @@ class SummaryAccountMovePos(models.Model):
                                 else:
                                     v_item["amount_total"] -= abs(line.remaining_amount_total)
                                     adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
-                                    v[""]
                                     if store_adjusted:
                                         v_item["bkav_adjusted_id"] = store_adjusted.id
                                         remaining_discounts.append(v_item.copy())
@@ -639,13 +639,48 @@ class SummaryAccountMovePos(models.Model):
 
                         if v_item["amount_total"] > 0:
                             not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
-                            v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
-                            remaining_discounts.append(v_item.copy())
+                            if not_adjusted:
+                                v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                                remaining_discounts.append(v_item.copy())
+                            else:
+                                if vals_list.get('adjusted'):
+                                    row = vals_list['adjusted']
+                                    row["adjusted_discount_ids"].append((0,0, v_item.copy()))
+                                else:
+                                    pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                    vals_list['adjusted'] = {
+                                        'code': pos_license_bkav,
+                                        'company_id': company_id.id,
+                                        'store_id': store.id,
+                                        'partner_id': store.contact_id.id,
+                                        'invoice_date': date.today(),
+                                        'line_ids': [],
+                                        'source_invoice': None,
+                                        'accumulate_ids': [],
+                                        'adjusted_discount_ids': [(0,0, v_item.copy())],
+                                    }
                     else:
                         not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
-                        v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
-                        remaining_discounts.append(v_item.copy())
-
+                        if not_adjusted:
+                            v_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                            remaining_discounts.append(v_item.copy())
+                        else:
+                            if vals_list.get('adjusted'):
+                                row = vals_list['adjusted']
+                                row["adjusted_discount_ids"].append((0,0, v_item.copy()))
+                            else:
+                                pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                vals_list['adjusted'] = {
+                                    'code': pos_license_bkav,
+                                    'company_id': company_id.id,
+                                    'store_id': store.id,
+                                    'partner_id': store.contact_id.id,
+                                    'invoice_date': date.today(),
+                                    'line_ids': [],
+                                    'source_invoice': None,
+                                    'accumulate_ids': [],
+                                    'adjusted_discount_ids': [(0,0, v_item.copy())],
+                                }
             if accumulate_point > 0:
                 matching_accumulates.append({
                     "total_point": accumulate_point,
@@ -742,18 +777,54 @@ class SummaryAccountMovePos(models.Model):
                             "total_point": accumulate_point,
                             "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
                             "store_id": store_id,
-                            "bkav_adjusted_id": not_adjusted[0].id if not_adjusted else None
                         }
-                        remaining_accumulates.append(accumulate_item)
+                        if not_adjusted:
+                            accumulate_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                            remaining_accumulates.append(accumulate_item)
+                        else:
+                            if vals_list.get('adjusted'):
+                                row = vals_list['adjusted']
+                                row["accumulate_ids"].append((0,0, accumulate_item))
+                                vals_list['adjusted'] = row
+                            else:
+                                pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                                vals_list['adjusted'] = {
+                                    'code': pos_license_bkav,
+                                    'company_id': company_id.id,
+                                    'store_id': store.id,
+                                    'partner_id': store.contact_id.id,
+                                    'invoice_date': date.today(),
+                                    'line_ids': [],
+                                    'source_invoice': None,
+                                    'accumulate_ids': [(0,0, accumulate_item)]
+                                }
                 else:
                     not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                     accumulate_item = {
                         "total_point": accumulate_point,
                         "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
                         "store_id": store_id,
-                        "bkav_adjusted_id": not_adjusted[0].id if not_adjusted else None
                     }
-                    remaining_accumulates.append(accumulate_item)
+                    if not_adjusted:
+                        accumulate_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                        remaining_accumulates.append(accumulate_item)
+                    else:
+                        if vals_list.get('adjusted'):
+                            row = vals_list['adjusted']
+                            row["accumulate_ids"].append((0,0, accumulate_item))
+                            vals_list['adjusted'] = row
+                        else:
+                            pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
+                            vals_list['adjusted'] = {
+                                'code': pos_license_bkav,
+                                'company_id': company_id.id,
+                                'store_id': store.id,
+                                'partner_id': store.contact_id.id,
+                                'invoice_date': date.today(),
+                                'line_ids': [],
+                                'source_invoice': None,
+                                'accumulate_ids': [(0,0, accumulate_item)]
+                            }
 
         self.env["synthetic.account.move.pos.line.discount"].create(matching_discounts)
         self.env["summary.adjusted.invoice.pos.line.discount"].create(remaining_discounts)
