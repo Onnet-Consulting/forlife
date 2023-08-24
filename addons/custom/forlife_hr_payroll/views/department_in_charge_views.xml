@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="department_in_charge_view_tree" model="ir.ui.view">
+            <field name="name">department_in_charge_view_tree</field>
+            <field name="model">department.in.charge</field>
+            <field name="arch" type="xml">
+                <tree string="department_in_charge_tree" editable="bottom">
+                    <field name="department_code"/>
+                    <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="user_ids" widget="many2many_tags" options="{'no_create': True, 'no_open': True}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="department_in_charge_filter" model="ir.ui.view">
+            <field name="name">department_in_charge_filter</field>
+            <field name="model">department.in.charge</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="department_id"/>
+                    <field name="user_ids"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="department_in_charge_action" model="ir.actions.act_window">
+            <field name="name">Phòng ban phụ trách</field>
+            <field name="res_model">department.in.charge</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>
