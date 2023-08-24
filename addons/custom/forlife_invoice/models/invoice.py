@@ -333,7 +333,8 @@ class AccountMove(models.Model):
             if cost_line_vals:
                 invoice_cl_ids = self.env['invoice.cost.line'].create(cost_line_vals)
 
-            self.vendor_back_ids = self.vendor_back_ids
+            if self.vendor_back_ids:
+                self.vendor_back_ids = self.vendor_back_ids
 
 
         elif self.select_type_inv == 'labor':
@@ -530,7 +531,7 @@ class AccountMove(models.Model):
                     })
             # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
-                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id):
+                for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != x.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id):
                     line.write({
                         'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
                         'name': line.product_id.name
