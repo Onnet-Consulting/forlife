@@ -123,7 +123,7 @@ class PurchaseOrder(models.Model):
                 })
         return res
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, partner_id=False, currency_id=False, exchange_rate=False):
         if len(self) == 1 and self.is_return:
             if self.custom_state != 'approved':
                 raise UserError(_('Tạo hóa đơn không hợp lệ!'))
@@ -244,7 +244,7 @@ class PurchaseOrder(models.Model):
             # is actually negative or not
             return moves
         else:
-            return super(PurchaseOrder, self).action_create_invoice()
+            return super(PurchaseOrder, self).action_create_invoice(partner_id, currency_id, exchange_rate)
 
     def get_data_line(self, line, wave_item, sequence, order, quantity):
         ware_name = wave_item.picking_id.name if wave_item.picking_id.name else ''
