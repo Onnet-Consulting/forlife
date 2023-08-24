@@ -294,6 +294,7 @@ class StockPicking(models.Model):
             for item, r in zip(po.order_line_production_order, self.move_ids):
                 # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
                 move = self.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
+                if not move: continue
                 qty_po_done = sum(move.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
@@ -371,7 +372,7 @@ class StockPicking(models.Model):
                     svl_values = []
                     svl_values.append((0, 0, {
                         'value': - credit_cost,
-                        'unit_cost': credit_cost / qty_po_done if qty_po_done else credit_cost,
+                        'unit_cost': credit_cost / qty_po_done,
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
@@ -422,7 +423,7 @@ class StockPicking(models.Model):
                     svl_allowcation_values = []
                     svl_allowcation_values.append((0, 0, {
                         'value': -total_npl_amount,
-                        'unit_cost': total_npl_amount / qty_po_done if qty_po_done else total_npl_amount,
+                        'unit_cost': total_npl_amount / qty_po_done,
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
