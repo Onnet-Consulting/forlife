@@ -691,7 +691,7 @@ class StockTransferLine(models.Model):
                               domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
-    qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
+    qty_plan_tsq = fields.Float(default=0, string='Quantity Plan Tsq')
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
     check_id = fields.Integer(string="")
     sequence = fields.Integer(string="STT dòng")
