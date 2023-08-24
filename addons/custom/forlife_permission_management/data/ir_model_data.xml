@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <function model="ir.model.data" name="write" context="{'active_test': False}">
             <value model="ir.model.data" eval="obj().search([
                 ('module', '=', 'forlife_permission_management'),
                 ('model', '=', 'ir.model.access')]).ids"/>
             <value eval="{'noupdate': True}"/>
+        </function>
+        <function model="ir.model.data" name="update_to_noupdate">
+            <value eval="[
+            'website.group_website_designer',
+            'website.group_website_restricted_editor',
+            'forlife_customer_card_rank.update_card_rank',
+            'stock.group_stock_user',
+            'mrp.group_mrp_user',
+            'quality.group_quality_user',
+            'point_of_sale.group_pos_user',
+            'purchase.group_purchase_user',
+            'sales_team.group_sale_salesman',
+            'sales_team.group_sale_salesman_all_leads',
+            'account.group_account_invoice',
+            'sales_team.group_sale_manager',
+            'hr.group_hr_manager',
+            'mrp.group_mrp_manager',
+            'point_of_sale.group_pos_manager',
+            'quality.group_quality_manager',
+            'purchase.group_purchase_manager',
+            'stock.group_stock_manager',
+            'hr.group_hr_user',
+            'forlife_point_of_sale.store_manager',
+            'forlife_net_promoter_score.net_promoter_score_manager',
+            'forlife_customer_card_rank.member_card_manager',
+            'forlife_promotion.promotion_manager',
+            'account.group_account_manager',
+            'account.group_account_readonly',
+            'account.group_account_user',
+            ]"/>
         </function>
     </data>
 </odoo>
