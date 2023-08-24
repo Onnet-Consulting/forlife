@@ -22,8 +22,7 @@ class SelectTypeInvoice(models.TransientModel):
 
     @api.onchange('currency_id')
     def onchange_currency_id(self):
-        rates = self.currency_id._get_rates(self.env.company, fields.Date.today())
-        self.exchange_rate = rates.get(self.currency_id) or 1
+        self.exchange_rate = self.currency_id.inverse_rate or 1
 
     def select_type_invoice(self):
         req_id = self._context.get('active_ids') or self._context.get('active_id')
