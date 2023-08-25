@@ -210,8 +210,6 @@ class PurchaseOrder(models.Model):
         for r in self:
             for rec in r.order_line:
                 rec.location_id = self.location_id
-            if not r.location_export_material_id:
-                r.location_export_material_id = r.location_id
 
     @api.onchange('account_analytic_id')
     def _onchange_line_account_analytic_id(self):
