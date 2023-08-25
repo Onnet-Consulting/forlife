@@ -207,8 +207,11 @@ class PurchaseOrder(models.Model):
 
     @api.onchange('location_id')
     def _onchange_line_location_id(self):
-        for rec in self.order_line:
-            rec.location_id = self.location_id
+        for r in self:
+            for rec in r.order_line:
+                rec.location_id = self.location_id
+            if not r.location_export_material_id:
+                r.location_export_material_id = r.location_id
 
     @api.onchange('account_analytic_id')
     def _onchange_line_account_analytic_id(self):
@@ -697,13 +700,6 @@ class PurchaseOrder(models.Model):
                 rec.active_manual_currency_rate = True
             else:
                 rec.active_manual_currency_rate = False
-
-    def write(self, vals):
-        old_line_count = len(self.order_line)
-        new_line_count = len(vals.get('order_line', []))
-        if (new_line_count > old_line_count) and self.custom_state == "approved":
-            raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
-        return super(PurchaseOrder, self).write(vals)
 
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):

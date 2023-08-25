@@ -334,7 +334,10 @@ class AccountMove(models.Model):
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
 
             if self.vendor_back_ids:
-                self.vendor_back_ids = self.vendor_back_ids
+                self.write({
+                    'vendor_back_ids': self.vendor_back_ids,
+                    'purchase_order_product_id': [(6, 0, self.purchase_order_product_id.ids)],
+                })
 
         elif self.select_type_inv == 'labor':
             labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
