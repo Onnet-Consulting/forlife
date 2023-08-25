@@ -127,6 +127,9 @@ class PurchaseOrderLine(models.Model):
                  "purchase_order_line_material_line_ids.price_unit")
     def _compute_cost(self):
         for item in self:
+            item.material_cost = item.material_cost
+            item.labor_cost = item.labor_cost
+
             if not item.order_id.picking_ids.picking_xk_id.filtered(lambda x: x.state == 'done'):
                 total_material_price = 0
                 total_labor_price = 0
