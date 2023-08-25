@@ -64,6 +64,7 @@ def _create_returns(self):
 
     new_picking.action_confirm()
     new_picking.action_assign()
+    new_picking.action_set_quantities_to_reservation()
     return new_picking.id, picking_type_id
 
 
