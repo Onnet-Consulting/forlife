@@ -48,7 +48,7 @@ class InheritStockPicking(models.Model):
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
             product_qty_prodution_remaining = self.env['quantity.production.order'].search([('location_id', '=', self.location_id.id), ('production_id.code', '=', move.work_production.code)])
-            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and not x.product_backup_id)
+            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
             material_backup_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and x.product_backup_id)
             if not material_ids:
                 raise ValidationError(_("BOM của sản phẩm '%s' hiện tại đang không có sản phẩm lưu kho, vui lòng kiểm tra lại!" %  move.product_id.display_name))
