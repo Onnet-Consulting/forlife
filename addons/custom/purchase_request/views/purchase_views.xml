@@ -130,8 +130,8 @@
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}" string="Đơn vị"/>
                                         <field name="product_qty" string="Số lượng" force_save="1"/>
                                         <field name="type_cost_product" invisible="1"/>
-                                        <field name="price_unit" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
-                                        <field name="total_amount" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
+                                        <field name="price_unit" force_save="1" string="Giá" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
+                                        <field name="total_amount" force_save="1" attrs="{'readonly': [('type_cost_product', '=', False)]}"/>
                                     </tree>
                                 </field>
                             </page>

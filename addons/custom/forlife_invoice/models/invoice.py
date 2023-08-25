@@ -189,9 +189,7 @@ class AccountMove(models.Model):
             'description': product_expense.name,
             'uom_id': product_expense.uom_id.id,
             'qty': 1,
-            'price_subtotal_back': price_subtotal,
-            'origin_currency_id': self.currency_id.id,
-            'origin_price_subtotal_back': price_subtotal
+            'price_subtotal_back': price_subtotal
         }
         return vals
 
