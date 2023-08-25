@@ -218,7 +218,10 @@ class AccountMove(models.Model):
         else:
             currency_id = self.currency_id.id or False
             exchange_rate = self.exchange_rate or 1
-        self.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
+        tax_lines = self.line_ids.filtered(lambda x: x.display_type == 'tax').write({
+            'tax_ids': False
+        })
+        tax_lines.unlink()
         self.sudo().write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
@@ -487,7 +490,9 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if 'vendor_back_ids' in vals:
-                tax_line_ids = rec.line_ids.filtered(lambda x: x.display_type == 'tax')
+                tax_line_ids = rec.line_ids.filtered(lambda x: x.display_type == 'tax').write({
+                    'tax_ids': False
+                })
                 tax_line_ids.unlink()
                 invoice_description = []
                 for vendor_back_id in rec.vendor_back_ids:
