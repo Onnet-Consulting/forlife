@@ -251,6 +251,7 @@ class SaleOrder(models.Model):
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
                                 'promotion_type': 'discount',
+                                'product_uom_qty': ln.product_uom_qty,
                                 'account_id': discount_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp",
@@ -264,6 +265,7 @@ class SaleOrder(models.Model):
                                 'product_id': ln.product_id.id,
                                 'value': diff_price,
                                 'promotion_type': 'diff_price',
+                                'product_uom_qty': ln.product_uom_qty,
                                 'account_id': promotion_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá",
@@ -400,6 +402,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': line_promotion.product_id.id,
                                         'value': discount_amount,
+                                        'product_uom_qty': line_promotion.product_uom_qty,
                                         'promotion_type': 'reward',
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
@@ -430,6 +433,7 @@ class SaleOrder(models.Model):
                                         rec.promotion_ids = [(0, 0, {
                                             'product_id': line_promotion.product_id.id,
                                             'value': discount_amount,
+                                            'product_uom_qty': line_promotion.product_uom_qty,
                                             'promotion_type': 'reward',
                                             'account_id': discount_account_id and discount_account_id.id,
                                             'analytic_account_id': analytic_account_id and analytic_account_id.id,
