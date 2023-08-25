@@ -111,6 +111,8 @@ class StockReturnPicking(models.TransientModel):
                     'picking_id': picking.id,
                     'for_po': True if picking.purchase_id else False
                 })
+        if self._context.get('so_return'):
+            res.update({'select_all': True})
         return res
 
     @api.model
