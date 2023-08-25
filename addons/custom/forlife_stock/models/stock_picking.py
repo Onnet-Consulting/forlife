@@ -107,6 +107,14 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                     'quantity_change': pk_od.quantity_change,
                     'quantity_purchase_done': pk.qty_done/pk_od.quantity_change
                 })
+            for pk in self.picking_id.move_line_ids:
+                pk.write({
+                        'quantity_purchase_done': pk.qty_done/pk.quantity_change
+                    })
+            for pk in self.picking_id.move_ids:
+                pk.write({
+                        'quantity_purchase_done': pk.quantity_done/pk.quantity_change
+                    })
         return self.picking_id.button_validate()
 
 
