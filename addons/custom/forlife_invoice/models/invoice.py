@@ -583,21 +583,21 @@ class AccountMove(models.Model):
 
     @api.onchange('amount_total', 'tax_totals')
     def onchange_amount_total_trade_discount(self):
-        if self.trade_discount and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.trade_discount and self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
         else:
             self.trade_discount = 0
