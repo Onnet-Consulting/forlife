@@ -151,11 +151,9 @@ class PurchaseOrderLine(models.Model):
                 raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
             production_data = []
             for production_line in production_order.order_line_ids:
-                # product_plan_qty = self.product_qty / production_order.product_qty * production_line.product_qty
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
                     'uom': production_line.uom_id.id,
-                    # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'production_line_price_unit': production_line.price,
