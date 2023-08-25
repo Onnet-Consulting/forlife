@@ -840,6 +840,7 @@ class PurchaseOrder(models.Model):
             'work_order': po_line.production_id.id if po_line.production_id else False,
             'account_analytic_id': po_line.account_analytic_id.id if po_line.account_analytic_id else False,
             'import_tax': po_line.import_tax,
+            'tax_ids': False
         }
         return data_line
 
@@ -930,6 +931,7 @@ class PurchaseOrder(models.Model):
             'import_tax': pol_id.import_tax,
             'special_consumption_tax': pol_id.special_consumption_tax,
             'vat_tax': pol_id.vat_tax,
+            'tax_ids': False,
         }
         return data
 
