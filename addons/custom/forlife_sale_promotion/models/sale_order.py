@@ -23,7 +23,7 @@ class SaleOrder(models.Model):
         readonly=True, copy=False, index=True,
         tracking=3,
         default='draft')
-    promotion_used = fields.Char()
+    promotion_used = fields.Char(copy=False)
 
     def get_oder_line_barcode(self, barcode):
         line_product = []
