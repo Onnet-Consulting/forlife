@@ -105,6 +105,9 @@ class SaleOrder(models.Model):
                                 action['context'] = {
                                     'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)
                                 }
+                                rec.write({
+                                    'promotion_used': ' , '.join(list_promotion_used)
+                                })
                                 return action
                             else:
                                 rec.nhanh_origin_id = nhanh_origin_id
@@ -114,6 +117,9 @@ class SaleOrder(models.Model):
                             action['context'] = {
                                 'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                     has_vip = False
@@ -220,6 +226,9 @@ class SaleOrder(models.Model):
                             action['context'] = {
                                 'default_message': _("Order note '#VIP' invalid!")
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
@@ -338,6 +347,9 @@ class SaleOrder(models.Model):
                                 'default_message': _("Voucher %s không tồn tại trong hệ thống. Vui lòng kiểm tra lại!" % rec.x_code_voucher),
                                 'default_voucher_name': rec.x_code_voucher
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                         if voucher_id.state not in ['sold', 'valid', 'off value']:
@@ -348,6 +360,9 @@ class SaleOrder(models.Model):
                             action['context'] = {
                                 'default_message': _('Trạng thái của Voucher %s phải là "Đã bán" hoặc "Còn giá trị"' % rec.x_code_voucher),
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                         if voucher_id and voucher_id.price_residual < rec.x_voucher:
@@ -359,6 +374,9 @@ class SaleOrder(models.Model):
                                 'default_message': _("Giá trị voucher (Nhanh) không được vượt quá %s" % "{:0,.0f}".format(voucher_id.price_residual)),
                                 'default_voucher_value': rec.x_voucher
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                 # đơn bán buôn
