@@ -20,6 +20,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
                     val = (0, 0, {
                         "product_id": prm.product_id.id,
                         "value": prm.value,
+                        "product_uom_qty": prm.product_uom_qty,
                         "promotion_type": prm.promotion_type,
                         "account_id": prm.account_id.id,
                         "analytic_account_id": prm.analytic_account_id.id,
@@ -34,6 +35,20 @@ class SaleAdvancePaymentInv(models.TransientModel):
                         "product_id": prm.product_id.id,
                         "partner_id": sale_orders[0].delivery_carrier_id.partner_id.id if sale_orders.delivery_carrier_id.partner_id and prm.promotion_type == 'customer_shipping_fee' else False,
                         "value": value,
+                        "product_uom_qty": prm.product_uom_qty,
+                        "promotion_type": prm.promotion_type,
+                        "account_id": prm.account_id.id,
+                        "analytic_account_id": prm.analytic_account_id.id,
+                        "description": prm.description,
+                        "tax_id": prm.tax_id,
+                    })
+                    promotion_vals.append(val)
+                if prm.promotion_type in ['out_point', 'in_point']:
+                    val = (0, 0, {
+                        "product_id": prm.product_id.id,
+                        "partner_id": sale_orders[0].delivery_carrier_id.partner_id.id if sale_orders.delivery_carrier_id.partner_id and prm.promotion_type == 'customer_shipping_fee' else False,
+                        "value": prm.value,
+                        "product_uom_qty": prm.product_uom_qty,
                         "promotion_type": prm.promotion_type,
                         "account_id": prm.account_id.id,
                         "analytic_account_id": prm.analytic_account_id.id,

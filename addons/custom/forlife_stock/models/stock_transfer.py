@@ -895,6 +895,26 @@ class ForlifeProductionFinishedProduct(models.Model):
             remaining_qty = 0 if qty_done > rec.produce_qty else rec.produce_qty - qty_done
             rec.remaining_qty = remaining_qty
 
+    
+class ForlifeProduction(models.Model):
+    _inherit = 'forlife.production'
+        
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {})
+        forlife_production_finished_product_ids = self.forlife_production_finished_product_ids
+        for forlife_production_finished_product_id in forlife_production_finished_product_ids:
+            forlife_production_finished_product_id.update({
+                'forlife_production_stock_move_ids':False,
+                'stock_qty':0,
+                'remaining_qty':0
+            })
+
+        default['forlife_production_finished_product_ids'] = forlife_production_finished_product_ids
+        return super().copy(default)
+    
+
 
 class HREmployee(models.Model):
     _inherit = 'hr.employee'

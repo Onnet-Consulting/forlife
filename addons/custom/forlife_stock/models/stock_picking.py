@@ -57,25 +57,27 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                 tolerance = 0
             if pk.qty_done != pk_od.product_uom_qty:
                 if pk.qty_done > pk_od.product_uom_qty:
-                    list_line_over.append((0, 0, {
-                        'product_id': pk_od.product_id.id,
-                        'product_uom_qty': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
-                        'quantity_done': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
-                        'product_uom': pk_od.product_uom.id,
-                        'free_good': pk_od.free_good,
-                        'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': (pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty))/(pk_od.quantity_change),
-                        'occasion_code_id': pk.occasion_code_id.id,
-                        'work_production': pk.work_production.id,
-                        'account_analytic_id': pk.account_analytic_id.id,
-                        'price_unit': pk_od.price_unit,
-                        'location_id': pk_od.location_id.id,
-                        'location_dest_id': pk_od.location_dest_id.id,
-                        'amount_total': pk_od.amount_total,
-                        'reason_type_id': pk_od.reason_type_id.id,
-                        'reason_id': pk_od.reason_id.id,
-                        'purchase_line_id': pk_od.purchase_line_id.id,
-                    }))
+                    product_uom_qty = (pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty
+                    if pk.qty_done != product_uom_qty:
+                        list_line_over.append((0, 0, {
+                            'product_id': pk_od.product_id.id,
+                            'product_uom_qty': pk.qty_done - product_uom_qty,
+                            'quantity_done': pk.qty_done - product_uom_qty,
+                            'product_uom': pk_od.product_uom.id,
+                            'free_good': pk_od.free_good,
+                            'quantity_change': pk_od.quantity_change,
+                            'quantity_purchase_done': (pk.qty_done - product_uom_qty)/(pk_od.quantity_change),
+                            'occasion_code_id': pk.occasion_code_id.id,
+                            'work_production': pk.work_production.id,
+                            'account_analytic_id': pk.account_analytic_id.id,
+                            'price_unit': pk_od.price_unit,
+                            'location_id': pk_od.location_id.id,
+                            'location_dest_id': pk_od.location_dest_id.id,
+                            'amount_total': pk_od.amount_total,
+                            'reason_type_id': pk_od.reason_type_id.id,
+                            'reason_id': pk_od.reason_id.id,
+                            'purchase_line_id': pk_od.purchase_line_id.id,
+                        }))
 
             if pk.qty_done > pk_od.product_uom_qty:
                 pk.write({
