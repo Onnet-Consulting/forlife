@@ -89,9 +89,8 @@
                                 <field name="purchase_quantity" readonly="0"/>
                                 <field name="product_uom" readonly="1" force_save="1" string="Đơn vị tính"/>
                                 <field name="exchange_quantity" readonly="0"/>
-                                <field name="product_qty" readonly="1" force_save="1"/>
-                                <button name="action_npl" string="NPL" type="object" style="text-align: center;"
-                                        class="btn btn-secondary"/>
+                                <field name="product_qty" string="Số lượng" readonly="1" force_save="1"/>
+                                <button name="action_npl" string="NPL" type="object" style="text-align: center;" class="btn btn-secondary"/>
                             </tree>
                         </field>
                     </page>
@@ -108,13 +107,13 @@
                         <group>
                             <group>
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
+                                <field name="name" string="Mô tả" readonly="1"/>
                                 <field name="purchase_quantity" readonly="1"/>
                             </group>
                             <group>
                                 <field name="purchase_uom" readonly="1"/>
                                 <field name="exchange_quantity" readonly="1"/>
-                                <field name="product_qty" readonly="1"/>
+                                <field name="product_qty" string="Số lượng" readonly="1"/>
                             </group>
                         </group>
                         <notebook>

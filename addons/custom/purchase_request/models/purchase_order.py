@@ -142,6 +142,26 @@ class PurchaseOrderLine(models.Model):
                 item.material_cost = total_material_price
                 item.labor_cost = total_labor_price
 
+    def write(self, vals):
+        res = super().write(vals)
+        for r in self.filtered(lambda x: x.x_check_npl and not x.purchase_order_line_material_line_ids):
+            product = self.product_id
+            production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
+            production_data = []
+            for production_line in production_order.order_line_ids:
+                production_data.append((0, 0, {
+                    'product_id': production_line.product_id.id,
+                    'uom': production_line.uom_id.id,
+                    'production_order_product_qty': production_order.product_qty,
+                    'production_line_product_qty': production_line.product_qty,
+                    'production_line_price_unit': production_line.price,
+                    'is_from_po': True,
+                }))
+            r.write({
+                'purchase_order_line_material_line_ids': production_data
+            })
+        return res
+
     def action_npl(self):
         self.ensure_one()
         if not self.purchase_order_line_material_line_ids:
