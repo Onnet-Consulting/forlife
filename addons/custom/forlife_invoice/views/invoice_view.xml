@@ -339,6 +339,7 @@
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
                                        options="{'currency_field': 'currency_id'}"/>
                                 <field name="after_est_tax" sum="Sum Estimate After Tax" widget="monetary"
+                                       invisible="1"
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
                                        options="{'currency_field': 'currency_id'}"/>
                                 <field name="expense_est_labor" sum="Sum Estimate Expense Labor" widget="monetary"

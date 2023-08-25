@@ -385,8 +385,7 @@ class AccountMove(models.Model):
             if product_labors:
                 labor_lst = []
                 for product_labor in product_labors:
-                    sum_product_labor_moves = aml_ids.filtered(
-                        lambda x: x.product_expense_origin_id == product_labor)
+                    sum_product_labor_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_labor)
                     price_subtotal = sum([x.price_unit for x in sum_product_labor_moves])
                     labor_vals = self._prepare_account_expense_labor_detail(product_labor, price_subtotal)
                     labor_lst.append(labor_vals)

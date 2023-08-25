@@ -923,7 +923,7 @@ class PurchaseOrder(models.Model):
             'account_id': labor_cost_id.product_id.categ_id.property_stock_account_input_categ_id.id,
             'name': labor_cost_id.product_id.name,
             'quantity': 1,
-            'price_unit': labor_cost_id.price_unit * (move_qty / pol_id.product_qty),
+            'price_unit': labor_cost_id.total_amount * (move_qty / pol_id.product_qty),
             'occasion_code_id': pol_id.occasion_code_id.id if pol_id.occasion_code_id else False,
             'work_order': pol_id.production_id.id if pol_id.production_id else False,
             'account_analytic_id': pol_id.account_analytic_id.id if pol_id.account_analytic_id else False,
