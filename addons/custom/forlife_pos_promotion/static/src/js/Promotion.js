@@ -331,9 +331,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         super.set_point(point);
         if (!old_point && this.point) {
             if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
+                this.order._resetLinePromotionPrograms(this);
                 this.promotion_usage_ids = [];
                 this.reset_unit_price();
-                this.order._resetPromotionPrograms(false);
             };
         };
     }
@@ -345,7 +345,8 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0 && !this.pos.no_reset_program) {
             this.promotion_usage_ids = [];
             this.reset_unit_price();
-            this.order._resetPromotionPrograms(false);
+//            this.order._resetPromotionPrograms(false);
+            this.order._resetLinePromotionPrograms(this);
             reset = true;
         };
         /*
