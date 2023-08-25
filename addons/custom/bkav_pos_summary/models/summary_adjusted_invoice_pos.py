@@ -148,10 +148,10 @@ class SummaryAdjustedInvoicePos(models.Model):
                 "Price": 0,
                 "Amount": 0,
                 "TaxAmount": 0,
-                "IsDiscount": 1,
-                "ItemTypeID": 0,
-                "TaxRateID": 1,
-                "TaxRate": 0,
+                "IsDiscount": 0,
+                "ItemTypeID": 4,
+                "TaxRateID": 4,
+                "TaxRate": -1,
             }
             list_invoice_details_ws.append(line_invoice)
         if line_discount_ids:
@@ -270,6 +270,8 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "IsIncrease": 0,
                 }
                 vat, tax_rate_id = self.get_vat(line)
+                if line.x_free_good:
+                    vat, tax_rate_id = -1, 4
                 line_invoice.update({
                     "TaxRateID": tax_rate_id,
                     "TaxRate": vat
@@ -297,9 +299,12 @@ class SummaryAdjustedInvoicePos(models.Model):
     
     def get_invoice_bkav(self):
         for line in self:
-            bkav_action.get_invoice_bkav(self)
+            try:
+                bkav_action.get_invoice_bkav(self)
+            except Exception as e:
+                line.message_post(body=str(e))
 
- 
+
 class SummaryAdjustedInvoicePosLine(models.Model):
     _name = 'summary.adjusted.invoice.pos.line'
 
@@ -369,14 +374,15 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
 
-    @api.depends('tax_ids', 'price_unit_incl')
+    @api.depends('tax_ids', 'amount_total', 'price_unit')
     def _compute_amount(self):
         for r in self:
-            if r.tax_ids:
-                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
-                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
-            else:
-                r.tax_amount = 0
+            # if r.tax_ids:
+            #     tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+            #     r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
+            # else:
+            #     r.tax_amount = 0
+            r.tax_amount = r.amount_total - r.price_unit
 
 
 

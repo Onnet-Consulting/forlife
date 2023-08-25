@@ -7,15 +7,15 @@ from odoo.exceptions import ValidationError
 class PosOrderReturn(models.Model):
     _inherit = "pos.order"
 
-    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV (HD trả hàng)")
-    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV (HD trả hàng)")
+    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV(R)")
+    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV(R)")
     ###trạng thái và số hdđt từ bkav trả về
-    invoice_state_e_return = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_return', store=True,copy=False)
-    invoice_guid_return = fields.Char('GUID HDDT', copy=False)
-    invoice_no_return = fields.Char('Số HDDT', copy=False)
-    invoice_form_return = fields.Char('Mẫu số HDDT', copy=False)
-    invoice_serial_return = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date_return = fields.Date('Ngày HDDT', copy=False)
+    invoice_state_e_return = fields.Char('Trạng thái HDDT(R)', compute='_compute_data_compare_status_return', store=True,copy=False)
+    invoice_guid_return = fields.Char('GUID HDDT(R)', copy=False)
+    invoice_no_return = fields.Char('Số HDDT(R)', copy=False)
+    invoice_form_return = fields.Char('Mẫu số HDDT(R)', copy=False)
+    invoice_serial_return = fields.Char('Ký hiệu HDDT(R)', copy=False)
+    invoice_e_date_return = fields.Date('Ngày HDDT(R)', copy=False)
     data_compare_status_return = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -32,7 +32,7 @@ class PosOrderReturn(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
-    eivoice_file_return = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+    eivoice_file_return = fields.Many2one('ir.attachment', 'eInvoice PDF(R)', readonly=1, copy=0)
     issue_invoice_type = fields.Selection([
         ('vat', 'GTGT'),
         ('adjust', 'Điều chỉnh'),
@@ -52,7 +52,7 @@ class PosOrderReturn(models.Model):
                 "Amount": 0,
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -93,7 +93,7 @@ class PosOrderReturn(models.Model):
                 "Amount": -abs(value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -124,7 +124,7 @@ class PosOrderReturn(models.Model):
                 "Amount": -abs(value_not_tax),
                 "TaxAmount": 0,
                 "IsDiscount": 1,
-                "ItemTypeID": 0,
+                "ItemTypeID": 4,
                 "TaxRateID": 4,
                 "TaxRate": -1
             }
@@ -168,8 +168,10 @@ class PosOrderReturn(models.Model):
                 price_bkav = round(price_subtotal/line.qty) if line.qty != 0 else round(price_subtotal)
                 vat, tax_rate_id = self._get_vat_line_bkav(line)
                 itemname = line.product_id.name
+                ItemTypeID = 0
                 if line.is_reward_line:
                     itemname += '(Hàng tặng khuyến mại không thu tiền)'
+                    ItemTypeID = 4
                 item = {
                     "ItemName": itemname,
                     "UnitName": line.product_uom_id.name or '',
@@ -177,7 +179,7 @@ class PosOrderReturn(models.Model):
                     "Price": -abs(price_bkav),
                     "Amount": -abs(price_subtotal),
                     "TaxAmount":0,
-                    "ItemTypeID": 0,
+                    "ItemTypeID": ItemTypeID,
                     "IsDiscount": 1 if line.is_promotion else 0,
                     "TaxRateID": 4,
                     "TaxRate": -1

@@ -10,20 +10,23 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    # production_id = fields.Many2many('forlife.production', string='Production Order', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], copy=False)
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
-    order_line_production_order = fields.One2many(comodel_name='purchase.order.line',
-                                                  compute='_compute_order_line_production_order')
-
+    order_line_production_order = fields.One2many(comodel_name='purchase.order.line', compute='_compute_order_line_production_order')
     total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
 
     @api.depends('order_line.purchase_quantity')
     def compute_total_qty(self):
         for rec in self:
-            rec.total_qty = sum(rec.order_line.mapped('purchase_quantity'))
+            self._cr.execute("""
+                SELECT 
+                    sum(pol.purchase_quantity) as purchase_quantity
+                FROM purchase_order_line pol where pol.order_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_qty = data.get('purchase_quantity', 0)
 
     @api.depends('order_line')
     def _compute_order_line_production_order(self):
@@ -47,10 +50,6 @@ class PurchaseOrder(models.Model):
             for line in rec.order_line:
                 if not line.purchase_request_line_id:
                     continue
-                purchase_request_line = line.purchase_request_line_id
-                purchase_request_name = purchase_request_line.request_id.name
-                # if (line.product_qty + purchase_request_line.order_quantity) > purchase_request_line.purchase_quantity:
-                #     raise ValidationError('Số lượng sản phẩm %s còn lại không đủ!\nVui lòng check mã phiếu yêu cầu %s.' % (line.product_id.name, purchase_request_name))
         res = super(PurchaseOrder, self).action_approved()
         for rec in self:
             material_data = []
@@ -102,13 +101,12 @@ class PurchaseOrderLine(models.Model):
 
     state = fields.Selection(related='order_id.state', store=1)
     purchase_request_line_id = fields.Many2one('purchase.request.line', ondelete='cascade')
-    purchase_order_line_material_line_ids = fields.One2many('purchase.order.line.material.line',
-                                                            'purchase_order_line_id')
+    purchase_order_line_material_line_ids = fields.One2many('purchase.order.line.material.line', 'purchase_order_line_id')
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
     x_check_npl = fields.Boolean(related='product_id.x_check_npl')
-    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost")
-    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost")
+    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost", store=1)
+    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost", store=1)
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
@@ -129,18 +127,20 @@ class PurchaseOrderLine(models.Model):
                  "purchase_order_line_material_line_ids.price_unit")
     def _compute_cost(self):
         for item in self:
-            total_material_price = 0
-            total_labor_price = 0
-            material_on_hand = item.purchase_order_line_material_line_ids.filtered(
-                lambda x: x.product_id.detailed_type == 'product')
-            labor_service = item.purchase_order_line_material_line_ids.filtered(
-                lambda x: x.product_id.detailed_type == 'service')
+            item.material_cost = item.material_cost
+            item.labor_cost = item.labor_cost
 
-            total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
-            total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
+            if not item.order_id.picking_ids.picking_xk_id.filtered(lambda x: x.state == 'done'):
+                total_material_price = 0
+                total_labor_price = 0
+                material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
+                labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
 
-            item.material_cost = total_material_price
-            item.labor_cost = total_labor_price
+                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
+                total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
+
+                item.material_cost = total_material_price
+                item.labor_cost = total_labor_price
 
     def action_npl(self):
         self.ensure_one()
@@ -190,9 +190,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     production_order_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_order tại thời điểm được tạo
     product_type = fields.Selection(related='product_id.detailed_type')
     production_line_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_line tại thời điểm được tạo
-    product_qty = fields.Float('Quantity', digits='Product Unit of Measure', compute='_compute_product_qty',
-                               store=1,
-                               readonly=False)
+    product_qty = fields.Float('Quantity', digits='Product Unit of Measure', compute='_compute_product_qty', store=1, readonly=False)
     is_from_po = fields.Boolean(default=False)
     type_cost_product = fields.Selection(related='product_id.product_tmpl_id.x_type_cost_product')
     production_line_price_unit = fields.Float(digits='Product Unit of Measure') # ghi lại price ở đính kèm sản phẩm ứng product
@@ -224,7 +222,6 @@ class PurchaseOrderLineMaterialLine(models.Model):
     def _compute_total_amount(self):
         for item in self:
             item.total_amount = item.price_unit * item.product_qty
-
 
     @api.onchange('product_qty')
     def onchange_product_qty_pppp(self):

@@ -41,22 +41,17 @@ class StockTransferRequest(models.Model):
     note = fields.Text(string='Ghi chú')
     purchase_id = fields.Many2one('purchase.order', string='Đơn mua hàng', domain=[('is_return', '=', False)])
     total_request_qty = fields.Float(string='Tổng số lượng yc', compute='_compute_total_qty')
-    total_in_qty = fields.Float(string='Tổng số lượng thực xuất', compute='_compute_total_qty')
-    total_out_qty = fields.Float(string='Tổng số lượng thực nhận', compute='_compute_total_qty')
 
     @api.depends('request_lines.plan_quantity', 'request_lines.quantity_reality_receive', 'request_lines.quantity_reality_transfer')
     def _compute_total_qty(self):
         for rec in self:
-            total_request_qty = 0
-            total_in_qty = 0
-            total_out_qty = 0
-            for line in rec.request_lines:
-                total_request_qty += line.plan_quantity
-                total_in_qty += line.quantity_reality_receive
-                total_out_qty += line.quantity_reality_transfer
-            rec.total_request_qty = total_request_qty
-            rec.total_in_qty = total_in_qty
-            rec.total_out_qty = total_out_qty
+            self._cr.execute("""
+                SELECT 
+                    sum(stl.plan_quantity) as plan_quantity
+                FROM transfer_request_line stl where request_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_request_qty = data.get('plan_quantity', 0)
 
     @api.model
     def default_get(self, default_fields):
@@ -225,9 +220,8 @@ class StockTransferRequest(models.Model):
         return res
 
     def unlink(self):
-        for rec in self:
-            if rec.state != 'draft':
-                raise ValidationError("You only delete a record in draft and cancel status")
+        if any(item.state not in ('draft') for item in self):
+            raise ValidationError("Không thể xóa phiếu yêu cầu điều chuyển ở trạng thái khác dự thảo !!")
         return super(StockTransferRequest, self).unlink()
 
     def action_stock_transfer(self):

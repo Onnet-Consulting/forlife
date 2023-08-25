@@ -6,15 +6,23 @@ class SelectTypeInvoice(models.TransientModel):
     _name = "select.type.invoice"
     _description = "Select Type Invoice"
 
-    select_type_inv = fields.Selection(
-        copy=False,
-        default='normal',
-        string="Loại hóa đơn",
-        required=True,
-        selection=[('expense', 'Hóa đơn chi phí mua hàng'),
-                   ('labor', 'Hóa đơn chi phí nhân công'),
-                   ('normal', 'Hóa đơn chi tiết hàng hóa'),
-                   ])
+    select_type_inv = fields.Selection(string="Loại hóa đơn", required=True,
+        selection=[
+            ('expense', 'Hóa đơn chi phí mua hàng'),
+            ('labor', 'Hóa đơn chi phí nhân công'),
+            ('normal', 'Hóa đơn chi tiết hàng hóa'),
+        ], default='normal')
+    partner_id = fields.Many2one('res.partner', string='Đối tác')
+    currency_id = fields.Many2one('res.currency', string='Tiền tệ')
+    exchange_rate = fields.Float(string='Tỷ giá', default=1)
+
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        self.currency_id = self.env.company.currency_id if not self.partner_id.property_purchase_currency_id else self.partner_id.property_purchase_currency_id
+
+    @api.onchange('currency_id')
+    def onchange_currency_id(self):
+        self.exchange_rate = self.currency_id.inverse_rate or 1
 
     def select_type_invoice(self):
         req_id = self._context.get('active_ids') or self._context.get('active_id')
@@ -25,7 +33,10 @@ class SelectTypeInvoice(models.TransientModel):
                     item.write({
                         'select_type_inv': rec.select_type_inv,
                     })
-                moves = current_purchase.action_create_invoice()
+                if rec.select_type_inv in ['expense', 'labor']:
+                    moves = current_purchase.action_create_invoice(rec.partner_id, rec.currency_id, rec.exchange_rate)
+                else:
+                    moves = current_purchase.action_create_invoice()
                 if not moves:
                     raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
                 return {

@@ -5,7 +5,7 @@
             <field name="name">salary_supplementary_view_tree</field>
             <field name="model">salary.supplementary</field>
             <field name="arch" type="xml">
-                <tree string="salary_supplementary_tree">
+                <tree string="salary_supplementary_tree" class="set-width-custom">
                     <field name="salary_record_id" invisible="1"/>
                     <field name="company_id" invisible="1"/>
                     <field name="purpose_id"/>

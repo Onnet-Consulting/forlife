@@ -156,6 +156,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 
         }
         condition_voucher(item, i, data, so_tien_da_tra,list_id_product_apply_condition) {
+                    let qty = item.quantity
                     let item_id = item.id.toString()
                     if(!so_tien_da_tra[item_id]){
                         so_tien_da_tra[item_id] = 0;
@@ -173,7 +174,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     }
                     let discount_ck = 0;
                     if(item.discount >0){
-                       discount_ck = ((item.product.lst_price*item.quantity)*item.discount)/100
+                       discount_ck = ((item.product.lst_price*qty)*item.discount)/100
                     }
                     if(!item.card_rank_discount){
                         item.card_rank_discount = 0
@@ -181,9 +182,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     if(!item.money_reduce_from_product_defective){
                         item.money_reduce_from_product_defective =0;
                     }
-                    if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck)){
-                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck);
-                        so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total*item.quantity - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck;
+                    if(data[i].value.price_residual >= (item.product.lst_price*qty + item.point - so_tien_da_tra[item_id] - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck)){
+                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*qty - so_tien_da_tra[item_id] + item.point - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck);
+                        so_tien_da_tra[item_id] = item.product.lst_price*qty + item.point - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck;
                     }else{
                         so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                         data[i].value.price_residual = 0;
@@ -191,6 +192,19 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     if(data[i].value.product_apply_ids.includes(item.product.id)){
                         list_id_product_apply_condition.push(item.id)
                     }
+        }
+
+
+        _compute_price_of_refund_product(){
+               let price_of_refund_product = 0;
+               if(this.env.pos.selectedOrder.is_change_product){
+                  this.env.pos.selectedOrder.orderlines.forEach(function(item){
+                      if(item.refunded_orderline_id && item.quantity!=0){
+                         price_of_refund_product += ((Math.abs(item.quantity)* item.product.lst_price)-((item.money_is_reduced * Math.abs(item.quantity)) / item.quantity_canbe_refund) + item.handle_change_refund_price)
+                      }
+                  })
+               }
+               return price_of_refund_product
         }
 
         async check() {
@@ -226,18 +240,13 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    $(this).val(index+1)
                 }
             });
-            var total_price_residual=0
-            var total_price_order_line = 0;
-            var data_value = []
-            for(let i = 0; i < data.length; i ++){
-                if(codes[i].value != false && data[i].value != false){
-                    total_price_residual+= data[i].value.price_residual
-                    data_value.push(data[i].value)
-                    if(data[i].value.price_change == 0){
-                        data[i].value.price_change = data[i].value.price_residual
-                    }
-                }
-            }
+//            for(let i = 0; i < data.length; i ++){
+//                if(codes[i].value != false && data[i].value != false){
+//                    if(data[i].value.price_change == 0){
+//                        data[i].value.price_change = data[i].value.price_residual
+//                    }
+//                }
+//            }
 //            var obj_count_program = data.reduce((acc, item) => {
 //                  const key = item.bookName
 //                  if (!acc.hasOwnProperty(key)) {
@@ -323,7 +332,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                 if(data[i].value.is_full_price_applies == true && ('point' in this.env.pos.selectedOrder.orderlines[j]
                                 && this.env.pos.selectedOrder.orderlines[j].point
                                 || this.env.pos.selectedOrder.orderlines[j].promotion_usage_ids.length>0
-                                || this.env.pos.selectedOrder.orderlines[j].card_rank_discount >0)
+                                || this.env.pos.selectedOrder.orderlines[j].card_rank_discount >0 || this.env.pos.selectedOrder.orderlines[j].discount > 0 || this.env.pos.selectedOrder.orderlines[j].money_reduce_from_product_defective > 0)
                                 )
                                 {
                                     error_continue.push("Sản phẩm "+ this.env.pos.selectedOrder.orderlines[j].product.display_name +" nếu muốn sử dụng voucher sẽ cần được xóa chương trình khuyến mại trên giỏ hàng!")
@@ -365,14 +374,19 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
                         if(data[i].value.has_condition == false){
                             self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                         }
-                        else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0) && data[i].value.is_full_price_applies )){
+                        else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0) && data[i].value.is_full_price_applies) && !item.refunded_orderline_id){
                             self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual - self._compute_price_of_refund_product();
+                        }
+                        if(data[i].value.price_change < 0){
+                           data[i].value.price_change = 0;
                         }
                    })
-                   data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                }
             }
+
             this.env.pos.selectedOrder.orderlines.forEach(function(line){
                 let line_id = line.id.toString()
                 if(list_id_product_apply_condition.includes(line.id)){
@@ -383,8 +397,14 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             });
 
             for(let i=0;i<data.length;i++){
+                let self = this;
                 if(data[i].value != false){
-                    data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
+                   if (data[i].value.price_change != 0) {
+                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change + self._compute_price_of_refund_product();
+                   }
+                   if (data[i].value.price_change == 0) {
+                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
+                   }
                 }
             }
 //            for(let i = 0; i < data.length; i ++){

@@ -71,7 +71,7 @@ class StockMove(models.Model):
             warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
             if move_line.owner_id and move_line.owner_id != move_line.company_id.partner_id:
                 continue
-            if move_line.picking_id.from_company and move_line.picking_id.from_company.code == '1300' and move_line.picking_id.to_company and move_line.picking_id.to_company.code == '1400':
+            if move_line.picking_id.sudo().from_company and move_line.picking_id.sudo().from_company.code == '1300' and move_line.picking_id.sudo().to_company and move_line.picking_id.sudo().to_company.code == '1400':
                 if (move_line.picking_id.location_id.warehouse_id.whs_type.id in [warehouse_type_master]
                     and move_line.picking_id.location_dest_id.id_deposit) \
                         or (move_line.picking_id.location_id.id_deposit

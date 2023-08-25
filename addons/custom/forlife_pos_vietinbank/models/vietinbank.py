@@ -8,7 +8,8 @@ import random
 import time
 import json
 from Crypto.PublicKey import RSA
-from odoo.exceptions import ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class ApisVietinBank(models.AbstractModel):
@@ -39,7 +40,7 @@ class ApisVietinBank(models.AbstractModel):
 
     def _prepare_body(self, pos_id):
         date_to = datetime.now().strftime('%d/%m/%Y')
-        date_from = (datetime.now() - timedelta(days=7)).strftime('%d/%m/%Y')
+        date_from = (datetime.now() - timedelta(hours=4)).strftime('%d/%m/%Y')
         request_id = self._ramdom_request()
         merchant_id = ""
         pos_config = self.env['pos.config'].browse(pos_id)
@@ -77,9 +78,11 @@ class ApisVietinBank(models.AbstractModel):
             json=self._prepare_body(pos_id)
         )
         if req.status_code != 200:
+            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank")}
         data = json.loads(req.text)
         if data['status']['code'] != '1':
+            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank: Error: %s" % data['status']['message'])}
         return {
             'status': True,
@@ -99,20 +102,21 @@ class ApisVietinBank(models.AbstractModel):
             ('session_id', '=', args[2]),
         ]).unlink()
         virtual_account = self.env['pos.config'].browse(args[0]).vietinbank_virtual_account
-        virtual_account = virtual_account.split(',')
+        virtual_account = virtual_account.split(',') if virtual_account else ''
         if not trans_data['data']:
             return trans_data
         vals = []
         for item in data.get('transactions', []):
             if 'order' not in item or not item['order']:
                 continue
-            if virtual_account and item['virtualAccount'] in virtual_account:
+            if virtual_account and item['virtualAccount'] not in virtual_account:
                 continue
             vals.append({
                 'pos_order_id': args[0],
                 'payment_method_id': args[1],
                 'session_id': args[2],
                 'debit_account': item['corresponsiveAccount'],
+                'customer_name': item['corresponsiveAccountName'],
                 'amount': item['credit'],
                 'benefi_account': data['account'],
                 'benefi_name': data['companyName'],
@@ -132,9 +136,11 @@ class ApisVietinBank(models.AbstractModel):
 
 class VietinBankModel(models.TransientModel):
     _name = 'vietinbank.transaction.model'
+    _rec_name = 'customer_name'
     _description = 'Vietinbank transaction'
 
-    pos_order_id = fields.Many2one('pos.order', string='Pos Order')
+    customer_name = fields.Char(string='Tên khách hàng')
+    pos_order_id = fields.Many2one('pos.config', string='Pos Order')
     payment_method_id = fields.Many2one('pos.payment.method', string='Payment method')
     session_id = fields.Many2one('pos.session', string='Session Id')
     company_id = fields.Many2one('res.company', string='Company')

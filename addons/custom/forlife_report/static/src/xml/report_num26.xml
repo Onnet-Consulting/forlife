@@ -20,10 +20,13 @@
                         <td><t t-esc="line.tu_kho"/></td>
                         <td><t t-esc="line.den_kho"/></td>
                         <td><t t-esc="line.so_phieu_dc"/></td>
+                        <td><t t-esc="line.so_kien"/></td>
+                        <td><t t-esc="line.trong_luong"/></td>
                         <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.barcode"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.mau"/></td>
+                        <td><t t-esc="line.anh_mau"/></td>
                         <td><t t-esc="line.size"/></td>
                         <td><t t-esc="line.sl_ke_hoach"/></td>
                         <td><t t-esc="line.dvt"/></td>

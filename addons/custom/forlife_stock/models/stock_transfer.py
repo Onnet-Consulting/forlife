@@ -73,16 +73,17 @@ class StockTransfer(models.Model):
     @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
     def _compute_total_qty(self):
         for rec in self:
-            total_request_qty = 0
-            total_in_qty = 0
-            total_out_qty = 0
-            for line in rec.stock_transfer_line:
-                total_request_qty += line.qty_plan
-                total_in_qty += line.qty_in
-                total_out_qty += line.qty_out
-            rec.total_request_qty = total_request_qty
-            rec.total_in_qty = total_in_qty
-            rec.total_out_qty = total_out_qty
+            self._cr.execute("""
+                SELECT 
+                    sum(stl.qty_plan) as qty_plan,
+                    sum(stl.qty_in) as qty_in,
+                    sum(stl.qty_out) as qty_out
+                FROM stock_transfer_line stl where stock_transfer_id = %s;
+            """ % rec.id)
+            data = self._cr.dictfetchone()
+            rec.total_request_qty = data.get('qty_plan', 0)
+            rec.total_in_qty = data.get('qty_in', 0)
+            rec.total_out_qty = data.get('qty_out', 0)
 
     def _compute_picking_count(self):
         for transfer in self:
@@ -690,7 +691,7 @@ class StockTransferLine(models.Model):
                               domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
-    qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
+    qty_plan_tsq = fields.Float(default=0, string='Quantity Plan Tsq')
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
     check_id = fields.Integer(string="")
     sequence = fields.Integer(string="STT dòng")
@@ -741,59 +742,58 @@ class StockTransferLine(models.Model):
             self._context.get('from_date'), self._context.get('to_date'))
         qty_available = result[product.id].get('free_qty', 0)
         domain = [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id)]
-        # quantity_prodution = QuantityProductionOrder.search(
-        #     [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id),
-        #      ('production_id', '=', self.work_from.id)])
         quantity_prodution_to = QuantityProductionOrder.search(
             [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
-             ('production_id.code', '=', self.work_to.code)])
+            ('production_id.code', '=', self.work_to.code)])
         if self.work_from:
             domain.append(('production_id.code', '=', self.work_from.code))
-            quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
-
-            if quantity_prodution:
-                if self.qty_out > quantity_prodution.quantity:
-                    raise ValidationError(
-                        '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
-                        product.name, self.work_from.code))
+            if product.categ_id.category_type_id.code in ('2','3','4'):
+                quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
+                if quantity_prodution:
+                    if self.qty_out > quantity_prodution.quantity:
+                        raise ValidationError(
+                            '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
+                            product.name, self.work_from.code))
+                    else:
+                        quantity_prodution.update({
+                            'quantity': quantity_prodution.quantity - self.qty_out
+                        })
                 else:
-                    quantity_prodution.update({
-                        'quantity': quantity_prodution.quantity - self.qty_out
-                    })
-            else:
-                raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (product.code, product.name, self.work_from.code))
+                    raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (product.code, product.name, self.work_from.code))
             if self.work_to:
-                if quantity_prodution_to:
-                    quantity_prodution_to.update({
-                        'quantity': quantity_prodution_to.quantity + self.qty_out
-                    })
-                else:
-                    QuantityProductionOrder.create({
-                        'product_id': product.id,
-                        'location_id': self.stock_transfer_id.location_dest_id.id,
-                        'production_id': self.work_to.id,
-                        'quantity': self.qty_out
-                    })
+                if product.categ_id.category_type_id.code in ('2','3','4'):
+                    if quantity_prodution_to:
+                        quantity_prodution_to.update({
+                            'quantity': quantity_prodution_to.quantity + self.qty_out
+                        })
+                    else:
+                        QuantityProductionOrder.create({
+                            'product_id': product.id,
+                            'location_id': self.stock_transfer_id.location_dest_id.id,
+                            'production_id': self.work_to.id,
+                            'quantity': self.qty_out
+                        })
         else:
-            qty_production_ids = QuantityProductionOrder.search(
-                [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id)])
-            if qty_production_ids:
-                qty_in_production = sum([x.quantity for x in qty_production_ids])
-                qty_free = qty_available - qty_in_production
-                if self.qty_out > qty_free:
-                    raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % (product.name))
-            if self.work_to:
-                if quantity_prodution_to:
-                    quantity_prodution_to.update({
-                        'quantity': quantity_prodution_to.quantity + self.qty_out
-                    })
-                else:
-                    QuantityProductionOrder.create({
-                        'product_id': product.id,
-                        'location_id': self.stock_transfer_id.location_dest_id.id,
-                        'production_id': self.work_to.id,
-                        'quantity': self.qty_out
-                    })
+            if product.categ_id.category_type_id.code in ('2','3','4'):
+                qty_production_ids = QuantityProductionOrder.search(
+                    [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id)])
+                if qty_production_ids:
+                    qty_in_production = sum([x.quantity for x in qty_production_ids])
+                    qty_free = qty_available - qty_in_production
+                    if self.qty_out > qty_free:
+                        raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % (product.name))
+                if self.work_to:
+                    if quantity_prodution_to:
+                        quantity_prodution_to.update({
+                            'quantity': quantity_prodution_to.quantity + self.qty_out
+                        })
+                    else:
+                        QuantityProductionOrder.create({
+                            'product_id': product.id,
+                            'location_id': self.stock_transfer_id.location_dest_id.id,
+                            'production_id': self.work_to.id,
+                            'quantity': self.qty_out
+                        })
         if qty_available < product_quantity:
             if is_diff_transfer:
                 raise ValidationError(

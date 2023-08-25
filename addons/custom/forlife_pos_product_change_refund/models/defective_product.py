@@ -89,12 +89,28 @@ class ProductDefective(models.Model):
             raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
 
+    def action_send_request_approves(self):
+        for request in self.filtered(lambda r: r.state == 'new'):
+            try:
+                request.action_send_request_approve()
+            except ValidationError as e:
+                body = _('Exception while send the request approve: %s', e)
+                request.message_post(body=body)
+
     def action_send_request_approve(self):
         product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id), ('id','!=',self.id),('store_id','=',self.store_id.id),('state','=','approved')])
         if self.quantity_require > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
             raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
         self.state = 'waiting approve'
         self._send_mail_approve(self.id)
+
+    def action_approves(self):
+        for request in self.filtered(lambda r: r.state == 'waiting approve'):
+            try:
+                request.action_approve()
+            except (ValidationError, UserError) as e:
+                body = _('Exception while approve the request: %s', e)
+                request.message_post(body=body)
 
     def action_approve(self):
         self.ensure_one()

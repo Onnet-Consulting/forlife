@@ -6,7 +6,7 @@
             <field name="name">salary_backlog_view_tree</field>
             <field name="model">salary.backlog</field>
             <field name="arch" type="xml">
-                <tree string="salary_backlog_tree">
+                <tree string="salary_backlog_tree" editable="bottom">
                     <field name="salary_record_id" invisible="1"/>
                     <field name="company_id" invisible="1"/>
                     <field name="employee_id"/>
