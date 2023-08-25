@@ -66,6 +66,7 @@ class ProductionMaterialImport(models.Model):
     _description = "Production material import"
 
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', ondelete='cascade')
+    makithuat = fields.Char(string='Mã kĩ thuật', related='product_id.makithuat')
     product_id = fields.Many2one('product.product', string='Mã NPL')
     product_backup_id = fields.Many2one('product.product', string='Mã NPL thay thế')
     product_finish_id = fields.Many2one('product.product', string='Thành phẩm')
@@ -83,7 +84,7 @@ class ProductionMaterialImport(models.Model):
     def _compute_total_material(self):
         for rec in self:
             precision_rounding = rec.uom_id.rounding
-            rec.total = float_round(value=(rec.rated_level * rec.conversion_coefficient * (1.0 + rec.loss) * rec.qty), precision_rounding=precision_rounding)
+            rec.total = float_round(value=(rec.rated_level * rec.conversion_coefficient * (1.0 + (rec.loss / 100)) * rec.qty), precision_rounding=precision_rounding)
 
     @api.onchange('conversion_coefficient', 'rated_level', 'loss', 'qty')
     def _onchange_update_total(self):

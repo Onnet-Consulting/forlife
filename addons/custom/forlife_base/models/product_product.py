@@ -2,7 +2,7 @@
 #
 import re
 import datetime
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 
@@ -81,7 +81,7 @@ class ProducProduct(models.Model):
             product_ids = []
             if operator in positive_operators:
                 product_ids = list(
-                    self._search([('barcode', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                    self._search(['|', ('barcode', operator, name), ('makithuat', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
                 if not product_ids:
                     product_ids = list(
                         self._search([('default_code', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))

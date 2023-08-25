@@ -23,7 +23,7 @@ class ResPartner(models.Model):
     sup_product_type_id = fields.Many2one('supplier.product.type', string="Type of Supplier Product", copy=False)
 
     def name_get(self):
-        result = super().name_get()
+        result = []
         for partner in self:
             if partner.ref:
                 name = f'[{partner.ref}] {partner.name}'
