@@ -385,8 +385,7 @@ class AccountMove(models.Model):
             if product_labors:
                 labor_lst = []
                 for product_labor in product_labors:
-                    sum_product_labor_moves = aml_ids.filtered(
-                        lambda x: x.product_expense_origin_id == product_labor)
+                    sum_product_labor_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_labor)
                     price_subtotal = sum([x.price_unit for x in sum_product_labor_moves])
                     labor_vals = self._prepare_account_expense_labor_detail(product_labor, price_subtotal)
                     labor_lst.append(labor_vals)
@@ -584,21 +583,21 @@ class AccountMove(models.Model):
 
     @api.onchange('amount_total', 'tax_totals')
     def onchange_amount_total_trade_discount(self):
-        if self.trade_discount and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.trade_discount and self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
         else:
             self.trade_discount = 0
@@ -1092,9 +1091,10 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         res = super()._compute_account_id()
         for line in self:
-            if line.move_id.purchase_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
-                line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
-                line.name = line.product_id.name
+            if line.move_id.purchase_type == 'product' and line.product_id.detailed_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
+                if line.account_id != line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id:
+                    line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                    line.name = line.product_id.name
         return res
 
     @api.onchange('vendor_price')
