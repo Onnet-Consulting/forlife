@@ -36,7 +36,7 @@ class ProductionOrder(models.Model):
         ('normal', 'Attach Ingredients')], 'BoM Type', default='normal', required=True)
     product_id = fields.Many2one('product.product', 'Product', required=True)
     production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
-    order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines', copy=True)
+    order_line_ids = fields.One2many('production.order.line', 'order_id', string='Thành phần', copy=True)
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
     invoice_status_fake = fields.Selection([
         ('no', 'Chưa nhận'),
@@ -60,7 +60,7 @@ class ProductionOrder(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu NPL'),
-            'template': '/purchase_request/static/src/xlsx/file import npl.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/template_npl.xlsx?download=true'
         }]
 
     def data_search(self, domain):
