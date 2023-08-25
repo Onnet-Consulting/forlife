@@ -64,6 +64,7 @@ def _create_returns(self):
 
     new_picking.action_confirm()
     new_picking.action_assign()
+    new_picking.action_set_quantities_to_reservation()
     return new_picking.id, picking_type_id
 
 
@@ -110,6 +111,8 @@ class StockReturnPicking(models.TransientModel):
                     'picking_id': picking.id,
                     'for_po': True if picking.purchase_id else False
                 })
+        if self._context.get('so_return'):
+            res.update({'select_all': True})
         return res
 
     @api.model
