@@ -1092,9 +1092,10 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         res = super()._compute_account_id()
         for line in self:
-            if line.move_id.purchase_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
-                line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
-                line.name = line.product_id.name
+            if line.move_id.purchase_type == 'product' and line.product_id.detailed_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
+                if line.account_id != line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id:
+                    line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                    line.name = line.product_id.name
         return res
 
     @api.onchange('vendor_price')
