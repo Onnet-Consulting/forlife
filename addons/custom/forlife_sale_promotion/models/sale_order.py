@@ -346,7 +346,8 @@ class SaleOrder(models.Model):
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
-                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán" hoặc "Còn giá trị"' % rec.x_code_voucher),
+                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán", "Còn giá trị", "Hết giá trị"' % rec.x_code_voucher),
+                                'default_voucher_name': rec.x_code_voucher
                             }
                             return action
 
