@@ -742,7 +742,9 @@ class StockTransferLine(models.Model):
             self._context.get('from_date'), self._context.get('to_date'))
         qty_available = result[product.id].get('free_qty', 0)
         domain = [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_id.id)]
-        
+        quantity_prodution_to = QuantityProductionOrder.search(
+            [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
+            ('production_id.code', '=', self.work_to.code)])
         if self.work_from:
             domain.append(('production_id.code', '=', self.work_from.code))
             if product.categ_id.category_type_id.code in ('2','3','4'):
@@ -760,9 +762,6 @@ class StockTransferLine(models.Model):
                     raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (product.code, product.name, self.work_from.code))
             if self.work_to:
                 if product.categ_id.category_type_id.code in ('2','3','4'):
-                    quantity_prodution_to = QuantityProductionOrder.search(
-                        [('product_id', '=', product.id), ('location_id', '=', self.stock_transfer_id.location_dest_id.id),
-                        ('production_id.code', '=', self.work_to.code)])
                     if quantity_prodution_to:
                         quantity_prodution_to.update({
                             'quantity': quantity_prodution_to.quantity + self.qty_out
