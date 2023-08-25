@@ -148,8 +148,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='purchase_synthetic_ids']//tree//field[@name='after_tax']" position="after">
-                    <field name="material_cost" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
-                    <field name="labor_cost" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                    <field name="material_cost" widget="monetary" force_save="1" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                    <field name="labor_cost" widget="monetary" force_save="1" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
                 </xpath>
 
             </field>

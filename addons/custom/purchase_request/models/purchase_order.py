@@ -105,8 +105,8 @@ class PurchaseOrderLine(models.Model):
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
     x_check_npl = fields.Boolean(related='product_id.x_check_npl')
-    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost")
-    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost")
+    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost", store=1)
+    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost", store=1)
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):

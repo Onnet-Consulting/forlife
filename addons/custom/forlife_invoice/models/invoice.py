@@ -582,18 +582,26 @@ class AccountMove(models.Model):
             if item.trade_discount < 0:
                 raise ValidationError('Chiết khấu thương mại không được âm!')
 
+    @api.onchange('amount_total', 'tax_totals')
+    def onchange_amount_total_trade_discount(self):
+        if self.trade_discount and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+            self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
+        else:
+            self.total_trade_discount = 0
+
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
-        if self.trade_discount:
-            if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
-                self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
+        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+            self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
+        else:
+            self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
-        if self.total_trade_discount:
-            if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
-                self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
-
+        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+            self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
+        else:
+            self.trade_discount = 0
 
     def create_invoice_tnk_db(self):
         account_db = []
@@ -765,11 +773,38 @@ class AccountMove(models.Model):
         account_expense_id = self.env.ref('forlife_purchase.product_discount_tax').with_company(self.company_id).property_account_expense_id
         if not account_expense_id:
             raise ValidationError("Bạn chưa cấu hình tài khoản chi phí ở tab kế toán trong danh sản phẩm có tên là Chiết khấu tổng đơn!!")
-        account_tax_id = self.trade_tax_id.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').account_id
-        if not account_tax_id:
-            raise ValidationError("Bạn chưa cấu hình tài khoản trong phần Thuế!!")
+        if self.trade_tax_id:
+            account_tax_id = self.trade_tax_id.invoice_repartition_line_ids.filtered(lambda x: x.repartition_type == 'tax').account_id
+            if not account_tax_id:
+                raise ValidationError("Bạn chưa cấu hình tài khoản trong phần Thuế!!")
         if not self.partner_id.property_account_payable_id:
             raise ValidationError(_("Bạn chưa cấu hình tài khoản phải trả ở tab kế toán trong nhà cung cấp %s") % self.partner_id.name)
+
+        invoice_line_ids = [
+            (0, 0, {
+                'account_id': self.partner_id.property_account_payable_id.id,
+                'name': self.partner_id.property_account_payable_id.name,
+                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate if is_in else 0.0,
+                'credit': 0 if is_in else (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
+            }),
+            (0, 0, {
+                'account_id': account_expense_id.id,
+                'name': account_expense_id.name,
+                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
+                'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
+                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
+            })
+        ]
+        if self.trade_tax_id:
+            invoice_line_ids.append(
+                (0, 0, {
+                    'account_id': account_tax_id.id,
+                    'name': account_tax_id.name,
+                    'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
+                    'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
+                })
+            )
+
         invoice_ck = self.create({
             'e_in_check': self.id,
             'partner_id': self.partner_id.id,
@@ -781,27 +816,7 @@ class AccountMove(models.Model):
             'purchase_order_product_id': self.purchase_order_product_id,
             'x_root': self.x_root,
             'is_tc': self.is_tc,
-            'invoice_line_ids': [
-                (0, 0, {
-                    'account_id': self.partner_id.property_account_payable_id.id,
-                    'name': self.partner_id.property_account_payable_id.name,
-                    'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate if is_in else 0.0,
-                    'credit': 0 if is_in else (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
-                }),
-                (0, 0, {
-                    'account_id': account_expense_id.id,
-                    'name': account_expense_id.name,
-                    'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
-                    'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
-                    'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
-                }),
-                (0, 0, {
-                    'account_id': account_tax_id.id,
-                    'name': account_tax_id.name,
-                    'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
-                    'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
-                })
-            ]
+            'invoice_line_ids': invoice_line_ids
         })
         invoice_ck._post()
         return invoice_ck
