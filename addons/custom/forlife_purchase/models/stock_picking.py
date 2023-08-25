@@ -85,27 +85,6 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return True
         for record in self:
-            if record.location_dest_id.usage == 'internal':
-                for rec in record.move_ids:
-                    if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
-                        continue
-                    if rec.work_production:
-                        quantity = self.env['quantity.production.order'].search(
-                            [('product_id', '=', rec.product_id.id),
-                                ('location_id', '=', rec.picking_id.location_dest_id.id),
-                                ('production_id.code', '=', rec.work_production.code)])
-                        if quantity:
-                            quantity.write({
-                                'quantity': quantity.quantity + rec.quantity_done
-                            })
-                        else:
-                            self.env['quantity.production.order'].create({
-                                'product_id': rec.product_id.id,
-                                'location_id': rec.picking_id.location_dest_id.id,
-                                'production_id': rec.work_production.id,
-                                'quantity': rec.quantity_done
-                            })
-        for record in self:
             po = record.purchase_id
             if not po:
                 continue
@@ -138,6 +117,25 @@ class StockPicking(models.Model):
                     'currency_id': po.currency_id.id,
                     'exchange_rate': po.exchange_rate
                 })
+            for rec in record.move_ids:
+                if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                    continue
+                if rec.work_production:
+                    quantity = self.env['quantity.production.order'].search(
+                        [('product_id', '=', rec.product_id.id),
+                            ('location_id', '=', rec.picking_id.location_dest_id.id),
+                            ('production_id.code', '=', rec.work_production.code)])
+                    if quantity:
+                        quantity.write({
+                            'quantity': quantity.quantity + rec.quantity_done
+                        })
+                    else:
+                        self.env['quantity.production.order'].create({
+                            'product_id': rec.product_id.id,
+                            'location_id': rec.picking_id.location_dest_id.id,
+                            'production_id': rec.work_production.id,
+                            'quantity': rec.quantity_done
+                        })
         return res
 
     def prepare_move_svl_value_with_tax_po(self, po, tax_type):
