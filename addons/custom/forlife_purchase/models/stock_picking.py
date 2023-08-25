@@ -385,7 +385,7 @@ class StockPicking(models.Model):
                                     'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
                                 })
                                 list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
-                if record.state == 'done':
+                if record.state == 'done' and list_line_xk:
                     self.create_xk_picking(po, record, list_line_xk, export_production_order)
                 if debit_cost > 0:
                     debit_cp = (0, 0, {
