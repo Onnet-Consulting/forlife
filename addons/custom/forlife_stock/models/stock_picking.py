@@ -64,7 +64,7 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                         'product_uom': pk_od.product_uom.id,
                         'free_good': pk_od.free_good,
                         'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
+                        'quantity_purchase_done': (pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty))/(pk_od.quantity_change),
                         'occasion_code_id': pk.occasion_code_id.id,
                         'work_production': pk.work_production.id,
                         'account_analytic_id': pk.account_analytic_id.id,
@@ -105,8 +105,16 @@ class StockPickingOverPopupConfirm(models.TransientModel):
             for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
                 pk.write({
                     'quantity_change': pk_od.quantity_change,
-                    'quantity_purchase_done': pk.qty_done
+                    'quantity_purchase_done': pk.qty_done/pk_od.quantity_change
                 })
+            for pk in self.picking_id.move_line_ids:
+                pk.write({
+                        'quantity_purchase_done': pk.qty_done/pk.quantity_change
+                    })
+            for pk in self.picking_id.move_ids:
+                pk.write({
+                        'quantity_purchase_done': pk.quantity_done/pk.quantity_change
+                    })
         return self.picking_id.button_validate()
 
 

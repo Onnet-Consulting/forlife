@@ -105,8 +105,8 @@ class PurchaseOrderLine(models.Model):
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
     x_check_npl = fields.Boolean(related='product_id.x_check_npl')
-    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost")
-    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost")
+    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost", store=1)
+    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost", store=1)
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
@@ -127,16 +127,20 @@ class PurchaseOrderLine(models.Model):
                  "purchase_order_line_material_line_ids.price_unit")
     def _compute_cost(self):
         for item in self:
-            total_material_price = 0
-            total_labor_price = 0
-            material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
-            labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
+            item.material_cost = item.material_cost
+            item.labor_cost = item.labor_cost
 
-            total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
-            total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
+            if not item.order_id.picking_ids.picking_xk_id.filtered(lambda x: x.state == 'done'):
+                total_material_price = 0
+                total_labor_price = 0
+                material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
+                labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
 
-            item.material_cost = total_material_price
-            item.labor_cost = total_labor_price
+                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
+                total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
+
+                item.material_cost = total_material_price
+                item.labor_cost = total_labor_price
 
     def action_npl(self):
         self.ensure_one()
