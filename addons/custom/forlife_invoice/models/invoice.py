@@ -346,13 +346,13 @@ class AccountMove(models.Model):
                 pol_id = labor_cost_id.purchase_order_line_id
 
                 move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                 # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not pol_id.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 data_line = purchase_order_id._prepare_invoice_labor(labor_cost_id, move_qty)
                 if pol_id.display_type == 'line_section':

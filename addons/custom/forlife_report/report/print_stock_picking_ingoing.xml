@@ -194,15 +194,17 @@
                 <t t-set="o" t-value="docs"/>
                 <t t-set="attr_value" t-value="env['res.utility'].get_attribute_code_config()"/>
                 <table class="table">
-                    <col style="width:7%"/>
-                    <col style="width:45%"/>
-                    <col style="width:12%"/>
-                    <col style="width:12%"/>
-                    <col style="width:12%"/>
-                    <col style="width:12%"/>
+                    <col style="width:6%"/>
+                    <col style="width:10%"/>
+                    <col style="width:40%"/>
+                    <col style="width:11%"/>
+                    <col style="width:11%"/>
+                    <col style="width:11%"/>
+                    <col style="width:11%"/>
                     <tbody>
                         <tr class="x_bold x_center">
                             <td>STT</td>
+                            <td>Mã kĩ thuật</td>
                             <td>Tên</td>
                             <td>ĐVT</td>
                             <td>Màu</td>
@@ -214,6 +216,9 @@
                             <tr>
                                 <td class="x_center">
                                     <t t-esc="stt"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_id.makithuat"/>
                                 </td>
                                 <td>
                                     <span t-field="line.product_id.name"/>
@@ -234,7 +239,7 @@
                             <t t-set="stt" t-value="stt + 1"/>
                         </t>
                         <tr>
-                            <td class="x_bold x_right" colspan="4">Tổng cộng</td>
+                            <td class="x_bold x_right" colspan="5">Tổng cộng</td>
                             <td class="x_bold x_center">
                                 <t t-esc="sum(o.move_ids_without_package.mapped('quantity_done'))"/>
                             </td>

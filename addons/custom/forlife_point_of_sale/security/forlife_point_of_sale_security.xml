@@ -11,11 +11,5 @@
             <field name="implied_ids" eval="[(4, ref('forlife_point_of_sale.store_manager'))]"/>
         </record>
 
-        <record id="store_company_rule" model="ir.rule">
-            <field name="name">Store company rule</field>
-            <field name="model_id" ref="model_store"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-
     </data>
 </odoo>
