@@ -29,7 +29,7 @@ class PurchaseOrderCostLine(models.Model):
             invoices = self.env['account.move'].search(domain)
             cost_paid = 0
             for detail_id in invoices.account_expense_labor_detail_ids.filtered(lambda x: x.product_id.id == rec.product_id.id):
-                cost_paid += (detail_id.totals_back * detail_id.move_id.exchange_rate) / (rec.exchange_rate or 1)
+                cost_paid += (detail_id.price_subtotal_back * detail_id.move_id.exchange_rate) / (rec.exchange_rate or 1)
             rec.cost_paid = cost_paid
 
     @api.onchange('currency_id')
