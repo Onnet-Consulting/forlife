@@ -396,6 +396,13 @@ class AccountMove(models.Model):
                     labor_vals = self._prepare_account_expense_labor_detail(product_labor, price_subtotal)
                     labor_lst.append(labor_vals)
                 labor_ids = AccountExpenseLaborDetail.create(labor_lst)
+
+            if self.vendor_back_ids:
+                self.write({
+                    'vendor_back_ids': self.vendor_back_ids,
+                    'purchase_order_product_id': [(6, 0, self.purchase_order_product_id.ids)],
+                })
+
         else:
             self.prepare_move_line_type_invoice_product(purchase_order_id)
 

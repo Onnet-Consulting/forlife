@@ -89,7 +89,7 @@ class SummaryExpenseLaborAccount(models.Model):
     qty_actual = fields.Float(string='SL(thực nhập)', compute='_compute_qty_actual')
     before_est_tax = fields.Float(string='CP ước tính trước thuế', currency_field='currency_id')
     after_est_tax = fields.Float(string='CP ước tính sau thuế', currency_field='currency_id')
-    expense_est_labor = fields.Float(string='CP ước tính nhân công', currency_field='currency_id', compute='_compute_expense_est_labor')
+    expense_est_labor = fields.Float(string='CP ước tính nhân công', currency_field='currency_id')
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -102,6 +102,10 @@ class SummaryExpenseLaborAccount(models.Model):
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             after_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_false.mapped('product_id')).mapped('price_unit'))
             rec.after_est_tax = after_est_tax
+
+            lines = rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
+            rec.expense_est_labor = sum(lines.mapped('price_unit'))
+
         return res
 
     @api.onchange('product_id')
@@ -138,17 +142,6 @@ class SummaryExpenseLaborAccount(models.Model):
                 move_ids = item.move_id.receiving_warehouse_id.mapped('move_ids').filtered(lambda w: w.product_id == item.product_id)
                 item.product_qty = sum(x.quantity_done for x in move_ids)
 
-    # @api.depends('product_id', 'move_id.cost_line')
-    # def compute_origin_est_tax(self):
-    #     for rec in self:
-    #         cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-    #         before_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_true.mapped('product_id')).mapped('price_unit'))
-    #         rec.before_est_tax = before_est_tax
-    #
-    #         cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-    #         after_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_false.mapped('product_id')).mapped('price_unit'))
-    #         rec.after_est_tax = after_est_tax
-
     @api.depends('product_id', 'move_id.cost_line.is_check_pre_tax_costs', 'move_id.invoice_line_ids')
     def _compute_before_tax(self):
         for rec in self:
@@ -176,10 +169,3 @@ class SummaryExpenseLaborAccount(models.Model):
             lines = item.move_id.invoice_line_ids.filtered(lambda x: x.product_id == item.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
             total += sum([x.price_unit for x in lines])
             item.expense_labor = total
-
-    @api.depends('product_id', 'move_id.invoice_line_ids', 'move_id.invoice_line_ids.product_expense_origin_id')
-    def _compute_expense_est_labor(self):
-        for item in self:
-            lines = item.move_id.invoice_line_ids.filtered(lambda x: x.product_id == item.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
-            item.expense_est_labor = sum(lines.mapped('price_unit'))
-

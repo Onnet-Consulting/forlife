@@ -352,6 +352,7 @@
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
                                        options="{'currency_field': 'currency_id'}"/>
                                 <field name="expense_labor" sum="Sum Expense Labor" widget="monetary"
+                                       invisible="1"
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'labor')]}"
                                        options="{'currency_field': 'currency_id'}"/>
                             </tree>
