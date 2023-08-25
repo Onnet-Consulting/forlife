@@ -154,7 +154,7 @@ class InheritStockPicking(models.Model):
                 picking_outgoing_id.location_id.complete_name,
                 materials_not_enough
             ))
-        # picking_outgoing_id.button_validate()
+        picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
     def button_validate(self):
