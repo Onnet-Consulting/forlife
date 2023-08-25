@@ -23,6 +23,7 @@ class SaleOrder(models.Model):
         readonly=True, copy=False, index=True,
         tracking=3,
         default='draft')
+    promotion_used = fields.Char()
 
     def get_oder_line_barcode(self, barcode):
         line_product = []
@@ -76,6 +77,11 @@ class SaleOrder(models.Model):
 
     def check_sale_promotion(self):
         for rec in self:
+            list_promotion_used = []
+            ignore_barcode = []
+            if rec.promotion_used:
+                list_promotion_used = rec.promotion_used.split(' , ')
+                ignore_barcode = rec.promotion_used.split(' , ')
             if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
                 rec.promotion_ids = [Command.clear()]
                 if rec.x_sale_chanel == "online":
@@ -115,7 +121,9 @@ class SaleOrder(models.Model):
                         for mn in self.find_mn_index(note):
                             barcode_str = note[mn + 3:].strip()
                             barcode = re.split(' |,', barcode_str)[0]
-
+                            if barcode in ignore_barcode:
+                                ignore_barcode.pop(ignore_barcode.index(barcode))
+                                continue
                             if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
                                 rec.order_line.write({
                                     'x_free_good': True,
@@ -132,6 +140,9 @@ class SaleOrder(models.Model):
                                     action['context'] = {
                                         'default_message': _("Order note '#MN' invalid!")
                                     }
+                                    rec.write({
+                                        'promotion_used': ' , '.join(list_promotion_used)
+                                    })
                                     return action
                                 elif len(line) >= 1:
                                     if line[0].product_uom_qty == 1:
@@ -154,6 +165,7 @@ class SaleOrder(models.Model):
                                             'odoo_price_unit': 0,
                                             'x_cart_discount_fixed_price': 0,
                                         })
+                                    list_promotion_used.append(barcode)
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]
