@@ -218,9 +218,10 @@ class AccountMove(models.Model):
         else:
             currency_id = self.currency_id.id or False
             exchange_rate = self.exchange_rate or 1
-        tax_lines = self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
+        self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
         self.sudo().write({
             'invoice_line_ids': False,
+            'line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
             'exchange_rate': exchange_rate,
@@ -459,6 +460,7 @@ class AccountMove(models.Model):
     def onchange_invoice_line_ids_by_type(self):
         for rec in self:
             rec.invoice_line_ids = False
+            rec.line_ids = False
             rec.account_expense_labor_detail_ids = False
             rec.sum_expense_labor_ids = False
             if rec.select_type_inv == 'service':
@@ -472,23 +474,6 @@ class AccountMove(models.Model):
                 if not picking_id.x_is_check_return:
                     picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
-
-    # @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
-    # def constrains_total_vnd_amount(self):
-    #     invoice_relationship = self.search(
-    #         [('purchase_order_product_id', 'in', self.purchase_order_product_id.ids),
-    #          ('purchase_type', '=', 'service')])
-    #     for rec in self:
-    #         if rec.purchase_type == 'service':
-    #             reference = []
-    #             for item in rec.purchase_order_product_id:
-    #                 reference.append(item.name)
-    #                 ref_join = ', '.join(reference)
-    #             if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount')):
-    #                 raise ValidationError(
-    #                     _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
-    #                     % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
-    #                        sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
