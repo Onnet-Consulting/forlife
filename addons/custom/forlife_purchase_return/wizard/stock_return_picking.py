@@ -154,3 +154,10 @@ class StockReturnPickingLine(models.TransientModel):
         if self.wizard_id.picking_id.purchase_id:
             if self.quantity > self.quantity_remain:
                 raise UserError("Số lượng trả lại vượt quá số lượng cho phép. Vui lòng thiết lập lại.")
+            
+    def default_get(self, fields):
+        res = super(StockReturnPickingLine, self).default_get(fields)
+        # remove default group_id value on views, keep on other source (api, controller ...)
+        if self._context.get('so_return'):
+            res.update({'select_line': True})
+        return res
