@@ -189,9 +189,7 @@ class AccountMove(models.Model):
             'description': product_expense.name,
             'uom_id': product_expense.uom_id.id,
             'qty': 1,
-            'price_subtotal_back': price_subtotal,
-            'origin_currency_id': self.currency_id.id,
-            'origin_price_subtotal_back': price_subtotal
+            'price_subtotal_back': price_subtotal
         }
         return vals
 
@@ -348,13 +346,13 @@ class AccountMove(models.Model):
                 pol_id = labor_cost_id.purchase_order_line_id
 
                 move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                 # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not pol_id.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 data_line = purchase_order_id._prepare_invoice_labor(labor_cost_id, move_qty)
                 if pol_id.display_type == 'line_section':
@@ -381,17 +379,6 @@ class AccountMove(models.Model):
                 if aml_id.product_id not in products:
                     products.append(aml_id.product_id)
 
-            # tạo dữ liệu chi tiết hóa đơn custom
-            if product_labors:
-                labor_lst = []
-                for product_labor in product_labors:
-                    sum_product_labor_moves = aml_ids.filtered(
-                        lambda x: x.product_expense_origin_id == product_labor)
-                    price_subtotal = sum([x.price_unit for x in sum_product_labor_moves])
-                    labor_vals = self._prepare_account_expense_labor_detail(product_labor, price_subtotal)
-                    labor_lst.append(labor_vals)
-                labor_ids = AccountExpenseLaborDetail.create(labor_lst)
-
             # tạo dữ liệu tổng hợp
             if products:
                 product_lst = []
@@ -399,6 +386,16 @@ class AccountMove(models.Model):
                     product_vals = self._prepare_sum_expense_labor_value(product)
                     product_lst.append(product_vals)
                 sum_expense_ids = SummaryExpenseLaborAccount.create(product_lst)
+
+            # tạo dữ liệu chi tiết hóa đơn custom
+            if product_labors:
+                labor_lst = []
+                for product_labor in product_labors:
+                    sum_product_labor_moves = aml_ids.filtered(lambda x: x.product_expense_origin_id == product_labor)
+                    price_subtotal = sum([x.price_unit for x in sum_product_labor_moves])
+                    labor_vals = self._prepare_account_expense_labor_detail(product_labor, price_subtotal)
+                    labor_lst.append(labor_vals)
+                labor_ids = AccountExpenseLaborDetail.create(labor_lst)
         else:
             self.prepare_move_line_type_invoice_product(purchase_order_id)
 
@@ -469,22 +466,22 @@ class AccountMove(models.Model):
                     picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
 
-    @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
-    def constrains_total_vnd_amount(self):
-        invoice_relationship = self.search(
-            [('purchase_order_product_id', 'in', self.purchase_order_product_id.ids),
-             ('purchase_type', '=', 'service')])
-        for rec in self:
-            if rec.purchase_type == 'service':
-                reference = []
-                for item in rec.purchase_order_product_id:
-                    reference.append(item.name)
-                    ref_join = ', '.join(reference)
-                if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount')):
-                    raise ValidationError(
-                        _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
-                        % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
-                           sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
+    # @api.constrains('invoice_line_ids', 'invoice_line_ids.total_vnd_amount')
+    # def constrains_total_vnd_amount(self):
+    #     invoice_relationship = self.search(
+    #         [('purchase_order_product_id', 'in', self.purchase_order_product_id.ids),
+    #          ('purchase_type', '=', 'service')])
+    #     for rec in self:
+    #         if rec.purchase_type == 'service':
+    #             reference = []
+    #             for item in rec.purchase_order_product_id:
+    #                 reference.append(item.name)
+    #                 ref_join = ', '.join(reference)
+    #             if sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')) > sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount')):
+    #                 raise ValidationError(
+    #                     _('Tổng tiền của các hóa đơn dịch vụ đang là %s lớn hơn tổng tiền của đơn mua hàng dịch vụ %s liên quan là %s!')
+    #                     % (sum(invoice_relationship.invoice_line_ids.mapped('total_vnd_amount')), ref_join,
+    #                        sum(rec.purchase_order_product_id.order_line.mapped('total_vnd_amount'))))
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
@@ -584,21 +581,21 @@ class AccountMove(models.Model):
 
     @api.onchange('amount_total', 'tax_totals')
     def onchange_amount_total_trade_discount(self):
-        if self.trade_discount and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.trade_discount and self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
         else:
             self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
-        if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
+        if self.tax_totals and self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
             self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
         else:
             self.trade_discount = 0
@@ -1092,9 +1089,10 @@ class AccountMoveLine(models.Model):
     def _compute_account_id(self):
         res = super()._compute_account_id()
         for line in self:
-            if line.move_id.purchase_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
-                line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
-                line.name = line.product_id.name
+            if line.move_id.purchase_type == 'product' and line.product_id.detailed_type == 'product' and line.product_id and line.move_id.purchase_order_product_id and line.move_id.purchase_order_product_id[0].is_inter_company == False:
+                if line.account_id != line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id:
+                    line.account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                    line.name = line.product_id.name
         return res
 
     @api.onchange('vendor_price')

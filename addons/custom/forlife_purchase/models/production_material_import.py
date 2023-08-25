@@ -1,4 +1,5 @@
 from odoo import fields, api, models
+from odoo.tools import float_round
 
 
 class ForlifeProduction(models.Model):
@@ -76,7 +77,13 @@ class ProductionMaterialImport(models.Model):
     rated_level = fields.Float(string='Định mức')
     loss = fields.Float(string='Hao hụt')
     qty = fields.Float(string='Số lượng sản xuất')
-    total = fields.Float(string='Tổng nhu cầu')
+    total = fields.Float(string='Tổng nhu cầu', compute='_compute_total_material', store=True)
+
+    @api.depends('conversion_coefficient', 'rated_level', 'loss', 'qty')
+    def _compute_total_material(self):
+        for rec in self:
+            precision_rounding = rec.uom_id.rounding
+            rec.total = float_round(value=(rec.rated_level * rec.conversion_coefficient * (1.0 + rec.loss) * rec.qty), precision_rounding=precision_rounding)
 
     @api.onchange('conversion_coefficient', 'rated_level', 'loss', 'qty')
     def _onchange_update_total(self):

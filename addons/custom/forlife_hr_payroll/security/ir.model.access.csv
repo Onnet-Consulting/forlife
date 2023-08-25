@@ -13,8 +13,8 @@ payroll_employee_salary_entry,salary.entry payroll_employee,model_salary_entry,p
 payroll_leader_salary_entry,salary.entry payroll_leader,model_salary_entry,payroll_leader,1,0,0,0
 accounting_salary_entry,salary.entry accounting,model_salary_entry,account.group_account_manager,1,0,0,0
 base_group_system_salary_entry,salary.entry base.group_user,model_salary_entry,base.group_system,1,1,1,1
-payroll_employee_salary_record,salary.record payroll_employee,model_salary_record,payroll_employee,1,0,1,0
-payroll_leader_salary_record,salary.record payroll_leader,model_salary_record,payroll_leader,1,0,0,0
+payroll_employee_salary_record,salary.record payroll_employee,model_salary_record,payroll_employee,1,1,1,0
+payroll_leader_salary_record,salary.record payroll_leader,model_salary_record,payroll_leader,1,1,0,0
 accounting_salary_record,salary.record accounting,model_salary_record,account.group_account_manager,1,0,0,0
 payroll_employee_salary_record_main,salary.record.main payroll_employee,model_salary_record_main,payroll_employee,1,1,1,1
 payroll_leader_salary_record_main,salary.record.main payroll_leader,model_salary_record_main,payroll_leader,1,1,1,1

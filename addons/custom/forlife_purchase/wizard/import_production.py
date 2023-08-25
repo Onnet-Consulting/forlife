@@ -156,7 +156,6 @@ class ImportProductionFromExcel(models.TransientModel):
                         'rated_level': m[7],
                         'loss': m[8],
                         'qty': m[9],
-                        'total': float(m[10]),
                     }))
                 create_list_expense = []
                 create_list_by_production_expense = []
