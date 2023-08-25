@@ -18,18 +18,9 @@
             <field name="model_id" ref="forlife_hr_payroll.model_salary_record"/>
             <field name="groups"
                    eval="[(4, ref('forlife_hr_payroll.payroll_employee')), (4, ref('forlife_hr_payroll.payroll_leader'))]"/>
-            <field name="domain_force">['|', ('type_id.user_ids', 'in', user.ids), '|', ('type_id.group_ids', 'in',
+            <field name="domain_force">['&amp;', ('department_id', 'in', user.get_department_in_charge()),
+                '|', '|', ('type_id.user_ids', 'in', user.ids), ('type_id.group_ids', 'in',
                 user.groups_id.ids), '&amp;', ('type_id.user_ids', '=', False), ('type_id.group_ids', '=', False)]
-            </field>
-        </record>
-
-        <record model="ir.rule" id="salary_record_type_rule">
-            <field name="name">Salary Record Type Rule</field>
-            <field name="model_id" ref="forlife_hr_payroll.model_salary_record_type"/>
-            <field name="groups"
-                   eval="[(4, ref('forlife_hr_payroll.payroll_employee')), (4, ref('forlife_hr_payroll.payroll_leader'))]"/>
-            <field name="domain_force">['|', ('user_ids', 'in', user.ids), '|', ('group_ids', 'in', user.groups_id.ids),
-                '&amp;', ('user_ids', '=', False), ('group_ids', '=', False)]
             </field>
         </record>
 

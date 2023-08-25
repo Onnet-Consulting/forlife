@@ -344,10 +344,10 @@
                                 <field name="expense_est_labor" sum="Sum Estimate Expense Labor" widget="monetary"
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'labor')]}"
                                        options="{'currency_field': 'currency_id'}"/>
-                                <field name="before_tax" sum="Sum Actual Before Tax" widget="monetary"
+                                <field name="before_tax" sum="Sum Actual Before Tax" widget="monetary" invisible="1"
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
                                        options="{'currency_field': 'currency_id'}"/>
-                                <field name="after_tax" sum="Sum After Tax" widget="monetary"
+                                <field name="after_tax" sum="Sum After Tax" widget="monetary" invisible="1"
                                        attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'expense')]}"
                                        options="{'currency_field': 'currency_id'}"/>
                                 <field name="expense_labor" sum="Sum Expense Labor" widget="monetary"

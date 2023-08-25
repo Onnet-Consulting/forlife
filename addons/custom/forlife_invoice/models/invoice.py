@@ -219,9 +219,9 @@ class AccountMove(models.Model):
             exchange_rate = purchase_order_id[0].exchange_rate if purchase_order_id else 1
         else:
             currency_id = self.currency_id.id or False
-            exchange_rate = self.exchange_rate or 0
-
-        self.write({
+            exchange_rate = self.exchange_rate or 1
+        self.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
+        self.sudo().write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
@@ -334,7 +334,10 @@ class AccountMove(models.Model):
                 expense_ids = AccountExpenseLaborDetail.create(expense_lst)
 
             if self.vendor_back_ids:
-                self.vendor_back_ids = self.vendor_back_ids
+                self.write({
+                    'vendor_back_ids': self.vendor_back_ids,
+                    'purchase_order_product_id': [(6, 0, self.purchase_order_product_id.ids)],
+                })
 
         elif self.select_type_inv == 'labor':
             labor_cost_ids = purchase_order_id.order_line_production_order.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.x_type_cost_product == 'labor_costs')
@@ -493,11 +496,15 @@ class AccountMove(models.Model):
                 for vendor_back_id in rec.vendor_back_ids:
                     if vendor_back_id.invoice_description not in invoice_description:
                         invoice_description.append(vendor_back_id.invoice_description)
-                tax_lines = []
                 for product in invoice_description:
                     backs = rec.vendor_back_ids.filtered(lambda x: x.invoice_description == product)
                     if backs:
                         tax_lines = rec._prepare_tax_line_to_expense_invoice(backs, product)
+                        # Thêm line thuế
+                        if tax_lines:
+                            rec.write({
+                                'line_ids': tax_lines
+                            })
                         sum_price_subtotal_back = sum(backs.mapped('price_subtotal_back'))
                         sum_tax_back = sum(backs.mapped('tax_back'))
                         expense_detail = rec.account_expense_labor_detail_ids.filtered(lambda x: x.product_id == product)
@@ -522,12 +529,6 @@ class AccountMove(models.Model):
                     })
 
                 invoice_invalid_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id not in invoice_description).unlink()
-
-                # Thêm line thuế
-                if tax_lines:
-                    rec.write({
-                        'line_ids': tax_lines
-                    })
             # Update lại tài khoản với những line có sản phẩm
             if rec.select_type_inv in ('labor', 'expense') and rec.purchase_type == 'product':
                 for line in rec.invoice_line_ids.filtered(lambda x: x.product_id and x.display_type == 'product' and x.account_id.id != x.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id):

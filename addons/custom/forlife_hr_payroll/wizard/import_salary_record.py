@@ -135,7 +135,8 @@ class ImportSalaryRecord(models.TransientModel):
     def insert_salary_backlog_data(self, data, salary_record_id):
         for backlog in data:
             backlog.update({'salary_record_id': salary_record_id})
-        return self.env['salary.backlog'].create(data)
+        if data:
+            self.env['salary.backlog'].create(data)
 
     def insert_salary_accounting_data(self, salary_record):
         entries = self.env['salary.entry'].sudo().search([])
@@ -724,6 +725,8 @@ class ImportSalaryRecord(models.TransientModel):
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
+        if not data:
+            return [], []
         res = []
         errors = []
         xls_employees_name_and_code = {}

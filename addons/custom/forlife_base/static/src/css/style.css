@@ -1,7 +1,20 @@
 .margin_btn {
     margin-right: 5px !important;
 }
+
 .padding-setting-custom {
-    padding-left:  24px !important;
+    padding-left: 24px !important;
     padding-right: 24px !important;
+}
+
+.padding-form-custom {
+    padding: 1em 1em;
+}
+
+.set-width-custom [data-name$='_id'] {
+    width: 120px !important;
+}
+
+.set-width-custom [data-name^='x_'] {
+    width: 100px !important;
 }

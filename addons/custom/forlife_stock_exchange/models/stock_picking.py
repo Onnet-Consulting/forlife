@@ -48,7 +48,7 @@ class InheritStockPicking(models.Model):
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
             product_qty_prodution_remaining = self.env['quantity.production.order'].search([('location_id', '=', self.location_id.id), ('production_id.code', '=', move.work_production.code)])
-            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and not x.product_backup_id)
+            material_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
             material_backup_ids = bom.forlife_bom_material_ids.filtered(lambda x: x.product_id.detailed_type == 'product' and x.product_backup_id)
             if not material_ids:
                 raise ValidationError(_("BOM của sản phẩm '%s' hiện tại đang không có sản phẩm lưu kho, vui lòng kiểm tra lại!" %  move.product_id.display_name))
@@ -68,8 +68,7 @@ class InheritStockPicking(models.Model):
     def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
         product_qty = sum(product_prodution_quantity.mapped('quantity'))
-        m_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
-        material_total = float_round(m_total, precision_rounding=material.production_uom_id.rounding)
+        material_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
         product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding)
         move_outgoing_value = []
         qty_remain = product_uom_qty

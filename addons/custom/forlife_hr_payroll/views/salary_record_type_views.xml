@@ -9,8 +9,8 @@
                 <tree string="salary_record_type_tree" editable="bottom">
                     <field name="code" required="1" placeholder="code..."/>
                     <field name="name" required="1" placeholder="name..."/>
-                    <field name="user_ids" widget="many2many_tags"/>
-                    <field name="group_ids" widget="many2many_tags"/>
+                    <field name="user_ids" widget="many2many_tags" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="group_ids" widget="many2many_tags" options="{'no_create': True, 'no_open': True}"/>
                 </tree>
             </field>
         </record>
