@@ -127,16 +127,17 @@ class PurchaseOrderLine(models.Model):
                  "purchase_order_line_material_line_ids.price_unit")
     def _compute_cost(self):
         for item in self:
-            total_material_price = 0
-            total_labor_price = 0
-            material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
-            labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
+            if not item.order_id.picking_ids.picking_xk_id.filtered(lambda x: x.state == 'done'):
+                total_material_price = 0
+                total_labor_price = 0
+                material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
+                labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
 
-            total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
-            total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
+                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
+                total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
 
-            item.material_cost = total_material_price
-            item.labor_cost = total_labor_price
+                item.material_cost = total_material_price
+                item.labor_cost = total_labor_price
 
     def action_npl(self):
         self.ensure_one()
