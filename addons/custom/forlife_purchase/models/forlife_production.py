@@ -241,6 +241,7 @@ class ForlifeProductionMaterial(models.Model):
 
     forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade')
     product_id = fields.Many2one('product.product', required=True, string='Mã NPL')
+    makithuat = fields.Char(string='Mã kĩ thuật', related='product_id.makithuat')
     product_backup_id = fields.Many2one('product.product', string='Mã NPL thay thế')
     product_finish_id = fields.Many2one('product.product', string='Mã thành phẩm')
     description = fields.Char(string='Description', related="product_id.name")

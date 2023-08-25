@@ -72,8 +72,8 @@ class ImportProductionFromExcel(models.TransientModel):
             ('code', 'in', list_account),
         ], ['id', 'code'])
         product = self.env['product.product'].search_read([
-            ('barcode', 'in', list_product),
-        ], ['id', 'barcode'])
+            '|', ('barcode', 'in', list_product), ('makithuat', 'in', list_product)
+        ], ['id', 'barcode', 'makithuat'])
         uom_uom = self.env['uom.uom'].search_read([
             ('name', 'in', uom),
         ], ['id', 'name'])
@@ -84,7 +84,7 @@ class ImportProductionFromExcel(models.TransientModel):
         for a in account_aa:
             department.update({a['code']: a['id']})
         for p in product:
-            product_dict.update({p['barcode']: p['id']})
+            product_dict.update({p['barcode']: p['id'], p['makithuat']: p['id']})
         for u in uom_uom:
             uom_dict.update({u['name']: u['id']})
 

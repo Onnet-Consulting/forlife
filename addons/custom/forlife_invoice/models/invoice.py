@@ -218,10 +218,7 @@ class AccountMove(models.Model):
         else:
             currency_id = self.currency_id.id or False
             exchange_rate = self.exchange_rate or 1
-        tax_lines = self.line_ids.filtered(lambda x: x.display_type == 'tax')
-        if tax_lines:
-            tax_lines.write({'tax_ids': False})
-            tax_lines.unlink()
+        tax_lines = self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
         self.sudo().write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
