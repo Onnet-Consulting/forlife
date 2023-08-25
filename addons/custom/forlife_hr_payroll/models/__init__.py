@@ -3,6 +3,7 @@
 from . import res_company
 from . import res_partner
 from . import salary_tc_entry
+from . import department_in_charge
 from . import salary_general_info
 from . import salary_accounting_config
 from . import salary_arrears

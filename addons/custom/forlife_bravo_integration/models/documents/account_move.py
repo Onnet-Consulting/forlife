@@ -52,7 +52,7 @@ class AccountMove(models.Model):
                 'purchase_asset_service_reversed',
                 'purchase_product_cost_picking_reversed'):
             bravo_table = 'B30AccDocPurchaseReturn'
-        elif journal_data in ('purchase_product_reserved', "purchase_product"):
+        elif journal_data in ('purchase_product_reserved', "purchase_product", 'invoice_trade_discount'):
             bravo_table = 'B30AccDocOther'
         elif journal_data == "purchase_bill_vendor_back":
             bravo_table = 'B30AccDocAtchDoc'
@@ -120,6 +120,16 @@ class AccountMove(models.Model):
                     initial_records |= move
             return initial_records
 
+        if journal_data == 'invoice_trade_discount':
+            # Đơn mua chỉ có sản phẩm là chiết khấu tổng đơn
+            initial_records = self.filtered(lambda m: m.e_in_check > 0 and m.is_trade_discount_move)
+
+            # Đơn mua bao gồm sản phẩm chiết khấu tổng đơn khác
+            invoice_trade_discount_other = self.filtered(lambda m: m.e_in_check > 0 and not m.is_trade_discount_move)
+            origin_invoice = self.env['account.move'].search([('total_trade_discount', 'in', invoice_trade_discount_other.mapped('e_in_check'))])
+            initial_records |= invoice_trade_discount_other.filtered(lambda m: m.e_in_check in origin_invoice.ids)
+            return initial_records
+
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
                 lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0 and len(m.vendor_back_ids) > 0)
@@ -172,7 +182,7 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_asset_service_values()
         if journal_data == 'purchase_asset_service_reversed':
             return self.bravo_get_purchase_asset_service_values(is_reversed=True)
-        if journal_data == 'purchase_product':
+        if journal_data in ('purchase_product', 'invoice_trade_discount'):
             return self.bravo_get_purchase_product_values()
         if journal_data == 'purchase_product_reserved':
             return self.bravo_get_purchase_product_values(is_reversed=True)
@@ -219,6 +229,13 @@ class AccountMove(models.Model):
 
         # Purchase Product reversed (return)
         current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_product_reserved'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_product_reversed_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_product_reversed_queries:
+            queries.extend(purchase_product_reversed_queries)
+
+        # invoice have trade discount
+        current_context = {CONTEXT_JOURNAL_ACTION: 'invoice_trade_discount'}
         records = self.bravo_filter_record_by_context(**current_context)
         purchase_product_reversed_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_product_reversed_queries:

@@ -207,8 +207,9 @@ class PurchaseOrder(models.Model):
 
     @api.onchange('location_id')
     def _onchange_line_location_id(self):
-        for rec in self.order_line:
-            rec.location_id = self.location_id
+        for r in self:
+            for rec in r.order_line:
+                rec.location_id = self.location_id
 
     @api.onchange('account_analytic_id')
     def _onchange_line_account_analytic_id(self):
@@ -698,13 +699,6 @@ class PurchaseOrder(models.Model):
             else:
                 rec.active_manual_currency_rate = False
 
-    def write(self, vals):
-        old_line_count = len(self.order_line)
-        new_line_count = len(vals.get('order_line', []))
-        if (new_line_count > old_line_count) and self.custom_state == "approved":
-            raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
-        return super(PurchaseOrder, self).write(vals)
-
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
         if self.company_id or self.currency_id and self.company_id.currency_id != self.currency_id:
@@ -939,10 +933,11 @@ class PurchaseOrder(models.Model):
         }
         return data
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, partner_id=False, currency_id=False, exchange_rate=False):
         """Create the invoice associated to the PO.
         """
         if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
+            raise UserError(_('Tính năng đang hoàn thiện, vui lòng tạo hóa đơn cho từng Đơn mua hàng'))
             result = self.create_multi_invoice_vendor()
             move_ids = [move.id for move in result]
             return {
@@ -971,8 +966,9 @@ class PurchaseOrder(models.Model):
                 invoice_vals.update({
                     'purchase_type': purchase_type,
                     'invoice_date': datetime.now(),
-                    'exchange_rate': order.exchange_rate,
-                    'currency_id': order.currency_id.id
+                    'exchange_rate': exchange_rate if exchange_rate else order.exchange_rate,
+                    'currency_id': currency_id.id if currency_id else order.currency_id.id,
+                    'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
                 })
                 # Invoice line values (keep only necessary sections).
 
@@ -1185,10 +1181,11 @@ class PurchaseOrder(models.Model):
                     return
 
                 amount_rate = line.total_vnd_amount / total_vnd_amount_order
-                cp = ((amount_rate * cost_line.vnd_amount) / line.product_qty) * move_qty
-                if line.currency_id != line.company_currency:
-                    rates = line.currency_id._get_rates(line.company_id, self.date_order)
-                    cp = cp * rates.get(line.currency_id.id)
+                cp = ((amount_rate * cost_line.foreign_amount) / line.product_qty) * move_qty
+                currency_id = invoice_vals['currency_id']
+                if cost_line.currency_id.id != currency_id:
+                    rate = cost_line.exchange_rate/invoice_vals['exchange_rate']
+                    cp = cp * rate
 
                 data_line = self._prepare_invoice_expense(cost_line, line, cp)
                 if line.display_type == 'line_section':
@@ -1790,8 +1787,16 @@ class PurchaseOrderLine(models.Model):
                 rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
                 rec.total_vnd_exchange = rec.total_vnd_exchange_import
 
+    def _compute_tax_id(self):
+        if self.filtered(lambda x: x.order_id.type_po_cost == 'tax'):
+            self.write({
+                'taxes_id': False
+            })
+        else:
+            return super(PurchaseOrderLine, self)._compute_tax_id()
+
     @api.onchange('product_id', 'is_change_vendor')
-    def onchange_product_id(self):
+    def onchange_product_vendor_id(self):
         if self.product_id and self.product_id.uom_po_id:
             self.purchase_uom = self.product_id.uom_po_id.id
         if self.product_id and self.currency_id:

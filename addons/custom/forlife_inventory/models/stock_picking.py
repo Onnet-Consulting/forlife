@@ -221,7 +221,7 @@ class StockPicking(models.Model):
     def _create_picking_from_pos_order_lines(self, location_dest_id, lines, picking_type, partner=False):
         pickings = super(StockPicking, self)._create_picking_from_pos_order_lines(location_dest_id, lines, picking_type,
                                                                                   partner)
-        Picking = self.env['stock.picking']
+        Picking = self.env['stock.picking'].sudo()
         stockable_lines = lines.filtered(
             lambda l: l.product_id.type in ['product', 'consu'] and not float_is_zero(l.qty,
                                                                                       precision_rounding=l.product_id.uom_id.rounding))

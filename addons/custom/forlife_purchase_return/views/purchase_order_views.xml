@@ -75,11 +75,11 @@
                     <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
                            string="Địa điểm xuất NPL"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', True)]}"/>
-                <field name="location_export_material_id"
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), '|', ('is_return', '=', True), ('is_check_line_material_line', '=', True)]}"/>
+                    <field name="location_export_material_id"
                            domain="[('usage', '=', 'internal')]"
                            string="Địa điểm nhập NPL"
-                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), ('is_return', '=', False)]}"/>
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|', ('purchase_type', '!=', 'product'), '|', ('is_return', '=', False), ('is_check_line_material_line', '=', True)]}"/>
                 </xpath>
             </field>
         </record>
