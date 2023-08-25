@@ -47,46 +47,74 @@ class ReportNum3(models.TransientModel):
         where_query = f"""
             sm.company_id = any (array{allowed_company})
             and sm.state = 'done'
-            and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
+            and (src_lc.warehouse_id = any (array{warehouse_ids}) or des_lc.warehouse_id = any (array{warehouse_ids}))
             and sm.product_id = any (array{product_ids})\n
         """
         if self.to_date:
             where_query += f"""and {format_date_query("sm.date", tz_offset)} <= '{self.to_date}'\n"""
 
         if self.report_by == 'area':
-            stock_query = f"""select 
-    sm.product_id                                                               as product_id,
-    coalesce(srlp.id, case when coalesce(src_wh.id, 0) <> 0 then -1 else 0 end) as src_warehouse_id,
-    coalesce(drlp.id, case when coalesce(des_wh.id, 0) <> 0 then -1 else 0 end) as dest_warehouse_id,
-    sum(sm.product_qty)                                                         as qty
-from stock_move sm
-    left join stock_location des_lc on sm.location_dest_id = des_lc.id
-    left join product_product pp on sm.product_id = pp.id
-    left join product_template pt on pp.product_tmpl_id = pt.id
-    left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-    left join res_location_province drlp on drlp.id = des_wh.loc_province_id
-    left join stock_location src_lc on sm.location_id = src_lc.id
-    left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-    left join res_location_province srlp on srlp.id = src_wh.loc_province_id
-where {where_query}
-group by sm.product_id, src_warehouse_id, dest_warehouse_id
-"""
+            ton_dat_so_query = f"""
+                select sol.product_id,
+                       wh.loc_province_id                           as warehouse_id,
+                       sum(sol.product_uom_qty - sol.qty_delivered) as qty
+                from sale_order_line sol
+                         join sale_order so on sol.order_id = so.id
+                         join stock_location sl on so.x_location_id = sl.id
+                         join stock_warehouse wh on sl.warehouse_id = wh.id and wh.loc_province_id notnull
+                where so.company_id = any (array{allowed_company})
+                  and sol.product_id notnull
+                  and so.state not in ('sale', 'done')
+                  and wh.id = any (array{warehouse_ids})
+                group by sol.product_id, wh.loc_province_id
+            """
+
+            stock_query = f"""
+                select 
+                    sm.product_id                                                               as product_id,
+                    coalesce(src_wh.loc_province_id, case when coalesce(src_wh.id, 0) <> 0 then -1 else 0 end) as src_warehouse_id,
+                    coalesce(des_wh.loc_province_id, case when coalesce(des_wh.id, 0) <> 0 then -1 else 0 end) as dest_warehouse_id,
+                    sum(sm.product_qty)                                                         as qty
+                from stock_move sm
+                    join stock_location des_lc on sm.location_dest_id = des_lc.id
+                    join product_product pp on sm.product_id = pp.id
+                    join product_template pt on pp.product_tmpl_id = pt.id
+                    join stock_warehouse des_wh on des_lc.warehouse_id = des_wh.id and des_wh.loc_province_id notnull
+                    join stock_location src_lc on sm.location_id = src_lc.id
+                    join stock_warehouse src_wh on src_lc.warehouse_id = src_wh.id and src_wh.loc_province_id notnull
+                where {where_query}
+                group by sm.product_id, src_warehouse_id, dest_warehouse_id
+            """
+
         else:
-            stock_query = f"""select 
-    sm.product_id          as product_id,
-    coalesce(src_wh.id, 0) as src_warehouse_id,
-    coalesce(des_wh.id, 0) as dest_warehouse_id,
-    sum(sm.product_qty)    as qty
-from stock_move sm
-    left join stock_location des_lc on sm.location_dest_id = des_lc.id
-    left join product_product pp on sm.product_id = pp.id
-    left join product_template pt on pp.product_tmpl_id = pt.id
-    left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-    left join stock_location src_lc on sm.location_id = src_lc.id
-    left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-where {where_query}
-group by sm.product_id, src_wh.id, des_wh.id            
-"""
+            ton_dat_so_query = f"""
+                select sol.product_id,
+                       sl.warehouse_id                              as warehouse_id,
+                       sum(sol.product_uom_qty - sol.qty_delivered) as qty
+                from sale_order_line sol
+                         join sale_order so on sol.order_id = so.id
+                         join stock_location sl on so.x_location_id = sl.id
+                where so.company_id = any (array{allowed_company})
+                  and sol.product_id notnull
+                  and so.state not in ('sale', 'done')
+                  and sl.warehouse_id = any (array{warehouse_ids})
+                group by sol.product_id, sl.warehouse_id
+            """
+
+            stock_query = f"""
+                select 
+                    sm.product_id          as product_id,
+                    coalesce(src_lc.warehouse_id, 0) as src_warehouse_id,
+                    coalesce(des_lc.warehouse_id, 0) as dest_warehouse_id,
+                    sum(sm.product_qty)    as qty
+                from stock_move sm
+                    join stock_location des_lc on sm.location_dest_id = des_lc.id
+                    join product_product pp on sm.product_id = pp.id
+                    join product_template pt on pp.product_tmpl_id = pt.id
+                    join stock_location src_lc on sm.location_id = src_lc.id
+                where {where_query}
+                group by sm.product_id, src_lc.warehouse_id, des_lc.warehouse_id            
+            """
 
         query = f"""
 with attribute_data as (
@@ -134,16 +162,20 @@ quantity_pending as (
              join stock_warehouse sw on sl.warehouse_id = sw.id and sw.id = any(array{warehouse_ids})
     group by stl.product_id
 ),
+ton_dat_so as (
+    {ton_dat_so_query}
+),
 stock as (
     {stock_query}
 ),
 source_stock as (
-    select product_id,
-        src_warehouse_id as warehouse_id,
-        sum(qty)         as qty
-    from stock
-    where src_warehouse_id != 0
-    group by product_id, src_warehouse_id
+    select st.product_id,
+        st.src_warehouse_id                             as warehouse_id,
+        sum(coalesce(st.qty, 0) - coalesce(tds.qty, 0)) as qty
+    from stock st
+        left join ton_dat_so tds on tds.product_id = st.product_id and st.src_warehouse_id = tds.warehouse_id
+    where st.src_warehouse_id != 0
+    group by st.product_id, st.src_warehouse_id
 ),
 agg_source_stock as (
     select product_id,
@@ -205,6 +237,7 @@ order by num
             warehouse_ids=wh_ids
         )
 
+    @api.model
     def format_data(self, data):
         for line in data:
             source_warehouse_qty = line.pop('source_qty_by_wh') or {}
