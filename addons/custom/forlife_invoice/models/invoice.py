@@ -221,7 +221,6 @@ class AccountMove(models.Model):
         self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
         self.sudo().write({
             'invoice_line_ids': False,
-            'line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or type_po_cost else False,
             'exchange_rate': exchange_rate,
@@ -459,8 +458,8 @@ class AccountMove(models.Model):
     @api.onchange('receiving_warehouse_id', 'select_type_inv')
     def onchange_invoice_line_ids_by_type(self):
         for rec in self:
+            rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
             rec.invoice_line_ids = False
-            rec.line_ids = False
             rec.account_expense_labor_detail_ids = False
             rec.sum_expense_labor_ids = False
             if rec.select_type_inv == 'service':
@@ -479,10 +478,7 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if 'vendor_back_ids' in vals:
-                tax_line_ids = rec.line_ids.filtered(lambda x: x.display_type == 'tax')
-                if tax_line_ids:
-                    tax_line_ids.write({'tax_ids': False})
-                    tax_line_ids.unlink()
+                rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
                 invoice_description = []
                 for vendor_back_id in rec.vendor_back_ids:
                     if vendor_back_id.invoice_description not in invoice_description:
