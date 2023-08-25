@@ -223,7 +223,7 @@
                                 <field name="uom_id"/>
                                 <field name="qty"/>
                                 <field name="price_subtotal_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="tax_percent"/>
+                                <field name="tax_percent" invisible="1"/>
                                 <field name="tax_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="totals_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </tree>
