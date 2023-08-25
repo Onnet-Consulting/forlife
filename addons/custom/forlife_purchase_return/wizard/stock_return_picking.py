@@ -23,7 +23,7 @@ def _create_returns(self):
     returned_lines = 0
     for return_line in self.product_return_moves:
         # sửa lại base chỉ chọn những line được tích
-        if not return_line.select_line:
+        if not return_line.select_line and self.for_po:
             continue
         if not return_line.move_id:
             raise UserError(_("You have manually created product lines, please delete them to proceed."))
@@ -64,6 +64,7 @@ def _create_returns(self):
 
     new_picking.action_confirm()
     new_picking.action_assign()
+    new_picking.action_set_quantities_to_reservation()
     return new_picking.id, picking_type_id
 
 
@@ -85,10 +86,11 @@ class StockReturnPicking(models.TransientModel):
     @api.model_create_multi
     def create(self, vals_list):
         for val in vals_list:
-            val['product_return_moves'] = [item for item in val.get('product_return_moves', []) if
-                                           'quantity' in item[2] and item[2]['quantity'] >= 1]
-        res = super().create(vals_list)
-        return res
+            if 'for_po' in val and val['for_po']:
+                val['product_return_moves'] = [
+                    item for item in val.get('product_return_moves', [])
+                    if 'quantity' in item[2] and item[2]['quantity'] >= 1]
+        return super().create(vals_list)
 
     @api.onchange('select_all')
     def _onchange_select_all(self):
@@ -110,6 +112,8 @@ class StockReturnPicking(models.TransientModel):
                     'picking_id': picking.id,
                     'for_po': True if picking.purchase_id else False
                 })
+        if self._context.get('so_return'):
+            res.update({'select_all': True})
         return res
 
     @api.model
@@ -154,3 +158,10 @@ class StockReturnPickingLine(models.TransientModel):
         if self.wizard_id.picking_id.purchase_id:
             if self.quantity > self.quantity_remain:
                 raise UserError("Số lượng trả lại vượt quá số lượng cho phép. Vui lòng thiết lập lại.")
+            
+    def default_get(self, fields):
+        res = super(StockReturnPickingLine, self).default_get(fields)
+        # remove default group_id value on views, keep on other source (api, controller ...)
+        if self._context.get('so_return'):
+            res.update({'select_line': True})
+        return res

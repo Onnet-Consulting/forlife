@@ -68,8 +68,7 @@ class InheritStockPicking(models.Model):
     def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
         product_qty = sum(product_prodution_quantity.mapped('quantity'))
-        m_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
-        material_total = float_round(m_total, precision_rounding=material.production_uom_id.rounding)
+        material_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
         product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding)
         move_outgoing_value = []
         qty_remain = product_uom_qty
@@ -155,7 +154,7 @@ class InheritStockPicking(models.Model):
                 picking_outgoing_id.location_id.complete_name,
                 materials_not_enough
             ))
-        # picking_outgoing_id.button_validate()
+        picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
     def button_validate(self):

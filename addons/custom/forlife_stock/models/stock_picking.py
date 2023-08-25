@@ -64,7 +64,7 @@ class StockPickingOverPopupConfirm(models.TransientModel):
                         'product_uom': pk_od.product_uom.id,
                         'free_good': pk_od.free_good,
                         'quantity_change': pk_od.quantity_change,
-                        'quantity_purchase_done': pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty),
+                        'quantity_purchase_done': (pk.qty_done - ((pk_od.product_uom_qty * (1 + (tolerance / 100))) if tolerance else pk_od.product_uom_qty))/(pk_od.quantity_change),
                         'occasion_code_id': pk.occasion_code_id.id,
                         'work_production': pk.work_production.id,
                         'account_analytic_id': pk.account_analytic_id.id,
@@ -105,7 +105,7 @@ class StockPickingOverPopupConfirm(models.TransientModel):
             for pk, pk_od in zip(data_pk_over.move_line_ids_without_package, self.picking_id.move_line_ids_without_package):
                 pk.write({
                     'quantity_change': pk_od.quantity_change,
-                    'quantity_purchase_done': pk.qty_done
+                    'quantity_purchase_done': pk.qty_done/pk_od.quantity_change
                 })
         return self.picking_id.button_validate()
 
@@ -465,6 +465,8 @@ class StockPicking(models.Model):
         """
 
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                continue
             # Nhập khác
             if picking_id.other_import:
                 domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', rec.picking_id.location_dest_id.id), ('production_id.code', '=', rec.work_production.code)]
@@ -512,6 +514,8 @@ class StockPicking(models.Model):
         """
 
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                continue
             if picking_id.location_id.id == picking_id.transfer_id.location_id.id and picking_id.work_from:
                 # Trừ tồn ở lệnh work_from
                 domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]

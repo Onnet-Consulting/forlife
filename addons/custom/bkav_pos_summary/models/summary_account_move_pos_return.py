@@ -311,12 +311,14 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 
-    @api.depends('tax_ids', 'price_unit_incl')
+    @api.depends('tax_ids', 'amount_total', 'price_unit')
     def _compute_amount(self):
         for r in self:
-            if r.tax_ids:
-                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
-                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
-            else:
-                r.tax_amount = 0
+            # if r.tax_ids:
+            #     tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+            #     r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
+            # else:
+            #     r.tax_amount = 0
+
+            r.tax_amount = r.amount_total - r.price_unit
 
