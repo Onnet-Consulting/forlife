@@ -181,5 +181,5 @@ class SummaryExpenseLaborAccount(models.Model):
     def _compute_expense_est_labor(self):
         for item in self:
             lines = item.move_id.invoice_line_ids.filtered(lambda x: x.product_id == item.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
-            item.expense_labor = sum(lines.mapped('price_unit'))
+            item.expense_est_labor = sum(lines.mapped('price_unit'))
 
