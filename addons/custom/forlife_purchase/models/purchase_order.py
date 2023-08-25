@@ -1132,7 +1132,7 @@ class PurchaseOrder(models.Model):
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not pol_id.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 data_line = self._prepare_invoice_labor(labor_cost_id, move_qty)
                 if pol_id.display_type == 'line_section':
