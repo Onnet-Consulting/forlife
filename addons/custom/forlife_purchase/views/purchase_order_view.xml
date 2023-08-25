@@ -151,7 +151,7 @@
                                 <field name="exchange_rate" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="foreign_amount"/>
                                 <field name="vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                                <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1" force_save="1"/>
+                                <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1" readonly="1" force_save="1"/>
                                 <field name="cost_paid" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1" force_save="1"/>
                                 <field name="is_check_pre_tax_costs"/>
                             </tree>
