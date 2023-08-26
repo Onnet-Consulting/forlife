@@ -8,6 +8,12 @@ class AccountMoveLine(models.Model):
     # fields lưu giá trị product chi phí cho hac toán phân bổ chi phí mua hàng
     product_expense_origin_id = fields.Many2one('product.product', string='Product Expense Origin')
 
+    @api.model
+    def _prepare_reconciliation_partials(self, vals_list):
+        partials_vals_list, exchange_data = super(AccountMoveLine, self)._prepare_reconciliation_partials(vals_list)
+        exchange_data = {}
+        return partials_vals_list, exchange_data
+
     def unlink(self):
         for invoice_line_id in self.filtered(lambda x: x.stock_move_id):
             qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
