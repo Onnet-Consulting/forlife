@@ -617,8 +617,8 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
                         self.company_id).property_account_expense_id.name,
-                    'debit': 0 if is_in else item.amount_tax,
-                    'credit': item.amount_tax if is_in else 0.0,
+                    'debit': 0 if is_in else round(item.amount_tax),
+                    'credit': round(item.amount_tax) if is_in else 0.0,
                 })
                 account_debit_tnk = (0, 0, {
                     'sequence': 9,
@@ -626,8 +626,8 @@ class AccountMove(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': item.product_id.name,
-                    'debit': item.amount_tax if is_in else 0.0,
-                    'credit': 0 if is_in else item.amount_tax,
+                    'debit': round(item.amount_tax) if is_in else 0.0,
+                    'credit': 0 if is_in else round(item.amount_tax),
                 })
                 lines_tnk = [account_debit_tnk, account_credit_tnk]
                 account_tnk.extend(lines_tnk)
@@ -639,16 +639,16 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
                         self.company_id).property_account_expense_id.name,
-                    'debit': 0 if is_in else item.special_consumption_tax_amount,
-                    'credit': item.special_consumption_tax_amount if is_in else 0,
+                    'debit': 0 if is_in else round(item.special_consumption_tax_amount),
+                    'credit': round(item.special_consumption_tax_amount) if is_in else 0,
                 })
                 account_debit_db = (0, 0, {
                     'sequence': 9,
                     'product_id': item.product_id.id,
                     'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
                     'name': item.product_id.name,
-                    'debit': item.special_consumption_tax_amount if is_in else 0,
-                    'credit': 0 if is_in else item.special_consumption_tax_amount,
+                    'debit': round(item.special_consumption_tax_amount) if is_in else 0,
+                    'credit': 0 if is_in else round(item.special_consumption_tax_amount),
                 })
                 lines_db = [account_debit_db, account_credit_db]
                 account_db.extend(lines_db)
