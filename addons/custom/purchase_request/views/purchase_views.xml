@@ -89,7 +89,7 @@
                                 <field name="product_uom" readonly="1" force_save="1" string="Đơn vị tính"/>
                                 <field name="exchange_quantity" readonly="0"/>
                                 <field name="product_qty" string="Số lượng" readonly="1" force_save="1"/>
-                                <button name="action_npl" string="NPL" type="object" style="text-align: center;" class="btn btn-secondary"/>
+                                <button name="action_npl" attrs="{'invisible': [('id', '=', False)]}" string="NPL" type="object" style="text-align: center;" class="btn btn-secondary"/>
                             </tree>
                         </field>
                     </page>
