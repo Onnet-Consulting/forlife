@@ -15,6 +15,10 @@ class AccountMoveLine(models.Model):
         exchange_data = {}
         return partials_vals_list, exchange_data
 
+    @api.model
+    def _create_exchange_difference_move(self, exchange_diff_vals):
+        return False
+
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None):
         res = super(AccountMoveLine, self)._prepare_exchange_difference_move_vals(amounts_list, company, exchange_date)
         if res['move_vals'].get('line_ids'):
