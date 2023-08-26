@@ -413,7 +413,7 @@ class PurchaseOrder(models.Model):
             domain = [('purchase_order_product_id', 'in', rec.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'labor')]
             rec.count_invoice_inter_labor_fix = self.env['account.move'].search_count(domain)
 
-    @api.onchange('trade_discount')
+    @api.onchange('trade_discount', 'tax_totals')
     def onchange_total_trade_discount(self):
         if self.trade_discount:
             if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
@@ -2124,8 +2124,7 @@ class PurchaseOrderLine(models.Model):
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
         for line in self:
-            if line.purchase_quantity:
-                line.product_qty = line.purchase_quantity * line.exchange_quantity
+            line.product_qty = line.purchase_quantity * line.exchange_quantity
 
     def _suggest_quantity(self):
         '''
