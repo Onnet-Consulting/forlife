@@ -106,6 +106,8 @@ class AccountMove(models.Model):
         for rec in self:
             if rec.total_trade_discount != 0 and rec.trade_tax_id:
                 rec.x_amount_tax = rec.trade_tax_id.amount / 100 * rec.total_trade_discount
+            else:
+                rec.x_amount_tax = 0
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
