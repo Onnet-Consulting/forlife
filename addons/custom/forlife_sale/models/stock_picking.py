@@ -40,6 +40,7 @@ class StockPicking(models.Model):
                         "account_id": promotion_id.account_id.id,
                         "analytic_account_id": promotion_id.analytic_account_id.id,
                         "description": promotion_id.description,
+                        "tax_id": [(6, 0, promotion_id.tax_id)],
                     }))
             invoice_line = {
                 'product_id': line.product_id.id,
