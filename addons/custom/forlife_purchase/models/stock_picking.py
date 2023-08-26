@@ -91,10 +91,6 @@ class StockPicking(models.Model):
             if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
                 ## check npl tồn:
                 self.check_quant_goods_import(po)
-                po.write({
-                    'inventory_status': 'done',
-                    'invoice_status_fake': 'to invoice',
-                })
                 _context = {
                     'pk_no_input_warehouse': False,
                 }

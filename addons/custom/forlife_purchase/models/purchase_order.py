@@ -294,15 +294,15 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
+    @api.depends('picking_ids', 'picking_ids.state')
     def compute_inventory_status(self):
         for item in self:
-            pk = self.env['stock.picking'].search([('origin', '=', item.name)])
-            if pk:
-                all_equal_parent_done = all(x == 'done' for x in pk.mapped('state'))
-                if all_equal_parent_done:
-                    item.inventory_status = 'done'
-                else:
-                    item.inventory_status = 'incomplete'
+            picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
+            all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
+            if all_equal_parent_done:
+                item.inventory_status = 'done'
+            elif 'done' in picking_ids.mapped('state'):
+                item.inventory_status = 'incomplete'
             else:
                 item.inventory_status = 'not_received'
 
