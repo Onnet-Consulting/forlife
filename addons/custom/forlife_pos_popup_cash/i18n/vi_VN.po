@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-22 06:55+0000\n"
-"PO-Revision-Date: 2023-08-22 06:55+0000\n"
+"POT-Creation-Date: 2023-08-26 02:51+0000\n"
+"PO-Revision-Date: 2023-08-26 02:51+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -255,6 +255,13 @@ msgid "POS Transfer Cash to POS"
 msgstr "Chuyển tiền đến VP"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_trans_diff_move_id
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_move__pos_trans_diff_move_id
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_payment__pos_trans_diff_move_id
+msgid "POS Transfer Difference Move"
+msgstr "Bút toán chênh lệch chuyển tiền"
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_transfer_type
 msgid "POS Transfer Type"
 msgstr "Loại chuyển tiền POS"
@@ -282,13 +289,6 @@ msgstr ""
 #: model:ir.model,name:forlife_pos_popup_cash.model_pos_session
 msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
-
-#. module: forlife_pos_popup_cash
-#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_trans_diff_move_id
-#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_move__pos_trans_diff_move_id
-#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_payment__pos_trans_diff_move_id
-msgid "Pos Trans Diff Move"
-msgstr "Bút toán chênh lệch chuyển tiền"
 
 #. module: forlife_pos_popup_cash
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_trans_session_id
