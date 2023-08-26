@@ -145,6 +145,8 @@ class PurchaseOrder(models.Model):
         for rec in self:
             if rec.total_trade_discount > 0 and rec.x_tax > 0:
                 rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+            else:
+                rec.x_amount_tax = 0
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -416,12 +418,16 @@ class PurchaseOrder(models.Model):
         if self.trade_discount:
             if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
                 self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
+        else:
+            self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
         if self.total_trade_discount:
             if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
                 self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
+        else:
+            self.trade_discount = 0
 
     def action_confirm(self):
         for record in self:
