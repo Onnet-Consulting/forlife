@@ -294,15 +294,15 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
+    @api.depends('picking_ids', 'picking_ids.state')
     def compute_inventory_status(self):
         for item in self:
-            pk = self.env['stock.picking'].search([('origin', '=', item.name)])
-            if pk:
-                all_equal_parent_done = all(x == 'done' for x in pk.mapped('state'))
-                if all_equal_parent_done:
-                    item.inventory_status = 'done'
-                else:
-                    item.inventory_status = 'incomplete'
+            picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
+            all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
+            if all_equal_parent_done:
+                item.inventory_status = 'done'
+            elif 'done' in picking_ids.mapped('state'):
+                item.inventory_status = 'incomplete'
             else:
                 item.inventory_status = 'not_received'
 
@@ -1634,19 +1634,6 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
-    def _compute_amount(self):
-        for line in self:
-            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-            totals = list(tax_results['totals'].values())[0]
-            amount_untaxed = totals['amount_untaxed']
-            amount_tax = totals['amount_tax']
-            line.update({
-                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
-                'price_tax': amount_tax,
-                'price_total': amount_untaxed + amount_tax,
-            })
-
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
     asset_code = fields.Many2one('assets.assets', string='Asset code')
@@ -1656,13 +1643,6 @@ class PurchaseOrderLine(models.Model):
     exchange_quantity = fields.Float('Exchange Quantity', default=1.0)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
-
-    @api.constrains('discount_percent')
-    def _constrains_discount_percent_and_discount(self):
-        for rec in self:
-            if rec.discount_percent < 0 or rec.discount_percent > 100:
-                raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
-
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
@@ -1722,6 +1702,25 @@ class PurchaseOrderLine(models.Model):
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
+
+    @api.constrains('discount_percent')
+    def _constrains_discount_percent_and_discount(self):
+        for rec in self:
+            if rec.discount_percent < 0 or rec.discount_percent > 100:
+                raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
+    def _compute_amount(self):
+        for line in self:
+            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+            totals = list(tax_results['totals'].values())[0]
+            amount_untaxed = totals['amount_untaxed']
+            amount_tax = totals['amount_tax']
+            line.update({
+                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
+                'price_tax': amount_tax,
+                'price_total': amount_untaxed + amount_tax,
+            })
 
     @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax', 'order_id.is_inter_company','order_id')
     def _constrain_total_vnd_exchange_import(self):
@@ -1783,7 +1782,6 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             if not rec.total_tax_amount:
                 rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
-
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import', 'before_tax')
     def _compute_total_vnd_amount(self):
@@ -1933,8 +1931,7 @@ class PurchaseOrderLine(models.Model):
             item.billed = item.qty_invoiced/item.exchange_quantity if item.exchange_quantity else 0
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
-                 'free_good')
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
@@ -2059,7 +2056,7 @@ class PurchaseOrderLine(models.Model):
                     line.price_unit = line.vendor_price / line.exchange_quantity
                 else:
                     line.price_unit = line.vendor_price
-            if not line.product_id or line.invoice_lines:
+            if not line.product_id or line.invoice_lines or not line.partner_id:
                 continue
             params = {'order_id': line.order_id}
             uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
