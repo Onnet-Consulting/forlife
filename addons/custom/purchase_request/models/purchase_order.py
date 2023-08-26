@@ -136,7 +136,7 @@ class PurchaseOrderLine(models.Model):
                 material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
                 labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
 
-                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
+                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand.with_company(item.company_id)])
                 total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
 
                 item.material_cost = total_material_price
@@ -163,9 +163,7 @@ class PurchaseOrderLine(models.Model):
         return res
 
     def action_npl(self):
-        # self.ensure_one()
-        if not self:
-            pass
+        self.ensure_one()
         if not self.purchase_order_line_material_line_ids:
             product = self.product_id
             production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
