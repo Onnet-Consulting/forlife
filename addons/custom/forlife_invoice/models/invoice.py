@@ -721,8 +721,8 @@ class AccountMove(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').with_company(
                         self.company_id).property_account_expense_id.id,
                     'name': 'thuế giá trị gia tăng nhập khẩu (VAT)',
-                    'debit': 0 if is_in else line.vat_tax_amount,
-                    'credit': line.vat_tax_amount if is_in else 0.0,
+                    'debit': 0 if is_in else round(line.vat_tax_amount),
+                    'credit': round(line.vat_tax_amount) if is_in else 0.0,
                 })
                 account_debit_vat = (0, 0, {
                     'sequence': 99991,
@@ -730,8 +730,8 @@ class AccountMove(models.Model):
                     'account_id': self.env.ref('forlife_purchase.product_vat_tax').categ_id.with_company(
                         self.company_id).property_stock_account_input_categ_id.id,
                     'name': line.name,
-                    'debit': line.vat_tax_amount if is_in else 0.0,
-                    'credit': 0 if is_in else line.vat_tax_amount,
+                    'debit': round(line.vat_tax_amount) if is_in else 0.0,
+                    'credit': 0 if is_in else round(line.vat_tax_amount),
                 })
                 lines_vat = [account_credit_vat, account_debit_vat]
                 account_vat.extend(lines_vat)
