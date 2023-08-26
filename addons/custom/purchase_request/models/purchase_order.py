@@ -164,6 +164,8 @@ class PurchaseOrderLine(models.Model):
 
     def action_npl(self):
         # self.ensure_one()
+        if not self:
+            pass
         if not self.purchase_order_line_material_line_ids:
             product = self.product_id
             production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
