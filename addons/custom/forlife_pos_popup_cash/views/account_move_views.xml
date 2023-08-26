@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <field name="invoice_vendor_bill_id" position="after">
                     <field name="pos_transfer_cash_2office" invisible="1"/>
+                    <field name="pos_trans_diff_move_id" attrs="{'invisible': [('pos_trans_diff_move_id', '=', False)]}"/>
                     <field name="pos_orig_amount"
                            widget='monetary' options="{'currency_field': 'currency_id'}"
                            attrs="{'invisible': [('pos_transfer_cash_2office', '=', False)]}"/>
@@ -28,6 +29,9 @@
                     <filter string="POS Cash Transfer" name="pos_cash_transfer"
                             domain="[('pos_transfer_cash_2office', '=', True)]"/>
                 </filter>
+                <field name="journal_id" position="after">
+                    <field name="pos_trans_diff_move_id"/>
+                </field>
             </field>
         </record>
     </data>

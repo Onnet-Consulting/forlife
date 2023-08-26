@@ -106,6 +106,8 @@ class AccountMove(models.Model):
         for rec in self:
             if rec.total_trade_discount != 0 and rec.trade_tax_id:
                 rec.x_amount_tax = rec.trade_tax_id.amount / 100 * rec.total_trade_discount
+            else:
+                rec.x_amount_tax = 0
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -218,7 +220,7 @@ class AccountMove(models.Model):
         else:
             currency_id = self.currency_id.id or False
             exchange_rate = self.exchange_rate or 1
-        self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
+        self.sudo().line_ids.filtered(lambda x: x.display_type == 'tax').with_context(dynamic_unlink=True).unlink()
         self.sudo().write({
             'invoice_line_ids': False,
             'type_inv': type_po_cost if type_po_cost else False,
@@ -458,7 +460,6 @@ class AccountMove(models.Model):
     @api.onchange('receiving_warehouse_id', 'select_type_inv')
     def onchange_invoice_line_ids_by_type(self):
         for rec in self:
-            rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
             rec.invoice_line_ids = False
             rec.account_expense_labor_detail_ids = False
             rec.sum_expense_labor_ids = False
@@ -473,6 +474,13 @@ class AccountMove(models.Model):
                 if not picking_id.x_is_check_return:
                     picking_return_id = self.env['stock.picking'].search([('relation_return', '=', picking_id.name), ('x_is_check_return', '=', True), ('state', '=', 'done')])
                     rec.receiving_warehouse_id |= picking_return_id
+
+    def _get_unbalanced_moves(self, container):
+        moves = container['records'].filtered(lambda move: move.line_ids)
+        for move_id in moves:
+            if all(x.display_type == 'tax' for x in move_id.line_ids):
+                move_id.line_ids = [(5, 0, 0)]
+        return super(AccountMove, self)._get_unbalanced_moves(container)
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
