@@ -508,10 +508,14 @@ class PurchaseOrder(models.Model):
         account_analytic_id = False
         if self.account_analytic_id:
             account_analytic_id = self.env['account.analytic.account'].sudo().search([('code', '=', self.account_analytic_id.code), ('company_id', '=', company_id.id)], limit=1)
+            if not account_analytic_id:
+                raise ValidationError('Công ty %s hiện tại không có Trung tâm chi phí: [%s] - %s. Vui lòng liên hệ Quản trị viên cấu hình!' % (company_id.name, account_analytic_id.code, account_analytic_id.name))
 
         occasion_code_id = False
         if self.occasion_code_id:
             occasion_code_id = self.env['occasion.code'].sudo().search([('code', '=', self.occasion_code_id.code), ('company_id', '=', company_id.id)], limit=1)
+            if not occasion_code_id:
+                raise ValidationError('Công ty %s hiện tại không có Mã vụ việc: %s. Vui lòng liên hệ Quản trị viên cấu hình!' % (company_id.name, occasion_code_id.name))
 
         sale_order_vals = {
             'company_id': company_id.id,
@@ -525,6 +529,7 @@ class PurchaseOrder(models.Model):
             'x_manufacture_order_code_id': self.production_id.id or False,
             'x_account_analytic_id': account_analytic_id.id if account_analytic_id else False,
             'x_occasion_code_id': occasion_code_id.id if occasion_code_id else False,
+            'x_po_inter_company': self.name,
             'order_line': sale_order_lines
         }
         sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
