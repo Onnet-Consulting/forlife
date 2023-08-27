@@ -11,15 +11,18 @@ class AccountMoveLine(models.Model):
     # Chặn sinh bút toán chênh lệch tỷ giá tự đông
     @api.model
     def _prepare_reconciliation_partials(self, vals_list):
+        print('Go _prepare_reconciliation_partials')
         partials_vals_list, exchange_data = super(AccountMoveLine, self)._prepare_reconciliation_partials(vals_list)
         exchange_data = {}
         return partials_vals_list, exchange_data
 
     @api.model
     def _create_exchange_difference_move(self, exchange_diff_vals):
+        print('Go _create_exchange_difference_move')
         return False
 
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None):
+        print('Go _prepare_exchange_difference_move_vals')
         res = super(AccountMoveLine, self)._prepare_exchange_difference_move_vals(amounts_list, company, exchange_date)
         if res['move_vals'].get('line_ids'):
             res['move_vals']['line_ids'] = []
