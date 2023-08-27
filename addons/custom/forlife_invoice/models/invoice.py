@@ -917,6 +917,9 @@ class AccountMoveLine(models.Model):
         svl_vals_list = aml_vals_list = []
         return svl_vals_list, aml_vals_list
 
+    def _apply_price_difference(self):
+        return self.env['stock.valuation.layer'].sudo().create([]), self.env['account.move.line'].sudo().create([])
+
     @api.onchange('asset_code')
     def onchange_asset_code(self):
         if self.asset_code:
