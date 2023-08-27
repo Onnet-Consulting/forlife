@@ -910,16 +910,6 @@ class AccountMoveLine(models.Model):
     is_passersby = fields.Boolean(related='move_id.is_passersby')
     is_red_color = fields.Boolean(compute='compute_vendor_price_ncc', store=1)
 
-    def _generate_price_difference_vals(self, layers):
-        """
-            Ghi đè lai hàm sinh chênh lệch tỷ giá khi post bút toán
-        """
-        svl_vals_list = aml_vals_list = []
-        return svl_vals_list, aml_vals_list
-
-    def _apply_price_difference(self):
-        return self.env['stock.valuation.layer'].sudo().create([]), self.env['account.move.line'].sudo().create([])
-
     @api.onchange('asset_code')
     def onchange_asset_code(self):
         if self.asset_code:
