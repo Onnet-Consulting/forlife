@@ -15,6 +15,16 @@ class AccountMoveLine(models.Model):
         exchange_data = {}
         return partials_vals_list, exchange_data
 
+    def _generate_price_difference_vals(self, layers):
+        """
+            Ghi đè lai hàm sinh chênh lệch tỷ giá khi post bút toán
+        """
+        svl_vals_list = aml_vals_list = []
+        return svl_vals_list, aml_vals_list
+
+    def _apply_price_difference(self):
+        return self.env['stock.valuation.layer'].sudo().create([]), self.env['account.move.line'].sudo().create([])
+
     @api.model
     def _create_exchange_difference_move(self, exchange_diff_vals):
         return False
