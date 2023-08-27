@@ -152,6 +152,7 @@ class TransferNotExistsBkav(models.Model):
                 AND s.state in ('out_approve','in_approve','done')
                 ) as b 
             ON a.location_id = b.location_id AND a.location_dest_id = b.location_dest_id
+            WHERE a.id not in (SELECT bkav_not_exist_id FROM stock_transfer_bkav_not_exist WHERE transfer_id = b.id)
             );
 
             UPDATE transfer_not_exists_bkav t SET vendor_contract_id = p.vendor_contract_id

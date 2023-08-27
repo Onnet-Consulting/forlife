@@ -44,6 +44,7 @@ class SaleOrder(models.Model):
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
     x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
+    x_po_inter_company = fields.Char(string='PO liên công ty')
 
     def _get_x_location_id(self):
         warehouse_id = self.user_id.with_company(self.company_id.id)._get_default_warehouse_id()

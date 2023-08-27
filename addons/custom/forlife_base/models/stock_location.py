@@ -5,7 +5,7 @@ class StockLocation(models.Model):
     _inherit = 'stock.location'
 
     def name_get(self):
-        result = super().name_get()
+        result = []
         for location in self:
             if not location.type_other:
                 name = f'[{location.code}] {location.complete_name}'
