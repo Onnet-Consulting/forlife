@@ -914,12 +914,10 @@ class AccountMoveLine(models.Model):
         """
             Ghi đè lai hàm sinh chênh lệch tỷ giá khi post bút toán
         """
-        print('Go _generate_price_difference_vals')
         svl_vals_list = aml_vals_list = []
         return svl_vals_list, aml_vals_list
 
     def _apply_price_difference(self):
-        print('Go _apply_price_difference')
         return self.env['stock.valuation.layer'].sudo().create([]), self.env['account.move.line'].sudo().create([])
 
     @api.onchange('asset_code')
