@@ -1,9 +1,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_is_zero
-import logging
-
-_logger = logging.getLogger(__name__)
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -24,10 +21,11 @@ class StockMove(models.Model):
         warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
         rslt = super(StockMove, self)._generate_valuation_lines_data(partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description)
         if rslt.get('debit_line_vals_curr') and rslt['debit_line_vals_curr'].get('name') == 'Chênh lệch tỉ giá tiền tệ':
-            rslt['credit_line_vals'] = []
-            rslt['debit_line_vals'] = []
-            rslt['debit_line_vals_curr'] = []
-            rslt['credit_line_vals_curr'] = []
+            rslt['credit_line_vals'] = {}
+            rslt['debit_line_vals'] = {}
+            rslt['debit_line_vals_curr'] = {}
+            rslt['credit_line_vals_curr'] = {}
+            return rslt
         if '_is_give' in self._context and self._context.get('_is_give'):
             if self.location_id.warehouse_id.whs_type.id in [warehouse_type_master] and self.location_dest_id.id_deposit:
                 if not self.location_dest_id.account_stock_give:
