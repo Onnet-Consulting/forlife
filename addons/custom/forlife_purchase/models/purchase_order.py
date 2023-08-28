@@ -1970,12 +1970,10 @@ class PurchaseOrderLine(models.Model):
                 ('date_start', '<=', today),
                 ('date_end', '>=', today)
             ])
-            rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
-            if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                for line in data:
-                    if rec.product_qty and rec.product_qty >= line.min_qty:
-                        rec.vendor_price = line.price
-                        rec.exchange_quantity = line.amount_conversion
+            for line in data.sorted(lambda s: (s.sequence, -s.min_qty, s.price, s.id)):
+                if rec.product_qty >= line.min_qty:
+                    rec.vendor_price = line.price
+                    rec.exchange_quantity = line.amount_conversion
 
     # discount
     @api.depends("free_good")
