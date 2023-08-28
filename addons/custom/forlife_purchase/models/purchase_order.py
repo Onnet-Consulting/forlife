@@ -677,6 +677,15 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'cancel'})
 
     def action_close(self):
+        if self.picking_ids.filtered(lambda x: x.state == 'done'):
+            move_ids = self.env['account.move'].search([
+                ('purchase_order_product_id', 'in', self.ids),
+                ('move_type', 'in', ('in_invoice','in_refund')),
+                ('select_type_inv', '=', 'normal')]
+            )
+            if not move_ids:
+                message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+                raise ValidationError(message)
         self.button_cancel()
         self.write({'custom_state': 'close'})
 
@@ -1645,7 +1654,7 @@ class PurchaseOrderLine(models.Model):
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
     purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
-    exchange_quantity = fields.Float('Exchange Quantity', default=1.0)
+    exchange_quantity = fields.Float('Exchange Quantity', default=1.0, copy=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     free_good = fields.Boolean(string='Free Goods')
@@ -2104,8 +2113,8 @@ class PurchaseOrderLine(models.Model):
                                                                                    'decimal.precision'].precision_get(
                                                                                    'Product Price')))
                 continue
-
-            price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price,
+            amount_conversion = seller.amount_conversion if seller.amount_conversion != 0 else 1
+            price_unit = line.env['account.tax']._fix_tax_included_price_company(seller.price/amount_conversion,
                                                                                  line.product_id.supplier_taxes_id,
                                                                                  line.taxes_id,
                                                                                  line.company_id) if seller else 0.0
