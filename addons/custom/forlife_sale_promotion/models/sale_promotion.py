@@ -29,3 +29,4 @@ class SaleOrderPromotion(models.Model):
     ], string='Loại khuyến mại')
     analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
     order_line_id = fields.Many2one("sale.order.line", string="Order line")
+    is_handle = fields.Boolean(default=True)

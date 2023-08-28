@@ -5,3 +5,4 @@ access_forlife_pos_reason_refund,forlife_pos_product_change.forlife_pos_reason_r
 access_product_defective,access_product_defective,model_product_defective,point_of_sale.group_pos_manager,0,0,0,0
 access_defective_type,access_defective_type,model_defective_type,base.group_user,1,1,1,1
 access_reason_refuse_product_defective,access_reason_refuse_product,model_reason_refuse_product,base.group_user,1,1,1,1
+access_warning_popup,access_warning_popup,model_warning_popup,base.group_user,1,1,1,1
