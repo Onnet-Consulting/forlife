@@ -502,6 +502,8 @@ class PurchaseOrder(models.Model):
                 'discount': item.discount_percent,
                 'x_location_id': self.source_location_id.id if self.purchase_type == 'product' else False,
                 'tax_id': [(6, 0, tax_ids)],
+                'x_product_code_id': item.asset_code.id if item.asset_code else False,
+                'x_sale_chanel': 'intercompany',
             }))
 
         # Tìm trung tâm chi phí có cùng mã
