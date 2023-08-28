@@ -681,7 +681,7 @@ class PurchaseOrder(models.Model):
     def action_close(self):
         for rec in self:
             for line in rec.order_line:
-                if line.received != 0 and line.received != line.billed:
+                if line.received != 0 and line.received > line.billed:
                     message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
                     raise ValidationError(message)
         self.button_cancel()
