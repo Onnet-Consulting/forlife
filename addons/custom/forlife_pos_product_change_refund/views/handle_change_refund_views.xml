@@ -49,6 +49,8 @@
                                         <field name="purchase_price" readonly="1"/>
                                         <field name="pos_order_line_id" invisible="1"/>
                                         <field name="return_price"/>
+                                        <field name="quantity" readonly="1"/>
+                                        <field name="product_uom_id"/>
                                         <field name="expire_change_refund_date"/>
                                         <field name="reason_refund_id" readonly="1" force_save="1"/>
                                         <field name="note"/>

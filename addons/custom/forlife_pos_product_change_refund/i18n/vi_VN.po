@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-25 04:50+0000\n"
-"PO-Revision-Date: 2023-08-25 04:50+0000\n"
+"POT-Creation-Date: 2023-08-28 07:33+0000\n"
+"PO-Revision-Date: 2023-08-28 07:33+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1076,6 +1076,11 @@ msgid "Purchase: Handle Change Refund"
 msgstr "Xử lý đổi trả hàng quá hạn"
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund_line__quantity
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__quantity_canbe_refund
 msgid "Quantity can be refund"
 msgstr "Số lượng có thể đổi trả"
@@ -1478,6 +1483,11 @@ msgid "Từ chối (alpha)"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund_line__product_uom_id
+msgid "Unit"
+msgstr "Đơn vị"
+
+#. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLine.xml:0
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
@@ -1514,6 +1524,7 @@ msgstr "Đợi duyệt"
 #: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
 #: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
 #: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
+#: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Orderline.js:0
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Orderline.js:0
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Orderline.js:0
@@ -1525,7 +1536,7 @@ msgstr "Đợi duyệt"
 #: code:addons/forlife_pos_product_change_refund/static/src/js/models.js:0
 #, python-format
 msgid "Warning"
-msgstr ""
+msgstr "Cảnh báo"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__website_message_ids
@@ -1582,6 +1593,13 @@ msgstr ""
 #, python-format
 msgid "You can't change or refund quantity bigger quantity available."
 msgstr "Bạn không thể trả số lượng lớn hơn số lượng có thể đổi trả."
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/OrderLineChangeRefund.js:0
+#, python-format
+msgid "You can't change the quantity after sending approve."
+msgstr "Bạn không thể thay đổi số lượng sau khi đã gửi duyệt."
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
