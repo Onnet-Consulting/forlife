@@ -1972,13 +1972,10 @@ class PurchaseOrderLine(models.Model):
             ])
             rec.is_red_color = True if rec.exchange_quantity not in data.mapped('amount_conversion') else False
             if rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id and not rec.is_red_color and not rec.order_id.partner_id.is_passersby:
-                closest_quantity = None  # Khởi tạo giá trị biến tạm
                 for line in data:
                     if rec.product_qty and rec.product_qty >= line.min_qty:
-                        ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
-                        if closest_quantity is None or line.min_qty > closest_quantity:
-                            rec.vendor_price = line.price
-                            rec.exchange_quantity = line.amount_conversion
+                        rec.vendor_price = line.price
+                        rec.exchange_quantity = line.amount_conversion
 
     # discount
     @api.depends("free_good")
