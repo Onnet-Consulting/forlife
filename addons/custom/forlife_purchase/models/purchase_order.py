@@ -1977,11 +1977,7 @@ class PurchaseOrderLine(models.Model):
                     if rec.product_qty and rec.product_qty >= line.min_qty:
                         ### closest_quantity chỉ được cập nhật khi rec.product_qty lớn hơn giá trị hiện tại của line.min_qty
                         if closest_quantity is None or line.min_qty > closest_quantity:
-                            closest_quantity = line.min_qty
-                            if not rec.free_good:
-                                rec.vendor_price = line.price
-                            else:
-                                rec.vendor_price = 0
+                            rec.vendor_price = line.price
                             rec.exchange_quantity = line.amount_conversion
 
     # discount
@@ -2059,8 +2055,15 @@ class PurchaseOrderLine(models.Model):
                 moves.write({"price_unit": line._get_discounted_price_unit()})
         return res
 
+    @api.onchange('vendor_price')
+    def onchange_vendor_price(self):
+        if self.exchange_quantity != 0:
+            self.price_unit = self.vendor_price / self.exchange_quantity
+        else:
+            self.price_unit = self.vendor_price
+
     # exchange rate
-    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'exchange_quantity', 'product_uom', 'vendor_price', 'order_id.purchase_type', 'free_good')
+    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'exchange_quantity', 'product_uom', 'order_id.purchase_type', 'free_good')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
             if line.free_good:
