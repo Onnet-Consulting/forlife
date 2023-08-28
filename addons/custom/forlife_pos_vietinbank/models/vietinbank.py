@@ -40,7 +40,7 @@ class ApisVietinBank(models.AbstractModel):
 
     def _prepare_body(self, pos_id):
         date_to = datetime.now().strftime('%d/%m/%Y')
-        date_from = (datetime.now() - timedelta(hours=4)).strftime('%d/%m/%Y')
+        date_from = (datetime.now() - timedelta(hours=1)).strftime('%d/%m/%Y')
         request_id = self._ramdom_request()
         merchant_id = ""
         pos_config = self.env['pos.config'].browse(pos_id)
@@ -121,7 +121,8 @@ class ApisVietinBank(models.AbstractModel):
                 'benefi_account': data['account'],
                 'benefi_name': data['companyName'],
                 'ref': item['transactionContent'],
-                'ref_no': "",
+                'service_bank': item['serviceBankName'],
+                'ref_no': item['transactionNumber'],
                 'effect_date': datetime.strptime(item['transactionDate'], '%d-%m-%Y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S'),
                 'channel': item['channel'],
             })
@@ -139,16 +140,17 @@ class VietinBankModel(models.TransientModel):
     _rec_name = 'customer_name'
     _description = 'Vietinbank transaction'
 
-    customer_name = fields.Char(string='Tên khách hàng')
+    customer_name = fields.Char(string='Tên người chuyển')
     pos_order_id = fields.Many2one('pos.config', string='Pos Order')
     payment_method_id = fields.Many2one('pos.payment.method', string='Payment method')
     session_id = fields.Many2one('pos.session', string='Session Id')
     company_id = fields.Many2one('res.company', string='Company')
-    debit_account = fields.Char(string='Debit account')
-    amount = fields.Float(string='Amount')
+    debit_account = fields.Char(string='Tên người chuyển')
+    amount = fields.Float(string='Số tiền chuyển')
     benefi_account = fields.Char(string='Beneficiary account')
     benefi_name = fields.Char(string='Beneficiary name')
-    ref = fields.Char(string='Reference')
-    ref_no = fields.Char(string='Ref no')
-    effect_date = fields.Datetime(string='Effective date')
+    service_bank = fields.Char(string='Ngân hàng chuyển')
+    ref = fields.Char(string='Nội dung')
+    ref_no = fields.Char(string='Số chứng từ')
+    effect_date = fields.Datetime(string='Thời gian chuyển')
     channel = fields.Char(string='Channel')

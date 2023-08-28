@@ -105,8 +105,8 @@ class PurchaseOrderLine(models.Model):
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
     x_check_npl = fields.Boolean(related='product_id.x_check_npl')
-    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost")
-    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost")
+    material_cost = fields.Float("Chi phí NPL", compute="_compute_cost", store=1)
+    labor_cost = fields.Float("Chi phí nhân công", compute="_compute_cost", store=1)
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
@@ -136,11 +136,31 @@ class PurchaseOrderLine(models.Model):
                 material_on_hand = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'product')
                 labor_service = item.purchase_order_line_material_line_ids.filtered(lambda x: x.product_id.detailed_type == 'service')
 
-                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand])
+                total_material_price += sum([x.product_id.standard_price * x.product_qty for x in material_on_hand.with_company(item.company_id)])
                 total_labor_price += sum([x.price_unit * x.product_qty for x in labor_service])
 
                 item.material_cost = total_material_price
                 item.labor_cost = total_labor_price
+
+    def write(self, vals):
+        res = super().write(vals)
+        for r in self.filtered(lambda x: x.x_check_npl and not x.purchase_order_line_material_line_ids):
+            product = self.product_id
+            production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
+            production_data = []
+            for production_line in production_order.order_line_ids:
+                production_data.append((0, 0, {
+                    'product_id': production_line.product_id.id,
+                    'uom': production_line.uom_id.id,
+                    'production_order_product_qty': production_order.product_qty,
+                    'production_line_product_qty': production_line.product_qty,
+                    'production_line_price_unit': production_line.price,
+                    'is_from_po': True,
+                }))
+            r.write({
+                'purchase_order_line_material_line_ids': production_data
+            })
+        return res
 
     def action_npl(self):
         self.ensure_one()
@@ -151,11 +171,9 @@ class PurchaseOrderLine(models.Model):
                 raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
             production_data = []
             for production_line in production_order.order_line_ids:
-                # product_plan_qty = self.product_qty / production_order.product_qty * production_line.product_qty
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
                     'uom': production_line.uom_id.id,
-                    # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'production_line_price_unit': production_line.price,

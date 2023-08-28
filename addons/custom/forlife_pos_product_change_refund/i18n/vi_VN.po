@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-09 03:35+0000\n"
-"PO-Revision-Date: 2023-08-09 03:35+0000\n"
+"POT-Creation-Date: 2023-08-25 04:50+0000\n"
+"PO-Revision-Date: 2023-08-25 04:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -130,6 +130,7 @@ msgid "All active orders"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.actions.server,name:forlife_pos_product_change_refund.product_defective_action_approves
 #: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.handle_change_refund_form_view
 msgid "Approve"
 msgstr "Duyệt"
@@ -219,13 +220,6 @@ msgstr ""
 #, python-format
 msgid "Cashier"
 msgstr "Thu ngân"
-
-#. module: forlife_pos_product_change_refund
-#. odoo-javascript
-#: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
-#, python-format
-msgid "Change"
-msgstr "Đổi"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__detail_defective
@@ -389,7 +383,14 @@ msgstr ""
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLine.xml:0
 #, python-format
 msgid "Employee"
-msgstr ""
+msgstr "Nhân viên"
+
+#. module: forlife_pos_product_change_refund
+#. odoo-python
+#: code:addons/forlife_pos_product_change_refund/models/defective_product.py:0
+#, python-format
+msgid "Exception while send the request approve: %s"
+msgstr "Gặp lỗi khi gửi duyệt yêu cầu: "
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__handle_change_refund__type__exchange_goods
@@ -1036,7 +1037,7 @@ msgstr "Sản phẩm tự động"
 #. module: forlife_pos_product_change_refund
 #: model:ir.model,name:forlife_pos_product_change_refund.model_product_category
 msgid "Product Category"
-msgstr "Danh mục sản phẩm"
+msgstr "Nhóm sản phẩm"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model,name:forlife_pos_product_change_refund.model_product_defective
@@ -1245,6 +1246,11 @@ msgid "Send Approve"
 msgstr "Gửi duyệt"
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.actions.server,name:forlife_pos_product_change_refund.product_defective_action_send_request_approves
+msgid "Send Request Approves"
+msgstr "Gửi duyệt"
+
+#. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
@@ -1337,6 +1343,11 @@ msgstr ""
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__quantity_require
 msgid "Số lượng yêu cầu"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__qty_unreturned
+msgid "Số lượng được trả"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
@@ -1623,6 +1634,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.view_reason_refuse_product_defective_form
 #, python-format
 msgid "Đồng ý"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml:0
+#, python-format
+msgid "Đổi SP"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund

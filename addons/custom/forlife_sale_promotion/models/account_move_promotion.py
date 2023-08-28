@@ -11,15 +11,18 @@ class AccountMovePromotion(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product')
     value = fields.Float(string='Value')
+    product_uom_qty = fields.Float(string="Quantity", digits='Product Unit of Measure',)
     promotion_type = fields.Selection([
-        ('diff_price', 'diff_price'),
-        ('discount', 'discount'),
-        ('vip_amount_remain', 'vip_amount_remain'),
-        ('vip_amount', 'vip_amount'),
-        ('nhanh_shipping_fee', 'nhanh_shipping_fee'),
-        ('customer_shipping_fee', 'customer_shipping_fee'),
-        ('reward', 'reward')
-    ], string='promotion_type')
+        ('diff_price', 'Làm giá'),
+        ('discount', 'Chiết khấu'),
+        ('vip_amount_remain', 'Giảm giá trực tiếp'),
+        ('vip_amount', 'Hạng thẻ'),
+        ('nhanh_shipping_fee', 'Phí vận chuyển'),
+        ('customer_shipping_fee', 'Phí ship báo khách hàng'),
+        ('reward', 'Chiết khấu tổng đơn'),
+        ('out_point', 'Tiêu điểm'),
+        ('in_point', 'Tích điểm'),
+    ], string='Loại khuyến mại')
     account_id = fields.Many2one('account.account', string="Account")
     description = fields.Char(string="Description")
     move_id = fields.Many2one("account.move", string="Order")

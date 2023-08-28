@@ -145,6 +145,8 @@ class PurchaseOrder(models.Model):
         for rec in self:
             if rec.total_trade_discount > 0 and rec.x_tax > 0:
                 rec.x_amount_tax = rec.x_tax / 100 * rec.total_trade_discount
+            else:
+                rec.x_amount_tax = 0
 
     @api.constrains('x_tax')
     def constrains_x_tax(self):
@@ -292,15 +294,15 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
+    @api.depends('picking_ids', 'picking_ids.state')
     def compute_inventory_status(self):
         for item in self:
-            pk = self.env['stock.picking'].search([('origin', '=', item.name)])
-            if pk:
-                all_equal_parent_done = all(x == 'done' for x in pk.mapped('state'))
-                if all_equal_parent_done:
-                    item.inventory_status = 'done'
-                else:
-                    item.inventory_status = 'incomplete'
+            picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
+            all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
+            if all_equal_parent_done:
+                item.inventory_status = 'done'
+            elif 'done' in picking_ids.mapped('state'):
+                item.inventory_status = 'incomplete'
             else:
                 item.inventory_status = 'not_received'
 
@@ -411,17 +413,21 @@ class PurchaseOrder(models.Model):
             domain = [('purchase_order_product_id', 'in', rec.ids), ('move_type', '=', 'in_invoice'), ('select_type_inv', '=', 'labor')]
             rec.count_invoice_inter_labor_fix = self.env['account.move'].search_count(domain)
 
-    @api.onchange('trade_discount')
+    @api.onchange('trade_discount', 'tax_totals')
     def onchange_total_trade_discount(self):
         if self.trade_discount:
             if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
                 self.total_trade_discount = self.tax_totals.get('amount_untaxed') * (self.trade_discount / 100)
+        else:
+            self.total_trade_discount = 0
 
     @api.onchange('total_trade_discount')
     def onchange_trade_discount(self):
         if self.total_trade_discount:
             if self.tax_totals.get('amount_untaxed') and self.tax_totals.get('amount_untaxed') != 0:
                 self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_untaxed') * 100
+        else:
+            self.trade_discount = 0
 
     def action_confirm(self):
         for record in self:
@@ -502,10 +508,14 @@ class PurchaseOrder(models.Model):
         account_analytic_id = False
         if self.account_analytic_id:
             account_analytic_id = self.env['account.analytic.account'].sudo().search([('code', '=', self.account_analytic_id.code), ('company_id', '=', company_id.id)], limit=1)
+            if not account_analytic_id:
+                raise ValidationError('Công ty %s hiện tại không có Trung tâm chi phí: [%s] - %s. Vui lòng liên hệ Quản trị viên cấu hình!' % (company_id.name, account_analytic_id.code, account_analytic_id.name))
 
         occasion_code_id = False
         if self.occasion_code_id:
             occasion_code_id = self.env['occasion.code'].sudo().search([('code', '=', self.occasion_code_id.code), ('company_id', '=', company_id.id)], limit=1)
+            if not occasion_code_id:
+                raise ValidationError('Công ty %s hiện tại không có Mã vụ việc: %s. Vui lòng liên hệ Quản trị viên cấu hình!' % (company_id.name, occasion_code_id.name))
 
         sale_order_vals = {
             'company_id': company_id.id,
@@ -519,6 +529,7 @@ class PurchaseOrder(models.Model):
             'x_manufacture_order_code_id': self.production_id.id or False,
             'x_account_analytic_id': account_analytic_id.id if account_analytic_id else False,
             'x_occasion_code_id': occasion_code_id.id if occasion_code_id else False,
+            'x_po_inter_company': self.name,
             'order_line': sale_order_lines
         }
         sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
@@ -840,6 +851,7 @@ class PurchaseOrder(models.Model):
             'work_order': po_line.production_id.id if po_line.production_id else False,
             'account_analytic_id': po_line.account_analytic_id.id if po_line.account_analytic_id else False,
             'import_tax': po_line.import_tax,
+            'tax_ids': False
         }
         return data_line
 
@@ -923,13 +935,14 @@ class PurchaseOrder(models.Model):
             'account_id': labor_cost_id.product_id.categ_id.property_stock_account_input_categ_id.id,
             'name': labor_cost_id.product_id.name,
             'quantity': 1,
-            'price_unit': labor_cost_id.price_unit * (move_qty / pol_id.product_qty),
+            'price_unit': labor_cost_id.total_amount * (move_qty / pol_id.product_qty),
             'occasion_code_id': pol_id.occasion_code_id.id if pol_id.occasion_code_id else False,
             'work_order': pol_id.production_id.id if pol_id.production_id else False,
             'account_analytic_id': pol_id.account_analytic_id.id if pol_id.account_analytic_id else False,
             'import_tax': pol_id.import_tax,
             'special_consumption_tax': pol_id.special_consumption_tax,
             'vat_tax': pol_id.vat_tax,
+            'tax_ids': False,
         }
         return data
 
@@ -1132,7 +1145,7 @@ class PurchaseOrder(models.Model):
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not pol_id.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 data_line = self._prepare_invoice_labor(labor_cost_id, move_qty)
                 if pol_id.display_type == 'line_section':
@@ -1626,19 +1639,6 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
-    def _compute_amount(self):
-        for line in self:
-            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-            totals = list(tax_results['totals'].values())[0]
-            amount_untaxed = totals['amount_untaxed']
-            amount_tax = totals['amount_tax']
-            line.update({
-                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
-                'price_tax': amount_tax,
-                'price_total': amount_untaxed + amount_tax,
-            })
-
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
     asset_code = fields.Many2one('assets.assets', string='Asset code')
@@ -1648,13 +1648,6 @@ class PurchaseOrderLine(models.Model):
     exchange_quantity = fields.Float('Exchange Quantity', default=1.0)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
-
-    @api.constrains('discount_percent')
-    def _constrains_discount_percent_and_discount(self):
-        for rec in self:
-            if rec.discount_percent < 0 or rec.discount_percent > 100:
-                raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
-
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
@@ -1714,6 +1707,25 @@ class PurchaseOrderLine(models.Model):
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
+
+    @api.constrains('discount_percent')
+    def _constrains_discount_percent_and_discount(self):
+        for rec in self:
+            if rec.discount_percent < 0 or rec.discount_percent > 100:
+                raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
+
+    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
+    def _compute_amount(self):
+        for line in self:
+            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+            totals = list(tax_results['totals'].values())[0]
+            amount_untaxed = totals['amount_untaxed']
+            amount_tax = totals['amount_tax']
+            line.update({
+                'price_subtotal': amount_untaxed if amount_untaxed else line.price_subtotal,
+                'price_tax': amount_tax,
+                'price_total': amount_untaxed + amount_tax,
+            })
 
     @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax', 'order_id.is_inter_company','order_id')
     def _constrain_total_vnd_exchange_import(self):
@@ -1775,7 +1787,6 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             if not rec.total_tax_amount:
                 rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
-
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import', 'before_tax')
     def _compute_total_vnd_amount(self):
@@ -1925,8 +1936,7 @@ class PurchaseOrderLine(models.Model):
             item.billed = item.qty_invoiced/item.exchange_quantity if item.exchange_quantity else 0
 
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
-                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id',
-                 'free_good')
+                 'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
     def compute_vendor_price_ncc(self):
         today = datetime.now().date()
         for rec in self:
@@ -2051,7 +2061,7 @@ class PurchaseOrderLine(models.Model):
                     line.price_unit = line.vendor_price / line.exchange_quantity
                 else:
                     line.price_unit = line.vendor_price
-            if not line.product_id or line.invoice_lines:
+            if not line.product_id or line.invoice_lines or not line.partner_id:
                 continue
             params = {'order_id': line.order_id}
             uom_id = line.purchase_uom if line.product_id.detailed_type == 'product' else line.product_uom
@@ -2119,8 +2129,7 @@ class PurchaseOrderLine(models.Model):
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
         for line in self:
-            if line.purchase_quantity:
-                line.product_qty = line.purchase_quantity * line.exchange_quantity
+            line.product_qty = line.purchase_quantity * line.exchange_quantity
 
     def _suggest_quantity(self):
         '''

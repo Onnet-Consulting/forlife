@@ -7,15 +7,15 @@ from odoo.exceptions import ValidationError
 class PosOrderReturn(models.Model):
     _inherit = "pos.order"
 
-    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV (HD trả hàng)")
-    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV (HD trả hàng)")
+    exists_bkav_return = fields.Boolean(default=False, copy=False, string="Đã tồn tại trên BKAV(R)")
+    is_post_bkav_return = fields.Boolean(default=False, copy=False, string="Đã ký HĐ trên BKAV(R)")
     ###trạng thái và số hdđt từ bkav trả về
-    invoice_state_e_return = fields.Char('Trạng thái HDDT', compute='_compute_data_compare_status_return', store=True,copy=False)
-    invoice_guid_return = fields.Char('GUID HDDT', copy=False)
-    invoice_no_return = fields.Char('Số HDDT', copy=False)
-    invoice_form_return = fields.Char('Mẫu số HDDT', copy=False)
-    invoice_serial_return = fields.Char('Ký hiệu HDDT', copy=False)
-    invoice_e_date_return = fields.Date('Ngày HDDT', copy=False)
+    invoice_state_e_return = fields.Char('Trạng thái HDDT(R)', compute='_compute_data_compare_status_return', store=True,copy=False)
+    invoice_guid_return = fields.Char('GUID HDDT(R)', copy=False)
+    invoice_no_return = fields.Char('Số HDDT(R)', copy=False)
+    invoice_form_return = fields.Char('Mẫu số HDDT(R)', copy=False)
+    invoice_serial_return = fields.Char('Ký hiệu HDDT(R)', copy=False)
+    invoice_e_date_return = fields.Date('Ngày HDDT(R)', copy=False)
     data_compare_status_return = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
@@ -32,7 +32,7 @@ class PosOrderReturn(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')], copy=False)
 
-    eivoice_file_return = fields.Many2one('ir.attachment', 'eInvoice PDF', readonly=1, copy=0)
+    eivoice_file_return = fields.Many2one('ir.attachment', 'eInvoice PDF(R)', readonly=1, copy=0)
     issue_invoice_type = fields.Selection([
         ('vat', 'GTGT'),
         ('adjust', 'Điều chỉnh'),
