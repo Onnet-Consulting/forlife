@@ -7,6 +7,7 @@ class ProductDefective(models.Model):
     _check_company_auto = True
     _order = 'create_date desc'
     _description = 'Product Defective'
+    _rec_name = 'product_id'
 
     store_id = fields.Many2one('store', 'Cửa hàng')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
@@ -90,12 +91,20 @@ class ProductDefective(models.Model):
         return res
 
     def action_send_request_approves(self):
+        except_records = []
         for request in self.filtered(lambda r: r.state == 'new'):
             try:
                 request.action_send_request_approve()
-            except ValidationError as e:
-                body = _('Exception while send the request approve: %s', e)
-                request.message_post(body=body)
+            except (ValidationError, UserError) as e:
+                except_records.append((request, e))
+        if except_records:
+            message = (_('Have exception while sending the request approve: \n')
+                       + '\n'.join([('- ' + str(e)) for rec, e in except_records]))
+            action = self.env['ir.actions.actions']._for_xml_id('forlife_pos_product_change_refund.action_warning_popup')
+            action['context'] = {
+                'default_message': message
+            }
+            return action
 
     def action_send_request_approve(self):
         product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id), ('id','!=',self.id),('store_id','=',self.store_id.id),('state','=','approved')])
@@ -105,12 +114,20 @@ class ProductDefective(models.Model):
         self._send_mail_approve(self.id)
 
     def action_approves(self):
+        except_records = []
         for request in self.filtered(lambda r: r.state == 'waiting approve'):
             try:
                 request.action_approve()
             except (ValidationError, UserError) as e:
-                body = _('Exception while approve the request: %s', e)
-                request.message_post(body=body)
+                except_records.append((request, e))
+        if except_records:
+            message = (_('Have exception while approving the request: \n')
+                       + '\n'.join([(f'- {rec.display_name}: ' + str(e)) for rec, e in except_records]))
+            action = self.env['ir.actions.actions']._for_xml_id('forlife_pos_product_change_refund.action_warning_popup')
+            action['context'] = {
+                'default_message': message
+            }
+            return action
 
     def action_approve(self):
         self.ensure_one()
