@@ -50,8 +50,8 @@
                             <field name="user_id" string="User" attrs="{'readonly': [('state', '!=', 'draft')]}" />
                             <field name="department_id" string="Department" readonly="1"/>
                             <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="location_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="location_dest_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="export_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="import_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
                             <field name="create_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
