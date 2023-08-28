@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools import float_round
 
 
 class ForlifeProduction(models.Model):
@@ -251,12 +252,15 @@ class ForlifeProductionMaterial(models.Model):
     conversion_coefficient = fields.Float(string='Conversion Coefficient')
     rated_level = fields.Float(string='Rated level')
     loss = fields.Float(string='Loss %')
-    total = fields.Float(string='Total', compute='compute_total')
+    total = fields.Float(string='Total', compute='compute_total', store=True)
 
     @api.depends('conversion_coefficient', 'rated_level', 'loss')
     def compute_total(self):
-        for item in self:
-            item.total = item.conversion_coefficient * item.rated_level * item.loss
+        for rec in self:
+            precision_rounding = rec.uom_id.rounding
+            rec.total = float_round(
+                value=(rec.rated_level * rec.conversion_coefficient * (1.0 + (rec.loss / 100))),
+                precision_rounding=precision_rounding)
 
 
 class ForlifeProductionServiceCost(models.Model):
