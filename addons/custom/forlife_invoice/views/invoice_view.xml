@@ -89,6 +89,9 @@
                     <field name="payment_term_invoice" string="Chính sách thanh toán" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="invoice_date_due" string="Hạn xử lý" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
+                <xpath expr="//field[@name='amount_residual']" position="attributes">
+                    <attribute name="attrs">{}</attribute>
+                </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="domain_receiving_warehouse_id" invisible="1"/>
