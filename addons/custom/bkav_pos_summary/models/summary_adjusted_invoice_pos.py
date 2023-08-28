@@ -207,6 +207,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     line_pk = line.line_pk
                     if line_discount_card_taxs.get(line_pk):
                         row = line_discount_card_taxs[line_pk]
+                        row["Price"] += -abs(line.price_unit)
                         row["Amount"] += -abs(line.price_unit)
                         row["TaxAmount"] += -abs(line.tax_amount)
                         line_discount_card_taxs[line_pk] = row
@@ -215,6 +216,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                         line_discount_card_taxs[line_pk] = {
                             "ItemName": "Chiết khấu hạng thẻ",
                             "UnitName": '',
+                            "Price": -abs(line.price_unit),
                             "Amount": -abs(line.price_unit),
                             "TaxAmount": -abs(line.tax_amount),
                             "IsDiscount": 1,
