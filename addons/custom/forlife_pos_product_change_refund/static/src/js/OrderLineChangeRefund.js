@@ -40,7 +40,15 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                         body: self.env._t("You can't change or refund quantity bigger quantity available."),
                     });
                     return false
-			    }
+			    };
+			    if (parseFloat(event.target.value) != self.props.line.get_quantity() && self.props.line.handle_change_refund_id) {
+                    event.target.value = Math.abs(self.props.line.get_quantity());
+                    self.showPopup('ErrorPopup', {
+                        title: self.env._t('Warning'),
+                        body: self.env._t("You can't change the quantity after sending approve."),
+                    });
+                    return false
+			    };
 			    var today = new Date();
                 today.setHours(0, 0, 0, 0);
 
@@ -129,9 +137,10 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                 line.expire_change_refund_date = this.props.line.expire_change_refund_date;
                 line.refunded_orderline_id = this.props.line.refunded_orderline_id;
                 line.reason_refund_id = this.props.line.reason_refund_id;
+                line.quantity = this.props.line.get_quantity();
+                line.product_uom_id = this.props.line.get_unit().id;
                 obj.lines = [line];
 
-                this.props.line.approvalStatus = true;
                 try {
                     const id = await this.rpc({
                         model: 'handle.change.refund',
@@ -139,6 +148,7 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
                         args: [obj]
                     });
                     if (id) {
+                        this.props.line.approvalStatus = true;
                         this.props.line.handle_change_refund_id = id;
                     }
                 }

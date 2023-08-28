@@ -48,7 +48,9 @@ class HandleChangeRefund(models.Model):
                 'purchase_price': line.get('price'),
                 'expire_change_refund_date': line.get('expire_change_refund_date'),
                 'reason_refund_id': line.get('reason_refund_id'),
-                'pos_order_line_id': line.get('refunded_orderline_id')
+                'pos_order_line_id': line.get('refunded_orderline_id'),
+                'quantity': abs(line.get('quantity', 0)),
+                'product_uom_id': line.get('product_uom_id')
             }))
         vals.update({'line_ids': lst_line})
         handle_change_refund_id = self.create(vals)
