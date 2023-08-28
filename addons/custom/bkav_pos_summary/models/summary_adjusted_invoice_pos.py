@@ -100,6 +100,23 @@ class SummaryAdjustedInvoicePos(models.Model):
         return bkav_action.download_invoice_bkav(self)
 
 
+    def get_address(self):
+        partner_id = self.partner_id
+        address = ''
+        if partner_id:
+            if partner_id.street:
+                address += str(partner_id.street).strip()
+            if partner_id.street2:
+                address += ' ' + str(partner_id.street2).strip()
+            if partner_id.city:
+                address += ' ' + str(partner_id.city).strip()
+            if partner_id.state_id:
+                address += ' ' + str(partner_id.state_id.name).strip()
+            if partner_id.country_id:
+                address += ' ' + str(partner_id.country_id.name).strip()
+        return address
+
+
     def get_vat(self, line):
         vat = 0
         if line.tax_ids:
@@ -221,7 +238,7 @@ class SummaryAdjustedInvoicePos(models.Model):
                     "BuyerName": 'Khách lẻ',
                     "BuyerTaxCode": '',
                     "BuyerUnitName": 'Khách hàng không lấy hoá đơn',
-                    "BuyerAddress": str(ln.partner_id.street).strip() if ln.partner_id.street else '',
+                    "BuyerAddress": ln.get_address(),
                     "BuyerBankAccount": "",
                     "PayMethodID": 3,
                     "ReceiveTypeID": 3,
@@ -348,7 +365,7 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
     line_pk = fields.Char('Line primary key')
     adjusted_line_id = fields.Many2one('summary.adjusted.invoice.pos.line')
     adjusted_invoice_id = fields.Many2one('summary.adjusted.invoice.pos', related="adjusted_line_id.adjusted_invoice_id")
-    price_unit = fields.Float('Đơn giá')
+    price_unit = fields.Float('Đơn giá', compute="_compute_amount")
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
@@ -374,15 +391,17 @@ class SummaryAdjustedInvoicePosDiscount(models.Model):
         return (1 + sum(self.tax_ids.mapped("amount"))/100)
 
 
-    @api.depends('tax_ids', 'amount_total', 'price_unit')
+    @api.depends('tax_ids', 'amount_total', 'price_unit_incl')
     def _compute_amount(self):
         for r in self:
-            # if r.tax_ids:
-            #     tax_results = r.tax_ids.compute_all(r.price_unit_incl)
-            #     r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
-            # else:
-            #     r.tax_amount = 0
-            r.tax_amount = r.amount_total - r.price_unit
+            if r.tax_ids:
+                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+                r.price_unit = tax_results["total_excluded"]
+            else:
+                r.tax_amount = 0
+                r.price_unit = r.price_unit_incl
+            # r.tax_amount = r.amount_total - r.price_unit
 
 
 
