@@ -679,15 +679,11 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'cancel'})
 
     def action_close(self):
-        if self.picking_ids.filtered(lambda x: x.state == 'done'):
-            move_ids = self.env['account.move'].search([
-                ('purchase_order_product_id', 'in', self.ids),
-                ('move_type', 'in', ('in_invoice','in_refund')),
-                ('select_type_inv', '=', 'normal')]
-            )
-            if not move_ids:
-                message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
-                raise ValidationError(message)
+        for rec in self:
+            for line in rec.order_line:
+                if line.received != 0 and line.received != line.billed:
+                    message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+                    raise ValidationError(message)
         self.button_cancel()
         self.write({'custom_state': 'close'})
 
