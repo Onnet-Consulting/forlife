@@ -1965,7 +1965,6 @@ class PurchaseOrderLine(models.Model):
                 ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
                 ('partner_id', '=', rec.order_id.partner_id.id),
                 ('currency_id', '=', rec.order_id.currency_id.id),
-                ('amount_conversion', '=', rec.exchange_quantity),
                 ('product_uom', '=', rec.purchase_uom.id),
                 ('date_start', '<=', today),
                 ('date_end', '>=', today)
