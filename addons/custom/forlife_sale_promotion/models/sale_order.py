@@ -86,7 +86,7 @@ class SaleOrder(models.Model):
                 # rec.promotion_ids = [Command.clear()]
                 for promotion_item in rec.promotion_ids:
                     if not promotion_item.is_handle:
-                        rec.promotion_ids.unlink(promotion_item.id)
+                        rec.promotion_ids = Command.unlink(promotion_item.id)
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
                     text = re.compile('<.*?>')
