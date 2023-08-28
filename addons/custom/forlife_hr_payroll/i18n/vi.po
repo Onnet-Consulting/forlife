@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-25 01:42+0000\n"
-"PO-Revision-Date: 2023-08-25 01:42+0000\n"
+"POT-Creation-Date: 2023-08-28 07:58+0000\n"
+"PO-Revision-Date: 2023-08-28 07:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -120,36 +120,42 @@ msgstr "Tài sản"
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhtn_ct
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhtn_ct
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhtn_ct
 msgid "BHTN Công ty chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhtn_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhtn_nld
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhtn_nld
 msgid "BHTN NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhxh_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhxh_nld
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhxh_nld
 msgid "BHXH NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhxh_bhbnn_tnld_ct
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhxh_bhbnn_tnld_ct
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhxh_bhbnn_tnld_ct
 msgid "BHXH+BHBNN-TNLĐ Công ty chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhyt_ct
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhyt_ct
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhyt_ct
 msgid "BHYT Công ty chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhyt_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhyt_nld
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhyt_nld
 msgid "BHYT NLĐ chi trả"
 msgstr ""
 
@@ -201,6 +207,11 @@ msgstr "Đã hủy"
 #, python-format
 msgid "Cancelled Posting"
 msgstr "Hủy bút toán"
+
+#. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_view_form
+msgid "Chi tiết tổng"
+msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_purpose__code
@@ -304,6 +315,7 @@ msgstr "Ngày tạo"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__create_uid
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__create_uid
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__create_uid
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__create_uid
 msgid "Created by"
 msgstr "Tạo bởi"
 
@@ -324,6 +336,7 @@ msgstr "Tạo bởi"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__create_date
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__create_date
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__create_date
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
@@ -349,29 +362,39 @@ msgid "Credit partner by employee"
 msgstr "Tạo liên hệ từ nhân viên"
 
 #. module: forlife_hr_payroll
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_bhxh_bhbnn_tnld_cn
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhxh_bhbnn_tnld_cn
 msgid "Công nợ BHTN NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_bhxh_cn
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhxh_cn
 msgid "Công nợ BHXH NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_bhyt_cn
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhyt_cn
 msgid "Công nợ BHYT NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_cdp_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_cdp_nld
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_cdp_nld
 msgid "Công đoàn phí NLĐ nộp"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_cdp_ct
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_cdp_ct
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_cdp_ct
 msgid "Công đoàn phí công ty nộp"
 msgstr ""
 
@@ -449,6 +472,7 @@ msgstr "Mô tả"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__display_name
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__display_name
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__display_name
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -560,6 +584,7 @@ msgstr "Nhóm"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__id
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__id
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__id
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__id
 msgid "ID"
 msgstr ""
 
@@ -615,6 +640,7 @@ msgstr ""
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_kq
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_kq
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_kq
 msgid "Ký quỹ"
 msgstr ""
 
@@ -635,6 +661,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry____last_update
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income____last_update
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log____last_update
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard____last_update
 msgid "Last Modified on"
 msgstr "Ngày cập nhật"
 
@@ -655,6 +682,7 @@ msgstr "Ngày cập nhật"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__write_uid
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__write_uid
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__write_uid
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Cập nhật bởi"
 
@@ -675,6 +703,7 @@ msgstr "Cập nhật bởi"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_tc_entry__write_date
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__write_date
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__write_date
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__write_date
 msgid "Last Updated on"
 msgstr "Ngày cập nhật"
 
@@ -711,6 +740,7 @@ msgstr "Số lượng bút toán"
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_bhxh_level
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_bhxh_level
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_bhxh_level
 msgid "Mức BHXH"
 msgstr ""
 
@@ -732,6 +762,11 @@ msgstr "Ghi chú"
 
 #. module: forlife_hr_payroll
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.error_log_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_arrears_id_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_backlog_id_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_main_id_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_supplementary_id_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_total_income_id_view_form
 msgid "OK"
 msgstr "Xác nhận"
 
@@ -799,12 +834,14 @@ msgstr ""
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_pds
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_pds
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_pds
 msgid "Phạt doanh số"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_pvp
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_pvp
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_pvp
 msgid "Phạt vi phạm"
 msgstr ""
 
@@ -1042,12 +1079,18 @@ msgid "State"
 msgstr "Trạng thái"
 
 #. module: forlife_hr_payroll
+#: model:ir.model,name:forlife_hr_payroll.model_summary_popup_wizard
+msgid "Summary popup wizard"
+msgstr "Chi tiết tổng"
+
+#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__supplementary_ids
 msgid "Supplementary"
 msgstr "Truy thu NLĐ"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_slns
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_slns
 msgid "Số lượng nhân sự"
 msgstr ""
 
@@ -1069,6 +1112,7 @@ msgstr ""
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_tkdp
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tkdp
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tkdp
 msgid "TKDP"
 msgstr ""
 
@@ -1145,11 +1189,13 @@ msgstr ""
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tncn
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_tncn
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tncn
 msgid "Thuế TNCN NLĐ nộp"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tl
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tl
 msgid "Thực lĩnh"
 msgstr ""
 
@@ -1183,41 +1229,48 @@ msgstr "Tổng thu nhập"
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_ttbh
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_ttbh
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_ttbh
 msgid "Truy thu BH vào lương"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_ttl
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_ttl
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_ttl
 msgid "Truy thu lương"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_ttpc
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_ttpc
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_ttpc
 msgid "Truy thu phụ cấp"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_tthh
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tthh
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tthh
 msgid "Trừ TTHH"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_dpfm
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_dpfm
 msgid "Trừ chi phí đồng phục FM"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_thl
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_thl
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_thl
 msgid "Trừ hàng lỗi"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_tk
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tk
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tk
 msgid "Trừ khác"
 msgstr ""
 
@@ -1236,28 +1289,38 @@ msgstr "Loại"
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__x_tu
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tu
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tu
 msgid "Tạm ứng"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tbh_ct
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_tbh_ct
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tbh_ct
 msgid "TỔNG CHI PHÍ BH Công ty chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tbh_nld
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__x_tbh_nld
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tbh_nld
 msgid "TỔNG CHI PHÍ BH NLĐ chi trả"
 msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_ttn
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_ttn
 msgid "Tổng thu nhập"
 msgstr ""
 
 #. module: forlife_hr_payroll
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__amount
+msgid "Tổng tiền"
+msgstr ""
+
+#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_main__x_tt
+#: model:ir.model.fields,field_description:forlife_hr_payroll.field_summary_popup_wizard__x_tt
 msgid "Tổng trừ"
 msgstr ""
 
@@ -1382,8 +1445,18 @@ msgid "salary_accounting_tree"
 msgstr ""
 
 #. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_arrears_id_view_form
+msgid "salary_arrears_id_form"
+msgstr ""
+
+#. module: forlife_hr_payroll
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_arrears_view_tree
 msgid "salary_arrears_tree"
+msgstr ""
+
+#. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_backlog_id_view_form
+msgid "salary_backlog_id_form"
 msgstr ""
 
 #. module: forlife_hr_payroll
@@ -1407,6 +1480,11 @@ msgid "salary_record_form"
 msgstr ""
 
 #. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_main_id_view_form
+msgid "salary_record_main_id_form"
+msgstr ""
+
+#. module: forlife_hr_payroll
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_record_main_view_tree
 msgid "salary_record_main_tree"
 msgstr ""
@@ -1427,8 +1505,18 @@ msgid "salary_record_type_tree"
 msgstr ""
 
 #. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_supplementary_id_view_form
+msgid "salary_supplementary_id_form"
+msgstr ""
+
+#. module: forlife_hr_payroll
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_supplementary_view_tree
 msgid "salary_supplementary_tree"
+msgstr ""
+
+#. module: forlife_hr_payroll
+#: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.salary_total_income_id_view_form
+msgid "salary_total_income_id_form"
 msgstr ""
 
 #. module: forlife_hr_payroll
