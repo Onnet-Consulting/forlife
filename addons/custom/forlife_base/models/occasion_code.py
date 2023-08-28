@@ -8,7 +8,13 @@ class OccasionCode(models.Model):
     company_id = fields.Many2one('res.company', string='Công ty')
     name = fields.Char('Occasion name')
     group_id = fields.Many2one('occasion.group', string='Occasion group')
-    code = fields.Char('Occasion code')
+    code = fields.Char('Occasion code', readonly=True)
+
+    @api.model_create_single
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res.code = '%s%s'%(res.group_id.name, self.env['ir.sequence'].next_by_code('occasion.code.seq'))
+        return res
 
 
 class OccasionGroup(models.Model):

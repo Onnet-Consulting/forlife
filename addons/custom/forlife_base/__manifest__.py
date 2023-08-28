@@ -22,6 +22,7 @@
     'auto_install': True,
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_sequence.xml',
         'views/asset_location_view.xml',
         'views/occasion.xml',
         'data/mail_activity_type_data.xml',
