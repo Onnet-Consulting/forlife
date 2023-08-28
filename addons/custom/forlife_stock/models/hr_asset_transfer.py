@@ -27,8 +27,11 @@ class HrAssetTransfer(models.Model):
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
-    location_id = fields.Many2one('stock.location', string='Kho xuất', check_company=True)
-    location_dest_id = fields.Many2one('stock.location', string='Kho nhập', check_company=True)
+    # location_id = fields.Many2one('stock.location', string='Kho xuất', check_company=True)
+    # location_dest_id = fields.Many2one('stock.location', string='Kho nhập', check_company=True)
+    export_department_id = fields.Many2one('hr.department', string='Bộ phận xuất', domain="[('company_id', '=', company_id)]")
+    import_department_id = fields.Many2one('hr.department', string='Bộ phận nhập',
+                                           domain="[('company_id', '=', company_id)]")
 
     @api.model
     def default_get(self, default_fields):
