@@ -520,7 +520,7 @@ class SummaryAccountMovePos(models.Model):
 
     def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         self.collect_invoice_to_bkav_end_day(*args, **kwargs)
-        # self.create_an_invoice_bkav()
+        self.create_an_invoice_bkav()
 
     def cronjob_get_all_invoice_info(self):
         synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', True)])
@@ -860,21 +860,21 @@ class SummaryAccountMovePos(models.Model):
         synthetic_lines = self.env['synthetic.account.move.pos.line'].search([
             ('remaining_quantity', '>', 0),
             ('synthetic_id', '!=', False),
-            #('exists_bkav', '=', True)
-        ], order="invoice_date asc, id desc")
+            ('exists_bkav', '=', True)
+        ], order="invoice_date desc, id desc")
 
         synthetic_line_discounts = self.env['synthetic.account.move.pos.line.discount'].search([
             ('remaining_amount_total', '<', 0),
             ('bkav_synthetic_id', '!=', False),
-            #('exists_bkav', '=', True)
-        ], order="invoice_date asc, id desc")
+            ('exists_bkav', '=', True)
+        ], order="invoice_date desc, id desc")
 
 
         synthetic_accumulates = self.env['synthetic.accumulate.point'].search([
             ('remaining_total_point', '>', 0),
             ('bkav_synthetic_id', '!=', False),
-            #('exists_bkav', '=', True)
-        ], order="invoice_date asc, id desc")
+            ('exists_bkav', '=', True)
+        ], order="invoice_date desc, id desc")
 
         return synthetic_lines, synthetic_line_discounts, synthetic_accumulates
 
