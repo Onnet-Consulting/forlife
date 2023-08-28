@@ -45,7 +45,6 @@
                                 <field name="description"/>
                                 <field name="tax_id" widget="many2many_tags"/>
                                 <field name="promotion_type" required="1"/>
-                                <field name="is_handle" default="1"/>
                             </tree>
                         </field>
                      </page>
