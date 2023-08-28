@@ -2205,6 +2205,7 @@ class PurchaseOrderLine(models.Model):
             vals.update({
                 'exchange_quantity': self.exchange_quantity,
                 'quantity': quantity,
+                'promotions': self.free_good,
             })
         if self.asset_code:
             vals.update({
