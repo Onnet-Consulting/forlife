@@ -42,7 +42,7 @@ class SummaryAccountMovePos(models.Model):
     def get_line_discount_detail(self, line):
         item = {
             "line_pk": line.get_pk_synthetic_line_discount(),
-            "price_unit": line.price_subtotal,
+            # "price_unit": line.price_subtotal,
             "price_unit_incl": line.price_subtotal_incl,
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
             "promotion_type": line.promotion_type,
@@ -64,7 +64,7 @@ class SummaryAccountMovePos(models.Model):
                 line_pk = f'{item["promotion_type"]}_{item["line_pk"]}'
                 if discount_items.get(line_pk):
                     row = discount_items[line_pk]
-                    row["price_unit"] += item["price_unit"]
+                    # row["price_unit"] += item["price_unit"]
                     row["price_unit_incl"] += item["price_unit_incl"]
                     row["amount_total"] += item["amount_total"]
                 else:
@@ -359,14 +359,14 @@ class SummaryAccountMovePos(models.Model):
         model_line = self.env['summary.adjusted.invoice.pos.line']
 
         vals_list = []
+        adjusted_vals_list = []
         for store_id, lines in records.items():
             store = store_data[store_id]
             company_id = company_ids[store_id]
-            i = 0
             for k, v in lines.items():
                 res_line = model_line.create(v)
                 pos_license_bkav = self.env['ir.sequence'].next_by_code('pos.license.bkav')
-                vals_list.append({
+                item = {
                     'code': pos_license_bkav,
                     'company_id': company_id.id,
                     'store_id': store.id,
@@ -374,10 +374,15 @@ class SummaryAccountMovePos(models.Model):
                     'invoice_date': date.today(),
                     'line_ids': res_line.ids,
                     'source_invoice': k if k != 'adjusted' else None,
-                })
-                i += 1
+                }
+                if k == 'adjusted':
+                    adjusted_vals_list.append(item)
+                else:
+                    vals_list.append(item)
+
         res = model.create(vals_list)
-        return res
+        adjusted_not_source = model.create(adjusted_vals_list)
+        return res, adjusted_not_source
 
 
     def handle_invoice_balance_clearing(
@@ -538,6 +543,7 @@ class SummaryAccountMovePos(models.Model):
         data,
         synthetics,
         adjusteds,
+        adjusted_not_source,
         synthetic_line_discounts,
         synthetic_accumulates,
         store_data,
@@ -554,6 +560,7 @@ class SummaryAccountMovePos(models.Model):
             accumulate_point = item["accumulate_point"]
             store_synthetics = synthetics.filtered(lambda r: r.store_id.id == store_id)
             store_adjusteds = adjusteds.filtered(lambda r: r.store_id.id == store_id)
+            store_not_adjusteds = adjusted_not_source.filtered(lambda r: r.store_id.id == store_id)
             store = store_data[store_id]
             company_id = company_ids[store_id]
 
@@ -581,8 +588,8 @@ class SummaryAccountMovePos(models.Model):
                                     adjusted_amount_total = line.adjusted_amount_total + v_item["amount_total"]
                                     
                                     v_item_copy["price_unit_incl"] = v_item_copy["amount_total"]
-                                    tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
-                                    v_item_copy["price_unit"] = tax_results["total_excluded"]
+                                    # tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
+                                    # v_item_copy["price_unit"] = tax_results["total_excluded"]
 
                                     if store_adjusted:
                                         v_item_copy["bkav_adjusted_id"] = store_adjusted.id
@@ -617,8 +624,8 @@ class SummaryAccountMovePos(models.Model):
                                     adjusted_amount_total = line.adjusted_amount_total + abs(line.remaining_amount_total)
                                     v_item_copy = v_item.copy()
                                     v_item_copy["price_unit_incl"] = v_item_copy["amount_total"] = abs(line.remaining_amount_total)
-                                    tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
-                                    v_item_copy["price_unit"] = tax_results["total_excluded"]
+                                    # tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
+                                    # v_item_copy["price_unit"] = tax_results["total_excluded"]
 
                                     if store_adjusted:
                                         v_item_copy["bkav_adjusted_id"] = store_adjusted.id
@@ -650,14 +657,13 @@ class SummaryAccountMovePos(models.Model):
                                 break
 
                         if v_item["amount_total"] > 0:
-                            not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                             v_item_copy = v_item.copy()
                             v_item_copy["price_unit_incl"] = v_item_copy["amount_total"]
-                            tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
-                            v_item_copy["price_unit"] = tax_results["total_excluded"]
+                            # tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
+                            # v_item_copy["price_unit"] = tax_results["total_excluded"]
 
-                            if not_adjusted:
-                                v_item_copy["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                            if store_not_adjusteds:
+                                v_item_copy["bkav_adjusted_id"] = store_not_adjusteds[0].id if store_not_adjusteds else None
                                 remaining_discounts.append(v_item_copy)
                             else:
                                 if vals_list.get('adjusted'):
@@ -677,14 +683,13 @@ class SummaryAccountMovePos(models.Model):
                                         'adjusted_discount_ids': [(0,0, v_item_copy)],
                                     }
                     else:
-                        not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                         v_item_copy = v_item.copy()
                         v_item_copy["price_unit_incl"] = v_item_copy["amount_total"]
-                        tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
-                        v_item_copy["price_unit"] = tax_results["total_excluded"]
+                        # tax_results = line.get_amount_total(abs(v_item_copy["amount_total"]))
+                        # v_item_copy["price_unit"] = tax_results["total_excluded"]
                             
-                        if not_adjusted:
-                            v_item_copy["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                        if store_not_adjusteds:
+                            v_item_copy["bkav_adjusted_id"] = store_not_adjusteds[0].id if store_not_adjusteds else None
                             remaining_discounts.append(v_item_copy)
                         else:
                             if vals_list.get('adjusted'):
@@ -794,14 +799,13 @@ class SummaryAccountMovePos(models.Model):
                             break
 
                     if accumulate_point < 0:
-                        not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                         accumulate_item = {
                             "total_point": accumulate_point,
                             "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
                             "store_id": store_id,
                         }
-                        if not_adjusted:
-                            accumulate_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                        if store_not_adjusteds:
+                            accumulate_item["bkav_adjusted_id"] = store_not_adjusteds[0].id if store_not_adjusteds else None
                             remaining_accumulates.append(accumulate_item)
                         else:
                             if vals_list.get('adjusted'):
@@ -821,14 +825,13 @@ class SummaryAccountMovePos(models.Model):
                                     'accumulate_ids': [(0,0, accumulate_item)]
                                 }
                 else:
-                    not_adjusted = store_adjusteds.filtered(lambda r: r.source_invoice == False)
                     accumulate_item = {
                         "total_point": accumulate_point,
                         "adjusted_ids": store_adjusteds.ids if store_adjusteds else [],
                         "store_id": store_id,
                     }
-                    if not_adjusted:
-                        accumulate_item["bkav_adjusted_id"] = not_adjusted[0].id if not_adjusted else None
+                    if store_not_adjusteds:
+                        accumulate_item["bkav_adjusted_id"] = store_not_adjusteds[0].id if store_not_adjusteds else None
                         remaining_accumulates.append(accumulate_item)
                     else:
                         if vals_list.get('adjusted'):
@@ -912,7 +915,6 @@ class SummaryAccountMovePos(models.Model):
                     for line_pk, item in refund_card_grade_focus.items():
                         if card_grade_focus.get(line_pk):
                             row = card_grade_focus[line_pk]
-                            row["price_unit"] += item["price_unit"]
                             row["price_unit_incl"] += item["price_unit_incl"]
                             row["amount_total"] += item["amount_total"]
                             card_grade_focus[line_pk] = row
@@ -1001,12 +1003,13 @@ class SummaryAccountMovePos(models.Model):
                                 matching_records[store_id] = [v]
 
         synthetics = self.collect_invoice_balance_clearing(matching_records, store_data, company_ids, limit)
-        adjusteds = self.collect_invoice_difference(remaining_records, store_data, company_ids)
+        adjusteds, adjusted_not_source = self.collect_invoice_difference(remaining_records, store_data, company_ids)
 
         self.handle_accumulate_point_focus_card(
             data, 
             synthetics, 
             adjusteds, 
+            adjusted_not_source,
             synthetic_line_discounts, 
             synthetic_accumulates, 
             store_data, 
@@ -1066,7 +1069,7 @@ class SummaryAccountMovePosLineDiscount(models.Model):
     line_pk = fields.Char('Line primary key')
     summary_line_id = fields.Many2one('summary.account.move.pos.line')
     summary_id = fields.Many2one('summary.account.move.pos', related="summary_line_id.summary_id")
-    price_unit = fields.Float('Đơn giá')
+    price_unit = fields.Float('Đơn giá', compute="_compute_amount")
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
@@ -1085,12 +1088,14 @@ class SummaryAccountMovePosLineDiscount(models.Model):
     summary_ids = fields.Many2many('summary.account.move.pos', string='Hóa đơn bán', relation='summary_account_move_pos_card_point_line_discount_rel')
     store_id = fields.Many2one('store')
 
-    @api.depends('tax_ids', 'amount_total', 'price_unit')
+    @api.depends('tax_ids', 'amount_total', 'price_unit_incl')
     def _compute_amount(self):
         for r in self:
-            # if r.tax_ids:
-            #     tax_results = r.tax_ids.compute_all(r.price_unit_incl)
-            #     r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
-            # else:
-            #     r.tax_amount = 0
-            r.tax_amount = r.amount_total - r.price_unit
+            if r.tax_ids:
+                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+                r.price_unit = tax_results["total_excluded"]
+            else:
+                r.tax_amount = 0
+                r.price_unit = r.price_unit_incl
+            # r.tax_amount = r.amount_total - r.price_unit
