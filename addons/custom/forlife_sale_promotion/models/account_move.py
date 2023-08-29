@@ -39,7 +39,7 @@ class AccountMove(models.Model):
         if self.promotion_ids:
             line_ids = []
             journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
-            for pr in self.promotion_ids:
+            for pr in self.promotion_ids.filtered(lambda x: x.promotion_type not in ('out_point','in_point')):
                 account_debit_id = False
                 account_credit_id = False
                 line_allow = False

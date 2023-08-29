@@ -46,3 +46,4 @@ accounting_salary_tc_entry,salary.tc.entry accounting,model_salary_tc_entry,acco
 base_group_system_salary_tc_entry,salary.tc.entry base.group_user,model_salary_tc_entry,base.group_system,1,1,1,1
 payroll_department_in_charge,department.in.charge,model_department_in_charge,base.group_user,1,0,0,0
 base_group_system_payroll_department_in_charge,department.in.charge manager,model_department_in_charge,base.group_system,1,1,1,1
+payroll_summary_popup_wizard,summary.popup.wizard,model_summary_popup_wizard,base.group_user,1,0,0,0
