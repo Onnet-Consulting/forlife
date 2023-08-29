@@ -210,6 +210,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 OrderCurrent.detelte_history_point = true
                 this.env.pos.selectedOrder.total_order_line_point_used = total_point_used/1000;
                 this.env.pos.selectedOrder.total_order_line_redisual = points_of_customer - this.env.pos.selectedOrder.total_order_line_point_used
+                this.env.pos.get_order()._updateActivatedPromotionPrograms();
             }
         }
 
