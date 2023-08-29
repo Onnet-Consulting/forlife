@@ -150,7 +150,7 @@ PromotionButton.template = 'PromotionButton';
 ProductScreen.addControlButton({
     component: PromotionButton,
     condition: function() {
-        return this.env.pos.get_order().getActivatedPrograms().length > 0;
+        return this.env.pos.get_order().getPotentialProgramsToSelect().length > 0;
     }
 });
 
