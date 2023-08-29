@@ -88,7 +88,7 @@ class ReportNum3(models.TransientModel):
                 group by sm.product_id, src_warehouse_id, dest_warehouse_id
             """
 
-            wh_condition = '<> 0'
+            wh_condition = '> 0'
 
         else:
             ton_dat_so_query = f"""
