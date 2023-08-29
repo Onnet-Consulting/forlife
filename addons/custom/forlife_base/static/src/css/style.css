@@ -10,11 +10,3 @@
 .padding-form-custom {
     padding: 0 0.5em;
 }
-
-.set-width-custom [data-name$='_id'] {
-    width: 150px !important;
-}
-
-.set-width-custom [data-name^='x_'] {
-    width: 130px !important;
-}

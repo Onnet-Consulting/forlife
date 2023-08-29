@@ -14,8 +14,8 @@
                     <field name="asset_id"/>
                     <field name="production_id"/>
                     <field name="occasion_code_id"/>
-                    <field name="x_ttn" optional="show" sum="Total"/>
-                    <field name="note" optional="show" sum="Total"/>
+                    <field name="x_ttn" optional="show" width="150px"/>
+                    <field name="note" optional="show"/>
                 </tree>
             </field>
         </record>

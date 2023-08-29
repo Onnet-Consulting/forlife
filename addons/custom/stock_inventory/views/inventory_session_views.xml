@@ -8,24 +8,24 @@
             <field name="arch" type="xml">
                 <tree string="inventory_session_line_tree">
                     <field name="inv_session_id"/>
-                    <field name="product_id"/>
-                    <field name="kiem_ke_thuc_te" sum="Tổng"/>
-                    <field name="phien_dem_bo_sung" sum="Tổng"/>
-                    <field name="hang_khong_kiem_dem" sum="Tổng"/>
-                    <field name="tui_ban_hang" sum="Tổng"/>
-                    <field name="hang_khong_tem" sum="Tổng"/>
-                    <field name="hang_khong_cheat_duoc" sum="Tổng"/>
-                    <field name="hang_loi_chua_duyet" sum="Tổng"/>
-                    <field name="hang_loi_da_duyet" sum="Tổng"/>
-                    <field name="them1" sum="Tổng"/>
-                    <field name="bot1" sum="Tổng"/>
-                    <field name="cong_hang_ban_ntl_chua_kiem" sum="Tổng"/>
-                    <field name="tru_hang_ban_da_kiem" sum="Tổng"/>
-                    <field name="bo_sung_hang_chua_cheat" sum="Tổng"/>
-                    <field name="tru_hang_kiem_dup" sum="Tổng"/>
-                    <field name="them2" sum="Tổng"/>
-                    <field name="bot2" sum="Tổng"/>
-                    <field name="ghi_chu"/>
+                    <field name="product_id" width="250px"/>
+                    <field name="kiem_ke_thuc_te" sum="Tổng" width="150px"/>
+                    <field name="phien_dem_bo_sung" sum="Tổng" width="150px"/>
+                    <field name="hang_khong_kiem_dem" sum="Tổng" width="250px"/>
+                    <field name="tui_ban_hang" sum="Tổng" width="150px"/>
+                    <field name="hang_khong_tem" sum="Tổng" width="150px"/>
+                    <field name="hang_khong_cheat_duoc" sum="Tổng" width="250px"/>
+                    <field name="hang_loi_chua_duyet" sum="Tổng" width="200px"/>
+                    <field name="hang_loi_da_duyet" sum="Tổng" width="200px"/>
+                    <field name="them1" sum="Tổng" width="150px"/>
+                    <field name="bot1" sum="Tổng" width="150px"/>
+                    <field name="cong_hang_ban_ntl_chua_kiem" sum="Tổng" width="280px"/>
+                    <field name="tru_hang_ban_da_kiem" sum="Tổng" width="200px"/>
+                    <field name="bo_sung_hang_chua_cheat" sum="Tổng" width="250px"/>
+                    <field name="tru_hang_kiem_dup" sum="Tổng" width="150px"/>
+                    <field name="them2" sum="Tổng" width="150px"/>
+                    <field name="bot2" sum="Tổng" width="150px"/>
+                    <field name="ghi_chu" width="150px"/>
                     <field name="updated"/>
                 </tree>
             </field>
