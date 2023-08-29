@@ -420,7 +420,7 @@ class AccountMove(models.Model):
         for line in purchase_order_id.order_line:
             stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_to_invoice - x.qty_refunded > 0):
-                data_line = purchase_order_id._prepare_invoice_normal(line, move_id)
+                data_line = line.order_id._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
