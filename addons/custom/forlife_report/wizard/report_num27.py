@@ -42,8 +42,8 @@ class ReportNum27(models.TransientModel):
                 , ROW_NUMBER () OVER (PARTITION BY t4.picking_id ORDER BY t4.id) num
                 , t5.barcode as barcode
                 , COALESCE(t6.name->>'vi_VN', t6.name->>'en_US') AS ten_sp
-                , attr.attrs->>'{attr_value.get('mau_sac', '')}' AS mau
-                , attr.attrs->>'{attr_value.get('size', '')}' AS size
+                , attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 AS mau
+                , attr.attrs->'{attr_value.get('size', '')}' ->> 0 AS size
                 , t4.product_uom_qty as sl_yc
                 , COALESCE(t7.name->>'vi_VN', t7.name->>'en_US') as dvt
                 , '' as sl_xn
