@@ -270,18 +270,18 @@
                         <button name="btn_export_inventory_line" states="waiting,first_inv,second_inv,confirm,done" type="object" class="oe_highlight margin_btn" string="Xuất Excel"/>
                         <field name="line_ids" nolabel="1" readonly="1">
                             <tree editable="bottom">
-                                <field name="product_id"/>
-                                <field name="barcode"/>
-                                <field name="location_id"/>
+                                <field name="product_id" x_width="250px"/>
+                                <field name="barcode" x_width="150px"/>
+                                <field name="location_id" x_width="250px"/>
                                 <field name="inventory_date" optional="hide" width="0.8"/>
                                 <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
                                 <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
-                                <field name="theoretical_qty" force_save="1" optional="show" string="Tồn phần mềm"/>
-                                <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1"/>
-                                <field name="difference_qty1" force_save="1" optional="show"/>
-                                <field name="product_qty" force_save="1" string="SL xác nhận lần 2"/>
-                                <field name="difference_qty" force_save="1" optional="show"/>
-                                <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
+                                <field name="theoretical_qty" force_save="1" optional="show" string="Tồn phần mềm" x_width="150px"/>
+                                <field name="x_first_qty" force_save="1" string="SL xác nhận lần 1" x_width="200px"/>
+                                <field name="difference_qty1" force_save="1" optional="show" x_width="150px"/>
+                                <field name="product_qty" force_save="1" string="SL xác nhận lần 2" x_width="200px"/>
+                                <field name="difference_qty" force_save="1" optional="show" x_width="150px"/>
+                                <field name="product_uom_id" groups="uom.group_uom" force_save="1" x_width="150px"/>
                                 <field name="state" invisible="1"/>
                             </tree>
                         </field>

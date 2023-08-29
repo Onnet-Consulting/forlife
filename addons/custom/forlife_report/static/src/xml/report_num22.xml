@@ -14,7 +14,7 @@
                     <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-detail" t-att-id="line.num - 1">
-                            <td><t t-esc="line.num"/></td>
+                            <td class="index-report"><t t-esc="line.num"/></td>
                             <td><t t-esc="line.chi_nhanh"/></td>
                             <td><t t-esc="line.ngay"/></td>
                             <td><t t-esc="line.phien_bh"/></td>

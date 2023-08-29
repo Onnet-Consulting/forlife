@@ -13,7 +13,7 @@
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
+                        <td class="index-report"><t t-esc="line.num"/></td>
                         <td><t t-esc="line.product_line"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.revenue, 0)"/></td>

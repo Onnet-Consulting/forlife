@@ -39,10 +39,10 @@
                     </t>
                     <t t-else=""/>
                     <tr>
-                        <td><t t-esc="line.stt"/></td>
+                        <td class="index-report"><t t-esc="line.stt"/></td>
                         <td><t t-esc="line.kho"/></td>
                         <td><t t-esc="line.dia_diem"/></td>
-                        <td><t t-esc="line.ma_sp"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_sp"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.don_vi"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_ban, 0)"/></td>

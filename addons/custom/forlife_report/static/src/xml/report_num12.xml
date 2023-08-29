@@ -15,7 +15,7 @@
                     <t t-set="num" t-value="1"/>
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-detail" t-att-id="num - 1">
-                            <td><t t-esc="num"/></td>
+                            <td class="index-report"><t t-esc="num"/></td>
                             <td><t t-esc="line.store_name"/></td>
                             <td><t t-esc="line.rank_name"/></td>
                             <td class="right"><t t-esc="format_decimal(line.total_customer, 0)"/></td>
@@ -40,7 +40,7 @@
                     <t t-set="num" t-value="1"/>
                     <t t-foreach="data" t-as="line">
                         <tr>
-                            <td><t t-esc="num"/></td>
+                            <td class="index-report"><t t-esc="num"/></td>
                             <td><t t-esc="line.store_name"/></td>
                             <td><t t-esc="line.customer_info[0]"/></td>
                             <td><t t-esc="line.customer_info[1]"/></td>

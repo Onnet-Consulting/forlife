@@ -13,7 +13,7 @@
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="num"/></td>
+                        <td class="index-report"><t t-esc="num"/></td>
                         <td><t t-esc="line.store_name"/></td>
                         <td><t t-esc="line.customer_info[0]"/></td>
                         <td><t t-esc="line.customer_info[1]"/></td>

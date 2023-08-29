@@ -12,13 +12,13 @@
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
+                        <td class="index-report"><t t-esc="line.num"/></td>
                         <td><t t-esc="line.store_name"/></td>
                         <td><t t-esc="line.department"/></td>
                         <td><t t-esc="line.date"/></td>
                         <td><t t-esc="line.invoice_num"/></td>
                         <td><t t-esc="line.customer_name"/></td>
-                        <td><t t-esc="line.voucher"/></td>
+                        <td class="column_nowrap"><t t-esc="line.voucher"/></td>
                         <td><t t-esc="line.program_name"/></td>
                         <td><t t-esc="line.start_date"/></td>
                         <td><t t-esc="line.end_date"/></td>
