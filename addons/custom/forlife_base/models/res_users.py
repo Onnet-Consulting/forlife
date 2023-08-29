@@ -60,7 +60,7 @@ class ResUsers(models.Model):
     @api.model
     def get_store(self):
         if not self.store_ids:
-            store_ids = self.store_ids.search([]).mapped('id')
+            store_ids = self.store_ids.with_context(active_test=False).search([]).mapped('id')
         else:
             store_ids = self.store_ids.mapped('id')
         return store_ids
