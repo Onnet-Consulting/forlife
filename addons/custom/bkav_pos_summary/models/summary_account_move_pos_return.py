@@ -41,7 +41,7 @@ class SummaryAccountMovePosReturn(models.Model):
     def get_line_discount_detail(self, line):
         item = {
             "line_pk": line.get_pk_synthetic_line_discount(),
-            "price_unit": line.price_subtotal,
+            # "price_unit": line.price_subtotal,
             "price_unit_incl": line.price_subtotal_incl,
             "tax_ids": line.tax_ids_after_fiscal_position.ids,
             "promotion_type": line.promotion_type,
@@ -61,7 +61,7 @@ class SummaryAccountMovePosReturn(models.Model):
                 line_pk = f'{item["promotion_type"]}_{item["line_pk"]}'
                 if discount_items.get(line_pk):
                     row = discount_items[line_pk]
-                    row["price_unit"] += item["price_unit"]
+                    # row["price_unit"] += item["price_unit"]
                     row["price_unit_incl"] += item["price_unit_incl"]
                     row["amount_total"] += item["amount_total"]
                 else:
@@ -293,7 +293,7 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
     line_pk = fields.Char('Line primary key')
     summary_line_id = fields.Many2one('summary.account.move.pos.return.line')
     return_id = fields.Many2one('summary.account.move.pos.return', related="summary_line_id.return_id")
-    price_unit = fields.Float('Đơn giá')
+    price_unit = fields.Float('Đơn giá', compute="_compute_amount")
     price_unit_incl = fields.Float('Đơn giá sau thuế')
     tax_ids = fields.Many2many('account.tax', string='Thuế')
     tax_amount = fields.Monetary('Tổng tiền thuế', compute="_compute_amount")
@@ -311,14 +311,16 @@ class SummaryAccountMovePosReturnLineDiscount(models.Model):
     invoice_ids = fields.Many2many('pos.order', string='Hóa đơn')
 
 
-    @api.depends('tax_ids', 'amount_total', 'price_unit')
+    @api.depends('tax_ids', 'amount_total', 'price_unit_incl')
     def _compute_amount(self):
         for r in self:
-            # if r.tax_ids:
-            #     tax_results = r.tax_ids.compute_all(r.price_unit_incl)
-            #     r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"] 
-            # else:
-            #     r.tax_amount = 0
+            if r.tax_ids:
+                tax_results = r.tax_ids.compute_all(r.price_unit_incl)
+                r.tax_amount = tax_results["total_included"] - tax_results["total_excluded"]
+                r.price_unit = tax_results["total_excluded"]
+            else:
+                r.tax_amount = 0
+                r.price_unit = r.price_unit_incl
 
-            r.tax_amount = r.amount_total - r.price_unit
+            # r.tax_amount = r.amount_total - r.price_unit
 

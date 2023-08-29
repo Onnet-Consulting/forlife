@@ -165,12 +165,12 @@ class MainController(http.Controller):
                         for picking_id in webhook_value_id.order_id.picking_ids:
                             if picking_id.state != 'done':
                                 picking_id.action_cancel()
-                            else:
-                                if picking_id.company_id.id == webhook_value_id.order_id.company_id.id:
-                                    try:
-                                        picking_id.create_invoice_out_refund()
-                                    except Exception as e:
-                                        picking_id.message_post(body=str(e))
+                            # else:
+                            #     if picking_id.company_id.id == webhook_value_id.order_id.company_id.id:
+                            #         try:
+                            #             picking_id.create_invoice_out_refund()
+                            #         except Exception as e:
+                            #             picking_id.message_post(body=str(e))
 
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
@@ -200,12 +200,12 @@ class MainController(http.Controller):
                             for picking_id in odoo_order.picking_ids:
                                 if picking_id.state != 'done':
                                     picking_id.action_cancel()
-                                else:
-                                    if picking_id.company_id.id == odoo_order.company_id.id:
-                                        try:
-                                            picking_id.create_invoice_out_refund()
-                                        except Exception as e:
-                                            picking_id.message_post(body=str(e))
+                                # else:
+                                #     if picking_id.company_id.id == odoo_order.company_id.id:
+                                #         try:
+                                #             picking_id.create_invoice_out_refund()
+                                #         except Exception as e:
+                                #             picking_id.message_post(body=str(e))
 
                         # if odoo_order.picking_ids and 'done' not in odoo_order.picking_ids.mapped('state'):
                         #     for picking_id in odoo_order.picking_ids:

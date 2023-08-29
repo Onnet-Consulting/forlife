@@ -67,6 +67,12 @@ class ProductTemplate(models.Model):
             price = product_id.list_price
         return price
 
+    def get_weight(self):
+        weight = 200
+        if self.weight > 0:
+            weight = self.weight * 1000
+        return weight
+
 
     def synchronized_create_product(self, res):
         if res.check_data_odoo and res.brand_id.id and res.categ_id.category_type_id.x_sync_nhanh:
@@ -83,7 +89,7 @@ class ProductTemplate(models.Model):
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
                     "price": price,
-                    "shippingWeight": res.weight if res.weight > 0 else 200,
+                    "shippingWeight": res.get_weight(),
                     "status": 'New'
                 }]
 
@@ -136,7 +142,7 @@ class ProductTemplate(models.Model):
                 "barcode": res.barcode if res.barcode else '',
                 "importPrice": res.list_price,
                 "price": price,
-                "shippingWeight": res.weight if res.weight > 0 else 200,
+                "shippingWeight": res.get_weight(),
                 "status": status
             }]
             
