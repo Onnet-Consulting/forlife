@@ -24,6 +24,7 @@
                         </group>
                     </group>
                     <group>
+                        <field name="sku_code" placeholder="Sku1,Sku2,Sku3..."/>
                         <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="category_type_id" options="{'no_create': True}"/>
                         <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>

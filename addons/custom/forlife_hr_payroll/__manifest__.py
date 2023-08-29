@@ -58,6 +58,7 @@
         # wizard
         'wizard/import_salary_record_view.xml',
         'wizard/error_log_wizard_view.xml',
+        'wizard/summary_popup_wizard_views.xml',
 
         'views/menuitem.xml',
     ]

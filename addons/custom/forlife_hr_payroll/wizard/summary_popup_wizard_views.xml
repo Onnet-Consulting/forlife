@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="salary_record_main_id_view_form" model="ir.ui.view">
+            <field name="name">salary_record_main_id_view_form</field>
+            <field name="model">summary.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="salary_record_main_id_form">
+                    <sheet>
+                        <group>
+                            <field name="x_ttn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_kq" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tkdp" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_pvp" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tthh" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_thl" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_dpfm" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_pds" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttl" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttpc" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tu" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttbh" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tk" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_level" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_bhbnn_tnld_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhyt_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhtn_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tbh_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhyt_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhtn_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tbh_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_cdp_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_cdp_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tncn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tt" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tl" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_slns" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_total_income_id_view_form" model="ir.ui.view">
+            <field name="name">salary_total_income_id_view_form</field>
+            <field name="model">summary.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="salary_total_income_id_form">
+                    <sheet>
+                        <group>
+                            <field name="x_ttn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_supplementary_id_view_form" model="ir.ui.view">
+            <field name="name">salary_supplementary_id_view_form</field>
+            <field name="model">summary.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="salary_supplementary_id_form">
+                    <sheet>
+                        <group>
+                            <field name="x_bhxh_level" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhyt_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhtn_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tbh_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_bhbnn_tnld_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhyt_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhtn_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tbh_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_cdp_ct" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_cdp_nld" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tncn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_arrears_id_view_form" model="ir.ui.view">
+            <field name="name">salary_arrears_id_view_form</field>
+            <field name="model">summary.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="salary_arrears_id_form">
+                    <sheet>
+                        <group>
+                            <field name="x_kq" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tkdp" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_pvp" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tthh" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_thl" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_dpfm" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_pds" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttl" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttpc" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tu" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_tk" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_cn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhyt_cn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_bhxh_bhbnn_tnld_cn" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="x_ttbh" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_backlog_id_view_form" model="ir.ui.view">
+            <field name="name">salary_backlog_id_view_form</field>
+            <field name="model">summary.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="salary_backlog_id_form">
+                    <sheet>
+                        <group>
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button special="cancel" string="OK" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

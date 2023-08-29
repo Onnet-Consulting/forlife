@@ -99,7 +99,7 @@ class HrAssetTransferLine(models.Model):
 
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
     asset_code_code = fields.Char(related='asset_code.code', string='Mã tài sản')
-    employee_from_id = fields.Many2one('hr.employee', string="Employee From")
+    employee_from_id = fields.Many2one('hr.employee', string="Employee From",  related='asset_code.employee', store=True)
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
     account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From", related='asset_code.dept_code', store=True)
     account_analytic_to_id = fields.Many2one('account.analytic.account', string="Cost Center To")
