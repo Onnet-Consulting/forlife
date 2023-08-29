@@ -323,7 +323,7 @@ class PurchaseRequestLine(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_date = fields.Date(string='Request date', required=True)
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
-    product_uom = fields.Many2one('uom.uom', string='Product uom', required=True)
+    product_uom = fields.Many2one('uom.uom', string='Product uom', related='product_id.uom_id')
     exchange_quantity = fields.Float('Exchange Quantity', required=True, default=1)
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
