@@ -13,6 +13,19 @@
         </field>
     </record>
 
+    <record id="quantity_production_order_search" model="ir.ui.view">
+        <field name="name">quantity.production.order.tree</field>
+        <field name="model">quantity.production.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="production_id" string="Tồn kho lệnh sản xuất" filter_domain="['|', '|', '|', ('production_id.name', 'ilike', self), ('production_id.code', 'ilike', self), ('location_id.name', 'ilike', self), ('location_id.code', 'ilike', self)]"/>
+                <field name="production_id"/>
+                <field name="location_id"/>
+                <field name="product_id"/>
+            </search>
+        </field>
+    </record>
+
     <record id="quantity_production_order_action" model="ir.actions.act_window">
         <field name="name">Tồn kho lệnh sản xuất</field>
         <field name="res_model">quantity.production.order</field>
