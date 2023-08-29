@@ -44,7 +44,7 @@ class ReportNum36(models.TransientModel):
                 case
                     when fp.production_department = 'tu_san_xuat'
                     and fp.machining_id is null then coalesce (aaa2.name->>'vi_VN', aaa2.name->>'en_US')
-                    else coalesce (aaa.name->>'vi_VN', aaa.name->>'en_US')
+                    else rp1.name
                 end as dv_giacong,
                 coalesce (pt.name ->> 'vi_VN', pt.name ->> 'en_US') as ma_thanhpham,
                 coalesce (uu.name->>'vi_VN',
@@ -56,8 +56,8 @@ class ReportNum36(models.TransientModel):
                 forlife_production fp
             join forlife_production_finished_product fpfp on
                 fp.id = fpfp.forlife_production_id
-            left join account_analytic_account aaa on
-                fp.machining_id = aaa.id
+            left join res_partner rp1 on
+                fp.machining_id = rp1.id
             left join account_analytic_account aaa2 on
                 fp.implementation_id = aaa2.id
             left join hr_employee he on

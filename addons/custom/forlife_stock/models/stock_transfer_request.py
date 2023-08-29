@@ -260,7 +260,7 @@ class TransferRequestLine(models.Model):
     _description = 'Transfer Request Line'
 
     product_id = fields.Many2one('product.product', string="Product", required=True, copy=True)
-    uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True)
+    uom_id = fields.Many2one('uom.uom', related='product_id.uom_id', string='Đơn vị')
     location_id = fields.Many2one('stock.location', string="Whs From", required=True)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
     request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True, ondelete='cascade')

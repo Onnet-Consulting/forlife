@@ -36,6 +36,10 @@ class ForlifeOtherInOutRequest(models.Model):
     reject_reason = fields.Text()
     quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
     is_last_transfer = fields.Boolean(string="Lần nhập kho cuối")
+    occasion_id = fields.Many2one('occasion.code', string='Mã vụ việc')
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất',
+                                    domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
 
     @api.model
     def default_get(self, default_fields):
@@ -261,6 +265,8 @@ class ForlifeOtherInOutRequestLine(models.Model):
 
     def _domain_location_id(self):
         return "[('reason_type_id', '=', type_other_id)]"
+
+
     other_in_out_request_id = fields.Many2one('forlife.other.in.out.request', ondelete='cascade', required=True)
     product_id = fields.Many2one('product.product', required=True, string='Sản phẩm')
     description = fields.Char(string='Mô tả', related="product_id.name")
