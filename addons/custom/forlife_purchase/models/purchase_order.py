@@ -883,23 +883,21 @@ class PurchaseOrder(models.Model):
         data_line = {
             'po_id': line.id,
             'product_id': line.product_id.id,
-            # 'sequence': sequence,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
             'purchase_uom': line.purchase_uom.id,
-            'quantity': line.product_qty,
+            'quantity': line.product_qty - sum(wave.mapped('quantity')),
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
             'discount': line.discount_percent,
-            # 'event_id': line.event_id.id,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
             'discount_value': line.discount,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
-            'price_unit': line.price_unit - sum(wave.mapped('price_unit')),
-            'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+            'price_unit': line.price_unit,
+            'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(wave.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
             'account_analytic_id': line.account_analytic_id.id,
@@ -1500,7 +1498,11 @@ class PurchaseOrder(models.Model):
         for cl in self.cost_line:
             move_done = sum(self.order_line.move_ids.filtered(lambda x:x.state == 'done').mapped('quantity_done'))
             total_qty = sum(self.order_line.mapped('product_qty'))
-            data = cl.copy_data({'vnd_amount': move_done/total_qty * cl.vnd_amount, 'cost_line_origin': cl.id})[0]
+            if total_qty * cl.vnd_amount > 0:
+                vnd_amount = move_done/total_qty * cl.vnd_amount
+            else:
+                vnd_amount = 0
+            data = cl.copy_data({'vnd_amount': vnd_amount, 'cost_line_origin': cl.id})[0]
             if 'purchase_order_id' in data:
                 del data['purchase_order_id']
             if 'actual_cost' in data:
