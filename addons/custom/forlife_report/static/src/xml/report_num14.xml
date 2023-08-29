@@ -13,13 +13,13 @@
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
+                        <td class="index-report"><t t-esc="line.num"/></td>
                         <td><t t-esc="line.program_name"/></td>
                         <td><t t-esc="line.code"/></td>
                         <td><t t-esc="line.invoice_num"/></td>
                         <td><t t-esc="line.invoice_num_online"/></td>
                         <td><t t-esc="line.customer_name"/></td>
-                        <td><t t-esc="line.product_code"/></td>
+                        <td class="column_nowrap"><t t-esc="line.product_code"/></td>
                         <td><t t-esc="line.product_name"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty, 2)"/></td>
                     </tr>

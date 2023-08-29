@@ -15,8 +15,8 @@
                     <t t-set="num" t-value="1"/>
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-employee-detail" t-att-id="line.employee_id">
-                            <td><t t-esc="num"/></td>
-                            <td><t t-esc="line.employee_code"/></td>
+                            <td class="index-report"><t t-esc="num"/></td>
+                            <td class="column_nowrap"><t t-esc="line.employee_code"/></td>
                             <td><t t-esc="line.employee_name"/></td>
                             <t t-foreach="widget.column_add" t-as="column">
                                 <td class="right"><t t-esc="format_decimal(line[column])"/></td>

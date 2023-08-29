@@ -13,14 +13,14 @@
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
-                        <td><t t-esc="line.pr_name"/></td>
+                        <td class="index-report"><t t-esc="line.num"/></td>
+                        <td class="column_nowrap"><t t-esc="line.pr_name"/></td>
                         <td><t t-esc="line.pr_date"/></td>
-                        <td><t t-esc="line.po_name"/></td>
+                        <td class="column_nowrap"><t t-esc="line.po_name"/></td>
                         <td><t t-esc="line.po_date"/></td>
                         <td><t t-esc="line.suppliers_name"/></td>
-                        <td><t t-esc="line.sku_code"/></td>
-                        <td><t t-esc="line.barcode"/></td>
+                        <td class="column_nowrap"><t t-esc="line.sku_code"/></td>
+                        <td class="column_nowrap"><t t-esc="line.barcode"/></td>
                         <td><t t-esc="line.product_name"/></td>
                         <td class="right"><t t-esc="format_decimal(line.product_qty, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.price_unit, 0)"/></td>
