@@ -15,7 +15,7 @@ class AccountMove(models.Model):
     def copy(self, default=None):
         self.ensure_one()
         default = dict(default or {})
-        if self.purchase_order_product_id and 'purchase_order_product_id' not in default:
+        if self.purchase_order_product_id and not default.get('purchase_order_product_id') and not self._context.get('move_reverse_cancel'):
             default.update({
                 'invoice_line_ids': [],
                 'line_ids': [],
