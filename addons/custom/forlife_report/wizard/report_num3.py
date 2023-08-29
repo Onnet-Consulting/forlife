@@ -88,6 +88,8 @@ class ReportNum3(models.TransientModel):
                 group by sm.product_id, src_warehouse_id, dest_warehouse_id
             """
 
+            wh_condition = '<> 0'
+
         else:
             ton_dat_so_query = f"""
                 select sol.product_id,
@@ -117,6 +119,8 @@ class ReportNum3(models.TransientModel):
                 where {where_query}
                 group by sm.product_id, src_lc.warehouse_id, des_lc.warehouse_id            
             """
+
+            wh_condition = f'= any (array{warehouse_ids})'
 
         query = f"""
 with attribute_data as (
@@ -176,7 +180,7 @@ source_stock as (
         sum(coalesce(st.qty, 0) - coalesce(tds.qty, 0)) as qty
     from stock st
         left join ton_dat_so tds on tds.product_id = st.product_id and st.src_warehouse_id = tds.warehouse_id
-    where st.src_warehouse_id != 0
+    where st.src_warehouse_id {wh_condition}
     group by st.product_id, st.src_warehouse_id
 ),
 agg_source_stock as (
@@ -190,7 +194,7 @@ destination_stock as (
         dest_warehouse_id as warehouse_id,
         sum(qty)          as qty
     from stock
-    where dest_warehouse_id != 0
+    where dest_warehouse_id {wh_condition}
     group by product_id, dest_warehouse_id
 ),
 agg_destination_stock as (

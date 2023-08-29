@@ -15,7 +15,7 @@
                     <tr>
                         <td><t t-esc="line.so_phieu_yc"/></td>
                         <td><t t-esc="line.so_dong_tren_phieu_yc"/></td>
-                        <td><t t-esc="line.ma_sp"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_sp"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_yeu_cau, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_nhap_xuat[0], 0)"/></td>

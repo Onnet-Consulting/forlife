@@ -135,6 +135,14 @@ table.available-report-list {
     top:0;
 }
 
+.report_table > thead > tr > th {
+    min-width: 100px;
+}
+
+.report_table > thead > tr :first-child{
+    min-width: 50px;
+}
+
 .report_table {
     border-spacing: 1px 0;
     border-collapse: separate;
@@ -191,4 +199,8 @@ table.available-report-list {
     font-weight: bold;
     font-size: 14px;
     color: #255dec;
+}
+
+.column_nowrap {
+    white-space: nowrap !important;
 }

@@ -14,19 +14,19 @@
                     <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-detail" t-att-id="line.num - 1">
-                            <td><t t-esc="line.num"/></td>
+                            <td class="index-report"><t t-esc="line.num"/></td>
                             <td><t t-esc="line.ma_cn"/></td>
                             <td><t t-esc="line.ten_cn"/></td>
                             <td><t t-esc="line.ngay"/></td>
-                            <td><t t-esc="line.so_ct"/></td>
-                            <td><t t-esc="line.ma_kh"/></td>
+                            <td class="column_nowrap"><t t-esc="line.so_ct"/></td>
+                            <td class="column_nowrap"><t t-esc="line.ma_kh"/></td>
                             <td><t t-esc="line.sdt"/></td>
                             <td><t t-esc="line.ten_kh"/></td>
                             <td><t t-esc="line.mo_ta"/></td>
                             <td><t t-esc="line.ma_the_gg"/></td>
                             <td><t t-esc="line.voucher"/></td>
-                            <td><t t-esc="line.sl_mua"/></td>
-                            <td><t t-esc="line.sl_tra"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.cong, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
