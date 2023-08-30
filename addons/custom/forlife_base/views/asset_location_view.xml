@@ -9,7 +9,25 @@
                     <field name="code" required="1"/>
                     <field name="name"/>
                     <field name="address"/>
+                    <field name="warehouse_id"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="asset_location_view_form" model="ir.ui.view">
+            <field name="name">asset_location_view_form</field>
+            <field name="model">asset.location</field>
+            <field name="arch" type="xml">
+                <form string="asset_location_form" create="0" delete="0" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="address"/>
+                            <field name="warehouse_id"/>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 
