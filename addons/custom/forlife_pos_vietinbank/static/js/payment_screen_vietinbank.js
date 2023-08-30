@@ -51,6 +51,7 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                         }
                     });
                 } else {
+                    dataLine.set_payment_status('get_transaction_from_vietinbank');
                     alert(res[1])
                 }
             })
