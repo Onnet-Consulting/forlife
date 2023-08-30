@@ -930,7 +930,7 @@ class ForlifeProduction(models.Model):
                 'stock_qty':0,
                 'remaining_qty':0
             })
-            forlife_production_finished_product_ids.append((0,0,production_finished_product_id))
+            forlife_production_finished_product_ids.append((production_finished_product_id))
 
         default['forlife_production_finished_product_ids'] = forlife_production_finished_product_ids
         return super().copy(default)
