@@ -77,12 +77,11 @@ class ApisVietinBank(models.AbstractModel):
             headers=self._get_header(),
             json=self._prepare_body(pos_id)
         )
+        _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
         if req.status_code != 200:
-            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank")}
         data = json.loads(req.text)
         if data['status']['code'] != '1':
-            _logger.info(f'header: {self._get_header()}, body: {self._prepare_body(pos_id)}')
             return {'status': False, 'msg': _("Can't get data from vietinbank: Error: %s" % data['status']['message'])}
         return {
             'status': True,
@@ -123,7 +122,7 @@ class ApisVietinBank(models.AbstractModel):
                 'ref': item['transactionContent'],
                 'service_bank': item['serviceBankName'],
                 'ref_no': item['transactionNumber'],
-                'effect_date': datetime.strptime(item['transactionDate'], '%d-%m-%Y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S'),
+                'effect_date': (datetime.strptime(item['transactionDate'], '%d-%m-%Y %H:%M:%S') - timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                 'channel': item['channel'],
             })
         self.env['vietinbank.transaction.model'].create(vals)

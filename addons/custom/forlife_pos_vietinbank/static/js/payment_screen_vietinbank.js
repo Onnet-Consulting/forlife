@@ -16,6 +16,7 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
 
         async _getTransactionFromVietinBank({detail: line}) {
             const dataLine = line
+            dataLine.set_payment_status('waiting');
             const self = this
             await rpc.query({
                 model: 'apis.vietinbank',
@@ -43,6 +44,10 @@ odoo.define('forlife_pos_vietinbank.payment_screen_vietinbank', function (requir
                                 dataLine.set_amount(res)
                                 dataLine.set_payment_status('done')
                             })
+                        }
+                    }, {
+                        onClose: () => {
+                            dataLine.set_payment_status('get_transaction_from_vietinbank');
                         }
                     });
                 } else {
