@@ -922,7 +922,7 @@ class ForlifeProduction(models.Model):
     def copy(self, default=None):
         self.ensure_one()
         default = dict(default or {})
-        forlife_production_finished_product_ids = self.forlife_production_finished_product_ids
+        forlife_production_finished_product_ids = self.forlife_production_finished_product_ids.copy()
         for forlife_production_finished_product_id in forlife_production_finished_product_ids:
             forlife_production_finished_product_id.update({
                 'forlife_production_stock_move_ids':False,

@@ -4,7 +4,8 @@
         <field name="model">forlife.production</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Forlife Production" default_order="id desc,version desc">
+            <tree string="Forlife Production" default_order="id desc,version desc" decoration-info="state=='draft'"
+                      decoration-danger="state=='draft' and status!='done' and state!='draft'" decoration-success="status=='done'">
                 <field name="active" invisible="1"/>
                 <field name="code"/>
                 <field name="name"/>
@@ -14,6 +15,8 @@
                 <field name="user_id"/>
                 <field name="created_date"/>
                 <field name="company_id"/>
+                <field name="state"/>
+                <field name="status"/>
                 <button name="action_open_history" attrs="{'invisible': [('active', '=', False)]}" string="History" type="object" class="oe_title"/>
             </tree>
         </field>
