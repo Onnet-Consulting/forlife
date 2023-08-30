@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import random
 import time
 import json
+import pytz
 from Crypto.PublicKey import RSA
 import logging
 _logger = logging.getLogger(__name__)
@@ -39,8 +40,11 @@ class ApisVietinBank(models.AbstractModel):
         return b64encode(sig).decode('utf-8')
 
     def _prepare_body(self, pos_id):
-        date_to = datetime.now().strftime('%d/%m/%Y')
-        date_from = (datetime.now() - timedelta(hours=1)).strftime('%d/%m/%Y')
+        now = datetime.now(pytz.timezone(self.env.user.tz or 'GMT'))
+        date_to = now.strftime('%d/%m/%Y')
+        date_from = now.strftime('%d/%m/%Y')
+        fromTime = now - timedelta(hours=1)
+        toTime = now
         request_id = self._ramdom_request()
         merchant_id = ""
         pos_config = self.env['pos.config'].browse(pos_id)
@@ -55,6 +59,8 @@ class ApisVietinBank(models.AbstractModel):
             "account": account_id,
             "fromDate": date_from,
             "toDate": date_to,
+            "fromTime": fromTime.strftime('%H:%M:%S'),
+            "toTime": toTime.strftime('%H:%M:%S'),
             "accountType": "D",
             "collectionType": "c",
             "agencyType": "a",
