@@ -900,7 +900,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     _inherit = 'forlife.production.finished.product'
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
-    forlife_production_stock_move_ids = fields.Many2many('stock.move')
+    forlife_production_stock_move_ids = fields.Many2many('stock.move', copy=False)
     remaining_qty = fields.Float(string='Còn lại', compute='_compute_remaining_qty',compute_sudo=True)
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
@@ -913,28 +913,6 @@ class ForlifeProductionFinishedProduct(models.Model):
             #Trường hợp nhập thừa thành phẩm
             remaining_qty = 0 if qty_done > rec.produce_qty else rec.produce_qty - qty_done
             rec.remaining_qty = remaining_qty
-
-    
-class ForlifeProduction(models.Model):
-    _inherit = 'forlife.production'
-        
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        self.ensure_one()
-        default = dict(default or {})
-        forlife_production_finished_product_ids = []
-        for forlife_production_finished_product_id in self.forlife_production_finished_product_ids:
-            production_finished_product_id = forlife_production_finished_product_id.copy()
-            production_finished_product_id.update({
-                'forlife_production_stock_move_ids':False,
-                'stock_qty':0,
-                'remaining_qty':0
-            })
-            forlife_production_finished_product_ids.append((production_finished_product_id))
-
-        default['forlife_production_finished_product_ids'] = forlife_production_finished_product_ids
-        return super().copy(default)
-    
 
 
 class HREmployee(models.Model):
