@@ -25,47 +25,61 @@ class SelectTypeInvoice(models.TransientModel):
         self.exchange_rate = self.currency_id.inverse_rate or 1
 
     def select_type_invoice(self):
-        req_id = self._context.get('active_ids') or self._context.get('active_id')
-        current_purchase = self.env['purchase.order'].search([('id', 'in', req_id)])
-        for rec in self:
-            if len(current_purchase) == 1:
-                for item in current_purchase:
-                    item.write({
-                        'select_type_inv': rec.select_type_inv,
-                    })
-                if rec.select_type_inv in ['expense', 'labor']:
-                    moves = current_purchase.action_create_invoice(rec.partner_id, rec.currency_id, rec.exchange_rate)
-                else:
-                    moves = current_purchase.action_create_invoice()
-                if not moves:
-                    raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
-                return {
-                    'name': 'Hóa đơn nhà cung cấp',
-                    'type': 'ir.actions.act_window',
-                    'res_model': 'account.move',
-                    'view_id': False,
-                    'view_mode': 'tree,form',
-                    'domain': [('id', 'in', moves.ids)],
-                }
+        active_ids = self._context.get('active_ids') or self._context.get('active_id')
+        purchase_ids = self.env['purchase.order'].search([('id', 'in', active_ids)])
+
+        if any(x.custom_state != 'approved' for x in purchase_ids):
+            raise UserError(_('Tất cả Đơn mua hàng phải ở trạng thái Phê duyệt, vui lòng kiểm tra lại!'))
+
+        if len(purchase_ids) == 1:
+            purchase_ids.write({
+                'select_type_inv': self.select_type_inv,
+            })
+            if self.select_type_inv in ['expense', 'labor']:
+                moves = purchase_ids.action_create_invoice(self.partner_id, self.currency_id, self.exchange_rate)
             else:
-                for item in current_purchase:
-                    exit_partner_id = current_purchase.filtered(lambda r: r.partner_id != item.partner_id)
-                    if exit_partner_id:
-                        raise UserError(_('Khổng thể tạo hóa đơn từ nhiều phiếu PO khác nhà cung cấp!'))
-                    item.write({
-                        'select_type_inv': rec.select_type_inv,
-                    })
-                moves = current_purchase.create_multi_invoice_vendor()
-                if not moves:
-                    raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
-                return {
-                    'name': 'Hóa đơn nhà cung cấp',
-                    'type': 'ir.actions.act_window',
-                    'res_model': 'account.move',
-                    'view_id': False,
-                    'view_mode': 'tree,form',
-                    'domain': [('move_type', '=', 'in_invoice'), ('id', 'in', moves.ids)],
-                }
+                moves = purchase_ids.action_create_invoice()
+            if not moves:
+                raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
+            return {
+                'name': 'Hóa đơn nhà cung cấp',
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'view_id': False,
+                'view_mode': 'tree,form',
+                'domain': [('id', 'in', moves.ids)],
+            }
+        else:
+            if len(purchase_ids.mapped('partner_id')) > 1:
+                raise UserError(_('Vui lòng chọn các PO có cùng Nhà cung cấp!'))
+            if len(purchase_ids.mapped('currency_id')) > 1:
+                raise UserError(_('Vui lòng chọn các PO có cùng Đơn vị tiền tệ!'))
+            if len(set(purchase_ids.mapped('exchange_rate'))) > 1:
+                raise UserError(_('Vui lòng chọn các PO có cùng Tỷ giá tiền tệ!'))
+            if len(purchase_ids.mapped('company_id')) > 1:
+                raise UserError(_('Vui lòng chọn các PO có cùng Công ty!'))
+            if len(set(purchase_ids.mapped('purchase_type'))) > 1:
+                raise UserError(_('Vui lòng chọn các PO có cùng Loại mua hàng!'))
+
+            purchase_ids.write({
+                'select_type_inv': self.select_type_inv,
+            })
+
+            if self.select_type_inv in ['expense', 'labor']:
+                moves = purchase_ids.create_invoice_multiple_purchase_orders(self.select_type_inv, self.partner_id, self.currency_id, self.exchange_rate)
+            else:
+                moves = purchase_ids.create_invoice_multiple_purchase_orders(select_type_inv=self.select_type_inv)
+
+            if not moves:
+                raise UserError(_('Tất cả sản phẩm đã được lên hóa đơn đầy đủ, vui lòng kiểm tra lại!'))
+            return {
+                'name': 'Hóa đơn nhà cung cấp',
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'view_id': False,
+                'view_mode': 'tree,form',
+                'domain': [('move_type', '=', 'in_invoice'), ('id', 'in', moves.ids)],
+            }
 
     def cancel(self):
         pass

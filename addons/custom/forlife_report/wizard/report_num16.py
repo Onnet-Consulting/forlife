@@ -196,13 +196,14 @@ order by stt
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo chi tiết xuất nhập hàng')
-        sheet.set_row(0, 25)
+        sheet.set_row(0, 30)
+        sheet.set_row(4, 30)
         sheet.write(0, 0, 'Báo cáo chi tiết xuất nhập hàng', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày %s' % self.from_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
         sheet.write(2, 2, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(4, idx, title, formats.get('title_format'))
-        sheet.set_column(0, len(TITLES), 20)
+        sheet.set_column(1, len(TITLES) - 1, 20)
         row = 5
         for value in data['data']:
             sheet.write(row, 0, value.get('stt'), formats.get('center_format'))

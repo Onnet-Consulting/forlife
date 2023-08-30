@@ -16,7 +16,7 @@ TITLES = [
     'Loại hàng mua',
     'Chính sách tính phí',
     'Chính sách kiểm soát',
-    'Brand',
+    'Thương hiệu',
     'Danh mục sản phẩm',
     'Nhóm hàng 1',
     'Dòng hàng 1',
@@ -85,10 +85,17 @@ TITLES = [
 
 class ReportNum37(models.TransientModel):
     _name = 'report.num37'
-    _inherit = ['report.base', 'export.excel.client']
+    _inherit = ['report.base', 'export.excel.client', 'report.category.type']
     _description = 'Báo cáo thông tin sản phẩm'
 
     product_id = fields.Many2many('product.product', string='Sản phẩm')
+    brand_id = fields.Many2one('product.category', string='Thương hiệu', domain="[('parent_id', '=', False), ('category_type_id', '=', category_type_id)]")
+    group_id = fields.Many2one('product.category', string='Nhóm hàng',
+                               domain="[('parent_id', '=', brand_id), ('parent_id', '!=', False)]")
+    line_id = fields.Many2one('product.category', string='Dòng hàng',
+                              domain="[('parent_id', '=', group_id), ('parent_id', '!=', False)]")
+    structure_id = fields.Many2one('product.category', string='Kết cấu',
+                                   domain="[('parent_id', '=', line_id), ('parent_id', '!=', False)]")
 
     def _get_query(self, allowed_company):
         self.ensure_one()
@@ -127,7 +134,7 @@ class ReportNum37(models.TransientModel):
                     when pt.purchase_method = 'receive' then 'Theo số lượng nhận'
                     else ''
                 end as cs_kiem_soat,
-                rb.name as thuong_hieu,
+                pc.pc4_name as thuong_hieu,
                 pc.pc_name as dm_sanpham,
                 pc.pc1_name as ketcau,
                 pc.pc2_name as donghang,
@@ -206,14 +213,16 @@ class ReportNum37(models.TransientModel):
             left join (
                 select
                     pc.id as pc_id,
-                    pc.category_code as pc,
+                    pc.id as pc,
                     pc.name as pc_name,
-                    pc1.category_code as pc1,
+                    pc1.id as pc1,
                     pc1.name as pc1_name,
-                    pc2.category_code as pc2,
+                    pc2.id as pc2,
                     pc2.name as pc2_name,
-                    pc3.category_code as pc3,
-                    pc3.name as pc3_name
+                    pc3.id as pc3,
+                    pc3.name as pc3_name,
+                    pc4.id as pc4,
+                    pc4.name as pc4_name
                 from
                     product_category pc
                 join product_category pc1 on
@@ -222,6 +231,8 @@ class ReportNum37(models.TransientModel):
                     pc1.parent_id = pc2.id
                 join product_category pc3 on
                     pc2.parent_id = pc3.id
+                join product_category pc4 on
+                    pc3.parent_id = pc4.id
             ) as pc on
                 pc.pc_id = pt.categ_id
             left join (
@@ -263,6 +274,15 @@ class ReportNum37(models.TransientModel):
         """
         if self.product_id:
             query += f" and pp.id = any(array{self.product_id.ids})"
+        if self.brand_id:
+            query += f" and pc.pc4 = {self.brand_id.id}"
+        if self.group_id:
+            query += f" and pc.pc3 = {self.group_id.id}"
+        if self.line_id:
+            query += f" and pc.pc2 = {self.line_id.id}"
+        if self.structure_id:
+            query += f" and pc.pc1 = {self.structure_id.id}"
+
         return query
 
     def get_data(self, allowed_company):

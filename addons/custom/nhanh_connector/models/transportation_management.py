@@ -31,7 +31,7 @@ class TransportationSession(models.Model):
         # Lấy đường dẫn của file tạm
         temp_file_path = temp_file.name
         workbook = xlsxwriter.Workbook(temp_file_path)
-        worksheet = workbook.add_worksheet(u'Sheet0')
+        worksheet = workbook.add_worksheet(u'Đơn hàng lỗi')
 
         header = [
             'Mã đơn hàng NhanhVN',
@@ -46,9 +46,10 @@ class TransportationSession(models.Model):
             'Trạng thái'
         ]
         lines = [header]
-        session_line = self.session_line
+        session_line = self.session_line.filtered(lambda x: x.status not in ['in_success', 'out_success'])
         if self.re_confirm:
             session_line = session_line.filtered(lambda x: x.select)
+
         data = [
             [
                 line.nhanh_id or '',
@@ -85,6 +86,51 @@ class TransportationSession(models.Model):
                     worksheet.write(row, col, item)
                 col += 1
             row += 1
+
+        not_enough = session_line.filtered(lambda x: x.status in ['not_enough'])
+        if len(not_enough) >= 1:
+            header_sheet2 = [
+                'Mã đơn hàng NhanhVN',
+                'Mã đơn hàng odoo',
+                'Phiếu kho',
+                'Mã vạch',
+                'Tên sản phẩm',
+                'SL nhu cầu',
+                'SL thực tế',
+                'Trạng thái',
+            ]
+            lines_sheet2 = [header_sheet2]
+            data_sheet2 = []
+            worksheet_2 = workbook.add_worksheet(u'Chi tiết đơn không đủ tồn')
+            for so in not_enough:
+                for move in so.order_id.picking_ids.move_ids:
+                    available_quantity = self.env['stock.quant']._get_available_quantity(move.product_id,
+                                                                                         move.location_id)
+                    if available_quantity < move.product_uom_qty:
+                        data_sheet2 += [[
+                            so.nhanh_id or '',
+                            so.order_id.name or '',
+                            so.picking_id or '',
+                            move.product_id.barcode or '',
+                            move.product_id.name or '',
+                            move.product_uom_qty or 0,
+                            available_quantity,
+                            dict(self.env['transportation.session.line']._fields['status']._description_selection(
+                                self.env)).get(so.status) or '',
+                        ]]
+            lines_sheet2 += data_sheet2
+
+            row = 0
+            for line in lines_sheet2:
+                col = 0
+                for item in line:
+                    if row == 0:
+                        worksheet_2.write(row, col, item, header_format)
+                    else:
+                        worksheet_2.write(row, col, item)
+                    col += 1
+                row += 1
+
         worksheet.set_column(0, len(header), 20)
         worksheet.set_row(0, 30)
         workbook.close()

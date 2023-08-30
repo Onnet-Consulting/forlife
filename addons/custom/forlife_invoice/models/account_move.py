@@ -7,6 +7,29 @@ class AccountMove(models.Model):
     account_expense_labor_detail_ids = fields.One2many('account.expense.labor.detail', 'move_id', string='Account Expense Labor Detail')
     sum_expense_labor_ids = fields.One2many('summary.expense.labor.account', 'move_id', string='Summary Expense Labor')
 
+    @api.depends(
+        'line_ids.matched_debit_ids.debit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.balance',
+        'line_ids.currency_id',
+        'line_ids.amount_currency',
+        'line_ids.amount_residual',
+        'line_ids.amount_residual_currency',
+        'line_ids.payment_id.state',
+        'line_ids.full_reconcile_id',
+        'total_trade_discount',
+        'x_amount_tax',
+        'state')
+    def _compute_amount(self):
+        super()._compute_amount()
+        for record in self.filtered(lambda x: x.total_trade_discount or x.x_amount_tax):
+            amount_residual = record.amount_residual - (record.total_trade_discount + record.x_amount_tax)
+            record.amount_residual = amount_residual
+
     @api.model_create_multi
     def create(self, vals):
         res = super().create(vals)

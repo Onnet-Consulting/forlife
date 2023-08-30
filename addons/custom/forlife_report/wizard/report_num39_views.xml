@@ -1,52 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num3_form" model="ir.ui.view">
+    <record id="report_num39_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num3</field>
+        <field name="model">report.num39</field>
         <field name="arch" type="xml">
-            <form string="Stock in time range by branch/area" create="0">
+            <form string="report_num39_form" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
-                        <group>
-                            <field name="report_by" widget="radio" options="{'horizontal': True}"/>
-                            <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" attrs="{'invisible': [('report_by', '=', 'area')]}" context="{'show_code_name': True}"/>
-                            <field name="all_areas" attrs="{'invisible': [('report_by', '=', 'branch')]}"/>
-                            <field name="area_ids" widget="many2many_tags" attrs="{'invisible': ['|', ('all_areas', '=', True), ('report_by', '=', 'branch')]}" options="{'no_create': True}"/>
-                        </group>
-                        <group>
-                            <field name="to_date"/>
-                            <field name="defective_inventory"/>
-                            <field name="order_inventory"/>
-                        </group>
-                    </group>
-                    <group>
-                        <field name="sku_code" placeholder="Sku1,Sku2,Sku3..."/>
+                        <label for="from_date" string="Date"/>
+                        <div>from
+                            <field name="from_date" class="oe_inline" required="1"/>
+                            to
+                            <field name="to_date" class="oe_inline" required="1"/>
+                        </div>
                         <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="category_type_id" options="{'no_create': True}"/>
                         <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>
                         <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
                         <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
                         <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="collection"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True}"/>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="report_num3_window_action" model="ir.actions.act_window">
-        <field name="name">Report stock in time range by branch/area</field>
-        <field name="res_model">report.num3</field>
+    <record id="report_num39_window_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo chi tiết nhập hàng theo phiếu kho</field>
+        <field name="res_model">report.num39</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="report_num3_menu"
-              action="report_num3_window_action"
+    <menuitem id="report_num39_menu"
+              action="report_num39_window_action"
               parent="report_menu_stock"
-              sequence="2"/>
+              sequence="39"/>
 </odoo>

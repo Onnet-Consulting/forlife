@@ -160,6 +160,8 @@ class ImportProductionFromExcel(models.TransientModel):
                 create_list_expense = []
                 create_list_by_production_expense = []
                 for e in data_expense_good.get(production_code, []):
+                    if not product_dict.get(e[0], False):
+                        raise ValidationError(_('Không có Mã chi phí %s trong danh mục sản phẩm.' % e[0]))
                     cost_norms = 0
                     if float(e[1]) > 0 and e[3]:
                         cost_norms = float(e[3]) / float(e[1])

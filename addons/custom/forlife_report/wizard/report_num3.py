@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from odoo.osv import expression
 
 TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
           'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Nhãn hiệu', 'Tổng tồn', 'Hàng treo']
@@ -25,6 +26,7 @@ class ReportNum3(models.TransientModel):
     order_inventory = fields.Boolean(string='Skip order inventory')
     all_areas = fields.Boolean(string='All areas', default=True)
     area_ids = fields.Many2many('res.location.province', string='Areas')
+    sku_code = fields.Char('Sku code', help='Nhiều mã sku ngăn cách nhau bằng dấu phẩy')
 
     @api.onchange('product_brand_id')
     def onchange_product_brand(self):
@@ -86,6 +88,8 @@ class ReportNum3(models.TransientModel):
                 group by sm.product_id, src_warehouse_id, dest_warehouse_id
             """
 
+            wh_condition = '> 0'
+
         else:
             ton_dat_so_query = f"""
                 select sol.product_id,
@@ -115,6 +119,8 @@ class ReportNum3(models.TransientModel):
                 where {where_query}
                 group by sm.product_id, src_lc.warehouse_id, des_lc.warehouse_id            
             """
+
+            wh_condition = f'= any (array{warehouse_ids})'
 
         query = f"""
 with attribute_data as (
@@ -174,7 +180,7 @@ source_stock as (
         sum(coalesce(st.qty, 0) - coalesce(tds.qty, 0)) as qty
     from stock st
         left join ton_dat_so tds on tds.product_id = st.product_id and st.src_warehouse_id = tds.warehouse_id
-    where st.src_warehouse_id != 0
+    where st.src_warehouse_id {wh_condition}
     group by st.product_id, st.src_warehouse_id
 ),
 agg_source_stock as (
@@ -188,7 +194,7 @@ destination_stock as (
         dest_warehouse_id as warehouse_id,
         sum(qty)          as qty
     from stock
-    where dest_warehouse_id != 0
+    where dest_warehouse_id {wh_condition}
     group by product_id, dest_warehouse_id
 ),
 agg_destination_stock as (
@@ -258,16 +264,24 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        collection_domain = [('collection', '=', self.collection)] if self.collection else []
+        domain = []
+        if self.sku_code:
+            for sku in self.sku_code.split(','):
+                domain = expression.OR([domain, [('sku_code', 'ilike', sku.strip())]])
+        if self.collection and not self.product_ids:
+            domain = expression.AND([[('collection', '=', self.collection)], domain])
         Product = self.env['product.product']
         Utility = self.env['res.utility']
         categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
-            product_ids = self.product_ids
+            product_ids = self.product_ids.filtered_domain(domain) if domain else self.product_ids
         elif categ_ids:
-            product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))] + collection_domain)
+            cate_domain = [('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]
+            if domain:
+                cate_domain = expression.AND([cate_domain, domain])
+            product_ids = Product.search(cate_domain)
         else:
-            product_ids = Product.search(collection_domain) if collection_domain else Product
+            product_ids = Product.search(domain) if domain else Product
         wh_domain = [('company_id', 'in', allowed_company)]
         if self.report_by == 'area':
             wh_domain += [('loc_province_id', '!=', False)] if self.all_areas else ([('loc_province_id', 'in', self.area_ids.ids)] if self.area_ids else [('loc_province_id', '=', False)])
@@ -275,7 +289,7 @@ order by num
             wh_domain = [] if self.warehouse_ids else wh_domain
         warehouse_ids = self.env['stock.warehouse'].search(wh_domain) if wh_domain else self.warehouse_ids
         wh_ids = warehouse_ids.ids or [-1]
-        if self.defective_inventory:
+        if self.defective_inventory and product_ids:
             attr_value = self.env['res.utility'].get_attribute_code_config()
             product_ids = product_ids.filtered(lambda f: any([attr_value.get('chat_luong') == x for x in f.mapped('attribute_line_ids.attribute_id.attrs_code')]))
         product_ids = product_ids.ids or [-1]

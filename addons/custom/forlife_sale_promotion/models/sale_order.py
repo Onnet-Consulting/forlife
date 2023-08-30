@@ -83,7 +83,10 @@ class SaleOrder(models.Model):
                 list_promotion_used = rec.promotion_used.split(' , ')
                 ignore_barcode = rec.promotion_used.split(' , ')
             if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
-                rec.promotion_ids = [Command.clear()]
+                # rec.promotion_ids = [Command.clear()]
+                for promotion_item in rec.promotion_ids:
+                    if not promotion_item.is_handle:
+                        promotion_item.unlink()
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
                     text = re.compile('<.*?>')
@@ -202,6 +205,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu theo chính sách vip",
                                         'tax_id': ln.tax_id,
                                         'order_line_id': ln.id,
+                                        'is_handle': False
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
@@ -217,6 +221,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu giảm giá trực tiếp",
                                         'tax_id': ln.tax_id,
                                         'order_line_id': ln.id,
+                                        'is_handle': False
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
@@ -257,6 +262,7 @@ class SaleOrder(models.Model):
                                 'description': "Chiết khấu giảm giá trực tiếp",
                                 'tax_id': ln.tax_id,
                                 'order_line_id': ln.id,
+                                'is_handle': False
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
@@ -271,6 +277,7 @@ class SaleOrder(models.Model):
                                 'description': "Chiết khấu khuyến mãi theo CT giá",
                                 'tax_id': ln.tax_id,
                                 'order_line_id': ln.id,
+                                'is_handle': False
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
@@ -302,7 +309,8 @@ class SaleOrder(models.Model):
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
-                            'description': "Phí vận chuyển"
+                            'description': "Phí vận chuyển",
+                            'is_handle': False
                         })]
 
                     # Customer shipping fee
@@ -334,7 +342,8 @@ class SaleOrder(models.Model):
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
-                            'description': "Phí ship báo khách hàng"
+                            'description': "Phí ship báo khách hàng",
+                            'is_handle': False
                         })]
 
                     # Check voucher và giá trị
@@ -410,6 +419,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu khuyến mãi",
                                         'tax_id': line.tax_id,
                                         'order_line_id': line_promotion.id,
+                                        'is_handle': False
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             list_line_promotion.append(line)
@@ -440,7 +450,8 @@ class SaleOrder(models.Model):
                                             'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                             'description': "Chiết khấu khuyến mãi",
                                             'tax_id': line.tax_id,
-                                            'order_line_id': line_promotion.id
+                                            'order_line_id': line_promotion.id,
+                                            'is_handle': False
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                         list_line_promotion.append(line)

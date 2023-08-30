@@ -22,13 +22,17 @@ class HrAssetTransfer(models.Model):
                    ('approved_out', 'Xác nhận xuất'),
                    ('approved_in', 'Xác nhận nhập'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel')], default='draft', copy=False)
+                   ('cancel', 'Cancel'),
+                   ('done', 'Hoàn thành')], default='draft', copy=False)
     hr_asset_transfer_line_ids = fields.One2many('hr.asset.transfer.line', 'hr_asset_transfer_id', string="Hr Asset Transfer", copy=True)
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
-    location_id = fields.Many2one('stock.location', string='Kho xuất', check_company=True)
-    location_dest_id = fields.Many2one('stock.location', string='Kho nhập', check_company=True)
+    # location_id = fields.Many2one('stock.location', string='Kho xuất', check_company=True)
+    # location_dest_id = fields.Many2one('stock.location', string='Kho nhập', check_company=True)
+    export_department_id = fields.Many2one('hr.department', string='Bộ phận xuất', domain="[('company_id', '=', company_id)]")
+    import_department_id = fields.Many2one('hr.department', string='Bộ phận nhập',
+                                           domain="[('company_id', '=', company_id)]")
 
     @api.model
     def default_get(self, default_fields):
@@ -60,6 +64,8 @@ class HrAssetTransfer(models.Model):
                 state = 'approved_out'
             if record.state == 'approved_out':
                 state = 'approved_in'
+            if record.state == 'approved_in':
+                state = 'done'
             record.write({
                 'state': state,
                 'validate_date': fields.Datetime.now()
@@ -93,7 +99,7 @@ class HrAssetTransferLine(models.Model):
 
     asset_code = fields.Many2one('assets.assets', string='Tài sản')
     asset_code_code = fields.Char(related='asset_code.code', string='Mã tài sản')
-    employee_from_id = fields.Many2one('hr.employee', string="Employee From")
+    employee_from_id = fields.Many2one('hr.employee', string="Employee From",  related='asset_code.employee', store=True)
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
     account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From", related='asset_code.dept_code', store=True)
     account_analytic_to_id = fields.Many2one('account.analytic.account', string="Cost Center To")

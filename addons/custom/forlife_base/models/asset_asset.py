@@ -47,3 +47,13 @@ class AssetsAssets(models.Model):
     def check_type(self,vals):
         if 'type' in vals and (vals['type'] == "CCDC" or vals['type'] == "TSCD"):
             raise ValidationError('Không được phép tạo tài sản từ odoo')
+        
+    def name_get(self):
+        result = []
+        for asset in self:
+            if not asset.code:
+                name = f'{asset.name}'
+            else:
+                name = f'[{asset.code}] {asset.name}'
+            result.append((asset.id, name))
+        return result

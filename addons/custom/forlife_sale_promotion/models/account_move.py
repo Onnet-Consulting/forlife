@@ -39,7 +39,7 @@ class AccountMove(models.Model):
         if self.promotion_ids:
             line_ids = []
             journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
-            for pr in self.promotion_ids:
+            for pr in self.promotion_ids.filtered(lambda x: x.promotion_type not in ('out_point','in_point')):
                 account_debit_id = False
                 account_credit_id = False
                 line_allow = False
@@ -88,7 +88,7 @@ class AccountMove(models.Model):
                         'product_id': pr.product_id.id,
                         'account_id': account_debit_id and account_debit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
-                        'partner_id': pr.partner_id.id if pr.promotion_type == 'customer_shipping_fee' else self.partner_id.id,
+                        'partner_id': pr.partner_id.id if pr.promotion_type == 'nhanh_shipping_fee' else self.partner_id.id,
                         'debit': product_value_without_tax,
                         'credit': 0
                     })
@@ -97,7 +97,7 @@ class AccountMove(models.Model):
                         'product_id': pr.product_id.id,
                         'account_id': account_credit_id and account_credit_id.id,
                         'analytic_account_id': pr.analytic_account_id.id,
-                        'partner_id': pr.partner_id.id if pr.promotion_type == 'customer_shipping_fee' else self.partner_id.id,
+                        'partner_id': pr.partner_id.id if pr.promotion_type == 'nhanh_shipping_fee' else self.partner_id.id,
                         'debit': 0,
                         'credit': product_value_without_tax
                     })

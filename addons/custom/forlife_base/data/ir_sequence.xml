@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="occasion_code_seq" model="ir.sequence">
+            <field name="name">Occasion sequence</field>
+            <field name="code">occasion.code.seq</field>
+            <field name="active">TRUE</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">0000001</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+
+</odoo>
