@@ -311,7 +311,7 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     uom_id = fields.Many2one(comodel_name='uom.uom', string='Unit of Measure', )
     parent_id = fields.Many2one('wizard.increase.decrease.invoice', string='Parent')
     price_unit = fields.Float(string='Unit Price', digits='Product Price', )
-    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", )
+    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", ondelete='restrict')
     invoice_line_id = fields.Many2one('account.move.line', string='Move Line')
     quantity = fields.Float(string='Quantity')
     price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )
