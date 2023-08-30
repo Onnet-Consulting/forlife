@@ -54,8 +54,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'origin_invoice_id': self.origin_invoice_id.id,
                 'move_type': move_type,
                 'reference': self.origin_invoice_id.name,
-                'purchase_order_product_id': False,
-                'receiving_warehouse_id': False,
                 'cost_line': False,
                 'vendor_back_ids': False,
                 'invoice_date': fields.Date.today(),
