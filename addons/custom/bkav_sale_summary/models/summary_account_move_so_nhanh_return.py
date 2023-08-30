@@ -10,8 +10,6 @@ class SummaryAccountMoveSoNhanhReturn(models.Model):
     code = fields.Char('Code')
     partner_id = fields.Many2one('res.partner')
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Nháp'),
-                              ('posted', 'Đã phát hành')], string="State", default='draft')
     line_ids = fields.One2many('summary.account.move.so.nhanh.return.line', 'summary_id')
     company_id = fields.Many2one('res.company')
     number_bill = fields.Char('Số hóa đơn')
