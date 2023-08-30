@@ -10,7 +10,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     _description = 'Increase Decrease Invoice Wizard'
 
     origin_invoice_id = fields.Many2one('account.move', string='Move Origin')
-    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type', default='increase')
+    invoice_type = fields.Selection([('increase', 'Tăng'), ('decrease', 'Giảm')], string='Type', default='increase')
     selected_all = fields.Boolean(string='Selected all')
     line_ids = fields.One2many('wizard.increase.decrease.invoice.line', 'parent_id', string='Detail')
 
@@ -311,7 +311,7 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     uom_id = fields.Many2one(comodel_name='uom.uom', string='Unit of Measure', )
     parent_id = fields.Many2one('wizard.increase.decrease.invoice', string='Parent')
     price_unit = fields.Float(string='Unit Price', digits='Product Price', )
-    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", )
+    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", ondelete='restrict')
     invoice_line_id = fields.Many2one('account.move.line', string='Move Line')
     quantity = fields.Float(string='Quantity')
     price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )

@@ -10,7 +10,7 @@ class ProductTemplateAttrLine(models.Model):
             exits = self.search([('attribute_id', '=', rec.attribute_id.id),('id','!=',rec.id),('product_tmpl_id','=',rec.product_tmpl_id.id)], limit=1)
             if exits:
                 if rec.attribute_id.id == exits.attribute_id.id:
-                    raise ValidationError('Đã tồn tại giá trị của thuộc tính này!')
+                    raise ValidationError('Đã tồn tại giá trị của thuộc tính %s và sản phẩm %s!' % (rec.attribute_id.name, rec.product_tmpl_id.name))
             if len(rec.value_ids) > 1 and rec.attribute_id.attrs_code != 'AT038':
                 raise ValidationError('Chỉ được một giá trị cho một thuộc tính!')
 

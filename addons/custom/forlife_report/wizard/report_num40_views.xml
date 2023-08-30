@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num40_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num40</field>
+        <field name="arch" type="xml">
+            <form string="report_num40_form" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <field name="to_date" class="oe_inline" required="1"/>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="asset_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id.parent_id', '=', False), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num40_window_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo tài sản công cụ dụng cụ</field>
+        <field name="res_model">report.num40</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num40_menu"
+              action="report_num40_window_action"
+              parent="report_menu_stock"
+              sequence="40"/>
+</odoo>

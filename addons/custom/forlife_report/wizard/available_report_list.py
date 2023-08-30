@@ -230,4 +230,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum39Template',
         'reportPager': True,
     },
+    'report.num40': {
+        'module': 'Kho',
+        'name': 'Báo cáo tài sản công cụ dụng cụ',
+        'reportTemplate': 'ReportNum40Template',
+        'reportPager': True,
+    },
 }

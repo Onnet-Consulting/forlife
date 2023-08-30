@@ -67,8 +67,8 @@ class StockTransfer(models.Model):
     backorder_count = fields.Integer(compute='_compute_backorder_count')
 
     total_request_qty = fields.Float(string='Tổng số lượng điều chuyển', compute='_compute_total_qty')
-    total_in_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
-    total_out_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
+    total_in_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
+    total_out_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
 
     @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
     def _compute_total_qty(self):

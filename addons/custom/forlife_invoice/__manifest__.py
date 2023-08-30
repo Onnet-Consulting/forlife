@@ -24,6 +24,7 @@
         'views/expense_item_views.xml',
         'views/stock_location.xml',
         'views/account_move_reversal_import_views.xml',
+        'wizard/wizard_increase_decrease_invoice_view.xml',
     ],
     "assets": {
         "web.assets_backend": [
