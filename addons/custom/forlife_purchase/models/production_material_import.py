@@ -9,6 +9,8 @@ class ForlifeProduction(models.Model):
     expense_import_ids = fields.One2many('production.expense.import', 'production_id', copy=True)
 
     def update_bom(self):
+        if self.state != 'approved':
+            return
         product_fish = self.forlife_production_finished_product_ids
         material_import_ids = self.material_import_ids
         expense_import_ids = self.expense_import_ids
