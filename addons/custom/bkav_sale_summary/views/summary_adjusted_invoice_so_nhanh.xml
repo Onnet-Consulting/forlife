@@ -10,7 +10,7 @@
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
                 <field name="source_invoice"/>
-                <field name="state"/>
+                <field name="data_compare_status"/>
             </tree>
         </field>
     </record>
@@ -21,7 +21,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar"/>
+                    <field name="data_compare_status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
