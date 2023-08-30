@@ -16,8 +16,6 @@ class SummaryAdjustedInvoiceSoNhanh(models.Model):
     source_einvoice = fields.Char(string='Hóa đơn điện tử gốc')
 
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Nháp'),
-                              ('posted', 'Đã vào sổ')], string="State", default='draft')
     line_ids = fields.One2many('summary.adjusted.invoice.so.nhanh.line', 'adjusted_invoice_id')
     company_id = fields.Many2one('res.company')
 
