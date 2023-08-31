@@ -173,7 +173,7 @@ class PurchaseOrder(models.Model):
                         sequence += 1
                     invoice_vals_list.append(invoice_vals)
             else:
-                domain = [('purchase_id', '=', self.id), ('state', '=', 'done'), ('ware_check', '=', False), ('x_is_check_return', '=', True)]
+                domain = [('purchase_id', '=', self.id), ('state', '=', 'done'), ('x_is_check_return', '=', True)]
                 picking_in = self.env['stock.picking'].search(domain)
                 if not picking_in:
                     raise UserError(_('Tất cả các phiếu nhập trả đã được lên hóa đơn đầy đủ! Vui lòng kiểm tra lại'))
