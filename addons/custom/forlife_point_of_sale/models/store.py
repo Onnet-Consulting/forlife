@@ -37,3 +37,14 @@ class Store(models.Model):
                 raise ValidationError(_('Opening/closing time should be between 0 and 24'))
             if line.opening_time >= line.closing_time:
                 raise ValidationError(_('Opening time must be less than closing time'))
+
+    def action_archive(self):
+        for rec in self:
+            rec.pos_config_ids.action_archive()
+        return super().action_archive()
+
+    def action_unarchive(self):
+        for rec in self:
+            rec.with_context(active_test=False).pos_config_ids.action_unarchive()
+        return super().action_unarchive()
+
