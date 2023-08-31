@@ -335,7 +335,7 @@ class StockPicking(models.Model):
                         if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                         if material_line.price_unit > 0:
-                            pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
+                            pbo = round(material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty)
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
@@ -362,13 +362,14 @@ class StockPicking(models.Model):
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
+                                value = round((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price)
                                 #xử lý phân bổ nguyên vật liệu
                                 debit_allowcation_npl = (0, 0, {
                                     'sequence': 1,
                                     'product_id': move.product_id.id,
                                     'account_id': account_1561,
                                     'name': item.product_id.name,
-                                    'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'debit': value,
                                     'credit': 0,
                                 })
 
@@ -378,7 +379,7 @@ class StockPicking(models.Model):
                                     'account_id': account_export_production_order.id,
                                     'name': account_export_production_order.name,
                                     'debit': 0,
-                                    'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'credit': value,
                                 })
                                 list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
                 if record.state == 'done' and list_line_xk:
