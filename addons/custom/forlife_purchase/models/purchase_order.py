@@ -991,7 +991,7 @@ class PurchaseOrder(models.Model):
                 # Invoice line values (keep only necessary sections).
 
                 if order.select_type_inv == 'labor':
-                    order._create_invoice_labor_purchase_type_product(invoice_v_als_list, invoice_vals)
+                    order._create_invoice_labor_purchase_type_product(invoice_vals_list, invoice_vals)
                 if order.select_type_inv == 'expense':
                     order._create_invoice_expense_purchase_type_product(invoice_vals_list, invoice_vals)
                 if order.select_type_inv == 'normal':
