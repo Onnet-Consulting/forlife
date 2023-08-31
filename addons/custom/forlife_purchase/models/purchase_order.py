@@ -1884,8 +1884,8 @@ class PurchaseOrderLine(models.Model):
                  ('currency_id', '=', self.currency_id.id)
                  ])
             if supplier_info:
-                self.purchase_uom = supplier_info[-1].product_uom
-                return {'domain': {'purchase_uom': [('id', 'in', supplier_info.product_uom.ids)]}}
+                self.purchase_uom = supplier_info[0].product_uom.id
+                return {'domain': {'purchase_uom': [('id', 'in', supplier_info.mapped('product_uom').ids)]}}
 
     @api.depends('supplier_id', 'product_id', )
     def compute_domain_uom(self):
