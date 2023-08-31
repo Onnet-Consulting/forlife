@@ -236,4 +236,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum40Template',
         'reportPager': True,
     },
+    'report.num41': {
+        'module': 'Kho',
+        'name': 'Báo cáo quyết toán lệnh sản xuất',
+        'reportTemplate': 'ReportNum41Template',
+        'reportPager': True,
+    },
 }
