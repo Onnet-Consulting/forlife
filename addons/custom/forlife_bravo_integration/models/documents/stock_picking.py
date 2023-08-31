@@ -18,33 +18,28 @@ class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = ['stock.picking', 'bravo.model.insert.action']
 
-    @api.model
-    def sync_bravo_picking_daily(self, **kwargs):
-        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-            return False
-        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Datetime.now()
-        begin_date = (date + timedelta(days=-1)).replace(hour=17, second=0, minute=0)
-        end_date = date.replace(hour=17, second=0, minute=0)
-        domain = [
-            ('state', '=', 'done'),
-            ('date_done', '>=', begin_date),
-            ('date_done', '<', end_date),
-        ]
-        companies = self.env['res.company'].search([('code', '!=', False)])
-        for company in companies:
-            dm = domain + [('company_id', '=', company.id)]
-            picking_count = self.search_count(dm)
-            if picking_count > 0:
-                self._action_sync_picking(company, dm)
+    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
 
     @api.model
-    def _action_sync_picking(self, company, domain):
-        pickings = self.with_company(company).search(domain)
-        for picking in pickings:
+    def sync_bravo_picking_daily(self):
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return False
+        domain = [('state', '=', 'done'), ('is_bravo_pushed', '=', False)]
+        companies = self.env['res.company'].search([('code', '!=', False)])
+        for company in companies:
+            pickings = self.with_company(company).search(domain + [('company_id', '=', company.id)])
+            if pickings:
+                pickings.with_company(company).action_sync_picking()
+
+    def action_sync_picking(self):
+        if not self:
+            return False
+        for picking in self:
             insert_queries = picking.bravo_get_insert_sql()
             if insert_queries:
                 self.env[self._name].sudo().with_delay(
                     description=f'Bravo: sync picking {picking.name or picking.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
+        self._cr.execute(f"update stock_picking set is_bravo_pushed = true where id = any (array{self.ids})")
         return True
 
     @api.model
