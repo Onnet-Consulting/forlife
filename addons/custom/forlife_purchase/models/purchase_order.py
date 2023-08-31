@@ -1870,7 +1870,7 @@ class PurchaseOrderLine(models.Model):
         else:
             return super(PurchaseOrderLine, self)._compute_tax_id()
 
-    @api.onchange('product_id', 'is_change_vendor')
+    @api.onchange('product_id', 'is_change_vendor','purchase_uom')
     def onchange_product_vendor_id(self):
         if self.product_id and self.product_id.uom_po_id:
             self.purchase_uom = self.product_id.uom_po_id.id
@@ -1878,7 +1878,7 @@ class PurchaseOrderLine(models.Model):
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
-                [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
+                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
                  ('date_start', '<', date_item),
                  ('date_end', '>', date_item),
                  ('currency_id', '=', self.currency_id.id)
@@ -2017,8 +2017,9 @@ class PurchaseOrderLine(models.Model):
                         rec.vendor_price = 0
                     rec.is_red_color = False
                     continue
-            data = self.env['product.supplierinfo'].search([
+            data = self.env['product.supplierinfo'].search(['|',
                 ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
+                ('product_id', '=', rec.product_id.id)
                 ('partner_id', '=', rec.order_id.partner_id.id),
                 ('currency_id', '=', rec.order_id.currency_id.id),
                 ('product_uom', '=', rec.purchase_uom.id),
