@@ -46,7 +46,6 @@ class ReportNum39(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         query_final = f"""
 with account_by_categ_id as (
@@ -61,14 +60,14 @@ with account_by_categ_id as (
 ),
 stock_moves as (
     select sm.id                              as move_id,
-           pol.before_tax                     as cp_truoc_thue,
-           pol.tax_amount                     as thue_nk,
-           pol.special_consumption_tax_amount as thue_ttdb,
-           pol.after_tax                      as cp_sau_thue,
-           pol.material_cost                  as cp_npl,
-           pol.labor_cost                     as cp_nc,
-           sum(svl.quantity)                  as qty_in,
-           sum(svl.value)                     as value
+           coalesce(pol.before_tax, 0)                     as cp_truoc_thue,
+           coalesce(pol.tax_amount, 0)                     as thue_nk,
+           coalesce(pol.special_consumption_tax_amount, 0) as thue_ttdb,
+           coalesce(pol.after_tax, 0)                      as cp_sau_thue,
+           coalesce(pol.material_cost, 0)                  as cp_npl,
+           coalesce(pol.labor_cost, 0)                     as cp_nc,
+           coalesce(sum(svl.quantity), 0)                  as qty_in,
+           coalesce(sum(svl.value), 0)                     as value
     from stock_move sm
              join purchase_order_line pol on sm.purchase_line_id = pol.id
              left join stock_location sl on sm.location_dest_id = sl.id
@@ -102,6 +101,8 @@ select row_number() over ()                                                     
        sms.cp_sau_thue                                                              as cp_sau_thue,
        sms.cp_npl                                                                   as cp_npl,
        sms.cp_nc                                                                    as cp_nc,
+       sms.cp_truoc_thue + sms.thue_nk + sms.thue_ttdb + sms.cp_sau_thue + sms.cp_npl + sms.cp_nc
+                                                                                    as tong,
        acc.account_code                                                             as tk_hach_toan,
        sm.name                                                                      as dien_giai,
        sm.origin                                                                    as so_po_tham_chieu
