@@ -17,7 +17,8 @@
                         <td><t t-esc="line.ngay"/></td>
                         <td class="column_nowrap"><t t-esc="line.so_ct"/></td>
                         <td><t t-esc="line.kho_nhap"/></td>
-                        <td><t t-esc="line.doi_tuong"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_doi_tuong"/></td>
+                        <td><t t-esc="line.ten_doi_tuong"/></td>
                         <td><t t-esc="line.thuong_hieu"/></td>
                         <td><t t-esc="line.nhom_hang"/></td>
                         <td><t t-esc="line.dong_hang"/></td>
@@ -32,7 +33,9 @@
                         <td class="right"><t t-esc="format_decimal(line.thue_nhap_khau, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.thue_tieu_thu_db, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.cp_sau_thue, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.gt_nhap + line.cp_truoc_thue + line.thue_nhap_khau + line.thue_tieu_thu_db + line.cp_sau_thue, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.cp_npl, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.cp_nc, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong, 0)"/></td>
                         <td class="column_nowrap"><t t-esc="line.tk_hach_toan"/></td>
                         <td><t t-esc="line.dien_giai"/></td>
                         <td><t t-esc="line.so_po_tham_chieu"/></td>
