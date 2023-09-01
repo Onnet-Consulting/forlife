@@ -39,7 +39,7 @@ class HrAssetTransferLine(models.Model):
     br9 = BravoIntegerField(odoo_name='id', bravo_name='RowId')
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         return {
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }
