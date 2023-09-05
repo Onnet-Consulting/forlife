@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="email_template_warning_unapproved_transfer_application" model="mail.template">
+            <field name="name">cảnh báo điều chuyển quá hạn Phê Duyệt</field>
+            <field name="model_id" ref="forlife_product_combo.model_product_combo"/>
+            <field name="subject">CẢNH BÁO ĐƠN ĐIỀU CHUYỂN CHƯA ĐƯỢC PHÊ DUYỆT</field>
+            <field name="email_to">{{ ctx.get('email_to') }}</field>
+            <field name="body_html" type="html">
+                <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td align="center">
+                                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: #FFFFFF; color: #454748; border-collapse:separate;">
+                                    <tbody>
+                                        <tr>
+                                            <td align="center" style="min-width: 590px;">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td valign="top" style="font-size: 13px;">
+                                                                <div>
+                                                                    Kính gửi anh/chị!
+                                                                    <br/>
+                                                                    <br/>
+                                                                    Hiện còn một số đơn điều chuyển tính đến thời điểm hiện tại đã quá thời hạn nhưng chưa được xử lý. Đề nghị anh/chị kiểm tra và xử lý các đơn điều chuyển trên hệ thống.
+                                                                    <br/>
+                                                                    <br/>
+                                                                    Anh/chị vui lòng đăng nhập hệ thống và tiến hành xử lý các đơn cần phê duyệt để đảm bảo tiến độ cập nhật dữ liệu trên hệ thống.
+                                                                    <br/>
+                                                                    <br/>
+                                                                    <br/>Trân trọng cảm ơn!
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </field>
+        </record>
+    </data>
+</odoo>

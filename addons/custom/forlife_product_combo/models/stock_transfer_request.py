@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 class StockTransferRequest(models.Model):
     _inherit = 'stock.transfer.request'
     _description = 'Forlife Stock Transfer'
-    is_expiration_date = fields.Boolean(compute='_compute_is_expiration_date')
 
+    is_expiration_date = fields.Boolean(compute='_compute_is_expiration_date')
     def _compute_is_expiration_date(self):
         for item in self:
             date_check = datetime.now() - relativedelta(days=7)
@@ -14,6 +14,7 @@ class StockTransferRequest(models.Model):
                 item.is_expiration_date = True
             else:
                 item.is_expiration_date = False
+
 
     def check_wait_confirm_stock_transfer_request(self):
         date_check = datetime.now() - relativedelta(days=7)
