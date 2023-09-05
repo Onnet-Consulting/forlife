@@ -143,10 +143,6 @@ odoo.define('forlife_pos_point_order.models', function (require) {
             }
             add_product(product, options){
                 this.old_data = false;
-                for (let i = 0; i < this.orderlines.length; i++) {
-                     this.orderlines[i].point = false
-                     this.orderlines[i].is_new_line_point = false
-                }
                 return super.add_product(product,options)
             }
             remove_orderline( line ){
