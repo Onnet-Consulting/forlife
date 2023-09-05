@@ -163,7 +163,7 @@ class SyntheticDailyTransfer(models.Model):
         return result1
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         return {}
 
     def bravo_get_insert_values(self, **kwargs):
@@ -324,7 +324,7 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
         return 'B30AccDocItemReceipt' if kwargs.get('move_type') == 'in' else 'B30AccDocItemIssue'
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         return {}
 
     @api.model
