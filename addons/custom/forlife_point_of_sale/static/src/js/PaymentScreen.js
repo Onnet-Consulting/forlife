@@ -32,17 +32,17 @@ odoo.define('forlife_point_of_sale.PaymentScreen', function(require) {
                 syncOrderResult = await this.env.pos.push_single_order(this.currentOrder);
                 framework.unblockUI();
                 // 2. Invoice.
-                if (this.currentOrder.is_to_invoice()) {
-                    if (syncOrderResult.length) {
-                        await this.env.legacyActionManager.do_action('account.account_invoices', {
-                            additional_context: {
-                                active_ids: [syncOrderResult[0].account_move],
-                            },
-                        });
-                    } else {
-                        throw { code: 401, message: 'Backend Invoice', data: { order: this.currentOrder } };
-                    }
-                }
+                // if (this.currentOrder.is_to_invoice()) {
+                //     if (syncOrderResult.length) {
+                //         await this.env.legacyActionManager.do_action('account.account_invoices', {
+                //             additional_context: {
+                //                 active_ids: [syncOrderResult[0].account_move],
+                //             },
+                //         });
+                //     } else {
+                //         throw { code: 401, message: 'Backend Invoice', data: { order: this.currentOrder } };
+                //     }
+                // }
 
                 // 3. Post process.
                 if (syncOrderResult.length && this.currentOrder.wait_for_push_order()) {
