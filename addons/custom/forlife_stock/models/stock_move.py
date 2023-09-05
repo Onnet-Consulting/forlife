@@ -38,8 +38,6 @@ class StockMove(models.Model):
         return super().write(vals)
     
     def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description):
-        # This method returns a dictionary to provide an easy extension hook to modify the valuation lines (see purchase for an example)
-        self.ensure_one()
         rslt = super(StockMove, self)._generate_valuation_lines_data(partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description)
         rslt['credit_line_vals'].update({
             'occasion_code_id': self.occasion_code_id.id or False,
