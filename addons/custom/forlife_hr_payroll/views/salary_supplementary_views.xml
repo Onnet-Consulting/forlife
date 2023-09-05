@@ -8,25 +8,25 @@
                 <tree string="salary_supplementary_tree" class="set-width-custom">
                     <field name="salary_record_id" invisible="1"/>
                     <field name="company_id" invisible="1"/>
-                    <field name="purpose_id"/>
-                    <field name="department_id"/>
-                    <field name="analytic_account_id"/>
-                    <field name="asset_id"/>
-                    <field name="production_id"/>
-                    <field name="occasion_code_id"/>
-                    <field name="x_bhxh_level" optional="show" sum="Total"/>
-                    <field name="x_bhxh_nld" optional="show" sum="Total"/>
-                    <field name="x_bhyt_nld" optional="show" sum="Total"/>
-                    <field name="x_bhtn_nld" optional="show" sum="Total"/>
-                    <field name="x_tbh_nld" optional="show" sum="Total"/>
-                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show" sum="Total"/>
-                    <field name="x_bhyt_ct" optional="show" sum="Total"/>
-                    <field name="x_bhtn_ct" optional="show" sum="Total"/>
-                    <field name="x_tbh_ct" optional="show" sum="Total"/>
-                    <field name="x_cdp_ct" optional="show" sum="Total"/>
-                    <field name="x_cdp_nld" optional="show" sum="Total"/>
-                    <field name="x_tncn" optional="show" sum="Total"/>
-                    <field name="note" optional="show"/>
+                    <field name="purpose_id" width="150px"/>
+                    <field name="department_id" width="150px"/>
+                    <field name="analytic_account_id" width="150px"/>
+                    <field name="asset_id" width="150px"/>
+                    <field name="production_id" width="150px"/>
+                    <field name="occasion_code_id" width="150px"/>
+                    <field name="x_bhxh_level" optional="show" width="150px"/>
+                    <field name="x_bhxh_nld" optional="show" width="150px"/>
+                    <field name="x_bhyt_nld" optional="show" width="150px"/>
+                    <field name="x_bhtn_nld" optional="show" width="150px"/>
+                    <field name="x_tbh_nld" optional="show" width="250px"/>
+                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show" width="250px"/>
+                    <field name="x_bhyt_ct" optional="show" width="200px"/>
+                    <field name="x_bhtn_ct" optional="show" width="200px"/>
+                    <field name="x_tbh_ct" optional="show" width="200px"/>
+                    <field name="x_cdp_ct" optional="show" width="200px"/>
+                    <field name="x_cdp_nld" optional="show" width="200px"/>
+                    <field name="x_tncn" optional="show" width="200px"/>
+                    <field name="note" optional="show" width="150px"/>
                 </tree>
             </field>
         </record>

@@ -16,6 +16,8 @@ class HandleChangeRefundLine(models.Model):
     company_id = fields.Many2one('res.company', related='handle_change_refund_id.company_id', string='Company', store=True)
     reason_refund_id = fields.Many2one('pos.reason.refund', 'Reason Refund')
     pos_order_line_id = fields.Many2one('pos.order.line', string='Pos Order Line')
+    quantity = fields.Float('Quantity')
+    product_uom_id = fields.Many2one('uom.uom', 'Unit', readonly=True)
 
     def action_open_lines_root(self):
         view_id = self.env.ref('forlife_pos_product_change_refund.pos_order_line_handle_change_refund_form_view').id

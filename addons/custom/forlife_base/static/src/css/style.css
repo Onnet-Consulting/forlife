@@ -8,13 +8,5 @@
 }
 
 .padding-form-custom {
-    padding: 1em 1em;
-}
-
-.set-width-custom [data-name$='_id'] {
-    width: 120px !important;
-}
-
-.set-width-custom [data-name^='x_'] {
-    width: 100px !important;
+    padding: 0 0.5em;
 }

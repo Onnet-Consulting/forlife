@@ -6,34 +6,61 @@ class AccountMove(models.Model):
 
     account_expense_labor_detail_ids = fields.One2many('account.expense.labor.detail', 'move_id', string='Account Expense Labor Detail')
     sum_expense_labor_ids = fields.One2many('summary.expense.labor.account', 'move_id', string='Summary Expense Labor')
+    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type')
+    origin_invoice_id = fields.Many2one('account.move', string='Origin Invoice', readonly=True, check_company=True)
+    increase_decrease_inv_count = fields.Integer(compute="_compute_increase_decrease_inv_count", string='Increase/decrease invoice count')
 
-    # @api.onchange('currency_id')
-    # def onchange_exchange_rate(self):
-    #     if self.currency_id:
-    #         new_exchange_rate = self.currency_id.inverse_rate if self.type_inv != 'cost' else 1
-    #         rate = self.exchange_rate/new_exchange_rate
-    #         if self.sum_expense_labor_ids and rate != 1:
-    #             for sum_expense_labor_id in self.sum_expense_labor_ids:
-    #                 if self.currency_id == sum_expense_labor_id.origin_currency_id:
-    #                     sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax
-    #                     sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax
-    #                     sum_expense_labor_id.before_tax = sum_expense_labor_id.origin_before_est_tax
-    #                     sum_expense_labor_id.after_tax = sum_expense_labor_id.origin_after_est_tax
-    #                 else:
-    #                     sum_expense_labor_id.before_est_tax = sum_expense_labor_id.origin_before_est_tax * rate
-    #                     sum_expense_labor_id.after_est_tax = sum_expense_labor_id.origin_after_est_tax * rate
-    #                     sum_expense_labor_id.before_tax = sum_expense_labor_id.before_tax * rate
-    #                     sum_expense_labor_id.after_tax = sum_expense_labor_id.after_tax * rate
-    #
-    #         if self.account_expense_labor_detail_ids and rate != 1:
-    #             for labor_detail_id in self.account_expense_labor_detail_ids:
-    #                 if self.currency_id == labor_detail_id.origin_currency_id:
-    #                     labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
-    #                     labor_detail_id.price_subtotal_back = labor_detail_id.origin_price_subtotal_back
-    #                 else:
-    #                     labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
-    #                     labor_detail_id.price_subtotal_back = labor_detail_id.price_subtotal_back * rate
-    #     return super(AccountMove, self).onchange_exchange_rate()
+    @api.depends(
+        'line_ids.matched_debit_ids.debit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.balance',
+        'line_ids.currency_id',
+        'line_ids.amount_currency',
+        'line_ids.amount_residual',
+        'line_ids.amount_residual_currency',
+        'line_ids.payment_id.state',
+        'line_ids.full_reconcile_id',
+        'total_trade_discount',
+        'x_amount_tax',
+        'state')
+    def _compute_amount(self):
+        super()._compute_amount()
+        for record in self.filtered(lambda x: x.total_trade_discount or x.x_amount_tax):
+            amount_residual = record.amount_residual - (record.total_trade_discount + record.x_amount_tax)
+            record.amount_residual = amount_residual
+
+    def _compute_increase_decrease_inv_count(self):
+        for move in self:
+            move.increase_decrease_inv_count = self.search_count([('origin_invoice_id', '=', move.id)])
+
+    def action_view_increase_decrease_invoice(self):
+        self.ensure_one()
+        invoices = self.search([('origin_invoice_id', 'in', self.ids)])
+        result = self.env['ir.actions.act_window']._for_xml_id('account.action_move_in_invoice_type')
+        if len(invoices) == 1:
+            res = self.env.ref('account.view_move_form', False)
+            form_view = [(res and res.id or False, 'form')]
+            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if view != 'form']
+            result['res_id'] = invoices.id
+        else:
+            result['domain'] = [('id', 'in', invoices.ids)]
+        return result
+
+    def button_popup_increase_decrease_invoice(self):
+        return {
+            'name': 'Tăng/giảm hóa đơn',
+            'domain': [],
+            'res_model': 'wizard.increase.decrease.invoice',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'context': {'default_origin_invoice_id': self.id},
+            'target': 'new',
+        }
 
     @api.model_create_multi
     def create(self, vals):
@@ -80,11 +107,9 @@ class AccountExpenseLaborDetail(models.Model):
     description = fields.Char('Mô tả')
     uom_id = fields.Many2one('uom.uom', string='Đơn vị')
     currency_id = fields.Many2one('res.currency', string='Tiền tệ', store=True, related='move_id.currency_id')
-    origin_currency_id = fields.Many2one('res.currency', string='Tiền tệ')
     company_id = fields.Many2one(related='move_id.company_id', string='Công ty', store=True)
     qty = fields.Float('Số lượng')
     price_subtotal_back = fields.Float(string='Thành tiền', currency_field='currency_id')
-    origin_price_subtotal_back = fields.Float(string='Thành tiền', currency_field='origin_currency_id')
     tax_back = fields.Float(string='Tiền thuế', currency_field='currency_id')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', currency_field='currency_id')
     tax_percent = fields.Many2one('account.tax', string='% Thuế')
@@ -118,9 +143,7 @@ class SummaryExpenseLaborAccount(models.Model):
     expense_labor = fields.Float(string='CP thưc tế nhân công', compute='_compute_expense_labor')
     qty_actual = fields.Float(string='SL(thực nhập)', compute='_compute_qty_actual')
     before_est_tax = fields.Float(string='CP ước tính trước thuế', currency_field='currency_id')
-    origin_before_est_tax = fields.Float(string='Giá trị CP ước tính trước thuế gốc', currency_field='origin_currency_id')
     after_est_tax = fields.Float(string='CP ước tính sau thuế', currency_field='currency_id')
-    origin_after_est_tax = fields.Float(string='Giá trị CP ước tính sau thuế gốc', currency_field='origin_currency_id')
     expense_est_labor = fields.Float(string='CP ước tính nhân công', currency_field='currency_id')
 
     @api.model_create_multi
@@ -134,6 +157,10 @@ class SummaryExpenseLaborAccount(models.Model):
             cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             after_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_false.mapped('product_id')).mapped('price_unit'))
             rec.after_est_tax = after_est_tax
+
+            lines = rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
+            rec.expense_est_labor = sum(lines.mapped('price_unit'))
+
         return res
 
     @api.onchange('product_id')
@@ -170,17 +197,6 @@ class SummaryExpenseLaborAccount(models.Model):
                 move_ids = item.move_id.receiving_warehouse_id.mapped('move_ids').filtered(lambda w: w.product_id == item.product_id)
                 item.product_qty = sum(x.quantity_done for x in move_ids)
 
-    # @api.depends('product_id', 'move_id.cost_line')
-    # def compute_origin_est_tax(self):
-    #     for rec in self:
-    #         cost_line_true = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-    #         before_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_true.mapped('product_id')).mapped('price_unit'))
-    #         rec.before_est_tax = before_est_tax
-    #
-    #         cost_line_false = rec.move_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-    #         after_est_tax = sum(rec.move_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.product_id and x.product_expense_origin_id in cost_line_false.mapped('product_id')).mapped('price_unit'))
-    #         rec.after_est_tax = after_est_tax
-
     @api.depends('product_id', 'move_id.cost_line.is_check_pre_tax_costs', 'move_id.invoice_line_ids')
     def _compute_before_tax(self):
         for rec in self:
@@ -205,8 +221,6 @@ class SummaryExpenseLaborAccount(models.Model):
     def _compute_expense_labor(self):
         for item in self:
             total = 0
-            lines = item.move_id.invoice_line_ids.filtered(
-                lambda x: x.product_id == item.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
+            lines = item.move_id.invoice_line_ids.filtered(lambda x: x.product_id == item.product_id and x.product_expense_origin_id and x.product_expense_origin_id.x_type_cost_product == 'labor_costs')
             total += sum([x.price_unit for x in lines])
             item.expense_labor = total
-

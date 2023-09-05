@@ -15,7 +15,7 @@
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr class="line_stock_detail" t-att-id="line.product_id">
-                        <td><t t-esc="line.product_barcode"/></td>
+                        <td class="column_nowrap"><t t-esc="line.product_barcode"/></td>
                         <td class="product_name"><t t-esc="line.product_name"/></td>
                         <td><t t-esc="line.product_size"/></td>
                         <td><t t-esc="line.product_color"/></td>

@@ -1,0 +1,24 @@
+<odoo>
+        <record id="warning_popup" model="ir.ui.view">
+            <field name="name">warning_popup_form</field>
+            <field name="model">warning.popup</field>
+            <field name="arch" type="xml">
+                <form string="Reason">
+                        <field name="message"
+                               readonly="True" nolabel="1" style="color:orange; font-size: 20px"/>
+                    <footer>
+                        <button string="Skip" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_warning_popup" model="ir.actions.act_window">
+            <field name="name">Action Warning Popup</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">warning.popup</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="warning_popup"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

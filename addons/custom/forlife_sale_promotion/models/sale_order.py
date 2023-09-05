@@ -23,6 +23,7 @@ class SaleOrder(models.Model):
         readonly=True, copy=False, index=True,
         tracking=3,
         default='draft')
+    promotion_used = fields.Char(copy=False)
 
     def get_oder_line_barcode(self, barcode):
         line_product = []
@@ -76,8 +77,16 @@ class SaleOrder(models.Model):
 
     def check_sale_promotion(self):
         for rec in self:
+            list_promotion_used = []
+            ignore_barcode = []
+            if rec.promotion_used:
+                list_promotion_used = rec.promotion_used.split(' , ')
+                ignore_barcode = rec.promotion_used.split(' , ')
             if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
-                rec.promotion_ids = [Command.clear()]
+                # rec.promotion_ids = [Command.clear()]
+                for promotion_item in rec.promotion_ids:
+                    if not promotion_item.is_handle:
+                        promotion_item.unlink()
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
                     text = re.compile('<.*?>')
@@ -99,6 +108,9 @@ class SaleOrder(models.Model):
                                 action['context'] = {
                                     'default_message': _("Not found the Sale Order with #X[%s] and #N[%s]!") % (nhanh_origin_id, nhanh_return_id)
                                 }
+                                rec.write({
+                                    'promotion_used': ' , '.join(list_promotion_used)
+                                })
                                 return action
                             else:
                                 rec.nhanh_origin_id = nhanh_origin_id
@@ -108,6 +120,9 @@ class SaleOrder(models.Model):
                             action['context'] = {
                                 'default_message': _("Order note '#X[Nhanh Origin ID] #N[Nhanh Return ID]' invalid!")
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                     has_vip = False
@@ -115,7 +130,9 @@ class SaleOrder(models.Model):
                         for mn in self.find_mn_index(note):
                             barcode_str = note[mn + 3:].strip()
                             barcode = re.split(' |,', barcode_str)[0]
-
+                            if barcode in ignore_barcode:
+                                ignore_barcode.pop(ignore_barcode.index(barcode))
+                                continue
                             if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
                                 rec.order_line.write({
                                     'x_free_good': True,
@@ -132,6 +149,9 @@ class SaleOrder(models.Model):
                                     action['context'] = {
                                         'default_message': _("Order note '#MN' invalid!")
                                     }
+                                    rec.write({
+                                        'promotion_used': ' , '.join(list_promotion_used)
+                                    })
                                     return action
                                 elif len(line) >= 1:
                                     if line[0].product_uom_qty == 1:
@@ -154,6 +174,7 @@ class SaleOrder(models.Model):
                                             'odoo_price_unit': 0,
                                             'x_cart_discount_fixed_price': 0,
                                         })
+                                    list_promotion_used.append(barcode)
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]
@@ -184,6 +205,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu theo chính sách vip",
                                         'tax_id': ln.tax_id,
                                         'order_line_id': ln.id,
+                                        'is_handle': False
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                 # Ưu tiên 4
@@ -199,6 +221,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu giảm giá trực tiếp",
                                         'tax_id': ln.tax_id,
                                         'order_line_id': ln.id,
+                                        'is_handle': False
                                     })]
                                     ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         else:
@@ -208,6 +231,9 @@ class SaleOrder(models.Model):
                             action['context'] = {
                                 'default_message': _("Order note '#VIP' invalid!")
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
                             # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
@@ -230,11 +256,13 @@ class SaleOrder(models.Model):
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
                                 'promotion_type': 'discount',
+                                'product_uom_qty': ln.product_uom_qty,
                                 'account_id': discount_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu giảm giá trực tiếp",
                                 'tax_id': ln.tax_id,
                                 'order_line_id': ln.id,
+                                'is_handle': False
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                         # Ưu tiên 2
@@ -243,11 +271,13 @@ class SaleOrder(models.Model):
                                 'product_id': ln.product_id.id,
                                 'value': diff_price,
                                 'promotion_type': 'diff_price',
+                                'product_uom_qty': ln.product_uom_qty,
                                 'account_id': promotion_account_id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi theo CT giá",
                                 'tax_id': ln.tax_id,
                                 'order_line_id': ln.id,
+                                'is_handle': False
                             })]
                             ln.x_account_analytic_id = analytic_account_id and analytic_account_id.id
 
@@ -279,7 +309,8 @@ class SaleOrder(models.Model):
                             'value': - rec.nhanh_shipping_fee,
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
-                            'description': "Phí vận chuyển"
+                            'description': "Phí vận chuyển",
+                            'is_handle': False
                         })]
 
                     # Customer shipping fee
@@ -311,7 +342,8 @@ class SaleOrder(models.Model):
                             'value': rec.nhanh_customer_shipping_fee,
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
-                            'description': "Phí ship báo khách hàng"
+                            'description': "Phí ship báo khách hàng",
+                            'is_handle': False
                         })]
 
                     # Check voucher và giá trị
@@ -326,6 +358,9 @@ class SaleOrder(models.Model):
                                 'default_message': _("Voucher %s không tồn tại trong hệ thống. Vui lòng kiểm tra lại!" % rec.x_code_voucher),
                                 'default_voucher_name': rec.x_code_voucher
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                         if voucher_id.state not in ['sold', 'valid', 'off value']:
@@ -334,8 +369,12 @@ class SaleOrder(models.Model):
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
-                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán" hoặc "Còn giá trị"' % rec.x_code_voucher),
+                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán", "Còn giá trị", "Hết giá trị"' % rec.x_code_voucher),
+                                'default_voucher_name': rec.x_code_voucher
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                         if voucher_id and voucher_id.price_residual < rec.x_voucher:
@@ -347,6 +386,9 @@ class SaleOrder(models.Model):
                                 'default_message': _("Giá trị voucher (Nhanh) không được vượt quá %s" % "{:0,.0f}".format(voucher_id.price_residual)),
                                 'default_voucher_value': rec.x_voucher
                             }
+                            rec.write({
+                                'promotion_used': ' , '.join(list_promotion_used)
+                            })
                             return action
 
                 # đơn bán buôn
@@ -370,12 +412,14 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': line_promotion.product_id.id,
                                         'value': discount_amount,
+                                        'product_uom_qty': line_promotion.product_uom_qty,
                                         'promotion_type': 'reward',
                                         'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi",
                                         'tax_id': line.tax_id,
                                         'order_line_id': line_promotion.id,
+                                        'is_handle': False
                                     })]
                                     line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                             list_line_promotion.append(line)
@@ -400,12 +444,14 @@ class SaleOrder(models.Model):
                                         rec.promotion_ids = [(0, 0, {
                                             'product_id': line_promotion.product_id.id,
                                             'value': discount_amount,
+                                            'product_uom_qty': line_promotion.product_uom_qty,
                                             'promotion_type': 'reward',
                                             'account_id': discount_account_id and discount_account_id.id,
                                             'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                             'description': "Chiết khấu khuyến mãi",
                                             'tax_id': line.tax_id,
-                                            'order_line_id': line_promotion.id
+                                            'order_line_id': line_promotion.id,
+                                            'is_handle': False
                                         })]
                                         line_promotion.x_account_analytic_id = analytic_account_id and analytic_account_id.id
                                         list_line_promotion.append(line)
@@ -436,15 +482,3 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     prm_price_discount = fields.Float(string="Price discount")
-    # prm_price_total_discount = fields.Float(string="Price total discount", compute="_compute_amount_discount")
-    # ghn_price_unit_discount = fields.Float(string="Price unit discount (GHN)")
-    # product_gift = fields.Boolean(string="Gift")
-
-    # @api.depends("price_subtotal", "price_unit", "product_uom_qty", "order_id.x_sale_chanel", "x_cart_discount_fixed_price")
-    # def _compute_amount_discount(self):
-    #     for rec in self:
-    #         # rec.prm_price_discount = False
-    #         rec.prm_price_total_discount = False
-    #         if rec.order_id.x_sale_chanel == "online":
-    #             # rec.prm_price_discount = rec.discount_price_unit * rec.product_uom_qty
-    #             rec.prm_price_total_discount = rec.price_subtotal - rec.x_cart_discount_fixed_price

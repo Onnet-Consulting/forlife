@@ -85,37 +85,12 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return True
         for record in self:
-            if record.location_dest_id.usage == 'internal':
-                for rec in record.move_ids:
-                    if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
-                        continue
-                    if rec.work_production:
-                        quantity = self.env['quantity.production.order'].search(
-                            [('product_id', '=', rec.product_id.id),
-                                ('location_id', '=', rec.picking_id.location_dest_id.id),
-                                ('production_id.code', '=', rec.work_production.code)])
-                        if quantity:
-                            quantity.write({
-                                'quantity': quantity.quantity + rec.quantity_done
-                            })
-                        else:
-                            self.env['quantity.production.order'].create({
-                                'product_id': rec.product_id.id,
-                                'location_id': rec.picking_id.location_dest_id.id,
-                                'production_id': rec.work_production.id,
-                                'quantity': rec.quantity_done
-                            })
-        for record in self:
             po = record.purchase_id
             if not po:
                 continue
             if po.is_inter_company == False and not po.is_return and not record.move_ids[0]._is_purchase_return():
                 ## check npl tồn:
                 self.check_quant_goods_import(po)
-                po.write({
-                    'inventory_status': 'done',
-                    'invoice_status_fake': 'to invoice',
-                })
                 _context = {
                     'pk_no_input_warehouse': False,
                 }
@@ -138,6 +113,25 @@ class StockPicking(models.Model):
                     'currency_id': po.currency_id.id,
                     'exchange_rate': po.exchange_rate
                 })
+            for rec in record.move_ids:
+                if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                    continue
+                if rec.work_production:
+                    quantity = self.env['quantity.production.order'].search(
+                        [('product_id', '=', rec.product_id.id),
+                            ('location_id', '=', rec.picking_id.location_dest_id.id),
+                            ('production_id.code', '=', rec.work_production.code)])
+                    if quantity:
+                        quantity.write({
+                            'quantity': quantity.quantity + rec.quantity_done
+                        })
+                    else:
+                        self.env['quantity.production.order'].create({
+                            'product_id': rec.product_id.id,
+                            'location_id': rec.picking_id.location_dest_id.id,
+                            'production_id': rec.work_production.id,
+                            'quantity': rec.quantity_done
+                        })
         return res
 
     def prepare_move_svl_value_with_tax_po(self, po, tax_type):
@@ -341,7 +335,7 @@ class StockPicking(models.Model):
                         if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                             raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                         if material_line.price_unit > 0:
-                            pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
+                            pbo = round(material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty)
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
@@ -368,13 +362,14 @@ class StockPicking(models.Model):
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                             if material_line.product_id.standard_price > 0:
+                                value = round((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price)
                                 #xử lý phân bổ nguyên vật liệu
                                 debit_allowcation_npl = (0, 0, {
                                     'sequence': 1,
                                     'product_id': move.product_id.id,
                                     'account_id': account_1561,
                                     'name': item.product_id.name,
-                                    'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'debit': value,
                                     'credit': 0,
                                 })
 
@@ -384,10 +379,10 @@ class StockPicking(models.Model):
                                     'account_id': account_export_production_order.id,
                                     'name': account_export_production_order.name,
                                     'debit': 0,
-                                    'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                    'credit': value,
                                 })
                                 list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
-                if record.state == 'done':
+                if record.state == 'done' and list_line_xk:
                     self.create_xk_picking(po, record, list_line_xk, export_production_order)
                 if debit_cost > 0:
                     debit_cp = (0, 0, {

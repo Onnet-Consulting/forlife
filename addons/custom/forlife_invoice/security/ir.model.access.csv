@@ -10,3 +10,5 @@ access_account_move_reversal_import_user,account.move.reversal.import.user,model
 access_account_move_reversal_import_manager,account.move.reversal.import.manager,model_account_move_reversal_import,base.group_system,1,1,1,1
 access_summary_expense_labor_account,summary.expense.labor.account,model_summary_expense_labor_account,,1,1,1,1
 access_account_expense_labor_detail,account.expense.labor.detail,model_account_expense_labor_detail,,1,1,1,1
+access_wizard_increase_decrease_invoice,wizard increase decrease invoice,model_wizard_increase_decrease_invoice,base.group_user,1,1,1,1
+access_wizard_increase_decrease_invoice_line,wizard increase decrease invoice line,model_wizard_increase_decrease_invoice_line,base.group_user,1,1,1,1

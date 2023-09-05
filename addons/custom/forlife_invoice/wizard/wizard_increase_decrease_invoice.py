@@ -10,7 +10,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     _description = 'Increase Decrease Invoice Wizard'
 
     origin_invoice_id = fields.Many2one('account.move', string='Move Origin')
-    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type', default='increase')
+    invoice_type = fields.Selection([('increase', 'Tăng'), ('decrease', 'Giảm')], string='Type', default='increase')
     selected_all = fields.Boolean(string='Selected all')
     line_ids = fields.One2many('wizard.increase.decrease.invoice.line', 'parent_id', string='Detail')
 
@@ -54,8 +54,8 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'origin_invoice_id': self.origin_invoice_id.id,
                 'move_type': move_type,
                 'reference': self.origin_invoice_id.name,
-                'purchase_order_product_id': False,
-                'receiving_warehouse_id': False,
+                'cost_line': False,
+                'vendor_back_ids': False,
                 'invoice_date': fields.Date.today(),
                 'pos_order_id': False,
                 'direction_sign': 1 if move_type == 'in_invoice' else -1,
@@ -74,11 +74,15 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'amount_currency': abs(line_id.amount_currency),
                     })
 
-                if line_id.product_id:
-                    line_id.write({
-                        'account_id': line_id.product_id.categ_id.property_stock_account_input_categ_id.id,
-                        'purchase_line_id': False
-                    })
+                # if line_id.product_id:
+                #     if not line_id.product_id.categ_id.property_stock_account_input_categ_id.id:
+                #         raise ValidationError(_('Vui lòng cấu hình tài khoản nhập kho trong Nhóm sản phẩm %s' % line_id.product_id.display_name))
+                #     line_id.write({
+                #         'account_id': line_id.product_id.categ_id.property_stock_account_input_categ_id.id,
+                #         'purchase_line_id': False
+                #     })
+
+
             # check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
             #         (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
             # move_copy_id.write({
@@ -105,7 +109,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
         amount_payable = int(sum(line_ids.mapped('price_subtotal')) + sum(line_ids.mapped('tax_amount')))
         tax_lines = []
         for line in line_ids:
-            account_id = line.product_id.categ_id.property_stock_account_input_categ_id
+            account_id = line.account_id
             taxes_res = []
             if line.tax_ids:
                 line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
@@ -307,7 +311,7 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     uom_id = fields.Many2one(comodel_name='uom.uom', string='Unit of Measure', )
     parent_id = fields.Many2one('wizard.increase.decrease.invoice', string='Parent')
     price_unit = fields.Float(string='Unit Price', digits='Product Price', )
-    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", )
+    tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", ondelete='restrict')
     invoice_line_id = fields.Many2one('account.move.line', string='Move Line')
     quantity = fields.Float(string='Quantity')
     price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )

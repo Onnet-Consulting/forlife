@@ -40,6 +40,7 @@ class StockPicking(models.Model):
                         "account_id": promotion_id.account_id.id,
                         "analytic_account_id": promotion_id.analytic_account_id.id,
                         "description": promotion_id.description,
+                        "tax_id": [(6, 0, promotion_id.tax_id.ids)],
                     }))
             invoice_line = {
                 'product_id': line.product_id.id,
@@ -108,6 +109,7 @@ class StockPicking(models.Model):
 
         try:
             sale_from_nhanh = self.sale_id and self.sale_id.source_record
+            is_refund = self.sale_id.x_is_return or self.x_is_check_return
             if self.state == "done" and self.picking_type_code == "outgoing" and sale_from_nhanh:
                 picking_out = self.sale_id.picking_ids.filtered(
                     lambda r: r.picking_type_id == self.sale_id.warehouse_id.out_type_id
@@ -123,7 +125,8 @@ class StockPicking(models.Model):
                     })
                     invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
                     invoice_id.action_post()
-            if self.state == "done" and sale_from_nhanh and self.sale_id.x_is_return:
+            
+            if self.state == "done" and sale_from_nhanh and is_refund:
                 if self.company_id.id == self.sale_id.company_id.id:
                     self.create_invoice_out_refund()
         except Exception as e:
@@ -137,6 +140,8 @@ class StockPicking(models.Model):
         """
 
         for rec in picking_id.move_ids_without_package.filtered(lambda r: r.work_production):
+            if rec.product_id.categ_id.category_type_id.code not in ('2','3','4'):
+                continue
             domain = [('product_id', '=', rec.product_id.id), ('location_id', '=', picking_id.location_id.id), ('production_id.code', '=', rec.work_production.code)]
             quantity_prodution = self.env['quantity.production.order'].search(domain)
             if quantity_prodution:

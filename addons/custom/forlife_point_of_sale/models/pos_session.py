@@ -41,10 +41,11 @@ class PosSession(models.Model):
         return loaded_data
 
     def _process_pos_ui_product_product(self, products):
-        product_ids = set(self._get_product_ids_by_store())
-        new_products = []
-        for product in products:
-            if product.get('id') in product_ids:
-                new_products.append(product)
-        products[:] = new_products
+        if not self.env.context.get('load_missing_product', False):
+            product_ids = set(self._get_product_ids_by_store())
+            new_products = []
+            for product in products:
+                if product.get('id') in product_ids:
+                    new_products.append(product)
+            products[:] = new_products
         return super(PosSession, self)._process_pos_ui_product_product(products)

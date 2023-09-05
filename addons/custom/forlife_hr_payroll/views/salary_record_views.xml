@@ -81,21 +81,26 @@
                         </group>
                         <notebook>
                             <page name="salary_record_main" string="Salary Record Main">
+                                <button name="open_view_summary" type="object" string="Chi tiết tổng" class="oe_highlight" icon="fa-arrows-alt" context="{'action_id': 'salary_record_main_id'}"/>
                                 <field name="salary_record_main_ids" readonly="1"/>
                             </page>
                             <page name="salary_total_income" string="Salary Total Income">
+                                <button name="open_view_summary" type="object" string="Chi tiết tổng" class="oe_highlight" icon="fa-arrows-alt" context="{'action_id': 'salary_total_income_id'}"/>
                                 <field name="salary_total_income_ids" readonly="1"/>
                             </page>
                             <page name="salary_supplementary" string="Salary Supplementary">
+                                <button name="open_view_summary" type="object" string="Chi tiết tổng" class="oe_highlight" icon="fa-arrows-alt" context="{'action_id': 'salary_supplementary_id'}"/>
                                 <field name="salary_supplementary_ids" readonly="1"/>
                             </page>
                             <page name="salary_arrears" string="Salary Arrears">
+                                <button name="open_view_summary" type="object" string="Chi tiết tổng" class="oe_highlight" icon="fa-arrows-alt" context="{'action_id': 'salary_arrears_id'}"/>
                                 <field name="salary_arrears_ids" readonly="1"/>
                             </page>
                             <page name="salary_accounting" string="Salary Accounting" states="approved,posted,cancel_post" groups="account.group_account_manager">
                                 <field name="salary_accounting_ids" readonly="1"/>
                             </page>
                             <page name="salary_backlog" string="Salary Backlog">
+                                <button name="open_view_summary" type="object" string="Chi tiết tổng" class="oe_highlight" icon="fa-arrows-alt" context="{'action_id': 'salary_backlog_id'}"/>
                                 <field name="salary_backlog_ids"/>
                             </page>
                         </notebook>

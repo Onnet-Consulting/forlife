@@ -10,13 +10,14 @@
         <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
             <t t-call="ReportTitle"/>
             <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.stt"/></td>
+                        <td class="index-report"><t t-esc="line.stt"/></td>
                         <td><t t-esc="line.ngay"/></td>
-                        <td><t t-esc="line.so_ct"/></td>
+                        <td class="column_nowrap"><t t-esc="line.so_ct"/></td>
                         <td><t t-esc="line.kho_xuat"/></td>
-                        <td><t t-esc="line.so_ct2"/></td>
+                        <td class="column_nowrap"><t t-esc="line.so_ct2"/></td>
                         <td><t t-esc="line.kho_nhap"/></td>
                         <td><t t-esc="line.ma_khach"/></td>
                         <td><t t-esc="line.ten_khach"/></td>
@@ -24,8 +25,8 @@
                         <td><t t-esc="line.nhom_hang"/></td>
                         <td><t t-esc="line.dong_hang"/></td>
                         <td><t t-esc="line.ket_cau"/></td>
-                        <td><t t-esc="line.ma_vach"/></td>
-                        <td><t t-esc="line.ma_hang"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_vach"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_hang"/></td>
                         <td><t t-esc="line.ten_hang"/></td>
                         <td><t t-esc="line.mau_sac"/></td>
                         <td><t t-esc="line.kich_co"/></td>
@@ -38,9 +39,9 @@
                         <td><t t-esc="line.subclass4"/></td>
                         <td><t t-esc="line.subclass5"/></td>
                         <td><t t-esc="line.dv_tinh"/></td>
-                        <td><t t-esc="line.nhap"/></td>
-                        <td><t t-esc="line.xuat"/></td>
-                        <td><t t-esc="line.don_gia"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.nhap, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.xuat, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.don_gia, 0)"/></td>
                         <td><t t-esc="line.ma_loai"/></td>
                         <td><t t-esc="line.ngay_to_khai"/></td>
                         <td><t t-esc="line.dien_giai"/></td>

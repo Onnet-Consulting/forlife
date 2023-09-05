@@ -10,7 +10,7 @@
                 <field name="company_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
-                <field name="state"/>
+                <field name="data_compare_status"/>
             </tree>
         </field>
     </record>
@@ -20,11 +20,9 @@
         <field name="model">synthetic.account.move.pos</field>
         <field name="arch" type="xml">
             <form>
-                <!--header>
-                    <button name="generate_invoices" type="object" string="Tạo hóa đơn tổng hợp"/>
-                    <button name="generate_invoices_bkav" type="object" string="Tạo hóa đơn tổng hợp đến BKAV"/>
-                    <field name="state" widget="statusbar"/>
-                </header-->
+                <header>
+                    <field name="data_compare_status" widget="statusbar"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -80,6 +78,9 @@
                             </field>
                         </page>
                         <page name="HĐĐT" string="Invoices">
+                            <button name="create_an_invoice" type="object" class="btn btn-primary"
+                                attrs="{'invisible':['|',('exists_bkav', '!=', False),('invoice_guid', '!=', False)]}"
+                                string="Create eInvoice" groups="account.group_account_invoice"/>
                             <button name="get_invoice_bkav" type="object" class="btn btn-primary"
                                 attrs="{'invisible':[('invoice_guid', '=', False)]}"
                                 string="Get eInvoice" groups="account.group_account_invoice"/>
@@ -91,6 +92,7 @@
                                 <field name="invoice_e_date" readonly="1"/>
                                 <field name="invoice_serial" readonly="1"/>
                                 <field name="invoice_guid" readonly="1"/>
+                                <field name="exists_bkav" readonly="1"/>
                                 <field name="invoice_form" readonly="1"/>
                             </group>
                         </page>

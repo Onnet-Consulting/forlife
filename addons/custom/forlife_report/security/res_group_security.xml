@@ -204,5 +204,20 @@
             <field name="name">Báo cáo danh sách kho hàng/địa điểm</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+
+        <record id="group_report_num39" model="res.groups">
+            <field name="name">Báo cáo chi tiết nhập hàng theo phiếu kho</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num40" model="res.groups">
+            <field name="name">Báo cáo tài sản công cụ dụng cụ</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+
+        <record id="group_report_num41" model="res.groups">
+            <field name="name">Báo cáo quyết toán lệnh sản xuất</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>

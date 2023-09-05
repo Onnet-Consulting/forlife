@@ -50,6 +50,7 @@
         'wizard/bravo_sync_tax_wizard_views.xml',
         'views/product_category_views.xml',
         'views/synthetic_daily_transfer_views.xml',
+        'views/account_move_views.xml',
         'wizard/bravo_sync_asset_wizard_views.xml',
         'wizard/bravo_sync_pos_expense_label_views.xml',
     ],

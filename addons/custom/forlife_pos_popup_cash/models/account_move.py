@@ -11,7 +11,8 @@ class AccountMove(models.Model):
     pos_transfer_cash_2office = fields.Boolean(string='POS Transfer Cash to POS', readonly=True)
     pos_orig_amount = fields.Float(string='POS Original Transfer Amount', readonly=True)
     pos_trans_session_id = fields.Many2one('pos.session', readonly=True)
-    pos_trans_diff_move_id = fields.Many2one('account.move', readonly=True)
+    pos_trans_diff_move_id = fields.Many2one(
+        'account.move', readonly=True, string='POS Transfer Difference Move')
 
     def _check_pos_transfer_amount(self):
         self.ensure_one()

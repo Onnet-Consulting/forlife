@@ -15,9 +15,9 @@ class AccountMove(models.Model):
     def copy(self, default=None):
         self.ensure_one()
         default = dict(default or {})
-        if self.purchase_order_product_id:
+        if self.purchase_order_product_id and 'origin_invoice_id' not in default and not self._context.get('move_reverse_cancel'):
             default.update({
-                'invoice_line_ids': False,
+                'invoice_line_ids': [],
                 'line_ids': [],
                 'purchase_order_product_id': False,
                 'receiving_warehouse_id': False,
@@ -31,10 +31,6 @@ class AccountMove(models.Model):
                     item.write({
                         'invoice_status_fake': 'invoiced',
                     })
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': True
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced + invoice_line_id.stock_move_id.qty_to_invoice
                 invoice_line_id.stock_move_id.write({
@@ -47,10 +43,6 @@ class AccountMove(models.Model):
 
     def button_cancel(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
                 if qty_invoiced <= 0:
@@ -64,10 +56,6 @@ class AccountMove(models.Model):
 
     def unlink(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
                 if qty_invoiced <= 0:
@@ -81,10 +69,6 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 invoice_line_id.stock_move_id.write({
                     'qty_to_invoice': invoice_line_id.quantity

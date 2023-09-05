@@ -10,7 +10,6 @@
                 <field name="company_id"/>
                 <field name="partner_id"/>
                 <field name="invoice_date"/>
-                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -20,9 +19,6 @@
         <field name="model">summary.account.move.pos.return</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <field name="state" widget="statusbar"/>
-                </header>
                 <sheet>
                     <group>
                         <group>

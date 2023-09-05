@@ -22,7 +22,8 @@ class HrAssetTransfer(models.Model):
                    ('approved_out', 'Xác nhận xuất'),
                    ('approved_in', 'Xác nhận nhập'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel')], default='draft', copy=False)
+                   ('cancel', 'Cancel'),
+                   ('done', 'Hoàn thành')], default='draft', copy=False)
     hr_asset_transfer_line_ids = fields.One2many('hr.asset.transfer.line', 'hr_asset_transfer_id', string="Hr Asset Transfer", copy=True)
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
@@ -63,6 +64,8 @@ class HrAssetTransfer(models.Model):
                 state = 'approved_out'
             if record.state == 'approved_out':
                 state = 'approved_in'
+            if record.state == 'approved_in':
+                state = 'done'
             record.write({
                 'state': state,
                 'validate_date': fields.Datetime.now()

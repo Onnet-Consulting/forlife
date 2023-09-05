@@ -49,6 +49,7 @@
         'data/mail_template_data.xml',
         # Wizards
         'wirards/reason_refuse.xml',
+        'wirards/warning_popup_views.xml',
         # View
         'views/pos_order_line_views.xml',
         'views/handle_change_refund_views.xml',

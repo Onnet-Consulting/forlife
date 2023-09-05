@@ -7,6 +7,71 @@ from datetime import datetime, timedelta
 class AccountMoveSaleOrder(models.Model):
     _inherit = 'account.move'
 
+    def _get_point_in_sale(self,sign):
+        list_invoice_detail = []
+        out_point = {}
+        total_point = 0
+        for promotion_id in self.promotion_ids:
+            if promotion_id.promotion_type == 'out_point':
+                vat = False
+                if promotion_id.tax_id:
+                    vat = promotion_id.tax_id[0]
+                if vat not in list(out_point.keys()):
+                    out_point.update({
+                        vat:round(promotion_id.value),
+                    })
+                else:
+                    out_point[vat] += promotion_id.value
+            if promotion_id.promotion_type == 'in_point':
+                total_point += round(promotion_id.product_uom_qty)
+
+        if total_point != 0:
+            line_invoice = {
+                "ItemName": "Tích điểm",
+                "UnitName": 'Điểm',
+                "Qty": abs(total_point),
+                "Price": 0,
+                "Amount": 0,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 4,
+                "TaxRateID": 4,
+                "TaxRate": -1
+            }
+            list_invoice_detail.append(line_invoice)
+        
+        for vat, value in out_point.items():
+            int_vat = (vat if vat != -1 else 0)
+            value_not_tax = round(value/(1+int_vat/100))
+            line_invoice = {
+                "ItemName": "Tiêu điểm",
+                "UnitName": 'Điểm',
+                "Qty": abs(value/1000),
+                "Price": abs(round(1000/(1+int_vat/100))),
+                "Amount": abs(value_not_tax)*sign,
+                "TaxAmount": 0,
+                "IsDiscount": 1,
+                "ItemTypeID": 4,
+                "TaxRateID": 4,
+                "TaxRate": -1
+            }
+            if vat == 0:
+                tax_rate_id = 1
+            elif vat == 5:
+                tax_rate_id = 2
+            elif vat == 8:
+                tax_rate_id = 9
+            elif vat == 10:
+                tax_rate_id = 3
+            if vat != -1:
+                line_invoice.update({
+                    "TaxAmount": abs(value - value_not_tax)*sign,
+                    "TaxRateID": tax_rate_id,
+                    "TaxRate": vat
+                })
+            list_invoice_detail.append(line_invoice)
+        return list_invoice_detail
+
     def _get_promotion_in_sale(self,sign):
         list_invoice_detail = []
         vip_amount = {}
@@ -18,7 +83,7 @@ class AccountMoveSaleOrder(models.Model):
                     vat = promotion_id.tax_id[0]
                 if vat not in list(vip_amount.keys()):
                     vip_amount.update({
-                        vat:promotion_id.value,
+                        vat:round(promotion_id.value),
                     })
                 else:
                     vip_amount[vat] += promotion_id.value
@@ -28,7 +93,7 @@ class AccountMoveSaleOrder(models.Model):
                     vat = promotion_id.tax_id[0]
                 if vat not in list(reward_amount.keys()):
                     reward_amount.update({
-                        vat:promotion_id.value,
+                        vat:round(promotion_id.value),
                     })
                 else:
                     reward_amount[vat] += promotion_id.value
@@ -152,6 +217,7 @@ class AccountMoveSaleOrder(models.Model):
                 list_invoice_detail.append(item)
 
             list_invoice_detail.extend(self._get_promotion_in_sale(sign))
+            list_invoice_detail.extend(self._get_point_in_sale(sign))
 
             BuyerName = invoice.partner_id.name if invoice.partner_id.name else ''
 

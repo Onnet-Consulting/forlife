@@ -9,20 +9,6 @@ PROMOTION_JOURNAL_FIELD = {
     'member.card': 'journal_id'
 }
 
-# REWARD_TYPE = (
-#     'combo_amount',
-#     'combo_percent',
-#     'combo_fixed_price',
-#     'combo_percent_by_qty',
-#     'combo_fixed_price_by_qty',
-#     'code_amount',
-#     'code_percent',
-#     'code_fixed_price',
-#     'cart_discount_percent',
-#     'cart_discount_fixed_price'
-# )
-
-
 class InheritPosOrder(models.Model):
     _inherit = 'pos.order'
 

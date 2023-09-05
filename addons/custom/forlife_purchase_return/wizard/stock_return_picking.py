@@ -64,6 +64,7 @@ def _create_returns(self):
 
     new_picking.action_confirm()
     new_picking.action_assign()
+    new_picking.action_set_quantities_to_reservation()
     return new_picking.id, picking_type_id
 
 
@@ -111,6 +112,8 @@ class StockReturnPicking(models.TransientModel):
                     'picking_id': picking.id,
                     'for_po': True if picking.purchase_id else False
                 })
+        if self._context.get('so_return'):
+            res.update({'select_all': True})
         return res
 
     @api.model
@@ -155,3 +158,10 @@ class StockReturnPickingLine(models.TransientModel):
         if self.wizard_id.picking_id.purchase_id:
             if self.quantity > self.quantity_remain:
                 raise UserError("Số lượng trả lại vượt quá số lượng cho phép. Vui lòng thiết lập lại.")
+            
+    def default_get(self, fields):
+        res = super(StockReturnPickingLine, self).default_get(fields)
+        # remove default group_id value on views, keep on other source (api, controller ...)
+        if self._context.get('so_return'):
+            res.update({'select_line': True})
+        return res

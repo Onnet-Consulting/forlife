@@ -34,12 +34,12 @@ class ForlifeProduction(models.Model):
         ('draft', 'Nháp'),
         ('wait_confirm', 'Chờ duyệt'),
         ('approved', 'Đã duyệt'),
-    ], default='draft')
+    ], default='draft', string="Trạng thái phê duyệt")
     status = fields.Selection([
         ('assigned', 'Chưa thực hiện'),
         ('in_approved', 'Đã nhập kho'),
         ('done', 'Hoàn thành'),
-    ], compute='compute_check_status')
+    ], compute='compute_check_status', string="Trạng thái hoạt động")
     check_status = fields.Boolean(default=False)
     machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
     leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
@@ -52,17 +52,99 @@ class ForlifeProduction(models.Model):
     def action_wait_confirm(self):
         for record in self:
             record.write({'state': 'wait_confirm'})
+    
+    def _get_vals_production(self, production):
+        master = {
+            'code': production.code,
+            'name': production.name,
+            'version': production.version,
+            'leader_id': production.leader_id.id if production.leader_id else False,
+            'machining_id': production.machining_id.id if production.machining_id else False,
+            'brand_id': production.brand_id.id if production.brand_id else False,
+            'implementation_id': production.implementation_id.id if production.implementation_id else False,
+            'management_id': production.management_id.id if production.management_id else False,
+            'production_department': production.production_department,
+            'produced_from_date': production.produced_from_date,
+            'to_date': production.to_date,
+            'production_price':production.production_price,
+        }
+        forlife_production_finished_product_ids = [(5,0,0)]
+        for line in production.forlife_production_finished_product_ids:
+            forlife_production_finished_product_ids.append((0,0,{
+                'product_id':line.product_id.id,
+                'produce_qty':line.produce_qty,
+            }))
+        if forlife_production_finished_product_ids:
+            master.update({
+                'forlife_production_finished_product_ids': forlife_production_finished_product_ids
+            })
+        material_import_ids = [(5,0,0)]
+        for line in production.material_import_ids:
+            material_import_ids.append((0,0,{
+                'product_id': line.product_id.id,
+                'product_finish_id': line.product_finish_id.id if line.product_finish_id else False,
+                'product_backup_id': line.product_backup_id.id if line.product_backup_id else False,
+                'size': line.size,
+                'color': line.color,
+                'production_uom_id': line.production_uom_id.id if line.production_uom_id else False,
+                'conversion_coefficient': line.conversion_coefficient,
+                'rated_level': line.rated_level,
+                'loss': line.loss,
+                'qty': line.qty,
+            }))
+        if material_import_ids:
+            master.update({
+                'material_import_ids': material_import_ids
+            })
+        expense_import_ids = [(5,0,0)]
+        for line in production.expense_import_ids:
+            expense_import_ids.append((0,0,{
+                'product_id': line.product_id.id if line.product_id else False,
+                'quantity': line.quantity,
+                'cost_norms': line.cost_norms,
+                'total_cost_norms': line.total_cost_norms,
+                'product_finish_id': line.product_finish_id.id if line.product_finish_id else False,
+            }))
+        if expense_import_ids:
+            master.update({
+                'expense_import_ids': expense_import_ids,
+            })
+        return master
 
     def action_approved(self):
         for record in self:
-            old_record= self.env['forlife.production'].with_context(active_test=False).search([('id', '!=', record.id), ('code', '=', record.code)])
-            record.write({
-                'state': 'approved',
-                'active': True,
-                'version': len(old_record) + 1 if len(old_record) else 1
-            })
-            for old in old_record:
-                old.write({'active': False})
+            old_record= self.env['forlife.production'].with_context(active_test=False).search([('id', '!=', record.id), ('code', '=', record.code),('active','=', True),('state','=','approved')])
+            if old_record:
+                old_record_val = self._get_vals_production(old_record)
+                record_val = self._get_vals_production(record)
+                record_val.update({
+                    'active': True,
+                    'version': old_record.version + 1,
+                })              
+                old_record.write(record_val)
+                old_record.update_bom()
+
+                old_record_val.update({'active': False})
+                record.write(old_record_val)
+                return {
+                    'name': 'Lệnh sản xuất',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'forlife.production',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'domain': [('code', '=', self.code), ('active', '=', False)],
+                    'target': 'current',
+                    'views': [(self.env.ref('forlife_purchase.forlife_production_form').id, 'form')],
+                    'view_id': self.env.ref('forlife_purchase.forlife_production_form').id,
+                    'target': 'current',
+                    'res_id': old_record.id,
+                }
+            else:
+                record.write({
+                    'state': 'approved',
+                })
+                record.update_bom()
+            
 
     def action_done(self):
         for record in self:
@@ -143,8 +225,8 @@ class ForlifeProductionFinishedProduct(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Đơn vị lưu kho', related='product_id.uom_id')
     produce_qty = fields.Float(string='Produce Quantity', required=True)
     unit_price = fields.Float(readonly=1, string='Unit Price')
-    stock_qty = fields.Float(string='Stock Quantity', compute='_compute_remaining_qty', store=1)
-    remaining_qty = fields.Float(string='Remaining Quantity')
+    stock_qty = fields.Float(string='Stock Quantity', compute='_compute_remaining_qty', store=1, copy=False)
+    remaining_qty = fields.Float(string='Remaining Quantity', copy=False)
     description = fields.Char(string='Description', related='product_id.name')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
     implementation_id = fields.Many2one('account.analytic.account', related='forlife_production_id.implementation_id')
