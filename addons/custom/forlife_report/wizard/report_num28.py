@@ -7,7 +7,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 TITLES = [
     'Số PO', 'Ngày tạo PO', 'Ngày nhận hàng dự kiến', 'Ghi chú',
     'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng nhu cầu', 'Tên SP',
-    'Màu', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
+    'Màu', 'Ánh màu', 'Màu cơ bản', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
     'Phần dở dang của',
 ]
 
@@ -43,6 +43,8 @@ class ReportNum28(models.TransientModel):
                 pp.barcode as barcode,
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') as ten_sp,
                 attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 as mau,
+                attr.attrs->'{attr_value.get('anh_mau', '')}' ->> 0 as anh_mau,
+                attr.attrs->'{attr_value.get('mau_co_ban', '')}' ->> 0 as mau_co_ban,
                 attr.attrs->'{attr_value.get('size', '')}' ->> 0 as size,
                 sm.product_uom_qty as sl_nhu_cau,
                 COALESCE(uu.name->>'vi_VN', uu.name->>'en_US') as dvt,
@@ -133,9 +135,11 @@ class ReportNum28(models.TransientModel):
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('sl_nhu_cau'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
-            sheet.write(row, 10, value.get('mau'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('size'), formats.get('int_number_format'))
-            sheet.write(row, 12, value.get('dvt'), formats.get('int_number_format'))
-            sheet.write(row, 13, value.get('sl_nhan'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('phan_do_dang'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('mau'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('anh_mau'), formats.get('normal_format'))
+            sheet.write(row, 12, value.get('mau_co_ban'), formats.get('normal_format'))
+            sheet.write(row, 13, value.get('size'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('dvt'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('sl_nhan'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('phan_do_dang'), formats.get('int_number_format'))
             row += 1

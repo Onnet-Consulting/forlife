@@ -7,7 +7,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 TITLES = [
     'Số yêu cầu', 'Ngày yêu cầu', 'Ngày kế hoạch', 'Ghi chú',
     'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng yêu cầu', 'Tên SP',
-    'Màu', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
+    'Màu', 'Ánh màu', 'Màu cơ bản' ,'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
     'Lý do', 'Trung tâm chi phí', 'Mã vụ việc', 'Lệnh sản xuất', 'Mã tài sản'
 ]
 
@@ -43,6 +43,8 @@ class ReportNum27(models.TransientModel):
                 , t5.barcode as barcode
                 , COALESCE(t6.name->>'vi_VN', t6.name->>'en_US') AS ten_sp
                 , attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 AS mau
+                , attr.attrs->'{attr_value.get('anh_mau', '')}' ->> 0 AS anh_mau
+                , attr.attrs->'{attr_value.get('mau_co_ban', '')}' ->> 0 AS mau_co_ban
                 , attr.attrs->'{attr_value.get('size', '')}' ->> 0 AS size
                 , t4.product_uom_qty as sl_yc
                 , COALESCE(t7.name->>'vi_VN', t7.name->>'en_US') as dvt
@@ -148,13 +150,15 @@ class ReportNum27(models.TransientModel):
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('sl_yc'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
-            sheet.write(row, 10, value.get('mau'), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('size'), formats.get('int_number_format'))
-            sheet.write(row, 12, value.get('dvt'), formats.get('int_number_format'))
-            sheet.write(row, 13, value.get('sl_xn'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('ly_do'), formats.get('int_number_format'))
-            sheet.write(row, 15, value.get('tt_cp'), formats.get('int_number_format'))
-            sheet.write(row, 16, value.get('ma_vv'), formats.get('int_number_format'))
-            sheet.write(row, 17, value.get('lsx'), formats.get('int_number_format'))
-            sheet.write(row, 18, value.get('ma_ts'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('mau'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('anh_mau'), formats.get('normal_format'))
+            sheet.write(row, 12, value.get('mau_co_ban'), formats.get('normal_format'))
+            sheet.write(row, 13, value.get('size'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('dvt'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('sl_xn'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('ly_do'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('tt_cp'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('ma_vv'), formats.get('normal_format'))
+            sheet.write(row, 19, value.get('lsx'), formats.get('normal_format'))
+            sheet.write(row, 20, value.get('ma_ts'), formats.get('normal_format'))
             row += 1
