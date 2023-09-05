@@ -817,7 +817,6 @@ class PurchaseOrder(models.Model):
         data_line = {
             'stock_move_id': stock_move_id.id,
             'ware_name': stock_move_id.picking_id.name,
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
@@ -846,7 +845,6 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice_expense(self, cost_line, po_line, cp):
         data_line = {
-            'po_id': po_line.id,
             'product_id': po_line.product_id.id,
             'product_expense_origin_id': cost_line.product_id.id,
             'description': po_line.product_id.name,
@@ -865,7 +863,6 @@ class PurchaseOrder(models.Model):
     def create_invoice_labor(self, line_id, material_line, wave_item):
         data_line = {
             'ware_name': wave_item.picking_id.name,
-            'po_id': line_id.id,
             'product_id': material_line.product_id.id,
             'description': material_line.product_id.name,
             'quantity': 1,
@@ -881,7 +878,6 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
         data_line = {
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
@@ -906,7 +902,6 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_service_and_asset_not_get_mode(self, order, line):
         data_line = {
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
@@ -933,7 +928,6 @@ class PurchaseOrder(models.Model):
     def _prepare_invoice_labor(self, labor_cost_id, move_qty):
         pol_id = labor_cost_id.purchase_order_line_id
         data = {
-            'po_id': pol_id.id,
             'product_id': pol_id.product_id.id,
             'product_expense_origin_id': labor_cost_id.product_id.id,
             'description': pol_id.product_id.name,
