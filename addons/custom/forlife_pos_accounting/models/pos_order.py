@@ -34,36 +34,36 @@ class InheritPosOrder(models.Model):
             # else:
             credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
             credit_account_id = (credit_account['income'] or credit_account['expense']).id
-        # compute_all_taxes = order_line.tax_ids.compute_all(
-        #     price_unit=order_line.price_unit,
-        #     currency=order_line.currency_id,
-        #     quantity=order_line.qty,
-        #     product=order_line.product_id,
-        #     partner=order_line.order_id.partner_id or False,
-        #     is_refund=order_line.price_unit*order_line.qty < 0 or False,
-        #     handle_price_include=True,
-        #     include_caba_tags=True,
-        #     fixed_multiplicator=1,
-        # )
-        # tax_lines = [{
-        #     **{
-        #         'tax_repartition_line_id': tax['tax_repartition_line_id'],
-        #         'group_tax_id': tax['group'] and tax['group'].id or False,
-        #         'account_id': tax['account_id'],
-        #         'currency_id': order_line.order_id.pricelist_id.currency_id.id,
-        #         'tax_ids': [(6, 0, tax['tax_ids'])],
-        #         'tax_tag_ids': [(6, 0, tax['tag_ids'])],
-        #         'partner_id': order_line.order_id.partner_id.id or partner_id or False,
-        #         'display_type': 'tax',
-        #     }, **{
-        #         'name': tax['name'] + ' (Dòng thuế)',
-        #         'balance': -tax['amount'],
-        #         'amount_currency': -tax['amount'],
-        #         'tax_base_amount': tax['base'],
-        #     }
-        # }
-        #     for tax in compute_all_taxes['taxes']
-        #     if tax['amount']]
+        compute_all_taxes = order_line.tax_ids.compute_all(
+            price_unit=order_line.price_unit,
+            currency=order_line.currency_id,
+            quantity=order_line.qty,
+            product=order_line.product_id,
+            partner=order_line.order_id.partner_id or False,
+            is_refund=order_line.price_unit*order_line.qty < 0 or False,
+            handle_price_include=True,
+            include_caba_tags=True,
+            fixed_multiplicator=1,
+        )
+        tax_lines = [{
+            **{
+                'tax_repartition_line_id': tax['tax_repartition_line_id'],
+                'group_tax_id': tax['group'] and tax['group'].id or False,
+                'account_id': tax['account_id'],
+                'currency_id': order_line.order_id.pricelist_id.currency_id.id,
+                'tax_ids': [(6, 0, tax['tax_ids'])],
+                'tax_tag_ids': [(6, 0, tax['tag_ids'])],
+                'partner_id': order_line.order_id.partner_id.id or partner_id or False,
+                'display_type': 'tax',
+            }, **{
+                'name': tax['name'] + ' (Dòng thuế)',
+                'balance': -tax['amount'],
+                'amount_currency': -tax['amount'],
+                'tax_base_amount': tax['base'],
+            }
+        }
+            for tax in compute_all_taxes['taxes']
+            if tax['amount']]
         return [
             (0, 0, {
                 'partner_id': partner_id,
@@ -96,7 +96,7 @@ class InheritPosOrder(models.Model):
                 'credit': -order_line.price_subtotal_incl if order_line.price_subtotal_incl < 0 else 0.0,
                 'debit': order_line.price_subtotal_incl if order_line.price_subtotal_incl >= 0 else 0.0
             }),
-        ]  # + [(0, 0, tax_val) for tax_val in tax_lines]
+        ] + [(0, 0, tax_val) for tax_val in tax_lines]
 
     def create_promotion_account_move(self):
         self.ensure_one()
