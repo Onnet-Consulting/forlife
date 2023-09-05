@@ -15,7 +15,7 @@ class ResCurrencyRate(models.Model):
     br_3 = BravoDecimalField(odoo_name='inverse_company_rate', bravo_name='BuyingExchangeRate')
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         # special fields - don't declare them in Odoo
         return {
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
