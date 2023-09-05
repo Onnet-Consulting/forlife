@@ -157,7 +157,7 @@ class PosOrder(models.Model):
         for rec in order_lines[0]:
             product_ids.append(rec['product_id'])
             if rec['seri']:
-                seri_list.append(rec['seri'])
+                seri_list += rec['seri']
         if product_ids:
             if len(product_ids) == 1:
                 product_ids = str(tuple(product_ids))
@@ -183,9 +183,19 @@ class PosOrder(models.Model):
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         list_product_exits = []
+
+        merged_data = {}
+        for data_item in data:
+            if data_item['product_id'] not in merged_data:
+                merged_data[data_item['product_id']] = data_item
+            else:
+                merged_data[data_item['product_id']]['quantity'] += data_item['quantity']
+                merged_data[data_item['product_id']]['reserved_quantity'] += data_item['reserved_quantity']
+        merged_data = list(merged_data.values())
+
         for rec in order_lines[0]:
-            if data:
-                for r in data:
+            if merged_data:
+                for r in merged_data:
                     list_product_exits.append(r['product_id'])
                     if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (
                             r['quantity'] - r['reserved_quantity']) < rec['count']:
@@ -196,7 +206,7 @@ class PosOrder(models.Model):
         product_types = self._cr.dictfetchall()
         data_product_ids = [x['id'] for x in product_types] if product_types else []
         for rec in order_lines[0]:
-            if rec['product_id'] not in list_product_exits and rec['product_id'] not in data_product_ids:
+            if rec['count'] > 0 and (rec['product_id'] not in list_product_exits or rec['product_id'] not in data_product_ids):
                 product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
