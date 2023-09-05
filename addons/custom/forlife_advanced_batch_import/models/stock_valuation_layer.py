@@ -4,21 +4,21 @@ from datetime import datetime
 class StockValuationLayer(models.Model):
     _inherit = 'stock.valuation.layer'
 
-    def _validate_accounting_entries(self):
-        context = self.env.context
-        if self.stock_move_id.picking_type_id.warehouse_id:
-            job_name = 'wh_'+self.stock_move_id.picking_type_id.warehouse_id.code+'_job_channel'
-            if not (context.get('job_channel', False) and context.get('job_channel') in (job_name, 'validate_stock_valuation_2')) :
-                model_job_channel = self.env['queue.job.channel'].sudo()
-                job_channel = model_job_channel.search([('name', '=', job_name)], limit=1)
-                channel_root = self.env.ref('queue_job.channel_root')
-                if not job_channel:
-                    model_job_channel.create({
-                        'name': job_name,
-                        'parent_id': channel_root.id
-                    })
-                return super(StockValuationLayer, self).with_context(run_job=True).with_delay(channel=job_name)._validate_accounting_entries()
-        return super(StockValuationLayer, self)._validate_accounting_entries()
+    # def _validate_accounting_entries(self):
+    #     context = self.env.context
+    #     if self.stock_move_id.picking_type_id.warehouse_id:
+    #         job_name = 'wh_'+self.stock_move_id.picking_type_id.warehouse_id.code+'_job_channel'
+    #         if not (context.get('job_channel', False) and context.get('job_channel') in (job_name, 'validate_stock_valuation_2')) :
+    #             model_job_channel = self.env['queue.job.channel'].sudo()
+    #             job_channel = model_job_channel.search([('name', '=', job_name)], limit=1)
+    #             channel_root = self.env.ref('queue_job.channel_root')
+    #             if not job_channel:
+    #                 model_job_channel.create({
+    #                     'name': job_name,
+    #                     'parent_id': channel_root.id
+    #                 })
+    #             return super(StockValuationLayer, self).with_context(run_job=True).with_delay(channel=job_name)._validate_accounting_entries()
+    #     return super(StockValuationLayer, self)._validate_accounting_entries()
     #     am_vals = []
     #     for svl in self:
     #         if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
