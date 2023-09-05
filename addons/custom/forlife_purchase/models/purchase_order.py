@@ -1771,6 +1771,7 @@ class PurchaseOrderLine(models.Model):
     before_tax = fields.Float(string='Chi phí trước tính thuế', compute='_compute_before_tax', store=1)
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
+    prefix_product_code = fields.Char(string='Lọc chi phí', compute='compute_prefix_product_code')
 
     @api.constrains('discount_percent')
     def _constrains_discount_percent_and_discount(self):
@@ -1903,6 +1904,14 @@ class PurchaseOrderLine(models.Model):
     def search_product_sup(self, domain):
         supplier_info = self.env['product.supplierinfo'].search(domain)
         return supplier_info
+    
+    @api.depends('product_id')
+    def compute_prefix_product_code(self):
+        for item in self:
+            if item.product_id and item.product_id.default_code:
+                item.prefix_product_code = item.product_id.default_code[0]
+            else:
+                item.prefix_product_code = ''
 
     # Update fields từ Po line sang stock_move
     def _prepare_stock_moves(self, picking):

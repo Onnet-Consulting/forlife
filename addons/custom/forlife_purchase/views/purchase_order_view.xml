@@ -347,8 +347,9 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="prefix_product_code" invisible="1"/>
+                        <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')],'required': [('prefix_product_code', 'in', ['A','E','F'])]}"/>
+                        <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')],'required': [('parent.purchase_type', '=', 'service')]}"/>
                         <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}" sum="discounted subtotal" force_save="1"/>
                         <field name="readonly_discount" invisible="1"/>
