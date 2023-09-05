@@ -684,7 +684,7 @@ class PurchaseOrder(models.Model):
                 if line.received != 0 and line.received > line.billed:
                     message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
                     raise ValidationError(message)
-        self.button_cancel()
+        # self.button_cancel()
         self.write({'custom_state': 'close'})
 
     @api.model
