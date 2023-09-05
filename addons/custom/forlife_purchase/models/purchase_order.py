@@ -1434,18 +1434,11 @@ class PurchaseOrder(models.Model):
     # Trường hợp Tạo nhiều PO
     def _create_invoice_normal_purchase_type_product_orders(self, invoice_vals_list, invoice_vals):
         sequence = 10
-        picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
         pending_section = None
         receiving_warehouse_ids = []
         for line in self.order_line:
-            # stock_move_ids = line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
-            # move_return_ids = stock_move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
-            #
-            # # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
-            # move_qty = sum(stock_move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
-
-
-            stock_move_ids = picking_ids.filtered(lambda x: x.purchase_id == line.order_id).move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            # Lấy ra các move nhập kho
+            stock_move_ids = line.move_ids.filtered(lambda x: x.state == 'done' and not x.to_refund)
 
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_to_invoice - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = line.order_id._prepare_invoice_normal(line, move_id)
