@@ -425,7 +425,7 @@ class AccountMove(models.Model):
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
-                move_id.qty_to_invoice = quantity
+                move_id.qty_to_invoice += quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line

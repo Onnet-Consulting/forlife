@@ -274,7 +274,7 @@ class ForlifeOtherInOutRequestLine(models.Model):
     date_expected = fields.Datetime(string='Ngày dự kiến')
     type_other_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     quantity = fields.Float(string='Số lượng', required=True)
-    uom_id = fields.Many2one('uom.uom', string='Đơn vị')
+    uom_id = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     whs_from_id = fields.Many2one('stock.location', string='Từ kho')
     reason_from_id = fields.Many2one('stock.location', string='Lý do xuất', domain=_domain_location_id)
     whs_to_id = fields.Many2one('stock.location', string='Đến kho')
