@@ -74,6 +74,7 @@
         'wizard/report_num38.xml',
         'wizard/report_num39_views.xml',
         'wizard/report_num40_views.xml',
+        'wizard/report_num41_views.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',

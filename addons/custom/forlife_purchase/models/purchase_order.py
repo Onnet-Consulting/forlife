@@ -2019,7 +2019,7 @@ class PurchaseOrderLine(models.Model):
                     continue
             data = self.env['product.supplierinfo'].search(['|',
                 ('product_tmpl_id', '=', rec.product_id.product_tmpl_id.id),
-                ('product_id', '=', rec.product_id.id)
+                ('product_id', '=', rec.product_id.id if rec.product_id else False),
                 ('partner_id', '=', rec.order_id.partner_id.id),
                 ('currency_id', '=', rec.order_id.currency_id.id),
                 ('product_uom', '=', rec.purchase_uom.id),
