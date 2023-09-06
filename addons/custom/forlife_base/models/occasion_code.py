@@ -2,7 +2,7 @@ from odoo import api, fields, models
 
 class OccasionCode(models.Model):
     _name = 'occasion.code'
-
+    _rec_names_search = ['code', 'name']
     _description = 'Occasion Code'
 
     company_id = fields.Many2one('res.company', string='Công ty')
