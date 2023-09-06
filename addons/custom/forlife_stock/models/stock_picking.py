@@ -254,7 +254,7 @@ class StockPicking(models.Model):
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
-    leftovers_id = fields.Many2one('stock.picking', 'Left over of', copy=False, readonly=True, check_company=True)
+    leftovers_id = fields.Many2one('stock.picking', 'Phần thừa của', copy=False, readonly=True, check_company=True)
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)

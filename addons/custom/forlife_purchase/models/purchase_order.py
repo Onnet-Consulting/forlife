@@ -1688,6 +1688,30 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tiền tệ ở tab chi phí ở dòng - {}".format(line_number)))
         return super(PurchaseOrder, self).load(fields, data)
 
+    def open_update_tax_and_cost(self):
+        self.ensure_one()
+        if not self.env.user.has_group('forlife_purchase.update_tax_and_cost_group'):
+            raise UserError("Yêu cầu bị từ chối, tài khoản không thuộc nhóm quyền 'Cập nhật thông tin thuế - chi phí'")
+        picking_done = self.picking_ids.filtered(lambda f: f.state == 'done')
+        if picking_done:
+            raise ValidationError(f"Yêu cầu bị từ chối, phiếu kho {picking_done.mapped('name')} đã hoàn thành")
+        return {
+            'name': 'Cập nhật thông tin thuế - chi phí',
+            'view_mode': 'form',
+            'view_id': self.env.ref('forlife_purchase.update_tax_and_cost_view_form').id,
+            'res_model': 'purchase.order',
+            'type': 'ir.actions.act_window',
+            'target': 'inline',
+            'res_id': self.id,
+        }
+
+    def export_tax_info(self):
+        self.ensure_one()
+        if not self.exchange_rate_line_ids:
+            raise ValidationError('Xuất excel không thành công. Thông tin thuế chưa được nhập.')
+        return self.env['import.tax.info.wizard'].create({'po_id': self.id}).print_xlsx()
+
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
