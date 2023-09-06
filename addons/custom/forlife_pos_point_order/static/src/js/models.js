@@ -174,7 +174,7 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                     };
                     return false;
                 };
-                return false;
+                return true;
             }
         }
     Registries.Model.extend(Orderline, PointsOrderLine);
