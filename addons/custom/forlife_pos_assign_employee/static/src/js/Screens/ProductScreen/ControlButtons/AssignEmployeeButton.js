@@ -6,6 +6,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
     const {useListener} = require("@web/core/utils/hooks");
+    const {useState} = owl;
 
 
     class AssignEmployeeButton extends PosComponent {
@@ -18,18 +19,24 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
             return this.env.pos.get_order().get_selected_orderline();
         }
 
+        listEmployees() {
+            return this.env.pos.assignable_employees
+        }
+
         get order_lines(){
             return this.env.pos.get_order().get_orderlines();
         }
 
         async onClick() {
             const selectedOrderLine = this.selectedOrderline;
-            if (!selectedOrderLine) return;
+            const self = this
+            // if (!selectedOrderLine) return;
             const {confirmed, payload: data} = await this.showPopup('AssignEmployeePopup', {
-                startingValue: this.selectedOrderline.get_employee(),
+                startingValue: self.listEmployees(),
                 title: this.env._t('Assign Employee'),
                 assignTitle: this.env._t('Assign employee'),
                 assignAllTitle: this.env._t('Assign All'),
+                assignDefaultTitle: this.env._t('Gán trước'),
                 cancelTitle: this.env._t('Cancel')
             });
             if (confirmed) {
@@ -39,7 +46,10 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
                     for (let line of order_lines){
                         line.set_employee(employee_id);
                     }
-                } else {
+                } else if (data.isDefault) {
+                    self.env.pos.setDefaultEmployee(employee_id);
+                }
+                else {
                     this.selectedOrderline.set_employee(employee_id);
                 }
 

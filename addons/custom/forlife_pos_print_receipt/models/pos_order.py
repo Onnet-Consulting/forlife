@@ -102,7 +102,6 @@ class PosOrder(models.Model):
                 'address': '%s-%s-%s' % (
                     item.store_id.contact_id.street, item.store_id.contact_id.street2, item.store_id.contact_id.city),
                 'phone': item.store_id.contact_id.phone,
-                'qr_code': '',
                 'date_order': (item.date_order + timedelta(hours=7)).strftime('%d/%m/%Y %H:%M:%S') if item.date_order else '',
                 'order_name': item.pos_reference,
                 'partner': item.partner_id.name,
@@ -118,10 +117,9 @@ class PosOrder(models.Model):
                 'payment_method': payment_method,
                 'accumulation': self.currency_id.custom_format(accumulation) if accumulation > 0 else 0,
                 'total_point': item.total_point,
-                'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0
+                'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0,
+                'qr_code': '%s%s' % (item.brand_id.mobile_app_url, item.pos_reference)
             })
-        if not item.partner_id.retail_type_ids.filtered(lambda x: x.retail_type == 'app'):
-            data['qr_code'] = 'https://tokyolife.vn'
         return data
 
     def covert_to_list(self, data):

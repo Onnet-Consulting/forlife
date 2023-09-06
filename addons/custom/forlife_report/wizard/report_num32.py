@@ -130,6 +130,7 @@ class ReportNum28(models.TransientModel):
                                 php.points_used,
                                 php.points_back,
                                 php.points_store,
+                                SUM(php.points_store) OVER (ORDER BY php.date_order) AS sum_points_store,
                                 p.amount as amount
                             from
                                 partner_history_point php

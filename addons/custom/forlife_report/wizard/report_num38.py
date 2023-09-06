@@ -113,7 +113,7 @@ class ReportNum38(models.TransientModel):
                 left join stock_location sl on sw.id = sl.warehouse_id
                 left join stock_location_type slt on sl.stock_location_type_id = slt.id
             ''' if self.show_location else ''}
-            where 1= 1
+            where 1= 1 and sw.company_id = any(array{self.company_ids.ids})
         """
         if self.wh_ids:
             query += f""" and sw.id = any(array{self.wh_ids.ids})"""

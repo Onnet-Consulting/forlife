@@ -19,6 +19,7 @@
     ],
     "data": [
         'security/ir.model.access.csv',
+        'data/ir_rule_data.xml',
         'data/cron.xml',
         'views/sale_order_view.xml',
         'views/res_partner_customer_view.xml',

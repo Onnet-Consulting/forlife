@@ -146,7 +146,7 @@ class ReportNum36(models.TransientModel):
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo nhập kho thành phẩm sản xuất', formats.get('header_format'))
         sheet.write(2, 0, 'Lệnh sản xuất: %s' % self.produce_id.mapped('name'), formats.get('italic_format'))
-        sheet.write(2, 2, 'Từ ngày: %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày: %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y') if self.from_date else '', self.to_date.strftime('%d/%m/%Y') if self.to_date else ''), formats.get('italic_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)

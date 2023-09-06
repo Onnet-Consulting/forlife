@@ -38,10 +38,17 @@ class ImportProductionFromExcel(models.TransientModel):
         list_product = []
         uom = []
         list_production = []
+        list_partners = []
+        list_employee = []
+        list_brand = []
 
         for o in orders:
             list_account += [o[2], [o[3]]]
-            list_product += [o[8]]
+            list_product += [o[11]]
+            list_partners += [o[10]]
+            list_employee += [o[9]]
+            list_brand += [o[8]]
+
             if o[0]:
                 list_production += [o[0]]
 
@@ -78,15 +85,36 @@ class ImportProductionFromExcel(models.TransientModel):
             ('name', 'in', uom),
         ], ['id', 'name'])
 
+        brands = self.env['res.brand'].search_read([
+            ('code', 'in', list_brand),
+        ], ['id', 'code'])
+
+        partners = self.env['res.partner'].search_read([
+            ('ref', 'in', list_partners),
+        ], ['id', 'ref'])
+
+        employees = self.env['hr.employee'].search_read([
+            ('code', 'in', list_employee),
+        ], ['id', 'code'])
+
         department = {}
         product_dict = {}
         uom_dict = {}
+        brand = {}
+        partner = {}
+        employee = {}
         for a in account_aa:
             department.update({a['code']: a['id']})
         for p in product:
             product_dict.update({p['barcode']: p['id'], p['makithuat']: p['id']})
         for u in uom_uom:
             uom_dict.update({u['name']: u['id']})
+        for p in partners:
+            partner.update({p['ref']: p['id']})
+        for b in brands:
+            brand.update({b['code']: b['id']})
+        for e in employees:
+            employee.update({e['code']: e['id']})
 
         create_list_order = []
         production_code = ''
@@ -104,20 +132,25 @@ class ImportProductionFromExcel(models.TransientModel):
                 master = {
                     'code': order[0],
                     'name': order[1],
-                    'implementation_id': department.get(order[2], False),
-                    'management_id': department.get(order[3], False),
+                    'implementation_id': department.get(order[2].strip(), False),
+                    'management_id': department.get(order[3].strip(), False),
                     'production_department': order[4],
                     'produced_from_date': order[5],
                     'to_date': order[6],
                     'production_price': order[7],
+                    'brand_id': brand.get(order[8].strip(), False),
+                    'leader_id':  employee.get(order[9].strip(), False),
+                    'machining_id': partner.get(order[10].strip(), False),
                 }
-            if order[8]:
+            if order[11]:
+                if not product_dict.get(order[11], False):
+                    raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.' % order[11]))
                 child_value = {
-                    'product_id': product_dict.get(order[8], False),
-                    'produce_qty': int(order[9]),
+                    'product_id': product_dict.get(order[11], False),
+                    'produce_qty': int(order[12]),
                 }
 
-                product_variant = self.env['product.product'].browse(product_dict.get(order[8]))\
+                product_variant = self.env['product.product'].browse(product_dict.get(order[11]))\
                     .mapped('attribute_line_ids.value_ids.name')
                 list_material = []
                 create_material_vals = []
@@ -140,7 +173,7 @@ class ImportProductionFromExcel(models.TransientModel):
                         'rated_level': m[7],
                         'loss': m[8],
                     }
-                    if (m[1].strip() == order[8] or m[1] == '') and (m[3].strip() == '' and m[4].strip() == ''):
+                    if (m[1].strip() == order[11] or m[1] == '') and (m[3].strip() == '' and m[4].strip() == ''):
                         list_material.append((0, 0, common_data))
                     elif (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
                         list_material.append((0, 0, common_data))
@@ -166,7 +199,7 @@ class ImportProductionFromExcel(models.TransientModel):
                     if float(e[1]) > 0 and e[3]:
                         cost_norms = float(e[3]) / float(e[1])
 
-                    if e[4] == order[8] or not e[4]:
+                    if e[4] == order[11] or not e[4]:
                         create_list_expense.append((0, 0, {
                             'product_id': product_dict.get(e[0], False),
                             'rated_level': cost_norms
