@@ -299,13 +299,14 @@ class PurchaseOrder(models.Model):
         for item in self:
             item.inventory_status = 'not_received'
             picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
-            all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
-            if all_equal_parent_done:
-                item.inventory_status = 'done'
-            elif 'done' in picking_ids.mapped('state'):
-                item.inventory_status = 'incomplete'
-            else:
-                item.inventory_status = 'not_received'
+            if picking_ids:
+                all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
+                if all_equal_parent_done:
+                    item.inventory_status = 'done'
+                elif 'done' in picking_ids.mapped('state'):
+                    item.inventory_status = 'incomplete'
+                else:
+                    item.inventory_status = 'not_received'
 
     def compute_is_done_picking(self):
         for record in self:
