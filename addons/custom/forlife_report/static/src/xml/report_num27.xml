@@ -23,6 +23,8 @@
                         <td><t t-esc="line.sl_yc"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.mau"/></td>
+                        <td><t t-esc="line.anh_mau"/></td>
+                        <td><t t-esc="line.mau_co_ban"/></td>
                         <td><t t-esc="line.size"/></td>
                         <td><t t-esc="line.dvt"/></td>
                         <td><t t-esc="line.sl_xn"/></td>

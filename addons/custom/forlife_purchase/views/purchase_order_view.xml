@@ -422,6 +422,9 @@
                     <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
                 </xpath>
+                <field name="date_planned" position="after">
+                    <field name="note" optional="show"/>
+                </field>
             </field>
         </record>
 

@@ -27,6 +27,7 @@
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.mau"/></td>
                         <td><t t-esc="line.anh_mau"/></td>
+                        <td><t t-esc="line.mau_co_ban"/></td>
                         <td><t t-esc="line.size"/></td>
                         <td><t t-esc="line.sl_ke_hoach"/></td>
                         <td><t t-esc="line.dvt"/></td>

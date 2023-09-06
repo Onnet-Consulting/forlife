@@ -12,7 +12,7 @@
             <tbody>
                 <t t-set="index" t-value="0"></t>
                 <t t-foreach="options.data" t-as="line">
-                    <tr>
+                    <tr t-if="line.lsx != 'Tổng'">
                         <t t-if="line.lsx">
                             <t t-set="index" t-value="index + 1"/>
                             <td><t t-esc="index"/></td>
@@ -20,14 +20,27 @@
                         <t t-else="">
                             <td></td>
                         </t>
-                        <td><t t-esc="line.lsx"/></td>
+                        <td t-if="line.lsx == 'Tổng'" colspan="6" style="background: #714B67; color: white; text-align: right"><t t-esc="line.lsx"/></td>
+                        <td t-else=""><t t-esc="line.lsx"/></td>
                         <td><t t-esc="line.ql_donhang"/></td>
                         <td><t t-esc="line.dv_giacong"/></td>
                         <td><t t-esc="line.ma_thanhpham"/></td>
+                        <td><t t-esc="line.ten_thanhpham"/></td>
                         <td><t t-esc="line.dvt"/></td>
                         <td><t t-esc="line.sl_sanxuat"/></td>
                         <td><t t-esc="line.sl_nhapkho"/></td>
                         <td><t t-esc="line.sl_conlai"/></td>
+                    </tr>
+                    <tr t-if="line.lsx and line.lsx == 'Tổng'">
+                        <td t-if="line.lsx == 'Tổng'" colspan="7" style="text-align: right"><b><t t-esc="line.lsx"/></b></td>
+<!--                        <td t-else=""><t t-esc="line.lsx"/></td>-->
+<!--                        <td><t t-esc="line.ql_donhang"/></td>-->
+<!--                        <td><t t-esc="line.dv_giacong"/></td>-->
+<!--                        <td><t t-esc="line.ma_thanhpham"/></td>-->
+<!--                        <td><t t-esc="line.dvt"/></td>-->
+                        <td><b><t t-esc="line.sl_sanxuat"/></b></td>
+                        <td><b><t t-esc="line.sl_nhapkho"/></b></td>
+                        <td><b><t t-esc="line.sl_conlai"/></b></td>
                     </tr>
                 </t>
             </tbody>
