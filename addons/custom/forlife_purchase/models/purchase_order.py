@@ -1895,9 +1895,12 @@ class PurchaseOrderLine(models.Model):
     def _compute_tax_amount(self):
         for rec in self:
             if not rec.tax_amount_import:
-                rec.tax_amount = rec.total_vnd_exchange * rec.import_tax / 100
+                tax_amount = rec.total_vnd_exchange * rec.import_tax / 100
             else:
-                rec.tax_amount = rec.tax_amount_import
+                tax_amount = rec.tax_amount_import
+
+            if rec.tax_amount != tax_amount:
+                rec.tax_amount = tax_amount
 
     @api.depends('tax_amount', 'special_consumption_tax', 'special_consumption_tax_amount_import', 'import_tax')
     def _compute_special_consumption_tax_amount(self):
@@ -1926,10 +1929,15 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             if not rec.total_vnd_exchange_import:
                 if rec.price_subtotal and rec.order_id.exchange_rate:
-                    rec.total_vnd_amount = rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                    if rec.total_vnd_amount != round(rec.price_subtotal * rec.order_id.exchange_rate):
+                        rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                    if rec.total_vnd_exchange != round(rec.price_subtotal * rec.order_id.exchange_rate):
+                        rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
             else:
-                rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
-                rec.total_vnd_exchange = rec.total_vnd_exchange_import
+                if rec.total_vnd_amount != round(rec.price_subtotal * rec.order_id.exchange_rate):
+                    rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                if rec.total_vnd_exchange != rec.total_vnd_exchange_import:
+                    rec.total_vnd_exchange = rec.total_vnd_exchange_import
 
     def _compute_tax_id(self):
         if self.filtered(lambda x: x.order_id.type_po_cost == 'tax'):
@@ -2373,13 +2381,17 @@ class PurchaseOrderLine(models.Model):
                         before_tax = line.total_vnd_amount / sum(rec.order_id.order_line.mapped('total_vnd_amount')) * item.vnd_amount
                         total_cost_true += before_tax
                         line.before_tax = total_cost_true
-                    line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
+                    if line.total_vnd_exchange != line.total_vnd_amount + line.before_tax:
+                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
                 else:
                     line.before_tax = 0
                     if line.before_tax != 0:
-                        line.total_vnd_exchange = line.total_vnd_amount + line.before_tax
+                        total_vnd_exchange = line.total_vnd_amount + line.before_tax
                     else:
-                        line.total_vnd_exchange = line.total_vnd_amount
+                        total_vnd_exchange = line.total_vnd_amount
+
+                    if line.total_vnd_exchange != total_vnd_exchange:
+                        line.total_vnd_exchange = total_vnd_exchange
 
     @api.depends('order_id.cost_line.is_check_pre_tax_costs', 'order_id.exchange_rate_line_ids')
     def _compute_after_tax(self):

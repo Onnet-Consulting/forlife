@@ -60,6 +60,20 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
             });
         }
 
+        confirm_default() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: true, payload: this.getDefaultPayload()},
+            });
+        }
+
+        getDefaultPayload() {
+            return {
+                employee_id: this.state.employeeID,
+                isDefault: true
+            }
+        }
+
         getMultipleLinesPayload() {
             return {
                 employee_id: this.state.employeeID,

@@ -28,7 +28,7 @@
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
                     <field name="account_analytic_id" force_save="1"
                            attrs="{
-                           'readonly': ['|','|',('is_purchase_request', '=', True),('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))],
+                           'readonly': ['|',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))],
                            'required': [('purchase_type', 'in', ('service', 'asset'))]
                            }"/>
                     <field name="production_id" force_save="1"
