@@ -146,7 +146,8 @@
                            options="{'no_open': False}"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                         <button name="insert_data" type="object" string="Tổng hợp"
-                                attrs="{'invisible': [('state', '=', 'posted')]}" icon="fa-plus-square" class="btn btn-primary"/>
+                                attrs="{'invisible': ['|', ('state', '=', 'posted'), ('receiving_warehouse_id', '=', False)]}"
+                                icon="fa-plus-square" class="btn btn-primary"/>
                     </div>
                     <!--<field name="x_asset_fin" widget="radio"/> todo: bỏ trường này sau golive. giữ lại để backup cho trường is_tc-->
                     <field name="is_tc"/>
