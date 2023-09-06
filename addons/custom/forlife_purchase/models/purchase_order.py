@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
-    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1)
+    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
@@ -294,9 +294,10 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
-    @api.depends('picking_ids', 'picking_ids.state')
+    @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
         for item in self:
+            item.inventory_status = 'not_received'
             picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
             all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
             if all_equal_parent_done:
