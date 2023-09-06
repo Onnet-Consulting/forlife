@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
-    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1)
+    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
@@ -294,9 +294,10 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
-    @api.depends('picking_ids', 'picking_ids.state')
+    @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
         for item in self:
+            item.inventory_status = 'not_received'
             picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
             all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
             if all_equal_parent_done:
@@ -1866,9 +1867,12 @@ class PurchaseOrderLine(models.Model):
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
-                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
+                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                 ('product_id', '=', self.product_id.id), 
+                 ('partner_id', '=', self.supplier_id.id),
                  ('date_start', '<', date_item),
                  ('date_end', '>', date_item),
+                 ('min_qty', '<=', self.product_qty),
                  ('currency_id', '=', self.currency_id.id)
                  ])
             if supplier_info:
@@ -1880,9 +1884,12 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
-                [('product_id', '=', item.product_id.id), ('partner_id', '=', item.supplier_id.id),
+                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                 ('product_id', '=', self.product_id.id), 
+                 ('partner_id', '=', item.supplier_id.id),
                  ('currency_id', '=', item.currency_id.id),
                  ('date_start', '<', date_item),
+                 ('min_qty', '<=', self.product_qty),
                  ('date_end', '>',
                   date_item)]) if item.supplier_id and item.product_id and item.currency_id else None
             item.domain_uom = json.dumps(
@@ -2019,6 +2026,7 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', rec.order_id.partner_id.id),
                 ('currency_id', '=', rec.order_id.currency_id.id),
                 ('product_uom', '=', rec.purchase_uom.id),
+                ('min_qty', '<=', rec.product_qty),
                 ('date_start', '<=', today),
                 ('date_end', '>=', today)
             ])
@@ -2120,6 +2128,7 @@ class PurchaseOrderLine(models.Model):
                     line.price_unit = line.vendor_price / line.exchange_quantity
                 else:
                     line.price_unit = line.vendor_price
+                continue
             if not line.product_id or line.invoice_lines or not line.partner_id:
                 continue
             params = {'order_id': line.order_id}
