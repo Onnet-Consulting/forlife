@@ -8,7 +8,7 @@
             <main class="body">
                 <select t-model="state.employeeID" class="configurator_select assign-employee">
                     <t t-foreach="employees" t-as="employee" t-key="employee.id">
-                        <option t-att-value="employee.id"><t t-esc="employee.name"/></option>
+                        <option t-att-value="employee.id"><t t-esc="employee.code"/> - <t t-esc="employee.name"/></option>
                     </t>
                 </select>
             </main>

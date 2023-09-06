@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
-    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1)
+    ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
@@ -294,9 +294,10 @@ class PurchaseOrder(models.Model):
             else:
                 item.origin = False
 
-    @api.depends('picking_ids', 'picking_ids.state')
+    @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
         for item in self:
+            item.inventory_status = 'not_received'
             picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
             all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
             if all_equal_parent_done:
@@ -817,7 +818,6 @@ class PurchaseOrder(models.Model):
         data_line = {
             'stock_move_id': stock_move_id.id,
             'ware_name': stock_move_id.picking_id.name,
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
@@ -846,7 +846,6 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice_expense(self, cost_line, po_line, cp):
         data_line = {
-            'po_id': po_line.id,
             'product_id': po_line.product_id.id,
             'product_expense_origin_id': cost_line.product_id.id,
             'description': po_line.product_id.name,
@@ -865,7 +864,6 @@ class PurchaseOrder(models.Model):
     def create_invoice_labor(self, line_id, material_line, wave_item):
         data_line = {
             'ware_name': wave_item.picking_id.name,
-            'po_id': line_id.id,
             'product_id': material_line.product_id.id,
             'description': material_line.product_id.name,
             'quantity': 1,
@@ -881,7 +879,6 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
         data_line = {
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
@@ -906,7 +903,6 @@ class PurchaseOrder(models.Model):
 
     def create_invoice_service_and_asset_not_get_mode(self, order, line):
         data_line = {
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'price_subtotal': line.price_subtotal,
             'promotions': line.free_good,
@@ -933,7 +929,6 @@ class PurchaseOrder(models.Model):
     def _prepare_invoice_labor(self, labor_cost_id, move_qty):
         pol_id = labor_cost_id.purchase_order_line_id
         data = {
-            'po_id': pol_id.id,
             'product_id': pol_id.product_id.id,
             'product_expense_origin_id': labor_cost_id.product_id.id,
             'description': pol_id.product_id.name,
@@ -1705,7 +1700,7 @@ class PurchaseOrderLine(models.Model):
     exchange_quantity = fields.Float('Exchange Quantity', default=1.0, copy=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
-    free_good = fields.Boolean(string='Free Goods')
+    free_good = fields.Boolean(string='Hàng không tính tiền', default=False)
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')

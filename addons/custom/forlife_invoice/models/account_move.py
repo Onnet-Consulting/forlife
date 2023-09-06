@@ -90,12 +90,6 @@ class StockReturnPicking(models.TransientModel):
                     'origin': self.picking_id.origin,
                     'relation_return': self.picking_id.name
                 })
-            for item in self.picking_id.move_line_ids_without_package:
-                for line in new_picking.move_line_ids_without_package:
-                    if item.product_id == line.product_id:
-                        line.write({
-                            'po_id': item.po_id
-                        })
         return new_picking_id, pick_type_id
 
 

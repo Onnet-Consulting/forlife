@@ -27,6 +27,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
         get employees() {
             return this.env.pos.assignable_employees.map(function (employee) {
                 return {
+                    code: employee.code,
                     name: employee.name,
                     id: employee.id
                 }
