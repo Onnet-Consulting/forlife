@@ -91,6 +91,7 @@
                             <th style="text-align: center;">Tiêu tích lũy</th>
                             <th style="text-align: center;">Điểm trả</th>
                             <th style="text-align: center;">Tổng điểm TL</th>
+                            <th style="text-align: center;">Điểm TL sau mua</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,6 +113,7 @@
                                 <td style="text-align: center;"><t t-esc="line.points_used"/></td>
                                 <td style="text-align: center;"><t t-esc="line.points_back"/></td>
                                 <td style="text-align: center;"><t t-esc="line.points_store"/></td>
+                                <td style="text-align: center;"><t t-esc="line.sum_points_store"/></td>
                             </tr>
                         </t>
                     </tbody>
