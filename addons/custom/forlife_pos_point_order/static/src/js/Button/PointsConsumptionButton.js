@@ -90,7 +90,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             var old_data_props = []
             let currentOrder = this.env.pos.selectedOrder;
             if (currentOrder._checkHasNotExistedLineOnOldData()) {
-                currentOrder.resetPointOrder();
+                currentOrder.old_data = false;
             };
             if(!this.env.pos.selectedOrder.old_data){
                 old_data_props = false;
