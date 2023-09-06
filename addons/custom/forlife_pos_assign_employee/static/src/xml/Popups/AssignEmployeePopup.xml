@@ -22,6 +22,9 @@
                 <div class="button confirm highlight" t-on-click="confirm_all">
                     <t t-esc="props.assignAllTitle"/>
                 </div>
+                <div class="button confirm highlight" t-on-click="confirm_default">
+                    <t t-esc="props.assignDefaultTitle"/>
+                </div>
             </footer>
         </div>
     </t>
