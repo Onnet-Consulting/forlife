@@ -27,7 +27,7 @@ odoo.define('forlife_pos_payment_change.ProductScreen', function (require) {
 
         async _onClickPay() {
             var order_lines = [];
-            this.env.pos.selectedOrder.orderlines.forEach(function(item){
+            this.env.pos.selectedOrder.orderlines.filter(line => line.product.type == 'product').forEach(function(item){
                 if(item.pack_lot_lines){
                     order_lines.push({
                         product_id: item.product.id,
