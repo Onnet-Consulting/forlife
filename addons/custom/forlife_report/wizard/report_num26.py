@@ -7,7 +7,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 TITLES = [
     'Số yêu cầu', 'Ngày yêu cầu', 'Hạn xử lý', 'Ghi chú',
     'Từ kho', 'Đến kho', 'Số phiếu điều chuyển', 'Tổng số kiện', 'Tổng trọng lượng (Kg)', 'STT dòng', 'Barcode (*)', 'Tên SP',
-    'Màu', 'Ánh màu', 'Size', 'SL kế hoạch', 'Đơn vị tính (*)', 'Số lượng xuất (*)',
+    'Màu', 'Ánh màu', 'Màu cơ bản', 'Size', 'SL kế hoạch', 'Đơn vị tính (*)', 'Số lượng xuất (*)',
     'Số lượng nhập (*)', 'Từ LSX', 'Đến LSX', 'Loại phiếu'
 ]
 
@@ -47,6 +47,7 @@ class ReportNum26(models.TransientModel):
                 COALESCE(pt.name->>'vi_VN', pt.name->>'en_US') AS ten_sp,
                 attr.attrs->'{attr_value.get('mau_sac', '')}'->> 0 AS mau,
                 attr.attrs->'{attr_value.get('anh_mau', '')}'->> 0 AS anh_mau,
+                attr.attrs->'{attr_value.get('mau_co_ban', '')}'->> 0 AS mau_co_ban,
                 attr.attrs->'{attr_value.get('size', '')}'->> 0 AS size,
                 stl.qty_plan AS sl_ke_hoach,
                 COALESCE(uu.name->>'vi_VN', uu.name->>'en_US') AS dvt,
@@ -146,12 +147,13 @@ class ReportNum26(models.TransientModel):
             sheet.write(row, 11, value.get('ten_sp'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('mau'), formats.get('normal_format'))
             sheet.write(row, 13, value.get('anh_mau'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('size'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('sl_ke_hoach'), formats.get('int_number_format'))
-            sheet.write(row, 16, value.get('dvt'), formats.get('int_number_format'))
-            sheet.write(row, 17, value.get('sl_xuat'), formats.get('int_number_format'))
-            sheet.write(row, 18, value.get('sl_nhap'), formats.get('int_number_format'))
-            sheet.write(row, 19, value.get('lsx_tu'), formats.get('normal_format'))
-            sheet.write(row, 20, value.get('lsx_den'), formats.get('normal_format'))
-            sheet.write(row, 21, dict(self.env['stock.transfer']._fields['type'].selection).get(value.get('loai_phieu')), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('mau_co_ban'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('size'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('sl_ke_hoach'), formats.get('int_number_format'))
+            sheet.write(row, 17, value.get('dvt'), formats.get('int_number_format'))
+            sheet.write(row, 18, value.get('sl_xuat'), formats.get('int_number_format'))
+            sheet.write(row, 19, value.get('sl_nhap'), formats.get('int_number_format'))
+            sheet.write(row, 20, value.get('lsx_tu'), formats.get('normal_format'))
+            sheet.write(row, 21, value.get('lsx_den'), formats.get('normal_format'))
+            sheet.write(row, 22, dict(self.env['stock.transfer']._fields['type'].selection).get(value.get('loai_phieu')), formats.get('normal_format'))
             row += 1

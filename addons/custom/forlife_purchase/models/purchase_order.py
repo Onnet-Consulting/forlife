@@ -1699,7 +1699,7 @@ class PurchaseOrderLine(models.Model):
     exchange_quantity = fields.Float('Exchange Quantity', default=1.0, copy=True)
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0, compute='_compute_free_good', store=1, readonly=False)
-    free_good = fields.Boolean(string='Free Goods')
+    free_good = fields.Boolean(string='Hàng không tính tiền', default=False)
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code', domain=[('state', '=', 'approved'), ('status', '=', 'in_approved')], ondelete='restrict')
