@@ -81,11 +81,11 @@ class PurchaseOrder(models.Model):
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
-    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
-    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
-    trade_tax_id = fields.Many2one(comodel_name='account.tax', string='Thuế VAT cùa chiết khấu(%)', domain="[('type_tax_use', '=', 'purchase'), ('company_id', '=', company_id)]")
-    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
-    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
+    trade_discount = fields.Float(string='Chiết khấu thương mại(%)', copy=False)
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại', copy=False)
+    trade_tax_id = fields.Many2one(comodel_name='account.tax', string='Thuế VAT cùa chiết khấu(%)', domain="[('type_tax_use', '=', 'purchase'), ('company_id', '=', company_id)]", copy=False)
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)', copy=False)
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False, copy=False)
     total_trade_discounted = fields.Float(string='Tổng chiết khấu thương mại đã lên hóa đơn', compute='compute_total_trade_discounted')
     location_export_material_id = fields.Many2one('stock.location', string='Địa điểm xuất NPL')
     count_invoice_inter_company_ncc = fields.Integer(compute='compute_count_invoice_inter_company_ncc')
@@ -1335,6 +1335,8 @@ class PurchaseOrder(models.Model):
         # Invoice line values (keep only necessary sections).
         if select_type_inv == 'normal':
             self._create_invoice_normal_purchase_type_product_orders(invoice_vals_list, invoice_vals)
+        if select_type_inv == 'expense':
+            self._create_invoice_expense_purchase_type_product_orders(invoice_vals_list, invoice_vals)
         else:
             raise UserError('Tính năng đang được hoàn thiện!')
 
@@ -1473,6 +1475,59 @@ class PurchaseOrder(models.Model):
             raise UserError(_('Tất cả các phiếu nhập kho đã được lên hóa đơn. Vui lòng kiểm tra lại!'))
         invoice_vals['receiving_warehouse_id'] = [(6, 0, receiving_warehouse_ids)]
         invoice_vals_list.append(invoice_vals)
+
+
+    # Hóa đơn chi phí mua hàng nhiều PO
+    def _create_invoice_expense_purchase_type_product_orders(self, invoice_vals_list, invoice_vals):
+        sequence = 10
+        picking_ids = self.picking_ids.filtered(lambda x: x.state == 'done')
+        picking_in_ids = picking_ids.filtered(lambda x: not x.x_is_check_return)
+        if not picking_in_ids:
+            raise UserError(_('Không có số lượng nhập kho để lên hóa đơn. Vui lòng kiểm tra lại!'))
+        if not self.cost_line:
+            raise UserError(_('Không có thông tin ở Tab Chi phí để lên hóa đơn. Vui lòng kiểm tra lại!'))
+
+        pending_section = None
+        total_vnd_amount_order = sum(self.order_line.mapped('total_vnd_amount'))
+        if total_vnd_amount_order <= 0:
+            raise UserError(_('Tổng tiền chi phí không được nhỏ hơn hoặc bằng 0. Vui lòng kiểm tra lại!'))
+
+        for cost_line in self.cost_line:
+            for line in self.order_line:
+
+                move_ids = line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+
+                # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
+                move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
+
+                if not total_vnd_amount_order or not line.product_qty or move_qty <= 0:
+                    return
+
+                amount_rate = line.total_vnd_amount / total_vnd_amount_order
+                cp = ((amount_rate * cost_line.foreign_amount) / line.product_qty) * move_qty
+                currency_id = invoice_vals['currency_id']
+                if cost_line.currency_id.id != currency_id:
+                    rate = cost_line.exchange_rate/invoice_vals['exchange_rate']
+                    cp = cp * rate
+
+                data_line = self._prepare_invoice_expense(cost_line, line, cp)
+                if line.display_type == 'line_section':
+                    pending_section = line
+                    continue
+                if pending_section:
+                    line_vals = pending_section._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                    sequence += 1
+                    pending_section = None
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                sequence += 1
+        invoice_vals['receiving_warehouse_id'] = [(6, 0, picking_ids.ids)]
+        invoice_vals_list.append(invoice_vals)
+
 
     def _prepare_invoice_purchases(self):
         """
