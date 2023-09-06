@@ -17,5 +17,9 @@
         <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
         <field name="implied_ids" eval="[(4, ref('user_purchase_order_group'))]"/>
     </record>
+     <record id="update_tax_and_cost_group" model="res.groups">
+        <field name="name">Cập nhật thông tin thuế - chi phí</field>
+        <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
+    </record>
 </data>
 </odoo>

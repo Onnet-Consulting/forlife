@@ -24,3 +24,4 @@ access_select_type_invoice,select_type_invoice,model_select_type_invoice,,1,1,1,
 access_import.production.from.excel,import.production.from.excel,model_import_production_from_excel,,1,1,1,1
 access_production.material.import,production.material.import,model_production_material_import,,1,1,1,1
 access_production.expense.import,production.expense.import,model_production_expense_import,,1,1,1,1
+access_import_tax_info_wizard,import.tax.info.wizard,model_import_tax_info_wizard,base.group_user,1,1,1,1
