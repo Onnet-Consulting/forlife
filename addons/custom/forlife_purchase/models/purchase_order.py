@@ -1872,9 +1872,12 @@ class PurchaseOrderLine(models.Model):
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
-                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
+                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                 ('product_id', '=', self.product_id.id), 
+                 ('partner_id', '=', self.supplier_id.id),
                  ('date_start', '<', date_item),
                  ('date_end', '>', date_item),
+                 ('min_qty', '<=', self.product_qty),
                  ('currency_id', '=', self.currency_id.id)
                  ])
             if supplier_info:
@@ -1886,9 +1889,12 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
-                [('product_id', '=', item.product_id.id), ('partner_id', '=', item.supplier_id.id),
+                ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                 ('product_id', '=', self.product_id.id), 
+                 ('partner_id', '=', item.supplier_id.id),
                  ('currency_id', '=', item.currency_id.id),
                  ('date_start', '<', date_item),
+                 ('min_qty', '<=', self.product_qty),
                  ('date_end', '>',
                   date_item)]) if item.supplier_id and item.product_id and item.currency_id else None
             item.domain_uom = json.dumps(
@@ -2025,6 +2031,7 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', rec.order_id.partner_id.id),
                 ('currency_id', '=', rec.order_id.currency_id.id),
                 ('product_uom', '=', rec.purchase_uom.id),
+                ('min_qty', '<=', rec.product_qty),
                 ('date_start', '<=', today),
                 ('date_end', '>=', today)
             ])
@@ -2126,6 +2133,7 @@ class PurchaseOrderLine(models.Model):
                     line.price_unit = line.vendor_price / line.exchange_quantity
                 else:
                     line.price_unit = line.vendor_price
+                continue
             if not line.product_id or line.invoice_lines or not line.partner_id:
                 continue
             params = {'order_id': line.order_id}
