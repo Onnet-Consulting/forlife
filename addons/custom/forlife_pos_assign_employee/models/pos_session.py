@@ -22,7 +22,7 @@ class PosSession(models.Model):
 
     def _get_assignable_employees(self):
         """Get assignable employees for PoS order line"""
-        return self.env['hr.employee'].search_read(self._get_assignable_employees_domain(), ['name'])
+        return self.env['hr.employee'].search_read(self._get_assignable_employees_domain(), ['name', 'code'])
 
     def _get_assignable_employees_domain(self):
         return ['|', ('id', 'in', self.config_id.store_id.employee_ids.ids), ('id', '=', self.env.user.employee_id.id)]
