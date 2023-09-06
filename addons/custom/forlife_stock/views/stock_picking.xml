@@ -13,6 +13,9 @@
                 <field name="total_purchase_qty"/>
                 <field name="total_qty_done"/>
             </xpath>
+            <xpath expr="//field[@name='backorder_id']" position="after">
+                <field name="leftovers_id"/>
+            </xpath>
         </field>
     </record>
     <record id="forlife_stock_stock_picking_form_view" model="ir.ui.view">
