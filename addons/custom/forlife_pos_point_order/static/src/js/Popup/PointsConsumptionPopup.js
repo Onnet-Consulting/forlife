@@ -46,6 +46,17 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             return line.is_applied_promotion() || line.discount > 0;
         }
 
+        _get_old_point(line) {
+            console.log('line', line);
+            let ref_line = this.env.pos.get_order().get_orderlines().find(l => l.id == line.id);
+            if (!ref_line) return 0;
+            else {
+                if (ref_line.quantity) {
+                    return Math.abs(ref_line.point/ref_line.quantity/1000)
+                } else return 0
+            };
+        }
+
         push_value(){
             var promotion = this.props.program_promotion;
             var product_valid = this.props.product_valid;

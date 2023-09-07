@@ -69,7 +69,8 @@ class InheritStockPicking(models.Model):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
         product_qty = float_round(sum(product_prodution_quantity.mapped('quantity')), precision_rounding=material.production_uom_id.rounding)
         material_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
-        product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding)
+        #Lam tron xuong voi npl cho sx - Hang:05/09
+        product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding, rounding_method='DOWN')
         move_outgoing_value = []
         qty_remain = product_uom_qty
         if product_qty >= product_uom_qty:

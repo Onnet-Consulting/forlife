@@ -18,7 +18,7 @@ class PurchaseOrder(models.Model):
     br5 = BravoCharField(bravo_name='DocCode', bravo_default='PO')
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         return {
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }

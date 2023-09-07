@@ -10,9 +10,10 @@ odoo.define('forlife_pos_payment_change.ProductScreen', function (require) {
                const res = order_lines.reduce((acc, obj) => {
                   let found = false;
                   for (let i = 0; i < acc.length; i++) {
-                     if (acc[i].product_id === obj.product_id && acc[i].seri == obj.seri) {
+                     if (acc[i].product_id === obj.product_id) {
                         found = true;
                         acc[i].count=acc[i].count+obj.quantity;
+                        acc[i].seri.push(...obj.seri);
                      };
                   }
                   if (!found) {
@@ -26,20 +27,20 @@ odoo.define('forlife_pos_payment_change.ProductScreen', function (require) {
 
         async _onClickPay() {
             var order_lines = [];
-            this.env.pos.selectedOrder.orderlines.forEach(function(item){
+            this.env.pos.selectedOrder.orderlines.filter(line => line.product.type == 'product').forEach(function(item){
                 if(item.pack_lot_lines){
                     order_lines.push({
                         product_id: item.product.id,
                         product_name:item.product.display_name,
                         quantity: item.quantity,
-                        seri:$.trim(item.pack_lot_lines[0].lot_name)
+                        seri: item.pack_lot_lines.map(lot => $.trim(lot.lot_name)) || []
                     })
                 }else{
                     order_lines.push({
                         product_id: item.product.id,
                         product_name:item.product.display_name,
                         quantity: item.quantity,
-                        seri:false
+                        seri: []
                     })
                 }
 

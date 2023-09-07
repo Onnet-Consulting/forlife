@@ -3,6 +3,12 @@ odoo.define('forlife_pos_point_order.models', function (require) {
 
     var {PosGlobalState, Orderline, Order} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
+    const field_utils = require('web.field_utils');
+    const {Gui} = require('point_of_sale.Gui');
+
+    var core = require('web.core');
+    var _t = core._t;
+
     var utils = require('web.utils');
     var round_pr = utils.round_precision;
     const PointsOrderLine = (Orderline) =>
@@ -12,14 +18,21 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 this.is_new_line_point = this.is_new_line_point || false;
             }
 
-//            set_quantity(quantity, keep_price){
-//                this.order.old_data = false
-//                for (let i = 0; i < this.order.orderlines.length; i++) {
-//                    this.order.orderlines[i].point = false
-//                    this.order.orderlines[i].is_new_line_point = false
-//                }
-//                return super.set_quantity(quantity, keep_price)
-//            }
+            set_quantity(quantity, keep_price){
+
+                if (quantity !== 'remove') {
+                    let pre_quantity = this.quantity;
+                    let quant = typeof(quantity) === 'number' ? quantity : (field_utils.parse.float('' + (quantity ? quantity : 0 )));
+                    if (this.point && (this.quantity && quant > pre_quantity || quant > 1)) {
+                        Gui.showPopup('ErrorPopup', {
+                            title: _t('Lỗi thao tác'),
+                            body: _t('Bạn không thể tăng số lượng trên sản phẩm đã tiêu điểm lớn hơn 1.0 !'),
+                        });
+                        return false;
+                    };
+                };
+                return super.set_quantity(quantity, keep_price);
+            }
 
             init_from_JSON(json) {
                 super.init_from_JSON(...arguments);
@@ -143,10 +156,6 @@ odoo.define('forlife_pos_point_order.models', function (require) {
             }
             add_product(product, options){
                 this.old_data = false;
-                for (let i = 0; i < this.orderlines.length; i++) {
-                     this.orderlines[i].point = false
-                     this.orderlines[i].is_new_line_point = false
-                }
                 return super.add_product(product,options)
             }
             remove_orderline( line ){
@@ -178,7 +187,7 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                     };
                     return false;
                 };
-                return false;
+                return true;
             }
         }
     Registries.Model.extend(Orderline, PointsOrderLine);
