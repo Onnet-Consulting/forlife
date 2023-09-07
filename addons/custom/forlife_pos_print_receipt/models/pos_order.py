@@ -118,7 +118,9 @@ class PosOrder(models.Model):
                 'accumulation': self.currency_id.custom_format(accumulation) if accumulation > 0 else 0,
                 'total_point': item.total_point,
                 'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0,
-                'qr_code': '%s%s' % (item.brand_id.mobile_app_url, item.pos_reference)
+                'qr_code': '%s%s' % (item.brand_id.mobile_app_url, item.pos_reference),
+                'pay_point': item.pay_point,
+                'refund_point': item.refund_point,
             })
         return data
 
@@ -216,6 +218,8 @@ class PosOrder(models.Model):
                     ('store', '=', store)
                 ])
                 o.update({
+                    'pay_point': order.pay_point,
+                    'refund_point': order.refund_point,
                     'total_point': order.total_point,
                     'sum_total_point': sum(history_point.mapped('points_store')) if history_point else 0,
                 })
