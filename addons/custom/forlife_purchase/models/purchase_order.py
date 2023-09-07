@@ -1797,7 +1797,7 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
+    product_qty = fields.Float(string='Quantity', digits=(16, 2), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
