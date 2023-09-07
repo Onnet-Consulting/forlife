@@ -134,10 +134,10 @@ class ForLifeProduction(models.Model):
             return False
         queries = record.bravo_get_insert_sql(bravo_table=BravoTableDetail)
         if queries:
-            if len(record == 1):
+            if len(record) == 1:
                 bravo_condition = f"DocNo = {record.code} and CompanyCode = {record.company_id.code}"
             else:
                 bravo_condition = ' or '.join([f"(DocNo = {r.code} and CompanyCode = {r.company_id.code})" for r in record])
-            queries = f"delete from B20Brand where {bravo_condition};\n" + queries
+            queries = f"delete from {BravoTableDetail} where {bravo_condition};\n" + queries
             self.env[self._name].with_delay(description=f"Bravo: Chứng từ lệnh sản xuất", channel="root.Bravo").bravo_execute_query(queries)
         return True
