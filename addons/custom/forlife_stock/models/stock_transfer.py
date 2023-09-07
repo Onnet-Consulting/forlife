@@ -34,9 +34,9 @@ class StockTransfer(models.Model):
                    ('excess_arising_lack_arise', 'Excess Arising/Lack Arise')], default='same_branch', required=1,
         compute='_compute_document_type')
     type = fields.Selection([
-        ('excess', 'Điều chuyển phát sinh thừa'),
-        ('lack', 'Điều chuyển phát sinh thiếu'),
-    ], string='Type', copy=False)
+        ('excess', 'ĐC phát sinh thừa (Đầu xuất)'),
+        ('lack', 'ĐC phát sinh thiếu (Đầu nhập)'),
+    ], string='Loại', copy=False)
     method_transfer = fields.Selection(
         string="Method",
         selection=[('transfer_between_warehouse', 'Transfer Between Warehouse'),
@@ -60,8 +60,8 @@ class StockTransfer(models.Model):
     origin = fields.Char(copy=False)
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
     note = fields.Text("Ghi chú")
-    date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now(), copy=False)
-    date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now(), copy=False)
+    date_transfer = fields.Datetime("Ngày xác nhận xuất", readonly=True, copy=False)
+    date_in_approve = fields.Datetime("Ngày xác nhận nhập", readonly=True, copy=False)
     is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=False)
     picking_count = fields.Integer(compute='_compute_picking_count')
     backorder_count = fields.Integer(compute='_compute_backorder_count')
@@ -69,6 +69,8 @@ class StockTransfer(models.Model):
     total_request_qty = fields.Float(string='Tổng số lượng điều chuyển', compute='_compute_total_qty')
     total_in_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
     total_out_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
+    out_confirm_uid = fields.Many2one('res.users', 'Người XN xuất', readonly=True, copy=False)
+    done_transfer_uid = fields.Many2one('res.users', 'Người XN nhập', readonly=True, copy=False)
 
     @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
     def _compute_total_qty(self):
@@ -232,7 +234,11 @@ class StockTransfer(models.Model):
         if stock_transfer_line_less:
             self._out_approve_less_quantity(stock_transfer_line_less)
         self._update_forlife_production()
-        self.write({'state': 'out_approve'})
+        self.write({
+            'state': 'out_approve',
+            'date_transfer': fields.Datetime.now(),
+            'out_confirm_uid': self._uid,
+        })
         if stock_transfer_line_less:
             return {
                 'type': 'ir.actions.client',
@@ -244,7 +250,11 @@ class StockTransfer(models.Model):
                 }
             }
         if self.type == 'excess':
-            self.write({'state': 'done'})
+            self.write({
+                'state': 'done',
+                'date_in_approve': fields.Datetime.now(),
+                'done_transfer_uid': self._uid,
+            })
 
     def _update_forlife_production(self):
         for line in self.stock_transfer_line:
@@ -348,7 +358,11 @@ class StockTransfer(models.Model):
     def _action_in_approve(self):
         self.ensure_one()
         self._validate_product_tolerance('in')
-        self.write({'state': 'done'})
+        self.write({
+            'state': 'done',
+            'date_in_approve': fields.Datetime.now(),
+            'done_transfer_uid': self._uid,
+        })
         return self._action_in_approve_in_process()
 
     def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
