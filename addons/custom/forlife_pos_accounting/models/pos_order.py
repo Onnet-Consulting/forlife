@@ -15,6 +15,7 @@ class InheritPosOrder(models.Model):
     real_to_invoice = fields.Boolean(string='Real To Invoice')
     invoice_ids = fields.One2many(comodel_name='account.move', inverse_name='pos_order_id', string='Invoices')
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+    line_detail = fields.One2many(related='lines', domain=['|', ('is_promotion', '!=', True), ('is_product_auto', '!=', True)])
 
     def _compute_invoice_count(self):
         for rec in self:

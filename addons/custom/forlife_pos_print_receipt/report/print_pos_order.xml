@@ -233,6 +233,18 @@
                                                 <div class="line" style="border-bottom: 1px solid;"/>
                                             </td>
                                         </tr>
+                                        <tr t-if="doc['pay_point'] &gt; 0">
+                                            <td colspan="2">Điểm trả</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['pay_point']"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="doc['refund_point'] &gt; 0">
+                                            <td colspan="2">Điểm hoàn</td>
+                                            <td colspan="3" style="text-align: right !important;">
+                                                <t t-esc="doc['refund_point']"/>
+                                            </td>
+                                        </tr>
                                         <tr t-if="doc['total_point'] &gt; 0">
                                             <td colspan="2">Tích lũy HĐ</td>
                                             <td colspan="3" style="text-align: right !important;">
