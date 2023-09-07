@@ -180,7 +180,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 orderlines = orderlines.filter((line) => this.props.listOrderLineRefundSelected.includes(line.id))
             }
             if (orderlines.length <= 0) {
-                alert('Không thể thực hiển Đổi/Trả đơn này !');
+                alert('Không thể thực hiện Đổi/Trả đơn này !');
                 return;
             }
 

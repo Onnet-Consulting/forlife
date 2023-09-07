@@ -317,7 +317,7 @@ class SummaryAdjustedInvoicePos(models.Model):
     def get_invoice_bkav(self):
         for line in self:
             try:
-                bkav_action.get_invoice_bkav(self)
+                bkav_action.get_invoice_bkav(line)
             except Exception as e:
                 line.message_post(body=str(e))
 
