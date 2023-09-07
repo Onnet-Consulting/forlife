@@ -734,6 +734,31 @@ class PurchaseOrder(models.Model):
                 raise ValidationError(message)
         return res
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        if "import_file" in self.env.context:
+            pr_names = [val['order_line'][0][2].get('request_purchases') for val in vals_list if val.get('order_line') and len(val.get('order_line')[0]) == 3 and val['order_line'][0][2].get('request_purchases') and val['order_line'][0][2].get('sequence')]
+            if pr_names:
+                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names)])
+                for val in vals_list:
+                    request_ids = []
+                    if not val.get('order_line'):
+                        continue
+                    for line in val.get('order_line'):
+                        if len(line) == 3 and line[2].get('request_purchases') and line[2]['sequence']:
+                            purchase_request_id = purchase_request_ids.filtered(lambda x: x.name == line[2]['request_purchases'])
+                            if purchase_request_id:
+                                request_ids.append(purchase_request_id.id)
+                                # Update PR line
+                                request_line_id = purchase_request_id.order_lines[line[2]['sequence'] - 1]
+                                line[2].update({
+                                    'purchase_request_line_id': request_line_id.id if request_line_id else False
+                                })
+                    val.update({
+                        'purchase_request_ids': [(6, 0, request_ids)]
+                    })
+        return super(PurchaseOrder, self).create(vals_list)
+
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
         order_line_ids = []
@@ -2218,6 +2243,8 @@ class PurchaseOrderLine(models.Model):
                     line.price_unit = line.vendor_price / line.exchange_quantity
                 else:
                     line.price_unit = line.vendor_price
+                if not line.date_planned:
+                    line.date_planned = fields.Datetime.now()
                 continue
             if not line.product_id or line.invoice_lines or not line.partner_id:
                 continue
