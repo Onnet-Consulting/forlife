@@ -5,6 +5,7 @@ class InheritStockPicking(models.Model):
     _inherit = 'stock.picking'
 
     is_need_scan_barcode = fields.Boolean(compute='_compute_need_scan_barcode', store=False)
+    done_picking_uid = fields.Many2one('res.users', 'Người xác nhận', readonly=True, copy=False)
 
     @api.depends(
         'move_line_ids_without_package',

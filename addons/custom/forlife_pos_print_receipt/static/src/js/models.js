@@ -188,6 +188,8 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             return {
                 'sum_total_point': this.pos.sum_total_point,
                 'total_point': this.pos.total_point,
+                'pay_point': this.pos.pay_point,
+                'refund_point': this.pos.refund_point,
             }
         }
 

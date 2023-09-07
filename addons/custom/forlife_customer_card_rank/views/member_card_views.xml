@@ -14,6 +14,7 @@
                     <field name="min_turnover"/>
                     <field name="is_register"/>
                     <field name="time_set_rank"/>
+                    <field name="is_warning"/>
                     <field name="active" invisible="1"/>
                 </tree>
             </field>
@@ -73,6 +74,7 @@
                             <separator string="Card Rank Discount"/>
                             <group>
                                 <field name="retail_type_not_apply_ids" widget="many2many_tags" domain="[('brand_id', '=', brand_id)]"/>
+                                <field name="is_warning"/>
                             </group>
                             <div>
                                 <label for="original_price"/>
