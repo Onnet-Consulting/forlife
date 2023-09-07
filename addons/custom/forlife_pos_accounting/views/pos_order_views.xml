@@ -40,6 +40,20 @@
                 <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
+            <xpath expr="//notebook/page[@name='products']" position="after">
+                <page string="Chi tiết đơn hàng" name="detail">
+                    <field name="line_detail" readonly="1">
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="qty"/>
+                            <field name="original_price"/>
+                            <field name="money_is_reduced"/>
+                            <field name="subtotal_paid"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
         </field>
     </record>
 </odoo>
