@@ -830,7 +830,7 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_value': line.discount,
+            'discount_value': (stock_move_id.quantity_done * line.price_unit) * (line.discount_percent / 100) if line.discount_percent else 0,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax * (stock_move_id.quantity_done / line.product_qty) if line.product_qty > 0 else 0,
             'product_uom_id': line.product_uom.id,
@@ -879,18 +879,19 @@ class PurchaseOrder(models.Model):
         return data_line
 
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
+        quantity = line.product_qty - sum(invoice_line_ids.mapped('quantity'))
         data_line = {
             'product_id': line.product_id.id,
             'promotions': line.free_good,
             'exchange_quantity': line.exchange_quantity,
             'purchase_uom': line.purchase_uom.id,
-            'quantity': line.product_qty - sum(invoice_line_ids.mapped('quantity')),
+            'quantity': quantity,
             'vendor_price': line.vendor_price,
             'warehouse': line.location_id.id,
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_value': line.discount,
+            'discount_value': (quantity * line.price_unit) * (line.discount_percent / 100) if line.discount_percent else 0,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
@@ -915,7 +916,7 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_value': line.discount,
+            'discount_value': (line.product_qty * line.price_unit) * (line.discount_percent / 100) if line.discount_percent else 0,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
@@ -1860,7 +1861,7 @@ class PurchaseOrderLine(models.Model):
                 'price_total': amount_untaxed + amount_tax,
             })
 
-    @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax', 'order_id.is_inter_company','order_id')
+    @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax', 'order_id')
     def _constrain_total_vnd_exchange_import(self):
         line_number = 1
         for rec in self:
@@ -1949,10 +1950,11 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id', 'is_change_vendor','purchase_uom')
     def onchange_product_vendor_id(self):
-        if self.product_id and self.product_id.uom_po_id:
+        if self.product_id and not self.purchase_uom:
             self.purchase_uom = self.product_id.uom_po_id.id
         if self.product_id and self.currency_id:
-            self.product_uom = self.product_id.uom_id.id
+            if self.product_uom != self.product_id.uom_id:
+                self.product_uom = self.product_id.uom_id.id
             date_item = datetime.now().date()
             supplier_info = self.search_product_sup(
                 ['|',('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
@@ -2302,7 +2304,8 @@ class PurchaseOrderLine(models.Model):
         else:
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
-        self.product_uom = self.product_id.uom_id.id
+        if self.product_uom != self.product_id.uom_id:
+            self.product_uom = self.product_id.uom_id.id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
