@@ -2010,6 +2010,13 @@ class PurchaseOrderLine(models.Model):
             item.domain_uom = json.dumps(
                 [('id', 'in', supplier_info.mapped('product_uom').ids)]) if supplier_info else json.dumps([])
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(PurchaseOrderLine, self).create(vals_list)
+        if "import_file" in self.env.context:
+            res._compute_product_qty()
+        return res
+
     def search_product_sup(self, domain):
         supplier_info = self.env['product.supplierinfo'].search(domain)
         return supplier_info
@@ -2314,7 +2321,8 @@ class PurchaseOrderLine(models.Model):
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
         for line in self:
-            line.product_qty = line.purchase_quantity * line.exchange_quantity
+            if line.product_qty != line.purchase_quantity * line.exchange_quantity:
+                line.product_qty = line.purchase_quantity * line.exchange_quantity
 
     def _suggest_quantity(self):
         '''
