@@ -941,10 +941,12 @@ class AccountMoveLine(models.Model):
             product_names = ','.join(product_id.mapped('display_name'))
             raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
 
-    @api.onchange('price_unit')
+    @api.onchange('price_unit', 'quantity')
     def onchange_price_unit_set_discount(self):
-        if self.price_unit and self.discount > 0:
+        if self.price_unit and self.discount > 0 and self.quantity:
             self.discount_value = (self.price_unit * self.quantity) * (self.discount / 100)
+        else:
+            self.discount_value = 0
 
     def _get_stock_valuation_layers_price_unit(self, layers):
         price_unit_by_layer = {}
