@@ -101,20 +101,31 @@
                             <field name="date_planned"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}" required="1"/>
                         </group>
-                        <group string="Receiver's information">
-                            <field name="x_receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': 1, 'no_open': 1}"/>
-                            <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </group>
+                    <group string="Receiver's information">
+                        <group>
+                             <field name="use_department_id" options="{'no_create': 1, 'no_open': 1}"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_id" options="{'no_create': 1, 'no_open': 1}"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="attention" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="use_department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group>
+                           <field name="x_receiver_id" attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                   options="{'no_create': 1, 'no_open': 1}"/>
+                            <field name="delivery_address" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Product">
                             <field name="order_lines" widget="section_and_note_one2many" mode="tree,kanban"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}"
-                                   context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned,
+                                   context="{
+                                   'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned,
+                                   'default_location_id': location_id,
                                    'default_production_id': production_id, 'default_account_analytic_id': account_analytic_id}">
                                 <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh">
+                                    <field name="company_id" invisible="1"/>
                                     <field name="is_close" string="Đã Đóng"/>
                                     <field name="product_id"/>
                                     <field name="state" invisible="1"/>
@@ -124,6 +135,7 @@
                                     <field name="asset_description" attrs="{'readonly': [('purchase_product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="product_uom" optional="show" readonly="0" string="ĐVT"/>
                                     <field name="purchase_quantity" string="Số lượng yêu cầu" optional="show"/>
+                                    <field name="location_id" optional="show"/>
                                     <field name="exchange_quantity" optional="show" string="Tỷ lệ quy đổi" invisible="1"/>
                                     <field name="product_qty" invisible="1" force_save="1"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
