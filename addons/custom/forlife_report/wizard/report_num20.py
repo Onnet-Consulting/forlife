@@ -5,22 +5,23 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = [
-    'STT', 'Mã CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã vạch', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
+    'STT', 'Mã CN', 'Tên CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã vạch', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
     'Kích cỡ', 'Màu sắc', 'Đơn vị', 'Dòng hàng', 'Kết cấu', 'Bộ sưu tập', 'SL Bán', 'SL Trả', 'Giá', 'Giảm giá', 'Giảm trên HĐ', 'Thành tiền',
-    'Thành tiền NTL', 'Mô tả', 'Hạng', 'Chương trình khuyến mại', 'Mã thẻ GG', 'Voucher', 'Nhân viên', 'Đơn hàng gốc', 'Mã loại', 'Kênh bán'
+    'Thành tiền NTL', 'Mô tả', 'Hạng', 'Chương trình khuyến mại', 'Mã thẻ GG', 'Voucher', 'Nhân viên', 'Đơn hàng gốc', 'Ngày đơn hàng gốc',
+    'Mã loại', 'Kênh bán'
 ]
 
 
 class ReportNum20(models.TransientModel):
     _name = 'report.num20'
     _inherit = 'report.base'
-    _description = 'Invoice detail sales and refund'
+    _description = 'Bảng kê chi tiết hóa đơn bán - đổi - trả'
 
     lock_date = fields.Date('Lock date')
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    store_id = fields.Many2one('store', string='Store')
+    store_ids = fields.Many2many('store', string='Store')
     customer = fields.Char('Customer-info-x')
     order_filter = fields.Char('Order-filter')
 
@@ -34,7 +35,7 @@ class ReportNum20(models.TransientModel):
 
     @api.onchange('brand_id')
     def onchange_brand_id(self):
-        self.store_id = False
+        self.store_ids = self.store_ids.filtered(lambda f: f.brand_id.id == self.brand_id.id)
 
     def _get_query(self, store_ids, allowed_company):
         self.ensure_one()
@@ -42,12 +43,12 @@ class ReportNum20(models.TransientModel):
         user_lang_code = self.env.user.lang
         attr_value = self.env['res.utility'].get_attribute_code_config()
 
-        customer_condition = f"and (rp.ref ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')" if self.customer else ''
-        order_filter_condition = f"""and (po.pos_reference ilike '%{self.order_filter}%'
+        customer_condition = f"and (rp.ref ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')" if self.customer else ''
+        order_filter_condition = f"""and (po.pos_reference ilike '%%{self.order_filter}%%'
              or po.id in (select order_id from pos_order_line where product_id in (
-                select id from product_product where default_code ilike '%{self.order_filter}%'))
+                select id from product_product where default_code ilike '%%{self.order_filter}%%'))
              or po.id in (select order_id from promotion_usage_line where code_id in(
-                select id from promotion_code where name ilike '%{self.order_filter}%')))""" if self.order_filter else ''
+                select id from promotion_code where name ilike '%%{self.order_filter}%%')))""" if self.order_filter else ''
         query = f"""
 WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho bằng cate_id
     select 
@@ -79,6 +80,7 @@ attribute_data as (
 select
     row_number() over (order by po.id)                                          as num,
     sto.code                                                                    as ma_cn,
+    sto.name                                                                    as ten_cn,
     to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')           as ngay_lap_phieu,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')            as ngay_hd,
     po.pos_reference                                                            as so_hd,
@@ -119,7 +121,8 @@ select
             select voucher_id from pos_voucher_line where pos_order_id = po.id
             )) as xx)                                                           as voucher,
     emp.name                                                                    as nhan_vien,        
-    (select pos_reference from pos_order where id in (
+    (select array[pos_reference, to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')]
+     from pos_order where id in (
         select order_id from pos_order_line
          where id = pol.refunded_orderline_id
     ))                                                                          as don_hang_goc,
@@ -156,7 +159,7 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_id else self.store_id.ids
+        store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_ids else self.store_ids.ids
         query = self._get_query(store_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
@@ -180,35 +183,38 @@ order by num
         for value in data['data']:
             sheet.write(row, 0, value.get('num'), formats.get('center_format'))
             sheet.write(row, 1, value.get('ma_cn'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('ngay_lap_phieu'), formats.get('center_format'))
-            sheet.write(row, 3, value.get('ngay_hd'), formats.get('center_format'))
-            sheet.write(row, 4, value.get('so_hd'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('ma_kh'), formats.get('normal_format'))
-            sheet.write(row, 6, value.get('ten_kh'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('ma_vach'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('ten_hang'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('nhom_hang'), formats.get('normal_format'))
-            sheet.write(row, 10, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
-            sheet.write(row, 11, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
-            sheet.write(row, 12, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
-            sheet.write(row, 13, value.get('don_vi'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('dong_hang'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('ket_cau'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('bo_suu_tap'), formats.get('normal_format'))
-            sheet.write(row, 17, value.get('sl_ban', 0), formats.get('int_number_format'))
-            sheet.write(row, 18, value.get('sl_tra', 0), formats.get('int_number_format'))
-            sheet.write(row, 19, value.get('gia', 0), formats.get('int_number_format'))
-            sheet.write(row, 20, value.get('giam_gia', 0), formats.get('int_number_format'))
-            sheet.write(row, 21, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
-            sheet.write(row, 22, value.get('gia', 0) * value.get('sl_ban', 0) - (value.get('giam_gia', 0) if value.get('sl_ban', 0) else 0), formats.get('int_number_format'))
-            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_tra', 0) - (value.get('giam_gia', 0) if value.get('sl_tra', 0) else 0), formats.get('int_number_format'))
-            sheet.write(row, 24, value.get('mo_ta'), formats.get('normal_format'))
-            sheet.write(row, 25, value.get('hang'), formats.get('normal_format'))
-            sheet.write(row, 26, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
-            sheet.write(row, 27, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
-            sheet.write(row, 28, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
-            sheet.write(row, 29, value.get('nhan_vien'), formats.get('normal_format'))
-            sheet.write(row, 30, value.get('don_hang_goc'), formats.get('normal_format'))
-            sheet.write(row, 31, value.get('ma_loai'), formats.get('normal_format'))
-            sheet.write(row, 32, value.get('kenh_ban'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('ten_cn'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('ngay_lap_phieu'), formats.get('center_format'))
+            sheet.write(row, 4, value.get('ngay_hd'), formats.get('center_format'))
+            sheet.write(row, 5, value.get('so_hd'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('ma_kh'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('ten_kh'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('ma_vach'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('ten_hang'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('nhom_hang'), formats.get('normal_format'))
+            sheet.write(row, 11, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
+            sheet.write(row, 12, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
+            sheet.write(row, 13, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('don_vi'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('dong_hang'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('ket_cau'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('bo_suu_tap'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('sl_ban', 0), formats.get('int_number_format'))
+            sheet.write(row, 19, value.get('sl_tra', 0), formats.get('int_number_format'))
+            sheet.write(row, 20, value.get('gia', 0), formats.get('int_number_format'))
+            sheet.write(row, 21, value.get('giam_gia', 0), formats.get('int_number_format'))
+            sheet.write(row, 22, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
+            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_ban', 0) - (value.get('giam_gia', 0) if value.get('sl_ban', 0) else 0), formats.get('int_number_format'))
+            sheet.write(row, 24, value.get('gia', 0) * value.get('sl_tra', 0) - (value.get('giam_gia', 0) if value.get('sl_tra', 0) else 0), formats.get('int_number_format'))
+            sheet.write(row, 25, value.get('mo_ta'), formats.get('normal_format'))
+            sheet.write(row, 26, value.get('hang'), formats.get('normal_format'))
+            sheet.write(row, 27, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
+            sheet.write(row, 28, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
+            sheet.write(row, 29, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
+            sheet.write(row, 30, value.get('nhan_vien'), formats.get('normal_format'))
+            don_hang_goc = value.get('don_hang_goc') or ['', '']
+            sheet.write(row, 31, don_hang_goc[0], formats.get('normal_format'))
+            sheet.write(row, 32, don_hang_goc[1], formats.get('normal_format'))
+            sheet.write(row, 33, value.get('ma_loai'), formats.get('normal_format'))
+            sheet.write(row, 34, value.get('kenh_ban'), formats.get('normal_format'))
             row += 1

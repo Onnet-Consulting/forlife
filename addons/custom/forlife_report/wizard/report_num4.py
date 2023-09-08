@@ -10,7 +10,7 @@ COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
 class ReportNum4(models.TransientModel):
     _name = 'report.num4'
     _inherit = ['report.base', 'report.category.type']
-    _description = 'Report stock by product'
+    _description = 'Báo cáo tồn kho theo sản phẩm'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     product_ids = fields.Many2many('product.product', 'report_num4_product_rel', string='Products')

@@ -15,6 +15,7 @@
                     <tr>
                         <td class="index-report"><t t-esc="line.num"/></td>
                         <td><t t-esc="line.ma_cn"/></td>
+                        <td><t t-esc="line.ten_cn"/></td>
                         <td><t t-esc="line.ngay_lap_phieu"/></td>
                         <td><t t-esc="line.ngay_hd"/></td>
                         <td><t t-esc="line.so_hd"/></td>
@@ -49,7 +50,14 @@
                         <td><t t-esc="line.ma_the_gg"/></td>
                         <td><t t-esc="line.voucher"/></td>
                         <td><t t-esc="line.nhan_vien"/></td>
-                        <td><t t-esc="line.don_hang_goc"/></td>
+                        <t t-if="line.don_hang_goc">
+                            <td><t t-esc="line.don_hang_goc[0]"/></td>
+                            <td><t t-esc="line.don_hang_goc[1]"/></td>
+                        </t>
+                        <t t-else="">
+                            <td/>
+                            <td/>
+                        </t>
                         <td><t t-esc="line.ma_loai"/></td>
                         <td><t t-esc="line.kenh_ban"/></td>
                     </tr>

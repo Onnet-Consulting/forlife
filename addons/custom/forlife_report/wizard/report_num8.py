@@ -13,7 +13,7 @@ TITLES = [
 class ReportNum8(models.TransientModel):
     _name = 'report.num8'
     _inherit = 'report.base'
-    _description = 'Report voucher detail'
+    _description = 'Báo cáo chi tiết hóa đơn áp dụng voucher'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date('From date', required=True)
@@ -35,7 +35,7 @@ class ReportNum8(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         po_conditions = f'and po.id = {self.order_id.id}' if self.order_id else ''
-        voucher_conditions = f"and vv.name ilike '%{self.voucher}%'" if self.voucher else ''
+        voucher_conditions = f"and vv.name ilike '%%{self.voucher}%%'" if self.voucher else ''
         query = f"""
 select row_number() over ()                                                 as num,
     (select array[coalesce(code, ''), coalesce(name, '')]
