@@ -213,6 +213,10 @@
                     <separator/>
                     <filter string="Điều chuyển phát sinh thừa" name="type" domain="[('type','=','excess')]"/>
                     <filter string="Điều chuyển phát sinh thiếu" name="type" domain="[('type','=','lack')]"/>
+                    <separator/>
+                    <filter name="my_out_confirm" string="Xác nhận xuất bởi tôi" domain="[('out_confirm_uid', '=', uid)]"/>
+                    <separator/>
+                    <filter name="my_in_confirm" string="Hoàn thành bởi tôi" domain="[('done_transfer_uid', '=', uid)]"/>
                 </group>
                 <group expand="0" string="Group">
                     <filter name="stock_request_id_group" string="Yêu cầu điều chuyển"
