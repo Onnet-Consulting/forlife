@@ -17,7 +17,7 @@ ORDER_DETAIL_TITLE = [
 class ReportNum5(models.TransientModel):
     _name = 'report.num5'
     _inherit = ['report.base', 'export.excel.client']
-    _description = 'Report revenue by employee'
+    _description = 'Báo cáo doanh thu theo nhân viên'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     store_id = fields.Many2one('store', string='Store', required=True)

@@ -14,7 +14,7 @@ TITLE_LAYER2 = [
 class ReportNum12(models.TransientModel):
     _name = 'report.num12'
     _inherit = ['report.base', 'export.excel.client']
-    _description = 'Report customers not buying'
+    _description = 'Báo cáo khách hàng không mua hàng'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     to_date = fields.Date('To date', required=True)

@@ -22,9 +22,20 @@
                             </div>
                         </group>
                         <group>
-                            <field name="store_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True}"/>
                             <field name="customer"/>
                             <field name="order_filter"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" nolabel="1" colspan="2">
+                                <tree create="0" edit="0" delete="0" limit="20">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                </tree>
+                                <form edit="0" create="0" delete="0">
+                                    <group>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
                         </group>
                     </group>
                 </sheet>

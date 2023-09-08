@@ -11,7 +11,7 @@ COLUMN_WIDTHS = [10, 20, 20, 25, 15]
 class ReportNum7(models.TransientModel):
     _name = 'report.num7'
     _inherit = 'report.base'
-    _description = 'Report in-store revenue by product line'
+    _description = 'Báo cáo doanh thu tại cửa hàng theo dòng hàng'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date('From date', required=True)

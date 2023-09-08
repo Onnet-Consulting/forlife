@@ -43,10 +43,10 @@ class ReportNum34(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
-        customer_join = f"""join res_partner rp on so.order_partner_id = rp.id and (rp.ref ilike '%{self.customer}%' or
-            rp.name ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')""" if self.customer else ''
-        so_filter_condition = f"""and so.name ilike '%{self.order_filter}%'""" if self.order_filter else ''
-        nhanh_order_condition = f"""and so.nhanh_id ilike '%{self.nhanh_order}%'""" if self.nhanh_order else ''
+        customer_join = f"""join res_partner rp on so.order_partner_id = rp.id and (rp.ref ilike '%%{self.customer}%%' or
+            rp.name ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')""" if self.customer else ''
+        so_filter_condition = f"""and so.name ilike '%%{self.order_filter}%%'""" if self.order_filter else ''
+        nhanh_order_condition = f"""and so.nhanh_id ilike '%%{self.nhanh_order}%%'""" if self.nhanh_order else ''
 
         query = f"""
 with get_data_id_with_condition as (select so.id  as so_id,
