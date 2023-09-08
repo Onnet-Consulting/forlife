@@ -61,6 +61,7 @@ class PurchaseRequest(models.Model):
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
     total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
+    location_id = fields.Many2one('stock.location', string='Kho nhận', domain="[('company_id', '=', company_id)]")
 
     @api.depends('order_lines.purchase_quantity')
     def compute_total_qty(self):
@@ -270,6 +271,7 @@ class PurchaseRequest(models.Model):
                     'account_analytic_id': self[0].account_analytic_id.id if self[0].account_analytic_id else False,
                     'production_id': self[0].production_id.id if self[0].production_id else False,
                     'source_document': source_document,
+                    'location_id': self.location_id,
                     'date_planned': self[0].date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self[0].env.company.currency_id.id,
                 }
