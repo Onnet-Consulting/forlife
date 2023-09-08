@@ -148,6 +148,8 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
             production_data = []
+            if not production_order.order_line_ids:
+                continue
             for production_line in production_order.order_line_ids:
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
