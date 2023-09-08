@@ -174,11 +174,13 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         async _onClickOrder({ detail: clickedOrder }) {
             var payment_method = [];
             const partner = clickedOrder.get_partner();
-            let orderlines = clickedOrder.orderlines;
+            // Loại các sản phẩm lỗi khi load đơn đổi/trả
+            let orderlines = clickedOrder.orderlines.filter((line) => !line.is_product_defective);
             if (this.props.listOrderLineRefundSelected && this.props.listOrderLineRefundSelected.length > 0) {
                 orderlines = orderlines.filter((line) => this.props.listOrderLineRefundSelected.includes(line.id))
             }
             if (orderlines.length <= 0) {
+                alert('Không thể thực hiện Đổi/Trả đơn này !');
                 return;
             }
 

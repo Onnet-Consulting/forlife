@@ -13,6 +13,12 @@
                 <field name="total_purchase_qty"/>
                 <field name="total_qty_done"/>
             </xpath>
+            <xpath expr="//field[@name='date_done']" position="after">
+                <field name="done_picking_uid"/>
+            </xpath>
+            <xpath expr="//field[@name='backorder_id']" position="attributes">
+                <attribute name="string">Phần thiếu của</attribute>
+            </xpath>
             <xpath expr="//field[@name='backorder_id']" position="after">
                 <field name="leftovers_id"/>
             </xpath>
@@ -80,6 +86,17 @@
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
+        </field>
+    </record>
+    <record id="view_picking_internal_search_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.internal.search.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <filter name="activities_exception" position="after">
+                <separator/>
+                <filter name="my_confirm" string="Xác nhận bởi tôi" domain="[('done_picking_uid', '=', uid)]"/>
+            </filter>
         </field>
     </record>
 </odoo>

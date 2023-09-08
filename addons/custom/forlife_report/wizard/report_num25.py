@@ -14,7 +14,7 @@ TITLES = [
 class ReportNum25(models.TransientModel):
     _name = 'report.num25'
     _inherit = 'report.base'
-    _description = 'Estimated income by revenue report'
+    _description = 'Báo cáo dự tính thu nhập nhân viên bán hàng theo doanh thu'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     bo_plan_id = fields.Many2one('business.objective.plan', string='BO Plan', required=True)

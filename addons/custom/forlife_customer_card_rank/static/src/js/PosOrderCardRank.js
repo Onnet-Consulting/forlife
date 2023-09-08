@@ -86,7 +86,8 @@ const PosOrderCardRank = (Order) => class extends Order {
             if (card_rank) {
                 let cr_program = this.pos.card_rank_program_by_rank_id[card_rank[0]] || {};
                 let customer_not_apply = cr_program.customer_not_apply || [];
-                if ((customer_not_apply.length === 0) || (cr_program && customer_not_apply.length > 0 && !customer_not_apply.includes(partner.id))) {
+                if (((customer_not_apply.length === 0) || (cr_program && customer_not_apply.length > 0 && !customer_not_apply.includes(partner.id)))
+                    && cr_program.is_warning === true) {
                     res = true;
                 }
             }

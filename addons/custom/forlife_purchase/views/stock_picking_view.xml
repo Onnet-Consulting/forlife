@@ -53,7 +53,7 @@
                             <field name="qty_done"
                                    decoration-warning="reserved_uom_qty &lt; qty_done"
                                    decoration-success="reserved_uom_qty == qty_done" force_save="1"
-                                   attrs="{'readonly': [('parent.state', '=', 'done')]}"/>
+                                   attrs="{'readonly': ['|', ('parent.state', '=', 'done'), ('parent.is_pk_purchase', '=', True)]}"/>
                             <field name="original_qty_diff"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="product_uom_id"/>

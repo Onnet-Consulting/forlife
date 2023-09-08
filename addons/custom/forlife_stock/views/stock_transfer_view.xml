@@ -21,6 +21,8 @@
                 <field name="total_out_qty" optional="show"/>
                 <field name="total_in_qty" optional="show"/>
                 <field name="employee_id"/>
+                <field name="out_confirm_uid"/>
+                <field name="done_transfer_uid"/>
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
                 <field name="is_diff_transfer"/>
@@ -91,8 +93,10 @@
                             <field name="location_dest_id" domain="[('usage', '=', 'internal')]" string="Whs To" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)], 'readonly': [('state', '!=', 'draft')]}" string="Tài liệu gốc"/>
                             <field name="type" attrs="{'invisible':[('type', '=', False)], 'readonly':True}"/>
-                            <field name ="date_transfer"  attrs="{'invisible':[('state', 'in', ('draft','wait_approve','approved','cancel'))]}"  readonly="1"  />
-                            <field name ="date_in_approve"/>
+                            <field name="out_confirm_uid"/>
+                            <field name="date_transfer"/>
+                            <field name="done_transfer_uid"/>
+                            <field name="date_in_approve"/>
                         </group>
                         <group>
                             <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -192,6 +196,8 @@
                 <field name="work_from"/>
                 <field name="work_to"/>
                 <field name="create_date"/>
+                <field name="out_confirm_uid"/>
+                <field name="done_transfer_uid"/>
                 <field name="state" widget="badge"/>
                 <group expand="0" string="Filters">
                     <filter string="Dự thảo" name="state" domain="[('state','=','draft')]"/>
@@ -207,6 +213,10 @@
                     <separator/>
                     <filter string="Điều chuyển phát sinh thừa" name="type" domain="[('type','=','excess')]"/>
                     <filter string="Điều chuyển phát sinh thiếu" name="type" domain="[('type','=','lack')]"/>
+                    <separator/>
+                    <filter name="my_out_confirm" string="Xác nhận xuất bởi tôi" domain="[('out_confirm_uid', '=', uid)]"/>
+                    <separator/>
+                    <filter name="my_in_confirm" string="Hoàn thành bởi tôi" domain="[('done_transfer_uid', '=', uid)]"/>
                 </group>
                 <group expand="0" string="Group">
                     <filter name="stock_request_id_group" string="Yêu cầu điều chuyển"

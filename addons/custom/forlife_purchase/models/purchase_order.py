@@ -734,6 +734,7 @@ class PurchaseOrder(models.Model):
                 raise ValidationError(message)
         return res
 
+    # Xử lý import PO link sang bên PR
     @api.model_create_multi
     def create(self, vals_list):
         if "import_file" in self.env.context:
@@ -751,6 +752,8 @@ class PurchaseOrder(models.Model):
                                 request_ids.append(purchase_request_id.id)
                                 # Update PR line
                                 request_line_id = purchase_request_id.order_lines[line[2]['sequence'] - 1]
+                                if request_line_id and not purchase_request_id.is_check_button_orders_smart_button:
+                                    purchase_request_id.is_check_button_orders_smart_button = True
                                 line[2].update({
                                     'purchase_request_line_id': request_line_id.id if request_line_id else False
                                 })
@@ -1797,7 +1800,7 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    product_qty = fields.Float(string='Quantity', digits=(16, 0), required=False,
+    product_qty = fields.Float(string='Quantity', digits=(16, 2), required=False,
                                compute='_compute_product_qty', store=True, readonly=False, copy=True)
     asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
@@ -2009,6 +2012,13 @@ class PurchaseOrderLine(models.Model):
                   date_item)]) if item.supplier_id and item.product_id and item.currency_id else None
             item.domain_uom = json.dumps(
                 [('id', 'in', supplier_info.mapped('product_uom').ids)]) if supplier_info else json.dumps([])
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(PurchaseOrderLine, self).create(vals_list)
+        if "import_file" in self.env.context:
+            res._compute_product_qty()
+        return res
 
     def search_product_sup(self, domain):
         supplier_info = self.env['product.supplierinfo'].search(domain)
@@ -2314,7 +2324,8 @@ class PurchaseOrderLine(models.Model):
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
         for line in self:
-            line.product_qty = line.purchase_quantity * line.exchange_quantity
+            if line.product_qty != line.purchase_quantity * line.exchange_quantity:
+                line.product_qty = line.purchase_quantity * line.exchange_quantity
 
     def _suggest_quantity(self):
         '''
