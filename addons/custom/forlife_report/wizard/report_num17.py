@@ -17,13 +17,13 @@ TRANSACTION_DETAIL_TITLE = ['STT', 'Mã vạch', 'Tên sản phẩm', 'Đơn v�
 class ReportNum17(models.TransientModel):
     _name = 'report.num17'
     _inherit = ['report.base', 'export.excel.client']
-    _description = 'Invoice sales and refund list'
+    _description = 'Danh sách hóa đơn bán - đổi - trả'
 
     lock_date = fields.Date('Lock date')
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    store_id = fields.Many2one('store', string='Store')
+    store_ids = fields.Many2many('store', string='Store')
     customer = fields.Char('Customer-info')
     order_filter = fields.Char('Order-filter')
 
@@ -37,19 +37,19 @@ class ReportNum17(models.TransientModel):
 
     @api.onchange('brand_id')
     def onchange_brand_id(self):
-        self.store_id = False
+        self.store_ids = self.store_ids.filtered(lambda f: f.brand_id.id == self.brand_id.id)
 
     def _get_query(self, store_ids, allowed_company):
         self.ensure_one()
         tz_offset = self.tz_offset
         store_key = 'format' if self.brand_id.code == 'FMT' else 'forlife'
-        customer_join = f"""join res_partner rp on rp.id = po.partner_id and (rp.ref ilike '%{self.customer}%' or
-            rp.name ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')""" if self.customer else ''
-        order_filter_condition = f"""and (po.pos_reference ilike '%{self.order_filter}%'
+        customer_join = f"""join res_partner rp on rp.id = po.partner_id and (rp.ref ilike '%%{self.customer}%%' or
+            rp.name ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')""" if self.customer else ''
+        order_filter_condition = f"""and (po.pos_reference ilike '%%{self.order_filter}%%'
              or po.id in (select order_id from pos_order_line where product_id in (
-                select id from product_product where default_code ilike '%{self.order_filter}%'))
+                select id from product_product where default_code ilike '%%{self.order_filter}%%'))
              or po.id in (select order_id from promotion_usage_line where code_id in(
-                select id from promotion_code where name ilike '%{self.order_filter}%')))""" if self.order_filter else ''
+                select id from promotion_code where name ilike '%%{self.order_filter}%%')))""" if self.order_filter else ''
 
         query = f"""
 with po_datas as (select po.id  as po_id,
@@ -274,7 +274,7 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_id else self.store_id.ids
+        store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_ids else self.store_ids.ids
         query = self._get_query(store_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

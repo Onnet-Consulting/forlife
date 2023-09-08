@@ -734,6 +734,7 @@ class PurchaseOrder(models.Model):
                 raise ValidationError(message)
         return res
 
+    # Xử lý import PO link sang bên PR
     @api.model_create_multi
     def create(self, vals_list):
         if "import_file" in self.env.context:
@@ -751,6 +752,8 @@ class PurchaseOrder(models.Model):
                                 request_ids.append(purchase_request_id.id)
                                 # Update PR line
                                 request_line_id = purchase_request_id.order_lines[line[2]['sequence'] - 1]
+                                if request_line_id and not purchase_request_id.is_check_button_orders_smart_button:
+                                    purchase_request_id.is_check_button_orders_smart_button = True
                                 line[2].update({
                                     'purchase_request_line_id': request_line_id.id if request_line_id else False
                                 })

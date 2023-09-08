@@ -3,14 +3,14 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-TITLE_LAYER1 = ['STT', 'Chi nhánh', 'Ngày', 'Phiên bán hàng', 'POS', 'Tổng tiền thu', 'Tổng tiền chi']
+TITLE_LAYER1 = ['STT', 'Mã chi nhánh', 'Tên chi nhánh', 'Ngày', 'Phiên bán hàng', 'POS', 'Tổng tiền thu', 'Tổng tiền chi', 'Chênh lệch']
 TITLE_LAYER2 = ['STT', 'Ngày', 'Phiên bán hàng', 'Số CT', 'Nội dung', 'Khoản mục', 'TK nợ', 'TK có', 'Số tiền thu', 'Số tiền chi', 'Tên NV', 'Mã NV']
 
 
 class ReportNum22(models.TransientModel):
     _name = 'report.num22'
     _inherit = ['report.base', 'export.excel.client']
-    _description = 'Cash receipts report'
+    _description = 'Báo cáo thu chi tiền mặt tại cửa hàng'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date(string='From date', required=True)
@@ -54,7 +54,7 @@ with data_filtered as (
     where am.date between '{self.from_date}' and '{self.to_date}'
     and {('store.id = any(array%s)' % self.store_ids.ids) if self.store_ids else ('store.brand_id = %s' % self.brand_id.id)}
     {type_x.get(self.type) or ''}
-    {"and am.name ilike '%{}%'".format(self.so_ct) if self.so_ct else ''}
+    {f"and am.name ilike '%%{self.so_ct}%%'" if self.so_ct else ''}
 ),
 tai_khoan_co as (
     select
@@ -84,6 +84,7 @@ data_details as (
     select
         row_number() over (PARTITION BY ps2.id order by am2.date desc) as num,
         concat(to_char(am2.date, 'DDMMYYYY') || ps2.id::text)   as key,
+        s.code                                                  as ma_ch,
         s.name                                                  as chi_nhanh,
         to_char(am2.date, 'DD/MM/YYYY')                         as ngay,
         ps2.name                                                as phien_bh,
@@ -113,6 +114,7 @@ data_details as (
 tong_thu_chi as (
     select
         key,
+        ma_ch,
         chi_nhanh,
         ngay,
         phien_bh,
@@ -120,7 +122,7 @@ tong_thu_chi as (
         sum(tien_thu) as tong_tien_thu,
         sum(tien_chi) as tong_tien_chi
     from data_details
-    group by key, chi_nhanh, ngay, phien_bh, pos
+    group by key, ma_ch, chi_nhanh, ngay, phien_bh, pos
 ),
 gop_chi_tiet as (
     select

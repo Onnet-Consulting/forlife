@@ -14,7 +14,7 @@ TITLES = [
 class ReportNum18(models.TransientModel):
     _name = 'report.num18'
     _inherit = 'report.base'
-    _description = 'Purchase Request Detail Report'
+    _description = 'Báo cáo chi tiết PR'
 
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
