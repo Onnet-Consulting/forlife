@@ -157,9 +157,10 @@ class PurchaseOrderLine(models.Model):
                     'production_line_price_unit': production_line.price,
                     'is_from_po': True,
                 }))
-            r.write({
-                'purchase_order_line_material_line_ids': production_data
-            })
+            if production_data:
+                r.write({
+                    'purchase_order_line_material_line_ids': production_data
+                })
         return res
 
     def action_npl(self):
