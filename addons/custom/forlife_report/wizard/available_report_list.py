@@ -242,4 +242,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum41Template',
         'reportPager': True,
     },
+    'report.num42': {
+        'module': 'Kho',
+        'name': 'Báo cáo nhập kho theo đơn mua',
+        'reportTemplate': 'ReportNum42Template',
+        'reportPager': True,
+    },
 }

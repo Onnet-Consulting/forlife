@@ -41,3 +41,4 @@ from . import report_num38
 from . import report_num39
 from . import report_num40
 from . import report_num41
+from . import report_num42
