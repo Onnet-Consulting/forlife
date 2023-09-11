@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-26 02:51+0000\n"
-"PO-Revision-Date: 2023-08-26 02:51+0000\n"
+"POT-Creation-Date: 2023-09-08 10:54+0000\n"
+"PO-Revision-Date: 2023-09-08 10:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -231,6 +231,13 @@ msgid "Other Receivable Account"
 msgstr "Tài khoản phải thu khác"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_adjusted_amount
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_move__pos_adjusted_amount
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_payment__pos_adjusted_amount
+msgid "POS Adjusted Amount"
+msgstr "Tiền chuyển điều chỉnh lại"
+
+#. module: forlife_pos_popup_cash
 #: model_terms:ir.ui.view,arch_db:forlife_pos_popup_cash.account_move_view_filter_inherit
 msgid "POS Cash Transfer"
 msgstr "Chuyển tiền từ POS"
@@ -373,17 +380,6 @@ msgstr ""
 #, python-format
 msgid "You must delete the transfer difference journal entry first!"
 msgstr "Bạn phải xóa bút toán chênh lệch nạp/rút từ POS trước !"
-
-#. module: forlife_pos_popup_cash
-#. odoo-python
-#: code:addons/forlife_pos_popup_cash/models/account_move.py:0
-#, python-format
-msgid ""
-"You must set to draft and delete the journal entry related to pos transfer "
-"difference first!"
-msgstr ""
-"Bạn phải thiết lập về nháp và xóa bút toán liên quan đến chênh lệnh lệch "
-"nạp/rút tiền trước ! "
 
 #. module: forlife_pos_popup_cash
 #. odoo-javascript
