@@ -423,6 +423,7 @@
                     <field name="date_order"/>
                 </xpath>
                 <field name="date_planned" position="after">
+                    <field name="occasion_code_id" optional="show"/>
                     <field name="note" optional="show"/>
                 </field>
             </field>

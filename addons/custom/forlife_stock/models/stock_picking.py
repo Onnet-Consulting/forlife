@@ -127,6 +127,8 @@ class StockPicking(models.Model):
     is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
     total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
     total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
+    location_material_id = fields.Many2one('stock.location', domain="[('company_id', '=', company_id)]",
+                                           string='Địa điểm xuất NPL')
 
     @api.depends('move_ids.quantity_purchase_done', 'move_ids.quantity_done')
     def _compute_total_qty(self):
