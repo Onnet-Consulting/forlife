@@ -21,6 +21,7 @@ class ReportNum26(models.TransientModel):
     location_id = fields.Many2one('stock.location', string='Từ kho')
     location_dest_id = fields.Many2one('stock.location', string='Đến kho')
     status = fields.Selection([('approved', 'Chưa xuất'), ('out_approve', 'Xác nhận xuất')], string='Trạng thái')
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất')
 
     def _get_query(self):
         self.ensure_one()
@@ -101,6 +102,8 @@ class ReportNum26(models.TransientModel):
             query += f""" and sl2.id = {self.location_dest_id.id}"""
         if self.status:
             query += f""" and st.state = '{self.status}'"""
+        if self.production_id:
+            query += f""" and fp2.id = {self.production_id.id}"""
         query += " ORDER BY str.name, num;"
         return query
 
