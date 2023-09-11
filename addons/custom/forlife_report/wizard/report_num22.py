@@ -3,7 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-TITLE_LAYER1 = ['STT', 'Mã chi nhánh', 'Tên chi nhánh', 'Ngày', 'Phiên bán hàng', 'POS', 'Tổng tiền thu', 'Tổng tiền chi', 'Chênh lệch']
+TITLE_LAYER1_1 = ['STT', 'Mã chi nhánh', 'Tên chi nhánh', 'Ngày', 'Tổng tiền thu', 'Tổng tiền chi']
+TITLE_LAYER1_2 = ['STT', 'Mã chi nhánh', 'Tên chi nhánh', 'Ngày', 'Phiên bán hàng', 'POS', 'Tổng tiền thu', 'Tổng tiền chi']
 TITLE_LAYER2 = ['STT', 'Ngày', 'Phiên bán hàng', 'Số CT', 'Nội dung', 'Khoản mục', 'TK nợ', 'TK có', 'Số tiền thu', 'Số tiền chi', 'Tên NV', 'Mã NV']
 
 
@@ -18,6 +19,7 @@ class ReportNum22(models.TransientModel):
     store_ids = fields.Many2many('store', string='Store')
     so_ct = fields.Char(string='Number CT')
     type = fields.Selection([('all', _('All')), ('revenue', _('Revenue')), ('expenditure', _('Expenditure'))], 'Type', default='all', required=True)
+    group_by = fields.Selection([('store', 'Cửa hàng'), ('session', 'Phiên')], 'Nhóm theo', default='store', required=True)
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -37,6 +39,7 @@ class ReportNum22(models.TransientModel):
             'revenue': 'and absl1.amount > 0',
             'expenditure': 'and absl1.amount < 0',
         }
+        nhom_theo, khoa = ['', 's.code'] if self.group_by == 'store' else [', phien_bh, pos', 'ps2.id']
 
         query = f"""
 with data_filtered as (
@@ -82,15 +85,17 @@ tai_khoan as (
 ),
 data_details as (
     select
-        row_number() over (PARTITION BY ps2.id order by am2.date desc) as num,
-        concat(to_char(am2.date, 'DDMMYYYY') || ps2.id::text)   as key,
+        row_number() over (PARTITION BY {khoa}, am2.date order by am2.date desc) as num,
+        concat(to_char(am2.date, 'DDMMYYYY') || {khoa}::text)   as key,
         s.code                                                  as ma_ch,
         s.name                                                  as chi_nhanh,
         to_char(am2.date, 'DD/MM/YYYY')                         as ngay,
+        am2.date                                                as date,
         ps2.name                                                as phien_bh,
         pc2.name                                                as pos,
         am2.name                                                as so_ct,
-        absl2.reason                                            as noi_dung,
+        absl2.payment_ref                                       as noi_dung,
+        absl2.payment_ref                                       as nhan,
         pel.name                                                as khoan_muc,
         tk.tk_no                                                as tk_no,
         tk.tk_co                                                as tk_co,
@@ -117,12 +122,12 @@ tong_thu_chi as (
         ma_ch,
         chi_nhanh,
         ngay,
-        phien_bh,
-        pos,
+        date,
         sum(tien_thu) as tong_tien_thu,
         sum(tien_chi) as tong_tien_chi
+        {nhom_theo}
     from data_details
-    group by key, ma_ch, chi_nhanh, ngay, phien_bh, pos
+    group by key, ma_ch, chi_nhanh, ngay, date {nhom_theo}
 ),
 gop_chi_tiet as (
     select
@@ -132,7 +137,7 @@ gop_chi_tiet as (
     group by key
 )
 select
-    row_number() over (order by ttc.key)    as num,
+    row_number() over (order by ttc.ma_ch, ttc.date desc)    as num,
     ttc.*,
     gct.transaction_detail                  as transaction_detail
 from tong_thu_chi ttc
@@ -147,8 +152,9 @@ order by num
         query = self._get_query()
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
-            'titles': TITLE_LAYER1,
+            'titles': TITLE_LAYER1_1 if self.group_by == 'store' else TITLE_LAYER1_2,
             'title_layer2': TITLE_LAYER2,
+            'column_add': False if self.group_by == 'store' else True,
             "data": data,
         })
         return values
