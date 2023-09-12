@@ -26,7 +26,7 @@ class AccountMove(models.Model):
         if self.pos_trans_diff_move_id:
             diff_move_debit_sum = sum(self.pos_trans_diff_move_id.line_ids.filtered(lambda line: line.debit).mapped('debit'))
             if not float_is_zero(diff_move_debit_sum - delta_amount, precision_rounding=self.currency_id.rounding):
-                raise UserError(_('You must delete the transfer difference journal entry first!'))
+                raise UserError(_('You must cancel the transfer difference journal entry first!'))
             else:
                 return
 
