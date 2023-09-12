@@ -8,6 +8,13 @@ class PosOrderLine(models.Model):
     price_unit_excl = fields.Monetary(compute="price_unit_incl_excl")
     price_unit_incl = fields.Monetary(compute="price_unit_incl_excl")
 
+    origin_order_id = fields.Many2one('pos.order', related="refunded_orderline_id.order_id")
+    origin_is_post_bkav_store = fields.Boolean(
+        string='Có phát hành hóa đơn bkav', 
+        related="origin_order_id.is_post_bkav_store"
+    )
+
+
     def get_pk_tax(self):
         tax_ids = []
         if self.tax_ids_after_fiscal_position:
