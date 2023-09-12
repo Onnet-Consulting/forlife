@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.osv import expression
 import datetime
 
 list = [
@@ -42,6 +43,7 @@ class ProductTemplate(models.Model):
             ('internal_costs', 'Chi phí nội bộ'),
             ('labor_costs', 'Chi phí thuê ngoài'),
         ], string="Loại chi phí gia công")
+    is_store_spend = fields.Boolean('Cửa hàng được phép chi', default=False)
 
     @api.model
     def default_get(self, default_fields):
@@ -128,3 +130,10 @@ class ProductProduct(models.Model):
         if self.env.context.get('show_product_code'):
             return [(record.id, record.name or record.name) for record in self]
         return super().name_get()
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if (self._context.get('purchase_type') == 'service' and self._context.get('type_po_cost') == 'cost' and
+                (self.env.user.has_group('base.group_system') or self.env.user.has_group('base.group_system') or self.env.user.has_group('base.group_system'))):
+            args = expression.AND([[('is_store_spend', '=', True)], args])
+        return super(ProductProduct, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
