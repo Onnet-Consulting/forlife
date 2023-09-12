@@ -511,15 +511,16 @@ class SummaryAccountMovePos(models.Model):
 
 
     def create_an_invoice_bkav(self):
-        synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
-        synthetic_account_move.create_an_invoice()
+        is_general_bkav_nhanh = self.env['ir.config_parameter'].sudo().get_param('bkav.is_general_bkav_nhanh')
+        if is_general_bkav_nhanh:
+            synthetic_account_move = self.with_context({"lang": "vi_VN"}).env['synthetic.account.move.pos'].search([('exists_bkav', '=', False)])
+            synthetic_account_move.create_an_invoice()
 
-        adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
-            ('exists_bkav', '=', False),
-            ('source_invoice', '!=', False)
-        ])
-        adjusted_move.create_an_invoice()
-
+            adjusted_move = self.with_context({"lang": "vi_VN"}).env['summary.adjusted.invoice.pos'].search([
+                ('exists_bkav', '=', False),
+                ('source_invoice', '!=', False)
+            ])
+            adjusted_move.create_an_invoice()
 
     def cronjob_collect_invoice_to_bkav_end_day(self, *args, **kwargs):
         self.collect_invoice_to_bkav_end_day(*args, **kwargs)
