@@ -14,6 +14,7 @@ class AccountMove(models.Model):
     pos_trans_session_id = fields.Many2one('pos.session', readonly=True)
     pos_trans_diff_move_id = fields.Many2one(
         'account.move', readonly=True, string='POS Transfer Difference Move')
+    pos_orig_trans_move_id = fields.Many2one('account.move', readonly=True, string='POS Original Transfer Move')
 
     def _check_pos_transfer_amount(self):
         self.ensure_one()
@@ -49,6 +50,7 @@ class AccountMove(models.Model):
             'partner_id': store_id.contact_id.id,
             'company_id': self.company_id.id,
             'pos_trans_session_id': self.pos_trans_session_id.id,
+            'pos_orig_trans_move_id': self.id,
             'line_ids': [
                 # debit line
                 (0, 0, {
@@ -75,6 +77,17 @@ class AccountMove(models.Model):
     def _post(self, soft=True):
         posted = super(AccountMove, self)._post(soft=soft)
         for move in posted:
+            # Kiểm tra trên bút toán điều chỉnh chênh lệch,
+            # nếu bút toán chuyển tiền gốc đã được điều chỉnh bởi một bút toán khác thì không cho post
+            # nếu chưa được gán bút toán điều chỉnh thì gán lại
+            if move.pos_orig_trans_move_id:
+                diff_move_of_origin = move.pos_orig_trans_move_id.pos_trans_diff_move_id
+                if diff_move_of_origin and move.id != diff_move_of_origin.id:
+                    raise UserError(_('Bạn không thể Vào sổ một bút toán chênh lệch tiền đã hủy,'
+                                      ' vì bút toán gốc đã được điều chỉnh bởi một bút toán khác'))
+                elif not diff_move_of_origin:
+                    move.pos_orig_trans_move_id.pos_trans_diff_move_id = move.id
+
             if move.pos_transfer_cash_2office and move.pos_orig_amount:
                 diff_move = move._check_pos_transfer_amount()
                 if diff_move:
@@ -85,6 +98,13 @@ class AccountMove(models.Model):
                             % (diff_move._name, diff_move.id, diff_move.display_name)
                     move.message_post(body=body)
         return posted
+
+    def button_cancel(self):
+        super(AccountMove, self).button_cancel()
+        # Set pos_trans_diff_move_id = False if journal entry of transfer difference is canceled
+        for move in self:
+            if move.pos_orig_trans_move_id and move.id == move.pos_orig_trans_move_id.pos_trans_diff_move_id.id:
+                move.pos_orig_trans_move_id.pos_trans_diff_move_id = False
 
     # def button_draft(self):
     #     for move in self:

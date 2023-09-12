@@ -66,6 +66,7 @@ class PosSession(models.Model):
             'move_type': 'entry',
             'pos_transfer_cash_2office': True,
             'pos_orig_amount': balance,
+            'pos_adjusted_amount': balance,
             'pos_trans_session_id': self.id,
             'narration': self.name + reason or '',
             'currency_id': self.currency_id.id,
