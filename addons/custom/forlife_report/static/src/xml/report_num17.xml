@@ -15,6 +15,7 @@
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-detail" t-att-id="line.num - 1">
                             <td class="index-report"><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.phan_loai"/></td>
                             <td><t t-esc="line.ma_cn"/></td>
                             <td><t t-esc="line.ten_cn"/></td>
                             <td><t t-esc="line.ngay"/></td>
@@ -25,8 +26,7 @@
                             <td><t t-esc="line.mo_ta"/></td>
                             <td><t t-esc="line.ma_the_gg"/></td>
                             <td><t t-esc="line.voucher"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.cong, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.giam_gia, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tong_cong, 0)"/></td>
@@ -39,12 +39,11 @@
                             <td class="right"><t t-esc="format_decimal(line.tru_tich_luy, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_the_gg, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.phai_thu, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.phai_thu - (line.tien_voucher / 2), 0) - line.tien_sp_voucher"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.hs_dt * (line.phai_thu - (line.tien_voucher / 2) - line.tien_sp_voucher), 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_mat, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_the, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_vnpay, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_nextpay, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.tien_shipcod, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tien_voucher, 0)"/></td>
                             <td><t t-esc="line.nguoi_lap"/></td>
                             <td><t t-esc="line.ngay_lap"/></td>
@@ -54,7 +53,6 @@
                             <td><t t-esc="line.ngay_ct_goc"/></td>
                             <td><t t-esc="line.nhan_vien"/></td>
                             <td><t t-esc="line.nhom_khach"/></td>
-                            <td><t t-esc="line.ma_van_don"/></td>
                             <td><t t-esc="line.kenh_ban"/></td>
                         </tr>
                     </t>
@@ -74,14 +72,13 @@
                 <t t-call="DetailReportTitle"/>
                 <tbody>
                     <t t-foreach="data" t-as="line">
-                        <t t-set="thanh_tien" t-value="(line.sl_mua + line.sl_tra) * line.gia_ban"/>
+                        <t t-set="thanh_tien" t-value="line.sl * line.gia_ban"/>
                         <tr>
                             <td><t t-esc="line.num"/></td>
                             <td><t t-esc="line.ma_vach"/></td>
                             <td><t t-esc="line.ten_sp"/></td>
                             <td><t t-esc="line.don_vi"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.sl_mua, 0)"/></td>
-                            <td class="right"><t t-esc="format_decimal(line.sl_tra, 0)"/></td>
+                            <td class="right"><t t-esc="format_decimal(line.sl, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.gia_ban, 0)"/></td>
                             <t t-if="thanh_tien != 0"><td class="right"><t t-esc="format_decimal(line.tien_giam_gia / thanh_tien * 100, 0)"/></td></t>
                             <t t-else=""><td class="right">0</td></t>

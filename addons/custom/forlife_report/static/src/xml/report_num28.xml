@@ -21,14 +21,15 @@
                         <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.barcode"/></td>
                         <td><t t-esc="line.sl_nhu_cau"/></td>
+                        <td><t t-esc="line.sl_nhan"/></td>
                         <td><t t-esc="line.ten_sp"/></td>
                         <td><t t-esc="line.mau"/></td>
                         <td><t t-esc="line.anh_mau"/></td>
                         <td><t t-esc="line.mau_co_ban"/></td>
                         <td><t t-esc="line.size"/></td>
                         <td><t t-esc="line.dvt"/></td>
-                        <td><t t-esc="line.sl_nhan"/></td>
                         <td><t t-esc="line.phan_do_dang"/></td>
+                        <td><t t-esc="line.hang_tang"/></td>
                     </tr>
                 </t>
             </tbody>

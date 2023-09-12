@@ -8,7 +8,7 @@ TITLES = [
     'Số PO', 'Ngày tạo PO', 'Ngày nhận hàng dự kiến', 'Ghi chú',
     'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng nhu cầu', 'Tên SP',
     'Màu', 'Ánh màu', 'Màu cơ bản', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
-    'Phần dở dang của',
+    'Phần dở dang của', 'Hàng không tính tiền',
 ]
 
 
@@ -49,7 +49,8 @@ class ReportNum28(models.TransientModel):
                 sm.product_uom_qty as sl_nhu_cau,
                 COALESCE(uu.name->>'vi_VN', uu.name->>'en_US') as dvt,
                 '' as sl_nhan,
-                sp2.name as phan_do_dang
+                sp2.name as phan_do_dang,
+                sm.free_good as hang_tang
                 
             from purchase_order po 
             join purchase_order_line pol on po.id = pol.order_id 
@@ -134,12 +135,13 @@ class ReportNum28(models.TransientModel):
             sheet.write(row, 6, value.get('num'), formats.get('int_number_format'))
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('sl_nhu_cau'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('ten_sp'), formats.get('normal_format'))
-            sheet.write(row, 10, value.get('mau'), formats.get('normal_format'))
-            sheet.write(row, 11, value.get('anh_mau'), formats.get('normal_format'))
-            sheet.write(row, 12, value.get('mau_co_ban'), formats.get('normal_format'))
-            sheet.write(row, 13, value.get('size'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('dvt'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('sl_nhan'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('phan_do_dang'), formats.get('int_number_format'))
+            sheet.write(row, 9, value.get('sl_nhan'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('ten_sp'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('mau'), formats.get('normal_format'))
+            sheet.write(row, 12, value.get('anh_mau'), formats.get('normal_format'))
+            sheet.write(row, 13, value.get('mau_co_ban'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('size'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('dvt'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('phan_do_dang'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('hang_tang'), formats.get('normal_format'))
             row += 1
