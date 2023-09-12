@@ -26,7 +26,7 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                     if (this.point && (this.quantity && quant > pre_quantity || quant > 1)) {
                         Gui.showPopup('ErrorPopup', {
                             title: _t('Lỗi thao tác'),
-                            body: _t('Bạn không thể tăng số lượng trên sản phẩm đã tiêu điểm lớn hơn 1.0 !'),
+                            body: _t('Bạn không thể tăng số lượng trên sản phẩm đã tiêu điểm lớn hơn 1 !'),
                         });
                         return false;
                     };

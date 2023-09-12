@@ -47,7 +47,6 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
         }
 
         _get_old_point(line) {
-            console.log('line', line);
             let ref_line = this.env.pos.get_order().get_orderlines().find(l => l.id == line.id);
             if (!ref_line) return 0;
             else {
