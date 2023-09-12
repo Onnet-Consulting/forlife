@@ -134,6 +134,8 @@ class ProductProduct(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if (self._context.get('purchase_type') == 'service' and self._context.get('type_po_cost') == 'cost' and
-                (self.env.user.has_group('base.group_system') or self.env.user.has_group('base.group_system') or self.env.user.has_group('base.group_system'))):
+                (self.env.user.has_group('forlife_permission_management.group_shop_manager') or
+                 self.env.user.has_group('forlife_permission_management.group_customer_service') or
+                 self.env.user.has_group('forlife_permission_management.group_cashier'))):
             args = expression.AND([[('is_store_spend', '=', True)], args])
         return super(ProductProduct, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
