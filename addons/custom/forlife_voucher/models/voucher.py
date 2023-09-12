@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 class Voucher(models.Model):
     _name = 'voucher.voucher'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-
+    _rec_names_search = ['nhanh_id', 'name']
     _description = 'Voucher'
 
     name = fields.Char('Code', compute='_compute_name', store=True, readonly=False)
@@ -61,6 +61,7 @@ class Voucher(models.Model):
     has_accounted = fields.Boolean(default=False)
     notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app,'
                                                           ' dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho khách hàng.')
+    nhanh_id = fields.Char(string='Id nhanh')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
