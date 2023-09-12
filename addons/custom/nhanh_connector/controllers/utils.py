@@ -13,7 +13,10 @@ class NhanhClient:
         return self.cls.env['sale.order'].sudo().search([('nhanh_id', '=', order_id)], limit=1)
 
     def get_company(self):
-        return self.cls.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
+        company_id = self.cls.env['ir.config_parameter'].sudo().get_param('nhanh_connector.nhanh_company_id')
+        if not company_id:
+            return None
+        return self.cls.env['res.company'].sudo().search([('id', '=', company_id)], limit=1)
 
     def get_location_by_company(self, default_company_id, nhanh_id):
         return self.cls.env['stock.location'].sudo().search([
@@ -42,7 +45,6 @@ class NhanhClient:
 
     def get_brand(self):
         config = self.cls.env['nhanh.brand.config'].sudo().search([('nhanh_business_id', '=', self.cls.business_id)], limit=1)
-        # config = self.cls.env['nhanh.brand.config'].sudo().search([('id', '=', 6)], limit=1)
         return config.brand_id
 
     def get_partner_group(self):

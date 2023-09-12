@@ -35,5 +35,11 @@
             parent="sale.menu_sales_config"
             sequence="101"
             action="nhanh_webhook_value_action"/>
+
+        <menuitem id="nhanh_sale_brand_config_menu" 
+            name="Nhanh config" 
+            parent="sale.menu_sales_config"
+            action="nhanh_brand_config_action"/>
+
     </data>
 </odoo>
