@@ -941,7 +941,7 @@ class AccountMoveLine(models.Model):
             product_names = ','.join(product_id.mapped('display_name'))
             raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
 
-    @api.onchange('price_unit', 'quantity')
+    @api.onchange('price_unit', 'quantity', 'discount')
     def onchange_price_unit_set_discount(self):
         if self.price_unit and self.discount > 0 and self.quantity:
             self.discount_value = (self.price_unit * self.quantity) * (self.discount / 100)
@@ -1206,7 +1206,7 @@ class AccountMoveLine(models.Model):
     @api.onchange("discount_value")
     def _onchange_discount(self):
         if self.discount_value and self.price_unit > 0 and self.quantity > 0:
-            self.discount = (self.discount_value / (self.price_unit * self.quantity))
+            self.discount = (self.discount_value * 100 / (self.price_unit * self.quantity))
             self.readonly_discount = True
         elif self.discount_value == 0:
             self.discount = 0
