@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num42_form" model="ir.ui.view">
+    <record id="report_num43_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num42</field>
+        <field name="model">report.num43</field>
         <field name="arch" type="xml">
-            <form string="Báo cáo nhập kho theo đơn mua" create="0">
+            <form string="báo cáo hình thức thanh toán trên POS" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -19,8 +19,16 @@
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
                         </group>
+
+                    </group>
+                    <group>
                         <group>
-                            <field name="po_number" placeholder="PO001,PO002,..."/>
+                            <field name="brand_id" options="{'no_create': True}"/>
+                            <field name="pos_order"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="pos_reference"/>
                         </group>
                     </group>
                 </sheet>
@@ -28,15 +36,15 @@
         </field>
     </record>
 
-    <record id="report_num42_window_action" model="ir.actions.act_window">
-        <field name="name">Báo cáo nhập kho theo đơn mua</field>
-        <field name="res_model">report.num42</field>
+    <record id="report_num43_window_action" model="ir.actions.act_window">
+        <field name="name">báo cáo hình thức thanh toán trên POS</field>
+        <field name="res_model">report.num43</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="report_num42_menu"
-              action="report_num42_window_action"
-              parent="report_menu_purchase"
+    <menuitem id="report_num43_menu"
+              action="report_num43_window_action"
+              parent="report_menu_sale"
               sequence="0"/>
 </odoo>

@@ -11,6 +11,8 @@ patch(PosGlobalState.prototype, "rewrite_flush_orders", {
                 self.validated_orders_name_server_id_map[server_ids[i].pos_reference] = server_ids[i].id;
                 self.sum_total_point = server_ids[i].sum_total_point || 0
                 self.total_point = server_ids[i].total_point || 0
+                self.pay_point = server_ids[i].pay_point || 0
+                self.refund_point = server_ids[i].refund_point || 0
             }
             return server_ids;
         }).finally(function () {
