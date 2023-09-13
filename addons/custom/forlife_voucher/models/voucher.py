@@ -37,7 +37,7 @@ class Voucher(models.Model):
 
     state_app = fields.Boolean('Trạng thái App', tracking=True)
 
-    status_latest = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string="Latest status")
+    status_latest = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('expired', 'Expired'), ('off value', 'Off Value')], string="Latest status")
 
     sale_id = fields.Many2one('sale.order', 'Đơn hàng bán')
 
@@ -255,13 +255,13 @@ class Voucher(models.Model):
                                         }),
                                     ]
                                 }
-                                AccountMove.sudo().create(move_vals)._post()
+                                move = AccountMove.sudo().create(move_vals)._post()
                                 for v in vouchers:
                                     v.write({
                                         'has_accounted': True,
                                         'price_residual': 0,
                                         'state': 'off value',
-                                        'value_remain_account_move_id': AccountMove.id
+                                        'value_remain_account_move_id': move.id
                                     })
                             except Exception as e:
                                 _logger.info(e)
@@ -298,13 +298,13 @@ class Voucher(models.Model):
                                         }),
                                     ]
                                 }
-                                AccountMove.sudo().create(move_vals)._post()
+                                move = AccountMove.sudo().create(move_vals)._post()
                                 for v in vouchers:
                                     v.write({
                                         'has_accounted': True,
                                         'state': 'off value',
                                         'price_residual': 0,
-                                        'value_expired_account_move_id': AccountMove.id
+                                        'value_expired_account_move_id': move.id
                                     })
                             except Exception as e:
                                 _logger.info(e)

@@ -6,7 +6,6 @@
             <field name="model">occasion.code</field>
             <field name="arch" type="xml">
                 <tree string="Occasion Code" editable="top">
-                    <field name="company_id"/>
                     <field name="name"/>
                     <field name="group_id"/>
                     <field name="code"/>
