@@ -15,6 +15,12 @@ class AccountMove(models.Model):
     is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
 
     @api.model
+    def get_employee_code_by_uid(self, uid):
+        self._cr.execute(f'select code from hr_employee where user_id = {uid}')
+        result = self._cr.fetchone()
+        return result and result[0] or None
+
+    @api.model
     def sync_bravo_account_move_daily(self):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             return False

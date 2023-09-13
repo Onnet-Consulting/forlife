@@ -128,8 +128,9 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_purchase_product_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_product_columns()
+        employee_code = self.get_employee_code_by_uid(self.user_id.id or self._uid)
         for record in self:
-            res.extend(record.bravo_get_purchase_product_value(is_reversed))
+            res.extend(record.bravo_get_purchase_product_value(is_reversed, employee_code))
         return columns, res
 
     @api.model
@@ -139,10 +140,10 @@ class AccountMovePurchaseProduct(models.Model):
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
             "AtchDocFormNo", "AtchDocSerialNo", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder", "DebitAccount",
             "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount",
-            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
+            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO", "DocNo_PO",
         ]
 
-    def bravo_get_purchase_product_value(self, is_reversed):
+    def bravo_get_purchase_product_value(self, is_reversed, employee_code):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -173,9 +174,10 @@ class AccountMovePurchaseProduct(models.Model):
             "AtchDocNo": self.number_bills or None,
             "TaxRegName": partner.name or None,
             "TaxRegNo": partner.vat or None,
-            "EmployeeCode": self.env.user.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "DueDate": self.invoice_date_due or None,
+            "DocNo_PO": self.purchase_id.name or None,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
