@@ -5,10 +5,14 @@ class OccasionCode(models.Model):
     _rec_names_search = ['code', 'name']
     _description = 'Occasion Code'
 
-    company_id = fields.Many2one('res.company', string='Công ty')
+    # company_id = fields.Many2one('res.company', string='Công ty')
     name = fields.Char('Occasion name')
     group_id = fields.Many2one('occasion.group', string='Occasion group')
     code = fields.Char('Occasion code', readonly=True)
+
+    _sql_constraints = [
+        ('unique_code', 'UNIQUE(code)', 'Mã vụ việc là duy nhất!')
+    ]
 
     @api.model_create_single
     def create(self, vals_list):
