@@ -113,7 +113,7 @@ class Voucher(models.Model):
         for rec in self:
             partner_phone = self.env['res.partner'].search([('phone', '=', rec.phone_number)], limit=1)
             if partner_phone:
-                rec.partner_id = partner_phone.id or partner_mobile.id
+                rec.partner_id = partner_phone.id
             else:
                 rec.partner_id = False
 
