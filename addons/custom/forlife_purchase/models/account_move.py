@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from datetime import timedelta, datetime
+from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
@@ -27,13 +29,12 @@ class AccountMove(models.Model):
     def action_post(self):
         for rec in self:
             if rec.purchase_order_product_id:
-                for item in rec.purchase_order_product_id:
-                    item.write({
-                        'invoice_status_fake': 'invoiced',
-                    })
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': True
+                min_date_approve = (min(rec.purchase_order_product_id.mapped('date_approve')) + timedelta(hours=7)).date()
+                if min_date_approve > rec.date:
+                    message = 'Ngày kế toán (%s) nhỏ hơn ngày Xác nhận đơn mua hàng (%s). Vui lòng kiểm tra lại!' % (datetime.strftime(rec.date, '%d/%m/%Y'), datetime.strftime(min_date_approve, '%d/%m/%Y'))
+                    raise UserError(message)
+                rec.purchase_order_product_id.write({
+                    'invoice_status_fake': 'invoiced',
                 })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced + invoice_line_id.stock_move_id.qty_to_invoice
@@ -47,10 +48,6 @@ class AccountMove(models.Model):
 
     def button_cancel(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
                 if qty_invoiced <= 0:
@@ -64,10 +61,6 @@ class AccountMove(models.Model):
 
     def unlink(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced - invoice_line_id.quantity
                 if qty_invoiced <= 0:
@@ -81,14 +74,8 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         for rec in self:
-            if rec.receiving_warehouse_id:
-                rec.receiving_warehouse_id.write({
-                    'ware_check': False
-                })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 invoice_line_id.stock_move_id.write({
                     'qty_to_invoice': invoice_line_id.quantity
                 })
         return super(AccountMove, self).button_draft()
-
-

@@ -213,7 +213,6 @@ class StockPicking(models.Model):
         res = super().action_confirm()
         return res
 
-
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
@@ -228,31 +227,26 @@ class StockPicking(models.Model):
         company_id = self.env.company.id
         if self.env.context.get('from_inter_company'):
             company = self.env.context.get('company_po')
-            pk_type = self.env['stock.picking.type'].sudo().search(
-                [('company_id', '=', company), ('code', '=', 'outgoing')], limit=1)
+            pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company), ('code', '=', 'outgoing')], limit=1)
             if not pk_type:
-                pk_type = self.env['stock.picking.type'].sudo().create(
-                    {'name': 'Giao hàng', 'code': 'outgoing', 'company_id': company,
-                     'sequence_code': 'sequence_code1'})
+                pk_type = self.env['stock.picking.type'].sudo().create({
+                    'name': 'Giao hàng',
+                    'code': 'outgoing',
+                    'company_id': company,
+                    'sequence_code': 'sequence_code1'
+                })
             ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
             res.update({'picking_type_id': pk_type})
         if self.env.context.get('default_other_import'):
-            picking_type_id = self.env['stock.picking.type'].search([
-                ('code', '=', 'incoming'),
-                ('warehouse_id.company_id', '=', company_id)], limit=1)
+            picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         if self.env.context.get('default_other_export'):
-            picking_type_id = self.env['stock.picking.type'].search([
-                ('code', '=', 'outgoing'),
-                ('warehouse_id.company_id', '=', company_id)], limit=1)
+            picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('warehouse_id.company_id', '=', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         return res
 
-    ware_check = fields.Boolean('', default=False)
-    labor_check = fields.Boolean('', default=True)
-    expense_check = fields.Boolean('', default=True)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -260,10 +254,7 @@ class StockPicking(models.Model):
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
-    leftovers_id = fields.Many2one(
-        'stock.picking', 'Left over of',
-        copy=False, readonly=True,
-        check_company=True)
+    leftovers_id = fields.Many2one('stock.picking', 'Phần thừa của', copy=False, readonly=True, check_company=True)
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)
@@ -290,10 +281,7 @@ class StockPicking(models.Model):
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
                                 help="Date at which the transfer has been processed or cancelled.")
-    picking_type_id = fields.Many2one(
-        'stock.picking.type', 'Operation Type',
-        required=False, readonly=False, index=True,
-        states={'draft': [('readonly', False)]})
+    picking_type_id = fields.Many2one('stock.picking.type', 'Operation Type', required=False, readonly=False, index=True, states={'draft': [('readonly', False)]})
     display_asset = fields.Char(string='Display', compute="compute_display_asset")
     is_from_request = fields.Boolean('', default=False)
     stock_name = fields.Char(string='Mã phiếu')
@@ -357,14 +345,11 @@ class StockPicking(models.Model):
         old_date_done = {
             item.id: item.date_done for item in self
         }
-        # old_date_done = self.date_done
         res = super(StockPicking, self)._action_done()
         for record in self:
             if old_date_done.get(record.id) == record.date_done:
                 continue
             record.date_done = old_date_done.get(record.id)
-        # if old_date_done != self.date_done:
-        #     self.date_done = old_date_done
         return res
 
     def write(self, vals):
@@ -375,7 +360,7 @@ class StockPicking(models.Model):
                 item.move_line_ids.write({'date': item.date_done})
 
         if "import_file" in self.env.context:
-            for line in self.move_line_ids_without_package.filtered(lambda x: x.quantity_purchase_done and x.quantity_change):
+            for line in self.move_line_ids_without_package.filtered(lambda x: x.picking_id.is_pk_purchase):
                 if line.qty_done != line.quantity_purchase_done * line.quantity_change:
                     line.qty_done = line.quantity_purchase_done * line.quantity_change
 
@@ -400,19 +385,11 @@ class StockPicking(models.Model):
                     layer.quantity = 0
                     layer.unit_cost = 0
                     layer.value = 0
-                    #layer.account_move_id.button_draft()
-                    #layer.account_move_id.button_cancel()
                 for layer in layers:
                     if layer.account_move_id:
                         reversal_data = {
                             "move_ids": [
-                                [
-                                    6,
-                                    0,
-                                    [
-                                        layer.account_move_id.id
-                                    ]
-                                ]
+                                [6, 0, [layer.account_move_id.id]]
                             ],
                             "reason": False,
                             "date_mode": "custom",
@@ -436,10 +413,6 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
             for rec in line.move_ids_without_package:
                 rec._onchange_product_id()
-                '''
-                rec.location_id = vals['location_id']
-                rec.location_dest_id = vals['location_dest_id']
-                '''
                 #todo: handle above source, raise exception when import picking (business unknown)
                 location_values = {}
                 if rec.location_id != line.location_id:
@@ -587,8 +560,6 @@ class StockPicking(models.Model):
         if "import_file" in self.env.context:
             if 'stock_name' in fields and 'move_line_ids_without_package/sequence' in fields:
                 for record in data:
-                    # if 'stock_name' in fields and not record[fields.index('stock_name')]:
-                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường mã phiếu"))
                     if 'move_line_ids_without_package/sequence' in fields and not record[fields.index('move_line_ids_without_package/sequence')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường stt dòng"))
                     if 'move_line_ids_without_package/product_id' in fields and not record[fields.index('move_line_ids_without_package/product_id')]:
@@ -597,8 +568,6 @@ class StockPicking(models.Model):
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường hoàn thành"))
                     if 'move_line_ids_without_package/quantity_purchase_done' in fields and not record[fields.index('move_line_ids_without_package/quantity_purchase_done')]:
                         raise ValidationError(_("Thiếu giá trị bắt buộc cho trường số lượng mua hoàn thành"))
-                    # if 'date_done' in fields and not record[fields.index('date_done')]:
-                    #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường ngày hoàn thành"))
                 fields[fields.index('stock_name')] = 'id'
                 fields[fields.index('move_line_ids_without_package/sequence')] = 'move_line_ids_without_package/id'
                 id = fields.index('id')
@@ -636,12 +605,8 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
-    po_l_id = fields.Char('Dùng để so sánh hoạt động và hoạt động chi tiết')
     name = fields.Char('Description', required=False)
-    company_id = fields.Many2one(
-        'res.company', 'Company',
-        default=lambda self: self.env.company,
-        index=True, required=False)
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company, index=True, required=False)
     product_uom_qty = fields.Float(
         'Demand',
         digits='Product Unit of Measure',
@@ -736,10 +701,6 @@ class StockMove(models.Model):
             self.reason_type_id = self.picking_id.reason_type_id.id
         self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
 
-    # @api.onchange('reason_id')
-    # def _onchange_reason_id(self):
-    #     self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
-
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
@@ -776,10 +737,6 @@ class StockBackorderConfirmationInherit(models.TransientModel):
                         'qty_done': pk.reserved_qty,
                         'quantity_change': pk_od.quantity_change,
                         'quantity_purchase_done': pk.reserved_qty/pk_od.quantity_change if pk_od.quantity_change else 1
-                    })
-                for pk, pk_od in zip(data_pk.move_ids_without_package, rec.move_ids_without_package):
-                    pk.write({
-                        'po_l_id': pk_od.po_l_id,
                     })
                 for pk, pk_od in zip(rec.move_line_ids_without_package, rec.move_ids_without_package):
                     pk_od.write({

@@ -415,6 +415,8 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             return false;
         } else if (this.related_refund_line_cid) {
             return false;
+        } else if (this.point) {
+            return false;
         } else {
             return true;
         }
@@ -747,6 +749,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _resetLinePromotionPrograms(selected_line) {
         let self = this;
+        // Reset Giảm giá hàng lỗi
+        if (selected_line.is_product_defective) {
+            selected_line.money_reduce_from_product_defective = 0.0;
+            selected_line.is_product_defective = false;
+            selected_line.product_defective_id = null;
+        };
+
         function get_cids_applied_programs(set_programs) {
             let cids = new Set();
             self.get_orderlines().forEach(line => {

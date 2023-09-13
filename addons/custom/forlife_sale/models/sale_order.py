@@ -436,7 +436,8 @@ class SaleOrderLine(models.Model):
         self.x_location_id = self.order_id.x_location_id
         if self.order_id.x_manufacture_order_code_id:
             product_ids = self.order_id.x_manufacture_order_code_id.forlife_production_finished_product_ids.mapped('product_id').ids
-            domain = [('id', 'in', product_ids)]
+            material_import_ids = self.order_id.x_manufacture_order_code_id.material_import_ids.mapped('product_id').ids
+            domain = ['|',('id', 'in', product_ids),('id', 'in', material_import_ids)]
             return {
                 'domain': {
                     'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', self.order_id.company_id)] + domain

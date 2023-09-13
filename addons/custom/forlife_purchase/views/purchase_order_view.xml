@@ -10,6 +10,8 @@
                          <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="before">
+                    <button name="open_update_tax_and_cost" icon="fa-cogs" type="object" string="Thuế/Phí" title="Cập nhật thuế - chi phí"
+                            groups="forlife_purchase.update_tax_and_cost_group"/>
                     <button name="action_view_invoice_ncc"
                         string="Invoice"
                         type="object"
@@ -347,8 +349,9 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
-                        <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="prefix_product_code" invisible="1"/>
+                        <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')],'required': [('prefix_product_code', 'in', ['A','E','F'])]}"/>
+                        <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')],'required': [('parent.purchase_type', '=', 'service')]}"/>
                         <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}" sum="discounted subtotal" force_save="1"/>
                         <field name="readonly_discount" invisible="1"/>
@@ -419,6 +422,9 @@
                     <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
                 </xpath>
+                <field name="date_planned" position="after">
+                    <field name="note" optional="show"/>
+                </field>
             </field>
         </record>
 
@@ -477,5 +483,93 @@
         <menuitem id="purchase.menu_purchase_form_action" parent="purchase.menu_procurement_management" active="False"/>
         <!-- Inactive menu Request for quatation-->
         <menuitem id="purchase.menu_purchase_rfq" active="False"/>
+
+        <record id="update_tax_and_cost_view_form" model="ir.ui.view">
+            <field name="name">update_tax_and_cost_view_form</field>
+            <field name="model">purchase.order</field>
+            <field name="priority">1005</field>
+            <field name="arch" type="xml">
+                <form string="update_tax_and_cost_form" create="0" delete="0" class="padding-form-custom">
+                    <header>
+                        <button name="export_tax_info" icon="fa-file-excel-o" string="Tải mẫu nhập" class="oe_highlight" type="object"/>
+                        <button name="%(forlife_purchase.import_tax_info_wizard_action)d" icon="fa-file-excel-o" string="Nhập thông tin thuế"
+                                class="oe_highlight" type="action" context="{'default_po_id': active_id}"/>
+                    </header>
+                    <div class="padding-form-custom">
+                        <notebook>
+                            <page name="tax_info" string="Thông tin thuế">
+                                <field name="exchange_rate_line_ids" widget="section_and_note_one2many" force_save="1">
+                                    <tree editable="bottom" class="width-hh" create="0" delete="0">
+                                        <field name="company_currency" invisible="1"/>
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="description" readonly="1"/>
+                                        <field name="company_currency" invisible="1"/>
+                                        <field name="total_vnd_exchange" sum="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
+                                        <field name="total_vnd_exchange_import" invisible="1"/>
+                                        <field name="product_qty" readonly="1" string="Số lượng"/>
+                                        <field name="import_tax"/>
+                                        <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                        <field name="tax_amount_import" invisible="1"/>
+                                        <field name="special_consumption_tax"/>
+                                        <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                        <field name="special_consumption_tax_amount_import" invisible="1"/>
+                                        <field name="vat_tax"/>
+                                        <field name="vat_tax_amount" sum="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                        <field name="vat_tax_amount_import" invisible="1"/>
+                                        <field name="total_tax_amount" sum="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Chi phí" name="product_cost">
+                                <field name="is_inter_company" invisible="1"/>
+                                <field name="cost_line" widget="section_and_note_one2many" mode="tree">
+                                    <tree editable="bottom" class="width-hh">
+                                        <field name="company_currency" invisible="1"/>
+                                        <field name="product_id"/>
+                                        <field name="name" readonly="1" string='Mô tả'/>
+                                        <field name="currency_id"/>
+                                        <field name="exchange_rate" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="foreign_amount"/>
+                                        <field name="vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="actual_cost" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1" readonly="1" force_save="1"/>
+                                        <field name="cost_paid" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1" force_save="1"/>
+                                        <field name="is_check_pre_tax_costs"/>
+                                    </tree>
+                                </field>
+                                <div class="xl-12 d-flex" style="justify-content: end;">
+                                    <group class="xl-4">
+                                    </group>
+                                    <group class="xl-4">
+                                    </group>
+                                    <group class="xl-4">
+                                        <field name="cost_total"/>
+                                    </group>
+                                </div>
+                            </page>
+                            <page string="Tổng hợp" name="synthetic">
+                                <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1" force_save="1">
+                                    <tree editable="bottom" class="width-hh">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="company_currency" invisible="1"/>
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="product_uom" string="Đơn vị tính"/>
+                                        <field name="price_unit" string="Đơn giá" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="product_qty" sum="discounted subtotal" string="Số lượng"/>
+                                        <field name="discount"/>
+                                        <field name="total_vnd_amount" widget="monetary" options="{'currency_field': 'company_currency'}" sum="total_vnd_amount"/>
+                                        <field name="before_tax" sum="before_tax" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="after_tax" widget="monetary" sum="after_tax" options="{'currency_field': 'company_currency'}"/>
+                                        <field name="total_product" sum="total_product" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </div>
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>

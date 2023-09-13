@@ -76,7 +76,7 @@ class BravoModelInsertAction(models.AbstractModel):
     _description = 'Bravo Model Insert Action'
 
     @api.model
-    def bravo_get_default_insert_value(self):
+    def bravo_get_default_insert_value(self, **kwargs):
         # special fields - don't declare them in Odoo
         return {
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
@@ -112,7 +112,7 @@ class BravoModelInsertAction(models.AbstractModel):
             for fname in column_names:
                 params.append(rec_value.get(fname))
 
-        insert_default_value = self.bravo_get_default_insert_value()
+        insert_default_value = self.bravo_get_default_insert_value(**kwargs)
         for fname, fvalue in insert_default_value.items():
             insert_column_names.append(fname)
             single_record_values_placeholder.append(str(fvalue))

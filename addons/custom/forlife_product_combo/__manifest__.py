@@ -19,12 +19,9 @@
         'forlife_stock',
     ],
     'data': [
-        # Views
         'views/product_combo_views.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence.xml',
-        'views/account_move.xml',
         'views/stock_transfer_request_view.xml',
-        'wizard/wizard_increase_decrease_invoice_view.xml',
     ],
 }

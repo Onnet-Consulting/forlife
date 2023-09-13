@@ -6,6 +6,9 @@ class AccountMove(models.Model):
 
     account_expense_labor_detail_ids = fields.One2many('account.expense.labor.detail', 'move_id', string='Account Expense Labor Detail')
     sum_expense_labor_ids = fields.One2many('summary.expense.labor.account', 'move_id', string='Summary Expense Labor')
+    invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type')
+    origin_invoice_id = fields.Many2one('account.move', string='Origin Invoice', readonly=True, check_company=True)
+    increase_decrease_inv_count = fields.Integer(compute="_compute_increase_decrease_inv_count", string='Increase/decrease invoice count')
 
     @api.depends(
         'line_ids.matched_debit_ids.debit_move_id.move_id.payment_id.is_matched',
@@ -29,6 +32,35 @@ class AccountMove(models.Model):
         for record in self.filtered(lambda x: x.total_trade_discount or x.x_amount_tax):
             amount_residual = record.amount_residual - (record.total_trade_discount + record.x_amount_tax)
             record.amount_residual = amount_residual
+
+    def _compute_increase_decrease_inv_count(self):
+        for move in self:
+            move.increase_decrease_inv_count = self.search_count([('origin_invoice_id', '=', move.id)])
+
+    def action_view_increase_decrease_invoice(self):
+        self.ensure_one()
+        invoices = self.search([('origin_invoice_id', 'in', self.ids)])
+        result = self.env['ir.actions.act_window']._for_xml_id('account.action_move_in_invoice_type')
+        if len(invoices) == 1:
+            res = self.env.ref('account.view_move_form', False)
+            form_view = [(res and res.id or False, 'form')]
+            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if view != 'form']
+            result['res_id'] = invoices.id
+        else:
+            result['domain'] = [('id', 'in', invoices.ids)]
+        return result
+
+    def button_popup_increase_decrease_invoice(self):
+        return {
+            'name': 'Tăng/giảm hóa đơn',
+            'domain': [],
+            'res_model': 'wizard.increase.decrease.invoice',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'context': {'default_origin_invoice_id': self.id},
+            'target': 'new',
+        }
 
     @api.model_create_multi
     def create(self, vals):
@@ -58,12 +90,6 @@ class StockReturnPicking(models.TransientModel):
                     'origin': self.picking_id.origin,
                     'relation_return': self.picking_id.name
                 })
-            for item in self.picking_id.move_line_ids_without_package:
-                for line in new_picking.move_line_ids_without_package:
-                    if item.product_id == line.product_id:
-                        line.write({
-                            'po_id': item.po_id
-                        })
         return new_picking_id, pick_type_id
 
 

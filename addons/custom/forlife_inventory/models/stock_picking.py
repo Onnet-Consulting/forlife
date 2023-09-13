@@ -12,56 +12,6 @@ class StockPicking(models.Model):
     from_po_give = fields.Boolean(default=False)
     is_generate_auto_company = fields.Boolean(default=False)
 
-    def button_validate(self):
-        res = super(StockPicking, self).button_validate()
-        if 'endloop' in self._context and self._context.get('endloop'):
-            return res
-        if self.company_id.code == '1300':
-            warehouse_type_id_tl = self.env.ref('forlife_base.stock_warehouse_type_03', raise_if_not_found=False).id
-            warehouse_type_id_fm = self.env.ref('forlife_base.stock_warehouse_type_04', raise_if_not_found=False).id
-            if self.location_id.warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
-                location_map = self.env['stock.location.mapping'].sudo().search([('location_id','=',self.location_id.id)], limit=1)
-                if not location_map:
-                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
-            if self.location_dest_id.warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl,warehouse_type_id_fm] and self.location_id.stock_location_type_id and not self.location_id.type_other:
-                location_dest_map = self.env['stock.location.mapping'].sudo().search([('location_id','=',self.location_dest_id.id)], limit=1)
-                if not location_dest_map:
-                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
-            companyId = self.company_id.id
-            location_enter_inventory_balance_auto = self.env['stock.location'].sudo().search([('code', '=', 'N0202'),('company_id', '=',companyId)],
-                                                                                             limit=1)
-            location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202'),('company_id', '=', companyId)], limit=1)
-            reason_type_5 = self.env['forlife.reason.type'].search([('code', '=', 'N02'), ('company_id', '=', companyId)])
-            reason_type_4 = self.env['forlife.reason.type'].search([('code', '=', 'X02'), ('company_id', '=', companyId)])
-            ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
-            if self.sale_id.source_record and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
-                    and self.location_id.stock_location_type_id.id == ec_warehouse_id and self.location_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
-                self.create_other_give(type_create='export')
-            if self.sale_id.source_record and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id and self.location_dest_id.warehouse_id.whs_type.id in [warehouse_type_id_tl, warehouse_type_id_fm]:
-                self.create_other_give(type_create='import')
-            po = self.purchase_id
-            product_is_voucher = self.move_line_ids_without_package.filtered(lambda x: x.product_id.voucher)
-            product_not_voucher = self.move_line_ids_without_package.filtered(lambda x: not x.product_id.voucher)
-            if po and not po.is_inter_company and po.type_po_cost == 'cost' and po.location_id.id_deposit:
-                if product_is_voucher and not product_not_voucher:
-                    self.create_other_give(type_create='from_po')
-            if self.reason_type_id.id == reason_type_5.id and self.location_id.id == location_enter_inventory_balance_auto.id and self.location_dest_id.id_deposit:
-                if product_is_voucher and not product_not_voucher:
-                    self.create_check_inventory(type_create='import')
-            if self.reason_type_id.id == reason_type_4.id and self.location_dest_id.id == location_dest_check_id.id and self.location_id.id_deposit:
-                if product_is_voucher and not product_not_voucher:
-                    self.create_check_inventory(type_create='export')
-        if self.transfer_stock_inventory_id and self.company_id.code == '1400':
-            if self.other_import:
-                lc_map = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_dest_id.id)], limit=1)
-                if lc_map:
-                    self._create_oth_tranfer_stock(type_create='import', loc=lc_map)
-            elif self.other_export:
-                lc_map = self.env['stock.location.mapping'].search([('location_map_id', '=', self.location_id.id)], limit=1)
-                if lc_map:
-                    self._create_oth_tranfer_stock(type_create='export', loc=lc_map)
-        return res
-
     def _create_oth_tranfer_stock(self, type_create, loc):
         company = loc.sudo().location_id.company_id
         if type_create == 'import':

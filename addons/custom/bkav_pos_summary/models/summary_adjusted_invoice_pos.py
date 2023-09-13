@@ -16,8 +16,6 @@ class SummaryAdjustedInvoicePos(models.Model):
     source_invoice = fields.Many2one('synthetic.account.move.pos',
                                      string='Hóa đơn gốc')
     invoice_date = fields.Date('Date')
-    state = fields.Selection([('draft', 'Nháp'),
-                              ('posted', 'Đã vào sổ')], string="State", default='draft')
     line_ids = fields.One2many('summary.adjusted.invoice.pos.line', 'adjusted_invoice_id')
     company_id = fields.Many2one('res.company')
 

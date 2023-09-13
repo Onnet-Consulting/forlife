@@ -24,7 +24,7 @@ class StockTransfer(models.Model):
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string="Phòng ban")
-    reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
+    # reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
     create_date = fields.Datetime(string='Create Date', default=lambda self: fields.datetime.now())
     document_type = fields.Selection(
@@ -67,8 +67,8 @@ class StockTransfer(models.Model):
     backorder_count = fields.Integer(compute='_compute_backorder_count')
 
     total_request_qty = fields.Float(string='Tổng số lượng điều chuyển', compute='_compute_total_qty')
-    total_in_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
-    total_out_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
+    total_in_qty = fields.Float(string='Tổng số lượng nhận', compute='_compute_total_qty')
+    total_out_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
 
     @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
     def _compute_total_qty(self):
@@ -495,7 +495,7 @@ class StockTransfer(models.Model):
             # Trường hợp 2 kho khác cấu hình state (Tỉnh) trong cấu hình kho
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
 
-        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
+        # self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
         if not self._context.get('endloop') and self.env.company.code in ['1300', '1400']:
             self.with_context(endloop=True, company_match=self.env.company.id).create_tranfer_with_type_kigui()
         diff_transfer_in |= self._create_diff_transfer(diff_transfer_data_in, state='in_approve',
@@ -900,7 +900,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     _inherit = 'forlife.production.finished.product'
 
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
-    forlife_production_stock_move_ids = fields.Many2many('stock.move')
+    forlife_production_stock_move_ids = fields.Many2many('stock.move', copy=False)
     remaining_qty = fields.Float(string='Còn lại', compute='_compute_remaining_qty',compute_sudo=True)
 
     # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
@@ -913,26 +913,6 @@ class ForlifeProductionFinishedProduct(models.Model):
             #Trường hợp nhập thừa thành phẩm
             remaining_qty = 0 if qty_done > rec.produce_qty else rec.produce_qty - qty_done
             rec.remaining_qty = remaining_qty
-
-    
-class ForlifeProduction(models.Model):
-    _inherit = 'forlife.production'
-        
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        self.ensure_one()
-        default = dict(default or {})
-        forlife_production_finished_product_ids = self.forlife_production_finished_product_ids
-        for forlife_production_finished_product_id in forlife_production_finished_product_ids:
-            forlife_production_finished_product_id.update({
-                'forlife_production_stock_move_ids':False,
-                'stock_qty':0,
-                'remaining_qty':0
-            })
-
-        default['forlife_production_finished_product_ids'] = forlife_production_finished_product_ids
-        return super().copy(default)
-    
 
 
 class HREmployee(models.Model):

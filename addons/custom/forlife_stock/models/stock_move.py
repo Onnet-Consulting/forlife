@@ -36,3 +36,21 @@ class StockMove(models.Model):
                         'date': fields.Datetime.context_timestamp(self, item.picking_id.date_done).date()
                     })
         return super().write(vals)
+    
+    def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description):
+        rslt = super(StockMove, self)._generate_valuation_lines_data(partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description)
+        rslt['credit_line_vals'].update({
+            'occasion_code_id': self.occasion_code_id.id or False,
+            'production_order': self.work_production.id or False,
+            'work_order': self.work_production.id or False,
+            'analytic_account_id': self.account_analytic_id.id or False,
+            'account_analytic_id': self.account_analytic_id.id or False,
+        })
+        rslt['debit_line_vals'].update({
+            'occasion_code_id': self.occasion_code_id.id or False,
+            'production_order': self.work_production.id or False,
+            'work_order': self.work_production.id or False,
+            'analytic_account_id': self.account_analytic_id.id or False,
+            'account_analytic_id': self.account_analytic_id.id or False,
+        })
+        return rslt

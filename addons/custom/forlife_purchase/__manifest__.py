@@ -17,6 +17,7 @@
         'web_domain_field',
         'l10n_vn',
         'sale',
+        'report_xlsx',
     ],
     "data": [
         'data/product_category.xml',
@@ -26,6 +27,7 @@
         'wizard/reject_purchase_order.xml',
         'wizard/cancel_purchase_order.xml',
         'wizard/select_type_invoice.xml',
+        'wizard/import_tax_info_wizard_views.xml',
         'views/purchase_order_view.xml',
         'views/forlife_event_view.xml',
         'views/forlife_production_view.xml',

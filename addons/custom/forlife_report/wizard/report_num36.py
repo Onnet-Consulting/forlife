@@ -10,6 +10,7 @@ TITLES = [
     'Quản lý đơn hàng',
     'Đơn vị gia công/xưởng sản xuất',
     'Mã thành phẩm',
+    'Tên thành phẩm',
     'Đơn vị tính',
     'Số lượng sản xuất kế hoạch',
     'Số lượng đã nhập kho',
@@ -46,7 +47,8 @@ class ReportNum36(models.TransientModel):
                     and fp.machining_id is null then coalesce (aaa2.name->>'vi_VN', aaa2.name->>'en_US')
                     else rp1.name
                 end as dv_giacong,
-                coalesce (pt.name ->> 'vi_VN', pt.name ->> 'en_US') as ma_thanhpham,
+                pp.barcode as ma_thanhpham,
+                coalesce (pt.name ->> 'vi_VN', pt.name ->> 'en_US') as ten_thanhpham,
                 coalesce (uu.name->>'vi_VN',
                 uu.name->>'en_US') as dvt,
                 fpfp.produce_qty as sl_sanxuat,
@@ -87,7 +89,13 @@ class ReportNum36(models.TransientModel):
         result = []
         for key, values in data_dict.items():
             count = 0
+            sum_sl_xuat = 0
+            sum_sl_nhapkho = 0
+            sum_sl_conlai = 0
             for v in values:
+                sum_sl_xuat += float(v['sl_sanxuat'] if v['sl_sanxuat'] else 0)
+                sum_sl_nhapkho += float(v['sl_nhapkho'] if v['sl_nhapkho'] else 0) or 0
+                sum_sl_conlai += float(v['sl_conlai'] if v['sl_conlai'] else 0) or 0
                 if key == v['lsx'] and count == 0:
                     result += [v]
                 else:
@@ -96,12 +104,24 @@ class ReportNum36(models.TransientModel):
                         'ql_donhang': '',
                         'dv_giacong': '',
                         'ma_thanhpham': v['ma_thanhpham'],
+                        'ten_thanhpham': v['ten_thanhpham'],
                         'dvt': v['dvt'],
                         'sl_sanxuat': v['sl_sanxuat'],
                         'sl_nhapkho': v['sl_nhapkho'],
                         'sl_conlai': v['sl_conlai'],
                     }]
                 count = 1
+            result += [{
+                'lsx': 'Tổng',
+                'ql_donhang': '',
+                'dv_giacong': '',
+                'ma_thanhpham': '',
+                'ten_thanhpham': '',
+                'dvt': '',
+                'sl_sanxuat': sum_sl_xuat,
+                'sl_nhapkho': sum_sl_nhapkho,
+                'sl_conlai': sum_sl_conlai,
+            }]
         return result
 
     def get_data(self, allowed_company):
@@ -118,30 +138,39 @@ class ReportNum36(models.TransientModel):
         return values
 
     def generate_xlsx_report(self, workbook, allowed_company):
+        format_total = workbook.add_format({'bold': True, 'align': 'left', 'valign': 'vcenter',})
+        format_label = workbook.add_format({'bold': True, 'align': 'right', 'valign': 'vcenter',})
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo nhập kho thành phẩm sản xuất')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo nhập kho thành phẩm sản xuất', formats.get('header_format'))
         sheet.write(2, 0, 'Lệnh sản xuất: %s' % self.produce_id.mapped('name'), formats.get('italic_format'))
-        sheet.write(2, 2, 'Từ ngày: %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày: %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y') if self.from_date else '', self.to_date.strftime('%d/%m/%Y') if self.to_date else ''), formats.get('italic_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)
         row = 5
         index = 0
         for value in data['data']:
-            if value.get('lsx'):
-                index += 1
-                sheet.write(row, 0, index, formats.get('center_format'))
-            else:
-                sheet.write(row, 0, '', formats.get('center_format'))
-            sheet.write(row, 1, value.get('lsx'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('ql_donhang'), formats.get('normal_format'))
-            sheet.write(row, 3, value.get('dv_giacong'), formats.get('center_format'))
-            sheet.write(row, 4, value.get('ma_thanhpham'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('dvt'), formats.get('normal_format'))
-            sheet.write(row, 6, value.get('sl_sanxuat'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('sl_nhapkho'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('sl_conlai'), formats.get('normal_format'))
+            if value.get('lsx') != 'Tổng':
+                if value.get('lsx'):
+                    index += 1
+                    sheet.write(row, 0, index, formats.get('center_format'))
+                else:
+                    sheet.write(row, 0, '', formats.get('center_format'))
+                sheet.write(row, 1, value.get('lsx'), formats.get('normal_format'))
+                sheet.write(row, 2, value.get('ql_donhang'), formats.get('normal_format'))
+                sheet.write(row, 3, value.get('dv_giacong'), formats.get('center_format'))
+                sheet.write(row, 4, value.get('ma_thanhpham'), formats.get('normal_format'))
+                sheet.write(row, 5, value.get('ten_thanhpham'), formats.get('normal_format'))
+                sheet.write(row, 6, value.get('dvt'), formats.get('normal_format'))
+                sheet.write(row, 7, value.get('sl_sanxuat'), formats.get('normal_format'))
+                sheet.write(row, 8, value.get('sl_nhapkho'), formats.get('normal_format'))
+                sheet.write(row, 9, value.get('sl_conlai'), formats.get('normal_format'))
+            if value.get('lsx') == 'Tổng':
+                sheet.write(row, 6, value.get('lsx'), format_label)
+                sheet.write(row, 7, value.get('sl_sanxuat'), format_total)
+                sheet.write(row, 8, value.get('sl_nhapkho'), format_total)
+                sheet.write(row, 9, value.get('sl_conlai'), format_total)
             row += 1

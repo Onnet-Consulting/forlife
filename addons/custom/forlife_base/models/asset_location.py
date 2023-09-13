@@ -8,6 +8,7 @@ class AssetLocation(models.Model):
     code = fields.Char('Code')
     name = fields.Char('Name')
     address = fields.Char("Address")
+    warehouse_id = fields.Many2one('stock.warehouse', string='Kho')
 
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Code must be unique!')

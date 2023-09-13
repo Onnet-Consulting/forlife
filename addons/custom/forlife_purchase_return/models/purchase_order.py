@@ -147,13 +147,12 @@ class PurchaseOrder(models.Model):
                     'invoice_status_fake': 'to invoice',
                 })
                 invoice_relationship = self.env['account.move'].search([('reference', '=', order.name), ('partner_id', '=', order.partner_id.id)])
-                # if invoice_relationship:
                 if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(order.order_line.mapped('price_subtotal')):
                     raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
                 else:
                     for line in order.order_line:
                         if invoice_relationship:
-                            wave = invoice_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
+                            wave = invoice_relationship.invoice_line_ids.filtered(lambda w: w.purchase_line_id.id == line.id and w.product_id.id == line.product_id.id)
                             quantity = sum(wave.mapped('quantity'))
                         else:
                             quantity = 0
@@ -173,7 +172,7 @@ class PurchaseOrder(models.Model):
                         sequence += 1
                     invoice_vals_list.append(invoice_vals)
             else:
-                domain = [('purchase_id', '=', self.id), ('state', '=', 'done'), ('ware_check', '=', False), ('x_is_check_return', '=', True)]
+                domain = [('purchase_id', '=', self.id), ('state', '=', 'done'), ('x_is_check_return', '=', True)]
                 picking_in = self.env['stock.picking'].search(domain)
                 if not picking_in:
                     raise UserError(_('Tất cả các phiếu nhập trả đã được lên hóa đơn đầy đủ! Vui lòng kiểm tra lại'))
@@ -256,7 +255,6 @@ class PurchaseOrder(models.Model):
         quantity_purchased = wave_item.quantity_purchase_done if wave_item else line.purchase_quantity
         data_line = {
             'ware_name': ware_name,
-            'po_id': line.id,
             'product_id': line.product_id.id,
             'sequence': sequence,
             'price_subtotal': line.price_subtotal,
@@ -285,17 +283,14 @@ class PurchaseOrder(models.Model):
     def action_view_invoice_new(self):
         if not self.is_return:
             return super(PurchaseOrder, self).action_view_invoice_new()
-
-        for rec in self:
-            data_search = self.env['account.move'].search(
-                [('reference', '=', rec.name), ('move_type', '=', 'in_refund')]).ids
+        invoice_refunds = self.env['account.move'].search([('purchase_order_product_id', 'in', self.ids), ('move_type', '=', 'in_refund')])
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
             'view_id': False,
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_refund')],
+            'domain': [('id', 'in', invoice_refunds.ids)],
         }
 
 

@@ -28,6 +28,7 @@
                                                         <input style="width: 100%;text-align: center;"
                                                                t-att-data-value_id="line.get_taxed_lst_unit_price()"
                                                                t-att-id="line.id"
+                                                               t-att-value="this._get_old_point(line) || '0'"
                                                                type="text" class="o_input"/>
                                             </td>
                                         </tr>

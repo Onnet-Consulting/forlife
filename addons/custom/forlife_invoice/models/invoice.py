@@ -60,11 +60,11 @@ class AccountMove(models.Model):
     product_expense_ids = fields.Many2many('product.product', string='Chi phí', compute='_compute_product_expense_labor_ids')
 
     # Chiết khấu tổng đơn
-    trade_discount = fields.Float(string='Chiết khấu thương mại(%)')
-    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
-    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)')
-    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False)
-    trade_tax_id = fields.Many2one('account.tax', string='Thuế VAT cùa chiết khấu(%)', domain="[('type_tax_use', '=', 'purchase'), ('company_id', '=', company_id)]")
+    trade_discount = fields.Float(string='Chiết khấu thương mại(%)', copy=False)
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại', copy=False)
+    x_tax = fields.Float(string='Thuế VAT cùa chiết khấu(%)', copy=False)
+    x_amount_tax = fields.Float(string='Tiền VAT của chiết khấu', compute='compute_x_amount_tax', store=1, readonly=False, copy=False)
+    trade_tax_id = fields.Many2one('account.tax', string='Thuế VAT cùa chiết khấu(%)', domain="[('type_tax_use', '=', 'purchase'), ('company_id', '=', company_id)]", copy=False)
 
     # Chi phí
     transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
@@ -425,7 +425,7 @@ class AccountMove(models.Model):
                 quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
                 if quantity <= 0:
                     continue
-                move_id.qty_to_invoice = quantity
+                move_id.qty_to_invoice += quantity
                 move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
@@ -832,7 +832,6 @@ class AccountMoveLine(models.Model):
 
     cost_id = fields.Char('')
     text_check_cp_normal = fields.Char('')
-    po_id = fields.Char('')
     stock_move_id = fields.Many2one('stock.move', copy=False)
     ware_name = fields.Char('')
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')

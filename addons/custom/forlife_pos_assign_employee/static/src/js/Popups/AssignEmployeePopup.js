@@ -27,6 +27,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
         get employees() {
             return this.env.pos.assignable_employees.map(function (employee) {
                 return {
+                    code: employee.code,
                     name: employee.name,
                     id: employee.id
                 }
@@ -57,6 +58,20 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
                 popupId: this.props.id,
                 response: {confirmed: true, payload: this.getMultipleLinesPayload()},
             });
+        }
+
+        confirm_default() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: true, payload: this.getDefaultPayload()},
+            });
+        }
+
+        getDefaultPayload() {
+            return {
+                employee_id: this.state.employeeID,
+                isDefault: true
+            }
         }
 
         getMultipleLinesPayload() {

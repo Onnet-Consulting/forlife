@@ -11,3 +11,4 @@ class HrDepartment(models.Model):
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code,company_id)', 'Department code must be unique!')
     ]
+
