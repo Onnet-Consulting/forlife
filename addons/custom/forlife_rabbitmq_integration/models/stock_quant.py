@@ -20,6 +20,7 @@ class StockQuant(models.Model):
             'updated_at': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'data': [{
                 'store_id': line.location_id.warehouse_id.id,
+                'store_code': line.location_id.warehouse_id.code,
                 'location_id': line.location_id.id,
                 'location_code': line.location_id.code or '',
                 'sku': line.product_id.barcode or None,

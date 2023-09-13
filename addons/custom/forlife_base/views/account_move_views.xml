@@ -19,6 +19,9 @@
             <xpath expr="//field[@name='tax_ids']" position="attributes">
                 <attribute name="context">{'show_percentage': True}</attribute>
             </xpath>
+            <xpath expr="//field[@name='tax_ids']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

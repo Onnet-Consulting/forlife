@@ -21,5 +21,11 @@
         <field name="name">Cập nhật thông tin thuế - chi phí</field>
         <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
     </record>
+
+    <!--Chọn sản phẩm dịch vụ chỉ hiển thị các sản phẩm cửa hàng được phép chi-->
+    <record id="purchase_order_service_limit" model="res.groups">
+        <field name="name">Giới hạn mua sản phẩm dịch vụ</field>
+        <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
+    </record>
 </data>
 </odoo>
