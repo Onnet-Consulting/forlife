@@ -71,7 +71,7 @@ msgid ""
 "('combo_fixed_price'))]}\">per Combo</span>"
 msgstr ""
 "<span attrs=\"{'invisible': [('reward_type', 'not in', "
-"('combo_fixed_price'))]}\">mỗi Combo Combo</span>"
+"('combo_fixed_price'))]}\">mỗi Combo</span>"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
