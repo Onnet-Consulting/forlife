@@ -29,6 +29,7 @@ class ReportNum21(models.TransientModel):
     product_group_ids = fields.Many2many('product.category', 'report_num21_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num21_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num21_texture_rel', string='Level 4')
+    location_ids = fields.Many2many('stock.location', 'report_num21_location_rel', string='Location')
 
     @api.onchange('location_province_ids')
     def onchange_location_province(self):
@@ -45,6 +46,10 @@ class ReportNum21(models.TransientModel):
     @api.onchange('product_line_ids')
     def onchange_product_line(self):
         self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
+
+    @api.onchange('warehouse_ids')
+    def onchange_warehouse(self):
+        self.location_ids = self.location_ids.filtered(lambda f: f.warehouse_id.id in self.warehouse_ids.ids)
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -68,6 +73,8 @@ class ReportNum21(models.TransientModel):
                 status.append('in_approve')
             if self.is_done:
                 status.append('done')
+        warehouse_condition = (f's_loc.id = any (array{self.location_ids.ids}) or d_loc.id = any (array{self.location_ids.ids})'
+                               ) if self.location_ids else f's_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids})'
 
         query = f"""
 with acc_whs as (
@@ -165,7 +172,7 @@ from stock_transfer st
     left join attribute_data ad on ad.product_id = stl.product_id    
 where {format_date_query("st.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and stl.product_id = any (array{product_ids})
-    and (s_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids}))
+    and ({warehouse_condition})
     and st.state = any(array{status})
 order by num
 """

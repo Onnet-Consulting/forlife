@@ -73,15 +73,15 @@ class ForLifeProduction(models.Model):
         if (kwargs.get('bravo_table') or '') != BravoTableDetail:
             return super().bravo_get_insert_values(**kwargs)
         column_names = [
-            'StatsDocld', 'ItemCode', 'ItemName', 'UnitCode', 'NormQuantityUnit', 'NormAmountUnit',
+            'StatsDocId', 'ItemCode', 'ItemName', 'UnitCode', 'NormQuantityUnit', 'NormAmountUnit',
             'NormQuantity', 'LossRate', 'Quantity9', 'Quantity', 'NormAmount', 'CustomerCode', 'DebitAccount',
-            'CreditAccount', 'DeptCode', 'ExpenseCagld', 'JobCode', 'CustoomFieldCode', 'Duedate', 'Remark'
+            'CreditAccount', 'DeptCode', 'ExpenseCagId', 'JobCode', 'CustomFieldCode', 'DueDate', 'Remark'
         ]
         values = []
         for record in self:
             for material in record.material_import_ids:
                 values.append({
-                    'StatsDocld': record.code or None,
+                    'StatsDocId': record.code or None,
                     'ItemCode': material.product_id.barcode or None,
                     'ItemName': material.product_id.name or None,
                     'UnitCode': material.production_uom_id.code or None,
@@ -98,13 +98,13 @@ class ForLifeProduction(models.Model):
                     'DeptCode': None,
                     'ExpenseCagld': None,
                     'JobCode': None,
-                    'CustoomFieldCode': None,
-                    'Duedate': None,
+                    'CustomFieldCode': None,
+                    'DueDate': None,
                     'Remark': None,
                 })
             for expense in record.expense_import_ids:
                 values.append({
-                    'StatsDocld': record.code or None,
+                    'StatsDocId': record.code or None,
                     'ItemCode': expense.product_id.barcode or None,
                     'ItemName': expense.product_id.name or None,
                     'UnitCode': expense.product_id.uom_id.code or None,
@@ -121,8 +121,8 @@ class ForLifeProduction(models.Model):
                     'DeptCode': None,
                     'ExpenseCagld': None,
                     'JobCode': None,
-                    'CustoomFieldCode': None,
-                    'Duedate': None,
+                    'CustomFieldCode': None,
+                    'DueDate': None,
                     'Remark': None,
                 })
 
@@ -135,9 +135,9 @@ class ForLifeProduction(models.Model):
         queries = record.bravo_get_insert_sql(bravo_table=BravoTableDetail)
         if queries:
             if len(record) == 1:
-                bravo_condition = f"DocNo = '{record.code}' and CompanyCode = '{record.company_id.code}'"
+                bravo_condition = f"StatsDocId = '{record.code}'"
             else:
-                bravo_condition = ' or '.join([f"(DocNo = '{r.code}' and CompanyCode = '{r.company_id.code}')" for r in record])
+                bravo_condition = ' or '.join([f"StatsDocId = '{r.code}'" for r in record])
             x_query = f"delete from {BravoTableDetail} where {bravo_condition};\n" + queries[0][0]
             x_query = [(x_query, queries[0][1])]
             self.env[self._name].with_delay(description=f"Bravo: Chứng từ lệnh sản xuất", channel="root.Bravo").bravo_execute_query(x_query)
