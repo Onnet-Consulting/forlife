@@ -248,4 +248,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum42Template',
         'reportPager': True,
     },
+    'report.num43': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo hình thức thanh toán trên POS',
+        'reportTemplate': 'ReportNum43Template',
+        'reportPager': True,
+    },
 }

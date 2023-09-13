@@ -15,7 +15,7 @@ class InheritPosOrder(models.Model):
     real_to_invoice = fields.Boolean(string='Real To Invoice')
     invoice_ids = fields.One2many(comodel_name='account.move', inverse_name='pos_order_id', string='Invoices')
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
-    line_detail = fields.One2many(related='lines', domain=['|', ('is_promotion', '!=', True), ('is_product_auto', '!=', True)])
+    line_detail = fields.One2many('pos.order.line', 'order_id', domain=[('is_promotion', '=', False)])
 
     def _compute_invoice_count(self):
         for rec in self:
@@ -168,6 +168,7 @@ class InheritPosOrder(models.Model):
             'partner_id': order_line.order_id.partner_id.id,
             'price_unit': (order_line.original_price or invoice_line['price_unit']) if not order_line.is_reward_line else 0
         })
+        is_voucher_product = order_line.product_id.product_tmpl_id.voucher
         if order_line.refunded_orderline_id:
             invoice_line.update({
                 'account_id': order_line.product_id.product_tmpl_id.categ_id.x_property_account_return_id.id
@@ -179,13 +180,25 @@ class InheritPosOrder(models.Model):
                 ))
             invoice_line['partner_id'] = self.session_id.config_id.invoice_journal_id.company_consignment_id.id or \
                                          invoice_line['partner_id']
+            if is_voucher_product:
+                voucher_partner = order_line.order_id.company_id.accounting_voucher_partner_id
+                if voucher_partner:
+                    invoice_line.update({
+                        'partner_id': voucher_partner.id
+                    })
             return invoice_line
         journal = self.session_id.config_id.invoice_journal_id
-        if journal.company_consignment_id:
+        if journal.company_consignment_id and not is_voucher_product:
             invoice_line.update({
                 'partner_id': journal.company_consignment_id.id,
                 # 'account_id': journal.default_account_id.id
             })
+        if is_voucher_product:
+            voucher_partner = order_line.order_id.company_id.accounting_voucher_partner_id
+            if voucher_partner:
+                invoice_line.update({
+                    'partner_id': voucher_partner.id
+                })
         return invoice_line
 
     def _prepare_invoice_lines(self):

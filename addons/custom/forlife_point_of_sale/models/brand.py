@@ -18,7 +18,7 @@ class ResBrand(models.Model):
         result = []
         for br in self:
             if br.code:
-                name = f'[{br.code}]{br.name}'
+                name = f'[{br.code}] {br.name}'
             else:
                 name = f'{br.name}'
             result.append((br.id, name))
