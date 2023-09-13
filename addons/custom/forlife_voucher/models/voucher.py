@@ -63,6 +63,9 @@ class Voucher(models.Model):
                                                           ' dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho khách hàng.')
     nhanh_id = fields.Char(string='Id nhanh')
 
+    value_remain_account_move_id = fields.Many2one('account.move', 'Hạch toán giá trị còn lại')
+    value_expired_account_move_id = fields.Many2one('account.move', 'Hạch toán giá trị hết hạn')
+
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
         for rec in self:
@@ -217,7 +220,7 @@ class Voucher(models.Model):
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False),('apply_many_times','=',False)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'), ('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
                                                      voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day <= now.day))
@@ -251,14 +254,15 @@ class Voucher(models.Model):
                                     ]
                                 }
                                 AccountMove.sudo().create(move_vals)._post()
+                                for v in vouchers:
+                                    v.write({
+                                        'has_accounted': True,
+                                        'price_residual': 0,
+                                        'state': 'off value',
+                                        'value_remain_account_move_id': AccountMove.id
+                                    })
                             except Exception as e:
                                 _logger.info(e)
-                            for v in vouchers:
-                                v.write({
-                                    'has_accounted':True,
-                                    'price_residual':0,
-                                    'state':'off value'
-                                })
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
@@ -293,14 +297,15 @@ class Voucher(models.Model):
                                     ]
                                 }
                                 AccountMove.sudo().create(move_vals)._post()
+                                for v in vouchers:
+                                    v.write({
+                                        'has_accounted': True,
+                                        'state': 'off value',
+                                        'price_residual': 0,
+                                        'value_expired_account_move_id': AccountMove.id
+                                    })
                             except Exception as e:
                                 _logger.info(e)
-                            for v in vouchers:
-                                v.write({
-                                    'has_accounted': True,
-                                    'state': 'off value',
-                                    'price_residual': 0
-                                })
         else:
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
