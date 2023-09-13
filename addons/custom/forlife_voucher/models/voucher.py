@@ -220,15 +220,15 @@ class Voucher(models.Model):
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'), ('has_accounted','=',False),('apply_many_times','=',False)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '!=', 'expired'), ('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
-                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day <= now.day))
+                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day < now.day))
                         if vouchers:
                             try:
                                 move_vals = {
                                     'ref': 'Voucher bán hết giá trị/ hết hạn ngày 90 ngày trước',
-                                    'date': now,
+                                    'date': now - timedelta(days=1),
                                     'journal_id': payment_mothod.journal_id.id,
                                     'company_id': payment_mothod.company_id.id,
                                     'move_type': 'entry',
@@ -237,6 +237,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
                                             'display_type': 'product',
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
                                             'account_id': payment_mothod.account_other_income.id,
                                             'debit': 0.0,
                                             'credit': sum(vouchers.mapped('price_residual')),
@@ -246,6 +247,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
                                             'display_type': 'product',
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
                                             'account_id': payment_mothod.account_general.id,
                                             'debit': sum(vouchers.mapped('price_residual')),
                                             'credit': 0.0,
@@ -264,14 +266,14 @@ class Voucher(models.Model):
                             except Exception as e:
                                 _logger.info(e)
                 else:
-                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
+                    vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False)])
                     if vouchers:
-                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day <= now.day))
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day < now.day))
                         if vouchers:
                             try:
                                 move_vals = {
                                     'ref': 'Voucher bán hết giá trị/ hết hạn ngày 90 ngày trước',
-                                    'date': now,
+                                    'date': now - timedelta(days=1),
                                     'journal_id': payment_mothod.journal_id.id,
                                     'company_id': payment_mothod.company_id.id,
                                     'move_type': 'entry',
