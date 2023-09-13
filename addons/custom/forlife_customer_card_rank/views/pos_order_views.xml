@@ -16,9 +16,9 @@
         <record id="view_pos_pos_form_inherit" model="ir.ui.view">
             <field name="name">view_pos_pos_form_inherit</field>
             <field name="model">pos.order</field>
-            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="inherit_id" ref="forlife_point_of_sale.pos_order_form_inherit"/>
             <field name="arch" type="xml">
-                <field name="fiscal_position_id" position="after">
+                <field name="invoice_info_tax_number" position="after">
                     <field name="is_rank" readonly="1"/>
                 </field>
                 <field name="pricelist_id" position="after">
@@ -30,11 +30,11 @@
         <record id="onnet_inherit_view_pos_plus_point" model="ir.ui.view">
             <field name="name">onnet_inherit_view_pos_plus_point</field>
             <field name="model">pos.order</field>
-            <field name="inherit_id" ref="forlife_pos_point_order.onnet_inherit_view_pos"/>
+            <field name="inherit_id" ref="forlife_pos_point_order.pos_order_form_inherit"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='point_event_order']" position="after">
+                <field name="point_event_order" position="after">
                     <field name="plus_point_coefficient"/>
-                </xpath>
+                </field>
                 <xpath expr="//field[@name='lines']//tree//field[@name='point_addition_event']" position="after">
                     <field name="plus_point_coefficient"/>
                 </xpath>

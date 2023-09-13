@@ -23,6 +23,7 @@ class ReportNum16(models.TransientModel):
     product_line_ids = fields.Many2many('product.category', 'report_num16_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num16_texture_rel', string='Level 4')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num16_warehouse_rel', string='Warehouse')
+    location_ids = fields.Many2many('stock.location', 'report_num16_location_rel', string='Location')
     move_type = fields.Selection([('all', _('All')), ('in', _('In')), ('out', _('Out'))], 'Move Type', default='all', required=True)
 
     @api.constrains('from_date', 'to_date')
@@ -43,11 +44,16 @@ class ReportNum16(models.TransientModel):
     def onchange_product_line(self):
         self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
+    @api.onchange('warehouse_ids')
+    def onchange_warehouse(self):
+        self.location_ids = self.location_ids.filtered(lambda f: f.warehouse_id.id in self.warehouse_ids.ids)
+
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         attr_value = self.env['res.utility'].get_attribute_code_config()
+        warehouse_condition = f'sl.id = any(array{self.location_ids.ids})' if self.location_ids else f'sl.warehouse_id = any(array{warehouse_ids})'
 
         query = []
         if self.move_type in ('all', 'in'):
@@ -56,15 +62,12 @@ select sm.id            as move_id,
        sm.quantity_done as qty_in,
        0                as qty_out
 from stock_move sm
-         left join stock_location sl1 on sm.location_id = sl1.id
-         left join stock_warehouse wh1 on wh1.id = sl1.warehouse_id
-         left join stock_location sl2 on sm.location_dest_id = sl2.id
-         left join stock_warehouse wh2 on wh2.id = sl2.warehouse_id
+         left join stock_location sl on sm.location_dest_id = sl.id
 where sm.state = 'done'
   and sm.company_id = any (array{allowed_company})
   and {format_date_query("sm.date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
   and sm.product_id = any (array {product_ids})
-  and wh2.id = any (array {warehouse_ids})
+  and {warehouse_condition}
 """)
         if self.move_type in ('all', 'out'):
             query.append(f"""
@@ -72,15 +75,12 @@ select sm.id            as move_id,
        0                as qty_in,
        sm.quantity_done as qty_out
 from stock_move sm
-         left join stock_location sl1 on sm.location_id = sl1.id
-         left join stock_warehouse wh1 on wh1.id = sl1.warehouse_id
-         left join stock_location sl2 on sm.location_dest_id = sl2.id
-         left join stock_warehouse wh2 on wh2.id = sl2.warehouse_id
+         left join stock_location sl on sm.location_id = sl.id
 where sm.state = 'done'
   and sm.company_id = any (array{allowed_company})
   and {format_date_query("sm.date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
   and sm.product_id = any (array {product_ids})
-  and wh1.id = any (array {warehouse_ids})
+  and {warehouse_condition}
 """)
 
         query_final = f"""
@@ -183,7 +183,7 @@ order by stt
             product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
         else:
             product_ids = [-1]
-        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
+        warehouse_ids = [-1] if self.location_ids else (self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1]))
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = Utility.execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
