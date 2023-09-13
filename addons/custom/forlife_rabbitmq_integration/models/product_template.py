@@ -18,6 +18,7 @@ class ProductTemplate(models.Model):
             'created_at': line.create_date.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             'product_code': line.sku_code or None,
+            'brand_id': line.brand_id.code or None,
             'sku': line.barcode or None,
             'name': line.name or None,
             'unit': line.uom_id.name or None,
@@ -48,4 +49,4 @@ class ProductTemplate(models.Model):
     def get_field_update(self):
         if not self.mapped('product_variant_ids'):
             return []
-        return ['name', 'uom_id', 'categ_id', 'list_price', 'sale_ok']
+        return ['name', 'uom_id', 'categ_id', 'list_price', 'sale_ok', 'brand_id']

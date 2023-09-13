@@ -5,10 +5,22 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                <field name="invoice_info_company_name"/>
-                <field name="invoice_info_address"/>
-                <field name="invoice_info_tax_number"/>
+            <xpath expr="//group[@name='order_fields']" position="replace">
+                <group>
+                    <group name="order_fields">
+                        <field name="name"/>
+                        <field name="date_order"/>
+                        <field name="session_id"/>
+                        <field string="Thu ngân" name="user_id"/>
+                        <field name="partner_id" context="{'res_partner_search_mode': 'customer'}" attrs="{'readonly': [('state','=','invoiced')]}"/>
+                        <field name="fiscal_position_id" options="{'no_create': True}"/>
+                        <field name="invoice_info_company_name"/>
+                        <field name="invoice_info_address"/>
+                        <field name="invoice_info_tax_number"/>
+                    </group>
+                    <group name="x_other_info">
+                    </group>
+                </group>
             </xpath>
             <xpath expr="//field[@name='lines']/form/group/field[@name='full_product_name']" position="before">
                 <field name="product_id" groups="base.group_no_one"/>
