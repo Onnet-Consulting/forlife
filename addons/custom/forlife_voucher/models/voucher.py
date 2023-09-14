@@ -237,7 +237,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
                                             'display_type': 'product',
-                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id.id,
                                             'account_id': payment_mothod.account_other_income.id,
                                             'debit': 0.0,
                                             'credit': sum(vouchers.mapped('price_residual')),
@@ -247,7 +247,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
                                             'display_type': 'product',
-                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id.id,
                                             'account_id': payment_mothod.account_general.id,
                                             'debit': sum(vouchers.mapped('price_residual')),
                                             'credit': 0.0,
@@ -282,7 +282,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher hết hạn',
                                             'display_type': 'product',
-                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id.id,
                                             'account_id': payment_mothod.account_other_income.id,
                                             'debit': 0.0,
                                             'credit': sum(vouchers.mapped('price_residual')),
@@ -293,7 +293,7 @@ class Voucher(models.Model):
                                         (0, 0, {
                                             'name': 'Write off giá trị còn lại của Voucher hết hạn',
                                             'display_type': 'product',
-                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id,
+                                            'partner_id': payment_mothod.company_id.accounting_voucher_partner_id.id,
                                             'account_id': payment_mothod.account_general.id,
                                             'debit': sum(vouchers.mapped('price_residual')),
                                             'credit': 0.0
