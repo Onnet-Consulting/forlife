@@ -13,7 +13,7 @@ TITLES = [
 class ReportNum42(models.TransientModel):
     _name = 'report.num42'
     _inherit = 'report.base'
-    _description = 'Báo cáo nhập kho theo đơn mua'
+    _description = 'Báo cáo tình hình thực hiện đơn hàng mua (Kho)'
 
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
@@ -75,7 +75,7 @@ order by num
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo nhập kho theo đơn mua')
+        sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện đơn hàng mua (Kho)')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tình hình thực hiện đơn hàng mua', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
