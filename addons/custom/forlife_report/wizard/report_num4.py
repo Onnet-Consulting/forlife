@@ -18,6 +18,7 @@ class ReportNum4(models.TransientModel):
     product_line_ids = fields.Many2many('product.category', 'report_num4_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num4_texture_rel', string='Level 4')
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num4_warehouse_rel', string='Warehouse')
+    location_ids = fields.Many2many('stock.location', 'report_num4_location_rel', string='Location')
 
     @api.onchange('product_brand_id')
     def onchange_product_brand(self):
@@ -31,6 +32,10 @@ class ReportNum4(models.TransientModel):
     def onchange_product_line(self):
         self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
 
+    @api.onchange('warehouse_ids')
+    def onchange_warehouse(self):
+        self.location_ids = self.location_ids.filtered(lambda f: f.warehouse_id.id in self.warehouse_ids.ids)
+
     def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
@@ -42,7 +47,7 @@ class ReportNum4(models.TransientModel):
             and sm.state = 'done'
             and sm.product_id = any (array{product_ids})
             and {format_date_query("sm.date", tz_offset)} <= '{str(self.to_date)}'
-            and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
+            and {f'sl.id = any (array{self.location_ids.ids})' if self.location_ids else f'sl.warehouse_id = any (array{warehouse_ids})'}
         """
 
         query = f"""
@@ -78,20 +83,31 @@ product_cate_info as
         left join attribute_data ad on ad.product_id = pp.id
     where pp.id = any (array{product_ids})
     ),
-stock as 
+stock_in as 
     (select 
-        sm.product_id                                                                            as product_id,
-        sum(case when coalesce(src_wh.id, 0) <> 0 then -sm.product_qty else sm.product_qty end)  as qty
+        sm.product_id       as product_id,
+        sum(sm.product_qty) as qty
     from stock_move sm
-        left join stock_location des_lc on sm.location_dest_id = des_lc.id
-        left join product_product pp on sm.product_id = pp.id
-        left join product_template pt on pp.product_tmpl_id = pt.id
-        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-        left join stock_location src_lc on sm.location_id = src_lc.id
-        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+        left join stock_location sl on sm.location_dest_id = sl.id
     where {where_query}
     group by sm.product_id
-    )
+    ),
+stock_out as 
+    (select 
+        sm.product_id         as product_id,
+        sum(- sm.product_qty) as qty
+    from stock_move sm
+        left join stock_location sl on sm.location_id = sl.id
+    where {where_query}
+    group by sm.product_id
+    ),
+stock as (
+    select coalesce(a.product_id, b.product_id)     as product_id,
+       sum(coalesce(a.qty, 0) + coalesce(b.qty, 0)) as qty
+    from stock_in a
+             full join stock_out b on b.product_id = a.product_id
+    group by coalesce(a.product_id, b.product_id)
+)
 select row_number() over ()                     as num,
        pci.product_barcode                      as product_barcode,
        pci.product_name                         as product_name,
@@ -121,7 +137,7 @@ order by num
             product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
         else:
             product_ids = [-1]
-        warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1])
+        warehouse_ids = [-1] if self.location_ids else (self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1]))
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = Utility.execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

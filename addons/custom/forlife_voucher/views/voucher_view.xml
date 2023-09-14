@@ -58,6 +58,8 @@
                             <field name="using_limit"/>
                             <field name="product_voucher_id" readonly="True"/>
                             <field name="status_latest"/>
+                            <field name="value_remain_account_move_id" readonly="True"/>
+                            <field name="value_expired_account_move_id" readonly="True"/>
                         </group>
                         <group>
                             <field name="start_date" required="1"/>

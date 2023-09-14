@@ -7,13 +7,9 @@
             <field name="model">pos.order</field>
             <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                    <field name="point_order"/>
-                    <field name="point_event_order"/>
-                    <field name="total_point"/>
-                    <field name="program_store_point_id"/>
+                <xpath expr="//form" position="inside">
+                    <field name="is_check_allow_compensate_point" invisible="1"/>
                     <field name="allow_compensate_point" invisible="1"/>
-                    <field name="is_check_allow_compensate_point"/>
                 </xpath>
                 <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
                     <field name="point_addition"/>
@@ -95,6 +91,22 @@
             <field name="arch" type="xml">
                 <xpath expr="//search//filter[@name='posted']" position="after">
                     <filter string="Allow Compensate Point" name="allow_compensate_point" domain="[('allow_compensate_point', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="pos_order_form_inherit" model="ir.ui.view">
+            <field name="name">pos_order_form_inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="forlife_point_of_sale.pos_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='x_other_info']" position="inside">
+                    <field name="program_store_point_id" readonly="1" force_save="1"/>
+                    <field name="point_order"/>
+                    <field name="point_event_order"/>
+                    <field name="total_point"/>
+                    <field name="allow_compensate_point" invisible="1"/>
+                    <field name="is_check_allow_compensate_point" string="Được tích bù điểm"/>
                 </xpath>
             </field>
         </record>

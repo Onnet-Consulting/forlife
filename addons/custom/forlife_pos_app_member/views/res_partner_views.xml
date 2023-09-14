@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//span[@name='address_name']" position="before">
-                <field name="ref" string="Mã"/>
+                <field name="ref" string="Mã" required="1"/>
             </xpath>
             <field name="vat" position="before">
                 <field name="group_id" required="1"/>

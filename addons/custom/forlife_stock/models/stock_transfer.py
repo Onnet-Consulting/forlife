@@ -304,6 +304,8 @@ class StockTransfer(models.Model):
                 'work_from': line.work_from.id,
                 'work_to': line.work_to.id,
                 'check_id': line.id,
+                'product_str_id': line.product_str_id.id or False,
+                'stock_request_id': line.stock_request_id.id or False,
                 # 'qty_start': line.qty_plan
             }))
             line.write({
