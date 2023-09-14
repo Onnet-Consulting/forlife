@@ -101,6 +101,10 @@ export class CartPromotionButton extends PosComponent {
                 ) || [];
             }
         };
+        // Sort by options before showing popup
+        programs.sort((a, b) => Number(!b.isSelected && !_.isEmpty(b.reward_line_vals)) - Number(!a.isSelected && !_.isEmpty(a.reward_line_vals))
+                            || Number(b.isSelected) - Number(a.isSelected)
+        );
 
         const { confirmed, payload } = await this.showPopup('CartPromotionPopup', {
             title: this.env._t('Please select some program'),

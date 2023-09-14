@@ -32,6 +32,7 @@
                             </field>
                         </group>
                         <group>
+                            <field name="group_by" widget="radio" options="{'horizontal': True}"/>
                             <field name="type" widget="radio" options="{'horizontal': True}"/>
                             <field name="so_ct"/>
                         </group>

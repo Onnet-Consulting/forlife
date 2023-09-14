@@ -941,12 +941,31 @@ class AccountMoveLine(models.Model):
             product_names = ','.join(product_id.mapped('display_name'))
             raise UserError(_('Các sản phẩm cùng cấu hình %s. Vui lòng kiểm tra lại!' % product_names))
 
-    @api.onchange('price_unit', 'quantity')
+    @api.onchange('price_subtotal')
+    def onchange_price_subtotal_validate_price_subtotal(self):
+        # Validate hóa đơn dịch vụ
+        if self.move_id.purchase_type == 'service':
+            price_subtotal = self.purchase_line_id.price_subtotal
+            total_invoice = self.price_subtotal
+            for line_id in self.purchase_line_id.invoice_lines.filtered(lambda x: x.parent_state != 'cancel' and x.id not in [self.id, self._origin.id, self.id.origin]):
+                total_invoice += line_id.price_subtotal
+            if price_subtotal < total_invoice:
+                raise UserError(_('Sản phẩm %s: Vượt quá giá trị trên PO - (%s)' % (self.product_id.display_name, '{:,.0f}'.format(price_subtotal))))
+
+    @api.onchange('price_unit', 'quantity', 'discount')
     def onchange_price_unit_set_discount(self):
         if self.price_unit and self.discount > 0 and self.quantity:
             self.discount_value = (self.price_unit * self.quantity) * (self.discount / 100)
         else:
             self.discount_value = 0
+
+        if self.move_id.purchase_type == 'service':
+            price_subtotal = self.purchase_line_id.price_subtotal
+            total_invoice = self.price_unit * self.quantity
+            for line_id in self.purchase_line_id.invoice_lines.filtered(lambda x: x.parent_state != 'cancel' and x.id not in [self.id, self._origin.id, self.id.origin]):
+                total_invoice += line_id.price_unit * line_id.quantity
+            if price_subtotal < total_invoice:
+                raise UserError(_('Sản phẩm %s: Vượt quá giá trị trên PO - (%s)' % (self.product_id.display_name, '{:,.0f}'.format(price_subtotal))))
 
     def _get_stock_valuation_layers_price_unit(self, layers):
         price_unit_by_layer = {}
@@ -1206,7 +1225,7 @@ class AccountMoveLine(models.Model):
     @api.onchange("discount_value")
     def _onchange_discount(self):
         if self.discount_value and self.price_unit > 0 and self.quantity > 0:
-            self.discount = (self.discount_value / (self.price_unit * self.quantity))
+            self.discount = (self.discount_value * 100 / (self.price_unit * self.quantity))
             self.readonly_discount = True
         elif self.discount_value == 0:
             self.discount = 0

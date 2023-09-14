@@ -4,7 +4,7 @@
 from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
 import pyodbc
 from datetime import date, datetime
 from odoo.tests import Form
@@ -165,6 +165,7 @@ class SaleOrder(models.Model):
     def create(self, vals_list):
         res = super().create(vals_list)
         res.check_debtBalance()
+        res.check_stock_production()
         return res
 
     def write(self, vals_list):
@@ -172,6 +173,7 @@ class SaleOrder(models.Model):
         if self._context.get("skip_check_debt_balance"):
             return res
         self.check_debtBalance()
+        self.check_stock_production()
         return res
 
     def check_debtBalance(self):
@@ -182,6 +184,32 @@ class SaleOrder(models.Model):
         debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
         if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
             raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
+        
+    def check_stock_production(self):
+        production_id = self.x_manufacture_order_code_id
+        location_id = self.x_location_id
+        QuantityProductionOrder = self.env['quantity.production.order']
+        for line in self.order_line:
+            production_id = line.x_manufacture_order_code_id
+            location_id = line.x_location_id
+            if not production_id: continue
+            if not location_id: continue
+            if line.product_id.categ_id.category_type_id.code in ('2','3','4'):
+                domain = [('product_id', '=', line.product_id.id), ('location_id', '=', location_id.id),('production_id.code', '=', production_id.code)]
+                quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
+                if quantity_prodution:
+                    if line.product_uom_qty > quantity_prodution.quantity:
+                        raise ValidationError(
+                            'Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để xuất bán!' % (
+                            line.product_id.name, production_id.code))
+                    else:
+                        quantity_prodution.update({
+                            'quantity': quantity_prodution.quantity - line.product_uom_qty
+                        })
+                else:
+                    raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (line.product_id.code, line.product_id.name, production_id.code))
+
+
 
     def action_view_so_punish(self):
         count = self.env['sale.order'].search([('x_origin', '=', self.id), ('x_punish', '=', True)])

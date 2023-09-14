@@ -58,7 +58,9 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             }
 
             set_employee(employee_id) {
-                this.employee_id = employee_id ? parseInt(employee_id) : null;
+                if (employee_id && parseInt(employee_id)) {
+                    this.employee_id = employee_id ? parseInt(employee_id) : null;
+                };
             }
 
             get_employee() {

@@ -12,19 +12,27 @@
                 <field name="refunded_qty" position="move"/>
                 <field name="is_product_defective"/>
             </xpath>
-            <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                <field name="pay_point"/>
-                <field name="refund_point" readonly="1" force_save="1"/>
-                <field name="approved" readonly="1" force_save="1"/>
-                <field name="is_refund_order" invisible="1"/>
-                <field name="is_change_order" invisible="1"/>
-            </xpath>
             <xpath expr="//field[@name='pricelist_id']" position="after">
                 <field name="brand_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
                 <field name="voucher_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
             </xpath>
             <xpath expr="//field[@name='lines']/tree" position="inside">
                 <field name="pay_point_line" string="Điểm trả sản phẩm" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="x_pos_order_form_inherit" model="ir.ui.view">
+        <field name="name">x_pos_order_form_inherit</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="forlife_pos_point_order.pos_order_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='point_event_order']" position="after">
+                <field name="pay_point"/>
+                <field name="refund_point" readonly="1" force_save="1"/>
+                <field name="approved" readonly="1" force_save="1"/>
+                <field name="is_refund_order" invisible="1"/>
+                <field name="is_change_order" invisible="1"/>
             </xpath>
         </field>
     </record>

@@ -20,6 +20,7 @@ class ProductProduct(models.Model):
             'created_at': line.create_date.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             'product_code': line.sku_code or None,
+            'brand_id': line.brand_id.code or None,
             'sku': line.barcode or None,
             'name': line.name or None,
             'unit': line.uom_id.name or None,

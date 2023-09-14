@@ -35,3 +35,7 @@ class InheritResCompany(models.Model):
         default=False,
         string='Is Promotional Accounting Without State Registration'
     )
+    accounting_voucher_partner_id = fields.Many2one(
+        comodel_name='res.partner',
+        string='Accounting Voucher Partner',
+    )

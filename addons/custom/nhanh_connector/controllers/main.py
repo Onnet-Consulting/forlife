@@ -58,6 +58,11 @@ class MainController(http.Controller):
         n_client = NhanhClient(request, constant)
         order_id = data.get('orderId')
         brand_id = n_client.get_brand()
+        default_company_id = n_client.get_company()
+        if not default_company_id:
+            return self.result_request(404, 1, _('Chọn company trước khi đồng bộ đơn hàng từ Nhanh.Vn, Vui lòng vào Thiết lập -> Kế toán để chọn company'))
+
+
         try:
             order = n_client.get_order_from_nhanh_id(order_id, brand_id)
         except Exception as e:
@@ -93,7 +98,6 @@ class MainController(http.Controller):
                     return self.result_request(404, 1, _('Order confirmation is required'))
 
             if not odoo_order:
-                default_company_id = n_client.get_company()
                 location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
                 name_customer = False

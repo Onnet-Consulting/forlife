@@ -18,6 +18,7 @@
                 </xpath>
                 <xpath expr="//field[@name='detailed_type']" position="after">
                     <field name="product_type"/>
+                    <field name="is_store_spend"/>
                 </xpath>
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="expiration_date"/>

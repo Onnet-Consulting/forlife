@@ -5,10 +5,6 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='fiscal_position_id']" position="after">
-                <field name="reward_voucher_ids" widget="many2many_tags" readonly="1" attrs="{'invisible': [('reward_voucher_ids', '=', [])]}"/>
-                <field name="ref_reward_code_ids" widget="many2many_tags" attrs="{'invisible': [('ref_reward_code_ids', 'in', [False, []])]}"/>
-            </xpath>
             <xpath expr="//field[@name='lines']//tree//field[@name='price_unit']" position="before">
                 <field name="original_price" widget="monetary"/>
             </xpath>
@@ -53,6 +49,18 @@
                 <field name="is_reward_line"/>
             </xpath>
 
+        </field>
+    </record>
+
+    <record id="x_pos_order_form_inherit" model="ir.ui.view">
+        <field name="name">x_pos_order_form_inherit</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="forlife_pos_point_order.pos_order_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_check_allow_compensate_point']" position="after">
+                <field name="reward_voucher_ids" widget="many2many_tags" readonly="1" attrs="{'invisible': [('reward_voucher_ids', '=', [])]}"/>
+                <field name="ref_reward_code_ids" widget="many2many_tags" attrs="{'invisible': [('ref_reward_code_ids', 'in', [False, []])]}"/>
+            </xpath>
         </field>
     </record>
 </odoo>
