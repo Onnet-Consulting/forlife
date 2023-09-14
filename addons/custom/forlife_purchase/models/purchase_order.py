@@ -907,6 +907,8 @@ class PurchaseOrder(models.Model):
         return data_line
 
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
+        if (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')) <= 0:
+            return None
         quantity = line.product_qty - sum(invoice_line_ids.mapped('quantity'))
         data_line = {
             'product_id': line.product_id.id,
@@ -1364,8 +1366,34 @@ class PurchaseOrder(models.Model):
         })
         # Invoice line values (keep only necessary sections).
         if select_type_inv == 'normal':
-            self._create_invoice_normal_purchase_type_product_orders(invoice_vals_list, invoice_vals)
-        if select_type_inv == 'expense':
+            if 'product' in self.mapped('purchase_type'):
+                self._create_invoice_normal_purchase_type_product_orders(invoice_vals_list, invoice_vals)
+            else:
+                sequence = 10
+                pending_section = None
+                for line in self.order_line:
+                    wave = line.invoice_lines.filtered(lambda w: w.parent_state != 'cancel')
+                    data_line = self.create_invoice_service_and_asset(line.order_id, line, wave)
+                    if not data_line:
+                        continue
+                    if line.display_type == 'line_section':
+                        pending_section = line
+                        continue
+                    if pending_section:
+                        line_vals = pending_section._prepare_account_move_line()
+                        line_vals.update(data_line)
+                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                        sequence += 1
+                        pending_section = None
+                    line_vals = line._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                    sequence += 1
+                if not invoice_vals.get('invoice_line_ids', False):
+                    raise UserError(_('Tất cả đã được lên hóa đơn đầy đủ. Vui lòng kiểm tra lại!'))
+                invoice_vals_list.append(invoice_vals)
+
+        elif select_type_inv == 'expense':
             self._create_invoice_expense_purchase_type_product_orders(invoice_vals_list, invoice_vals)
         else:
             raise UserError('Tính năng đang được hoàn thiện!')
