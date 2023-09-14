@@ -16,9 +16,9 @@
                         <td class="index-report"><t t-esc="line.stt"/></td>
                         <td><t t-esc="line.ngay"/></td>
                         <td class="column_nowrap"><t t-esc="line.so_ct"/></td>
-                        <td><t t-esc="line.kho_xuat"/></td>
+                        <td><t t-esc="line.kho"/></td>
                         <td class="column_nowrap"><t t-esc="line.so_ct2"/></td>
-                        <td><t t-esc="line.kho_nhap"/></td>
+                        <td><t t-esc="line.kho2"/></td>
                         <td><t t-esc="line.ma_khach"/></td>
                         <td><t t-esc="line.ten_khach"/></td>
                         <td><t t-esc="line.doi_tuong"/></td>
