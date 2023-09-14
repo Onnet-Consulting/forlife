@@ -33,11 +33,11 @@
                         <field name="x_is_exchange_count" widget="statinfo" string="Đơn đổi"/>
                     </button>
                 </xpath>
-                <xpath expr="//button[@name='action_quotation_send']" position="after">
-                    <button name="action_create_picking"
-                        string="Xác nhận" type="object" context="{'validate_analytic': True}"
-                        attrs="{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}"/>
-                </xpath>
+<!--                <xpath expr="//button[@name='action_quotation_send']" position="after">-->
+<!--                    <button name="action_create_picking"-->
+<!--                        string="Xác nhận" type="object" context="{'validate_analytic': True}"-->
+<!--                        attrs="{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}"/>-->
+<!--                </xpath>-->
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_punish"
                         string="Phạt" type="object" context="{'validate_analytic': True}"
@@ -51,7 +51,8 @@
                         string="Xác nhận trả hàng" type="object"/>
                 </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
-                    <attribute name="invisible">1</attribute>
+                    <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}</attribute>
+                    <attribute name="class">oe_highlight</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', '=', 'sale')]}</attribute>

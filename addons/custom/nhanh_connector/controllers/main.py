@@ -177,7 +177,8 @@ class MainController(http.Controller):
                         webhook_value_id.order_id.check_sale_promotion()
                         if webhook_value_id.order_id.state != 'check_promotion' and not webhook_value_id.order_id.picking_ids:
                             try:
-                                webhook_value_id.order_id.action_create_picking()
+                                # webhook_value_id.order_id.action_create_picking()
+                                webhook_value_id.order_id.action_confirm()
                             except:
                                 return self.result_request(200, 0, _('Create sale order success'))
 
@@ -187,14 +188,17 @@ class MainController(http.Controller):
                     odoo_order.sudo().write({
                         'nhanh_order_status': data['status'].lower(),
                     })
-                    if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
+                    if data['status'] in ["Packing", "Pickup", "Shipping", "Packed"]:
                         odoo_order.check_sale_promotion()
                         if odoo_order.state != 'check_promotion' and not odoo_order.picking_ids:
                             try:
-                                odoo_order.action_create_picking()
+                                # odoo_order.action_create_picking()
+                                odoo_order.action_confirm()
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
-                        
+                    if data['status'] in ["Success"]:
+                        odoo_order.picking_ids.confirm_from_so(True)
+
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids:
                             for picking_id in odoo_order.picking_ids:
