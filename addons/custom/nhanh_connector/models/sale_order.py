@@ -93,6 +93,9 @@ class SaleOrderNhanh(models.Model):
 
         location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
+        nhanh_origin_id = order.get('returnFromOrderId', 0)
+
+
         name_customer = False
         # Add customer if not existed
         nhanh_partner = n_client.get_nhanh_partner()
@@ -135,18 +138,27 @@ class SaleOrderNhanh(models.Model):
         if return_changed:
             order_data.update(return_changed)
 
+        if nhanh_origin_id:
+            order_data.update({
+                'x_is_return': True,
+                'x_origin': None,
+                'nhanh_origin_id': nhanh_origin_id
+            })
+
         new_order = self.env['sale.order'].sudo().create(order_data)
-        try:
+        if order['statusCode'] in ["Packing", "Pickup", "Shipping", "Success", "Packed", "Returned"]:
             new_order.check_sale_promotion()
-            new_order.action_create_picking()
-        except Exception as e:
-            raise e
+            if new_order.state != 'check_promotion' and not new_order.picking_ids and not nhanh_origin_id:
+                try:
+                    new_order.action_create_picking()
+                except Exception as e:
+                    raise e
             
-        if order['statusCode'] in ['Canceled', 'Aborted']:
-            if new_order.picking_ids and 'done' not in new_order.picking_ids.mapped(
-                    'state'):
+        if order['statusCode'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
+            if new_order.picking_ids:
                 for picking_id in new_order.picking_ids:
-                    picking_id.action_cancel()
+                    if picking_id.state != 'done':
+                        picking_id.action_cancel()
 
 
     @api.model
