@@ -219,5 +219,13 @@
             <field name="name">Báo cáo quyết toán lệnh sản xuất</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+        <record id="group_report_num42" model="res.groups">
+            <field name="name">Báo cáo nhập kho theo đơn mua</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
+        <record id="group_report_num43" model="res.groups">
+            <field name="name">Báo cáo hình thức thanh toán trên POS</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>

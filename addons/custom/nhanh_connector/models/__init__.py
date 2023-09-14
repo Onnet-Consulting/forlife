@@ -12,7 +12,7 @@ from . import promotion_pricelist_item
 from . import constant
 from . import nhanh_brand_config
 from . import nhanh_webhook_value
-# from . import res_config_settings
+from . import res_config_settings
 from . import stock_warehouse
 from . import stock_location
 from . import delivery_carrier

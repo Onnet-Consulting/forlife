@@ -78,6 +78,8 @@ class SplitProduct(models.Model):
         for rec in self.split_product_line_ids:
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
+                level = 2 if self.product_id.brand_id.code == 'TKL' else 4
+                r.validate_product(level)
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
@@ -99,7 +101,6 @@ class SplitProduct(models.Model):
         self.user_approve_id = self.env.user
         self.date_approved = datetime.now()
         self.state = 'done'
-
 
     def action_view_picking(self):
         self.ensure_one()
@@ -238,5 +239,25 @@ class SpilitProductLineSub(models.Model):
         for rec in self:
             if rec.quantity < 0:
                 raise ValidationError(_('Không được phép nhập giá trị âm!'))
+
+    def validate_product(self, level):
+        if self.product_id.product_type != 'product' or self.product_split_id.product_type != 'product':
+            return True
+
+        categ_from_id = self.product_id.categ_id.id if self.product_id.categ_id.level == level else False
+        if self.product_id.categ_id.level > level:
+            categ_from_id = int(self.product_id.categ_id.parent_path.split('/')[level - 1])
+
+        categ_to_id = self.product_split_id.categ_id.id if self.product_split_id.categ_id.level == level else False
+        if self.product_split_id.categ_id.level > level:
+            categ_to_id = int(self.product_split_id.categ_id.parent_path.split('/')[level - 1])
+
+        if categ_from_id != categ_to_id:
+            if level == 4:
+                raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Kết cấu.' % (
+                self.product_id.name, self.product_split_id.name)))
+            else:
+                raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Nhóm hàng.' % (
+                self.product_id.name, self.product_split_id.name)))
 
 # class AccountIntermediary

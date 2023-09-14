@@ -21,6 +21,7 @@ class ReportNum27(models.TransientModel):
     location_id = fields.Many2one('stock.location', string='Kho')
     type = fields.Selection([('import', 'Nhập khác'), ('export', 'Xuất khác')], string='Loại nhập/xuất', required=True)
     status = fields.Selection([('approved', 'Chưa hoàn thành'), ('done', 'Đã hoàn thành')], string='Trạng thái')
+    production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất')
 
     def _get_query(self):
         self.ensure_one()
@@ -111,6 +112,8 @@ class ReportNum27(models.TransientModel):
             query += f""" and t2.other_import is true"""
         if self.type and self.type == 'export':
             query += f""" and t2.other_export is true"""
+        if self.production_id:
+            query += f""" and t9.id = {self.production_id.id}"""
         query += " ORDER BY t2.name, num;"
         return query
 

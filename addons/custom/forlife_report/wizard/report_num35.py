@@ -42,11 +42,11 @@ class ReportNum35(models.TransientModel):
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
         attr_value = self.env['res.utility'].get_attribute_code_config()
-        customer_join = f"""join res_partner rp on so.order_partner_id = rp.id and (rp.ref ilike '%{self.customer}%' or
-            rp.name ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')""" if self.customer else \
+        customer_join = f"""join res_partner rp on so.order_partner_id = rp.id and (rp.ref ilike '%%{self.customer}%%' or
+            rp.name ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')""" if self.customer else \
             'left join res_partner rp on so.order_partner_id = rp.id'
-        so_filter_condition = f"""and so.name ilike '%{self.order_filter}%'""" if self.order_filter else ''
-        nhanh_order_condition = f"""and so.nhanh_id ilike '%{self.nhanh_order}%'""" if self.nhanh_order else ''
+        so_filter_condition = f"""and so.name ilike '%%{self.order_filter}%%'""" if self.order_filter else ''
+        nhanh_order_condition = f"""and so.nhanh_id ilike '%%{self.nhanh_order}%%'""" if self.nhanh_order else ''
 
         query = f"""
 with account_by_categ_id as (select cate.id as cate_id,

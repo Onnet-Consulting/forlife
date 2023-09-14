@@ -88,6 +88,9 @@ class SaleOrderNhanh(models.Model):
     def create_an_order(self, order, brand_id):
         n_client = NhanhClient(self, constant)
         default_company_id = n_client.get_company()
+        if not default_company_id:
+            raise Exception ('Chọn company trước khi đồng bộ đơn hàng từ Nhanh.Vn, Vui lòng vào Thiết lập -> Kế toán để chọn company')
+
         location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
         name_customer = False

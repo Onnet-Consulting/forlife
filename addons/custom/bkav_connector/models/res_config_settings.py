@@ -23,3 +23,4 @@ class ResConfigSettings(models.TransientModel):
     bkav_download_pdf = fields.Char(string='Mã Download pdf', config_parameter='bkav.download_pdf')
     bkav_download_xml = fields.Char(string='Mã Download xml', config_parameter='bkav.download_xml')
     bkav_search_infor = fields.Char(string='Mã Tra cứu thông tin DN', config_parameter='bkav.search_infor')
+    is_general_bkav_nhanh = fields.Boolean(string='Tổng hợp cuối ngày xuất BKAV (Nhanh)', config_parameter='bkav.is_general_bkav_nhanh')

@@ -23,6 +23,19 @@ class StockMoveLine(models.Model):
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
+    original_quantity_purchase_done = fields.Float()
+    original_qty_diff = fields.Float(string='Chênh lệch', compute='_compute_original_qty_diff')
+
+    @api.model_create_single
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res.original_quantity_purchase_done = res.quantity_purchase_done
+        return res
+
+    @api.depends('quantity_purchase_done')
+    def _compute_original_qty_diff(self):
+        for rec in self:
+            rec.original_qty_diff = rec.original_quantity_purchase_done - rec.quantity_purchase_done
 
     @api.depends('reason_id')
     def compute_production_order(self):

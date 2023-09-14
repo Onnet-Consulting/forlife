@@ -13,3 +13,13 @@ class ResBrand(models.Model):
     _sql_constraints = [
         ('code_uniq', 'unique (code)', 'Brand code must be unique !'),
     ]
+
+    def name_get(self):
+        result = []
+        for br in self:
+            if br.code:
+                name = f'[{br.code}] {br.name}'
+            else:
+                name = f'{br.name}'
+            result.append((br.id, name))
+        return result

@@ -58,11 +58,12 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             }
 
             set_employee(employee_id) {
-                this.employee_id = employee_id ? parseInt(employee_id) : null;
+                if (employee_id && parseInt(employee_id)) {
+                    this.employee_id = employee_id ? parseInt(employee_id) : null;
+                };
             }
 
             get_employee() {
-                console.log(this.employee_id)
                 return this.employee_id;
             }
         }
@@ -70,7 +71,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
 
     const OrderAssignEmployee = (Order) => class extends Order {
         add_orderline(line) {
-            if (line.pos.employeeSelected.employeeID) {
+            if (!_.isEmpty(line.pos.employeeSelected.employeeID)) {
                 line.set_employee(line.pos.employeeSelected.employeeID)
             }
             super.add_orderline(...arguments);

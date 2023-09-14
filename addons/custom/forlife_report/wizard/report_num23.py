@@ -10,7 +10,7 @@ TITLES = ['STT', 'Cửa hàng', 'Hạng thẻ', 'Thuế suất', 'Giá trị tr�
 class ReportNum23(models.TransientModel):
     _name = 'report.num23'
     _inherit = 'report.base'
-    _description = 'Card rank discount report'
+    _description = 'Báo cáo giá trị chiết khấu hạng thẻ'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date(string='From date', required=True)

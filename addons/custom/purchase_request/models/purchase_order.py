@@ -148,6 +148,8 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
             production_data = []
+            if not production_order.order_line_ids:
+                continue
             for production_line in production_order.order_line_ids:
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
@@ -157,9 +159,10 @@ class PurchaseOrderLine(models.Model):
                     'production_line_price_unit': production_line.price,
                     'is_from_po': True,
                 }))
-            r.write({
-                'purchase_order_line_material_line_ids': production_data
-            })
+            if production_data:
+                r.write({
+                    'purchase_order_line_material_line_ids': production_data
+                })
         return res
 
     def action_npl(self):

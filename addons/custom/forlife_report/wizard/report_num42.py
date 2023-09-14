@@ -6,14 +6,14 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'STT', 'Số PR', 'Ngày PR', 'Số PO', 'Ngày PO', 'NCC', 'Mã SKU', 'Barcode', 'Tên hàng', 'SL',
-    'Đơn giá', 'CK (%)', 'Thành tiền', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
+    'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
 ]
 
 
-class ReportNum13(models.TransientModel):
-    _name = 'report.num13'
+class ReportNum42(models.TransientModel):
+    _name = 'report.num42'
     _inherit = 'report.base'
-    _description = 'Báo cáo tình hình thực hiện đơn hàng mua'
+    _description = 'Báo cáo nhập kho theo đơn mua'
 
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
@@ -75,7 +75,7 @@ order by num
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện đơn hàng mua')
+        sheet = workbook.add_worksheet('Báo cáo nhập kho theo đơn mua')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tình hình thực hiện đơn hàng mua', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
@@ -95,10 +95,7 @@ order by num
             sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('product_name'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('product_qty', 0), formats.get('float_number_format'))
-            sheet.write(row, 10, value.get('price_unit', 0), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('discount_percent', 0), formats.get('float_number_format'))
-            sheet.write(row, 12, value.get('price_subtotal', 0), formats.get('int_number_format'))
-            sheet.write(row, 13, value.get('qty_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 14, value.get('qty_not_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 15, value.get('qty_invoiced', 0), formats.get('float_number_format'))
+            sheet.write(row, 10, value.get('qty_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 11, value.get('qty_not_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 12, value.get('qty_invoiced', 0), formats.get('float_number_format'))
             row += 1

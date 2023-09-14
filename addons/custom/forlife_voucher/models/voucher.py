@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 class Voucher(models.Model):
     _name = 'voucher.voucher'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-
+    _rec_names_search = ['nhanh_id', 'name']
     _description = 'Voucher'
 
     name = fields.Char('Code', compute='_compute_name', store=True, readonly=False)
@@ -61,6 +61,7 @@ class Voucher(models.Model):
     has_accounted = fields.Boolean(default=False)
     notification_id = fields.Char('Notification ID', help='Id của thông báo trên trang quản trị app,'
                                                           ' dùng cho nghiệp vụ đẩy thông báo thông tin voucher cho khách hàng.')
+    nhanh_id = fields.Char(string='Id nhanh')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
@@ -212,14 +213,14 @@ class Voucher(models.Model):
         departments = self.env['hr.department'].search([])
         now = datetime.now()
         payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True),('company_id','=',self.env.company.id)], limit=1)
-        day_accounting = payment_mothod.day_accounting if payment_mothod.day_accounting else 90
+        day_accounting = payment_mothod.day_accounting if not payment_mothod.day_accounting == None else 90
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 if not self._context.get('expired'):
                     vouchers = self.search([('derpartment_id', '=', d.id), ('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
                         vouchers = vouchers.filtered(lambda voucher: voucher.price > voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and
-                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day == now.day))
+                                                     voucher.order_use_ids and ((voucher.order_use_ids.sorted('date_order')[0].date_order + timedelta(days=day_accounting)).day <= now.day))
                         if vouchers:
                             try:
                                 move_vals = {
@@ -261,7 +262,7 @@ class Voucher(models.Model):
                 else:
                     vouchers = self.search([('derpartment_id', '=', d.id), ('state', '=', 'expired'),('has_accounted','=',False),('apply_many_times','=',False)])
                     if vouchers:
-                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day == now.day))
+                        vouchers = vouchers.filtered(lambda voucher: voucher.price_residual > 0 and voucher.purpose_id.purpose_voucher == 'pay' and ((voucher.end_date + timedelta(days=day_accounting)).day <= now.day))
                         if vouchers:
                             try:
                                 move_vals = {

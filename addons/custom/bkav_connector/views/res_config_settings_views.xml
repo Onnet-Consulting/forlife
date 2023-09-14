@@ -13,6 +13,7 @@
                         <div class="col-12 col-lg-12 o_setting_box">
                             <group>
                                 <group>
+                                    <field name="is_general_bkav_nhanh"/>
                                     <field name="bkav_url"/>
                                     <field name="bkav_partner_token"/>
                                     <field name="bkav_partner_guid"/>

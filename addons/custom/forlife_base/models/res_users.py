@@ -5,6 +5,7 @@ from odoo import api, fields, models
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
+    _rec_names_search = ['login', 'name']
 
     stock_ids = fields.Many2many('stock.warehouse', string='Stock Warehouse')
     stock_default_id = fields.Many2one('stock.warehouse', string='Stock Warehouse Default', company_dependent=True)

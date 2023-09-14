@@ -42,3 +42,9 @@ class InheritResConfigSettings(models.TransientModel):
         string='Is Promotional Accounting Without State Registration',
         readonly=False
     )
+    accounting_voucher_partner_id = fields.Many2one(
+        'res.partner',
+        string='Accounting Voucher Partner',
+        related='company_id.accounting_voucher_partner_id',
+        readonly=False
+    )

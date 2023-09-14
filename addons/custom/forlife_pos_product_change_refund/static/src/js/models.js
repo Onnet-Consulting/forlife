@@ -134,7 +134,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             super(...arguments);
             this.expire_change_refund_date = this.expire_change_refund_date || '';
             this.quantity_canbe_refund = this.quantity_canbe_refund || 0;
-            this.reason_refund_id = this.reason_refund_id || 0;
+            if (!this.reason_refund_id && this.order.pos.pos_reason_refund) {
+                this.reason_refund_id = this.order.pos.pos_reason_refund[0].id || 0;
+            }
             // manhld
             this.approvalStatus = this.approvalStatus || false;
             this.beStatus = this.beStatus || false;
@@ -159,7 +161,13 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             super.init_from_JSON(...arguments);
             this.expire_change_refund_date = json.expire_change_refund_date || '';
             this.quantity_canbe_refund = json.quantity_canbe_refund || 0;
-            this.reason_refund_id = json.reason_refund_id;
+            let reason_refund_id = 0;
+            if (json.reason_refund_id && json.reason_refund_id !== 'pos.reason.refund()') {
+                reason_refund_id = json.reason_refund_id;
+            } else if (this.order.pos.pos_reason_refund) {
+                reason_refund_id = this.order.pos.pos_reason_refund[0].id || 0;
+            }
+            this.reason_refund_id = reason_refund_id;
             // manhld
             this.approvalStatus = json.approvalStatus || false;
             this.beStatus = json.beStatus || false;

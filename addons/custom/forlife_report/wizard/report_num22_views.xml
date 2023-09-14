@@ -18,9 +18,21 @@
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
                             <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" nolabel="1" colspan="2">
+                                <tree create="0" edit="0" delete="0" limit="20">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                </tree>
+                                <form edit="0" create="0" delete="0">
+                                    <group>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
                         </group>
                         <group>
+                            <field name="group_by" widget="radio" options="{'horizontal': True}"/>
                             <field name="type" widget="radio" options="{'horizontal': True}"/>
                             <field name="so_ct"/>
                         </group>

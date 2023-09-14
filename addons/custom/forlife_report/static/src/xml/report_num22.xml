@@ -15,10 +15,13 @@
                     <t t-foreach="options.data" t-as="line">
                         <tr class="show-detail" t-att-id="line.num - 1">
                             <td class="index-report"><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.ma_ch"/></td>
                             <td><t t-esc="line.chi_nhanh"/></td>
                             <td><t t-esc="line.ngay"/></td>
-                            <td><t t-esc="line.phien_bh"/></td>
-                            <td><t t-esc="line.pos"/></td>
+                            <t t-if="widget.column_add">
+                                <td><t t-esc="line.phien_bh"/></td>
+                                <td><t t-esc="line.pos"/></td>
+                            </t>
                             <td class="right"><t t-esc="format_decimal(line.tong_tien_thu, 0)"/></td>
                             <td class="right"><t t-esc="format_decimal(line.tong_tien_chi, 0)"/></td>
                         </tr>
@@ -44,7 +47,12 @@
                             <td><t t-esc="line.ngay"/></td>
                             <td><t t-esc="line.phien_bh"/></td>
                             <td><t t-esc="line.so_ct"/></td>
-                            <td><t t-esc="line.noi_dung"/></td>
+                            <t t-if="line.noi_dung">
+                                <td><t t-esc="line.noi_dung"/></td>
+                            </t>
+                            <t t-else="">
+                                <td><t t-esc="line.nhan"/></td>
+                            </t>
                             <td><t t-esc="line.khoan_muc"/></td>
                             <td><t t-esc="line.tk_no"/></td>
                             <td><t t-esc="line.tk_co"/></td>

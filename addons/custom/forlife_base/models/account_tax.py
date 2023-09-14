@@ -36,3 +36,14 @@ class AccountTax(models.Model):
     #         early_pay_discount_percentage=early_pay_discount_percentage
     #     )
     #     return to_update_vals, tax_values_list
+
+    def name_get(self):
+        if self._context.get('show_percentage'):
+            result = []
+            for t in self:
+                amount = int(t.amount)
+                _pct = amount if amount == t.amount else t.amount
+                name = f"[{_pct}%] {t.name or ''}"
+                result.append((t.id, name))
+            return result
+        return super().name_get()

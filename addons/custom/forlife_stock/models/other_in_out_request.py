@@ -40,6 +40,7 @@ class ForlifeOtherInOutRequest(models.Model):
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất',
                                     domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
+    location_material_id = fields.Many2one('stock.location', domain="[('company_id', '=', company_id)]", string='Địa điểm xuất NPL')
 
     @api.model
     def default_get(self, default_fields):
@@ -175,6 +176,7 @@ class ForlifeOtherInOutRequest(models.Model):
                     'origin': record.name,
                     'other_import_export_request_id': record.id,
                     'is_last_transfer': record.is_last_transfer,
+                    'location_material_id': record.location_material_id.id,
                     'move_ids_without_package': [data_other_line]
                 }
                 if value.get(key):
