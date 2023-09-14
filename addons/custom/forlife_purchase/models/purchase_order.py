@@ -912,7 +912,7 @@ class PurchaseOrder(models.Model):
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
         if (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')) <= 0:
             return None
-        quantity = line.product_qty - sum(invoice_line_ids.mapped('quantity'))
+        quantity = line.product_qty
         data_line = {
             'product_id': line.product_id.id,
             'promotions': line.free_good,
@@ -929,6 +929,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
+            'price_subtotal': line.price_subtotal - invoice_line_ids.mapped('price_subtotal'),
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
