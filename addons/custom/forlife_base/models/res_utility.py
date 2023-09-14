@@ -517,3 +517,17 @@ where rp.id in (select id from customers)
             group by rcs.id, rcs.code, rcs.name;
         """
         return self.execute_postgresql(sql, [], True)
+
+    @api.model
+    def get_employee_by_uid(self, uid):
+        self._cr.execute(f'select * from hr_employee where user_id = {uid} and active = true limit 1')
+        return self._cr.dictfetchone() or {}
+
+    @api.model
+    def get_multi_employee_by_list_uid(self, uids):
+        if not uids:
+            return {}
+        self._cr.execute(f'select json_object_agg(user_id, hr_employee.*) employees from hr_employee where user_id = any(array{uids}) and active = true')
+        return self._cr.dictfetchall()[0].get('employees') or {}
+
+

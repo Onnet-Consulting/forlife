@@ -99,7 +99,10 @@ class ForLifeProduction(models.Model):
                 "tu_san_xuat": 1,
                 "tp": 2,
             }
+            employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
             for record in self:
+                user_id = str(record.user_id.id) or str(self._uid)
+                employee = employees.get(user_id) or {}
                 values.append({
                     'CompanyCode': record.company_id.code or None,
                     'DocNo': record.code or None,
@@ -110,7 +113,7 @@ class ForLifeProduction(models.Model):
                     'DeptCode': record.implementation_id.code or None,
                     'StatsDocType': x_type.get(record.production_department) or None,
                     'BrandsCode': record.brand_id.code or None,
-                    'EmployeeCode': record.user_id.employee_id.code or None,
+                    'EmployeeCode': employee.get('code') or None,
                     'ManagementDeptCode': record.management_id.code or None,
                     'UnitCode': (record.forlife_production_finished_product_ids
                                  and record.forlife_production_finished_product_ids[0].uom_id.code) or None,

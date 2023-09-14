@@ -9,9 +9,11 @@ class PosSessionCashInMove(models.Model):
     def bravo_get_cash_in_move_values(self):
         res = []
         columns = self.bravo_get_cash_in_move_columns()
-        employee_code = self.get_employee_code_by_uid(self.user_id.id or self._uid)
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_cash_in_move_value(employee_code))
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_cash_in_move_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -32,6 +34,7 @@ class PosSessionCashInMove(models.Model):
         store_id = self.statement_line_id.pos_session_id.config_id.store_id
         analytic_account = store_id.analytic_account_id
         partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
+        expense_label_id = self.line_ids.mapped('expense_label_id')
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code or None,
@@ -54,7 +57,7 @@ class PosSessionCashInMove(models.Model):
             "Description1": debit_line.name or None,
             "DeptCode": analytic_account.code or None,
             "IsTransfer": 1 if store_id.is_post_bkav else 0,
-            "CashFlowCode": self.statement_line_id.expense_label_id.code or None,
+            "CashFlowCode": expense_label_id and expense_label_id[0].code or None,
             "RowId": debit_line.id or None
         }
         values.append(journal_value)
@@ -67,9 +70,11 @@ class PosSessionCashOutMove(models.Model):
     def bravo_get_cash_out_move_values(self):
         res = []
         columns = self.bravo_get_cash_out_move_columns()
-        employee_code = self.get_employee_code_by_uid(self.user_id.id or self._uid)
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_cash_out_move_value(employee_code))
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_cash_out_move_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -90,6 +95,7 @@ class PosSessionCashOutMove(models.Model):
         store_id = self.statement_line_id.pos_session_id.config_id.store_id
         analytic_account = store_id.analytic_account_id
         partner = debit_line.partner_id or credit_line.partner_id or store_id.contact_id
+        expense_label_id = self.line_ids.mapped('expense_label_id')
         values = []
         journal_value = {
             "CompanyCode": self.company_id.code or None,
@@ -112,7 +118,7 @@ class PosSessionCashOutMove(models.Model):
             "Description1": debit_line.name or None,
             "DeptCode": analytic_account.code or None,
             "IsTransfer": 1 if store_id.is_post_bkav else 0,
-            "CashFlowCode": self.statement_line_id.expense_label_id.code or None,
+            "CashFlowCode": expense_label_id and expense_label_id.code or None,
             "RowId": debit_line.id or None
         }
         values.append(journal_value)

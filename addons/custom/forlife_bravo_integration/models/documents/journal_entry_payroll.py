@@ -9,8 +9,11 @@ class JournalEntryPayroll(models.Model):
     def bravo_get_journal_entry_payroll_values(self):
         res = []
         columns = self.bravo_get_journal_entry_payroll_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_journal_entry_payroll_value())
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_journal_entry_payroll_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -22,7 +25,7 @@ class JournalEntryPayroll(models.Model):
             "JobCode", "RowId", "AssetCode", "DocNo_WO", "ExpenseCatgCode", "ProductCode", "DeptCode",
         ]
 
-    def bravo_get_journal_entry_payroll_value(self):
+    def bravo_get_journal_entry_payroll_value(self, employee_code):
         self.ensure_one()
         debit_lines = self.line_ids.filtered(lambda l: l.debit > 0)
         credit_lines = self.line_ids.filtered(lambda l: l.credit > 0)
@@ -49,7 +52,7 @@ class JournalEntryPayroll(models.Model):
                 "CustomerName": partner.name or None,
                 "Address": partner.contact_address_complete or None,
                 "Description": self.ref2 or None,
-                "EmployeeCode": self.user_id.employee_id.code or None,
+                "EmployeeCode": employee_code or None,
                 "IsTransfer": 1 if self.is_tc else 0,
                 "DocumentType": None,
                 "BuiltinOrder": stt,
