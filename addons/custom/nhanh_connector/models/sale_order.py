@@ -58,6 +58,14 @@ class SaleOrderNhanh(models.Model):
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
 
+    def open_nhanh(self):
+        return {
+            'type': 'ir.actions.act_url',
+            'url': "https://new.nhanh.vn/order/manage/detail?storeId=%s&id=%s"
+                   % (self.x_location_id.nhanh_id, self.nhanh_id),
+            'target': 'new',
+        }
+
 
     # def write(self, vals):
     #     res = super().write(vals)
