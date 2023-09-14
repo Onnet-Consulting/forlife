@@ -16,6 +16,9 @@
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="is_need_scan_barcode"/>
                 </xpath>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="required">1</attribute>
+                </xpath>
             </field>
         </record>
 

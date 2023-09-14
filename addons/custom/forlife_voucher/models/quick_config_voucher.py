@@ -27,8 +27,8 @@ class QuickConfigVoucher(models.Model):
         workbook = xlsxwriter.Workbook(temp_file_path)
         worksheet = workbook.add_worksheet(u'Sheet0')
 
-        header = ['Code']
-        lines = [header] + [['AXBIDSL12']]
+        header = ['Code', 'Id nhanh']
+        lines = [header] + [['AXBIDSL12', '01239832']]
 
         header_format = workbook.add_format({
             'align': 'center',
@@ -68,8 +68,10 @@ class QuickConfigVoucher(models.Model):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file_import))
         data = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=0))[1:]
         list_code = []
+        code_mapped = {}
         for d in data:
-            list_code += d
+            list_code += [d[0]]
+            code_mapped.update({d[0]: d[1]})
         vouchers = self.env['voucher.voucher'].search([('name', 'in', list_code), ('using_limit', '=', 1)])
         message_invalid = ''
         if self.method == 'active':
@@ -85,6 +87,9 @@ class QuickConfigVoucher(models.Model):
         if list_code_invalid:
             show_message = True
             message_invalid = 'Các code không hợp lệ trong file excel %s' % list(set(list_code_invalid))
+
+        for v in valid_vouchers:
+            v.write({'nhanh_id': code_mapped.get(v['name'], False)})
 
         self.write({
             'voucher_ids': [(6, 0, valid_vouchers.ids)],

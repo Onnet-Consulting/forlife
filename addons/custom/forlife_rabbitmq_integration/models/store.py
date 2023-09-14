@@ -19,6 +19,7 @@ class Store(models.Model):
     def get_sync_info_value(self):
         return [{
             'id': line.warehouse_id.id,
+            'code': line.warehouse_id.code or None,
             'updated_at': line.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             'start_date': line.start_date.strftime('%Y-%m-%d') if line.start_date else None,
             'opening_time': {
