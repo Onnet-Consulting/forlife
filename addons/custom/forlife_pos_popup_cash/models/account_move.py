@@ -51,6 +51,7 @@ class AccountMove(models.Model):
             'company_id': self.company_id.id,
             'pos_trans_session_id': self.pos_trans_session_id.id,
             'pos_orig_trans_move_id': self.id,
+            'journal_id': self.journal_id.id,
             'line_ids': [
                 # debit line
                 (0, 0, {

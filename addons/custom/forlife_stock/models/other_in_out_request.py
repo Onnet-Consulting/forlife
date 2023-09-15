@@ -176,7 +176,7 @@ class ForlifeOtherInOutRequest(models.Model):
                     'origin': record.name,
                     'other_import_export_request_id': record.id,
                     'is_last_transfer': record.is_last_transfer,
-                    'location_material_id': record.location_material_id.id,
+                    'location_export_id': record.location_material_id.id,
                     'move_ids_without_package': [data_other_line]
                 }
                 if value.get(key):

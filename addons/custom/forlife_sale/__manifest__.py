@@ -15,6 +15,7 @@
         'base',
         'sale',
         'stock',
+        'sale_stock',
         'product',
         'account',
         'forlife_base'

@@ -732,6 +732,9 @@ class PurchaseOrder(models.Model):
             if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
                 message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
                 raise ValidationError(message)
+
+        if self.env.context.get('import_file'):
+            self.order_line.compute_vendor_price_ncc()
         return res
 
     # Xử lý import PO link sang bên PR
@@ -909,7 +912,7 @@ class PurchaseOrder(models.Model):
     def create_invoice_service_and_asset(self, order, line, invoice_line_ids):
         if (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')) <= 0:
             return None
-        quantity = line.product_qty - sum(invoice_line_ids.mapped('quantity'))
+        quantity = line.product_qty
         data_line = {
             'product_id': line.product_id.id,
             'promotions': line.free_good,
@@ -926,6 +929,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
+            'price_subtotal': line.price_subtotal - invoice_line_ids.mapped('price_subtotal'),
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
@@ -1767,8 +1771,8 @@ class PurchaseOrder(models.Model):
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/exchange_quantity') and not mouse[fields.index('order_line/exchange_quantity')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Tỷ lệ quy đổi ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
-                        if fields.index('order_line/vendor_price_import') and not mouse[fields.index('order_line/vendor_price_import')]:
-                            raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Giá của nhà cung cấp ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
+                        # if fields.index('order_line/vendor_price_import') and not mouse[fields.index('order_line/vendor_price_import')]:
+                        #     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Giá của nhà cung cấp ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/location_id') and not mouse[fields.index('order_line/location_id')]:
                             raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Địa điểm kho ở tab chi tiết đơn hàng ở dòng - {}".format(line_number)))
                         if fields.index('order_line/receive_date') and not mouse[fields.index('order_line/receive_date')]:
