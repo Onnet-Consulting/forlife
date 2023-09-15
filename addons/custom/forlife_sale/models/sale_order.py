@@ -128,6 +128,8 @@ class SaleOrder(models.Model):
 
         lines = []
         for picking in picking_ids:
+            if picking.picking_type_id.sequence_code == 'PICK':
+                continue
             lines.append((0, 0, {
                 'picking_name': picking.name,
                 'state': list_state.get(picking.state),
@@ -266,6 +268,19 @@ class SaleOrder(models.Model):
                 res = self.env['stock.rule'].search(expression.AND([[('route_id', 'in', warehouse_routes.ids)], domain]), order='route_sequence, sequence', limit=1)
             return res
 
+    def action_confirm(self):
+        res = super().action_confirm()
+        if self.x_punish:
+            self.picking_ids.confirm_from_so(True)
+            advance_payment = self.env['sale.advance.payment.inv'].create({
+                'sale_order_ids': [(6, 0, self.ids)],
+                'advance_payment_method': 'delivered',
+                'deduct_down_payments': True
+            })
+            invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
+            invoice_id.action_post()
+        return res
+
     def action_create_picking(self):
         if self.state in ('draft', 'sent'):
             action = self.check_sale_promotion()
@@ -274,7 +289,7 @@ class SaleOrder(models.Model):
         kwargs = self._context
         if kwargs.get("wh_in"):
             rule = self.env['stock.rule'].search([
-                ('warehouse_id', '=', self.warehouse_id.id), 
+                ('warehouse_id', '=', self.warehouse_id.id),
                 ('picking_type_id', '=', self.warehouse_id.in_type_id.id)
             ], limit=1)
         else:
@@ -342,7 +357,7 @@ class SaleOrder(models.Model):
             picking_id = self.env['stock.picking'].create(master_data)
             picking_id.move_ids_without_package = stock_move_ids[move]
             picking_id.confirm_from_so(condition)
-            sql = f""" 
+            sql = f"""
                 with A as (
                     SELECT *
                     FROM ( VALUES {str(line_x_scheduled_date).replace('[', '').replace(']', '')})as A(sale_line_id,date)
@@ -570,3 +585,9 @@ class SaleOrderLine(models.Model):
             'price_unit': self.price_unit or False
         })
         return rslt
+
+    def _prepare_procurement_values(self, group_id=False):
+        res = super()._prepare_procurement_values(group_id=group_id)
+        if self.x_location_id:
+            res['warehouse_id'] = self.x_location_id.warehouse_id or False
+        return res

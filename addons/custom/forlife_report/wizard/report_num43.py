@@ -62,9 +62,9 @@ class ReportNum43(models.TransientModel):
         if self.partner_id:
             sql += f" and rp.id = {self.partner_id.id}"
         if self.pos_order:
-            sql += f" and po.name like %{self.pos_order}%"
+            sql += f" and po.name like '%{self.pos_order}%'"
         if self.pos_reference:
-            sql += f" and po.name like %{self.pos_reference}%"
+            sql += f" and po.name like '%{self.pos_reference}%'"
 
         sql += ' order by st.brand_id, pp.payment_date, st.id, ppm.id, ps.id'
         return sql
