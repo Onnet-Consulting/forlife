@@ -168,8 +168,8 @@ class SyntheticDailyTransfer(models.Model):
 
     def bravo_get_insert_values(self, **kwargs):
         bravo_column_names = [
-            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "Description",
-            "EmployeeCode", "DeptCode", "IsTransfer", "ReceiptWarehouseCode", "PushDate", "BuiltinOrder",
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", 'CustomerCode',  "Description",
+            "DeptCode", "IsTransfer", "ReceiptWarehouseCode", "PushDate", "BuiltinOrder",
             "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9", "Quantity",
             "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId", "DocNo_WO",
         ]
@@ -186,6 +186,9 @@ class SyntheticDailyTransfer(models.Model):
                     "DocDate": self.date.strftime('%Y-%m-%d 07:00:00') if self.date else None,
                     "CurrencyCode": self.company_id.currency_id.name or None,
                     "ExchangeRate": 1,
+                    "CustomerCode": self.company_id.partner_id.ref or None,
+                    "CustomerName": self.company_id.partner_id.name or None,
+                    "Address": self.company_id.partner_id.contact_address_complete or None,
                     "Description": transfer_wh.description or None,
                     "IsTransfer": 0,
                     "ReceiptWarehouseCode": transfer_wh.destination_warehouse or None,
@@ -342,7 +345,10 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
         sync_number = kwargs.get('sync_number')
         date = kwargs.get('date')
         move_type = kwargs.get('move_type')
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(inventory.create_uid.ids)
         for stock_move in (kwargs.get('move_ids') or []):
+            user_id = str(stock_move.create_uid.id)
+            employee_code = (employees.get(user_id) or {}).get('code')
             if move_type == 'in':
                 doc_code = "PN"
                 description = 'Nhập kho theo phiếu kiểm kê'
@@ -355,7 +361,6 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
                 debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
                 debit_account = debit_line.account_id.code or stock_move.product_id.categ_id.with_company(company).property_stock_valuation_account_id.code or None
                 debit = int(debit_line[0].debit) if debit_line else 0
-                wh_code = 1
                 amount = debit or credit
             else:
                 doc_code = 'PX'
@@ -369,7 +374,6 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
                 debit_account = debit_line.account_id.code or self.env['stock.location'].search([
                     ('company_id', '=', company.id), ('code', '=', 'X0202'), ('type_other', '!=', False)]).with_company(company).x_property_valuation_out_account_id.code or None
                 debit = int(debit_line[0].debit) if debit_line else 0
-                wh_code = 2
                 amount = debit or credit
 
             values.append({
@@ -384,7 +388,7 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
                 "CustomerName": None,
                 "Address": None,
                 "Description": description,
-                "EmployeeCode": inventory.create_uid.employee_id.code or None,
+                "EmployeeCode": employee_code or None,
                 "IsTransfer": 0,
                 "DocumentType": document_type,
                 "PushDate": date or None,
@@ -401,7 +405,7 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
                 "UnitCost": stock_move.quantity_done if amount / stock_move.quantity_done else 0,
                 "OriginalAmount": amount,
                 "Amount": amount,
-                "WarehouseCode": wh_code or None,
+                "WarehouseCode": stock_move.location_id.warehouse_id.code or None,
                 "JobCode": stock_move.occasion_code_id.code or None,
                 "RowId": 1,
                 "DocNo_WO": stock_move.work_production.code or None,

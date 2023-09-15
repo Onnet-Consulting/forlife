@@ -9,8 +9,11 @@ class OrderExistBkav(models.Model):
     def bravo_get_order_exist_bkav_values(self):
         res = []
         columns = self.bravo_get_order_exist_bkav_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_order_exist_bkav_value())
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_order_exist_bkav_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -23,7 +26,7 @@ class OrderExistBkav(models.Model):
             "RowId", "DocNo_WO", "DeptCode",
         ]
 
-    def bravo_get_order_exist_bkav_value(self):
+    def bravo_get_order_exist_bkav_value(self, employee_code):
         self.ensure_one()
         stock_move = self.stock_move_id
         picking = stock_move.picking_id
@@ -49,7 +52,7 @@ class OrderExistBkav(models.Model):
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "Description": picking.note or None,
-            "EmployeeCode": self.user_id.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": 0,
             "BuiltinOrder": 1,
             "DocumentType": None,

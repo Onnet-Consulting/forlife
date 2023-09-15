@@ -38,7 +38,7 @@ class AccountMove(models.Model):
             "Address": partner.contact_address_complete,
             "TaxRegNo": partner.vat,
             "Description": self.invoice_description,
-            "EmployeeCode": self.env.user.employee_id.code,
+            "EmployeeCode": self.env['res.utility'].get_employee_by_uid(self._uid).get('code') or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "DebitAccount": receivable_account_code,
             "DueDate": self.invoice_date_due,
