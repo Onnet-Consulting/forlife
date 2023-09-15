@@ -637,12 +637,12 @@ class StockMove(models.Model):
         index=True, required=False,
         states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
-    amount_total = fields.Float(string='Thành tiền')
+    amount_total = fields.Float(string='Tổng tiền')
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
-    occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
+    occasion_code_id = fields.Many2one('occasion.code', 'Mã vụ việc')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
-    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Trung tâm chi phí")
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
