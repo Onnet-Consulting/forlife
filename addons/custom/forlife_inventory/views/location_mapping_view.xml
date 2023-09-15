@@ -18,11 +18,14 @@
                 <form string="Địa điểm cấu hình">
                     <sheet>
                         <group>
+                            <field name="inter_company"/>
+                        </group>
+                        <group>
                             <group>
-                                <field name="location_id"/>
+                                <field name="location_id" domain="[('virtual_location_ch', '=', inter_company and True or False)]"/>
                             </group>
                             <group>
-                                <field name="location_map_id"/>
+                                <field name="location_map_id" domain="[('virtual_location_ch', '=', inter_company and True or False)]"/>
                             </group>
                         </group>
                     </sheet>

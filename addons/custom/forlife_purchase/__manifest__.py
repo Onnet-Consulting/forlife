@@ -43,6 +43,7 @@
         'views/stock_picking_view.xml',
         'views/production_import.xml',
         'wizard/import_production.xml',
+        'report/print_production.xml',
     ],
     "assets": {
         "web.assets_backend": [

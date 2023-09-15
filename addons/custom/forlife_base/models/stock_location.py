@@ -7,7 +7,7 @@ class StockLocation(models.Model):
     def name_get(self):
         result = []
         for location in self:
-            if not location.type_other:
+            if not location.type_other and location.code:
                 name = f'[{location.code}] {location.complete_name}'
             else:
                 name = location.complete_name
