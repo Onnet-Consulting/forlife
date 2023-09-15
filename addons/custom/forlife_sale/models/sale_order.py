@@ -281,102 +281,102 @@ class SaleOrder(models.Model):
             invoice_id.action_post()
         return res
 
-    # def action_create_picking(self):
-    #     if self.state in ('draft', 'sent'):
-    #         action = self.check_sale_promotion()
-    #         if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
-    #             return action
-    #     kwargs = self._context
-    #     if kwargs.get("wh_in"):
-    #         rule = self.env['stock.rule'].search([
-    #             ('warehouse_id', '=', self.warehouse_id.id),
-    #             ('picking_type_id', '=', self.warehouse_id.in_type_id.id)
-    #         ], limit=1)
-    #     else:
-    #         rule = self.get_rule()
-    #     master = {
-    #         'origin': self.name,
-    #         'company_id': self.company_id.id,
-    #         'move_type': self.picking_policy,
-    #         'partner_id': self.partner_id.id,
-    #         'picking_type_id': rule.picking_type_id.id,
-    #         'location_id': self.warehouse_id.lot_stock_id.id,
-    #         'location_dest_id': self.partner_shipping_id.property_stock_customer.id,
-    #         'sale_id': self.id,
-    #         'state': 'confirmed'
-    #     }
-    #     list_location = []
-    #     stock_move_ids = {}
-    #     line_x_scheduled_date = []
-    #     for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
-    #         if line.x_manufacture_order_code_id:
-    #             quant = self.env['stock.quant'].search([('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
-    #             if not quant or quant.quantity < line.product_uom_qty:
-    #                 raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
-    #         date = datetime.combine(line.x_scheduled_date, datetime.min.time()) if line.x_scheduled_date else datetime.now()
-    #         group_id = line._get_procurement_group()
-    #         if not group_id:
-    #             group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
-    #             # line.order_id.procurement_group_id = group_id
-    #         detail_data = {
-    #             'name': line.name,
-    #             'company_id': line.company_id.id,
-    #             'product_id': line.product_id.id,
-    #             'product_uom': line.product_uom.id,
-    #             'product_uom_qty': line.product_uom_qty,
-    #             'partner_id': line.order_id.partner_id.id,
-    #             'location_id': line.x_location_id.id,
-    #             'location_dest_id': line.order_id.partner_shipping_id.property_stock_customer.id,
-    #             'rule_id': rule.id,
-    #             'procure_method': 'make_to_stock',
-    #             'origin': line.order_id.name,
-    #             'picking_type_id': rule.picking_type_id.id,
-    #             'date_deadline': datetime.now(),
-    #             'description_picking': line.name,
-    #             'sale_line_id': line.id,
-    #             'occasion_code_id': line.x_occasion_code_id,
-    #             'work_production': line.x_manufacture_order_code_id,
-    #             'account_analytic_id': line.x_account_analytic_id,
-    #             'group_id': group_id.id
-    #         }
-    #         line_x_scheduled_date.append((line.id, str(date)))
-    #         if line.x_location_id:
-    #             if line.x_location_id.id not in list_location:
-    #                 stock_move_ids[line.x_location_id.id] = [(0, 0, detail_data)]
-    #                 list_location.append(line.x_location_id.id)
-    #             else:
-    #                 stock_move_ids[line.x_location_id.id].append((0, 0, detail_data))
-    #     if self.x_punish:
-    #         condition = True
-    #     else:
-    #         condition = False
-    #     for move in stock_move_ids:
-    #         master_data = master
-    #         master_data['name'] = rule.picking_type_id.sequence_id.next_by_id()
-    #         master_data['location_id'] = stock_move_ids[move][0][2].get('location_id')
-    #         picking_id = self.env['stock.picking'].create(master_data)
-    #         picking_id.move_ids_without_package = stock_move_ids[move]
-    #         picking_id.confirm_from_so(condition)
-    #         sql = f"""
-    #             with A as (
-    #                 SELECT *
-    #                 FROM ( VALUES {str(line_x_scheduled_date).replace('[', '').replace(']', '')})as A(sale_line_id,date)
-    #                 )
-    #             update stock_move
-    #                 set date = A.date::timestamp
-    #             from A
-    #             where stock_move.sale_line_id = A.sale_line_id
-    #             """
-    #         self._cr.execute(sql)
-    #     self.state = 'sale'
-    #     if condition:
-    #         advance_payment = self.env['sale.advance.payment.inv'].create({
-    #             'sale_order_ids': [(6, 0, self.ids)],
-    #             'advance_payment_method': 'delivered',
-    #             'deduct_down_payments': True
-    #         })
-    #         invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
-    #         invoice_id.action_post()
+    def action_create_picking(self):
+        if self.state in ('draft', 'sent'):
+            action = self.check_sale_promotion()
+            if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
+                return action
+        kwargs = self._context
+        if kwargs.get("wh_in"):
+            rule = self.env['stock.rule'].search([
+                ('warehouse_id', '=', self.warehouse_id.id),
+                ('picking_type_id', '=', self.warehouse_id.in_type_id.id)
+            ], limit=1)
+        else:
+            rule = self.get_rule()
+        master = {
+            'origin': self.name,
+            'company_id': self.company_id.id,
+            'move_type': self.picking_policy,
+            'partner_id': self.partner_id.id,
+            'picking_type_id': rule.picking_type_id.id,
+            'location_id': self.warehouse_id.lot_stock_id.id,
+            'location_dest_id': self.partner_shipping_id.property_stock_customer.id,
+            'sale_id': self.id,
+            'state': 'confirmed'
+        }
+        list_location = []
+        stock_move_ids = {}
+        line_x_scheduled_date = []
+        for line in self.order_line.filtered(lambda line: line.product_id.detailed_type == 'product'):
+            if line.x_manufacture_order_code_id:
+                quant = self.env['stock.quant'].search([('product_id', '=', line.product_id.id), ('location_id', '=', line.x_location_id.id)])
+                if not quant or quant.quantity < line.product_uom_qty:
+                    raise UserError(_('Sản phẩm %s: không đủ tồn kho') % line.product_id.name)
+            date = datetime.combine(line.x_scheduled_date, datetime.min.time()) if line.x_scheduled_date else datetime.now()
+            group_id = line._get_procurement_group()
+            if not group_id:
+                group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
+                # line.order_id.procurement_group_id = group_id
+            detail_data = {
+                'name': line.name,
+                'company_id': line.company_id.id,
+                'product_id': line.product_id.id,
+                'product_uom': line.product_uom.id,
+                'product_uom_qty': line.product_uom_qty,
+                'partner_id': line.order_id.partner_id.id,
+                'location_id': line.x_location_id.id,
+                'location_dest_id': line.order_id.partner_shipping_id.property_stock_customer.id,
+                'rule_id': rule.id,
+                'procure_method': 'make_to_stock',
+                'origin': line.order_id.name,
+                'picking_type_id': rule.picking_type_id.id,
+                'date_deadline': datetime.now(),
+                'description_picking': line.name,
+                'sale_line_id': line.id,
+                'occasion_code_id': line.x_occasion_code_id,
+                'work_production': line.x_manufacture_order_code_id,
+                'account_analytic_id': line.x_account_analytic_id,
+                'group_id': group_id.id
+            }
+            line_x_scheduled_date.append((line.id, str(date)))
+            if line.x_location_id:
+                if line.x_location_id.id not in list_location:
+                    stock_move_ids[line.x_location_id.id] = [(0, 0, detail_data)]
+                    list_location.append(line.x_location_id.id)
+                else:
+                    stock_move_ids[line.x_location_id.id].append((0, 0, detail_data))
+        if self.x_punish:
+            condition = True
+        else:
+            condition = False
+        for move in stock_move_ids:
+            master_data = master
+            master_data['name'] = rule.picking_type_id.sequence_id.next_by_id()
+            master_data['location_id'] = stock_move_ids[move][0][2].get('location_id')
+            picking_id = self.env['stock.picking'].create(master_data)
+            picking_id.move_ids_without_package = stock_move_ids[move]
+            picking_id.confirm_from_so(condition)
+            sql = f"""
+                with A as (
+                    SELECT *
+                    FROM ( VALUES {str(line_x_scheduled_date).replace('[', '').replace(']', '')})as A(sale_line_id,date)
+                    )
+                update stock_move
+                    set date = A.date::timestamp
+                from A
+                where stock_move.sale_line_id = A.sale_line_id
+                """
+            self._cr.execute(sql)
+        self.state = 'sale'
+        if condition:
+            advance_payment = self.env['sale.advance.payment.inv'].create({
+                'sale_order_ids': [(6, 0, self.ids)],
+                'advance_payment_method': 'delivered',
+                'deduct_down_payments': True
+            })
+            invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
+            invoice_id.action_post()
 
     def _conn(self, autocommit=True, encrypt="no"):
         ir_config = self.env['ir.config_parameter'].sudo()
