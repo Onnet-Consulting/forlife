@@ -30,4 +30,9 @@
               name="Purchase"
               parent="report_menu"
               sequence="4"/>
+
+    <menuitem id="root_permission_report_menu"
+              name="Phân quyền"
+              parent="report_menu"
+              sequence="100"/>
 </odoo>
