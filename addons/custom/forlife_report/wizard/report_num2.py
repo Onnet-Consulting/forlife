@@ -109,7 +109,8 @@ from stock_product stp
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         collection_domain = [('collection', '=', self.collection)] if self.collection else []
-        Product = self.env['product.product']
+        Product = self.env['product.product'].with_context(report_ctx='report.num2,product.product')
+        Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num2,stock.warehouse')
         Utility = self.env['res.utility']
         categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
@@ -118,7 +119,7 @@ from stock_product stp
             product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))] + collection_domain).ids or [-1]
         else:
             product_ids = (Product.search(collection_domain).ids or [-1]) if collection_domain else [-1]
-        warehouse_ids = self.warehouse_ids if self.warehouse_ids else self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)])
+        warehouse_ids = self.warehouse_ids if self.warehouse_ids else Warehouse.search([('company_id', 'in', allowed_company)])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = Utility.execute_postgresql(query=query, param=[], build_dict=True)
         data_by_product_id = {}

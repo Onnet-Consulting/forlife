@@ -17,9 +17,9 @@
                             <field name="number_of_days"/>
                         </group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
-                            <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num11,res.brand'}"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num11,store'}"/>
+                            <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num11,res.partner'}"/>
                         </group>
                     </group>
                 </sheet>

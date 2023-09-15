@@ -11,8 +11,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num5,res.brand'}"/>
+                            <field name="store_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True}" context="{'report_ctx': 'report.num5,store'}"/>
                             <field name="employee_id" options="{'no_create': True}"/>
                         </group>
                         <group>

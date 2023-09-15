@@ -22,9 +22,9 @@
                             <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]" options="{'no_create': True}"/>
                         </group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
-                            <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num10,res.brand'}"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num10,store'}"/>
+                            <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num10,res.partner'}"/>
                         </group>
                     </group>
                 </sheet>
