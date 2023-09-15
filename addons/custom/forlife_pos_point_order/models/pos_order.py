@@ -451,6 +451,8 @@ class PosOrder(models.Model):
         refunded_order_id = self.refunded_order_ids
         if len(self.refunded_order_ids) > 1:
             refunded_order_id = self.refunded_order_ids[0]
+        elif not self.refunded_order_ids or not total_point:
+            return True
 
         point_journal_id = refunded_order_id.program_store_point_id.account_journal_id
         if not point_journal_id:
