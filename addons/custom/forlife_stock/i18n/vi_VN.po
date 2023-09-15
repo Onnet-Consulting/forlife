@@ -249,11 +249,6 @@ msgid "Department from or department to is empty. Please check again!"
 msgstr ""
 
 #. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__description
-msgid "Description"
-msgstr ""
-
-#. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__is_diff_transfer
 msgid "Diff Transfer"
 msgstr "Chuyển khác"
@@ -660,9 +655,11 @@ msgid "Portal Access URL"
 msgstr ""
 
 #. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__product_id
+#: model:ir.model.fields,field_description:forlife_stock.field_quantity_production_order__product_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__product_id
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__product_id
 #: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__product_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.forlife_other_in_out_request_form
 #: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
@@ -1324,11 +1321,6 @@ msgid "Reason"
 msgstr "Lý do"
 
 #. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__occasion_code_id
-msgid "Occasion Code"
-msgstr "Vụ việc"
-
-#. module: forlife_stock
 #: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_wizard
 msgid "Reject/Cancel Transfer Stock Inventory"
 msgstr "Từ chối/Hủy phiếu kiểm kê cân tồn"
@@ -1379,3 +1371,36 @@ msgstr "Địa điểm đích"
 #: model_terms:ir.ui.view,arch_db:forlife_stock.inherit_stock_picking_for_other_export_form_view
 msgid "Are you sure you want to cancel?"
 msgstr "Bạn có chắc chắn muốn huỷ phiếu?"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__account_analytic_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move_line__account_analytic_id
+msgid "Cost Center"
+msgstr "Trung tâm chi phí"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__occasion_code_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move_line__occasion_code_id
+msgid "Occasion Code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__amount_total
+msgid "Thành tiền"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__product_uom_qty
+msgid "Demand"
+msgstr "Số lượng"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__date
+msgid "Date Scheduled"
+msgstr "Ngày dự kiến"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__description
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__name
+msgid "Description"
+msgstr "Mô tả"
