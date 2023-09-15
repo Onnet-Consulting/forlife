@@ -9,8 +9,11 @@ class AccountMovePurchaseAsset(models.Model):
     def bravo_get_purchase_asset_service_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_asset_service_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_purchase_asset_service_value(is_reversed))
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_purchase_asset_service_value(is_reversed, employee.get('code')))
         return columns, res
 
     @api.model
@@ -26,7 +29,7 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo_WO", "DeptCode", "AssetCode", "ExpenseCatgCode", "ProductCode", "JobCode",
         ]
 
-    def bravo_get_purchase_asset_service_value(self, is_reversed):
+    def bravo_get_purchase_asset_service_value(self, is_reversed, employee_code):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -58,7 +61,7 @@ class AccountMovePurchaseAsset(models.Model):
             "AtchDocNo": self.number_bills or None,
             "TaxRegName": partner.name or None,
             "TaxRegNo": partner.vat or None,
-            "EmployeeCode": self.env.user.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "CreditAccount": payable_account_code or None,
             "DueDate": self.invoice_date_due or None,
@@ -128,8 +131,11 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_purchase_product_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_purchase_product_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_purchase_product_value(is_reversed))
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_purchase_product_value(is_reversed, employee.get('code')))
         return columns, res
 
     @api.model
@@ -139,10 +145,10 @@ class AccountMovePurchaseProduct(models.Model):
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
             "AtchDocFormNo", "AtchDocSerialNo", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder", "DebitAccount",
             "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount",
-            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO",
+            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO", "DocNo_PO",
         ]
 
-    def bravo_get_purchase_product_value(self, is_reversed):
+    def bravo_get_purchase_product_value(self, is_reversed, employee_code):
         self.ensure_one()
         values = []
         journal_lines = self.line_ids
@@ -173,9 +179,10 @@ class AccountMovePurchaseProduct(models.Model):
             "AtchDocNo": self.number_bills or None,
             "TaxRegName": partner.name or None,
             "TaxRegNo": partner.vat or None,
-            "EmployeeCode": self.env.user.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "DueDate": self.invoice_date_due or None,
+            "DocNo_PO": self.purchase_id.name or None,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
@@ -279,8 +286,11 @@ class StockPickingPurchaseProduct(models.Model):
     def bravo_get_picking_purchase_values(self):
         res = []
         columns = self.bravo_get_picking_purchase_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            res.extend(record.bravo_get_picking_purchase_value())
+            user_id = str(record.user_id.id) or str(self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_picking_purchase_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -294,16 +304,16 @@ class StockPickingPurchaseProduct(models.Model):
             "IsPromotions", "DocNo_PO", "WarehouseCode", "JobCode", "RowId", "DocNo_WO", "DeptCode",
         ]
 
-    def bravo_get_picking_purchase_value(self):
+    def bravo_get_picking_purchase_value(self, employee_code):
         count = 1
         values = []
         for stock_move in self.move_ids:
             account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
-            values.append(self.bravo_get_picking_purchase_by_account_move_value(stock_move, account_move, count))
+            values.append(self.bravo_get_picking_purchase_by_account_move_value(stock_move, account_move, count, employee_code))
             count += 1
         return values
 
-    def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count):
+    def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count, employee_code):
         product = stock_move.product_id
         AccountAccount = self.env['account.account']
         if not account_move:
@@ -341,8 +351,8 @@ class StockPickingPurchaseProduct(models.Model):
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "Description": picking.note or "nhập mua hàng hóa/nguyên vật liệu",
-            "EmployeeCode": self.env.user.employee_id.code or None,
-            "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
+            "EmployeeCode": employee_code or None,
+            "IsTransfer": 1 if account_move.is_tc else 0,
             "CreditAccount": credit_account.code or None,
             "BuiltinOrder": line_count or None,
             "ItemCode": product.barcode or None,
@@ -378,8 +388,9 @@ class AccountMovePurchaseCostingAllocation(models.Model):
     def bravo_get_picking_purchase_costing_values(self, is_reversed=False):
         res = []
         columns = self.bravo_get_picking_purchase_costing_columns()
+        employee = self.env['res.utility'].get_employee_by_uid(self._uid)
         for record in self:
-            res.extend(record.bravo_get_picking_purchase_costing_value(is_reversed))
+            res.extend(record.bravo_get_picking_purchase_costing_value(is_reversed, employee.get('code')))
         return columns, res
 
     @api.model
@@ -391,7 +402,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "WarehouseCode", "JobCode", "RowId", "DeptCode",
         ]
 
-    def bravo_get_picking_purchase_costing_value(self, is_reversed):
+    def bravo_get_picking_purchase_costing_value(self, is_reversed, employee_code):
         self.ensure_one()
         picking = self.env['stock.picking'].search([('name', '=', self.ref)], limit=1)
         if not picking:
@@ -413,7 +424,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "Description": picking.note or "Phân bổ chi phí mua hàng hóa/nguyên vật liệu",
-            "EmployeeCode": self.env.user.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if purchase.has_contract_commerce else 0,
         }
         if not is_reversed:
@@ -479,12 +490,13 @@ class StockPickingPurchaseReturn(models.Model):
     def bravo_get_return_picking_purchase_values(self):
         values = []
         columns = self.bravo_get_return_picking_purchase_columns()
+        employee = self.env['res.utility'].get_employee_by_uid(self._uid)
         for record in self:
             for idx, stock_move in enumerate(record.move_ids, start=1):
-                values.append(record.bravo_get_return_picking_purchase_value(stock_move, idx))
+                values.append(record.bravo_get_return_picking_purchase_value(stock_move, idx, employee.get('code')))
         return columns, values
 
-    def bravo_get_return_picking_purchase_value(self, stock_move, idx):
+    def bravo_get_return_picking_purchase_value(self, stock_move, idx, employee_code):
         account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
         purchase_order_line = stock_move.purchase_line_id
         purchase_order = purchase_order_line.order_id
@@ -511,7 +523,7 @@ class StockPickingPurchaseReturn(models.Model):
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "Description": picking.note or "Xuất trả hàng hóa/nguyên vật liệu" or None,
-            "EmployeeCode": self.env.user.employee_id.code or None,
+            "EmployeeCode": employee_code or None,
             "IsTransfer": (purchase_order.has_contract_commerce and 1) or 0,
             "BuiltinOrder": idx or None,
             "ItemCode": product.barcode or None,
