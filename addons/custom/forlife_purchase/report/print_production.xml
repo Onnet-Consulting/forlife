@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="print_production_tmpl">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div id="table-header">
+                        <table class="table">
+                            <tbody style="border-color: #fff;">
+                                <tr>
+                                    <td></td>
+                                    <td class="text-center">
+                                        <div>CÔNG TY CỔ PHẦN INTELLIFE</div>
+                                        <div class="mt-2">
+                                            <h3>LỆNH SẢN XUẤT</h3>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Mã lệnh sản xuất : <t t-esc="o.code"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Tên Lệnh sản xuất: <t t-esc="o.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Đơn vị gia công/BP thực hiện: <t t-esc="o.machining_id.name"/>/<t t-esc="o.implementation_id.name"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="table-body">
+                            <table class="table table-bordered table-responsive">
+                            <thead>
+                                <tr style="vertical-align: middle;">
+                                    <th>STT</th>
+                                    <th>Nguyên vật liệu</th>
+                                    <th>Tên mã</th>
+                                    <th>NPL thay thế</th>
+                                    <th>Màu</th>
+                                    <th>Size</th>
+                                    <th>Hệ số quy đổi (Kg/m)</th>
+                                    <th>Đơn vị tính</th>
+                                    <th>Định mức</th>
+                                    <th>Hao hụt(%)</th>
+                                    <th>SL SX theo KH</th>
+                                    <th>Thực tế</th>
+                                    <th>Tổng nhu cầu theo KH</th>
+                                    <th>Thực tế</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <t t-set="index" t-value="0"/>
+                                <t t-foreach="o.material_import_ids" t-as="line">
+                                    <t t-set="index" t-value="index + 1"/>
+                                    <tr>
+                                        <td><t t-esc="index"/></td>
+                                        <td><t t-esc="line.product_id.name"/></td>
+                                        <td><t t-esc="line.product_id.barcode"/></td>
+                                        <td><t t-esc="line.product_backup_id.name"/></td>
+                                        <td><t t-esc="line.size"/></td>
+                                        <td><t t-esc="line.color"/></td>
+                                        <td><t t-esc="line.conversion_coefficient"/></td>
+                                        <td><t t-esc="line.uom_id.name"/></td>
+                                        <td><t t-esc="line.rated_level"/></td>
+                                        <td><t t-esc="line.loss"/></td>
+                                        <td><t t-esc="line.qty"/></td>
+                                        <td></td>
+                                        <td><t t-esc="line.rounding(line.total, line.uom_id.rounding)"/></td>
+                                        <td></td>
+                                    </tr>
+                                </t>
+
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="text-right mt-2">
+                            <div style="text-align: right">Hà Nội, Ngày <t t-esc="o.created_date.day"/> Tháng <t t-esc="o.created_date.month"/> Năm <t t-esc="o.created_date.year"/></div>
+                        </div>
+
+                        <div id="table-sign" class="mt-2">
+                            <table class="table">
+                                <tbody>
+                                    <tr class="text-center" style="border-color: #fff;">
+                                        <td>Lập biểu</td>
+                                        <td>GĐSX</td>
+                                    </tr>
+                                    <tr style="border-color: #fff;">
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="border-color: #fff;">
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="border-color: #fff;">
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+<!--                                    <tr class="text-center mt-10" style="border-color: #fff;">-->
+<!--                                        <td>Nguyễn Phương Thùy</td>-->
+<!--                                        <td>Lê Nguyệt An</td>-->
+<!--                                    </tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <record id="paperformat_purchase" model="report.paperformat">
+            <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">5</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+        <record id="print_print_production_action" model="ir.actions.report">
+            <field name="name">In lệnh sản xuất</field>
+            <field name="model">forlife.production</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">forlife_purchase.print_production_tmpl</field>
+            <field name="report_file">forlife_purchase.print_production_tmpl</field>
+            <field name="print_report_name">'Lệnh SX - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_purchase"/>
+        </record>
+
+    </data>
+</odoo>

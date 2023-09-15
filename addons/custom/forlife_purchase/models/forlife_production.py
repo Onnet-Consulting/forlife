@@ -45,6 +45,9 @@ class ForlifeProduction(models.Model):
     leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
     production_price = fields.Float(string='Đơn giá nhân công')
 
+    def action_print(self):
+        return self.env.ref('forlife_purchase.print_print_production_action').report_action(self)
+
     def action_draft(self):
         for record in self:
             record.write({'state': 'draft'})
