@@ -4,3 +4,5 @@ from . import reject_asset_transfer
 from . import reject_in_out_request
 from . import stock_picking_scan
 from . import stock_transfer_scan
+from . import stock_backorder_confirmation
+from . import stock_picking_over_popup_confirm

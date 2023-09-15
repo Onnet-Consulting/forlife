@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="stock_picking_over_popup_view_form" model="ir.ui.view">
+        <field name="name">stock.picking.over.popup.confirm.view.form</field>
+        <field name="model">stock.picking.over.popup.confirm</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>Bạn đã nhập quá số lượng nhu cầu ban đầu! Bạn có muốn tạo phần dở dang thừa?</p>
+                <field name="picking_id" invisible="1" force_save="1"/>
+                <footer>
+                    <button name="process" string="Tạo phần dở dang thừa" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="stock_picking_over_less_popup_view_form" model="ir.ui.view">
+        <field name="name">stock.picking.over.less.popup.confirm.view.form</field>
+        <field name="model">stock.picking.over.popup.confirm</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>Bạn đã nhập khác số lượng nhu cầu ban đầu! Bạn có muốn tạo phần dở dang thừa và thiếu?</p>
+                <field name="picking_id" invisible="1" force_save="1"/>
+                <footer>
+                    <button name="process" string="Tạo phần dở dang thừa/thiếu" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
