@@ -20,6 +20,10 @@
             <xpath expr="//field[@name='scrap_location']" position="before">
                 <field name="id_deposit"/>
             </xpath>
+
+            <field name="next_inventory_date" position="after">
+                <field name="virtual_location_ch"/>
+            </field>
         </field>
     </record>
 

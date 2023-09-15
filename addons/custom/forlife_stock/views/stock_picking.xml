@@ -58,6 +58,10 @@
                 <field name="x_hide_return" invisible="1"/>
                 <field name="x_is_check_return" invisible="1"/>
             </xpath>
+
+            <button name="action_cancel" position="after">
+                <button name="create_order_inter_company" attrs="{'invisible': [('state', 'not in', ('done'))]}" string="Tạo đơn liên công ty" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+            </button>
         </field>
     </record>
     <record id="stock_picking_over_popup_view_form" model="ir.ui.view">
