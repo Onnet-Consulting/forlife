@@ -12,7 +12,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num8,res.brand'}"/>
                             <field name="order_id" domain="[('brand_id', '=', brand_id)]" options="{'no_create': True}"/>
                         </group>
                         <group>

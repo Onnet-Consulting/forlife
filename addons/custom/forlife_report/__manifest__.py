@@ -91,6 +91,11 @@
         'views/purchase_request_views.xml',
         'views/stock_transfer_views.xml',
         'views/stock_picking_views.xml',
+        'views/res_group_report_view.xml',
+        'views/res_field_report_view.xml',
+        'views/res_field_value_report_view.xml',
+        'views/ir_model_fields_view.xml',
+        'views/res_config_settings_view.xml',
     ],
     'assets': {
         'web.assets_backend': [

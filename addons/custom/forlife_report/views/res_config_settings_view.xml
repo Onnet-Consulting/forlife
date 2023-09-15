@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="model_permission_config_view_form" model="ir.ui.view">
+            <field name="name">model_permission_config_view_form</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority">1010</field>
+            <field name="arch" type="xml">
+                <form string="Settings" class="oe_form_configuration o_base_settings" js_class="base_settings">
+                    <div class="o_setting_containers padding-setting-custom">
+                        <separator string="Danh sách đối tượng được phân quyền, Cú pháp là ['tên model': 'trường dùng để lọc']"/>
+                        <field name="model_permission_config" widget="ace" options="{'mode': 'python'}"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="model_permission_config_action" model="ir.actions.act_window">
+            <field name="name">Đối tượng được phân quyền</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="forlife_report.model_permission_config_view_form"/>
+            <field name="target">main</field>
+        </record>
+
+        <menuitem id="model_permission_config_menu" parent="root_permission_report_menu" action="model_permission_config_action" sequence="100"/>
+
+    </data>
+</odoo>
