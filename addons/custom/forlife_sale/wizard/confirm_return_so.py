@@ -22,15 +22,22 @@ class ConfirmReturnSoLine(models.Model):
     state = fields.Char('Trạng thái phiếu kho')
 
     def action_return(self):
-        stock_return_picking_form = Form(
-            self.env['stock.return.picking'].with_context(active_ids=self.picking_id.ids, active_id=self.picking_id.id,
-                                                          active_model='stock.picking'))
-        return_wiz = stock_return_picking_form.save()
+        # stock_return_picking_form = Form(
+        #     self.env['stock.return.picking'].with_context(active_ids=self.picking_id.ids, active_id=self.picking_id.id,
+        #                                                   active_model='stock.picking'))
+        # return_wiz = stock_return_picking_form.save()
+        origin_sale = self.master_id.origin.x_origin
+        location_id = self.picking_id.location_id.id
+        pick = origin_sale.picking_ids.filtered(lambda x: x.picking_type_id.sequence_code == 'PICK' and x.location_dest_id.id == location_id)
         ctx = {
             'x_return': True,
             'so_return': self.master_id.origin.id,
             'picking_id': self.picking_id.id,
-            'wizard_line_id': self.id
+            'active_ids': self.picking_id.ids,
+            'active_id': self.picking_id.id,
+            'active_model': 'stock.picking',
+            'wizard_line_id': self.id,
+            'location_id': pick.location_id.id
         }
         return {
             'name': _('Trả hàng phiếu %s' % (self.picking_id.name)),
@@ -38,7 +45,7 @@ class ConfirmReturnSoLine(models.Model):
             'res_model': 'stock.return.picking',
             'type': 'ir.actions.act_window',
             'views': [(False, 'form')],
-            'res_id': return_wiz.id,
+            # 'res_id': return_wiz.id,
             'context': ctx,
             'target': 'new'
         }

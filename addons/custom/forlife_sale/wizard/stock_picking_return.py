@@ -6,6 +6,15 @@ from odoo import api, fields, models, _
 class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
 
+    @api.onchange('picking_id')
+    def _onchange_picking_id(self):
+        res = super()._onchange_picking_id()
+        default_location = self._context.get('location_id', False)
+        if default_location:
+            self.location_id = default_location
+            self.original_location_id = default_location
+        return res
+
     def create_returns(self):
         for line in self.product_return_moves:
             if line.quantity > line.move_id.product_qty:

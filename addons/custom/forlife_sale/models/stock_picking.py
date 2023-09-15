@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_is_zero
 
 
 class StockPicking(models.Model):
@@ -7,11 +8,19 @@ class StockPicking(models.Model):
 
     def confirm_from_so(self, condition=None):
         if condition:
-            for move in self.move_ids:
-                move.check_quantity()
-            self.action_confirm()
-            self.move_ids._set_quantities_to_reservation()
-            self.with_context(skip_immediate=True).button_validate()
+            no_reserved_quantities_ids = set()
+            for picking in self:
+                if picking.state == 'done':
+                    continue
+                picking.action_assign()
+                if all(float_is_zero(move_line.reserved_qty, precision_rounding=move_line.product_uom_id.rounding)
+                       for move_line in picking.move_line_ids):
+                    no_reserved_quantities_ids.add(picking.id)
+                if no_reserved_quantities_ids:
+                    raise ValidationError(_('Không thể xuất kho, Vui lòng kiểm tra lại tồn của sản phẩm!.'))
+                picking.action_confirm()
+                picking.move_ids._set_quantities_to_reservation()
+                picking.with_context(skip_immediate=True).button_validate()
         else:
             self.action_confirm()
 

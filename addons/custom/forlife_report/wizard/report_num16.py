@@ -121,9 +121,15 @@ stock_moves as (
 select row_number() over ()                                                         as stt,
        to_char(sm.date + interval '{tz_offset} h', 'DD/MM/YYYY')                    as ngay,
        case when sp.transfer_id notnull then sp.origin else sp.name end             as so_ct,
-       coalesce(wh1.name, sl1.name)                                                 as kho_xuat,
-       coalesce(str.name, sp.origin, sm.reference)                                  as so_ct2,
-       coalesce(wh2.name, sl2.name)                                                 as kho_nhap,
+       case when sp.transfer_id notnull then coalesce(wh2.name, sl2.complete_name)
+            when sp.other_import = true then sl2.complete_name
+            when sp.other_export = true then sl1.complete_name
+        else '' end                                                                 as kho,
+       case when sp.transfer_id notnull then str.name else sp.origin end            as so_ct2,
+       case when sp.transfer_id notnull then coalesce(wh1.name, sl1.complete_name)
+            when sp.other_import = true then sl2.complete_name
+            when sp.other_export = true then sl1.complete_name
+        else '' end                                                                 as kho2,
        rp.barcode                                                                   as ma_khach,
        rp.name                                                                      as ten_khach,
        ad.attrs::json -> '{attr_value.get('doi_tuong', '')}'                        as doi_tuong,
@@ -209,9 +215,9 @@ order by stt
             sheet.write(row, 0, value.get('stt'), formats.get('center_format'))
             sheet.write(row, 1, value.get('ngay'), formats.get('center_format'))
             sheet.write(row, 2, value.get('so_ct'), formats.get('normal_format'))
-            sheet.write(row, 3, value.get('kho_xuat'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('kho'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('so_ct2'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('kho_nhap'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('kho2'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('ma_khach'), formats.get('normal_format'))
             sheet.write(row, 7, value.get('ten_khach'), formats.get('normal_format'))
             sheet.write(row, 8, ', '.join(value.get('doi_tuong') or []), formats.get('normal_format'))
