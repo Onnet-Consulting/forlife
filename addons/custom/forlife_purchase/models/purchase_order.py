@@ -517,7 +517,7 @@ class PurchaseOrder(models.Model):
 
         occasion_code_id = False
         if self.occasion_code_id:
-            occasion_code_id = self.env['occasion.code'].sudo().search([('code', '=', self.occasion_code_id.code), ('company_id', '=', company_id.id)], limit=1)
+            occasion_code_id = self.env['occasion.code'].sudo().search([('code', '=', self.occasion_code_id.code)], limit=1)
             if not occasion_code_id:
                 raise ValidationError('Công ty %s hiện tại không có Mã vụ việc: %s. Vui lòng liên hệ Quản trị viên cấu hình!' % (company_id.name, occasion_code_id.name))
 
