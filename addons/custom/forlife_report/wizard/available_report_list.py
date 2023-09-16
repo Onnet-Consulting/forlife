@@ -254,4 +254,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum43Template',
         'reportPager': True,
     },
+    'report.num44': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo chênh lệch tiền nộp về công ty',
+        'reportTemplate': 'ReportNum44Template',
+        'reportPager': True,
+    },
 }

@@ -182,23 +182,20 @@ order by num
         self.ensure_one()
         allowed_company = allowed_company or [-1]
         values = dict(super().get_data(allowed_company))
-        Product = self.env['product.product']
+        Product = self.env['product.product'].with_context(report_ctx='report.num21,product.product')
+        Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num21,stock.warehouse')
+        Utility = self.env['res.utility']
+        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
             product_ids = self.product_ids.ids
-        elif self.texture_ids:
-            product_ids = Product.search([('categ_id', 'in', self.texture_ids.child_id.ids)]).ids or [-1]
-        elif self.product_line_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_line_ids.child_id.child_id.ids)]).ids or [-1]
-        elif self.product_group_ids:
-            product_ids = Product.search([('categ_id', 'in', self.product_group_ids.child_id.child_id.child_id.ids)]).ids or [-1]
-        elif self.product_brand_id:
-            product_ids = Product.search([('categ_id', 'in', self.product_brand_id.child_id.child_id.child_id.child_id.ids)]).ids or [-1]
+        elif categ_ids:
+            product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
         else:
             product_ids = [-1]
         if not self.location_province_ids:
-            warehouse_ids = self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('loc_province_id', '=', False)]).ids or [-1]
+            warehouse_ids = Warehouse.search([('company_id', 'in', allowed_company), ('loc_province_id', '=', False)]).ids or [-1]
         else:
-            warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([
+            warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (Warehouse.search([
                 ('company_id', 'in', allowed_company), ('loc_province_id', 'in', self.location_province_ids.ids)]).ids or [-1])
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
