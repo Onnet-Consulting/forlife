@@ -231,5 +231,9 @@
             <field name="name">Báo cáo hình thức thanh toán trên POS</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+        <record id="group_report_num44" model="res.groups">
+            <field name="name">Báo cáo chênh lệch tiền nộp về công ty</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>
