@@ -28,11 +28,11 @@
                 </xpath>
 
                 <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)], 'invisible': ['|',('select_type_inv', 'in', ('expense', 'labor')), '&amp;',('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
                 </xpath>
 
                 <xpath expr="//page[@id='invoice_tab']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', '&amp;', ('select_type_inv', 'in', ('expense', 'labor')), ('origin_invoice_id', '=', False), '&amp;',('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('select_type_inv', 'in', ('expense', 'labor')), '&amp;',('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
                 </xpath>
 
                 <xpath expr="//div[@name='button_box']" position="inside">
@@ -245,19 +245,22 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@id='aml_tab']" position="before">
-                    <page string="Chi tiết hóa đơn" attrs="{'invisible': ['|', ('select_type_inv', '=', 'normal'), ('origin_invoice_id', '!=', False)]}">
-                        <field name="account_expense_labor_detail_ids" readonly="1" force_save="1">
+                    <page string="Chi tiết hóa đơn" attrs="{'invisible': [('select_type_inv', '=', 'normal')]}">
+                        <button name="create_invoice_expense_purchase" type="object" string="Tổng hợp lại bút toán"
+                                    attrs="{'invisible': ['|', ('state', '=', 'posted'), ('origin_invoice_id', '=', False)]}"
+                                    icon="fa-plus-square" class="btn btn-primary"/>
+                        <field name="account_expense_labor_detail_ids" attrs="{'readonly': [('state', '=', 'posted')]}" force_save="1">
                             <tree editable="bottom">
                                 <field name="currency_id" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
-                                <field name="product_id"/>
-                                <field name="description"/>
-                                <field name="uom_id"/>
-                                <field name="qty"/>
-                                <field name="price_subtotal_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="product_id" readonly="1" force_save="1"/>
+                                <field name="description" readonly="1" force_save="1"/>
+                                <field name="uom_id" readonly="1" force_save="1"/>
+                                <field name="qty" readonly="1" force_save="1"/>
+                                <field name="price_subtotal_back" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                                 <field name="tax_percent" invisible="1"/>
-                                <field name="tax_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                <field name="totals_back" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="tax_back" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
+                                <field name="totals_back" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                             </tree>
                         </field>
                     </page>

@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
@@ -71,6 +72,97 @@ class AccountMove(models.Model):
             if line.product_id:
                 line._compute_account_id()
         return res
+    
+    def action_post(self):
+        for rec in self:
+            rec.create_invoice_expense_purchase()
+        return super(AccountMove, self).action_post()
+    
+    @api.onchange('account_expense_labor_detail_ids',
+                  'account_expense_labor_detail_ids.totals_back',
+                  'account_expense_labor_detail_ids.price_subtotal_back')
+    def _onchange_account_expense_labor_detail(self):
+        for item in self:
+            if item.account_expense_labor_detail_ids:
+                item.create_invoice_expense_purchase()
+    
+    def create_invoice_expense_purchase(self):
+        if not self.origin_invoice_id or self.move_type not in ('in_invoice','in_refund'):
+            return
+        if self.select_type_inv not in ('labor','expense'):
+            return
+        if not self.account_expense_labor_detail_ids:
+            return
+        return self._create_invoice_expense_purchase()
+        
+    # Hóa đơn chi phí mua hàng nhiều PO
+    def _create_invoice_expense_purchase(self):
+        invoice_line_ids = [(5,0,0)]
+        purchase_id = self.purchase_order_product_id[0]
+        if not purchase_id:
+            return
+        if not purchase_id.cost_line:
+            return
+        picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done')
+        picking_in_ids = picking_ids.filtered(lambda x: not x.x_is_check_return)
+        if not picking_in_ids:
+            return
+
+        pending_section = None
+        total_vnd_amount_order = sum(purchase_id.order_line.mapped('total_vnd_amount'))
+        if total_vnd_amount_order <= 0:
+            raise UserError(_('Tổng tiền chi phí không được nhỏ hơn hoặc bằng 0. Vui lòng kiểm tra lại!'))
+
+        for cost_line in self.account_expense_labor_detail_ids:
+            for line in purchase_id.order_line:
+
+                move_ids = line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
+
+                # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
+                move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
+
+                if not total_vnd_amount_order or not line.product_qty or move_qty <= 0:
+                    return
+
+                amount_rate = line.total_vnd_amount / total_vnd_amount_order
+                cp = ((amount_rate * cost_line.totals_back) / line.product_qty) * move_qty
+                # currency_id = self.currency_id.id
+                # if cost_line.currency_id.id != currency_id:
+                #     rate = cost_line.exchange_rate/self.exchange_rate
+                #     cp = cp * rate
+
+                data_line = self._prepare_invoice_expense_line(cost_line, line, cp)
+                if line.display_type == 'line_section':
+                    pending_section = line
+                    continue
+                if pending_section:
+                    line_vals = pending_section._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    invoice_line_ids.append((0, 0, line_vals))
+                    pending_section = None
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                invoice_line_ids.append((0, 0, line_vals))
+        self.invoice_line_ids = invoice_line_ids
+
+
+    def _prepare_invoice_expense_line(self, cost_line, po_line, cp):
+        data_line = {
+            'product_id': po_line.product_id.id,
+            'product_expense_origin_id': cost_line.product_id.id,
+            'description': po_line.product_id.name,
+            'account_id': cost_line.product_id.categ_id.property_stock_account_input_categ_id.id,
+            'name': cost_line.product_id.name,
+            'quantity': 1,
+            'price_unit': cp,
+            'occasion_code_id': po_line.occasion_code_id.id if po_line.occasion_code_id else False,
+            'work_order': po_line.production_id.id if po_line.production_id else False,
+            'account_analytic_id': po_line.account_analytic_id.id if po_line.account_analytic_id else False,
+            'import_tax': po_line.import_tax,
+            'tax_ids': False
+        }
+        return data_line
 
 class AccountTax(models.Model):
     _inherit = 'account.tax.repartition.line'
