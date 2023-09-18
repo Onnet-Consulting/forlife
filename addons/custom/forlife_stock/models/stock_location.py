@@ -8,6 +8,7 @@ class Location(models.Model):
     code_location = fields.Char(string="Code Location", compute="compute_code_location", store=True)
     usage = fields.Selection(selection_add=[('import/export', 'Import Other/Export Other')],
                              ondelete={'import/export': 'set default'})
+    virtual_location_ch = fields.Boolean(string='Là địa điểm ảo CH', default=False)
 
     @api.depends('warehouse_id', 'stock_location_type_id')
     def compute_code_location(self):

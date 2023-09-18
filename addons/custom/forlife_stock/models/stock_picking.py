@@ -45,6 +45,67 @@ class StockPicking(models.Model):
     is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
     total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
     total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
+    create_from_po_inter_company = fields.Boolean(string='PO liên công ty được tạo ra', default=False)
+
+    def prepare_po_values(self):
+        company_id = self.env['res.company'].search([('code', '=', '1300')], limit=1)
+        company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
+        occasion_code_id = self.move_line_ids.mapped('occasion_code_id')
+        location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)], limit=1)
+        po = {
+            'partner_id': company_id.partner_id.id,
+            'occasion_code_id': occasion_code_id[0].id if len(occasion_code_id) >= 1 else False,
+            'receive_date': datetime.now(),
+            'date_planned': datetime.now(),
+            'source_location_id': self.location_dest_id.id,
+            'location_id': location_mapping.location_map_id.id,
+            'is_inter_company': True,
+            'is_return': False,
+            'company_id': company_dest_id.id
+        }
+        po_line = []
+        for line in self.move_ids:
+            data = self.env['product.supplierinfo'].search(
+                [
+                    '|',
+                    ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                    ('product_id', '=', line.product_id.id if line.product_id else False),
+                    ('partner_id', '=', company_id.partner_id.id),
+                    ('currency_id', '=', line.purchase_line_id.currency_id.id),
+                    ('product_uom', '=', line.product_uom.id),
+                    ('min_qty', '<=', line.quantity_done),
+                    ('date_start', '<=', datetime.now()),
+                    ('date_end', '>=', datetime.now())
+                ])
+            data = data.sorted(lambda s: (s.sequence, -s.min_qty, s.price, s.id)).filtered(lambda x: x.min_qty <= line.quantity_done)
+            if not data:
+                raise ValidationError(_('Chưa cấu hình giá nhà cung cấp. Không thể tạo đơn mua liên công ty'))
+            po_line.append((0, 0, {
+                'product_id': line.product_id.id,
+                'purchase_quantity': line.quantity_done,
+                'taxes_id': [(6, 0, line.purchase_line_id.taxes_id.ids)],
+                'vendor_price': data[0].price,
+                'exchange_quantity': data[0].amount_conversion,
+                'location_id': location_mapping.location_map_id.id,
+            }))
+        po['order_line'] = po_line
+        return po
+
+    def create_order_inter_company(self):
+        purchase_model = self.env['purchase.order']
+        purchase_model = purchase_model.create(self.prepare_po_values())
+        if purchase_model:
+            purchase_model.action_confirm()
+            purchase_model.action_approved()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': 'Đã tạo thành công đơn liên công ty',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
 
     @api.depends('move_ids.quantity_purchase_done', 'move_ids.quantity_done')
     def _compute_total_qty(self):

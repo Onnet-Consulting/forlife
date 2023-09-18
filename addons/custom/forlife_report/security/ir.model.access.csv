@@ -1,4 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_group_report,res.group.report,model_res_group_report,forlife_report.permission_report_configuration,1,1,1,1
+access_res_field_report,res.field.report,model_res_field_report,forlife_report.permission_report_configuration,1,1,1,1
+access_res_field_value_report,res.field.value.report,model_res_field_value_report,forlife_report.permission_report_configuration,1,1,1,1
+
 base_group_user_model_report_num2,base.group.user_report_num2,model_report_num2,forlife_report.group_report_num2,1,1,1,1
 base_group_user_model_report_num3,base.group.user_report_num3,model_report_num3,forlife_report.group_report_num3,1,1,1,1
 base_group_user_model_report_num4,base.group.user_report_num4,model_report_num4,forlife_report.group_report_num4,1,1,1,1
@@ -41,3 +45,4 @@ base_group_user_model_report.num40,base.group.user_report.num40,model_report_num
 base_group_user_model_report.num41,base.group.user_report.num41,model_report_num41,forlife_report.group_report_num41,1,1,1,1
 base_group_user_model_report.num42,base.group.user_report.num42,model_report_num42,forlife_report.group_report_num42,1,1,1,1
 base_group_user_model_report.num43,base.group.user_report.num43,model_report_num43,forlife_report.group_report_num43,1,1,1,1
+base_group_user_model_report.num44,base.group.user_report.num44,model_report_num44,forlife_report.group_report_num44,1,1,1,1

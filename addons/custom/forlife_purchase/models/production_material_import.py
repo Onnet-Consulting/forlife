@@ -92,6 +92,10 @@ class ProductionMaterialImport(models.Model):
     def _onchange_update_total(self):
         self.total = self.conversion_coefficient * self.rated_level * self.loss * self.qty
 
+    @api.model
+    def rounding(self, value, precision_rounding):
+        return float_round(value, precision_rounding=precision_rounding)
+
 
 class ProductionExpenseImport(models.Model):
     _name = 'production.expense.import'

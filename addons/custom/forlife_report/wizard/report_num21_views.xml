@@ -39,14 +39,20 @@
                         </group>
                     </group>
                     <group>
-                        <field name="warehouse_ids" widget="many2many_tags" domain="[('loc_province_id', 'in', (location_province_ids or [False]))]" context="{'show_code_name': True}" options="{'no_create': True}"/>
-                        <field name="location_ids" widget="many2many_tags" options="{'no_create': True}" domain="[('warehouse_id', '=', warehouse_ids), ('warehouse_id', '!=', False), ('usage', '=', 'internal')]"/>
-                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                        <field name="category_type_id" options="{'no_create': True}"/>
-                        <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]" options="{'no_create': True}"/>
-                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
+                        <field name="warehouse_ids" widget="many2many_tags" domain="[('loc_province_id', 'in', (location_province_ids or [False]))]"
+                               context="{'show_code_name': True, 'report_ctx': 'report.num21,stock.warehouse'}" options="{'no_create': True}"/>
+                        <field name="location_ids" widget="many2many_tags" context="{'report_ctx': 'report.num21,stock.location'}"
+                               options="{'no_create': True}" domain="[('warehouse_id', '=', warehouse_ids), ('warehouse_id', '!=', False), ('usage', '=', 'internal')]"/>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num21,product.product'}"/>
+                        <field name="category_type_id" options="{'no_create': True}" context="{'report_ctx': 'report.num21,product.category.type'}"/>
+                        <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]"
+                               context="{'report_ctx': 'report.num21,product.category,product_brand_id'}" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num21,product.category,product_group_ids'}" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num21,product.category,product_line_ids'}" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num21,product.category,texture_ids'}" options="{'no_create': True}"/>
                     </group>
                 </sheet>
             </form>
