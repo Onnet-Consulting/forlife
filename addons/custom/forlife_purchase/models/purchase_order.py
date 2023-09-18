@@ -495,14 +495,14 @@ class PurchaseOrder(models.Model):
         all_tax_ids = self.env['account.tax'].sudo().search([('type_tax_use', '=', 'sale'), ('company_id', '=', company_id.id)])
         for item in self.order_line:
             tax_ids = []
-            if item.taxes_id:
-                tax_ids = all_tax_ids.filtered(lambda x: x.amount in item.taxes_id.mapped('amount')).ids
+            for tax_id in item.taxes_id:
+                tax_ids.extend(all_tax_ids.filtered(lambda x: x.amount == tax_id.amount).ids[0])
 
             sale_order_lines.append((0, 0, {
                 'product_id': item.product_id.id,
                 'name': item.product_id.name,
                 'product_uom_qty': item.product_qty,
-                'price_unit': item.price_unit,
+                'price_unit': item.price_subtotal/item.product_qty,
                 'product_uom': item.product_id.uom_id.id,
                 'customer_lead': 0,
                 'sequence': 10,
