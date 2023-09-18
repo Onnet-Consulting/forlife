@@ -21,8 +21,8 @@
                             <field name="type" widget="radio" options="{'horizontal': True}"/>
                         </group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num23,res.brand'}"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num23,store'}"/>
                         </group>
                     </group>
                 </sheet>

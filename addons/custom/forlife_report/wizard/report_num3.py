@@ -270,7 +270,7 @@ order by num
                 domain = expression.OR([domain, [('sku_code', 'ilike', sku.strip())]])
         if self.collection and not self.product_ids:
             domain = expression.AND([[('collection', '=', self.collection)], domain])
-        Product = self.env['product.product']
+        Product = self.env['product.product'].with_context(report_ctx='report.num3,product.product')
         Utility = self.env['res.utility']
         categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
@@ -287,7 +287,7 @@ order by num
             wh_domain += [('loc_province_id', '!=', False)] if self.all_areas else ([('loc_province_id', 'in', self.area_ids.ids)] if self.area_ids else [('loc_province_id', '=', False)])
         else:
             wh_domain = [] if self.warehouse_ids else wh_domain
-        warehouse_ids = self.env['stock.warehouse'].search(wh_domain) if wh_domain else self.warehouse_ids
+        warehouse_ids = self.env['stock.warehouse'].with_context(report_ctx='report.num3,stock.warehouse').search(wh_domain) if wh_domain else self.warehouse_ids
         wh_ids = warehouse_ids.ids or [-1]
         if self.defective_inventory and product_ids:
             attr_value = self.env['res.utility'].get_attribute_code_config()

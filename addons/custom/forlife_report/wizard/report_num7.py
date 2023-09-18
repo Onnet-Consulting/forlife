@@ -37,7 +37,7 @@ class ReportNum7(models.TransientModel):
         return {'domain': {'employee_ids': [('id', 'in', self.get_employees())]}}
 
     def get_employees(self):
-        wh = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids
+        wh = self.env['stock.warehouse'].with_context(report_ctx='report.num7,stock.warehouse').search([]) if self.all_warehouses else self.warehouse_ids
         if not self.brand_id or not wh:
             return []
         query = f"""
@@ -91,8 +91,10 @@ order by num
     def get_data(self, allowed_company):
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids if self.all_warehouses else self.warehouse_ids.ids
-        store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
+        Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num7,stock.warehouse')
+        Store = self.env['store'].with_context(report_ctx='report.num7,store')
+        warehouse_ids = Warehouse.search([('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids if self.all_warehouses else self.warehouse_ids.ids
+        store_ids = Store.search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
         query = self._get_query(store_ids)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
