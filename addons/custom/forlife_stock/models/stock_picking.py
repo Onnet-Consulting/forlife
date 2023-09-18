@@ -92,11 +92,12 @@ class StockPicking(models.Model):
         return po
 
     def create_order_inter_company(self):
+        company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
         purchase_model = self.env['purchase.order']
-        purchase_model = purchase_model.create(self.prepare_po_values())
+        purchase_model = purchase_model.with_company(company_dest_id).create(self.prepare_po_values())
         if purchase_model:
-            purchase_model.action_confirm()
-            purchase_model.action_approved()
+            purchase_model.with_company(company_dest_id).action_confirm()
+            purchase_model.with_company(company_dest_id).action_approved()
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
