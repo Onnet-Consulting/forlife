@@ -63,7 +63,6 @@ class PosOrder(models.Model):
                     HistoryPoint.sudo().create(history_values)
                     pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                     pos.action_point_addition()
-            pos.action_point_refund(order)
         return pos_id
 
     def btn_compensate_points_all(self, reason):
@@ -438,53 +437,6 @@ class PosOrder(models.Model):
             }
             move = self.env['account.move'].create(usage_point_move_val)._post()
             self.point_usage_move_ids |= move
-        return True
-
-    def action_point_refund(self, order_data):
-        refund_point_list = []
-        for line in order_data['data']['lines']:
-            if line[2].get('refunded_orderline_id', False) and line[2].get('pos_order_line_discount_details', False):
-                for discount in line[2]['pos_order_line_discount_details']:
-                    if discount['type'] == 'point':
-                        refund_point_list.append((line[2]['qty'], discount))
-        total_point = sum([abs(qty * p['money_reduced_unit']) for qty, p in refund_point_list])
-        refunded_order_id = self.refunded_order_ids
-        if len(self.refunded_order_ids) > 1:
-            refunded_order_id = self.refunded_order_ids[0]
-        elif not self.refunded_order_ids or not total_point:
-            return True
-
-        point_journal_id = refunded_order_id.program_store_point_id.account_journal_id
-        if not point_journal_id:
-            raise UserError(_('Cấu hình Sổ điểm cho chương trình điểm: %s',
-                              self.refunded_order_ids.program_store_point_id.name or ''))
-        if total_point > 0:
-            return_point_move_val = {
-                'pos_order_id': self.id,
-                'move_type': 'entry',
-                'date': self.date_order,
-                'journal_id': point_journal_id.id,
-                'company_id': self.company_id.id,
-                'ref': self.name + ' - Trả điểm',
-                'line_ids': [
-                    # debit line
-                    (0, 0, {
-                        'account_id': refunded_order_id.program_store_point_id.acc_accumulate_points_id.id,
-                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
-                        'debit': 0.0,
-                        'credit': total_point,
-                    }),
-                    # credit line
-                    (0, 0, {
-                        'account_id': refunded_order_id.program_store_point_id.point_customer_id.property_account_receivable_id.id,
-                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
-                        'debit': total_point,
-                        'credit': 0.0,
-                    }),
-                ]
-            }
-            move = self.env['account.move'].create(return_point_move_val)._post()
-            self.point_refund_move_ids |= move
         return True
 
     def _export_for_ui(self, order):
