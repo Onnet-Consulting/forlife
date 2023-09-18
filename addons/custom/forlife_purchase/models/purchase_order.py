@@ -191,6 +191,13 @@ class PurchaseOrder(models.Model):
             else:
                 order.date_planned = order.date_planned_import
 
+    @api.onchange('location_id')
+    def onchange_location_picking_type(self):
+        if self.location_id:
+            self.picking_type_id = self.location_id.warehouse_id.in_type_id.id
+        else:
+            self.picking_type_id = False
+
     @api.onchange('date_planned')
     def onchange_date_planned(self):
         if self.date_planned:
