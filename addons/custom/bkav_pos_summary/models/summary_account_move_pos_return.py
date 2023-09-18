@@ -220,9 +220,12 @@ class SummaryAccountMovePosReturn(models.Model):
                 data[store.id] = {
                     "items": line_items,
                     "total_point": total_point,
-                    "card_point": discount_items
+                    "card_point": discount_items,
+                    "store": store,
+                    "company_id": store.company_id
                 }
                 store_discount_items[store.id] = discount_items
+                all_stores[store.id] = store
 
             for k, v in items.items():
                 res_line = model_line.create(v["line_ids"])
