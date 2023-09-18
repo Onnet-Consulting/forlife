@@ -514,7 +514,7 @@ class AccountMove(models.Model):
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if 'vendor_back_ids' in vals:
+            if 'vendor_back_ids' in vals and rec.purchase_type != 'product':
                 rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
                 invoice_description = []
                 for vendor_back_id in rec.vendor_back_ids:
@@ -1297,6 +1297,7 @@ class RespartnerVendor(models.Model):
     company_id = fields.Many2one('res.company', string='Công ty')
     invoice_reference = fields.Char(string='Số hóa đơn')
     invoice_description = fields.Many2one('product.product', string="Diễn giải hóa đơn")
+    description = fields.Char(string="Diễn giải hóa đơn")
     price_subtotal_back = fields.Float(string='Thành tiền')
     tax_back = fields.Float(string='Tiền thuế', compute='compute_tax')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back')
