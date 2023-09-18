@@ -159,7 +159,8 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        store_ids = (self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_ids else self.store_ids.ids
+        Store = self.env['store'].with_context(report_ctx='report.num20,store')
+        store_ids = (Store.search([('brand_id', '=', self.brand_id.id)]).ids or [-1]) if not self.store_ids else self.store_ids.ids
         query = self._get_query(store_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

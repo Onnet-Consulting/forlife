@@ -138,8 +138,9 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
+        Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num6,stock.warehouse')
         warehouse_ids = self.warehouse_ids.ids if self.warehouse_ids else (
-                self.env['stock.warehouse'].search([('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1])
+                Warehouse.search([('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1])
         query = self._get_query(warehouse_ids, allowed_company)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

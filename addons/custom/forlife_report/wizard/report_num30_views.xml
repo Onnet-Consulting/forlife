@@ -79,7 +79,7 @@
             <form string="Chọn sản phẩm" create="0">
                 <sheet>
                     <separator string="Products"/>
-                    <field name="product_ids">
+                    <field name="product_ids" context="{'report_ctx': 'report.num30,product.product'}">
                         <tree create="0" edit="0" delete="0">
                             <field name="barcode"/>
                             <field name="name"/>
@@ -112,7 +112,7 @@
             <form string="Chọn kho" create="0">
                 <sheet>
                     <separator string="Warehouses"/>
-                    <field name="warehouse_ids" domain="[('whs_type', '=', context.get('whs_type'))]">
+                    <field name="warehouse_ids" domain="[('whs_type', '=', context.get('whs_type'))]" context="{'report_ctx': 'report.num30,stock.warehouse'}">
                         <tree create="0" edit="0" delete="0">
                             <field name="code"/>
                             <field name="name"/>

@@ -33,7 +33,8 @@ class ReportNum24(models.TransientModel):
     def _get_query(self):
         self.ensure_one()
         tz_offset = self.tz_offset
-        stores = self.store_id.ids or self.env['store'].search([('brand_id', '=', self.brand_id.id)]).ids or [-1]
+        Store = self.env['store'].with_context(report_ctx='report.num24,store')
+        stores = self.store_id.ids or Store.search([('brand_id', '=', self.brand_id.id)]).ids or [-1]
         brand = {
             'FMT': 'format',
             'TKL': 'forlife',

@@ -134,7 +134,7 @@ where so.source_record = true {so_filter_condition} {nhanh_order_condition}
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        warehouse_ids = (self.env['stock.warehouse'].search(
+        warehouse_ids = (self.env['stock.warehouse'].with_context(report_ctx='report.num35,stock.warehouse').search(
             [('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids or [-1]
                          ) if not self.warehouse_id else self.warehouse_id.ids
         query = self._get_query(warehouse_ids, allowed_company)

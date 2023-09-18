@@ -31,8 +31,9 @@ class ReportNum19(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
-        sour_loc = (self.env['stock.location'].search([('usage', '=', 'internal')]).ids or [-1]) if not self.location_ids else self.location_ids.ids
-        dest_loc = (self.env['stock.location'].search([('usage', '=', 'internal')]).ids or [-1]) if not self.location_dest_ids else self.location_dest_ids.ids
+        Location = self.env['stock.location'].with_context(report_ctx='report.num19,stock.location')
+        sour_loc = (Location.search([('usage', '=', 'internal')]).ids or [-1]) if not self.location_ids else self.location_ids.ids
+        dest_loc = (Location.search([('usage', '=', 'internal')]).ids or [-1]) if not self.location_dest_ids else self.location_dest_ids.ids
         where_condition = f"""and ({' or '.join("str.name ilike '%s'" % i.strip() for i in self.str_number.split(','))})""" if self.str_number else ''
 
         sql = f"""

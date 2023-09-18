@@ -12,7 +12,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num20,res.brand'}"/>
                             <field name="lock_date" class="oe_inline"/>
                             <label for="from_date" string="Date"/>
                             <div>from
@@ -24,7 +24,7 @@
                         <group>
                             <field name="customer"/>
                             <field name="order_filter"/>
-                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" nolabel="1" colspan="2">
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" nolabel="1" colspan="2" context="{'report_ctx': 'report.num20,store'}">
                                 <tree create="0" edit="0" delete="0" limit="20">
                                     <field name="code"/>
                                     <field name="name"/>

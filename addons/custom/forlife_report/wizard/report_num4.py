@@ -128,7 +128,8 @@ order by num
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        Product = self.env['product.product']
+        Product = self.env['product.product'].with_context(report_ctx='report.num4,product.product')
+        Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num4,stock.warehouse')
         Utility = self.env['res.utility']
         categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
@@ -137,7 +138,7 @@ order by num
             product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
         else:
             product_ids = [-1]
-        warehouse_ids = [-1] if self.location_ids else (self.warehouse_ids.ids if self.warehouse_ids else (self.env['stock.warehouse'].search([('company_id', 'in', allowed_company)]).ids or [-1]))
+        warehouse_ids = [-1] if self.location_ids else (self.warehouse_ids.ids if self.warehouse_ids else (Warehouse.search([('company_id', 'in', allowed_company)]).ids or [-1]))
         query = self._get_query(product_ids, warehouse_ids, allowed_company)
         data = Utility.execute_postgresql(query=query, param=[], build_dict=True)
         values.update({

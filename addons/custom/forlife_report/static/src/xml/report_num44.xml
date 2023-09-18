@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum44Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum44MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum44MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td class="index-report"><t t-esc="line.stt"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ngay"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_ch"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ten_ch"/></td>
+                        <td><t t-esc="line.so_ct_goc"/></td>
+                        <td><t t-esc="line.noi_dung"/></td>
+                        <td><t t-esc="format_decimal(line.so_tien_nop, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.so_tien_thu, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.tien_chenh_lech, 0)"/></td>
+                        <td><t t-esc="line.so_ct_chenh_lech"/></td>
+                        <td><t t-esc="line.trang_thai"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

@@ -12,12 +12,15 @@
                     </div>
                     <group>
                         <field name="to_date" class="oe_inline" required="1"/>
-                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num40,product.product'}"/>
                         <field name="asset_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id.parent_id', '=', False), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]" options="{'no_create': True}"/>
-                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id.parent_id', '=', False), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num40,product.category,product_group_ids'}" options="{'no_create': True}"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num40,product.category,product_line_ids'}" options="{'no_create': True}"/>
+                        <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]"
+                               context="{'report_ctx': 'report.num40,product.category,texture_ids'}" options="{'no_create': True}"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True, 'report_ctx': 'report.num40,stock.warehouse'}"/>
                     </group>
                 </sheet>
             </form>
