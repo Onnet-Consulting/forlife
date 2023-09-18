@@ -1045,6 +1045,8 @@ class PurchaseOrder(models.Model):
                                 for line in order.order_line:
                                     wave = invoice_relationship.invoice_line_ids.filtered(lambda w: w.purchase_line_id.id == line.id and w.product_id.id == line.product_id.id)
                                     data_line = self.create_invoice_service_and_asset(order, line, wave)
+                                    if not data_line:
+                                        continue
                                     if line.display_type == 'line_section':
                                         pending_section = line
                                         continue
