@@ -24,23 +24,36 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
     def onchange_origin_invoice_id(self):
         for rec in self:
             vals_line = []
-            if rec.origin_invoice_id.invoice_line_ids:
-                for line in rec.origin_invoice_id.invoice_line_ids:
-                    vals_line.append((0, 0, {
-                        'product_id': line.product_id.id,
-                        'uom_id': line.product_uom_id.id,
-                        'price_unit': line.price_unit,
-                        'tax_ids': line.tax_ids.ids or False,
-                        'invoice_line_id': line.id,
-                        'quantity': line.quantity,
-                        'price_subtotal': line.price_subtotal,
-                        'price_total': line.price_total,
-                        'discount': line.discount,
-                        'currency_id': line.currency_id.id or False,
-                        'is_refund': line.is_refund,
-                        'tax_amount': line.tax_amount,
-                        'vendor_price': line.vendor_price,
-                    }))
+            if rec.origin_invoice_id.select_type_inv == 'normal':
+                if rec.origin_invoice_id.invoice_line_ids:
+                    for line in rec.origin_invoice_id.invoice_line_ids:
+                        vals_line.append((0, 0, {
+                            'product_id': line.product_id.id,
+                            'uom_id': line.product_uom_id.id,
+                            'price_unit': line.price_unit,
+                            'tax_ids': line.tax_ids.ids or False,
+                            'invoice_line_id': line.id,
+                            'quantity': line.quantity,
+                            'price_subtotal': line.price_subtotal,
+                            'price_total': line.price_total,
+                            'discount': line.discount,
+                            'currency_id': line.currency_id.id or False,
+                            'is_refund': line.is_refund,
+                            'tax_amount': line.tax_amount,
+                            'vendor_price': line.vendor_price,
+                        }))
+            else:
+                if rec.origin_invoice_id.account_expense_labor_detail_ids:
+                    for line in rec.origin_invoice_id.account_expense_labor_detail_ids:
+                        vals_line.append((0, 0, {
+                            'product_id': line.product_id.id,
+                            'uom_id': line.uom_id.id,
+                            'quantity': line.qty,
+                            'price_subtotal': line.price_subtotal_back,
+                            'tax_amount': line.tax_back,
+                            'price_total': line.totals_back,
+                            'tax_ids': line.tax_percent,
+                        }))
             if vals_line:
                 rec.write({
                     'line_ids': vals_line
@@ -52,6 +65,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
             move_copy_id = self.origin_invoice_id.copy({
                 'invoice_type': self.invoice_type,
                 'origin_invoice_id': self.origin_invoice_id.id,
+                'select_type_inv': self.origin_invoice_id.select_type_inv,
                 'move_type': move_type,
                 'reference': self.origin_invoice_id.name,
                 'cost_line': False,
@@ -59,36 +73,41 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'invoice_date': fields.Date.today(),
                 'pos_order_id': False,
                 'direction_sign': 1 if move_type == 'in_invoice' else -1,
+                'purchase_order_product_id': [(6, 0, self.origin_invoice_id.purchase_order_product_id.ids)],
+                'receiving_warehouse_id': [(6, 0, self.origin_invoice_id.receiving_warehouse_id.ids)],
             })
-            product_ids = self.line_ids.filtered(lambda x: not x.is_selected).mapped('product_id')
-            if product_ids:
-                line_remove = move_copy_id.line_ids.filtered(lambda x: x.product_id.id in product_ids.ids)
-                line_remove.unlink()
-            for line_id in move_copy_id.line_ids:
-                if line_id.display_type == 'tax' and move_copy_id.move_type == 'in_invoice' and line_id.credit > 0:
-                    line_id.update({
-                        'debit': line_id.credit,
-                        'credit': 0,
-                        'amount_tax': line_id.credit,
-                        'balance': line_id.credit,
-                        'amount_currency': abs(line_id.amount_currency),
-                    })
+            if self.origin_invoice_id.select_type_inv == 'normal':
+                product_ids = self.line_ids.filtered(lambda x: not x.is_selected).mapped('product_id')
+                if product_ids:
+                    line_remove = move_copy_id.line_ids.filtered(lambda x: x.product_id.id in product_ids.ids)
+                    line_remove.unlink()
+                for line_id in move_copy_id.line_ids:
+                    if line_id.display_type == 'tax' and move_copy_id.move_type == 'in_invoice' and line_id.credit > 0:
+                        line_id.update({
+                            'debit': line_id.credit,
+                            'credit': 0,
+                            'amount_tax': line_id.credit,
+                            'balance': line_id.credit,
+                            'amount_currency': abs(line_id.amount_currency),
+                        })
+            else:
+                lst_expense = []
+                for line in self.line_ids.filtered(lambda x: x.is_selected):
+                    vals_line = {
+                        'product_id': line.product_id.id,
+                        'uom_id': line.uom_id.id,
+                        'qty': line.quantity,
+                        'price_subtotal_back': line.price_subtotal,
+                        'tax_back': line.tax_amount,
+                        'totals_back': line.price_total,
+                        'tax_percent': line.tax_ids,
+                    }
+                    lst_expense.append((0, 0, vals_line))
+                move_copy_id.write({
+                    'account_expense_labor_detail_ids': lst_expense,
+                })
+                move_copy_id.create_invoice_expense_purchase()
 
-                # if line_id.product_id:
-                #     if not line_id.product_id.categ_id.property_stock_account_input_categ_id.id:
-                #         raise ValidationError(_('Vui lòng cấu hình tài khoản nhập kho trong Nhóm sản phẩm %s' % line_id.product_id.display_name))
-                #     line_id.write({
-                #         'account_id': line_id.product_id.categ_id.property_stock_account_input_categ_id.id,
-                #         'purchase_line_id': False
-                #     })
-
-
-            # check_move_type = True if (self.invoice_type == 'increase' and self.origin_invoice_id.move_type == 'in_invoice') or \
-            #         (self.invoice_type == 'decrease' and self.origin_invoice_id.move_type == 'in_refund') else False
-            # move_copy_id.write({
-            #     'line_ids': self.prepare_move_line(),
-            #     'direction_sign': 1 if check_move_type else -1,
-            # })
             return {
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
@@ -310,37 +329,16 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     product_id = fields.Many2one(comodel_name='product.product', string='Product', ondelete='restrict', )
     uom_id = fields.Many2one(comodel_name='uom.uom', string='Unit of Measure', )
     parent_id = fields.Many2one('wizard.increase.decrease.invoice', string='Parent')
-    price_unit = fields.Float(string='Unit Price', digits='Product Price', )
+    price_unit = fields.Float(string='Unit Price')
     tax_ids = fields.Many2many(comodel_name='account.tax', string="Taxes", ondelete='restrict')
     invoice_line_id = fields.Many2one('account.move.line', string='Move Line')
     quantity = fields.Float(string='Quantity')
-    price_subtotal = fields.Monetary(string='Subtotal', compute='_compute_totals', )
-    price_total = fields.Monetary(string='Total', compute='_compute_totals', )
+    price_subtotal = fields.Monetary(string='Subtotal')
+    price_total = fields.Monetary(string='Total')
     discount = fields.Float(string='Discount (%)', digits='Discount', default=0.0,)
     currency_id = fields.Many2one(comodel_name='res.currency', string='Currency')
     is_refund = fields.Boolean()
-    tax_amount = fields.Float(string='Tax Amount', )
+    tax_amount = fields.Float(string='Tax Amount')
     vendor_price = fields.Float(string="Vendor Price")
     is_selected = fields.Boolean(string='Selected')
 
-    @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'tax_amount')
-    def _compute_totals(self):
-        for line in self:
-            line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
-            subtotal = line.quantity * line_discount_price_unit
-
-            # Compute 'price_total'.
-            if line.tax_ids:
-                taxes_res = line.tax_ids.compute_all(
-                    line_discount_price_unit,
-                    quantity=line.quantity,
-                    currency=line.currency_id,
-                    product=line.product_id,
-                    partner=line.parent_id.origin_invoice_id.partner_id,
-                    is_refund=line.is_refund,
-                )
-                line.tax_amount = taxes_res['taxes'][0]['amount']
-                line.price_subtotal = taxes_res['total_excluded']
-                line.price_total = taxes_res['total_included']
-            else:
-                line.price_total = line.price_subtotal = subtotal

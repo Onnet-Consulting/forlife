@@ -98,6 +98,7 @@ class StockPicking(models.Model):
                         line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
                 else:
                     line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
+        invoice_id._post()
         return invoice_id.id
         
 

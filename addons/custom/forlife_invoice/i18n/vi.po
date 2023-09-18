@@ -1001,7 +1001,7 @@ msgstr ""
 #. module: forlife_invoice
 #: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__asset
 msgid "Tài sản"
-msgstr "TSCĐ"
+msgstr "Tài sản"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_vendor_back__vendor

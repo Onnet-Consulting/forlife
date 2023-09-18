@@ -8,6 +8,7 @@
     "description": """Forlife Purchase""",
     "depends": [
         'hr',
+        'account',
         'purchase',
         'product',
         'base',
