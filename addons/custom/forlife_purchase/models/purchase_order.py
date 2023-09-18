@@ -191,6 +191,13 @@ class PurchaseOrder(models.Model):
             else:
                 order.date_planned = order.date_planned_import
 
+    @api.onchange('location_id')
+    def onchange_location_picking_type(self):
+        if self.location_id:
+            self.picking_type_id = self.location_id.warehouse_id.in_type_id.id
+        else:
+            self.picking_type_id = False
+
     @api.onchange('date_planned')
     def onchange_date_planned(self):
         if self.date_planned:
@@ -930,7 +937,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
-            'price_subtotal': line.price_subtotal - invoice_line_ids.mapped('price_subtotal'),
+            'price_subtotal': line.price_subtotal - sum(invoice_line_ids.mapped('price_subtotal')),
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,

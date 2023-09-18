@@ -16,6 +16,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
     line_ids = fields.One2many(comodel_name='stock.balance.difference.report.line', inverse_name='report_id')
     account_move_ids = fields.One2many(comodel_name='stock.balance.difference.report.account.move', inverse_name='report_id')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Order', copy=False)
 
     @api.depends('period_start', 'period_end')
     def _compute_name(self):
