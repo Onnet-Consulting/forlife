@@ -220,7 +220,9 @@ class SummaryAccountMovePos(models.Model):
                 data[store.id] = {
                     "items": line_items,
                     "total_point": total_point,
-                    "card_point": discount_items
+                    "card_point": discount_items,
+                    "store": store,
+                    "company_id": store.company_id
                 }
                 store_discount_items[store.id] = discount_items
 
@@ -899,13 +901,22 @@ class SummaryAccountMovePos(models.Model):
         store_ids = set(list(sales.keys()) + list(refunds.keys()))
 
         for store_id in store_ids:
+            if sales.get(store_id):
+                store_data[store_id] = sales[store_id]["store"]
+                company_ids[store_id] = sales[store_id]["company_id"]
+
+            if refunds.get(store_id):
+                store_data[store_id] = sales[store_id]["store"]
+                company_ids[store_id] = sales[store_id]["company_id"]
+
+
             accumulate_point = 0
             if refunds.get(store_id):
                 move_refund_pos_line = refund_res.line_ids
                 refund = refunds[store_id]["items"]
-                res_store = refund_res.filtered(lambda r: r.store_id.id == store_id)
-                store_data[store_id] = res_store[0].store_id
-                company_ids[store_id] = res_store[0].company_id
+                # res_store = refund_res.filtered(lambda r: r.store_id.id == store_id)
+                # store_data[store_id] = res_store[0].store_id
+                # company_ids[store_id] = res_store[0].company_id
                 refund_card_grade_focus = refunds[store_id]["card_point"]
 
                 if sales.get(store_id):
@@ -981,9 +992,9 @@ class SummaryAccountMovePos(models.Model):
             for store_id in store_ids:
                 if sales.get(store_id) and sales[store_id].get("items"):
                     sale = sales[store_id]["items"]
-                    res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
-                    store_data[store_id] = res_store[0].store_id
-                    company_ids[store_id] = res_store[0].company_id
+                    # res_store = sale_res.filtered(lambda r: r.store_id.id == store_id)
+                    # store_data[store_id] = res_store[0].store_id
+                    # company_ids[store_id] = res_store[0].company_id
 
                     if len(sale.keys()):
                         for k, v in sale.items():
