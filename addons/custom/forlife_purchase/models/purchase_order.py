@@ -930,7 +930,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
-            'price_subtotal': line.price_subtotal - invoice_line_ids.mapped('price_subtotal'),
+            'price_subtotal': line.price_subtotal - sum(invoice_line_ids.mapped('price_subtotal')),
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
