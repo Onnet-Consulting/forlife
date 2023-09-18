@@ -128,14 +128,14 @@
                     <field name="purchase_order_product_id"
                            widget="many2many_tags"
                            options="{'no_open': False}"
-                           domain="[('custom_state','=', 'approved'), ('partner_id', '=', partner_id)]"
+                           domain="[('custom_state','=', 'approved'), ('partner_id', '=', partner_id), ('purchase_type', '=', purchase_type)]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': ['|', ('move_type', '=', 'out_invoice'), ('select_type_inv', '!=', 'normal')]}"/>
 
                     <!-- Với Hóa đơn chi phí Mua hàng/Nhân công PO không lọc theo partner -->
                     <field name="purchase_order_product_id"
                            widget="many2many_tags"
                            options="{'no_open': False}"
-                           domain="[('custom_state','=', 'approved')]"
+                           domain="[('custom_state','=', 'approved'), ('purchase_type', '=', purchase_type)]"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': ['|', ('move_type', '=', 'out_invoice'), ('select_type_inv', '=', 'normal')]}"/>
 
                     <label for="receiving_warehouse_id"/>
@@ -330,7 +330,8 @@
                                 <field name="company_id"/>
                                 <field name="currency_id" optional="hide"/>
                                 <field name="invoice_reference"/>
-                                <field name="invoice_description" domain="[('id', 'in', parent.product_expense_ids)]"/>
+                                <field name="description" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                                <field name="invoice_description" attrs="{'column_invisible': [('parent.purchase_type', '=', 'product')]}" domain="[('id', 'in', parent.product_expense_ids)]"/>
                                 <field name="price_subtotal_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="tax_percent" force_save="1"/>
                                 <field name="tax_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
