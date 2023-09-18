@@ -90,7 +90,7 @@ class SummaryAccountMovePosReturn(models.Model):
         items = {}
         discount_items = {}
         for line in lines:
-            if not line.product_id:
+            if not line.product_id or not line.origin_is_post_bkav_store:
                 continue
             if line.product_id.voucher or line.product_id.is_voucher_auto or line.product_id.is_product_auto:
                 continue
@@ -191,7 +191,6 @@ class SummaryAccountMovePosReturn(models.Model):
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '!=', False),
-            ('origin_is_post_bkav_store', '=', True),
             ('qty', '<', 0),
             ('is_promotion', '=', False),
             ('is_general', '=', False),
@@ -221,7 +220,9 @@ class SummaryAccountMovePosReturn(models.Model):
                 data[store.id] = {
                     "items": line_items,
                     "total_point": total_point,
-                    "card_point": discount_items
+                    "card_point": discount_items,
+                    "store": store,
+                    "company_id": store.company_id
                 }
                 store_discount_items[store.id] = discount_items
 

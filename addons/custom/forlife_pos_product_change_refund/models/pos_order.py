@@ -2,6 +2,8 @@
 
 from odoo import api, fields, models, _
 from datetime import timedelta
+
+from odoo.exceptions import UserError
 from odoo.osv.expression import AND
 from dateutil.relativedelta import relativedelta
 import math
@@ -88,6 +90,8 @@ class PosOrder(models.Model):
                     if pos.program_store_point_id and store is not None:
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
                                                           store)
+            if pos.pay_point > 0:
+                pos.action_point_refund()
 
         # create voucher
         line_voucher_id = pos.lines.filtered(lambda x: x.product_id.is_voucher_auto)
@@ -285,3 +289,45 @@ class PosOrder(models.Model):
             'notification_id': program_voucher_id.product_id.get_notification_id(price),
         }
         return vals
+
+    def action_point_refund(self):
+
+        total_point = self.pay_point
+        refunded_order_id = self.refunded_order_ids
+        if len(self.refunded_order_ids) > 1:
+            refunded_order_id = self.refunded_order_ids[0]
+        elif not self.refunded_order_ids or not total_point:
+            return True
+
+        point_journal_id = refunded_order_id.program_store_point_id.account_journal_id
+        if not point_journal_id:
+            raise UserError(_('Cấu hình Sổ điểm cho chương trình điểm: %s',
+                              self.refunded_order_ids.program_store_point_id.name or ''))
+        if total_point > 0:
+            return_point_move_val = {
+                'pos_order_id': self.id,
+                'move_type': 'entry',
+                'date': self.date_order,
+                'journal_id': point_journal_id.id,
+                'company_id': self.company_id.id,
+                'ref': self.name + ' - Trả điểm',
+                'line_ids': [
+                    # debit line
+                    (0, 0, {
+                        'account_id': refunded_order_id.program_store_point_id.acc_accumulate_points_id.id,
+                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
+                        'debit': 0.0,
+                        'credit': total_point*1000,
+                    }),
+                    # credit line
+                    (0, 0, {
+                        'account_id': refunded_order_id.program_store_point_id.point_customer_id.property_account_receivable_id.id,
+                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
+                        'debit': total_point*1000,
+                        'credit': 0.0,
+                    }),
+                ]
+            }
+            move = self.env['account.move'].create(return_point_move_val)._post()
+            self.point_refund_move_ids |= move
+        return True

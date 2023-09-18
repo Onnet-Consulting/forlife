@@ -514,7 +514,7 @@ class AccountMove(models.Model):
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if 'vendor_back_ids' in vals:
+            if 'vendor_back_ids' in vals and rec.purchase_type != 'product':
                 rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
                 invoice_description = []
                 for vendor_back_id in rec.vendor_back_ids:
@@ -804,19 +804,24 @@ class AccountMove(models.Model):
         if not self.partner_id.property_account_payable_id:
             raise ValidationError(_("Bạn chưa cấu hình tài khoản phải trả ở tab kế toán trong nhà cung cấp %s") % self.partner_id.name)
 
+        total_value = round((self.total_trade_discount + self.x_amount_tax) * self.exchange_rate)
+        total_tax = round(self.x_amount_tax * self.exchange_rate) if self.x_amount_tax else 0
+        total_trade = total_value - total_tax
+
+
         invoice_line_ids = [
             (0, 0, {
                 'account_id': self.partner_id.property_account_payable_id.id,
                 'name': self.partner_id.property_account_payable_id.name,
-                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate if is_in else 0.0,
-                'credit': 0 if is_in else (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
+                'debit': total_value if is_in else 0.0,
+                'credit': 0 if is_in else total_value,
             }),
             (0, 0, {
                 'account_id': account_expense_id.id,
                 'name': account_expense_id.name,
-                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
+                'debit': 0 if is_in else total_trade,
                 'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
-                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
+                'credit': total_trade if is_in else 0.0,
             })
         ]
         if self.trade_tax_id:
@@ -824,8 +829,8 @@ class AccountMove(models.Model):
                 (0, 0, {
                     'account_id': account_tax_id.id,
                     'name': account_tax_id.name,
-                    'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
-                    'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
+                    'debit': 0 if is_in else total_tax,
+                    'credit': total_tax if is_in else 0.0,
                 })
             )
 
@@ -1292,6 +1297,7 @@ class RespartnerVendor(models.Model):
     company_id = fields.Many2one('res.company', string='Công ty')
     invoice_reference = fields.Char(string='Số hóa đơn')
     invoice_description = fields.Many2one('product.product', string="Diễn giải hóa đơn")
+    description = fields.Char(string="Diễn giải hóa đơn")
     price_subtotal_back = fields.Float(string='Thành tiền')
     tax_back = fields.Float(string='Tiền thuế', compute='compute_tax')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back')
