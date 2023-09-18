@@ -191,6 +191,13 @@ class PurchaseOrder(models.Model):
             else:
                 order.date_planned = order.date_planned_import
 
+    @api.onchange('location_id')
+    def onchange_location_picking_type(self):
+        if self.location_id:
+            self.picking_type_id = self.location_id.warehouse_id.in_type_id.id
+        else:
+            self.picking_type_id = False
+
     @api.onchange('date_planned')
     def onchange_date_planned(self):
         if self.date_planned:
@@ -488,14 +495,14 @@ class PurchaseOrder(models.Model):
         all_tax_ids = self.env['account.tax'].sudo().search([('type_tax_use', '=', 'sale'), ('company_id', '=', company_id.id)])
         for item in self.order_line:
             tax_ids = []
-            if item.taxes_id:
-                tax_ids = all_tax_ids.filtered(lambda x: x.amount in item.taxes_id.mapped('amount')).ids
+            for tax_id in item.taxes_id:
+                tax_ids.extend(all_tax_ids.filtered(lambda x: x.amount == tax_id.amount).ids[0])
 
             sale_order_lines.append((0, 0, {
                 'product_id': item.product_id.id,
                 'name': item.product_id.name,
                 'product_uom_qty': item.product_qty,
-                'price_unit': item.price_unit,
+                'price_unit': item.price_subtotal/item.product_qty,
                 'product_uom': item.product_id.uom_id.id,
                 'customer_lead': 0,
                 'sequence': 10,
@@ -930,7 +937,7 @@ class PurchaseOrder(models.Model):
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
             'price_unit': line.price_unit,
-            'price_subtotal': line.price_subtotal - invoice_line_ids.mapped('price_subtotal'),
+            'price_subtotal': line.price_subtotal - sum(invoice_line_ids.mapped('price_subtotal')),
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
@@ -1038,6 +1045,8 @@ class PurchaseOrder(models.Model):
                                 for line in order.order_line:
                                     wave = invoice_relationship.invoice_line_ids.filtered(lambda w: w.purchase_line_id.id == line.id and w.product_id.id == line.product_id.id)
                                     data_line = self.create_invoice_service_and_asset(order, line, wave)
+                                    if not data_line:
+                                        continue
                                     if line.display_type == 'line_section':
                                         pending_section = line
                                         continue

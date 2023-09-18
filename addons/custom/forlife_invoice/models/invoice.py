@@ -206,7 +206,7 @@ class AccountMove(models.Model):
 
     def insert_data(self):
         self.ensure_one()
-        if not self.receiving_warehouse_id:
+        if not self.receiving_warehouse_id and self.purchase_type == 'product':
             raise ValidationError('Vui lòng chọn phiếu Nhập kho!')
         purchase_order_id = self.purchase_order_product_id or self.receiving_warehouse_id.purchase_id
         AccountMoveLine = self.env['account.move.line']
@@ -413,20 +413,15 @@ class AccountMove(models.Model):
         sequence = 10
         AccountMoveLine = self.env['account.move.line']
         pending_section = None
-        picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
-        if not picking_ids:
-            raise ValidationError('Vui lòng chọn ít nhất 1 phiếu nhập kho!')
-        return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
-        for line in purchase_order_id.order_line:
-            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
-            for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_to_invoice - x.qty_refunded > 0):
-                data_line = line.order_id._prepare_invoice_normal(line, move_id)
-                qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
-                quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
-                if quantity <= 0:
+
+        if self.purchase_type != 'product':
+            sequence = 10
+            pending_section = None
+            for line in purchase_order_id.order_line:
+                wave = line.invoice_lines.filtered(lambda w: w.parent_state != 'cancel')
+                data_line = line.order_id.create_invoice_service_and_asset(line.order_id, line, wave)
+                if not data_line:
                     continue
-                move_id.qty_to_invoice += quantity
-                move_id.qty_refunded = qty_returned
                 if line.display_type == 'line_section':
                     pending_section = line
                     continue
@@ -434,25 +429,59 @@ class AccountMove(models.Model):
                     line_vals = pending_section._prepare_account_move_line()
                     line_vals.update(data_line)
                     line_vals.update({
+                        'move_id': self.id,
+                    })
+                    vals_lst.append(line_vals)
+                    sequence += 1
+                    pending_section = None
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                line_vals.update({
+                    'move_id': self.id,
+                })
+                vals_lst.append(line_vals)
+                sequence += 1
+        else:
+            picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and not x.x_is_check_return)
+            if not picking_ids:
+                raise ValidationError('Vui lòng chọn ít nhất 1 phiếu nhập kho!')
+            return_picking_ids = self.receiving_warehouse_id.filtered(lambda x: x.state == 'done' and x.x_is_check_return)
+            for line in purchase_order_id.order_line:
+                stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+                for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_invoiced - x.qty_to_invoice - x.qty_refunded > 0):
+                    data_line = line.order_id._prepare_invoice_normal(line, move_id)
+                    qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done' and x.picking_id.id in return_picking_ids.ids).mapped('quantity_done'))
+                    quantity = move_id.quantity_done - move_id.qty_invoiced - move_id.qty_to_invoice - qty_returned
+                    if quantity <= 0:
+                        continue
+                    move_id.qty_to_invoice += quantity
+                    move_id.qty_refunded = qty_returned
+                    if line.display_type == 'line_section':
+                        pending_section = line
+                        continue
+                    if pending_section:
+                        line_vals = pending_section._prepare_account_move_line()
+                        line_vals.update(data_line)
+                        line_vals.update({
+                            'quantity': quantity,
+                            'quantity_purchased': quantity / line_vals['exchange_quantity'],
+                            'sequence': sequence,
+                            'move_id': self.id,
+                        })
+                        pending_section = None
+                        vals_lst.append(line_vals)
+                        sequence += 1
+
+                    line_vals = line._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    line_vals.update({
                         'quantity': quantity,
                         'quantity_purchased': quantity / line_vals['exchange_quantity'],
                         'sequence': sequence,
                         'move_id': self.id,
                     })
-                    pending_section = None
                     vals_lst.append(line_vals)
                     sequence += 1
-
-                line_vals = line._prepare_account_move_line()
-                line_vals.update(data_line)
-                line_vals.update({
-                    'quantity': quantity,
-                    'quantity_purchased': quantity / line_vals['exchange_quantity'],
-                    'sequence': sequence,
-                    'move_id': self.id,
-                })
-                vals_lst.append(line_vals)
-                sequence += 1
         if not vals_lst:
             raise ValidationError('Tất cả phiếu nhập đã được lên hóa đơn, vui lòng kiểm tra lại')
         aml_ids = AccountMoveLine.create(vals_lst)
@@ -775,19 +804,24 @@ class AccountMove(models.Model):
         if not self.partner_id.property_account_payable_id:
             raise ValidationError(_("Bạn chưa cấu hình tài khoản phải trả ở tab kế toán trong nhà cung cấp %s") % self.partner_id.name)
 
+        total_value = round((self.total_trade_discount + self.x_amount_tax) * self.exchange_rate)
+        total_tax = round(self.x_amount_tax * self.exchange_rate) if self.x_amount_tax else 0
+        total_trade = total_value - total_tax
+
+
         invoice_line_ids = [
             (0, 0, {
                 'account_id': self.partner_id.property_account_payable_id.id,
                 'name': self.partner_id.property_account_payable_id.name,
-                'debit': (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate if is_in else 0.0,
-                'credit': 0 if is_in else (self.total_trade_discount + self.x_amount_tax) * self.exchange_rate,
+                'debit': total_value if is_in else 0.0,
+                'credit': 0 if is_in else total_value,
             }),
             (0, 0, {
                 'account_id': account_expense_id.id,
                 'name': account_expense_id.name,
-                'debit': 0 if is_in else self.total_trade_discount * self.exchange_rate,
+                'debit': 0 if is_in else total_trade,
                 'product_id': self.env.ref('forlife_purchase.product_discount_tax').id,
-                'credit': self.total_trade_discount * self.exchange_rate if is_in else 0.0,
+                'credit': total_trade if is_in else 0.0,
             })
         ]
         if self.trade_tax_id:
@@ -795,8 +829,8 @@ class AccountMove(models.Model):
                 (0, 0, {
                     'account_id': account_tax_id.id,
                     'name': account_tax_id.name,
-                    'debit': 0 if is_in else self.x_amount_tax * self.exchange_rate,
-                    'credit': self.x_amount_tax * self.exchange_rate if is_in else 0.0,
+                    'debit': 0 if is_in else total_tax,
+                    'credit': total_tax if is_in else 0.0,
                 })
             )
 
