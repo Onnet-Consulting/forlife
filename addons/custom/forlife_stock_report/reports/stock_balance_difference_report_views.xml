@@ -12,14 +12,16 @@
                     </h1>
                     <separator/>
                     <label for="period_start" string="Period"/>
-                    <field name="period_start" style="padding-left: 15px"/> to <field name="period_end" style="padding-left: 15px"/>
+                    <field name="period_start" style="padding-left: 15px"/> to <field name="period_end"/>
                     <group>
                         <group>
                             <field name="account_id"/>
+                            <field name="purchase_order_ids" domain="[('invoice_status_fake', '=', 'invoiced')]" widget="many2many_tags"/>
                         </group>
                     </group>
                     <div>
-                        <button name="generate_details" string="Generate" type="object" class="btn-primary text-center"/>
+                        <button name="generate_details" string="Generate" type="object" class="btn btn-primary text-center"/>
+                        <div style="display: inline-block; margin: 5px;"></div>
                         <button name="create_account_move" string="Create Account Move" type="object" class="btn-primary text-center"/>
                     </div>
 
