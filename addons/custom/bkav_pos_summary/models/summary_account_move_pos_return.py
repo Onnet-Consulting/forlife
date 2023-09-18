@@ -225,7 +225,6 @@ class SummaryAccountMovePosReturn(models.Model):
                     "company_id": store.company_id
                 }
                 store_discount_items[store.id] = discount_items
-                all_stores[store.id] = store
 
             for k, v in items.items():
                 res_line = model_line.create(v["line_ids"])
