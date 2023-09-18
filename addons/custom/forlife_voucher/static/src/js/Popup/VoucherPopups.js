@@ -182,15 +182,21 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     if(!item.money_reduce_from_product_defective){
                         item.money_reduce_from_product_defective =0;
                     }
-                    if(data[i].value.price_residual >= (item.product.lst_price*qty + item.point - so_tien_da_tra[item_id] - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck)){
-                        data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*qty - so_tien_da_tra[item_id] + item.point - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck);
-                        so_tien_da_tra[item_id] = item.product.lst_price*qty + item.point - usage_total*qty - item.card_rank_discount - item.money_reduce_from_product_defective - discount_ck;
-                    }else{
-                        so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
-                        data[i].value.price_residual = 0;
-                    }
                     if(data[i].value.product_apply_ids.includes(item.product.id)){
                         list_id_product_apply_condition.push(item.id)
+                    };
+                    let total_to_pay = item.product.lst_price*qty + item.point - so_tien_da_tra[item_id]
+                                        - usage_total*qty - item.card_rank_discount
+                                        - item.money_reduce_from_product_defective - discount_ck
+                    if(data[i].value.price_residual >= (total_to_pay)){
+                        data[i].value.price_residual = data[i].value.price_residual - total_to_pay;
+                        so_tien_da_tra[item_id] = total_to_pay;
+                        return total_to_pay;
+                    } else {
+                        let total_paid = data[i].value.price_residual;
+                        so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
+                        data[i].value.price_residual = 0;
+                        return total_paid;
                     }
         }
 
@@ -213,6 +219,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             this.state.error = [];
             this.state.error_continue = [];
             var self = this;
+            let order = this.env.pos.get_order()
             var codes = []
             $('.o_price_used').each(function( index ){
                  $(this).css('color', '#444')
@@ -234,6 +241,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 pos_brand = this.env.pos.pos_branch[i].id
             };
             var data = await this.check_voucher(codes);
+            data.forEach(function(el) {
+                if (el.value) {
+                    el.value.original_price_residual = el.value.price_residual;
+                };
+            });
             $('.o_input_priority').each(function(index) {
                 $(this).val('')
                 if(data[index].value != false){
@@ -371,19 +383,45 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             for(let i = 0; i < data.length; i ++){
                 if(codes[i].value != false && data[i].value != false){
                    gia_tri_con_lai_ban_dau = data[i].value.price_residual
+                   let to_pay_condition = 0;
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
+                        let has_discount = (item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0);
                         if(data[i].value.has_condition == false){
                             self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
                             data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                         }
-                        else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !((item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0) && data[i].value.is_full_price_applies) && !item.refunded_orderline_id){
-                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
-                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual - self._compute_price_of_refund_product();
+                        else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id))
+                                && !(has_discount && data[i].value.is_full_price_applies)
+                                && !item.refunded_orderline_id){
+                            to_pay_condition += self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+//                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual - self._compute_price_of_refund_product();
                         }
                         if(data[i].value.price_change < 0){
                            data[i].value.price_change = 0;
                         }
                    })
+                   if (to_pay_condition > 0) {
+                        // Trường hợp có SP trả: Tính số tiền cần trả = Tổng đơn - Tổng số tiền đã dùng ở các voucher khác
+                        let refund_amount = self._compute_price_of_refund_product();
+                        let paid_voucher_amount = data.filter(el=>el.value.voucher_id !== data[i].value.voucher_id)
+                                        .reduce((tmp, el) => {
+                                            if (el.value) {
+                                                let tmp = tmp + el.value.original_price_residual - el.value.price_residual;
+                                            };
+                                            return tmp;
+                                        }, 0);
+
+                        if (refund_amount && (order.get_due() - paid_voucher_amount) < to_pay_condition) {
+                            to_pay_condition = order.get_due() - paid_voucher_amount
+                        };
+                        if (to_pay_condition >= gia_tri_con_lai_ban_dau) {
+                            data[i].value.price_change = gia_tri_con_lai_ban_dau;
+                            data[i].value.price_residual = 0;
+                        } else {
+                            data[i].value.price_change = to_pay_condition;
+                            data[i].value.price_residual = gia_tri_con_lai_ban_dau - to_pay_condition;
+                        }
+                   }
                }
             }
 
@@ -400,7 +438,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 let self = this;
                 if(data[i].value != false){
                    if (data[i].value.price_change != 0) {
-                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change + self._compute_price_of_refund_product();
+                      data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change;
                    }
                    if (data[i].value.price_change == 0) {
                       data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
