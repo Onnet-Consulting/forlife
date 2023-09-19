@@ -14,5 +14,39 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="pos_order_form_view_permission_inherit" model="ir.ui.view">
+            <field name="name">pos_order_form_view_permission_inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="forlife_pos_payment_change.view_pos_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='%(forlife_pos_payment_change.action_pos_payment_change_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_button_change_payments</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="pos_order_form_assgin_employee_permission_inherit" model="ir.ui.view">
+            <field name="name">pos_order_form_assgin_employee_permission_inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="forlife_pos_assign_employee.pos_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='reassign_employee']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_button_assign_employee</attribute>
+                </xpath>
+            </field>
+        </record>
+
+         <record id="pos_order_form_permission_inherit" model="ir.ui.view">
+            <field name="name">pos_order_form_permission_inherit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="forlife_pos_print_receipt.view_pos_pos_form_inherit_print_pos_order_be"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='print_pos_order']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_print_pos_order</attribute>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>
