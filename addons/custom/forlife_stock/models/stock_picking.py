@@ -45,7 +45,18 @@ class StockPicking(models.Model):
     is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
     total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
     total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
-    create_from_po_inter_company = fields.Boolean(string='PO liên công ty được tạo ra', default=False)
+    create_from_po_inter_company = fields.Boolean(string='Tạo từ PO liên công ty', default=False, readonly=True)
+    check_inter_company = fields.Boolean(string='Ẩn button liên công ty', compute='compute_check_inter_company')
+
+    def compute_check_inter_company(self):
+        for rec in self:
+            location_inter_company = rec.location_dest_id.virtual_location_ch
+            company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
+            po_inter_company = self.env['purchase.order'].with_company(company_dest_id).search([('create_from_picking', '=', rec.id)], limit=1)
+            if location_inter_company and not po_inter_company and rec.state == 'done':
+                rec.check_inter_company = True
+            else:
+                rec.check_inter_company = False
 
     def prepare_po_values(self):
         company_id = self.env['res.company'].search([('code', '=', '1300')], limit=1)
@@ -61,7 +72,8 @@ class StockPicking(models.Model):
             'location_id': location_mapping.location_map_id.id,
             'is_inter_company': True,
             'is_return': False,
-            'company_id': company_dest_id.id
+            'company_id': company_dest_id.id,
+            'create_from_picking': self.id
         }
         po_line = []
         for line in self.move_ids:
@@ -83,6 +95,7 @@ class StockPicking(models.Model):
             po_line.append((0, 0, {
                 'product_id': line.product_id.id,
                 'purchase_quantity': line.quantity_done,
+                'product_qty': line.quantity_done * (data[0].amount_conversion or line.quantity_change),
                 'taxes_id': [(6, 0, self.env['account.tax'].with_company(company_dest_id).search([('code', 'in', line.purchase_line_id.taxes_id.mapped('code'))]).ids)],
                 'vendor_price': data[0].price,
                 'exchange_quantity': data[0].amount_conversion,
@@ -94,6 +107,18 @@ class StockPicking(models.Model):
     def create_order_inter_company(self):
         company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
         purchase_model = self.env['purchase.order']
+        po_inter_company = purchase_model.with_company(company_dest_id).search(
+            [('create_from_picking', '=', self.id)], limit=1)
+        if po_inter_company:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'message': 'Đã tạo tồn tại đơn liên công ty',
+                    'type': 'danger',
+                    'sticky': False,
+                }
+            }
         purchase_model = purchase_model.with_company(company_dest_id).create(self.prepare_po_values())
         if purchase_model:
             purchase_model.with_company(company_dest_id).action_confirm()

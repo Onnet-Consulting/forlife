@@ -8,7 +8,7 @@ class ForlifeOtherInOutRequest(models.Model):
     _order = 'create_date desc'
 
     def _domain_location_id(self):
-        return "[('reason_type_id', '=', type_other_id)]"
+        return "[('reason_type_id', '=', type_other_id), ('virtual_location_ch', '=', False)]"
 
     name = fields.code = fields.Char(string="Mã phiếu", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="Nhân viên")
@@ -21,7 +21,7 @@ class ForlifeOtherInOutRequest(models.Model):
         ('other_import', 'Nhập khác'),
         ('other_export', 'Xuất khác'),], default='other_import', string='Loại phiếu', required=True)
     location_id = fields.Many2one('stock.location', string='Location From', domain=_domain_location_id)
-    location_dest_id = fields.Many2one('stock.location', string='Location To')
+    location_dest_id = fields.Many2one('stock.location', string='Location To', domain=[('virtual_location_ch', '=', False)])
     date_planned = fields.Datetime(string='Ngày kế hoạch', required=True)
     status = fields.Selection([
         ('draft', 'Dự thảo'),

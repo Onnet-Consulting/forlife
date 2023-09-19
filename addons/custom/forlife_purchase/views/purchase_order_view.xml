@@ -6,6 +6,9 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//div[@name='date_planned_div']" position="after">
+                    <field name="create_from_picking" attrs="{'invisible': [('create_from_picking', '=', False)]}"/>
+                </xpath>
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_invoice']" position="attributes">
                          <attribute name="invisible">1</attribute>
                 </xpath>
