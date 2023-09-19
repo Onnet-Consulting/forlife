@@ -497,7 +497,7 @@ class PurchaseOrder(models.Model):
             tax_ids = []
             for tax_id in item.taxes_id:
                 # tax_ids.extend(all_tax_ids.filtered(lambda x: x.amount == tax_id.amount).ids[0])
-                tax_ids += all_tax_ids.filtered(lambda x: x.amount == tax_id.amount).ids
+                tax_ids.append(all_tax_ids.filtered(lambda x: x.amount == tax_id.amount).ids[0])
 
             sale_order_lines.append((0, 0, {
                 'product_id': item.product_id.id,
