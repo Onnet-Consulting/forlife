@@ -131,8 +131,8 @@ class AccountMove(models.Model):
 
     def view_move_entry(self):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_moves_all")
-        context = {'search_default_move_id': self.id, 'search_default_posted': 1}
-        return dict(action, context=context)
+        action['domain'] = [('display_type', 'not in', ('line_section', 'line_note')), ('parent_state', '!=', 'cancel'), ('move_id', '=', self.id)]
+        return action
 
     @api.onchange('partner_id', 'partner_id.group_id')
     def onchange_partner_id(self):

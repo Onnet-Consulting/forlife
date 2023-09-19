@@ -134,7 +134,7 @@ class PurchaseOrder(models.Model):
 
     date_planned_import = fields.Datetime('Hạn xử lý')
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
-    create_from_stock = fields.Boolean(string='Tạo từ phiếu kho', default=False)
+    create_from_picking = fields.Many2one('stock.picking', string='Tạo từ phiếu kho', readonly=True, help="Phiếu mua hàng được tạo từ phiếu kho")
 
     def compute_total_trade_discounted(self):
         for r in self:
@@ -921,6 +921,8 @@ class PurchaseOrder(models.Model):
         if (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')) <= 0:
             return None
         quantity = line.product_qty
+        price_subtotal = line.price_subtotal - sum(invoice_line_ids.mapped('price_subtotal'))
+        price_unit = price_subtotal/quantity if quantity > 0 else 0
         data_line = {
             'product_id': line.product_id.id,
             'promotions': line.free_good,
@@ -932,12 +934,12 @@ class PurchaseOrder(models.Model):
             'discount': line.discount_percent,
             'request_code': line.request_purchases,
             'quantity_purchased': line.purchase_quantity,
-            'discount_value': (quantity * line.price_unit) * (line.discount_percent / 100) if line.discount_percent else 0,
+            'discount_value': (quantity * price_unit) * (line.discount_percent / 100) if line.discount_percent else 0,
             'tax_ids': line.taxes_id.ids,
             'tax_amount': line.price_tax,
             'product_uom_id': line.product_uom.id,
-            'price_unit': line.price_unit,
-            'price_subtotal': line.price_subtotal - sum(invoice_line_ids.mapped('price_subtotal')),
+            'price_unit': price_unit,
+            'price_subtotal': price_subtotal,
             'total_vnd_amount': (line.price_subtotal * order.exchange_rate) - sum(invoice_line_ids.mapped('total_vnd_amount')),
             'occasion_code_id': line.occasion_code_id.id,
             'work_order': line.production_id.id,
@@ -1039,7 +1041,7 @@ class PurchaseOrder(models.Model):
                     else:
                         invoice_relationship = self.env['account.move'].search([('reference', '=', order.name), ('partner_id', '=', order.partner_id.id), ('purchase_type', '=', order.purchase_type)])
                         if invoice_relationship:
-                            if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(order.order_line.mapped('price_subtotal')):
+                            if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) >= sum(order.order_line.mapped('price_subtotal')):
                                 raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
                             else:
                                 for line in order.order_line:
@@ -1659,7 +1661,8 @@ class PurchaseOrder(models.Model):
                 'location_dest_id': location.id,
                 'location_id': self.partner_id.property_stock_supplier.id,
                 'company_id': self.company_id.id,
-                'is_pk_purchase': True
+                'is_pk_purchase': True,
+                'create_from_po_inter_company': bool(self.create_from_picking),
             })
         return vals
 
