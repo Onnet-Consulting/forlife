@@ -34,7 +34,7 @@ class AccountMove(models.Model):
                     message = 'Ngày kế toán (%s) nhỏ hơn ngày Xác nhận đơn mua hàng (%s). Vui lòng kiểm tra lại!' % (datetime.strftime(rec.date, '%d/%m/%Y'), datetime.strftime(min_date_approve, '%d/%m/%Y'))
                     raise UserError(message)
                 rec.purchase_order_product_id.write({
-                    'invoice_status_fake': 'invoiced',
+                    'invoice_status_fake': 'to invoice',
                 })
             for invoice_line_id in rec.invoice_line_ids.filtered(lambda x: x.stock_move_id):
                 qty_invoiced = invoice_line_id.stock_move_id.qty_invoiced + invoice_line_id.stock_move_id.qty_to_invoice
