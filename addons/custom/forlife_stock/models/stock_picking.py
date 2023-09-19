@@ -65,7 +65,7 @@ class StockPicking(models.Model):
         }
         po_line = []
         for line in self.move_ids:
-            data = self.env['product.supplierinfo'].search(
+            data = self.env['product.supplierinfo'].with_company(company_dest_id).search(
                 [
                     '|',
                     ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
@@ -83,7 +83,7 @@ class StockPicking(models.Model):
             po_line.append((0, 0, {
                 'product_id': line.product_id.id,
                 'purchase_quantity': line.quantity_done,
-                'taxes_id': [(6, 0, line.purchase_line_id.taxes_id.ids)],
+                'taxes_id': [(6, 0, self.env['account.tax'].with_company(company_dest_id).search([('code', 'in', line.purchase_line_id.taxes_id.mapped('code'))]).ids)],
                 'vendor_price': data[0].price,
                 'exchange_quantity': data[0].amount_conversion,
                 'location_id': location_mapping.location_map_id.id,
