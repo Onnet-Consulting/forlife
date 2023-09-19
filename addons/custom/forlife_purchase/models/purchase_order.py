@@ -134,7 +134,7 @@ class PurchaseOrder(models.Model):
 
     date_planned_import = fields.Datetime('Hạn xử lý')
     count_stock = fields.Integer(compute="compute_count_stock", copy=False)
-    create_from_stock = fields.Boolean(string='Tạo từ phiếu kho', default=False)
+    create_from_picking = fields.Many2one('stock.picking', string='Tạo từ phiếu kho', help="Phiếu mua hàng được tạo từ phiếu kho")
 
     def compute_total_trade_discounted(self):
         for r in self:
