@@ -201,7 +201,7 @@ class MainController(http.Controller):
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
                     if data['status'] in ["Success"]:
-                        odoo_order.picking_ids.confirm_from_so(True)
+                        odoo_order.picking_ids.with_context({'done_from_nhanh': True}).confirm_from_so(True)
 
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids:
