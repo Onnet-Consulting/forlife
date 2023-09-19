@@ -12,13 +12,13 @@ class StockInventoryLine(models.Model):
             if type_picking == 'import':
                 l_id = self.env['stock.location'].sudo().search([('id','=',vals['location_dest_id'])])
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', l_id.id)])
-                if not location_mapping:
-                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                #if not location_mapping:
+                #    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             else:
                 l_id = self.env['stock.location'].sudo().search([('id', '=', vals['location_id'])])
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_map_id', '=', vals['location_id'])])
-                if not location_mapping:
-                    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+                #if not location_mapping:
+                #    raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {l_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
             if location_mapping:
                 location_id = location_mapping.location_id
                 type_id = location_id.with_company(company).warehouse_id.int_type_id.id
