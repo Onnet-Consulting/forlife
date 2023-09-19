@@ -30,7 +30,8 @@ class StockPicking(models.Model):
                     if material_line:
                         picking.create_return_valuation_npl()
                         picking.create_return_valuation_entries()
-                    picking.tax_return_by_return_goods()
+                    if purchase_origin_id:
+                        picking.tax_return_by_return_goods()
         return super(StockPicking, self)._action_done()
 
     def tax_return_by_return_goods(self):
