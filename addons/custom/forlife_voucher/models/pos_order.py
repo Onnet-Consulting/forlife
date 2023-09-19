@@ -92,7 +92,7 @@ class PosOrder(models.Model):
                 continue
             self.env['voucher.voucher'].create([{
                 'program_voucher_id': program_voucher_id.id,
-                'partner_id': line.order_id.partner_id.id if line.order_id.partner_id else None,
+                # 'partner_id': line.order_id.partner_id.id if line.order_id.partner_id else None,
                 'type': 'e',
                 'brand_id': program_voucher_id.brand_id.id if program_voucher_id.brand_id else None,
                 'store_ids': [(6, False, program_voucher_id.store_ids.ids)],
