@@ -24,13 +24,15 @@
         'forlife_report',
         'forlife_pos_product_change_refund',
         'forlife_print_stamps_barcode',
+        'forlife_pos_payment_change',
+        'forlife_pos_print_receipt',
+        'forlife_pos_assign_employee',
         'point_of_sale',
         'forlife_pos_promotion',
         'forlife_promotion',
         'sales_team',
         'point_of_sale',
         'account',
-
     ],
     'installable': True,
     'auto_install': True,
@@ -64,5 +66,6 @@
         'views/print_stamps_barcode_view.xml',
         'views/defective_type_view.xml',
         'views/product_supplierinfo_views.xml',
+        'views/account_move_views.xml',
     ],
 }
