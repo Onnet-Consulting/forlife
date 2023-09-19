@@ -112,3 +112,29 @@ class StockMove(models.Model):
                 am_vals[0]['line_ids'] = line_ids
 
         return am_vals
+    
+    def _prepare_common_svl_vals(self):
+        """When a `stock.valuation.layer` is created from a `stock.move`, we can prepare a dict of
+        common vals.
+
+        :returns: the common values when creating a `stock.valuation.layer` from a `stock.move`
+        :rtype: dict
+        """
+        self.ensure_one()
+        result = super(StockMove, self)._prepare_common_svl_vals()
+        if (self.origin_returned_move_id and self.purchase_line_id) or self.purchase_line_id.order_id.is_return:
+            if self.origin_returned_move_id and self.origin_returned_move_id.sudo().stock_valuation_layer_ids:
+                layers = self.origin_returned_move_id.sudo().stock_valuation_layer_ids.filtered(lambda x: x.quantity != 0)
+                layers_quantity = sum(layers.mapped("quantity"))
+                layers_value = sum(layers.mapped("value"))
+                valued_move_lines = self._get_out_move_lines()
+                valued_quantity = 0
+                for valued_move_line in valued_move_lines:
+                    valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, self.product_id.uom_id)
+                value =  - layers_value/layers_quantity * valued_quantity
+                unit_cost = layers_value/layers_quantity
+                result.update({
+                    'value': value,
+                    'unit_cost': unit_cost,
+                })
+        return result

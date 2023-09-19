@@ -589,5 +589,10 @@ class SaleOrderLine(models.Model):
     def _prepare_procurement_values(self, group_id=False):
         res = super()._prepare_procurement_values(group_id=group_id)
         if self.x_location_id:
+            rule = self.env['stock.rule'].search([
+                ('location_src_id', '=', self.x_location_id.id),
+                ('action', '!=', 'push')
+            ], order='route_sequence, sequence', limit=1)
             res['warehouse_id'] = self.x_location_id.warehouse_id or False
+            res['route_ids'] = rule.route_id
         return res
