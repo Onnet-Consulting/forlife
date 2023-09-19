@@ -29,6 +29,9 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='owner_id']" position="after">
+                <field name="create_from_po_inter_company" attrs="{'invisible': [('create_from_po_inter_company', '=', False)]}"/>
+            </xpath>
             <!--            <xpath expr="//div[@name='button_box']" position="inside">-->
             <!--                <field name="is_need_scan_barcode" invisible="1"/>-->
             <!--                <button name="open_scan_barcode" type="object" icon="fa-barcode" attrs="{'invisible':['|', ('state', '!=', 'assigned'), ('is_need_scan_barcode', '=', False)]}">-->

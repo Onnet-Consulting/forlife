@@ -45,7 +45,7 @@ class StockPicking(models.Model):
     is_picking_return = fields.Boolean(string='Phiếu trả hàng', compute='compute_is_picking_return')
     total_purchase_qty = fields.Float(string='Tổng số lượng mua hoàn thành', compute='_compute_total_qty')
     total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
-    create_from_po_inter_company = fields.Boolean(string='PO liên công ty được tạo ra', default=False)
+    create_from_po_inter_company = fields.Boolean(string='Tạo từ PO liên công ty', default=False, readonly=True)
     check_inter_company = fields.Boolean(string='Ẩn button liên công ty', compute='compute_check_inter_company')
 
     def compute_check_inter_company(self):
