@@ -191,12 +191,15 @@ class PurchaseOrder(models.Model):
             else:
                 order.date_planned = order.date_planned_import
 
-    @api.onchange('location_id')
+    @api.onchange('location_id', 'purchase_type')
     def onchange_location_picking_type(self):
-        if self.location_id:
-            self.picking_type_id = self.location_id.warehouse_id.in_type_id.id
+        if self.purchase_type == 'product':
+            if self.location_id:
+                self.picking_type_id = self.location_id.warehouse_id.in_type_id.id
+            else:
+                self.picking_type_id = self._default_picking_type()
         else:
-            self.picking_type_id = False
+            self.picking_type_id = self._default_picking_type()
 
     @api.onchange('date_planned')
     def onchange_date_planned(self):
@@ -2002,17 +2005,21 @@ class PurchaseOrderLine(models.Model):
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id', 'total_vnd_exchange_import', 'before_tax')
     def _compute_total_vnd_amount(self):
         for rec in self:
-            if not rec.total_vnd_exchange_import:
-                if rec.price_subtotal and rec.order_id.exchange_rate:
+            if rec.free_good:
+                rec.total_vnd_amount = 0
+                rec.total_vnd_exchange = 0
+            else:
+                if not rec.total_vnd_exchange_import:
+                    if rec.price_subtotal and rec.order_id.exchange_rate:
+                        if rec.total_vnd_amount != round(rec.price_subtotal * rec.order_id.exchange_rate):
+                            rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                        if rec.total_vnd_exchange != round(rec.price_subtotal * rec.order_id.exchange_rate):
+                            rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
+                else:
                     if rec.total_vnd_amount != round(rec.price_subtotal * rec.order_id.exchange_rate):
                         rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
-                    if rec.total_vnd_exchange != round(rec.price_subtotal * rec.order_id.exchange_rate):
-                        rec.total_vnd_exchange = round(rec.price_subtotal * rec.order_id.exchange_rate)
-            else:
-                if rec.total_vnd_amount != round(rec.price_subtotal * rec.order_id.exchange_rate):
-                    rec.total_vnd_amount = round(rec.price_subtotal * rec.order_id.exchange_rate)
-                if rec.total_vnd_exchange != rec.total_vnd_exchange_import:
-                    rec.total_vnd_exchange = rec.total_vnd_exchange_import
+                    if rec.total_vnd_exchange != rec.total_vnd_exchange_import:
+                        rec.total_vnd_exchange = rec.total_vnd_exchange_import
 
     def _compute_tax_id(self):
         if self.filtered(lambda x: x.order_id.type_po_cost == 'tax'):
