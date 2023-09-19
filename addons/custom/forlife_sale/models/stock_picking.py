@@ -21,6 +21,14 @@ class StockPicking(models.Model):
                 picking.action_confirm()
                 picking.move_ids._set_quantities_to_reservation()
                 picking.with_context(skip_immediate=True).button_validate()
+                if self._context.get('done_from_nhanh', False):
+                    advance_payment = self.env['sale.advance.payment.inv'].create({
+                        'sale_order_ids': [(6, 0, self.sale_id.ids)],
+                        'advance_payment_method': 'delivered',
+                        'deduct_down_payments': True
+                    })
+                    invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
+                    invoice_id.action_post()
         else:
             self.action_confirm()
 
@@ -104,6 +112,8 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
+        if self.picking_type_id.sequence_code == 'PICK':
+            return res
         if self.picking_type_id.x_is_return:
             for move in self.move_ids:
                 account_move = self.env['account.move'].search([('stock_move_id', '=', move.id)])
