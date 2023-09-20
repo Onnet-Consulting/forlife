@@ -593,13 +593,25 @@ class SaleOrderLine(models.Model):
         })
         return rslt
 
+    @api.model
+    def _search_rule(self, location):
+        domain = ['&', ('location_src_id', '=', location.id), ('action', '!=', 'push')]
+        domain_company = ['|', ('company_id', '=', False), ('company_id', 'child_of', self.company_id.ids)]
+        warehouse_id = location.warehouse_id
+        warehouse_domain = ['|', ('warehouse_id', '=', warehouse_id.id), ('warehouse_id', '=', False)]
+        Rule = self.env['stock.rule']
+        res = self.env['stock.rule']
+        if warehouse_id:
+            warehouse_routes = warehouse_id.route_ids
+            route_domain = [('route_id', 'in', warehouse_routes.ids)]
+            if warehouse_routes:
+                res = Rule.search(expression.AND([domain, domain_company, warehouse_domain, route_domain]), order='route_sequence, sequence', limit=1)
+        return res
+
     def _prepare_procurement_values(self, group_id=False):
         res = super()._prepare_procurement_values(group_id=group_id)
         if self.x_location_id:
-            rule = self.env['stock.rule'].search([
-                ('location_src_id', '=', self.x_location_id.id),
-                ('action', '!=', 'push')
-            ], order='route_sequence, sequence', limit=1)
+            rule = self._search_rule(self.x_location_id)
             res['warehouse_id'] = self.x_location_id.warehouse_id or False
             res['route_ids'] = rule.route_id
         return res
