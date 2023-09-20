@@ -31,6 +31,7 @@
         'wizards/stock_picking_scan.xml',
         'wizards/stock_transfer_scan_view.xml',
         'wizards/stock_picking_over_popup_confirm_view.xml',
+        'wizards/confirm_continue_validate_picking_view.xml',
         'security/ir.model.access.csv',
         'security/forlife_reason_type_security.xml',
         'data/base_automation.xml',
