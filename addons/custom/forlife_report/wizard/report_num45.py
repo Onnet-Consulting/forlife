@@ -93,6 +93,7 @@ from product_defective pd
          left join res_partner rp2 on ru2.partner_id = rp2.id
          left join attribute_data ad on ad.product_id = pd.product_id
 where pd.store_id = any(array{store_ids}) 
+    and {format_date_query("pd.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and pd.product_id = any(array{product_ids})
     {f'and pd.state = any(array{self.state_ids.mapped("value")})' if self.state_ids else ''}
     {f'and pd.defective_type_id = any(array{self.defective_type_ids.ids})' if self.defective_type_ids else ''}
