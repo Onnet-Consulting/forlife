@@ -374,6 +374,8 @@ class StockPicking(models.Model):
 
     def action_back_to_draft(self):
         self.state = 'draft'
+        self.move_ids.state = 'draft'
+        self.move_line_ids.state = 'draft'
 
     def action_cancel(self):
         for rec in self:

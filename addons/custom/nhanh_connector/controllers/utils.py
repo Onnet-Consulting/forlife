@@ -1,6 +1,10 @@
+import datetime
+
 import requests
 import logging
 import json
+
+from odoo.tools.safe_eval import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -288,7 +292,8 @@ class NhanhClient:
             'x_location_id': location_id.id,
             'sale_channel_id': sale_channel.id if sale_channel else None,
             'x_transfer_code': x_transfer_code if x_transfer_code else '',
-            'x_account_analytic_id': nhanh_partner.property_account_cost_center_id.id if nhanh_partner.property_account_cost_center_id else None
+            'x_account_analytic_id': nhanh_partner.property_account_cost_center_id.id if nhanh_partner.property_account_cost_center_id else None,
+            'date_order': datetime.datetime.strptime(order.get('createdDateTime', datetime.datetime.now()), '%Y-%m-%d %H:%M:%S') - datetime.timedelta(hours=7)
         }
         return order_data
 

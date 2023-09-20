@@ -21,7 +21,7 @@ class StockPicking(models.Model):
                 picking.action_confirm()
                 picking.move_ids._set_quantities_to_reservation()
                 if self._context.get('super', False):
-                    picking.with_user(SUPERUSER_ID).with_context(skip_immediate=True).button_validate()
+                    picking.with_user(SUPERUSER_ID).with_company(picking.company_id).with_context(skip_immediate=True).button_validate()
                 else:
                     picking.with_context(skip_immediate=True).button_validate()
         else:
