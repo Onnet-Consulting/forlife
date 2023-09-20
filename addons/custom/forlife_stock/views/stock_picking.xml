@@ -45,7 +45,8 @@
             </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="after">
                 <field name="is_picking_return" invisible="1"/>
-                <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '!=', True)]}" string="Xác nhận" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '!=', True)]}"
+                        string="Xác nhận" type="object" class="oe_highlight" groups="stock.group_stock_user" context="{'check_date_done': 1}"/>
             </xpath>
             <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
                <attribute name="attrs">{'invisible':['|', ('is_picking_return', '=', True), ('state', '!=', 'done')]}</attribute>
@@ -105,6 +106,20 @@
                 <separator/>
                 <filter name="my_confirm" string="Xác nhận bởi tôi" domain="[('done_picking_uid', '=', uid)]"/>
             </filter>
+        </field>
+    </record>
+
+    <record id="stock.action_validate_picking" model="ir.actions.server">
+        <field name="name">Validate</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                res = records.with_context(check_date_done=True).button_validate()
+                if isinstance(res, dict):
+                    action = res
         </field>
     </record>
 </odoo>
