@@ -86,7 +86,7 @@ class StockMove(models.Model):
     def compute_product_id(self):
         for rec in self:
             if not rec.reason_id.is_price_unit:
-                rec.amount_total = rec.product_id.standard_price
+                rec.amount_total = rec.product_id.standard_price * rec.product_uom_qty
             rec.name = rec.product_id.name
 
     @api.depends('product_uom_qty', 'picking_id.state')
