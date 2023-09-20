@@ -436,7 +436,6 @@ class StockPicking(models.Model):
                 action = self.env["ir.actions.actions"]._for_xml_id("forlife_stock.confirm_continue_validate_picking_action")
                 message = f"Kiểm tra lại ngày hoàn thành trên phiếu {', '.join(record_valid_date.mapped('name'))} trước khi xác nhận phiếu"
                 ctx = dict(self._context, picking_ids=self.ids, default_message=message)
-                ctx.pop('check_date_done')
                 action['context'] = ctx
                 return action
         res = super(StockPicking, self).button_validate()
