@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="confirm_continue_validate_picking_form" model="ir.ui.view">
+        <field name="name">confirm.continue.validate.picking.form</field>
+        <field name="model">confirm.continue.validate.picking</field>
+        <field name="arch" type="xml">
+            <form string="confirm_continue_validate_picking_form">
+                <h3>
+                    <field name="message" readonly="1"/>
+                </h3>
+                <footer>
+                    <button name="action_continue" string="Vẫn xác nhận" type="object" class="btn-primary"/>
+                    <button string="Dừng xác nhận" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="confirm_continue_validate_picking_action" model="ir.actions.act_window">
+        <field name="name">Cảnh báo xác nhận phiếu kho</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">confirm.continue.validate.picking</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

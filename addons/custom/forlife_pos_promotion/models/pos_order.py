@@ -174,26 +174,26 @@ class PosOrder(models.Model):
         pos_order.reward_voucher_ids = vouchers
         pos_order.cart_promotion_program_ids = programs
 
-    def migrate_voucher_program_many2one_to_many2many(self):
-        check_orders = self.search_read([
-            ('cart_promotion_program_id', '!=', False),
-            ('reward_voucher_id', '!=', False)], fields=['id', 'cart_promotion_program_id', 'reward_voucher_id'])
-        check_order_ids_list = [order['id'] for order in check_orders]
-        self.env.cr.execute("""
-        select pos_order_id from pos_order_applied_cart_promotion_program_rel
-        where pos_order_id in %(ids)s""", {'ids': tuple(check_order_ids_list)})
-        order_ids_updated = list(set(itertools.chain(*self.env.cr.fetchall())))
-        insert_program_vals = [(order['id'], order['cart_promotion_program_id'][0])
-                               for order in check_orders if order['id'] not in order_ids_updated]
-        insert_voucher_vals = [(order['id'], order['reward_voucher_id'][0])
-                               for order in check_orders if order['id'] not in order_ids_updated]
-        if insert_program_vals:
-            program_query = """
-            INSERT INTO pos_order_applied_cart_promotion_program_rel (pos_order_id, cart_program_id) 
-            VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_program_vals)))
-            self.env.cr.execute(program_query, insert_program_vals)
-        if insert_voucher_vals:
-            voucher_query = """
-            INSERT INTO pos_order_voucher_voucher_reward_rel (pos_order_id, voucher_id) 
-            VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_voucher_vals)))
-            self.env.cr.execute(voucher_query, insert_voucher_vals)
+    # def migrate_voucher_program_many2one_to_many2many(self):
+    #     check_orders = self.search_read([
+    #         ('cart_promotion_program_id', '!=', False),
+    #         ('reward_voucher_id', '!=', False)], fields=['id', 'cart_promotion_program_id', 'reward_voucher_id'])
+    #     check_order_ids_list = [order['id'] for order in check_orders]
+    #     self.env.cr.execute("""
+    #     select pos_order_id from pos_order_applied_cart_promotion_program_rel
+    #     where pos_order_id in %(ids)s""", {'ids': tuple(check_order_ids_list)})
+    #     order_ids_updated = list(set(itertools.chain(*self.env.cr.fetchall())))
+    #     insert_program_vals = [(order['id'], order['cart_promotion_program_id'][0])
+    #                            for order in check_orders if order['id'] not in order_ids_updated]
+    #     insert_voucher_vals = [(order['id'], order['reward_voucher_id'][0])
+    #                            for order in check_orders if order['id'] not in order_ids_updated]
+    #     if insert_program_vals:
+    #         program_query = """
+    #         INSERT INTO pos_order_applied_cart_promotion_program_rel (pos_order_id, cart_program_id)
+    #         VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_program_vals)))
+    #         self.env.cr.execute(program_query, insert_program_vals)
+    #     if insert_voucher_vals:
+    #         voucher_query = """
+    #         INSERT INTO pos_order_voucher_voucher_reward_rel (pos_order_id, voucher_id)
+    #         VALUES {} ON CONFLICT DO NOTHING""".format(", ".join(["%s"] * len(insert_voucher_vals)))
+    #         self.env.cr.execute(voucher_query, insert_voucher_vals)

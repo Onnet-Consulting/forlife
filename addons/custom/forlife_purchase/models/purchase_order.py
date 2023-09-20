@@ -793,6 +793,16 @@ class PurchaseOrder(models.Model):
         default = dict(default or {})
         default['custom_state'] = 'draft'
         default['purchase_type'] = self.purchase_type
+        if not self.picking_type_id:
+            if self.purchase_type == 'product':
+                if self.location_id:
+                    picking_type_id = self.location_id.warehouse_id.in_type_id
+                else:
+                    picking_type_id = self._default_picking_type()
+            else:
+                picking_type_id = self._default_picking_type()
+            default['picking_type_id'] = picking_type_id.id
+
         return super().copy(default)
 
     def action_view_invoice_normal_new(self):
