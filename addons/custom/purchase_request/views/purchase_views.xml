@@ -82,7 +82,7 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="attributes">
-                     <attribute name="context">{'default_state': 'draft', 'default_location_id': location_id}</attribute>
+                     <attribute name="context">{'default_state': 'draft', 'default_location_id': location_id, 'default_account_analytic_id': account_analytic_id, 'default_occasion_code_id': occasion_code_id, 'default_production_id': production_id}</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
                     <page string="Chi phí hoàn thiện" name="production_order_domain"
