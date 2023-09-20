@@ -191,6 +191,7 @@ class SummaryAccountMovePosReturn(models.Model):
         lines = self.env['pos.order.line'].search([
             ('order_id', 'in', move_ids.mapped("pos_order_id").ids),
             ('refunded_orderline_id', '!=', False),
+            ('origin_is_post_bkav_store', '=', True),
             ('qty', '<', 0),
             ('is_promotion', '=', False),
             ('is_general', '=', False),
