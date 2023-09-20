@@ -52,7 +52,3 @@ class ResFieldValueReport(models.Model):
 
     name = fields.Char('Giá trị dữ liệu', required=True)
     description = fields.Char('Mô tả')
-
-    _sql_constraints = [
-        ("value_uniq", "unique(name)", "Giá trị dữ liệu đã tồn tại")
-    ]
