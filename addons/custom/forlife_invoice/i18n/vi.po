@@ -401,7 +401,7 @@ msgstr "Khoản mục phí"
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__vendor_price
 msgid "Giá nhà cung cấp"
-msgstr "Gía nhà cung cấp"
+msgstr ""
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_expense_item__group_id
