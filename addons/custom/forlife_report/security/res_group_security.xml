@@ -235,5 +235,9 @@
             <field name="name">Báo cáo chênh lệch tiền nộp về công ty</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+        <record id="group_report_num45" model="res.groups">
+            <field name="name">Báo cáo chi tiết phiếu lỗi</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>

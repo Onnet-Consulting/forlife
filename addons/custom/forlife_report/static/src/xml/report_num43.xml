@@ -21,7 +21,7 @@
                         <td><t t-esc="line.so_dh"/></td>
                         <td class="column_nowrap"><t t-esc="line.ten_kh"/></td>
                         <td class="column_nowrap"><t t-esc="line.dien_giai"/></td>
-                        <td><t t-esc="format_decimal(line.so_tien, 2)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.so_tien, 2)"/></td>
                         <td><t t-esc="line.hinhthuc_tt"/></td>
                         <td><t t-esc="line.tt_phien"/></td>
                     </tr>

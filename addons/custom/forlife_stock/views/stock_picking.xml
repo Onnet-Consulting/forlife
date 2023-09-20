@@ -43,6 +43,9 @@
             <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '=', True)]}</attribute>
             </xpath>
+            <xpath expr="//button[@name='button_validate'][1]" position="attributes">
+                <attribute name="context">{'check_date_done': 1}</attribute>
+            </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="after">
                 <field name="is_picking_return" invisible="1"/>
                 <button name="button_forlife_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), '|', ('show_validate', '=', False), ('is_pk_purchase', '!=', True)]}"

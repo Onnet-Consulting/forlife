@@ -17,7 +17,7 @@ class ReportNum44(models.TransientModel):
 
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
-    brand_ids = fields.Many2many('res.brand', 'report_num44_brand_rel', string='Brand')
+    brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     store_ids = fields.Many2many('store', string='Store')
 
     @api.constrains('from_date', 'to_date')
@@ -26,19 +26,18 @@ class ReportNum44(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    @api.onchange('brand_ids')
+    @api.onchange('brand_id')
     def onchange_brand_id(self):
-        self.store_ids = self.store_ids.filtered(lambda f: f.brand_id.id in self.brand_ids.ids)
+        self.store_ids = self.store_ids.filtered(lambda f: f.brand_id.id == self.brand_id.id)
 
-    def _get_query(self, allowed_company, store_ids, brand_ids):
+    def _get_query(self, allowed_company, store_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         sql = f"""
 with state_json as (select json_object_agg(xx.value, coalesce(xx.name::json ->> '{user_lang_code}', xx.name::json ->> 'en_US')) as data
                     from ir_model_fields_selection xx
-                             join ir_model_fields cc on cc.id = xx.field_id and cc.name = 'state'
-                             join ir_model vv on vv.id = cc.model_id and vv.model = 'account.move'),
+                             join ir_model_fields cc on cc.id = xx.field_id and cc.name = 'state' and cc.model = 'account.move'),
      du_lieu_ct_goc as (select am.id                            as move_id,
                                am.date                          as ngay,
                                st.code                          as ma_ch,
@@ -55,7 +54,7 @@ with state_json as (select json_object_agg(xx.value, coalesce(xx.name::json ->> 
                                  join account_account aa on aa.id = aml.account_id and aa.account_type = 'asset_cash'
                         where pos_orig_amount > 0 
                         and {format_date_query("am.date", tz_offset)} between '{self.from_date}' and '{self.to_date}' 
-                        and st.brand_id = any(array{brand_ids})
+                        and st.brand_id = {self.brand_id.id}
                         and st.id = any(array{store_ids})
                         and am.date between '{self.from_date}' and '{self.to_date}'),
      du_lieu_ct_chenh_lech as (select am.id                                             as move_id,
@@ -87,9 +86,9 @@ order by stt
     def get_data(self, allowed_company):
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        brand_ids = self.brand_ids.ids if self.brand_ids else (self.env['res.brand'].with_context(report_ctx='report.num44,res.brand').search([]).ids or [-1])
-        store_ids = self.store_ids.ids if self.store_ids else (self.env['store'].with_context(report_ctx='report.num44,store').search([('brand_id', 'in', brand_ids)]).ids or [-1])
-        query = self._get_query(allowed_company, store_ids, brand_ids)
+        Store = self.env['store'].with_context(report_ctx='report.num44,store')
+        store_ids = self.store_ids.ids if self.store_ids else (Store.search([('brand_id', '=', self.brand_id.id)]).ids or [-1])
+        query = self._get_query(allowed_company, store_ids)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
@@ -104,6 +103,7 @@ order by stt
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo chênh lệch tiền nộp về công ty', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.write(2, 2, f'Thương hiệu: {self.brand_id.name}', formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)
