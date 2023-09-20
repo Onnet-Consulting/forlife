@@ -80,6 +80,10 @@ class MainController(http.Controller):
         ]
         if event_type == 'orderUpdate':
             odoo_order = n_client.get_sale_order(order_id)
+            # luong return v2, khong tao SO tra hang chi tao phieu tra hang tu picking
+            if odoo_order and data['status'] in ['Returned']:
+                odoo_order.create_picking_return()
+                return self.result_request(200, 0, _('Update sale order success'))
             is_create_wh_in = False
             if odoo_order and data['status'] in ['Returned']:
                 origin_order_id = odoo_order
@@ -201,7 +205,7 @@ class MainController(http.Controller):
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
                     if data['status'] in ["Success"]:
-                        odoo_order.picking_ids.with_context({'done_from_nhanh': True}).confirm_from_so(True)
+                        odoo_order.picking_ids.with_context(super=True).confirm_from_so(True)
 
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids:

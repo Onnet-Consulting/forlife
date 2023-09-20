@@ -104,6 +104,9 @@ class SaleOrder(models.Model):
     def confirm_return_so(self):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
+        picking_not_done = so_id.picking_ids.filtered(lambda p: p.state != 'done')
+        for pnd in picking_not_done:
+            pnd.action_cancel()
         if picking_ids and len(picking_ids) == 1:
             ctx = {
                 'so_return': self.id,
@@ -269,6 +272,10 @@ class SaleOrder(models.Model):
             return res
 
     def action_confirm(self):
+        if self.state in ('draft', 'sent'):
+            action = self.check_sale_promotion()
+            if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
+                return action
         res = super().action_confirm()
         if self.x_punish:
             self.picking_ids.confirm_from_so(True)
