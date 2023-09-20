@@ -907,8 +907,8 @@ class SummaryAccountMovePos(models.Model):
                 company_ids[store_id] = sales[store_id]["company_id"]
 
             if refunds.get(store_id):
-                store_data[store_id] = sales[store_id]["store"]
-                company_ids[store_id] = sales[store_id]["company_id"]
+                store_data[store_id] = refunds[store_id]["store"]
+                company_ids[store_id] = refunds[store_id]["company_id"]
 
 
             accumulate_point = 0
