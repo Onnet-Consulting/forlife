@@ -9,6 +9,9 @@
                 <xpath expr="//button[@name='button_cancel']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_button_cancel_accounting</attribute>
                 </xpath>
+                <xpath expr="//button[@name='button_cancel'][2]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_button_cancel_accounting</attribute>
+                </xpath>
                  <xpath expr="//button[@name='button_draft']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_button_draft_accounting</attribute>
                 </xpath>
