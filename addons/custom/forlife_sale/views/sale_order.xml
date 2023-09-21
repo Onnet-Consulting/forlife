@@ -51,7 +51,7 @@
                         string="Xác nhận trả hàng" type="object"/>
                 </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft', 'done_sale']), ('x_is_return', '=', True)]}</attribute>
                     <attribute name="class">oe_highlight</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="attributes">

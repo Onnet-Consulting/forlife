@@ -191,6 +191,7 @@ class MainController(http.Controller):
                             try:
                                 # webhook_value_id.order_id.action_create_picking()
                                 webhook_value_id.order_id.action_confirm()
+                                webhook_value_id.order_id.picking_ids.with_context(super=True).confirm_from_so(True)
                             except:
                                 return self.result_request(200, 0, _('Create sale order success'))
 
@@ -209,6 +210,8 @@ class MainController(http.Controller):
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
                     if data['status'] in ["Success"]:
+                        if odoo_order.state == 'draft':
+                            odoo_order.action_confirm()
                         odoo_order.picking_ids.with_context(super=True).confirm_from_so(True)
 
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
