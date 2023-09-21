@@ -96,10 +96,11 @@ class AccountMove(models.Model):
     @api.depends('cost_line', 'cost_line.product_id', 'account_expense_labor_detail_ids', 'account_expense_labor_detail_ids.product_id')
     def _compute_product_expense_labor_ids(self):
         for rec in self:
+            move_id = rec if not rec.origin_invoice_id else rec.origin_invoice_id
             if rec.select_type_inv == 'labor':
-                rec.product_expense_ids = [(6, 0, rec.account_expense_labor_detail_ids.mapped('product_id').ids)]
+                rec.product_expense_ids = [(6, 0, move_id.account_expense_labor_detail_ids.mapped('product_id').ids)]
             else:
-                rec.product_expense_ids = [(6, 0, rec.cost_line.mapped('product_id.id'))]
+                rec.product_expense_ids = [(6, 0, move_id.cost_line.mapped('product_id.id'))]
 
     @api.depends('total_trade_discount', 'trade_tax_id', 'trade_discount')
     def compute_x_amount_tax(self):
