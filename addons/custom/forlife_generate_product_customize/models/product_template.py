@@ -122,7 +122,7 @@ class ProductTemplate(models.Model):
         return barcode + ean
 
     def return_ean(self, barcode):
-        res = list(map(int, str(barcode)))
+        res = list(map(int, ''.join(filter(str.isdigit, str(barcode)))))
         res.append(0)
         res.reverse()
 

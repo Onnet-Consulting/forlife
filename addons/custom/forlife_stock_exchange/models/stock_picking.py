@@ -205,15 +205,15 @@ class InheritStockPicking(models.Model):
             if rec.picking_outgoing_id:
                 rec.picking_outgoing_id.action_cancel()
                 rec.picking_outgoing_id.action_back_to_draft()
-                rec.picking_outgoing_id.unlink()
+                # rec.picking_outgoing_id.unlink()
         return super(InheritStockPicking, self).action_cancel()
 
     def action_back_to_draft(self):
         for rec in self:
             if rec.picking_outgoing_id:
                 rec.picking_outgoing_id.action_cancel()
-                rec.picking_outgoing_id.action_back_to_draft()
-                rec.picking_outgoing_id.unlink()
+                # rec.picking_outgoing_id.action_back_to_draft()
+                # rec.picking_outgoing_id.unlink()
         return super(InheritStockPicking, self).action_back_to_draft()
 
     @api.model

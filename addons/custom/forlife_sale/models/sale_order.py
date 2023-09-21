@@ -104,6 +104,9 @@ class SaleOrder(models.Model):
     def confirm_return_so(self):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
+        picking_not_done = so_id.picking_ids.filtered(lambda p: p.state != 'done')
+        for pnd in picking_not_done:
+            pnd.action_cancel()
         if picking_ids and len(picking_ids) == 1:
             ctx = {
                 'so_return': self.id,
@@ -269,6 +272,10 @@ class SaleOrder(models.Model):
             return res
 
     def action_confirm(self):
+        if self.state in ('draft', 'sent'):
+            action = self.check_sale_promotion()
+            if action and action.get('xml_id', False) == 'forlife_sale_promotion.action_check_promotion_wizard':
+                return action
         res = super().action_confirm()
         if self.x_punish:
             self.picking_ids.confirm_from_so(True)
@@ -586,8 +593,25 @@ class SaleOrderLine(models.Model):
         })
         return rslt
 
+    @api.model
+    def _search_rule(self, location):
+        domain = ['&', ('location_src_id', '=', location.id), ('action', '!=', 'push')]
+        domain_company = ['|', ('company_id', '=', False), ('company_id', 'child_of', self.company_id.ids)]
+        warehouse_id = location.warehouse_id
+        warehouse_domain = ['|', ('warehouse_id', '=', warehouse_id.id), ('warehouse_id', '=', False)]
+        Rule = self.env['stock.rule']
+        res = self.env['stock.rule']
+        if warehouse_id:
+            warehouse_routes = warehouse_id.route_ids
+            route_domain = [('route_id', 'in', warehouse_routes.ids)]
+            if warehouse_routes:
+                res = Rule.search(expression.AND([domain, domain_company, warehouse_domain, route_domain]), order='route_sequence, sequence', limit=1)
+        return res
+
     def _prepare_procurement_values(self, group_id=False):
         res = super()._prepare_procurement_values(group_id=group_id)
         if self.x_location_id:
+            rule = self._search_rule(self.x_location_id)
             res['warehouse_id'] = self.x_location_id.warehouse_id or False
+            res['route_ids'] = rule.route_id
         return res

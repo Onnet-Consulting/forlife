@@ -21,6 +21,9 @@
                 <xpath expr="//button[@name='action_toggle_is_locked'][2]" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_stock_picking_lock_unlock,stock.group_stock_manager</attribute>
                 </xpath>
+                <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_action_create_returns</attribute>
+                </xpath>
             </field>
         </record>
     </data>

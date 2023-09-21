@@ -1,4 +1,4 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_is_zero
 
@@ -12,15 +12,17 @@ class StockPicking(models.Model):
             for picking in self:
                 if picking.state == 'done':
                     continue
-                picking.action_assign()
+                picking.sudo().action_assign()
+                picking.move_ids._set_quantities_to_reservation()
                 if all(float_is_zero(move_line.reserved_qty, precision_rounding=move_line.product_uom_id.rounding)
                        for move_line in picking.move_line_ids):
                     no_reserved_quantities_ids.add(picking.id)
                 if no_reserved_quantities_ids:
                     raise ValidationError(_('Không thể xuất kho, Vui lòng kiểm tra lại tồn của sản phẩm!.'))
-                picking.action_confirm()
-                picking.move_ids._set_quantities_to_reservation()
-                picking.with_context(skip_immediate=True).button_validate()
+                if self._context.get('super', False):
+                    picking.with_user(SUPERUSER_ID).with_company(picking.company_id).with_context(skip_immediate=True).button_validate()
+                else:
+                    picking.with_context(skip_immediate=True).button_validate()
         else:
             self.action_confirm()
 
@@ -104,6 +106,8 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
+        if self.picking_type_id.sequence_code == 'PICK':
+            return res
         if self.picking_type_id.x_is_return:
             for move in self.move_ids:
                 account_move = self.env['account.move'].search([('stock_move_id', '=', move.id)])

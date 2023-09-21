@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import http
 from odoo.http import request, Response
 import json
@@ -20,18 +22,21 @@ _logger = logging.getLogger(__name__)
 
 class MainController(http.Controller):
 
-    @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
+    @http.route('/nhanh/webhook/handler_tokyo', type='http', auth='public', methods=['POST'], csrf=False)
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         business_id = value.get("businessId")
         request.business_id = business_id
 
         event_type = value.get('event')
+        _logger.info(f'Webhook nhanh called value: {value}, time: {datetime.datetime.now()}')
         if event_type in ['orderUpdate']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
                 'event_type': event_type_mapping.get(event_type, ''),
                 'event_value': value,
-                'nhanh_id': value.get('data').get('orderId')
+                'nhanh_id': value.get('data').get('orderId'),
+                'state_nhanh': value.get('data').get('status'),
+                'brand': str(value.get('businessId')),
             })
             try:
                 data = value.get('data')
@@ -45,7 +50,44 @@ class MainController(http.Controller):
                         'state': 'done'
                     })
             except Exception as ex:
-                _logger.info(f'Webhook to system odoo false{ex}')
+                _logger.info(f'Webhook to system odoo false {ex}')
+                if webhook_value_id:
+                    webhook_value_id.update({
+                        'error': ex
+                    })
+                result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
+            return request.make_response(json.dumps(result_requests),
+                                         headers={'Content-Type': 'application/json'})
+
+    @http.route('/nhanh/webhook/handler_format', type='http', auth='public', methods=['POST'], csrf=False)
+    def nhanh_webhook_handler(self, **post):
+        value = json.loads(request.httprequest.data)
+        business_id = value.get("businessId")
+        request.business_id = business_id
+
+        event_type = value.get('event')
+        _logger.info(f'Webhook nhanh called value: {value}, time: {datetime.datetime.now()}')
+        if event_type in ['orderUpdate']:
+            webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
+                'event_type': event_type_mapping.get(event_type, ''),
+                'event_value': value,
+                'nhanh_id': value.get('data').get('orderId'),
+                'state_nhanh': value.get('data').get('status'),
+                'brand': str(value.get('businessId')),
+            })
+            try:
+                data = value.get('data')
+                result_requests = self.handle_order(event_type, data, webhook_value_id)
+                if result_requests.get('code') != 200 and webhook_value_id:
+                    webhook_value_id.update({
+                        'error': result_requests.get('message')
+                    })
+                elif result_requests.get('code') == 200 and webhook_value_id:
+                    webhook_value_id.update({
+                        'state': 'done'
+                    })
+            except Exception as ex:
+                _logger.info(f'Webhook to system odoo false {ex}')
                 if webhook_value_id:
                     webhook_value_id.update({
                         'error': ex
@@ -80,6 +122,10 @@ class MainController(http.Controller):
         ]
         if event_type == 'orderUpdate':
             odoo_order = n_client.get_sale_order(order_id)
+            # luong return v2, khong tao SO tra hang chi tao phieu tra hang tu picking
+            if odoo_order and data['status'] in ['Returned', 'Canceled']:
+                odoo_order.create_picking_return()
+                return self.result_request(200, 0, _('Update sale order success'))
             is_create_wh_in = False
             if odoo_order and data['status'] in ['Returned']:
                 origin_order_id = odoo_order
@@ -98,6 +144,10 @@ class MainController(http.Controller):
                     return self.result_request(404, 1, _('Order confirmation is required'))
 
             if not odoo_order:
+                # với trạng thái này thì không tạo so
+                if data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
+                    return self.result_request(200, 0, _('Success'))
+
                 location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
                 name_customer = False
@@ -163,7 +213,7 @@ class MainController(http.Controller):
                         webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
                     except Exception as e:
                         print(str(e))
-
+                # bỏ phân logi bên dưới
                 elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                     if webhook_value_id.order_id.picking_ids:
                         for picking_id in webhook_value_id.order_id.picking_ids:
@@ -179,7 +229,14 @@ class MainController(http.Controller):
                 else:
                     if data['status'] in ["Packing", "Pickup", "Shipping", "Success", "Packed"]:
                         webhook_value_id.order_id.check_sale_promotion()
-                        if webhook_value_id.order_id.state != 'check_promotion' and not webhook_value_id.order_id.picking_ids:
+                        if data['status'] in ["Success"]:
+                            try:
+                                # webhook_value_id.order_id.action_create_picking()
+                                webhook_value_id.order_id.action_confirm()
+                                webhook_value_id.order_id.picking_ids.with_context(super=True).confirm_from_so(True)
+                            except:
+                                return self.result_request(200, 0, _('Create sale order success'))
+                        elif webhook_value_id.order_id.state != 'check_promotion' and not webhook_value_id.order_id.picking_ids:
                             try:
                                 # webhook_value_id.order_id.action_create_picking()
                                 webhook_value_id.order_id.action_confirm()
@@ -201,7 +258,9 @@ class MainController(http.Controller):
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
                     if data['status'] in ["Success"]:
-                        odoo_order.picking_ids.confirm_from_so(True)
+                        if odoo_order.state == 'draft':
+                            odoo_order.action_confirm()
+                        odoo_order.picking_ids.with_context(super=True).confirm_from_so(True)
 
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                         if odoo_order.picking_ids:

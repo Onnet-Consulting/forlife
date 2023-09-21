@@ -260,4 +260,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum44Template',
         'reportPager': True,
     },
+    'report.num45': {
+        'module': 'Kho',
+        'name': 'Báo cáo chi tiết phiếu lỗi',
+        'reportTemplate': 'ReportNum45Template',
+        'reportPager': True,
+    },
 }

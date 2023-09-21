@@ -39,14 +39,17 @@
                         <tree editable="bottom" class="width-hh">
                             <field name="is_production_order" invisible="1"/>
                             <field name="product_id"/>
+                            <field name="picking_id" invisible="1"/>
+                            <field name="lots_visible" invisible="1"/>
+                            <field name="lot_id" groups="stock.group_production_lot" attrs="{'column_invisible': [('parent.show_lots_text', '=', True)], 'invisible': [('lots_visible', '=', False)]}" context="{'default_product_id': product_id, 'default_company_id': company_id, 'active_picking_id': picking_id}" optional="show"/>
+                            <field name="lot_name" groups="stock.group_production_lot" attrs="{'column_invisible': [('parent.show_lots_text', '=', False)], 'invisible': [('lots_visible', '=', False)]}" context="{'default_product_id': product_id}"/>
                             <field name="location_dest_id"/>
-                            <field name="lot_name"/>
                             <field name="purchase_uom"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="free_good"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="quantity_change"
-                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
+                                   attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)], 'readonly': [('parent.is_pk_purchase', '=', True)]}"/>
                             <field name="quantity_purchase_done"
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
 <!--                            <field name="is_need_scan_barcode" invisible="1"/>-->

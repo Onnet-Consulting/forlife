@@ -403,7 +403,7 @@ msgstr "(Cart) Giảm tiền"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__cart_discount_fixed_price
 msgid "Cart Discount Fixed Price"
-msgstr "(Cart) Giảm giá cố định"
+msgstr "(Cart) Giá cố định"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__cart_discount_percent
@@ -495,7 +495,7 @@ msgstr "(Code) Giảm tiền"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__code_fixed_price
 msgid "Code Discount Fixed Price"
-msgstr "(Code) Giảm giá cố định"
+msgstr "(code) Giá cố định"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__code_percent
@@ -531,12 +531,12 @@ msgstr "(Combo) Giảm tiền"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__combo_fixed_price
 msgid "Combo Discount Fixed Price"
-msgstr "(Combo) Giảm giá cố định"
+msgstr "(Combo) Giá cố định"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__combo_fixed_price_by_qty
 msgid "Combo Discount Fixed Price by Qty"
-msgstr "(Combo) Giảm giá cố định theo số lượng"
+msgstr "(Combo) Giá cố định theo số lượng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__reward_type__combo_percent
@@ -950,7 +950,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__has_check_product
 msgid "Has Check Product"
-msgstr "Có sản phẩm xét"
+msgstr "Chứa sản phẩm kiểm tra"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__has_code
@@ -1161,12 +1161,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__limit_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage
 msgid "Limit Order Usage"
-msgstr "Giới hạn sử dụng"
+msgstr "Giới hạn số lượng mã/đơn"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__limit_usage
 msgid "Limit usage"
-msgstr "Giới hạn sử dụng"
+msgstr "Giới hạn số lượng mã/đơn"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
@@ -2297,3 +2297,9 @@ msgstr ""
 #, python-format
 msgid "Đóng"
 msgstr ""
+
+#. module: point_of_sale
+#: model:ir.model.fields,field_description:point_of_sale.field_pos_order_line__price_unit
+msgid "Unit Price"
+msgstr "Đơn giá sau chiếu khấu"
+

@@ -245,6 +245,11 @@
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
+        <record id="group_action_create_returns" model="res.groups">
+            <field name="name">Phiếu nhập kho Nút trả hàng</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <!--Group chức năng POS-->
 
         <record model="ir.module.category" id="module_category_pos">
@@ -269,6 +274,21 @@
 
         <record id="group_print_stamps_barcode_approve" model="res.groups">
             <field name="name">In mã vạch nút Duyệt</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_button_change_payments" model="res.groups">
+            <field name="name">Đơn hàng Nút Điều chỉnh thanh toán</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_button_assign_employee" model="res.groups">
+            <field name="name">Đơn hàng Nút Thay đổi nhân viên</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_print_pos_order" model="res.groups">
+            <field name="name">Đơn hàng Nút In biên lai</field>
             <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
         </record>
 
@@ -346,6 +366,16 @@
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
         </record>
 
+        <record id="group_purchase_request_action_lock_and_unlock" model="res.groups">
+            <field name="name">Phiếu yêu cầu mua hàng Nút Lock + Unlock</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+         <record id="group_purchase_line_price_unit" model="res.groups">
+            <field name="name">Nhìn thấy trường giá list-view + form-view</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
         <!--Nhóm kiêm nhiệm -->
         <record model="ir.module.category" id="module_category_concurrently">
             <field name="name">Function Concurrently</field>
@@ -396,6 +426,16 @@
 
         <record id="group_liabilities_accounting" model="res.groups">
             <field name="name">Kế toán công nợ</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_accounting"/>
+        </record>
+
+        <record id="group_button_cancel_accounting" model="res.groups">
+            <field name="name">Hóa đơn Nút Cancel</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_accounting"/>
+        </record>
+
+        <record id="group_button_draft_accounting" model="res.groups">
+            <field name="name">Hóa đơn Nút Đưa về dự thảo</field>
             <field name="category_id" ref="forlife_permission_management.module_category_accounting"/>
         </record>
 
