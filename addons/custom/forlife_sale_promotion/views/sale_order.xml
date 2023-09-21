@@ -15,11 +15,11 @@
                 </xpath>
 
 
-                <xpath expr="//button[@name='action_confirm']" position="after">
-                    <button name="action_create_picking"
-                        string="Xác nhận" type="object" context="{'validate_analytic': True}"
-                        attrs="{'invisible': [('state', 'not in', ['check_promotion', 'done_sale'])]}"/>
-                </xpath>
+<!--                <xpath expr="//button[@name='action_confirm']" position="after">-->
+<!--                    <button name="action_create_picking"-->
+<!--                        string="Xác nhận" type="object" context="{'validate_analytic': True}"-->
+<!--                        attrs="{'invisible': [('state', 'not in', ['check_promotion', 'done_sale'])]}"/>-->
+<!--                </xpath>-->
 
                 <!--Them tam thoi đê test đơn hang nhanh-->
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
