@@ -120,9 +120,10 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                res = records.with_context(check_date_done=True).button_validate()
-                if isinstance(res, dict):
-                    action = res
+                for r in records:
+                    res = r.with_context(check_date_done=True).button_validate()
+                    if isinstance(res, dict):
+                        action = res
         </field>
     </record>
 </odoo>
