@@ -76,6 +76,14 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             }
             super.add_orderline(...arguments);
         }
+
+        set_orderline_options(line, options) {
+            super.set_orderline_options(...arguments);
+            if (options.employee_id && options.assigned_employee) {
+                line.employee_id = options.employee_id;
+                line.assigned_employee = options.assigned_employee;
+            };
+        }
     }
 
     Registries.Model.extend(Order, OrderAssignEmployee);
