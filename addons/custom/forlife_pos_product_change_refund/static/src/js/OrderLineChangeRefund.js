@@ -20,20 +20,20 @@ odoo.define('forlife_pos_product_change_refund.OrderlineChangeRefund', function(
 			    }else{
 			        old_id_employee = false
 			    }
-			    if(event.target.value > 0 &&  order_new.is_change_product){
-			        let user = this.env.pos.user;
-                    if (user.employee_id) {
-                        self.props.line.employee_id = user.employee_id[0];
-                    }
-			    }else {
-			        if(old_id_employee){
-			            old_id_employee.forEach(function(item){
-			                if(item.id == self.props.line.id){
-			                    self.props.line.employee_id = item.employee_id
-			                }
-			            })
-			        }
-			    }
+//			    if(event.target.value > 0 &&  order_new.is_change_product){
+//			        let user = this.env.pos.user;
+//                    if (user.employee_id) {
+//                        self.props.line.employee_id = user.employee_id[0];
+//                    }
+//			    }else {
+//			        if(old_id_employee){
+//			            old_id_employee.forEach(function(item){
+//			                if(item.id == self.props.line.id){
+//			                    self.props.line.employee_id = item.employee_id
+//			                }
+//			            })
+//			        }
+//			    }
 			    if (event.target.value > self.props.line.quantity_canbe_refund) {
 			        self.showPopup('ErrorPopup', {
                         title: self.env._t('Warning'),
