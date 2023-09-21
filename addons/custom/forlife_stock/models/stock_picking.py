@@ -431,7 +431,7 @@ class StockPicking(models.Model):
                     rec.update(location_values)
         return line
 
-    def button_validate(self):
+    def check_date_done_before_validate(self):
         if self._context.get('check_date_done'):
             record_valid_date = self.filtered(lambda s: s.state == 'assigned' and s.date_done.date() != fields.Date.today())
             if record_valid_date:
@@ -440,6 +440,9 @@ class StockPicking(models.Model):
                 ctx = dict(self._context, picking_ids=self.ids, default_message=message)
                 action['context'] = ctx
                 return action
+        return True
+
+    def button_validate(self):
         res = super(StockPicking, self).button_validate()
         for record in self:
 
