@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum45Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum45MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum45MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td class="index-report"><t t-esc="line.stt"/></td>
+                        <td class="column_nowrap"><t t-esc="line.trang_thai"/></td>
+                        <td class="column_nowrap"><t t-esc="line.so_ct"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ngay_lap_phieu"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ngay_duyet_loi"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_cua_hang"/></td>
+                        <td><t t-esc="line.ten_cua_hang"/></td>
+                        <td class="column_nowrap"><t t-esc="line.ma_hang"/></td>
+                        <td><t t-esc="line.ten_hang"/></td>
+                        <td><t t-esc="line.mau"/></td>
+                        <td><t t-esc="line.size"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_yeu_cau, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_duyet, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.phan_tram_gg, 2)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.so_tien_giam, 0)"/></td>
+                        <td><t t-esc="line.mo_ta_loi"/></td>
+                        <td><t t-esc="line.phan_loai_loi"/></td>
+                        <td><t t-esc="line.nguoi_tao"/></td>
+                        <td><t t-esc="line.nguoi_duyet"/></td>
+                        <td><t t-esc="line.nhom_hang"/></td>
+                        <td><t t-esc="line.dong_hang"/></td>
+                        <td><t t-esc="line.ket_cau"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

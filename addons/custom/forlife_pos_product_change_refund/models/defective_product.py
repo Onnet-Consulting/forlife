@@ -30,6 +30,8 @@ class ProductDefective(models.Model):
     active = fields.Boolean(default=True)
     quantity_require = fields.Integer('Số lượng yêu cầu')
     company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
+    approval_uid = fields.Many2one('res.users', 'Người duyệt', readonly=True)
+    approval_date = fields.Datetime('Ngày duyệt', readonly=True)
 
     @api.onchange('product_id')
     def change_product(self):
@@ -147,7 +149,11 @@ class ProductDefective(models.Model):
         if price:
             raise UserError(_('Tổng giảm không được lớn hơn %s' % str(price)))
 
-        self.state = 'approved'
+        self.write({
+            'state': 'approved',
+            'approval_uid': self._uid,
+            'approval_date': fields.Datetime.now(),
+        })
 
     def action_refuse(self):
         self.state = 'refuse'
@@ -156,6 +162,8 @@ class ProductDefective(models.Model):
         self.write({
             'state': 'cancel',
             'active': False,
+            'approval_uid': False,
+            'approval_date': False,
         })
 
     def _send_mail_approve(self, id):

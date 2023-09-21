@@ -19,9 +19,9 @@
                         <td class="column_nowrap"><t t-esc="line.ten_ch"/></td>
                         <td><t t-esc="line.so_ct_goc"/></td>
                         <td><t t-esc="line.noi_dung"/></td>
-                        <td><t t-esc="format_decimal(line.so_tien_nop, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.so_tien_thu, 0)"/></td>
-                        <td><t t-esc="format_decimal(line.tien_chenh_lech, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.so_tien_nop, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.so_tien_thu, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tien_chenh_lech, 0)"/></td>
                         <td><t t-esc="line.so_ct_chenh_lech"/></td>
                         <td><t t-esc="line.trang_thai"/></td>
                     </tr>
