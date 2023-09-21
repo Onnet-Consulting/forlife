@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 class MainController(http.Controller):
 
     @http.route('/nhanh/webhook/handler_tokyo', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, **post):
+    def nhanh_webhook_handler_tokyo(self, **post):
         value = json.loads(request.httprequest.data)
         business_id = value.get("businessId")
         request.business_id = business_id
@@ -60,7 +60,7 @@ class MainController(http.Controller):
                                          headers={'Content-Type': 'application/json'})
 
     @http.route('/nhanh/webhook/handler_format', type='http', auth='public', methods=['POST'], csrf=False)
-    def nhanh_webhook_handler(self, **post):
+    def nhanh_webhook_handler_format(self, **post):
         value = json.loads(request.httprequest.data)
         business_id = value.get("businessId")
         request.business_id = business_id
