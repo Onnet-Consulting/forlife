@@ -81,7 +81,7 @@ class MainController(http.Controller):
         if event_type == 'orderUpdate':
             odoo_order = n_client.get_sale_order(order_id)
             # luong return v2, khong tao SO tra hang chi tao phieu tra hang tu picking
-            if odoo_order and data['status'] in ['Returned']:
+            if odoo_order and data['status'] in ['Returned', 'Canceled']:
                 odoo_order.create_picking_return()
                 return self.result_request(200, 0, _('Update sale order success'))
             is_create_wh_in = False
@@ -102,6 +102,10 @@ class MainController(http.Controller):
                     return self.result_request(404, 1, _('Order confirmation is required'))
 
             if not odoo_order:
+                # với trạng thái này thì không tạo so
+                if data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
+                    return self.result_request(200, 0, _('Success'))
+
                 location_id = n_client.get_location_by_company(default_company_id, int(order['depotId']))
 
                 name_customer = False
@@ -167,7 +171,7 @@ class MainController(http.Controller):
                         webhook_value_id.order_id.create_stock_picking_so_from_nhanh_with_return_so()
                     except Exception as e:
                         print(str(e))
-
+                # bỏ phân logi bên dưới
                 elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
                     if webhook_value_id.order_id.picking_ids:
                         for picking_id in webhook_value_id.order_id.picking_ids:
@@ -187,6 +191,7 @@ class MainController(http.Controller):
                             try:
                                 # webhook_value_id.order_id.action_create_picking()
                                 webhook_value_id.order_id.action_confirm()
+                                webhook_value_id.order_id.picking_ids.with_context(super=True).confirm_from_so(True)
                             except:
                                 return self.result_request(200, 0, _('Create sale order success'))
 
@@ -205,6 +210,8 @@ class MainController(http.Controller):
                             except Exception as e:
                                 return self.result_request(404, 1, _('Update sale order false'))
                     if data['status'] in ["Success"]:
+                        if odoo_order.state == 'draft':
+                            odoo_order.action_confirm()
                         odoo_order.picking_ids.with_context(super=True).confirm_from_so(True)
 
                     elif data['status'] in ['Canceled', 'Aborted', 'CarrierCanceled']:
