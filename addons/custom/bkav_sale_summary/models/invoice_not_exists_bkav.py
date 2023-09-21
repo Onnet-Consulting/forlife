@@ -207,26 +207,27 @@ class GeneralInvoiceNotExistsBkav(models.Model):
         first_n=0
         last_n=limit
         model_code = self.genarate_pos_code(typ=typ, order=order, index=page)
-        if len(lines) > last_n:
-            separate_lines = lines[first_n:last_n]
-            del lines[first_n:last_n]
-            items[page] = {
-                'code': model_code,
-                'company_id': order.company_id.id,
-                'partner_id': order.partner_id.id,
-                'invoice_date': date.today(),
-                'line_ids': separate_lines
-            }
-            page += 1
-            self.recursive_move_line_items(
-                items=items, 
-                lines=lines, 
-                page=page, 
-                limit=limit,
-                order=order,
-                typ=typ
-            )
-        else:
+        # if len(lines) > last_n:
+        #     separate_lines = lines[first_n:last_n]
+        #     del lines[first_n:last_n]
+        #     items[page] = {
+        #         'code': model_code,
+        #         'company_id': order.company_id.id,
+        #         'partner_id': order.partner_id.id,
+        #         'invoice_date': date.today(),
+        #         'line_ids': separate_lines
+        #     }
+        #     page += 1
+        #     self.recursive_move_line_items(
+        #         items=items, 
+        #         lines=lines, 
+        #         page=page, 
+        #         limit=limit,
+        #         order=order,
+        #         typ=typ
+        #     )
+        # else:
+        if len(lines):
             items[page] = {
                 'code': model_code,
                 'company_id': order.company_id.id,
