@@ -1936,7 +1936,7 @@ class PurchaseOrderLine(models.Model):
             if rec.discount_percent < 0 or rec.discount_percent > 100:
                 raise UserError(_('Bạn không thể nhập chiết khấu % nhỏ hơn 0 hoặc lớn hơn 100!'))
 
-    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
+    @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent', 'vendor_price')
     def _compute_amount(self):
         for line in self:
             tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
@@ -1948,6 +1948,7 @@ class PurchaseOrderLine(models.Model):
                 'price_tax': amount_tax,
                 'price_total': amount_untaxed + amount_tax,
             })
+        self.order_id._amount_all()
 
     @api.constrains('total_vnd_exchange_import', 'total_vnd_amount', 'before_tax', 'order_id')
     def _constrain_total_vnd_exchange_import(self):
@@ -2307,7 +2308,7 @@ class PurchaseOrderLine(models.Model):
             self.price_unit = self.vendor_price
 
     # exchange rate
-    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'exchange_quantity', 'product_uom', 'order_id.purchase_type', 'free_good')
+    @api.depends('purchase_quantity', 'purchase_uom', 'product_qty', 'exchange_quantity', 'product_uom', 'order_id.purchase_type', 'free_good', 'vendor_price')
     def _compute_price_unit_and_date_planned_and_name(self):
         for line in self:
             if line.free_good:
