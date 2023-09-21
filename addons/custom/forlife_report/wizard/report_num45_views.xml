@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num44_form" model="ir.ui.view">
+    <record id="report_num45_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num44</field>
+        <field name="model">report.num45</field>
         <field name="arch" type="xml">
-            <form string="report_num44_form" create="0">
+            <form string="report_num45_form" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -20,26 +20,29 @@
                             </div>
                         </group>
                         <group>
-                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num44,res.brand'}"/>
+                            <field name="brand_id" widget="radio" options="{'horizontal': True}" context="{'report_ctx': 'report.num45,res.brand'}"/>
                         </group>
                     </group>
                     <group>
-                        <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num44,store'}"/>
+                        <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num45,store'}"/>
+                        <field name="state_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num45,product.product'}"/>
+                        <field name="defective_type_ids" widget="many2many_tags" options="{'no_create': True}"/>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="report_num44_window_action" model="ir.actions.act_window">
-        <field name="name">Báo cáo chênh lệch tiền nộp về công ty</field>
-        <field name="res_model">report.num44</field>
+    <record id="report_num45_window_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo chi tiết phiếu lỗi</field>
+        <field name="res_model">report.num45</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="report_num44_menu"
-              action="report_num44_window_action"
-              parent="report_menu_sale"
-              sequence="44"/>
+    <menuitem id="report_num45_menu"
+              action="report_num45_window_action"
+              parent="report_menu_stock"
+              sequence="45"/>
 </odoo>
