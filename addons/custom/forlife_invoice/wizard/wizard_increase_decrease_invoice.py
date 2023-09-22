@@ -102,6 +102,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                     if wz_invoice_line_id and line_id.display_type == 'product':
                         line_id.write({'vendor_price': wz_invoice_line_id[0].vendor_price})
                         line_id.onchange_vendor_price()
+                        line_id._onchange_discount_value()
                 total_tax = sum(move_copy_id.line_ids.filtered(lambda f: f.display_type == 'product').mapped('tax_amount'))
                 move_copy_id.line_ids.filtered(lambda f: f.display_type == 'tax').write({
                     'debit': total_tax,
@@ -358,7 +359,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
         for line in self.line_ids:
             r = row + 1
             sheet.write(row, 0, line.invoice_line_id.id or line.id, formats.get('center_format'))
-            sheet.write(row, 1, line.product_id.name, formats.get('normal_format'))
+            sheet.write(row, 1, line.product_id.display_name, formats.get('normal_format'))
             sheet.write(row, 2, line.uom_id.name, formats.get('normal_format'))
             sheet.write(row, 3, line.quantity, formats.get('int_number_format'))
             sheet.write(row, 4, line.exchange_quantity, formats.get('float_number_format'))
