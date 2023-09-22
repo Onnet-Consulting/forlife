@@ -77,6 +77,7 @@ class ReportBase(models.AbstractModel):
         datetime_format.update(normal_format)
         float_number_format = {}
         center_format = copy.copy(normal_format)
+        right_format = copy.copy(normal_format)
         italic_format = copy.copy(normal_format)
         italic_format.update({
             'border': 0,
@@ -85,6 +86,7 @@ class ReportBase(models.AbstractModel):
         int_number_format = {}
 
         center_format.update({'align': 'center'})
+        right_format.update({'align': 'right'})
         float_number_format.update(normal_format)
         int_number_format.update(normal_format)
         int_number_format.update(align_right)
@@ -98,6 +100,7 @@ class ReportBase(models.AbstractModel):
         normal_format = workbook.add_format(normal_format)
         italic_format = workbook.add_format(italic_format)
         center_format = workbook.add_format(center_format)
+        right_format = workbook.add_format(right_format)
         header_format = workbook.add_format(header_format)
 
         float_number_format.update(align_right)
@@ -125,6 +128,7 @@ class ReportBase(models.AbstractModel):
             'normal_format': normal_format,
             'italic_format': italic_format,
             'center_format': center_format,
+            'right_format': right_format,
             'float_number_format': float_number_format,
             'int_number_format': int_number_format,
             'float_number_title_format': float_number_title_format,
