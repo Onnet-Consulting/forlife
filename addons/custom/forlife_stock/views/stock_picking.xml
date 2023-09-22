@@ -120,7 +120,7 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                res = records.with_context(check_date_done=True).check_date_done_before_validate()
+                res = records.check_date_done_before_validate()
                 if isinstance(res, dict):
                     action = res
                 else:
