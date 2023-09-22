@@ -432,17 +432,20 @@ class StockPicking(models.Model):
         return line
 
     def check_date_done_before_validate(self):
-        if self._context.get('check_date_done'):
-            record_valid_date = self.filtered(lambda s: s.state == 'assigned' and (s.date_done + timedelta(hours=7)).date() != fields.Date.today())
-            if record_valid_date:
-                action = self.env["ir.actions.actions"]._for_xml_id("forlife_stock.confirm_continue_validate_picking_action")
-                message = f"Kiểm tra lại ngày hoàn thành trên phiếu {', '.join(record_valid_date.mapped('name'))} trước khi xác nhận phiếu"
-                ctx = dict(self._context, picking_ids=self.ids, default_message=message)
-                action['context'] = ctx
-                return action
-        return True
+        record_valid_date = self.filtered(lambda s: s.state == 'assigned' and (s.date_done + timedelta(hours=7)).date() != fields.Date.today())
+        if record_valid_date:
+            action = self.env["ir.actions.actions"]._for_xml_id("forlife_stock.confirm_continue_validate_picking_action")
+            message = f"Kiểm tra lại ngày hoàn thành trên phiếu {', '.join(record_valid_date.mapped('name'))} trước khi xác nhận phiếu"
+            ctx = dict(self._context, picking_ids=self.ids, default_message=message)
+            action['context'] = ctx
+            return action
+        return False
 
     def button_validate(self):
+        if self._context.get('check_date_done'):
+            action = self.check_date_done_before_validate()
+            if action:
+                return action
         res = super(StockPicking, self).button_validate()
         for record in self:
 
