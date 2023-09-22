@@ -757,6 +757,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             selected_line.product_defective_id = null;
         };
 
+        if (selected_line.is_reward_line) {
+            selected_line.is_reward_line = false;
+        }
+
         function get_cids_applied_programs(set_programs) {
             let cids = new Set();
             self.get_orderlines().forEach(line => {
