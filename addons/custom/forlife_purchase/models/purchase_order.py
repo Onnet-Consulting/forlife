@@ -506,7 +506,7 @@ class PurchaseOrder(models.Model):
                 'product_id': item.product_id.id,
                 'name': item.product_id.name,
                 'product_uom_qty': item.product_qty,
-                'price_unit': item.price_subtotal/item.product_qty,
+                'price_unit': (item.price_subtotal+item.price_tax)/item.product_qty if item.product_qty != 0 else (item.price_subtotal+item.price_tax),
                 'product_uom': item.product_id.uom_id.id,
                 'customer_lead': 0,
                 'sequence': 10,
