@@ -17,11 +17,13 @@
                         <td><t t-esc="line.ma_lenh_sx"/></td>
                         <td><t t-esc="line.kho_xuong"/></td>
                         <td class="column_nowrap"><t t-esc="line.ma_vat_tu"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_sx_ke_hoach, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_nk_thuc_te, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_th_thuc_te, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_vt_kho_cap, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.chenh_lech_qt, 0)"/></td>
+                        <td><t t-esc="line.ten_vat_tu"/></td>
+                        <td><t t-esc="line.dvt"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_sx_ke_hoach, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_nk_thuc_te, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_vt_tieu_hao_tt, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_vt_dieu_chuyen, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_vt_dieu_chuyen - line.sl_vt_tieu_hao_tt, line.precision_rounding)"/></td>
                     </tr>
                 </t>
             </tbody>
