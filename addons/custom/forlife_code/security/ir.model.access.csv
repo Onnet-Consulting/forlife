@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_declare_category,access_declare_category,model_declare_category,base.group_user,1,0,0,0
+access_declare_category_manager,access_declare_category_manager,model_declare_category,base.group_system,1,1,1,1
+access_declare_code,access_declare_code,model_declare_code,base.group_user,1,0,0,0
+access_declare_code_manager,access_declare_code_manager,model_declare_code,base.group_system,1,1,1,1

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="declare_code_form_view" model="ir.ui.view">
+        <field name="name">Quy tắc mã CT</field>
+        <field name="model">declare.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="category_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="select_prefix" widget="radio" options="{'horizontal': True}" required="1"/>
+                        <field name="count_prefix" invisible="1"/>
+                        <field name="draft_prefix" readonly="1" force_save="1" style="color:red"/>
+                    </group>
+                    <group>
+                        <group string="TIỀN TỐ 1">
+                            <field name="prefix_1"/>
+                        </group>
+                        <group string="TIỀN TỐ 2" attrs="{'invisible': [('select_prefix', '=', '1')]}">
+                            <field name="select_prefix_2" required="1"/>
+                            <field name="prefix_2" attrs="{'invisible': [('select_prefix_2', '!=', 'domain')]}"/>
+                            <field name="prefix_sequence_2" attrs="{'invisible': [('select_prefix_2', '!=', 'sequence')]}"/>
+                        </group>
+                        <group string="TIỀN TỐ 3" attrs="{'invisible': [('select_prefix', 'in', ('1','2'))]}">
+                            <field name="select_prefix_3" required="1"/>
+                            <field name="prefix_3" attrs="{'invisible': [('select_prefix_3', '!=', 'domain')]}"/>
+                            <field name="prefix_sequence_3" attrs="{'invisible': [('select_prefix_3', '!=', 'sequence')]}"/>
+                        </group>
+                        <group string="TIỀN TỐ 4" attrs="{'invisible': [('select_prefix', 'in', ('1','2','3'))]}">
+                            <field name="select_prefix_4" required="1"/>
+                            <field name="prefix_4" attrs="{'invisible': [('select_prefix_4', '!=', 'domain')]}"/>
+                            <field name="prefix_sequence_4" attrs="{'invisible': [('select_prefix_4', '!=', 'sequence')]}"/>
+                        </group>
+                        <group string="TIỀN TỐ 5" attrs="{'invisible': [('select_prefix', 'in', ('1','2','3','4'))]}">
+                            <field name="select_prefix_5" required="1"/>
+                            <field name="prefix_5" attrs="{'invisible': [('select_prefix_5', '!=', 'domain')]}"/>
+                            <field name="prefix_sequence_5" attrs="{'invisible': [('select_prefix_5', '!=', 'sequence')]}"/>
+                        </group>
+                    </group>
+                    <group col="3" string="Chú thích (đối với tiền tố loại miền)">
+                        <group>
+                            <span colspan="2">Năm Hiện tại kèm Thế kỷ: %%(year)s</span>
+                            <span colspan="2">Năm Hiện tại không kèm Thế kỷ: %%(y)s</span>
+                            <span colspan="2">Tháng: %%(month)s</span>
+                            <span colspan="2">Ngày: %%(day)s</span>
+                        </group>
+                        <group>
+                            <span colspan="2">Ngày trong Năm: %%(doy)s</span>
+                            <span colspan="2">Tuần trong Năm: %%(woy)s</span>
+                            <span colspan="2">Ngày trong Tuần (0:Monday): %%(weekday)s</span>
+                        </group>
+                        <group>
+                            <span colspan="2">Giờ 00-24: %%(h24)s</span>
+                            <span colspan="2">Giờ 00-12: %%(h12)s</span>
+                            <span colspan="2">Phút: %%(min)s</span>
+                            <span colspan="2">Giây: %%(sec)s</span>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="declare_code_tree_view" model="ir.ui.view">
+        <field name="name">Quy tắc mã CT</field>
+        <field name="model">declare.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="company_id"/>
+                <field name="select_prefix"/>
+                <field name="draft_prefix"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="declare_code_action" model="ir.actions.act_window">
+        <field name="name">Quy tắc mã CT</field>
+        <field name="res_model">declare.code</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="declare_code_menu" parent="forlife_code.config_declare_menu" action="declare_code_action" sequence="6" name="Quy tắc mã CT"/>
+</odoo>
