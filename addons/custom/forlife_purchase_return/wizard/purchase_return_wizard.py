@@ -40,6 +40,8 @@ class PurchaseReturnWizard(models.TransientModel):
             purchase = self.env['purchase.order'].browse(self.env.context.get('active_id'))
             if purchase.exists():
                 res.update({'purchase_id': purchase.id})
+            if self.env.context.get('selected_all'):
+                res.update({'selected_all': True})
         return res
 
     purchase_id = fields.Many2one('purchase.order')
@@ -52,9 +54,11 @@ class PurchaseReturnWizard(models.TransientModel):
 
     @api.onchange('selected_all')
     def onchange_selected_all(self):
-        self.purchase_return_lines.write({
-            'is_selected': self.selected_all
-        })
+        for line in self.purchase_return_lines:
+            line.update({
+                'is_selected': True,
+                'quantity': line.purchase_remain * line.exchange_quantity
+            })
 
     @api.onchange('purchase_id')
     def _onchange_purchase_id(self):
@@ -190,7 +194,7 @@ class PurchaseReturnWizard(models.TransientModel):
             if return_line.quantity:
                 line_vals.append((0, 0, self._prepare_purchase_line_default_values(return_line)))
 
-        new_purchase = self.purchase_id.copy(self._prepare_purchase_default_values(line_vals))
+        new_purchase = self.purchase_id.copy(self.sudo()._prepare_purchase_default_values(line_vals))
         picking_type_id = new_purchase.picking_type_id.id
         new_purchase.message_post_with_view('mail.message_origin_link',
             values={'self': new_purchase, 'origin': self.purchase_id},

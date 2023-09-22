@@ -63,6 +63,7 @@ class StockPicking(models.Model):
         company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
         occasion_code_id = self.move_line_ids.mapped('occasion_code_id')
         location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)], limit=1)
+        picking_type = self.env['purchase.order'].with_context({'company_id': company_dest_id.id})._default_picking_type().id
         po = {
             'partner_id': company_id.partner_id.id,
             'occasion_code_id': occasion_code_id[0].id if len(occasion_code_id) >= 1 else False,
@@ -73,7 +74,8 @@ class StockPicking(models.Model):
             'is_inter_company': True,
             'is_return': False,
             'company_id': company_dest_id.id,
-            'create_from_picking': self.id
+            'create_from_picking': self.id,
+            'picking_type_id': picking_type.id
         }
         po_line = []
         for line in self.move_ids:
@@ -101,6 +103,7 @@ class StockPicking(models.Model):
                 'vendor_price': data[0].price,
                 'exchange_quantity': data[0].amount_conversion,
                 'location_id': location_mapping.location_map_id.id,
+                'purchase_uom': line.product_uom.id,
             }))
         po['order_line'] = po_line
         return po
@@ -432,17 +435,20 @@ class StockPicking(models.Model):
         return line
 
     def check_date_done_before_validate(self):
-        if self._context.get('check_date_done'):
-            record_valid_date = self.filtered(lambda s: s.state == 'assigned' and (s.date_done + timedelta(hours=7)).date() != fields.Date.today())
-            if record_valid_date:
-                action = self.env["ir.actions.actions"]._for_xml_id("forlife_stock.confirm_continue_validate_picking_action")
-                message = f"Kiểm tra lại ngày hoàn thành trên phiếu {', '.join(record_valid_date.mapped('name'))} trước khi xác nhận phiếu"
-                ctx = dict(self._context, picking_ids=self.ids, default_message=message)
-                action['context'] = ctx
-                return action
-        return True
+        record_valid_date = self.filtered(lambda s: s.state == 'assigned' and (s.date_done + timedelta(hours=7)).date() != fields.Date.today())
+        if record_valid_date:
+            action = self.env["ir.actions.actions"]._for_xml_id("forlife_stock.confirm_continue_validate_picking_action")
+            message = f"Kiểm tra lại ngày hoàn thành trên phiếu {', '.join(record_valid_date.mapped('name'))} trước khi xác nhận phiếu"
+            ctx = dict(self._context, picking_ids=self.ids, default_message=message)
+            action['context'] = ctx
+            return action
+        return False
 
     def button_validate(self):
+        if self._context.get('check_date_done'):
+            action = self.check_date_done_before_validate()
+            if action:
+                return action
         res = super(StockPicking, self).button_validate()
         for record in self:
 

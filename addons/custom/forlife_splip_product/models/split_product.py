@@ -78,7 +78,7 @@ class SplitProduct(models.Model):
         for rec in self.split_product_line_ids:
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
-                level = 2 if self.product_id.brand_id.code == 'TKL' else 4
+                level = 2 if r.product_id.brand_id.code == 'TKL' else 4
                 r.validate_product(level)
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     r.product_split_id.standard_price = rec.product_id.standard_price

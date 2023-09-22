@@ -75,7 +75,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                 'select_type_inv': self.origin_invoice_id.select_type_inv,
                 'move_type': move_type,
                 'reference': self.origin_invoice_id.name,
-                'cost_line': False,
+                # 'cost_line': False,
                 'vendor_back_ids': False,
                 'invoice_date': fields.Date.today(),
                 'pos_order_id': False,
@@ -99,9 +99,15 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         })
                     # Daihv: cập nhật giá nhà cung cấp từ popup Tăng/giảm hóa đơn
                     wz_invoice_line_id = self.line_ids.filtered(lambda s: s.product_id.id == line_id.product_id.id and s.quantity == line_id.quantity)
-                    if wz_invoice_line_id:
+                    if wz_invoice_line_id and line_id.display_type == 'product':
                         line_id.write({'vendor_price': wz_invoice_line_id[0].vendor_price})
                         line_id.onchange_vendor_price()
+                total_tax = sum(move_copy_id.line_ids.filtered(lambda f: f.display_type == 'product').mapped('tax_amount'))
+                move_copy_id.line_ids.filtered(lambda f: f.display_type == 'tax').write({
+                    'debit': total_tax,
+                    'balance': total_tax,
+                    'amount_currency': total_tax,
+                })
             else:
                 lst_expense = []
                 for line in self.line_ids.filtered(lambda x: x.is_selected):
@@ -443,4 +449,5 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
             line.tax_amount = _price_subtotal * sum(line.tax_ids.mapped('amount')) / 100
             line.price_subtotal = _price_subtotal
             line.price_total = _price_subtotal
+            line.is_selected = True
 
