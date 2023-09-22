@@ -21,7 +21,7 @@
                 <notebook>
                     <page name="line" string="Chi tiết hóa đơn">
                         <field name="line_ids" widget="one2many" nolabel="1">
-                            <tree string="Account Mapping" editable="bottom" create="0" delete="0">
+                            <tree string="Account Mapping" editable="bottom" create="0" delete="0" decoration-danger="is_selected == True">
                                 <field name="parent_id" invisible="1" force_save="1"/>
                                 <field name="invoice_line_id" invisible="1" force_save="1"/>
                                 <field name="is_selected" string="Chọn"/>
