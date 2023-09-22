@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-21 03:55+0000\n"
-"PO-Revision-Date: 2023-09-21 03:55+0000\n"
+"POT-Creation-Date: 2023-09-22 11:06+0000\n"
+"PO-Revision-Date: 2023-09-22 11:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1638,6 +1638,7 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num18__product_brand_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__product_brand_id
@@ -1650,6 +1651,7 @@ msgid "Level 1"
 msgstr "Danh mục cấp 1"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__product_group_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_group_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num18__product_group_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__product_group_ids
@@ -1662,6 +1664,7 @@ msgid "Level 2"
 msgstr "Danh mục cấp 2"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__product_line_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_line_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num18__product_line_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__product_line_ids
@@ -1674,6 +1677,7 @@ msgid "Level 3"
 msgstr "Danh mục cấp 3"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__texture_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__texture_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num18__texture_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__texture_ids
@@ -2255,6 +2259,7 @@ msgid "Product count"
 msgstr "sản phẩm"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__product_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__product_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_ids
@@ -3145,6 +3150,7 @@ msgid "Type"
 msgstr "Khoản mục"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num13__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num16__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num2__category_type_id
