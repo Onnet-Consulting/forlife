@@ -2,7 +2,7 @@ from odoo import api, fields, models, _
 
 
 class SplitProduct(models.Model):
-    _inherit = 'split_product'
+    _inherit = 'split.product'
 
     @api.model_create_multi
     def create(self, vals):
