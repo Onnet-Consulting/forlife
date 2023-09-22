@@ -5,19 +5,23 @@ from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
-    'STT', 'Số PR', 'Ngày PR', 'Số PO', 'Ngày PO', 'NCC', 'Mã SKU', 'Barcode', 'Tên hàng', 'SL',
-    'Đơn giá', 'CK (%)', 'Thành tiền', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
+    'STT', 'Số PR', 'Ngày PR', 'Số PO', 'Ngày PO', 'NCC', 'Loại nhóm sản phẩm', 'Mã SKU', 'Barcode', 'Tên hàng',
+    'SL', 'Đơn giá', 'CK (%)', 'Thành tiền', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
 ]
 
 
 class ReportNum13(models.TransientModel):
     _name = 'report.num13'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Báo cáo tình hình thực hiện đơn hàng mua'
 
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
     po_number = fields.Char(string='PO number')
+    product_ids = fields.Many2many('product.product', 'report_num13_product_rel', string='Products')
+    product_group_ids = fields.Many2many('product.category', 'report_num13_group_rel', string='Level 2')
+    product_line_ids = fields.Many2many('product.category', 'report_num13_line_rel', string='Level 3')
+    texture_ids = fields.Many2many('product.category', 'report_num13_texture_rel', string='Level 4')
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -25,19 +29,47 @@ class ReportNum13(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def _get_query(self, allowed_company):
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id.id in self.product_group_ids.ids)
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.texture_ids = self.texture_ids.filtered(lambda f: f.parent_id.id in self.product_line_ids.ids)
+
+    def _get_query(self, allowed_company, product_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         po_number_list = self.po_number.split(',') if self.po_number else []
         po_number_condition = f"and po.name = any (array{[x.strip('') for x in po_number_list if x]})" if po_number_list else ''
         sql = f"""
+with cates as (select distinct pt.categ_id
+               from product_product pp
+                        join product_template pt on pp.product_tmpl_id = pt.id
+                            and pp.id = any(array{product_ids})),
+     category_types as (with RECURSIVE find_root AS (SELECT id as root_id, id, parent_id, category_type_id
+                                                     FROM product_category
+                                                     WHERE id in (select id from cates)
+                                                     UNION ALL
+                                                     SELECT fr.root_id, pc.id, pc.parent_id, pc.category_type_id
+                                                     FROM product_category pc
+                                                              JOIN find_root fr ON pc.id = fr.parent_id)
+                        select json_object_agg(fr.root_id, pct.name) as data
+                        from find_root fr
+                                 left join product_category_type pct on pct.id = fr.category_type_id
+                        where parent_id isnull)
 select row_number() over (order by po.date_order desc)                      as num,
     pr.name                                                                 as pr_name,
     to_char(pr.request_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')      as pr_date,
     po.name                                                                 as po_name,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
     rp.name                                                                 as suppliers_name,
+    (select data::json ->> pt.categ_id::text from category_types)           as category_type,
     pt.sku_code                                                             as sku_code,
     pp.barcode                                                              as barcode,
     coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
@@ -56,6 +88,7 @@ from purchase_order_line pol
     left join product_template pt on pt.id = pp.product_tmpl_id
 where {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and pol.company_id = any(array{allowed_company})
+    and pol.product_id = any(array{product_ids})
     {po_number_condition}
 order by num
 """
@@ -64,7 +97,16 @@ order by num
     def get_data(self, allowed_company):
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        query = self._get_query(allowed_company)
+        Product = self.env['product.product'].with_context(report_ctx='report.num13,product.product')
+        Utility = self.env['res.utility']
+        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        elif categ_ids:
+            product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
+        else:
+            product_ids = [-1]
+        query = self._get_query(allowed_company, product_ids)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
             'titles': TITLES,
@@ -91,14 +133,15 @@ order by num
             sheet.write(row, 3, value.get('po_name'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('po_date'), formats.get('center_format'))
             sheet.write(row, 5, value.get('suppliers_name'), formats.get('normal_format'))
-            sheet.write(row, 6, value.get('sku_code'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('barcode'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('product_name'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('product_qty', 0), formats.get('float_number_format'))
-            sheet.write(row, 10, value.get('price_unit', 0), formats.get('int_number_format'))
-            sheet.write(row, 11, value.get('discount_percent', 0), formats.get('float_number_format'))
-            sheet.write(row, 12, value.get('price_subtotal', 0), formats.get('int_number_format'))
-            sheet.write(row, 13, value.get('qty_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 14, value.get('qty_not_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 15, value.get('qty_invoiced', 0), formats.get('float_number_format'))
+            sheet.write(row, 6, value.get('category_type'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('sku_code'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('barcode'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('product_name'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('product_qty', 0), formats.get('float_number_format'))
+            sheet.write(row, 11, value.get('price_unit', 0), formats.get('int_number_format'))
+            sheet.write(row, 12, value.get('discount_percent', 0), formats.get('float_number_format'))
+            sheet.write(row, 13, value.get('price_subtotal', 0), formats.get('int_number_format'))
+            sheet.write(row, 14, value.get('qty_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 15, value.get('qty_not_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 16, value.get('qty_invoiced', 0), formats.get('float_number_format'))
             row += 1
