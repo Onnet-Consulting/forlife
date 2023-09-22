@@ -155,7 +155,7 @@ class ForlifeOtherInOutRequest(models.Model):
                         'is_production_order': item.reason_to_id.is_work_order,
                         'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
                         'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
-                        'amount_total': item.product_id.standard_price if not item.reason_to_id.is_price_unit else 0,
+                        'amount_total': item.amount_total or item.product_id.standard_price,
                         'occasion_code_id': item.occasion_id.id,
                         'work_production': item.production_id.id,
                         'account_analytic_id': item.cost_center.id,
@@ -285,6 +285,17 @@ class ForlifeOtherInOutRequestLine(models.Model):
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
+    amount_total = fields.Float(string='Tổng tiền')
+    required_work_production = fields.Boolean(default=False, compute='_compute_required_field')
+    required_amount_total = fields.Boolean(default=False, compute='_compute_required_field')
+    required_ref_asset = fields.Boolean(default=False, compute='_compute_required_field')
+
+    @api.depends('other_in_out_request_id', 'other_in_out_request_id.location_id')
+    def _compute_required_field(self):
+        for rec in self:
+            rec.required_work_production = rec.other_in_out_request_id.location_id.is_work_order
+            rec.required_amount_total = rec.other_in_out_request_id.location_id.is_price_unit
+            rec.required_ref_asset = rec.other_in_out_request_id.location_id.is_assets
 
     @api.constrains('quantity')
     def _constrains_quantity(self):

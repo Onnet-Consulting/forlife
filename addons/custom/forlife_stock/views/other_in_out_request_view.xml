@@ -110,7 +110,7 @@
                                 <tree editable="bottom" class="width-hh">
                                     <field name="product_id"/>
                                     <field name="description"/>
-                                    <field name="asset_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_import')]}"/>
+                                    <field name="asset_id" attrs="{'required': [('required_ref_asset', '=', True)]}"/>
                                     <field name="date_expected"/>
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
@@ -120,8 +120,12 @@
                                     <field name="reason_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
                                     <field name="whs_to_id" attrs="{'column_invisible':[ ('parent.type_other', '=', 'other_export')], 'required':[('parent.type_other', '=', 'other_import')]}"/>
                                     <field name="occasion_id"/>
-                                    <field name="production_id"/>
+                                    <field name="production_id" attrs="{'required': [('required_work_production', '=', True)]}"/>
                                     <field name="cost_center"/>
+                                    <field name="required_amount_total" invisible="1"/>
+                                    <field name="required_work_production" invisible="1"/>
+                                    <field name="required_ref_asset" invisible="1"/>
+                                    <field name="amount_total" attrs="{'required': [('required_amount_total', '=', True)]}"/>
                                 </tree>
                             </field>
                         </page>
