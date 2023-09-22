@@ -895,7 +895,6 @@ msgid "Data not found by id '%s'"
 msgstr "Không tìm thấy dữ liệu với id = '%s'"
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num41__date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num6__date
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
@@ -1147,6 +1146,11 @@ msgid "Fields"
 msgstr "Trường"
 
 #. module: forlife_report
+#: model:ir.model,name:forlife_report.model_forlife_production
+msgid "Forlife Production"
+msgstr "Lệnh sản xuất"
+
+#. module: forlife_report
 #: model:ir.model,name:forlife_report.model_stock_transfer
 msgid "Forlife Stock Transfer"
 msgstr "Phiếu điều chuyển"
@@ -1185,6 +1189,7 @@ msgstr "Từ ngày phải lớn hơn hoặc bằng khóa ngày"
 #: code:addons/forlife_report/wizard/report_num34.py:0
 #: code:addons/forlife_report/wizard/report_num35.py:0
 #: code:addons/forlife_report/wizard/report_num39.py:0
+#: code:addons/forlife_report/wizard/report_num41.py:0
 #: code:addons/forlife_report/wizard/report_num42.py:0
 #: code:addons/forlife_report/wizard/report_num43.py:0
 #: code:addons/forlife_report/wizard/report_num44.py:0
@@ -2285,7 +2290,7 @@ msgid "Quyền dữ liệu"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num41__employee_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num41__leader_id
 msgid "Quản lý đơn hàng"
 msgstr ""
 
@@ -3807,7 +3812,7 @@ msgid "Đơn vị"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num41__partner_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num41__machining_id
 msgid "Đơn vị gia công"
 msgstr ""
 
