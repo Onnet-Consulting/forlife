@@ -1948,16 +1948,19 @@ class PurchaseOrderLine(models.Model):
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     tax_amount = fields.Float(string='Thuế nhập khẩu',
                               compute='_compute_tax_amount',
+                              inverse='_inverse_tax_amount',
                               store=1)
     tax_amount_import = fields.Float('Thuế nhập khẩu của sản phẩm')
     special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Thuế tiêu thụ đặc biệt',
                                                   compute='_compute_special_consumption_tax_amount',
+                                                  inverse='_inverse_special_consumption_tax_amount',
                                                   store=1)
     special_consumption_tax_amount_import = fields.Float('Thuế TTĐB của sản phẩm')
     vat_tax = fields.Float(string='% Thuế GTGT')
     vat_tax_amount = fields.Float(string='Thuế GTGT',
                                   compute='_compute_vat_tax_amount',
+                                  inverse='_inverse_vat_tax_amount',
                                   store=1)
     vat_tax_amount_import = fields.Float('Thuế GTGT của sản phẩm')
 
@@ -1969,6 +1972,9 @@ class PurchaseOrderLine(models.Model):
     after_tax = fields.Float(string='Chi phí sau thuế (TNK - TTTDT)', compute='_compute_after_tax', store=1)
     company_currency = fields.Many2one('res.currency', string='Tiền tệ VND', default=lambda self: self.env.company.currency_id.id)
     prefix_product_code = fields.Char(string='Lọc chi phí', compute='compute_prefix_product_code')
+    manual_tax_amount = fields.Boolean(compute='_inverse_tax_amount')
+    manual_special_consumption_tax_amount = fields.Boolean(compute='_inverse_special_consumption_tax_amount')
+    manual_vat_tax_amount = fields.Boolean(compute='_inverse_vat_tax_amount')
 
     @api.constrains('discount_percent')
     def _constrains_discount_percent_and_discount(self):
@@ -2025,7 +2031,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_tax_amount(self):
         for rec in self:
             if not rec.tax_amount_import:
-                tax_amount = rec.total_vnd_exchange * rec.import_tax / 100
+                tax_amount = rec.manual_tax_amount and rec.tax_amount or rec.total_vnd_exchange * rec.import_tax / 100
             else:
                 tax_amount = rec.tax_amount_import
 
@@ -2036,7 +2042,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_special_consumption_tax_amount(self):
         for rec in self:
             if not rec.special_consumption_tax_amount_import:
-                rec.special_consumption_tax_amount = (rec.total_vnd_exchange + rec.tax_amount) * rec.special_consumption_tax / 100
+                rec.special_consumption_tax_amount = rec.manual_special_consumption_tax_amount and rec.special_consumption_tax_amount or (rec.total_vnd_exchange + rec.tax_amount) * rec.special_consumption_tax / 100
             else:
                 rec.special_consumption_tax_amount = rec.special_consumption_tax_amount_import
 
@@ -2044,9 +2050,35 @@ class PurchaseOrderLine(models.Model):
     def _compute_vat_tax_amount(self):
         for rec in self:
             if not rec.vat_tax_amount_import:
-                rec.vat_tax_amount = (rec.total_vnd_exchange + rec.tax_amount + rec.special_consumption_tax_amount) * rec.vat_tax / 100
+                rec.vat_tax_amount = rec.manual_vat_tax_amount and rec.vat_tax_amount or (rec.total_vnd_exchange + rec.tax_amount + rec.special_consumption_tax_amount) * rec.vat_tax / 100
             else:
                 rec.vat_tax_amount = rec.vat_tax_amount_import
+
+    @api.model
+    def _inverse_tax_amount(self):
+        self.manual_tax_amount = False
+        for record in self:
+            if not record.tax_amount_import and record.tax_amount != record.total_vnd_exchange * record.import_tax / 100:
+                print('Mark manual_tax_amount is manual!')
+                record.manual_tax_amount = True
+
+    @api.model
+    def _inverse_special_consumption_tax_amount(self):
+        self.manual_special_consumption_tax_amount = False
+        for record in self:
+            if (not record.special_consumption_tax_amount_import
+                    and record.special_consumption_tax_amount != (record.total_vnd_exchange + record.tax_amount) * record.special_consumption_tax / 100):
+                print('Mark manual_special_consumption_tax_amount is manual!')
+                record.manual_special_consumption_tax_amount = True
+
+    @api.model
+    def _inverse_vat_tax_amount(self):
+        self.manual_vat_tax_amount = False
+        for record in self:
+            if (not record.vat_tax_amount_import
+                    and record.vat_tax_amount != (record.total_vnd_exchange + record.tax_amount + record.special_consumption_tax_amount) * record.vat_tax / 100):
+                print('Mark manual_vat_tax_amount is manual!')
+                self.manual_vat_tax_amount = True
 
     @api.depends('vat_tax_amount')
     def _compute_total_tax_amount(self):
