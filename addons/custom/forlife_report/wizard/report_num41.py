@@ -149,5 +149,5 @@ order by stt
             sheet.write(row, 7, float_round(value=value.get('sl_nk_thuc_te') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             sheet.write(row, 8, float_round(value=value.get('sl_vt_tieu_hao_tt') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             sheet.write(row, 9, float_round(value=value.get('sl_vt_dieu_chuyen') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
-            sheet.write(row, 10, float_round(value=(value.get('sl_vt_dieu_chuyen') or 0 - value.get('sl_vt_tieu_hao_tt') or 0), precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
+            sheet.write(row, 10, float_round(value=(value.get('sl_vt_dieu_chuyen') or 0) - (value.get('sl_vt_tieu_hao_tt') or 0), precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             row += 1
