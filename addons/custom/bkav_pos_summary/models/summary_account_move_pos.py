@@ -129,28 +129,29 @@ class SummaryAccountMovePos(models.Model):
         first_n=0
         last_n=limit
         pk = f"{store.id}_{page}"
-        if len(lines) > last_n:
-            separate_lines = lines[first_n:last_n]
-            del lines[first_n:last_n]
+        # if len(lines) > last_n:
+        #     separate_lines = lines[first_n:last_n]
+        #     del lines[first_n:last_n]
 
-            items[pk] = {
-                'code': model_code,
-                'company_id': company_id.id,
-                'store_id': store.id,
-                'partner_id': store.contact_id.id,
-                'invoice_date': date.today(),
-                'line_ids': separate_lines
-            }
-            page += 1
-            self.recursive_move_line_items(
-                items=items, 
-                lines=lines, 
-                store=store, 
-                page=page, 
-                limit=limit,
-                company_id=company_id
-            )
-        else:
+        #     items[pk] = {
+        #         'code': model_code,
+        #         'company_id': company_id.id,
+        #         'store_id': store.id,
+        #         'partner_id': store.contact_id.id,
+        #         'invoice_date': date.today(),
+        #         'line_ids': separate_lines
+        #     }
+        #     page += 1
+        #     self.recursive_move_line_items(
+        #         items=items, 
+        #         lines=lines, 
+        #         store=store, 
+        #         page=page, 
+        #         limit=limit,
+        #         company_id=company_id
+        #     )
+        # else:
+        if len(lines):
             items[pk] = {
                 'code': model_code,
                 'company_id': company_id.id,
@@ -194,7 +195,6 @@ class SummaryAccountMovePos(models.Model):
             ('is_general', '=', False),
             ('exists_bkav', '=', False),
         ])
-
         data = {}
         items = {}
         pos_order_synthetic = None
@@ -231,7 +231,6 @@ class SummaryAccountMovePos(models.Model):
                 v["line_ids"] = res_line.ids
 
             vals_list = list(items.values())
-
             res_pos = model.create(vals_list)
 
             discount_vals_list = []
