@@ -449,5 +449,3 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
             line.tax_amount = _price_subtotal * sum(line.tax_ids.mapped('amount')) / 100
             line.price_subtotal = _price_subtotal
             line.price_total = _price_subtotal
-            line.is_selected = True
-
