@@ -11,10 +11,19 @@
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
-                        <field name="date" class="oe_inline" required="1"/>
-                        <field name="employee_id" class="oe_inline" options="{'no_create': True}"/>
-                        <field name="partner_id" class="oe_inline" options="{'no_create': True}"/>
-                        <field name="production_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="machining_id" class="oe_inline" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="leader_id" class="oe_inline" options="{'no_create': True}"/>
+                            <field name="production_ids" widget="many2many_tags" options="{'no_create': True}" context="{'order_manager': leader_id, 'machining': machining_id, 'received': 1}"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

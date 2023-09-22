@@ -8,3 +8,4 @@ from . import ir_rule
 from . import res_users
 from . import res_config_settings
 from . import models
+from . import forlife_production
