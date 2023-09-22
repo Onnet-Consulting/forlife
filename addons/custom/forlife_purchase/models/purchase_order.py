@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_date, formatLang, get_lang, groupby, float_round
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
+from odoo.tests import tagged, Form
 
 
 class PurchaseOrder(models.Model):
@@ -492,9 +493,10 @@ class PurchaseOrder(models.Model):
             if sum(product_ncc) < line.product_qty:
                 raise ValidationError('Số lượng sản phẩm (%s) trong kho không đủ.' % (line.product_id.name))
 
-    def _create_sale_order_another_company(self):
+    def _create_sale_order_another_company(self, company_id=None, partner_id=None, location_id=None):
         sale_order_lines = []
-        company_id = self.env['res.company'].sudo().search([('partner_id', '=', self.partner_id.id)], limit=1)
+        if not company_id:
+            company_id = self.env['res.company'].sudo().search([('partner_id', '=', self.partner_id.id)], limit=1)
         all_tax_ids = self.env['account.tax'].sudo().search([('type_tax_use', '=', 'sale'), ('company_id', '=', company_id.id)])
         for item in self.order_line:
             tax_ids = []
@@ -535,11 +537,11 @@ class PurchaseOrder(models.Model):
         sale_order_vals = {
             'company_id': company_id.id,
             'origin': self.name,
-            'partner_id': self.company_id.partner_id.id,
+            'partner_id': partner_id and partner_id.id or self.company_id.partner_id.id,
             'payment_term_id': self.payment_term_id.id,
             'date_order': self.date_order,
             'warehouse_id': self.source_location_id[0].warehouse_id.id if self.purchase_type == 'product' else self.sudo().env.user.with_company(company_id.id)._get_default_warehouse_id().id,
-            'x_location_id': self.source_location_id.id if self.purchase_type == 'product' else False,
+            'x_location_id': location_id and location_id.id or self.source_location_id.id if self.purchase_type == 'product' else False,
             'x_sale_type': self.purchase_type,
             'x_manufacture_order_code_id': self.production_id.id or False,
             'x_account_analytic_id': account_analytic_id.id if account_analytic_id else False,
@@ -551,6 +553,20 @@ class PurchaseOrder(models.Model):
         sale_id = self.env['sale.order'].sudo().create(sale_order_vals)
         return sale_id
 
+    def auto_return_with_inter_company(self):
+        location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_id.id)], limit=1)
+        inter_company_id = location_mapping.sudo().location_map_id.company_id
+        po_inter_company = self.env['purchase.order'].with_company(inter_company_id).search([('create_from_picking', 'in', self.origin_purchase_id.picking_ids.ids)])
+        po_return_inter_company = self.env['purchase.order']
+        if po_inter_company:
+            return_form = Form(self.env['purchase.return.wizard'].with_company(inter_company_id).with_context(active_id=po_inter_company[0].id, active_model='purchase.order', selected_all=True))
+            return_form = return_form.save()
+            po_return_inter_company_id, _ = return_form.sudo()._create_returns()
+            po_return_inter_company = po_return_inter_company.browse(po_return_inter_company_id)
+        if po_return_inter_company:
+            po_return_inter_company.with_company(inter_company_id).action_confirm()
+            po_return_inter_company.with_company(inter_company_id).action_approved()
+
     def action_approved(self):
         # self.check_purchase_tool_and_equipment()
         for record in self:
@@ -560,6 +576,7 @@ class PurchaseOrder(models.Model):
                     'show_operations': True
                 })
                 record.write({'custom_state': 'approved'})
+                self.auto_return_with_inter_company()
             else:
                 if not record.is_return:
                     record.action_approve_inter_company()
@@ -649,6 +666,29 @@ class PurchaseOrder(models.Model):
                 })
                 invoice = self.action_create_invoice()
                 invoice.action_post()
+            sale_order = self._create_sale_order_another_company(company_id=self.company_id, location_id=self.location_id, partner_id=self.partner_id)
+            if self.purchase_type == 'product':
+                sale_order.action_confirm()
+                picking_out = sale_order.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
+                if picking_out:
+                    picking_out.action_set_quantities_to_reservation()
+                    picking_out.button_validate()
+                    if picking_out.state == 'done':
+                        for move_id in picking_out.move_ids:
+                            move_id.sale_line_id.qty_delivered = move_id.quantity_done
+                        invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                            'sale_order_ids': [(6, 0, sale_order.ids)],
+                            'advance_payment_method': 'delivered',
+                            'deduct_down_payments': True,
+                        }).forlife_create_invoices()
+                        invoice_customer.action_post()
+            else:
+                invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
+                    'sale_order_ids': [(6, 0, sale_order.ids)],
+                    'advance_payment_method': 'delivered',
+                    'deduct_down_payments': True,
+                }).forlife_create_invoices()
+                invoice_customer.action_post()
         else:
             raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
 
