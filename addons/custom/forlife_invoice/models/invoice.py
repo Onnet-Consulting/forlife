@@ -582,16 +582,17 @@ class AccountMove(models.Model):
                 taxes = back_id.tax_percent.compute_all(price_unit, quantity=1, currency=self.currency_id, product=product_id, partner=self.partner_id, is_refund=False, )
                 if taxes.get('taxes') and taxes.get('taxes')[0]:
                     tax = taxes.get('taxes')[0]
+                    amount = tax['amount'] if self.invoice_type != 'decrease' else -tax['amount']
                     tax_lines.append((0, 0, {
                         'name': tax['name'],
                         'tax_ids': [(6, 0, tax['tax_ids'])],
                         'tax_tag_ids': [(6, 0, tax['tag_ids'])],
-                        'balance': tax['amount'],
-                        'debit': tax['amount'],
-                        'credit': 0,
+                        'balance': amount,
+                        'debit': amount if amount > 0 else 0,
+                        'credit': amount if amount < 0 else 0,
                         'account_id': tax['account_id'] or False,
-                        'amount_currency': tax['amount'],
-                        'tax_amount': tax['amount'],
+                        'amount_currency': amount,
+                        'tax_amount': amount,
                         'tax_base_amount': tax['base'],
                         'tax_repartition_line_id': tax['tax_repartition_line_id'],
                         'group_tax_id': tax['group'] and tax['group'].id or False,
@@ -1096,7 +1097,8 @@ class AccountMoveLine(models.Model):
                 if rec.move_id.type_inv == 'tax' and cost_line_false and line.total_vnd_exchange > 0:
                     for item in cost_line_false:
                         if sum_vnd_amount + sum_tnk + sum_db > 0:
-                            total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * item.vnd_amount
+                            vnd_amount = item.vnd_amount if item.vnd_amount else 1
+                            total_cost += (line.total_vnd_exchange + line.tax_amount + line.special_consumption_tax_amount) / (sum_vnd_amount + sum_tnk + sum_db) * vnd_amount
                             line.after_tax = total_cost
                 else:
                     line.after_tax = 0
