@@ -160,7 +160,7 @@ class AccountMove(models.Model):
             'work_order': po_line.production_id.id if po_line.production_id else False,
             'account_analytic_id': po_line.account_analytic_id.id if po_line.account_analytic_id else False,
             'import_tax': po_line.import_tax,
-            'tax_ids': False
+            'tax_ids': [(6, 0, cost_line.tax_percent.ids)]
         }
         return data_line
 
