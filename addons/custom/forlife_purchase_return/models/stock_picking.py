@@ -32,7 +32,15 @@ class StockPicking(models.Model):
                         picking.create_return_valuation_entries()
                     if purchase_origin_id:
                         picking.tax_return_by_return_goods()
-        return super(StockPicking, self)._action_done()
+        res = super(StockPicking, self)._action_done()
+        if res and self:
+            purchase = self.env['purchase.order']
+            if any(self.move_ids.filtered(lambda x: x.origin_returned_move_id and x.purchase_line_id)):
+                purchase = self.move_ids.purchase_line_id.order_id
+            if purchase:
+                purchase.auto_return_with_inter_company()
+
+        return res
 
     def tax_return_by_return_goods(self):
         if self.move_ids.sale_line_id or self.move_ids.origin_returned_move_id.sale_line_id:
