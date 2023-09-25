@@ -7,6 +7,7 @@
     'version': '16.0.1.0,0',
     'category': 'base',
     'depends': [
+        'account',
         'forlife_code',
         'purchase_request',
         'forlife_purchase',

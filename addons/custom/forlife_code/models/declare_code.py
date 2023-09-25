@@ -12,6 +12,9 @@ class DeclareCode(models.Model):
     active = fields.Boolean(default=True,string='Trạng thái')
     category_id = fields.Many2one('declare.category', string='Nhóm mã CT', required=True, tracking=True)
     company_id = fields.Many2one('res.company',string='Công ty',tracking=True)
+
+    is_journal = fields.Boolean('Sinh mã theo sổ nhật ký', tracking=True)
+    journal_id = fields.Many2one('account.journal', string='Sổ nhật ký', tracking=True)
     select_prefix = fields.Selection([('1', '1'),
                                     ('2', '2'),
                                     ('3', '3'),
@@ -175,11 +178,15 @@ class DeclareCode(models.Model):
         except ValueError:
             raise UserError('Có vấn đề trong quá trình tính toán mã phiếu. Vui lòng liên hệ quản trị viên')
     
-    def _get_declare_code(self, code, company_id):
+    def _get_declare_code(self, code, company_id=False, journal_id=False):
         declare_code_id = False
+        domain = []
         if code:
             domain = [('active','=', True),('category_id.code','=',code)]
             if company_id:
                 domain.append(('company_id','=',company_id))
+        if journal_id:
+            domain = [('active','=', True),('journal_id','=',journal_id)]
+        if domain:
             declare_code_id = self.search(domain,order='id desc',limit=1)
         return declare_code_id

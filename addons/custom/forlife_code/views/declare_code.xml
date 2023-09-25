@@ -14,6 +14,8 @@
                         <group>
                             <field name="category_id"/>
                             <field name="company_id"/>
+                            <field name="is_journal"/>
+                            <field name="journal_id" attrs="{'invisible': [('is_journal', '=', False)],'required': [('is_journal', '!=', False)]}"/>
                         </group>
                     </group>
                     <group>
