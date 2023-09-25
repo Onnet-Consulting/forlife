@@ -24,6 +24,9 @@
                     <field name="line_row_1"/>
                     <field name="structure"/>
                 </field>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="required">1</attribute>
+                </xpath>
             </field>
         </record>
     </data>
