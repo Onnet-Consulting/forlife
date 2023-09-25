@@ -63,7 +63,7 @@ class StockPicking(models.Model):
         company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
         occasion_code_id = self.move_line_ids.mapped('occasion_code_id')
         location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)], limit=1)
-        picking_type = self.env['purchase.order'].with_context({'company_id': company_dest_id.id})._default_picking_type().id
+        picking_type = self.env['purchase.order'].with_context({'company_id': company_dest_id.id}).with_company(company_dest_id)._default_picking_type()
         po = {
             'partner_id': company_id.partner_id.id,
             'occasion_code_id': occasion_code_id[0].id if len(occasion_code_id) >= 1 else False,
