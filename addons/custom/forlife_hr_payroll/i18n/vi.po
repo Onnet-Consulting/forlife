@@ -482,7 +482,6 @@ msgid "Download Template"
 msgstr "Mẫu tải về"
 
 #. module: forlife_hr_payroll
-#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__employee_id
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_backlog__employee_id
 msgid "Employee"
 msgstr "Nhân viên"
