@@ -133,16 +133,16 @@ class InheritStockPicking(models.Model):
         picking_outgoing_id._generate_outgoing_move(picking, self.move_ids)
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
-        materials_not_enough = '\n\t- '.join([
-            sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
-            for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'
-        ])
-        if materials_not_enough:
-            raise ValidationError(_(
-                'The stock "%s" dose not enough goods to export materials:\n\t- %s',
-                picking_outgoing_id.location_id.complete_name,
-                materials_not_enough
-            ))
+        # materials_not_enough = '\n\t- '.join([
+        #     sm.product_id.name if not sm.product_id.barcode else f'[{sm.product_id.barcode}] {sm.product_id.name}'
+        #     for sm in picking_outgoing_id.move_ids_without_package if sm.state != 'assigned'
+        # ])
+        # if materials_not_enough:
+        #     raise ValidationError(_(
+        #         'The stock "%s" dose not enough goods to export materials:\n\t- %s',
+        #         picking_outgoing_id.location_id.complete_name,
+        #         materials_not_enough
+        #     ))
         picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
