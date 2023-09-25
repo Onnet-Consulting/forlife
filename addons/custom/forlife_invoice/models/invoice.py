@@ -3,9 +3,8 @@ from odoo.exceptions import UserError
 from contextlib import contextmanager
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, time
-from odoo import Command
-import re
 import json
+import math
 
 
 def check_length_255(val):
@@ -540,10 +539,17 @@ class AccountMove(models.Model):
                             })
                         invoice_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id == product)
                         sum_price = sum(invoice_lines.mapped('price_unit'))
+                        total_price_unit = 0
+                        indx = 1
                         for invoice_line in invoice_lines:
+                            price_unit = math.ceil((sum_price_subtotal_back * invoice_line.price_unit) / sum_price) if sum_price > 0 else 0
+                            total_price_unit += price_unit
+                            if indx == len(invoice_lines):
+                                price_unit = price_unit + (sum_price_subtotal_back - total_price_unit)
                             invoice_line.write({
-                                'price_unit': (sum_price_subtotal_back * invoice_line.price_unit) / sum_price if sum_price > 0 else 0,
+                                'price_unit': price_unit,
                             })
+                            indx += 1
 
                 #Update các chi phí k được nhập ở Tab
                 expense_invalid_detail = rec.account_expense_labor_detail_ids.filtered(lambda x: x.product_id not in invoice_description)
