@@ -115,7 +115,7 @@ order by stt
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         Utility = self.env['res.utility']
-        ForLifeProduction = self.env['forlife.production'].with_context(order_manager=self.leader_id.id, machining=self.machining_id.id, received=0)
+        ForLifeProduction = self.env['forlife.production'].with_context(order_manager=self.leader_id.id, machining=self.machining_id.id, received=1)
         production_ids = self.production_ids.ids if self.production_ids else (
                 ForLifeProduction.search([('create_date', '>=', self.from_date), ('create_date', '<=', self.to_date)]).ids or [-1])
         query = self._get_query(production_ids)
