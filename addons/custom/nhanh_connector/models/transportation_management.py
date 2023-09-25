@@ -160,7 +160,7 @@ class TransportationSession(models.Model):
     def action_done(self):
         orders = self.session_line
         for order in orders:
-            pickings = order.order_id.picking_ids
+            pickings = order.order_id.picking_ids.filtered(lambda x: x.picking_type_id.sequence_code == 'PICK')
             if not pickings:
                 continue
             for picking in pickings:
@@ -246,7 +246,7 @@ class TransportationSessionLine(models.Model):
     @api.depends('order_id')
     def compute_picking(self):
         for rec in self:
-            rec.picking_id = ', '.join(x.name for x in rec.order_id.picking_ids)
+            rec.picking_id = ', '.join(x.name for x in rec.order_id.picking_ids.filtered(lambda x: x.picking_type_id.sequence_code == 'PICK'))
 
     def update_state(self, is_done, picking=None):
         if is_done and self.session_id.type == 'in':

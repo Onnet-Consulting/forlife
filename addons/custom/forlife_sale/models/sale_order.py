@@ -152,6 +152,39 @@ class SaleOrder(models.Model):
             'target': 'current'
         }
 
+    def confirm_sale_order_return_by_po_return(self, origin_po):
+        origin_so = self.search([('x_po_inter_company', '=', origin_po.name), ('x_sale_chanel', '=', 'intercompany')])
+        self.write({'x_is_return': True, 'x_origin': origin_so.id})
+        picking_ids = origin_so.picking_ids.filtered(lambda p: p.state == 'done')
+        picking_not_done = origin_so.picking_ids.filtered(lambda p: p.state != 'done')
+        for pnd in picking_not_done:
+            pnd.action_cancel()
+        if picking_ids and len(picking_ids) == 1:
+            ctx = {
+                'so_return': self.id,
+                'x_return': True,
+                'picking_id': picking_ids.id,
+                'active_ids': picking_ids.ids,
+                'active_id': picking_ids[0].id,
+                'active_model': 'stock.picking',
+            }
+            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
+            return_wiz = stock_return_picking_form.save()
+            return_picking_id, dummy = return_wiz._create_returns()
+            return_picking = self.env['stock.picking'].browse(return_picking_id)
+            return_picking.action_assign()
+            return_picking.action_set_quantities_to_reservation()
+            return_picking.button_validate()
+        self.state = 'sale'
+        if self.picking_ids and not any(self.picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))):
+            advance_payment = self.env['sale.advance.payment.inv'].create({
+                'sale_order_ids': [(6, 0, origin_so.ids)],
+                'advance_payment_method': 'delivered',
+                'deduct_down_payments': True
+            })
+            invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
+            invoice_id.action_post()
+
     def _compute_order_punish_count(self):
         for r in self:
             r.x_order_punish_count = self.env['sale.order'].search_count([('x_origin', '=', r.id), ('x_punish', '=', True)])
