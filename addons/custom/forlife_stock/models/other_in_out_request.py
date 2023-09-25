@@ -41,6 +41,15 @@ class ForlifeOtherInOutRequest(models.Model):
                                     domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     location_material_id = fields.Many2one('stock.location', domain="[('company_id', '=', company_id)]", string='Địa điểm xuất NPL')
+    required_work_production = fields.Boolean(compute='_compute_required_field')
+    required_amount_total = fields.Boolean(compute='_compute_required_field')
+    required_ref_asset = fields.Boolean(compute='_compute_required_field')
+
+    def _compute_required_field(self):
+        for rec in self:
+            rec.required_work_production = rec.location_id.is_work_order
+            rec.required_amount_total = rec.location_id.is_price_unit
+            rec.required_ref_asset = rec.location_id.is_assets
 
     @api.model
     def default_get(self, default_fields):
@@ -286,16 +295,6 @@ class ForlifeOtherInOutRequestLine(models.Model):
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
     amount_total = fields.Float(string='Tổng tiền')
-    required_work_production = fields.Boolean(default=False, compute='_compute_required_field')
-    required_amount_total = fields.Boolean(default=False, compute='_compute_required_field')
-    required_ref_asset = fields.Boolean(default=False, compute='_compute_required_field')
-
-    @api.depends('other_in_out_request_id', 'other_in_out_request_id.location_id')
-    def _compute_required_field(self):
-        for rec in self:
-            rec.required_work_production = rec.other_in_out_request_id.location_id.is_work_order
-            rec.required_amount_total = rec.other_in_out_request_id.location_id.is_price_unit
-            rec.required_ref_asset = rec.other_in_out_request_id.location_id.is_assets
 
     @api.constrains('quantity')
     def _constrains_quantity(self):
