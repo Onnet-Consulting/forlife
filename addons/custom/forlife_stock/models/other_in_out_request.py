@@ -45,6 +45,7 @@ class ForlifeOtherInOutRequest(models.Model):
     required_amount_total = fields.Boolean(compute='_compute_required_field')
     required_ref_asset = fields.Boolean(compute='_compute_required_field')
 
+    @api.depends('location_id', 'location_id.is_work_order', 'location_id.is_price_unit', 'location_id.is_assets')
     def _compute_required_field(self):
         for rec in self:
             rec.required_work_production = rec.location_id.is_work_order
