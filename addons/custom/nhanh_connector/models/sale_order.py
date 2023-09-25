@@ -59,10 +59,11 @@ class SaleOrderNhanh(models.Model):
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
 
     def open_nhanh(self):
+        storeId = self.x_location_id.warehouse_id.brand_id.code == 'FMT' and '92411' or '92405'
         return {
             'type': 'ir.actions.act_url',
             'url': "https://new.nhanh.vn/order/manage/detail?storeId=%s&id=%s"
-                   % (self.x_location_id.nhanh_id, self.nhanh_id),
+                   % (storeId, self.nhanh_id),
             'target': 'new',
         }
 

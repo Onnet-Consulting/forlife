@@ -6,7 +6,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_dat
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
 from odoo.tests import tagged, Form
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -559,8 +560,13 @@ class PurchaseOrder(models.Model):
         po_inter_company = self.env['purchase.order'].with_company(inter_company_id).search([('create_from_picking', 'in', self.origin_purchase_id.picking_ids.ids)])
         po_return_inter_company = self.env['purchase.order']
         if po_inter_company:
-            return_form = Form(self.env['purchase.return.wizard'].with_company(inter_company_id).with_context(active_id=po_inter_company[0].id, active_model='purchase.order', selected_all=True))
-            return_form = return_form.save()
+            try:
+                return_form = Form(self.env['purchase.return.wizard'].with_company(inter_company_id).with_context(active_id=po_inter_company[0].id, active_model='purchase.order', selected_all=True))
+                return_form = return_form.save()
+            except Exception as e:
+                _logger.info('run: auto_return_with_inter_company')
+                _logger.info('Lỗi trong quá trình tạo PO trả hàng liên công ty: %s' % e)
+                return True
             po_return_inter_company_id, _ = return_form.sudo()._create_returns()
             po_return_inter_company = po_return_inter_company.browse(po_return_inter_company_id)
         if po_return_inter_company:
@@ -576,7 +582,8 @@ class PurchaseOrder(models.Model):
                     'show_operations': True
                 })
                 record.write({'custom_state': 'approved'})
-                self.auto_return_with_inter_company()
+                if record.is_return:
+                    self.auto_return_with_inter_company()
             else:
                 if not record.is_return:
                     record.action_approve_inter_company()
@@ -666,29 +673,12 @@ class PurchaseOrder(models.Model):
                 })
                 invoice = self.action_create_invoice()
                 invoice.action_post()
-            sale_order = self._create_sale_order_another_company(company_id=self.company_id, location_id=self.location_id, partner_id=self.partner_id)
-            if self.purchase_type == 'product':
-                sale_order.action_confirm()
-                picking_out = sale_order.picking_ids.filtered(lambda x: x.state not in ['done', 'cancel'])
-                if picking_out:
-                    picking_out.action_set_quantities_to_reservation()
-                    picking_out.button_validate()
-                    if picking_out.state == 'done':
-                        for move_id in picking_out.move_ids:
-                            move_id.sale_line_id.qty_delivered = move_id.quantity_done
-                        invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
-                            'sale_order_ids': [(6, 0, sale_order.ids)],
-                            'advance_payment_method': 'delivered',
-                            'deduct_down_payments': True,
-                        }).forlife_create_invoices()
-                        invoice_customer.action_post()
-            else:
-                invoice_customer = self.env['sale.advance.payment.inv'].sudo().create({
-                    'sale_order_ids': [(6, 0, sale_order.ids)],
-                    'advance_payment_method': 'delivered',
-                    'deduct_down_payments': True,
-                }).forlife_create_invoices()
-                invoice_customer.action_post()
+            sale_order = self._create_sale_order_another_company(
+                company_id=self.sudo().source_location_id.company_id,
+                location_id=self.sudo().source_location_id,
+                partner_id=self.env.company.partner_id
+            )
+            sale_order.confirm_sale_order_return_by_po_return(self.origin_purchase_id)
         else:
             raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
 
