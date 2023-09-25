@@ -12,7 +12,6 @@
         'base',
         # 'forlife_purchase',
         'forlife_stock',
-        'report_xlsx',
     ],
     "data": [
         'data/ir_attachment_data.xml',

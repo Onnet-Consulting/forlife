@@ -3,23 +3,16 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-import xlrd
-import base64
 
 
 class WizardIncreaseDecreaseInvoice(models.TransientModel):
     _name = 'wizard.increase.decrease.invoice'
     _description = 'Increase Decrease Invoice Wizard'
-    _inherit = 'report.base'
 
     origin_invoice_id = fields.Many2one('account.move', string='Move Origin')
     invoice_type = fields.Selection([('increase', 'Tăng'), ('decrease', 'Giảm')], string='Type', default='increase')
     selected_all = fields.Boolean(string='Selected all')
     line_ids = fields.One2many('wizard.increase.decrease.invoice.line', 'parent_id', string='Detail')
-    import_file = fields.Binary(attachment=False, string='File nhập')
-    import_file_name = fields.Char()
-    error_file = fields.Binary(attachment=False, string='File lỗi')
-    error_file_name = fields.Char(default='Tệp lỗi.txt')
 
     @api.onchange('selected_all')
     def onchange_selected_all(self):
@@ -97,18 +90,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                             'balance': line_id.credit,
                             'amount_currency': abs(line_id.amount_currency),
                         })
-                    # Daihv: cập nhật giá nhà cung cấp từ popup Tăng/giảm hóa đơn
-                    wz_invoice_line_id = self.line_ids.filtered(lambda s: s.product_id.id == line_id.product_id.id and s.quantity == line_id.quantity)
-                    if wz_invoice_line_id and line_id.display_type == 'product':
-                        line_id.write({'vendor_price': wz_invoice_line_id[0].vendor_price})
-                        line_id.onchange_vendor_price()
-                        line_id._onchange_discount_value()
-                total_tax = sum(move_copy_id.line_ids.filtered(lambda f: f.display_type == 'product').mapped('tax_amount'))
-                move_copy_id.line_ids.filtered(lambda f: f.display_type == 'tax').write({
-                    'debit': total_tax,
-                    'balance': total_tax,
-                    'amount_currency': total_tax,
-                })
             else:
                 lst_expense = []
                 for line in self.line_ids.filtered(lambda x: x.is_selected):
@@ -227,7 +208,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'product_uom_id': line.uom_id.id,
                         'quantity_purchased': line.invoice_line_id.quantity_purchased,
                         'exchange_quantity': line.invoice_line_id.exchange_quantity,
-                        'vendor_price': line.vendor_price,
+                        'vendor_price': line.invoice_line_id.vendor_price,
                         'discount_percent': line.invoice_line_id.discount_percent,
                         'purchase_uom': line.invoice_line_id.purchase_uom.id,
                         'tax_ids': [(6, 0, line.tax_ids.ids)],
@@ -303,7 +284,7 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
                         'product_uom_id': line.uom_id.id,
                         'quantity_purchased': line.invoice_line_id.quantity_purchased,
                         'exchange_quantity': line.invoice_line_id.exchange_quantity,
-                        'vendor_price': line.vendor_price,
+                        'vendor_price': line.invoice_line_id.vendor_price,
                         'discount_percent': line.invoice_line_id.discount_percent,
                         'purchase_uom': line.invoice_line_id.purchase_uom.id,
                         'tax_ids': [(6, 0, line.tax_ids.ids)],
@@ -340,86 +321,6 @@ class WizardIncreaseDecreaseInvoice(models.TransientModel):
             )
         return move_line_vals
 
-    def get_filename(self):
-        return f"Mẫu nhập tăng_giảm hóa đơn {self.name}"
-
-    def generate_xlsx_report(self, workbook, allowed_company):
-        if not self.line_ids:
-            raise ValidationError('Dữ liệu Chi tiết hóa đơn trống.')
-        sheet = workbook.add_worksheet('Chi tiết')
-        formats = self.get_format_workbook(workbook)
-        TITLES = [
-            'ID', 'Sản phẩm', 'ĐVT', 'Số lượng', 'Tỷ lệ quy đổi', '% chiết khấu',
-            'Giá nhà cung cấp', 'Đơn giá', 'Thành tiền', 'Tiền thuế', 'Tổng tiền'
-                  ]
-        for idx, title in enumerate(TITLES):
-            sheet.write(0, idx, title, formats.get('title_format'))
-        sheet.set_column(0, len(TITLES) - 1, 20)
-        row = 1
-        for line in self.line_ids:
-            r = row + 1
-            sheet.write(row, 0, line.invoice_line_id.id or line.id, formats.get('center_format'))
-            sheet.write(row, 1, line.product_id.display_name, formats.get('normal_format'))
-            sheet.write(row, 2, line.uom_id.name, formats.get('normal_format'))
-            sheet.write(row, 3, line.quantity, formats.get('int_number_format'))
-            sheet.write(row, 4, line.exchange_quantity, formats.get('float_number_format'))
-            sheet.write(row, 5, line.discount / 100, formats.get('percentage_format'))
-            sheet.write(row, 6, line.vendor_price, formats.get('int_number_format'))
-            sheet.write_formula(row, 7, "IF(E{0}>0,G{0}/E{0},G{0})".format(r), formats.get('int_number_format'))
-            sheet.write_formula(row, 8, "H{0}*D{0}*(1-F{0})".format(r), formats.get('int_number_format'))
-            sheet.write_formula(row, 9, "{0}*I{1}".format(sum(line.tax_ids.mapped('amount')) / 100, r), formats.get('int_number_format'))
-            sheet.write_formula(row, 10, "I{0}".format(r), formats.get('int_number_format'))
-            row += 1
-
-    @api.onchange('import_file')
-    def onchange_import_file(self):
-        self.error_file = False
-
-    def action_import(self):
-        if not self.line_ids:
-            raise ValidationError('Dữ liệu Chi tiết hóa đơn trống.')
-        self.ensure_one()
-        if not self.import_file:
-            raise ValidationError("Vui lòng tải lên file mẫu trước khi nhấn nút nhập !")
-        workbook = xlrd.open_workbook(file_contents=base64.decodebytes(self.import_file))
-        data_import = list(self.env['res.utility'].read_xls_book(workbook, 0))[1:]
-        if not data_import:
-            return self.return_error_log('Dữ liệu nhập trống.')
-        error = []
-        data_write = []
-        key = 'invoice_line_id' if self.line_ids[0].invoice_line_id else 'id'
-        self._cr.execute(f"""select json_object_agg({key}, array[vendor_price, id]) as data
-                                    from wizard_increase_decrease_invoice_line
-                                    where parent_id = {self.id}""")
-        old_price_data = self._cr.fetchone()[0] or {}
-        for index, data in enumerate(data_import, start=2):
-            if not data[0] or not old_price_data.get(data[0]):
-                error.append(f"Dòng {index}: ID '{data[0]}' không khớp với dữ liệu trong tab Chi tiết hóa đơn")
-            elif not error:
-                old_vendor_price, line_id = old_price_data.get(data[0])
-                new_vendor_price = float(data[6])
-                if old_vendor_price != new_vendor_price:
-                    data_write.append((1, line_id, {
-                        'vendor_price': new_vendor_price,
-                        'is_selected': True,
-                    }))
-        if error:
-            return self.return_error_log('\n'.join(error))
-        elif data_write:
-            self.write({'line_ids': data_write})
-            self.line_ids.onchange_method()
-        return self.return_error_log()
-
-    def return_error_log(self, error=''):
-        if error:
-            self.write({
-                'error_file': base64.encodebytes(error.encode()),
-                'import_file': False,
-            })
-        action = self.env.ref('forlife_invoice.wizard_increase_decrease_invoice_action').read()[0]
-        action['res_id'] = self.id
-        return action
-
 
 class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     _name = 'wizard.increase.decrease.invoice.line'
@@ -439,14 +340,5 @@ class WizardIncreaseDecreaseInvoiceLine(models.TransientModel):
     is_refund = fields.Boolean()
     tax_amount = fields.Float(string='Tax Amount')
     vendor_price = fields.Float(string="Vendor Price")
-    exchange_quantity = fields.Float(string="Exchange Quantity", related='invoice_line_id.exchange_quantity')
     is_selected = fields.Boolean(string='Selected')
 
-    @api.onchange('vendor_price')
-    def onchange_method(self):
-        for line in self:
-            _price_subtotal = line.vendor_price * line.invoice_line_id.quantity_purchased * (1 - line.discount / 100)
-            line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else line.vendor_price
-            line.tax_amount = _price_subtotal * sum(line.tax_ids.mapped('amount')) / 100
-            line.price_subtotal = _price_subtotal
-            line.price_total = _price_subtotal
