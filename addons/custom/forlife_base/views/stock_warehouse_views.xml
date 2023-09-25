@@ -37,6 +37,17 @@
             </field>
         </record>
 
+        <record id="stock_warehouse_view_search_inherit" model="ir.ui.view">
+            <field name="name">stock_warehouse_view_search_inherit</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.stock_warehouse_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="code"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Type of Warehouse -->
         <record id="stock_warehouse_type_view_tree" model="ir.ui.view">
             <field name="name">stock.warehouse.type.view.tree</field>

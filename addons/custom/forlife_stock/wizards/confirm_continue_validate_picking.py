@@ -10,4 +10,6 @@ class ConfirmContinueValidatePicking(models.TransientModel):
     def action_continue(self):
         picking_ids = self._context.get('picking_ids')
         for picking_id in self.env['stock.picking'].browse(picking_ids):
-            picking_id.with_context(check_date_done=0).button_validate()
+            res = picking_id.with_context(check_date_done=0).button_validate()
+            if isinstance(res, dict):
+                return res
