@@ -129,8 +129,8 @@ class PurchaseReturnWizard(models.TransientModel):
             'source_document': _("Return of %s") % self.purchase_id.name,
             'dest_address_id': self.purchase_id.partner_id.id
         }
-        if self.purchase_id.location_id:
-            vals['source_location_id'] = self.purchase_id.location_id.id
+        if self.purchase_id.source_location_id:
+            vals['source_location_id'] = self.purchase_id.source_location_id.id
         if self.location_id:
             vals['location_id'] = self.location_id.id
         return vals
