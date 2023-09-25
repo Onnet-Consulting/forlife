@@ -781,7 +781,7 @@ class PurchaseOrder(models.Model):
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         for purchase_id in self.filtered(lambda x: not x.is_inter_company and x.state == 'draft'):
-            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
+            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id and 'create_from_pr' not in self._context:
                 message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
                 raise ValidationError(message)
 
