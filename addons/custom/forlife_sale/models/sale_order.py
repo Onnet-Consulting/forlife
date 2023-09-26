@@ -177,13 +177,8 @@ class SaleOrder(models.Model):
             return_picking.button_validate()
         self.state = 'sale'
         if self.picking_ids and not any(self.picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))):
-            advance_payment = self.env['sale.advance.payment.inv'].create({
-                'sale_order_ids': [(6, 0, origin_so.ids)],
-                'advance_payment_method': 'delivered',
-                'deduct_down_payments': True
-            })
-            invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
-            invoice_id.action_post()
+            for picking in self.picking_ids:
+                picking.create_invoice_out_refund()
 
     def _compute_order_punish_count(self):
         for r in self:
