@@ -41,24 +41,27 @@ class ReportNum6(models.TransientModel):
         where_query = f"""
     sm.company_id = any (array{allowed_company})
     and sm.state = 'done'
-    and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
     and {format_date_query("sm.date", tz_offset)} <= '{str(self.date)}'
 """
         query = f"""
-with stocks as (
-    select 
-        sm.product_id                                                                            as product_id,
-        sum(case when coalesce(src_wh.id, 0) <> 0 then -sm.product_qty else sm.product_qty end)  as qty
-    from stock_move sm
-        left join stock_location des_lc on sm.location_dest_id = des_lc.id
-        left join product_product pp on sm.product_id = pp.id
-        left join product_template pt on pp.product_tmpl_id = pt.id
-        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-        left join stock_location src_lc on sm.location_id = src_lc.id
-        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-    where {where_query}
-    group by sm.product_id
-),
+with stock_in as (select sm.product_id       as product_id,
+                         sum(sm.product_qty) as qty
+                  from stock_move sm
+                           join stock_location sl on sm.location_dest_id = sl.id
+                      and sl.warehouse_id = any (array {warehouse_ids})
+                  where {where_query} 
+                  group by sm.product_id),
+     stock_out as (select sm.product_id        as product_id,
+                          sum(-sm.product_qty) as qty
+                   from stock_move sm
+                            join stock_location sl on sm.location_id = sl.id
+                       and sl.warehouse_id = any (array {warehouse_ids})
+                   where {where_query}
+                   group by sm.product_id),
+stocks as (select coalesce(stock_in.product_id, stock_out.product_id)    as product_id,
+                       coalesce(stock_out.qty, 0) + coalesce(stock_in.qty, 0) as qty
+                from stock_in
+                         full join stock_out on stock_out.product_id = stock_in.product_id),
 sales as (
     select
         pol.product_id  as product_id,
@@ -69,7 +72,7 @@ sales as (
         left join pos_session ps on ps.id = po.session_id
         left join pos_config pc on ps.config_id = pc.id
         left join store on store.id = pc.store_id
-        left join stock_warehouse wh on wh.id = store.warehouse_id and wh.id = any (array{warehouse_ids})
+            and store.warehouse_id = any (array{warehouse_ids})
     where po.company_id = any (array{allowed_company})
         and po.state in ('paid', 'done', 'invoiced')
         and po.date_order between '{start_time}'and '{end_time}'
