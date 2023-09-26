@@ -112,7 +112,7 @@ class InheritPosOrder(models.Model):
             journal = line.get_journal_by_product() if not promotion else promotion[PROMOTION_JOURNAL_FIELD[line.promotion_model]]
             if not journal:
                 raise ValidationError(_("Cannot found journal promotion's product %s") % line.product_id.name)
-            partner_id = journal.company_consignment_id.id or self.partner_id.id
+            partner_id = journal.company_consignment_id.id or self.session_id.config_id.store_id.contact_id.id
             # credit_account_id = journal.default_account_id.id
             _key = f'promotion_{line.id}' if not promotion else ','.join((line.promotion_model, str(line.promotion_id)))
             if _key in values:

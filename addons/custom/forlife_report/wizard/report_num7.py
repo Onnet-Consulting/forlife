@@ -92,9 +92,8 @@ order by num
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num7,stock.warehouse')
-        Store = self.env['store'].with_context(report_ctx='report.num7,store')
         warehouse_ids = Warehouse.search([('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids if self.all_warehouses else self.warehouse_ids.ids
-        store_ids = Store.search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
+        store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
         query = self._get_query(store_ids)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
