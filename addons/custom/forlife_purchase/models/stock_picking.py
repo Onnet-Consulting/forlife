@@ -61,7 +61,8 @@ class StockPicking(models.Model):
 
     def check_quant_goods_import(self, po):
         self.ensure_one()
-        material_line_ids = po.order_line_production_order.purchase_order_line_material_line_ids
+        product_have_qty_done = self.move_ids_without_package.filtered(lambda x: x.quantity_done).product_id
+        material_line_ids = po.order_line_production_order.filtered(lambda x: x.product_id.id in product_have_qty_done.ids).purchase_order_line_material_line_ids
         material_product_ids = material_line_ids.filtered(lambda x: not x.product_id.x_type_cost_product and x.product_id.detailed_type == 'product').product_id.ids
         if not material_product_ids:
             return
