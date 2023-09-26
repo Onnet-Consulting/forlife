@@ -310,7 +310,8 @@ class SaleOrder(models.Model):
                             'promotion_type': 'nhanh_shipping_fee',
                             'account_id': account_id,
                             'description': "Phí vận chuyển",
-                            'is_handle': False
+                            'is_handle': False,
+                            'tax_id': [(6, 0, product_id.supplier_taxes_id.ids)]
                         })]
 
                     # Customer shipping fee
@@ -343,7 +344,8 @@ class SaleOrder(models.Model):
                             'promotion_type': 'customer_shipping_fee',
                             'account_id': account_id,
                             'description': "Phí ship báo khách hàng",
-                            'is_handle': False
+                            'is_handle': False,
+                            'tax_id': [(6, 0, product_id.taxes_id.ids)]
                         })]
 
                     # Check voucher và giá trị

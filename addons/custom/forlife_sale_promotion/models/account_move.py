@@ -70,7 +70,7 @@ class AccountMove(models.Model):
 
                 # cho phép tạo bút toán với các promotion type
                 if line_allow:
-                    account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
+                    account_tax = pr.tax_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                     account_tax_id = False
                     product_with_tax_value = abs(pr.value)
                     product_value_without_tax = abs(pr.value)
@@ -107,22 +107,31 @@ class AccountMove(models.Model):
 
                     # có thế thì tạo bút toán cho thuế
                     if account_tax_id:
-                        line_ids.append({
+                        if pr.value >= 0:
+                            tax_debit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
+                            tax_credit_account_id = account_tax_id and account_tax_id.id
+                        else:
+                            tax_debit_account_id = account_tax_id and account_tax_id.id
+                            tax_credit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
+
+                        credit = {
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': self.partner_id.property_account_receivable_id.id,
+                            'account_id': tax_credit_account_id,
                             'analytic_account_id': pr.analytic_account_id.id,
                             'debit': 0,
-                            'credit': pr.value > 0 and product_tax_value or -product_tax_value
-                        })
-                        line_ids.append({
+                            'credit': product_tax_value
+                        }
+                        line_ids.append(credit)
+                        debit = {
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': account_tax_id and account_tax_id.id,
+                            'account_id': tax_debit_account_id,
                             'analytic_account_id': pr.analytic_account_id.id,
-                            'debit': pr.value > 0 and product_tax_value or -product_tax_value,
+                            'debit': product_tax_value,
                             'credit': 0
-                        })
+                        }
+                        line_ids.append(debit)
 
             default_value = {
                 'date': self.invoice_date,
