@@ -563,12 +563,14 @@ class PurchaseOrder(models.Model):
             try:
                 return_form = Form(self.env['purchase.return.wizard'].with_company(inter_company_id).with_context(active_id=po_inter_company[0].id, active_model='purchase.order', selected_all=True))
                 return_form = return_form.save()
+                for rl in return_form.purchase_return_lines:
+                    rl.quantity = self.order_line.filtered(lambda x: x.product_id == rl.product_id).product_qty
             except Exception as e:
                 _logger.info('run: auto_return_with_inter_company')
                 _logger.info('Lỗi trong quá trình tạo PO trả hàng liên công ty: %s' % e)
                 return True
-            po_return_inter_company_id, _ = return_form.sudo()._create_returns()
-            po_return_inter_company = po_return_inter_company.browse(po_return_inter_company_id)
+            po_return_inter_company_id, _ = return_form.with_company(inter_company_id)._create_returns()
+            po_return_inter_company = po_return_inter_company.with_company(inter_company_id).browse(po_return_inter_company_id)
         if po_return_inter_company:
             po_return_inter_company.with_company(inter_company_id).action_confirm()
             po_return_inter_company.with_company(inter_company_id).action_approved()
@@ -1367,7 +1369,7 @@ class PurchaseOrder(models.Model):
         pending_section = None
         receiving_warehouse_ids = []
         for line in self.order_line:
-            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.purchase_line_id.id == line.id and x.state == 'done')
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_to_invoice - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = self._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))

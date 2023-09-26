@@ -71,7 +71,9 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
 
     const OrderAssignEmployee = (Order) => class extends Order {
         add_orderline(line) {
-            if (!_.isEmpty(line.pos.employeeSelected.employeeID)) {
+            console.log(line.pos.employeeSelected.employeeID, 'line.pos.employeeSelected.employeeID')
+            if (!_.isEmpty(line.pos.employeeSelected)) {
+                console.log(line.pos.employeeSelected.employeeID, 'passs')
                 line.set_employee(line.pos.employeeSelected.employeeID)
             }
             super.add_orderline(...arguments);
