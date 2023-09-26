@@ -712,6 +712,18 @@ class StockTransferLine(models.Model):
     check_id = fields.Integer(string="")
     sequence = fields.Integer(string="STT dòng")
     is_readonly_qty = fields.Boolean(default=False, compute='_compute_readonly_qty_in_out')
+    parent_state = fields.Selection(
+        string="Status",
+        selection=[
+            ('draft', 'Draft'),
+            ('wait_approve', 'Wait Approve'),
+            ('approved', 'Approved'),
+            ('out_approve', 'Out Approve'),
+            ('in_approve', 'In Approve'),
+            ('done', 'Done'),
+            ('reject', 'Reject'),
+            ('cancel', 'Cancel')
+        ], related='stock_transfer_id.state')
 
     @api.onchange('product_id')
     def onchange_product_id(self):
