@@ -174,7 +174,6 @@ class SalaryRecord(models.Model):
         self.ensure_one()
         if self.state != 'approved':
             return False
-        self._active_employee_partners()
         self.generate_account_moves()
 
         self.sudo().write({
@@ -189,12 +188,6 @@ class SalaryRecord(models.Model):
         start_of_month = datetime.strptime('%s-%s-01' % (self.year, self.month), DF).date()
         end_of_month = date_utils.end_of(start_of_month, 'month')
         return end_of_month
-
-    def _active_employee_partners(self):
-        self.ensure_one()
-        self.salary_arrears_ids.mapped('employee_id'). \
-            mapped('partner_id').filtered(lambda p: not p.active).write({'active': True})
-        return True
 
     def group_accounting_data_by_entry_and_account(self, accounting_values_by_entry):
         entry_ids = list(accounting_values_by_entry.keys())
