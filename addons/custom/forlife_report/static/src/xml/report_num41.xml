@@ -23,7 +23,9 @@
                         <td class="right"><t t-esc="format_decimal(line.sl_nk_thuc_te, line.precision_rounding)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_vt_tieu_hao_tt, line.precision_rounding)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.sl_vt_dieu_chuyen, line.precision_rounding)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.sl_vt_dieu_chuyen - line.sl_vt_tieu_hao_tt, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_thu_hoi_dieu_chuyen, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_xuat_ban_phat, line.precision_rounding)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.sl_vt_dieu_chuyen - line.sl_vt_tieu_hao_tt - line.sl_thu_hoi_dieu_chuyen, line.precision_rounding)"/></td>
                     </tr>
                 </t>
             </tbody>
