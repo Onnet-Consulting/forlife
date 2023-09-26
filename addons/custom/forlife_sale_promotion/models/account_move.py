@@ -37,9 +37,9 @@ class AccountMove(models.Model):
     def action_post(self):
         res = super(AccountMove, self).action_post()
         if self.promotion_ids:
-            line_ids = []
             journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
             for pr in self.promotion_ids.filtered(lambda x: x.promotion_type not in ('out_point','in_point')):
+                line_ids = []
                 account_debit_id = False
                 account_credit_id = False
                 line_allow = False
@@ -105,8 +105,19 @@ class AccountMove(models.Model):
                         if not account_repartition_tax or not account_repartition_tax[0].account_id:
                             raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
 
+                    default_value = {
+                        'date': self.invoice_date,
+                        'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
+                        'promotion_move_id': self.id,
+                        'move_type': 'entry',
+                        'line_ids': [(0, 0, line_id) for line_id in line_ids]
+                    }
+                    invoice_id = self.copy(default_value)
+                    invoice_id.action_post()
+
                     # có thế thì tạo bút toán cho thuế
                     if account_tax_id:
+                        tax_line_ids = []
                         if pr.value >= 0:
                             tax_debit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
                             tax_credit_account_id = account_tax_id and account_tax_id.id
@@ -122,7 +133,7 @@ class AccountMove(models.Model):
                             'debit': 0,
                             'credit': product_tax_value
                         }
-                        line_ids.append(credit)
+                        tax_line_ids.append(credit)
                         debit = {
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
@@ -131,17 +142,17 @@ class AccountMove(models.Model):
                             'debit': product_tax_value,
                             'credit': 0
                         }
-                        line_ids.append(debit)
+                        tax_line_ids.append(debit)
 
-            default_value = {
-                'date': self.invoice_date,
-                'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
-                'promotion_move_id': self.id,
-                'move_type': 'entry',
-                'line_ids': [(0, 0, line_id) for line_id in line_ids]
-            }
-            invoice_id = self.copy(default_value)
-            invoice_id.action_post()
+                        default_value = {
+                            'date': self.invoice_date,
+                            'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
+                            'promotion_move_id': self.id,
+                            'move_type': 'entry',
+                            'line_ids': [(0, 0, line_id) for line_id in tax_line_ids]
+                        }
+                        tax_invoice_id = self.copy(default_value)
+                        tax_invoice_id.action_post()
         return res
 
 
