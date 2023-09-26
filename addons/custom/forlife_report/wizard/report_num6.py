@@ -68,10 +68,10 @@ sales as (
         pol.employee_id as employee_id,
         sum(pol.qty)    as qty
     from pos_order_line pol
-        left join pos_order po on pol.order_id = po.id
-        left join pos_session ps on ps.id = po.session_id
-        left join pos_config pc on ps.config_id = pc.id
-        left join store on store.id = pc.store_id
+        join pos_order po on pol.order_id = po.id
+        join pos_session ps on ps.id = po.session_id
+        join pos_config pc on ps.config_id = pc.id
+        join store on store.id = pc.store_id
             and store.warehouse_id = any (array{warehouse_ids})
     where po.company_id = any (array{allowed_company})
         and po.state in ('paid', 'done', 'invoiced')
@@ -152,6 +152,7 @@ order by num
         })
         return values
 
+    @api.model
     def convert_time(self, value):
         return '{:02d}:{:02d}'.format(int(value), int((value - int(value)) * 60))
 
