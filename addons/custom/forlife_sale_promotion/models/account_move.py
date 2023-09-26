@@ -37,9 +37,9 @@ class AccountMove(models.Model):
     def action_post(self):
         res = super(AccountMove, self).action_post()
         if self.promotion_ids:
-            line_ids = []
             journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
             for pr in self.promotion_ids.filtered(lambda x: x.promotion_type not in ('out_point','in_point')):
+                line_ids = []
                 account_debit_id = False
                 account_credit_id = False
                 line_allow = False
@@ -51,7 +51,7 @@ class AccountMove(models.Model):
                 if not account_payable_customer_id:
                     raise UserError("Chưa cấu hình tài khoản phải trả cho khách hàng")
                     
-                account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
+                account_tax = pr.tax_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                 account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                 
                 if pr.promotion_type in ['vip_amount', 'reward']:
@@ -70,7 +70,7 @@ class AccountMove(models.Model):
 
                 # cho phép tạo bút toán với các promotion type
                 if line_allow:
-                    account_tax = pr.product_id.taxes_id.filtered(lambda x: x.company_id.id == self.env.company.id)
+                    account_tax = pr.tax_id.filtered(lambda x: x.company_id.id == self.env.company.id)
                     account_tax_id = False
                     product_with_tax_value = abs(pr.value)
                     product_value_without_tax = abs(pr.value)
@@ -105,34 +105,54 @@ class AccountMove(models.Model):
                         if not account_repartition_tax or not account_repartition_tax[0].account_id:
                             raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
 
+                    default_value = {
+                        'date': self.invoice_date,
+                        'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
+                        'promotion_move_id': self.id,
+                        'move_type': 'entry',
+                        'line_ids': [(0, 0, line_id) for line_id in line_ids]
+                    }
+                    invoice_id = self.copy(default_value)
+                    invoice_id.action_post()
+
                     # có thế thì tạo bút toán cho thuế
                     if account_tax_id:
-                        line_ids.append({
+                        tax_line_ids = []
+                        if pr.value >= 0:
+                            tax_debit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
+                            tax_credit_account_id = account_tax_id and account_tax_id.id
+                        else:
+                            tax_debit_account_id = account_tax_id and account_tax_id.id
+                            tax_credit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
+
+                        credit = {
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': self.partner_id.property_account_receivable_id.id,
+                            'account_id': tax_credit_account_id,
                             'analytic_account_id': pr.analytic_account_id.id,
                             'debit': 0,
-                            'credit': pr.value > 0 and product_tax_value or -product_tax_value
-                        })
-                        line_ids.append({
+                            'credit': product_tax_value
+                        }
+                        tax_line_ids.append(credit)
+                        debit = {
                             'name': self.name + "(%s)" % pr.description,
                             'product_id': pr.product_id.id,
-                            'account_id': account_tax_id and account_tax_id.id,
+                            'account_id': tax_debit_account_id,
                             'analytic_account_id': pr.analytic_account_id.id,
-                            'debit': pr.value > 0 and product_tax_value or -product_tax_value,
+                            'debit': product_tax_value,
                             'credit': 0
-                        })
+                        }
+                        tax_line_ids.append(debit)
 
-            default_value = {
-                'date': self.invoice_date,
-                'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
-                'promotion_move_id': self.id,
-                'move_type': 'entry',
-                'line_ids': [(0, 0, line_id) for line_id in line_ids]
-            }
-            invoice_id = self.copy(default_value)
-            invoice_id.action_post()
+                        default_value = {
+                            'date': self.invoice_date,
+                            'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
+                            'promotion_move_id': self.id,
+                            'move_type': 'entry',
+                            'line_ids': [(0, 0, line_id) for line_id in tax_line_ids]
+                        }
+                        tax_invoice_id = self.copy(default_value)
+                        tax_invoice_id.action_post()
         return res
 
 

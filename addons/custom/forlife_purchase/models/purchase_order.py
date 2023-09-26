@@ -773,7 +773,7 @@ class PurchaseOrder(models.Model):
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         for purchase_id in self.filtered(lambda x: not x.is_inter_company and x.state == 'draft'):
-            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id:
+            if not purchase_id.is_check_line_material_line and purchase_id.purchase_type == 'product' and not purchase_id.location_export_material_id and 'create_from_pr' not in self._context:
                 message = 'Địa điểm nhập NPL không thể thiếu, vui lòng kiểm tra lại!' if purchase_id.is_return else 'Địa điểm xuất NPL không thể thiếu, vui lòng kiểm tra lại!'
                 raise ValidationError(message)
 
@@ -1369,7 +1369,7 @@ class PurchaseOrder(models.Model):
         pending_section = None
         receiving_warehouse_ids = []
         for line in self.order_line:
-            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.state == 'done')
+            stock_move_ids = picking_ids.move_ids_without_package.filtered(lambda x: x.product_id.id == line.product_id.id and x.purchase_line_id.id == line.id and x.state == 'done')
             for move_id in stock_move_ids.filtered(lambda x: x.quantity_done - x.qty_to_invoice - x.qty_invoiced - x.qty_refunded > 0):
                 data_line = self._prepare_invoice_normal(line, move_id)
                 qty_returned = sum(move_id.returned_move_ids.filtered(lambda x: x.state == 'done').mapped('quantity_done'))

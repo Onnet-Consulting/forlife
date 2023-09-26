@@ -303,6 +303,16 @@ class ForlifeOtherInOutRequestLine(models.Model):
             if rec.quantity <= 0:
                 raise ValidationError(_("Số lượng phải lớn hơn 0"))
 
+    @api.constrains('production_id', 'amount_total', 'asset_id', 'other_in_out_request_id')
+    def _constrain_required_fields(self):
+        for rec in self:
+            if rec.other_in_out_request_id.required_work_production and not rec.production_id:
+                raise ValidationError('Trường Lệnh sản xuất là bắt buộc !')
+            if rec.other_in_out_request_id.required_amount_total and not rec.amount_total:
+                raise ValidationError('Trường Tổng tiền là bắt buộc !')
+            if rec.other_in_out_request_id.required_ref_asset and not rec.asset_id:
+                raise ValidationError('Trường Tài sản là bắt buộc !')
+
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:

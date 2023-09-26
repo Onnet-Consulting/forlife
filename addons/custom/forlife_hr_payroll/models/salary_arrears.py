@@ -12,7 +12,7 @@ class SalaryArrears(models.Model):
     _inherit = 'salary.general.info'
     _description = 'Salary Arrears'  # truy thu
 
-    employee_id = fields.Many2one('hr.employee', string='Employee')
+    partner_id = fields.Many2one('res.partner', string='Employee')
     x_kq = fields.Float(string="Ký quỹ")
     x_tkdp = fields.Float(string="TKDP")
     x_pvp = fields.Float(string="Phạt vi phạm")
@@ -29,6 +29,12 @@ class SalaryArrears(models.Model):
     x_bhxh_bhbnn_tnld_cn = fields.Float(string="Công nợ BHTN NLĐ chi trả")
     x_ttbh = fields.Float(string="Truy thu BH vào lương")
     note = fields.Text(string='Note')
+    partner_info = fields.Char(string='Nhân viên', compute='_compute_partner_info')
+
+    @api.depends('partner_id')
+    def _compute_partner_info(self):
+        for line in self:
+            line.partner_info = f"{(line.partner_id.ref or '')[4:]} - {line.partner_id.name}" if line.partner_id else ''
 
     @api.constrains(*NUMBER_FIELDS)
     def _check_numbers(self):
@@ -43,7 +49,7 @@ class SalaryArrears(models.Model):
         (
             'unique_info_with_employee',
             'UNIQUE(salary_record_id, purpose_id, department_id, analytic_account_id,'
-            'asset_id, production_id, occasion_code_id, employee_id)',
+            'asset_id, production_id, occasion_code_id, partner_id)',
             'The combination of Reference, Salary calculation purpose, Department, Cost Center, '
             'Project Code, Manufacture Order Code, Internal Order Code and Employee must be unique !'
         )

@@ -98,7 +98,9 @@ class AccountMove(models.Model):
     # Hóa đơn chi phí mua hàng nhiều PO
     def _create_invoice_expense_purchase(self):
         invoice_line_ids = [(5,0,0)]
-        purchase_id = self.purchase_order_product_id[0]
+        if not self.purchase_order_product_id and self.receiving_warehouse_id:
+            self.purchase_order_product_id = self.receiving_warehouse_id.purchase_id
+        purchase_id = self.purchase_order_product_id[0] if self.purchase_order_product_id else False
         if not purchase_id:
             return
         if not purchase_id.cost_line:
