@@ -24,5 +24,8 @@ class InheritStockMove(models.Model):
         results = super(InheritStockMove, self)._prepare_move_line_vals(quantity, reserved_quant)
         if self.picking_id.exchange_code == 'outgoing' or self._context.get('auto_done'):
             results['qty_done'] = results['reserved_uom_qty']
+        # else:
+        #     if results.get('quantity_purchase_done') and results.get('quantity_change'):
+        #         results['qty_done'] = results.get('quantity_purchase_done') * results.get('quantity_change')
         return results
 
