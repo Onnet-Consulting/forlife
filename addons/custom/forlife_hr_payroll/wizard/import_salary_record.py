@@ -258,6 +258,24 @@ class ImportSalaryRecord(models.TransientModel):
 
         return employee_by_code, error_by_code
 
+    def map_partner_data(self, data):
+        if not data:
+            return {}, {}
+        partner = self.env['res.partner'].search(['&', ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_4').id),
+                                                  '|', ('ref', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
+        error_by_code = {}
+        partner_by_code = {}
+        partner_data_by_code = {pn.ref: (pn.name, pn.id) for pn in partner}
+
+        for import_code, import_name in data.items():
+            db_data = partner_data_by_code.get(import_code)
+            if not db_data or import_name != db_data[0]:
+                error_by_code[import_code] = 'Tên-mã nhân viên không tồn tại hoặc không khớp: "%s" "%s"' % (import_name, import_code)
+                continue
+            partner_by_code[import_code] = db_data[1]
+
+        return partner_by_code, error_by_code
+
     def map_department_data(self, data):
         departments = self.env['hr.department'].search(
             ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
@@ -638,29 +656,30 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_employees_name_and_code = {}
+        xls_partner_name_and_code = {}
         xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
         xls_internal_orders = []
+        group_code = self.env.ref('forlife_pos_app_member.partner_group_4').code or ''
 
         for row_idx, row in enumerate(data, start=start_row):
             xls_purposes.append(row[0])
-            xls_employees_name_and_code.update({row[1]: row[2]})
+            xls_partner_name_and_code.update({group_code + row[1]: row[2]})
             xls_departments_name_and_code.update({row[3]: row[4]})
             xls_analytic_accounts.append(row[5])
             xls_projects.append(row[6])
             xls_manufacturing.append(row[7])
             xls_internal_orders.append(row[8])
         xls_data = dict(
-            purpose=xls_purposes, employee=xls_employees_name_and_code, department=xls_departments_name_and_code,
+            purpose=xls_purposes, partner=xls_partner_name_and_code, department=xls_departments_name_and_code,
             analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
         purpose_by_code, purpose_error_by_code = mapped_data.get('purpose')
-        employee_by_code, employee_error_by_code = mapped_data.get('employee')
+        partner_by_code, partner_error_by_code = mapped_data.get('partner')
         department_by_code, department_error_by_code = mapped_data.get('department')
         analytic_by_code, analytic_error_by_code = mapped_data.get('analytic')
         project_by_code, project_error_by_code = mapped_data.get('project')
@@ -669,7 +688,7 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data, start=start_row + 1):
             purpose_code = self.get_purpose_code(row[0])
-            employee_code = row[1]
+            partner_code = group_code + row[1]
             department_code = row[3]
             analytic_code = row[5]
             project_code = row[6]
@@ -677,13 +696,13 @@ class ImportSalaryRecord(models.TransientModel):
             internal_order_code = row[8]
 
             purpose_error = purpose_error_by_code.get(purpose_code)
-            employee_error = employee_error_by_code.get(employee_code)
+            partner_error = partner_error_by_code.get(partner_code)
             department_error = department_error_by_code.get(department_code)
             analytic_error = analytic_error_by_code.get(analytic_code)
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, employee_error, department_error, analytic_error, project_error,
+            line_error = [purpose_error, partner_error, department_error, analytic_error, project_error,
                           manufacturing_error, internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
@@ -692,7 +711,7 @@ class ImportSalaryRecord(models.TransientModel):
             else:
                 value = {
                     'purpose_id': purpose_by_code.get(purpose_code),
-                    'employee_id': employee_by_code.get(employee_code),
+                    'partner_id': partner_by_code.get(partner_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
                     'asset_id': project_by_code.get(project_code) or False,
