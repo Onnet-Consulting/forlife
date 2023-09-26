@@ -154,3 +154,12 @@ class StockMove(models.Model):
             'asset_code': self.ref_asset.id or False,
         })
         return rslt
+
+    # Update data when create backorder
+    def _prepare_move_split_vals(self, qty):
+        vals = super(StockMove, self)._prepare_move_split_vals(qty)
+        vals.update({
+            'quantity_change': self.quantity_change,
+            'quantity_purchase_done': qty / self.quantity_change if self.quantity_change else 0,
+        })
+        return vals
