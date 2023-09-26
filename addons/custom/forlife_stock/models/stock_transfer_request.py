@@ -292,7 +292,7 @@ class TransferRequestLine(models.Model):
                 item.quantity_reality_receive = 0
 
     def get_value_str_line(self):
-        return self.env['stock.transfer.line'].search([('stock_request_id.state', 'not in', ['cancel', 'reject']), ('product_str_id', '=', self.id)])
+        return self.env['stock.transfer.line'].search([('parent_state', 'not in', ['cancel', 'reject']), ('product_str_id', '=', self.id)])
 
     @api.onchange('product_id')
     def onchange_product_id(self):
