@@ -273,7 +273,7 @@ class TransferRequestLine(models.Model):
     production_from = fields.Many2one('forlife.production', string="Từ LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     production_to = fields.Many2one('forlife.production', string="Đến LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
 
-    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out')
+    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_transfer(self):
         for item in self:
             data_str_line = item.get_value_str_line()
@@ -282,7 +282,7 @@ class TransferRequestLine(models.Model):
             else:
                 item.quantity_reality_transfer = 0
 
-    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_in')
+    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_in', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_receive(self):
         for item in self:
             data_str_line = item.get_value_str_line()
@@ -292,7 +292,7 @@ class TransferRequestLine(models.Model):
                 item.quantity_reality_receive = 0
 
     def get_value_str_line(self):
-        return self.env['stock.transfer.line'].search([('is_parent_done', '=', True), ('product_str_id', '=', self.id)])
+        return self.env['stock.transfer.line'].search([('stock_request_id.state', 'not in', ['cancel', 'reject']), ('product_str_id', '=', self.id)])
 
     @api.onchange('product_id')
     def onchange_product_id(self):
