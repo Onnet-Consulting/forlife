@@ -7,7 +7,8 @@ from odoo.tools import float_round
 
 TITLES = [
     'STT', 'Mã lệnh sản xuất', 'Kho/xưởng', 'Mã vật tư', 'Tên vật tư', 'Đơn vị tính vật tư', 'Số lượng sản xuất theo kế hoạch ',
-    'Số lượng sản xuất nhập kho thực tế', 'Số lượng vât tư  tiêu hao theo nhập kho thực tế', 'Số lượng vật tư kho cấp', 'Chênh lệch'
+    'Số lượng sản xuất nhập kho thực tế', 'Số lượng vât tư  tiêu hao theo nhập kho thực tế', 'Số lượng vật tư kho cấp',
+    'Số lượng thu hồi/điều chuyển cho LSX khác', 'Số lượng xuất bán phạt', 'Chênh lệch',
 ]
 
 
@@ -80,7 +81,7 @@ with forlife_production_x as (select id
                                        sum(tieu_hao) as value
                                 from sl_chi_tiet
                                 group by id, product_id) as xx1),
-     sl_vt_dieu_chuyen as (select json_object_agg(concat(fp_id, '-', product_id), qty_in) as data
+     x_sl_vt_dieu_chuyen as (select json_object_agg(concat(fp_id, '-', product_id), qty_in) as data
                            from (select stl.work_to                  as fp_id,
                                         stl.product_id,
                                         sum(coalesce(stl.qty_in, 0)) as qty_in
@@ -88,7 +89,26 @@ with forlife_production_x as (select id
                                           join stock_transfer_line stl on st.id = stl.stock_transfer_id
                                  where stl.work_to in (select id from forlife_production_x)
                                    and st.state = 'done'
-                                 group by stl.work_to, stl.product_id) as xx2)
+                                 group by stl.work_to, stl.product_id) as xx2),
+     x_sl_thu_hoi_dieu_chuyen as (select json_object_agg(concat(fp_id, '-', product_id), qty_in) as data
+                                  from (select stl.work_from                as fp_id,
+                                               stl.product_id,
+                                               sum(coalesce(stl.qty_in, 0)) as qty_in
+                                        from stock_transfer st
+                                                 join stock_transfer_line stl on st.id = stl.stock_transfer_id
+                                        where stl.work_from in (select id from forlife_production_x)
+                                          and st.state = 'done'
+                                        group by stl.work_from, stl.product_id) as xx3),
+     x_sl_xuat_ban_phat as (select json_object_agg(concat(fp_id, '-', product_id), qty_done) as data
+                            from (select so.x_manufacture_order_code_id as fp_id,
+                                         sml.product_id,
+                                         sum(sml.qty_done)              as qty_done
+                                  from sale_order so
+                                           join stock_picking sp on sp.sale_id = so.id
+                                           join stock_move_line sml on sml.picking_id = sp.id
+                                  where so.x_manufacture_order_code_id in (select id from forlife_production_x)
+                                    and sp.state = 'done'
+                                  group by so.x_manufacture_order_code_id, sml.product_id) as xx4)
 select row_number() over (order by fp.code, fp.id)                                                     as stt,
        fp.code                                                                                         as ma_lenh_sx,
        (select value::json ->> fp.id::text from wh_data)                                               as kho_xuong,
@@ -98,7 +118,9 @@ select row_number() over (order by fp.code, fp.id)                              
        coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_sx_ke_hoach)::float, 0)     as sl_sx_ke_hoach,
        coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_nk_thuc_te)::float, 0)      as sl_nk_thuc_te,
        coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_vt_tieu_hao)::float4, 0)    as sl_vt_tieu_hao_tt,
-       coalesce((select data::json ->> concat(fp.id, '-', pp.id) from sl_vt_dieu_chuyen)::float4, 0)   as sl_vt_dieu_chuyen,
+       coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_vt_dieu_chuyen)::float4, 0) as sl_vt_dieu_chuyen,
+       coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_thu_hoi_dieu_chuyen)::float4, 0) as sl_thu_hoi_dieu_chuyen,
+       coalesce((select data::json ->> concat(fp.id, '-', pp.id) from x_sl_xuat_ban_phat)::float4, 0)       as sl_xuat_ban_phat,
        uom.rounding,
        case when uom.rounding >= 1 then 0 else LENGTH(SUBSTRING(uom.rounding::text FROM '\.(.*)')) end as precision_rounding
 from forlife_production fp
@@ -149,5 +171,8 @@ order by stt
             sheet.write(row, 7, float_round(value=value.get('sl_nk_thuc_te') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             sheet.write(row, 8, float_round(value=value.get('sl_vt_tieu_hao_tt') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             sheet.write(row, 9, float_round(value=value.get('sl_vt_dieu_chuyen') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
-            sheet.write(row, 10, float_round(value=(value.get('sl_vt_dieu_chuyen') or 0) - (value.get('sl_vt_tieu_hao_tt') or 0), precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
+            sheet.write(row, 10, float_round(value=value.get('sl_thu_hoi_dieu_chuyen') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
+            sheet.write(row, 11, float_round(value=value.get('sl_xuat_ban_phat') or 0, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
+            chenh_lech = (value.get('sl_vt_dieu_chuyen') or 0) - (value.get('sl_vt_tieu_hao_tt') or 0) - (value.get('sl_thu_hoi_dieu_chuyen') or 0)
+            sheet.write(row, 12, float_round(value=chenh_lech, precision_rounding=value.get('rounding') or 0), formats.get('right_format'))
             row += 1
