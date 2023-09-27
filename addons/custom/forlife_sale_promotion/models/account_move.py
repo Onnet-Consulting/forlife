@@ -51,8 +51,8 @@ class AccountMove(models.Model):
                 if not account_payable_customer_id:
                     raise UserError("Chưa cấu hình tài khoản phải trả cho khách hàng")
                     
-                account_tax = pr.tax_id.filtered(lambda x: x.company_id.id == self.env.company.id)
-                account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
+                # account_tax = pr.tax_id.filtered(lambda x: x.company_id.id == self.env.company.id)
+                # account_repartition_tax = account_tax and account_tax[0].invoice_repartition_line_ids.filtered(lambda p: p.repartition_type == 'tax')
                 
                 if pr.promotion_type in ['vip_amount', 'reward']:
                     line_allow = True
@@ -101,9 +101,9 @@ class AccountMove(models.Model):
                         'debit': 0,
                         'credit': product_value_without_tax
                     })
-                    if pr.promotion_type == 'customer_shipping_fee':
-                        if not account_repartition_tax or not account_repartition_tax[0].account_id:
-                            raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
+                    # if pr.promotion_type == 'customer_shipping_fee':
+                    #     if not account_repartition_tax or not account_repartition_tax[0].account_id:
+                    #         raise UserError("Chưa cấu hình tài khoản thuế cho sản phầm!")
 
                     default_value = {
                         'date': self.invoice_date,
@@ -116,7 +116,7 @@ class AccountMove(models.Model):
                     invoice_id.action_post()
 
                     # có thế thì tạo bút toán cho thuế
-                    if account_tax_id:
+                    if account_tax_id and product_tax_value:
                         tax_line_ids = []
                         if pr.value >= 0:
                             tax_debit_account_id = account_payable_customer_id.id if pr.promotion_type == 'nhanh_shipping_fee' else property_account_receivable_id.id
