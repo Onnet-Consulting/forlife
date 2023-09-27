@@ -128,12 +128,12 @@ class PosOrder(models.Model):
                 })
         return values
 
-    @api.depends('lines.refunded_orderline_id', 'is_refund_order')
+    @api.depends('lines.refunded_orderline_id', 'is_refund_order', 'is_change_order')
     def _compute_refund_point(self):
         for item in self:
             item.refund_point = 0
             total = 0
-            if item.is_refund_order:
+            if item.is_refund_order or item.is_change_order:
                 for line in item.lines:
                     qty_refund = abs(line.qty)
                     for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(
