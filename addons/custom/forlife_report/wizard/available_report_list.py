@@ -266,4 +266,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum45Template',
         'reportPager': True,
     },
+    'report.num46': {
+        'module': 'Kế toán',
+        'name': 'Sổ chi tiết tài khoản',
+        'reportTemplate': 'ReportNum46Template',
+        'reportPager': True,
+    },
 }

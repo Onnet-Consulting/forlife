@@ -31,6 +31,16 @@
               parent="report_menu"
               sequence="4"/>
 
+    <menuitem id="report_menu_accounting"
+              name="Kế toán"
+              parent="report_menu"
+              sequence="50"/>
+
+    <menuitem id="report_menu_manufacture"
+              name="Sản xuất"
+              parent="report_menu"
+              sequence="60"/>
+
     <menuitem id="root_permission_report_menu"
               name="Phân quyền"
               parent="report_menu"

@@ -12,7 +12,7 @@ COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20]
 class ReportNum3(models.TransientModel):
     _name = 'report.num3'
     _inherit = ['report.base', 'report.category.type']
-    _description = 'Báo cáo tồn kho'
+    _description = 'Báo cáo tồn kho theo chi nhánh_khu vực'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
