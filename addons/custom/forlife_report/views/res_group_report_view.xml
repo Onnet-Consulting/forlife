@@ -25,7 +25,7 @@
                             <field name="name"/>
                         </group>
                         <notebook>
-                            <page name="" string="Người dùng">
+                            <page name="user" string="Người dùng">
                                 <field name="user_ids">
                                     <tree create="0" delete="0" edit="0">
                                         <field name="login" string="Mã người dùng"/>
@@ -39,18 +39,18 @@
                                     </form>
                                 </field>
                             </page>
-                            <page name="" string="Quyền dữ liệu">
+                            <page name="data" string="Quyền dữ liệu">
                                 <field name="data_permission_ids">
                                     <tree create="0" delete="0" edit="0">
                                         <field name="name"/>
-                                        <field name="report"/>
+                                        <field name="report_id"/>
                                         <field name="field_id" context="{'report_permission': 1}"/>
                                         <field name="value_ids"/>
                                     </tree>
                                     <form create="0" delete="0" edit="0">
                                         <group>
                                             <field name="name" readonly="1"/>
-                                            <field name="report" readonly="1"/>
+                                            <field name="report_id" readonly="1"/>
                                             <field name="field_id" widget="selection" context="{'report_permission': 1}" readonly="1"/>
                                             <field name="value_ids">
                                                 <tree create="0" delete="0" edit="0">

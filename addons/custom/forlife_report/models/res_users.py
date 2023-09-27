@@ -17,8 +17,9 @@ class ResUsers(models.Model):
                      join ir_model_fields tb4 on tb4.id = tb3.field_id
                      join res_field_report_value_rel tb5 on tb5.res_field_report_id = tb3.id
                      join res_field_value_report tb6 on tb6.id = tb5.res_field_value_report_id
+                     join ir_model tb7 on tb3.report_id = tb7.id
             where tb1.res_users_id = {self._uid}
-              and tb3.report = '{report_ctx[0]}'
+              and tb7.model = '{report_ctx[0]}'
               {f"and tb4.name = '{report_ctx[2]}'" if len(report_ctx) > 2 else ''}
               and tb4.relation = '{report_ctx[1]}'""")
         result = self._cr.fetchone()
