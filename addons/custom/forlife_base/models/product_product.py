@@ -81,7 +81,10 @@ class ProducProduct(models.Model):
             product_ids = []
             if operator in positive_operators:
                 product_ids = list(
-                    self._search(['|', ('barcode', operator, name), ('makithuat', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                    self._search([('barcode', operator, name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                if not product_ids:
+                    product_ids = list(
+                        self._search([('makithuat', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
                 if not product_ids:
                     product_ids = list(
                         self._search([('default_code', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
