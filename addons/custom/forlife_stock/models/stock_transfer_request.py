@@ -276,7 +276,7 @@ class TransferRequestLine(models.Model):
     @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_transfer(self):
         for item in self:
-            data_str_line = item.get_value_str_line()
+            data_str_line = item.get_value_str_line(['out_approve', 'in_approve', 'done'])
             if data_str_line:
                 item.quantity_reality_transfer = sum(data_str_line.mapped('qty_out'))
             else:
@@ -285,14 +285,14 @@ class TransferRequestLine(models.Model):
     @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_in', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_receive(self):
         for item in self:
-            data_str_line = item.get_value_str_line()
+            data_str_line = item.get_value_str_line(['in_approve', 'done'])
             if data_str_line:
                 item.quantity_reality_receive = sum(data_str_line.mapped('qty_in'))
             else:
                 item.quantity_reality_receive = 0
 
-    def get_value_str_line(self):
-        return self.env['stock.transfer.line'].search([('parent_state', 'not in', ['cancel', 'reject']), ('product_str_id', '=', self.id)])
+    def get_value_str_line(self, states):
+        return self.env['stock.transfer.line'].search([('parent_state', 'in', states), ('product_str_id', '=', self.id)])
 
     @api.onchange('product_id')
     def onchange_product_id(self):
