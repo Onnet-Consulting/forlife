@@ -1143,11 +1143,6 @@ msgid "Fully Billed"
 msgstr "Hoàn thành"
 
 #. module: forlife_purchase
-#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__invoice_status__close
-msgid "Close"
-msgstr "Đóng"
-
-#. module: forlife_purchase
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__invoice_status__to_invoice
 msgid "Waiting Bills"
 msgstr "Dở dang"

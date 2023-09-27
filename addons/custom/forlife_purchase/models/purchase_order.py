@@ -106,12 +106,12 @@ class PurchaseOrder(models.Model):
         ('no', 'Nothing to Bill'),
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'Fully Billed'),
-        ('close', 'Close'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
     invoice_status_fake = fields.Selection([
         ('no', 'Chưa nhận'),
         ('to invoice', 'Dở dang'),
         ('invoiced', 'Hoàn thành'),
+        ('close', 'Đóng'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
     date_order = fields.Datetime('Order Deadline', states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,

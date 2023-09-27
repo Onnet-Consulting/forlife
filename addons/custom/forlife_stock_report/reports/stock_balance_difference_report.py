@@ -16,7 +16,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
     line_ids = fields.One2many(comodel_name='stock.balance.difference.report.line', inverse_name='report_id')
     account_move_ids = fields.One2many(comodel_name='stock.balance.difference.report.account.move', inverse_name='report_id')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Order', copy=False)
+    purchase_order_ids = fields.Many2many('purchase.order', string='Đơn hàng', copy=False)
 
     @api.depends('period_start', 'period_end')
     def _compute_name(self):
@@ -139,6 +139,8 @@ class StockBalanceDifferenceReportLine(models.TransientModel):
     debit = fields.Float(string='Debit')
     credit = fields.Float(string='Credit')
     difference = fields.Float(string='Difference')
+    difference_percent = fields.Float(string='% Chênh lệch')
+    purchase_id = fields.Many2one(comodel_name='purchase.order', string='PO', ondelete='cascade')
     report_id = fields.Many2one(comodel_name='stock.balance.difference.report', ondelete='cascade')
 
 
