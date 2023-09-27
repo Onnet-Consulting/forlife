@@ -2,7 +2,6 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.tools import float_round
 
 TITLES = [
@@ -36,12 +35,11 @@ class ReportNum41(models.TransientModel):
     def _get_query(self, production_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
-        tz_offset = self.tz_offset
 
         query_final = f"""
 with forlife_production_x as (select id
                               from forlife_production
-                               where {format_date_query("created_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+                               where created_date between '{self.from_date}' and '{self.to_date}'
                                 and id = any(array{production_ids})),
      wh_data as (select json_object_agg(production_id, warehouse) as value
                  from (select row_number() over (PARTITION BY foior.production_id) as stt,
