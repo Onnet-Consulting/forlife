@@ -24,6 +24,8 @@ class PosPromotionLine(models.Model):
     discount_based_on = fields.Char()
     promotion_type = fields.Char()
     registering_tax = fields.Boolean(readonly=True)
+    program_from_date = fields.Datetime(related='program_id.from_date', string='Từ ngày')
+    program_to_date = fields.Datetime(related='program_id.to_date', string='Đến ngày')
 
     def name_get(self):
         res = []
