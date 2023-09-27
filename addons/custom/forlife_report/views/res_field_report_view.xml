@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="res_field_report_tree">
                     <field name="name"/>
-                    <field name="report"/>
+                    <field name="report_id"/>
                     <field name="field_id" context="{'report_permission': 1}"/>
                     <field name="value_ids"/>
                 </tree>
@@ -24,9 +24,9 @@
                         <button name="reset_all_value" type="object" string="Gỡ tất cả Dữ liệu" class="oe_highlight oe_right" confirm="Xác nhận gỡ tất cả dữ liệu đã chọn"/>
                         <group>
                             <field name="name" class="oe_inline"/>
-                            <field name="report" class="oe_inline"/>
+                            <field name="report_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="field_id" widget="selection" context="{'report_permission': 1}" class="oe_inline"
-                                   domain="[('model_id.model', '=', report), ('model_id', '!=', False), ('readonly', '=', False), ('ttype', 'ilike', 'many')]" required="1"/>
+                                   domain="[('model_id', '=', report_id), ('model_id', '!=', False), ('readonly', '=', False), ('ttype', 'ilike', 'many')]" required="1"/>
                             <field name="value_ids">
                                 <tree create="0" delete="0" edit="0">
                                     <field name="name"/>
@@ -51,7 +51,7 @@
             <field name="arch" type="xml">
                 <search string="">
                     <field name="name"/>
-                    <field name="report"/>
+                    <field name="report_id"/>
                     <field name="field_id"/>
                     <field name="value_ids"/>
                 </search>
