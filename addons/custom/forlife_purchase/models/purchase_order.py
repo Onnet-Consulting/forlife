@@ -38,6 +38,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
+        ('close', 'CLose'),
     ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
@@ -105,6 +106,7 @@ class PurchaseOrder(models.Model):
         ('no', 'Nothing to Bill'),
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'Fully Billed'),
+        ('close', 'Close'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
     invoice_status_fake = fields.Selection([
         ('no', 'Chưa nhận'),
