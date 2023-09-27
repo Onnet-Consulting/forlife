@@ -548,6 +548,11 @@ msgid "Done"
 msgstr "Hoàn thành"
 
 #. module: forlife_purchase
+#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__inventory_status__close
+msgid "Close"
+msgstr "Đóng"
+
+#. module: forlife_purchase
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Product Exchange Rate"
 msgstr "Thông tin thuế"
