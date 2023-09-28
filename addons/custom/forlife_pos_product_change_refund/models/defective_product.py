@@ -19,19 +19,29 @@ class ProductDefective(models.Model):
     money_reduce = fields.Monetary('Số tiền giảm')
     percent_reduce = fields.Float('Phần trăm giảm (%)')
     total_reduce = fields.Monetary('Tổng giảm', compute='_compute_total_reduce', store=True)
-    defective_type_id = fields.Many2one('defective.type', 'Loại lỗi')
+    defective_type_id = fields.Many2one(
+        'defective.type', 'Loại lỗi', domain="[('department_id', 'in', [False, department_id])]")
     detail_defective = fields.Char('Chi tiết lỗi')
-    state = fields.Selection([('new', 'New'), ('waiting approve', 'Waiting Approve'), ('approved','Approved'),('refuse','Refuse'),('cancel','Cancel')], string='Trạng thái', default='new')
+    state = fields.Selection([
+        ('new', 'New'),
+        ('waiting approve', 'Waiting Approve'),
+        ('approved','Approved'),
+        ('refuse','Refuse'),
+        ('cancel','Cancel')
+    ], string='Trạng thái', default='new', tracking=True)
     is_already_in_use = fields.Boolean(default=False)
     program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá")
     from_date = fields.Datetime(readonly=True, string='Hiệu lực', related='program_pricelist_item_id.program_id.campaign_id.from_date')
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
-    reason_refuse_product = fields.Char('Lí do từ chối')
+    reason_refuse_product = fields.Char('Lí do từ chối', readonly=True)
     active = fields.Boolean(default=True)
     quantity_require = fields.Integer('Số lượng yêu cầu')
     company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
     approval_uid = fields.Many2one('res.users', 'Người duyệt', readonly=True)
     approval_date = fields.Datetime('Ngày duyệt', readonly=True)
+    department_id = fields.Many2one('hr.department', 'Bộ phận', related='pack_id.department_id')
+    pack_id = fields.Many2one('product.defective.pack', 'Defective Pack', ondelete='cascade')
+    selected = fields.Boolean('Selected', default=False)
 
     @api.onchange('product_id')
     def change_product(self):
@@ -51,6 +61,8 @@ class ProductDefective(models.Model):
         for rec in self:
             if rec.is_already_in_use:
                 raise ValidationError(_(f"KHông thể hoàn thành thao tác, có hàng lỗi đã được thực hiện bán!"))
+            if rec.state != 'new':
+                raise ValidationError(_(f"Bạn chỉ có thể xóa yêu cầu ở trạng thái Mới"))
         return super(ProductDefective, self).unlink()
 
     @api.depends('price', 'percent_reduce', 'money_reduce')
@@ -75,7 +87,6 @@ class ProductDefective(models.Model):
             else:
                 rec.quantity_inventory_store = 0
 
-
     @api.onchange('money_reduce','percent_reduce')
     def onchange_price_defective(self):
         if self.money_reduce<0 or self.percent_reduce <0:
@@ -88,8 +99,6 @@ class ProductDefective(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super(ProductDefective, self).create(vals_list)
-        if res.quantity_require == 0:
-            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
         return res
 
     def action_send_request_approves(self):
@@ -109,11 +118,15 @@ class ProductDefective(models.Model):
             return action
 
     def action_send_request_approve(self):
+        if any(line.quantity_require == 0 for line in self):
+            raise UserError(_('Vui lòng nhập giá trị lớn hơn 0 cho Số lượng yêu cầu !'))
+
         product_defective_exits = self.env['product.defective'].sudo().search([('product_id','=',self.product_id.id), ('id','!=',self.id),('store_id','=',self.store_id.id),('state','=','approved')])
         if self.quantity_require > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
             raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
         self.state = 'waiting approve'
-        self._send_mail_approve(self.id)
+        if self.env.context.get('active_model', '') != 'product.defective.pack':
+            self._send_mail_approve(self.id)
 
     def action_approves(self):
         except_records = []
@@ -148,6 +161,8 @@ class ProductDefective(models.Model):
                 price = self.price
         if price:
             raise UserError(_('Tổng giảm không được lớn hơn %s' % str(price)))
+        if self.quantity_defective_approved <= 0.0:
+            self.quantity_defective_approved = self.quantity_require
 
         self.write({
             'state': 'approved',
@@ -208,3 +223,19 @@ class ProductDefective(models.Model):
             'label': _('Tải xuống mẫu'),
             'template': '/forlife_pos_product_change_refund/static/src/xlsx/Mau_Xu_ly_hang_loi.xlsx?download=true'
         }]
+
+    def copy_data(self, default=None):
+        data_list = super().copy_data(default=default)
+        for line, values in zip(self, data_list):
+            values['money_reduce'] = 0
+            values['percent_reduce'] = 0
+        return data_list
+
+    def view_request(self):
+        action = self.env["ir.actions.act_window"]._for_xml_id("forlife_pos_product_change_refund.product_defective_action")
+        form_view = [(self.env.ref('forlife_pos_product_change_refund.product_defective_form_view').id, 'form')]
+        action['view_mode'] = 'form'
+        action['res_id'] = self.id
+        action['views'] = form_view
+        action['domain'] = [('id', '=', self.id)]
+        return action
