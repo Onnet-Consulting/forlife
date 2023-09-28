@@ -16,7 +16,7 @@
                     <group>
                         <group>
                             <field name="account_id"/>
-                            <field name="purchase_order_ids" domain="[('invoice_status_fake', '=', 'invoiced')]" widget="many2many_tags"/>
+                            <field name="purchase_order_ids" domain="[('invoice_status', '=', 'invoiced')]" widget="many2many_tags"/>
                         </group>
                     </group>
                     <div>
