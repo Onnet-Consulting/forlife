@@ -5,8 +5,8 @@ import datetime
 
 list = [
     ('product', 'Sản phẩm lưu kho'),
-    ('service', 'Dịch vụ'),
-    ('asset', 'Tài sản'),
+    ('service', 'Dịch vụ'),
+    ('asset', 'Tài sản'),
     ('event', 'Vé sự kiện')
 ]
 
