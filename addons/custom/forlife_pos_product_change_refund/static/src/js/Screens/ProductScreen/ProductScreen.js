@@ -116,7 +116,23 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                             }
                         }
                     }
-                    return await super._onClickPay(...arguments);
+                    let passPay = true;
+                    /*Nếu là đơn trả + đơn gốc từ 1 cửa hàng khác + lý do trả không phải "trả hàng hoàn điểm" thì không cho thanh toán*/
+                    if (currentOrder.is_refund_product && this.env.pos.config.store_id[0] !== currentOrder.source_store_id) {
+                        _.each(currentOrder.get_orderlines(), function (orderLine) {
+                            if (!orderLine.is_refund_points) {
+                                passPay = false;
+                                self.showPopup('ErrorPopup', {
+                                    title: self.env._t('Lý do trả hàng chưa phù hợp'),
+                                    body: self.env._t('Bạn đang thực hiện trả đơn hàng phát sinh từ 1 cửa hàng khác.' +
+                                        ' Thao tác thanh toán chỉ được hoàn thành nếu lý do trả hàng là loại trả hàng hoàn điểm'),
+                                });
+                            }
+                })
+                    }
+                    if (passPay) {
+                        return await super._onClickPay(...arguments);
+                    }
                 }
             }
 
