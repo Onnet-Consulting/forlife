@@ -38,6 +38,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
+        ('close', 'CLose'),
     ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
@@ -110,6 +111,7 @@ class PurchaseOrder(models.Model):
         ('no', 'Chưa nhận'),
         ('to invoice', 'Dở dang'),
         ('invoiced', 'Hoàn thành'),
+        ('close', 'Đóng'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
     date_order = fields.Datetime('Order Deadline', states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
