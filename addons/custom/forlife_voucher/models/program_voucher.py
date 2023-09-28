@@ -161,20 +161,26 @@ class ProgramVoucher(models.Model):
                 if rec.partner_ids:
                     for p in rec.partner_ids:
                         for i in range(rec.count):
-                            self.env['voucher.voucher'].create({
+                            vals = {
                                 'program_voucher_id': self.id,
-                                'start_date':self.start_date,
-                                'state':'new',
+                                'start_date': self.start_date,
+                                'state': 'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used': 0,
                                 'price_residual': rec.price - 0,
-                                'end_date':self.end_date,
-                            })
+                                'end_date': self.end_date,
+                            }
+                            if self.type == 'v':
+                                vals.update({
+                                    'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
+                                                        self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
+                                })
+                            self.env['voucher.voucher'].create()
                     self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
                 if not rec.partner_ids:
                     for i in range(rec.count):
-                        self.env['voucher.voucher'].create({
+                        vals = {
                             'program_voucher_id': self.id,
                             'start_date': self.start_date,
                             'state': 'new',
@@ -182,7 +188,15 @@ class ProgramVoucher(models.Model):
                             'price_used': 0,
                             'price_residual': rec.price - 0,
                             'end_date': self.end_date,
-                        })
+                            'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
+                                                self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
+                        }
+                        if self.type == 'v':
+                            vals.update({
+                                'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
+                                                    self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
+                            })
+                        self.env['voucher.voucher'].create()
                     self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
