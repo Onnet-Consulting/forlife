@@ -27,7 +27,7 @@
         <field name="model">forlife.production</field>
         <field name="arch" type="xml">
             <form string="">
-                <header>
+                <header attrs="{'invisible':[ ('active', '=', False)]}">
                     <button string="Trở về nháp" name="action_draft" type="object"
                             attrs="{'invisible': [('state', '!=', 'wait_confirm')]}"/>
                     <button string="Gửi duyệt" name="action_wait_confirm"
@@ -37,7 +37,7 @@
                     <button string="In lệnh" name="action_print" type="object"/>
                     <field name="state" widget="statusbar"/>
                 </header>
-                <header>
+                <header attrs="{'invisible':[ ('active', '=', False)]}">
                     <button string="Đóng" name="action_done" type="object"
                             attrs="{'invisible':[ '|', ('state', '!=', 'approved'),('status', '=', 'done')]}"/>
                     <field name="status" widget="statusbar"/>
