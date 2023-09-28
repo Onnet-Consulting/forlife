@@ -275,8 +275,13 @@ class StockTransfer(models.Model):
     def _validate_product_quantity(self):
         self.ensure_one()
         location = self.location_id
+        validation_error_msg = ''
         for line in self.stock_transfer_line:
-            line.validate_product_quantity(location)
+            msg = line.validate_product_quantity(location)
+            if msg:
+                validation_error_msg += msg
+        if validation_error_msg or validation_error_msg != '':
+            raise ValidationError("Cảnh báo tồn kho!\n"+validation_error_msg)
 
     def _out_approve_with_confirm(self):
         self.ensure_one()
@@ -757,6 +762,7 @@ class StockTransferLine(models.Model):
 
     def validate_product_quantity(self, location=False, is_diff_transfer=False):
         self.ensure_one()
+        validation_error_msg = ''
         QuantityProductionOrder = self.env['quantity.production.order']
         product = self.product_id
         stock_transfer_line = self.sudo().search([('id', '!=', self.id), ('product_id', '=', product.id),
@@ -775,15 +781,18 @@ class StockTransferLine(models.Model):
                 quantity_prodution = QuantityProductionOrder.search(domain, limit=1)
                 if quantity_prodution:
                     if self.qty_out > quantity_prodution.quantity:
-                        raise ValidationError(
-                            '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
-                            product.name, self.work_from.code))
+                        validation_error_msg += '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!\n' % (
+                            product.name, self.work_from.code)
+                        # raise ValidationError(
+                        #     '[04] - Số lượng tồn kho sản phẩm "%s" trong lệnh sản xuất "%s" không đủ để điều chuyển!' % (
+                        #     product.name, self.work_from.code))
                     else:
                         quantity_prodution.update({
                             'quantity': quantity_prodution.quantity - self.qty_out
                         })
                 else:
-                    raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (product.code, product.name, self.work_from.code))
+                    validation_error_msg += 'Sản phẩm [%s] %s không có trong lệnh sản xuất %s!\n' % (product.code, product.name, self.work_from.code)
+                    # raise ValidationError('Sản phẩm [%s] %s không có trong lệnh sản xuất %s!' % (product.code, product.name, self.work_from.code))
             # if self.work_to:
             #     if product.categ_id.category_type_id.code in ('2','3','4'):
             #         quantity_prodution_to = QuantityProductionOrder.search(
@@ -824,16 +833,22 @@ class StockTransferLine(models.Model):
         #                     'production_id': self.work_to.id,
         #                     'quantity': self.qty_out
         #                 })
+        if validation_error_msg:
+            return validation_error_msg
         
         if qty_available < product_quantity:
             if is_diff_transfer:
-                raise ValidationError(
-                    'Số lượng tồn kho sản phẩm [%s] %s không đủ để tạo phiếu dở dang!' % (product.code, product.name))
+                validation_error_msg += 'Số lượng tồn kho sản phẩm [%s] %s không đủ để tạo phiếu dở dang!\n' % (product.code, product.name)
+                # raise ValidationError(
+                #     'Số lượng tồn kho sản phẩm [%s] %s không đủ để tạo phiếu dở dang!' % (product.code, product.name))
             else:
-                raise ValidationError(
-                    'Số lượng tồn kho sản phẩm [%s] %s không đủ để điều chuyển!' % (product.code, product.name))
+                validation_error_msg +='Số lượng tồn kho sản phẩm [%s] %s không đủ để điều chuyển!\n' % (product.code, product.name)
+                # raise ValidationError(
+                #     'Số lượng tồn kho sản phẩm [%s] %s không đủ để điều chuyển!' % (product.code, product.name))
         # if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
         #     raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
+        if validation_error_msg:
+            return validation_error_msg
         if self.work_to:
             if product.categ_id.category_type_id.code in ('2','3','4'):
                 quantity_prodution_to = QuantityProductionOrder.search(
@@ -850,6 +865,7 @@ class StockTransferLine(models.Model):
                         'production_id': self.work_to.id,
                         'quantity': self.qty_out
                     })
+        return validation_error_msg
 
     def validate_product_tolerance(self, type='out'):
         self.ensure_one()

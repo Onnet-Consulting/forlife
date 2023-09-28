@@ -44,7 +44,7 @@
                             ('state', 'not in', ['progress', 'confirm'])]}"/>
                 <field name="theoretical_qty" width="0.5"
                        force_save="1" readonly="1" optional="show"/>
-                <button name="action_refresh_quantity"
+                <button name="action_refresh_quantity" string="Refresh"
                         icon="fa-refresh" type="object"
                         attrs="{'invisible': [('outdated', '=', False)]}"/>
                 <field name="product_qty" width="0.5" attrs="{'readonly': [
