@@ -36,8 +36,6 @@
                            'invisible': [('purchase_type', '=', 'asset')],
                            'readonly': ['&amp;',('production_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]
                             }"/>
-<!--                    <field name="event_id"-->
-<!--                           attrs="{'invisible': [('purchase_type', '!=', 'product')], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>-->
                     <field name="occasion_code_id"
                            force_save="1"
                            attrs="{
@@ -70,8 +68,7 @@
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
-                     <field name="invoice_status_fake" />
-                    <field name="invoice_status" invisible="1"/>
+                    <field name="invoice_status"/>
                     <field name="has_contract" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="has_contract_commerce" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="note" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>

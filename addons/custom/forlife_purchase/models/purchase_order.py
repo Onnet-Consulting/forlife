@@ -103,10 +103,11 @@ class PurchaseOrder(models.Model):
     department_id = fields.Many2one('hr.department', string='Department', default=_get_department_default)
     team_id = fields.Many2one('hr.team', string='Team', default=_get_team_default)
     invoice_status = fields.Selection([
-        ('no', 'Nothing to Bill'),
-        ('to invoice', 'Waiting Bills'),
-        ('invoiced', 'Fully Billed'),
-    ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
+        ('no', 'Chưa nhận'),
+        ('to invoice', 'Dở dang'),
+        ('invoiced', 'Hoàn thành'),
+        ('close', 'Đóng'),
+    ], string='Trạng thái hóa đơn', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
     invoice_status_fake = fields.Selection([
         ('no', 'Chưa nhận'),
         ('to invoice', 'Dở dang'),
@@ -311,17 +312,47 @@ class PurchaseOrder(models.Model):
 
     @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
-        for item in self:
-            item.inventory_status = 'not_received'
-            picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
-            if picking_ids:
-                all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
-                if all_equal_parent_done:
-                    item.inventory_status = 'done'
-                elif 'done' in picking_ids.mapped('state'):
-                    item.inventory_status = 'incomplete'
+        for order in self:
+            if order.purchase_type in ['service', 'asset']:
+                order.inventory_status = 'done'
+            else:
+                picking_ids = order.picking_ids.filtered(lambda x: not x.x_is_check_return and x.state == 'done')
+                if picking_ids:
+                    if any(order.order_line.filtered(lambda x: x.product_qty != x.qty_received)):
+                        order.inventory_status = 'incomplete'
+                    else:
+                        order.inventory_status = 'done'
                 else:
-                    item.inventory_status = 'not_received'
+                    order.inventory_status = 'not_received'
+
+    @api.depends('state', 'order_line.qty_to_invoice', 'order_line.invoice_lines')
+    def _get_invoiced(self):
+        for order in self:
+            if order.purchase_type == 'product':
+                if all(order.order_line.filtered(lambda x: x.qty_received == 0)) and order.order_line.filtered(lambda x: x.qty_received == 0):
+                    order.invoice_status = 'no'
+                elif all(order.order_line.filtered(lambda x: x.qty_invoiced == x.qty_received)) and order.order_line.filtered(lambda x: x.qty_invoiced == x.qty_received):
+                    order.invoice_status = 'invoiced'
+                elif any(order.order_line.filtered(lambda x: x.qty_invoiced != 0)):
+                    order.invoice_status = 'to invoice'
+                else:
+                    order.invoice_status = 'no'
+            else:
+                count_not_invoice_lines = 0
+                for line_id in order.order_line:
+                    if not line_id.invoice_lines or 'posted' not in line_id.invoice_lines.mapped('parent_state'):
+                        count_not_invoice_lines += 1
+                    else:
+                        invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
+                        total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
+                        if line_id.price_total != total_invoice_line:
+                            order.invoice_status = 'to invoice'
+                            return True
+
+                if count_not_invoice_lines == len(order.order_line):
+                    order.invoice_status = 'no'
+                else:
+                    order.invoice_status = 'invoiced'
 
     def compute_is_done_picking(self):
         for record in self:
