@@ -19,7 +19,8 @@ class PosSession(models.Model):
         reason = [{
             'id': rr.id,
             'name': rr.name,
-            'brand_id': rr.brand_id.id
+            'brand_id': rr.brand_id.id,
+            'is_refund_points': rr.is_refund_points,
         } for rr in reason_refund_ids]
         loaded_data.update({
             'pos.reason.refund': reason
