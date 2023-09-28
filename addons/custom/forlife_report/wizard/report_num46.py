@@ -47,7 +47,7 @@ class ReportNum46(models.TransientModel):
     def view_report(self):
         self.check_allowed_company()
         return super().view_report()
-    
+
     def check_allowed_company(self):
         allowed_company = len(self._context.get('allowed_company_ids', []))
         if allowed_company > 1:
@@ -156,8 +156,8 @@ where aml.id in (select id from account_move_lines)
         sheet.set_row(3, 25)
         sheet.set_row(6, 25)
         sheet.freeze_panes(7, 0)
-        sheet.write(0, 0, f'Công ty: {self.env.company.name}', formats.get('normal_format'))
-        sheet.write(1, 0, f'Địa chỉ: {self.env.company.street}', formats.get('normal_format'))
+        sheet.write(0, 0, f'Công ty: {self.env.company.name or ""}', formats.get('bold_format_left'))
+        sheet.write(1, 0, f'Địa chỉ: {self.env.company.street or ""}', formats.get('bold_format_left'))
         sheet.merge_range(3, 0, 3, len(data.get('titles')) - 1, 'Sổ chi tiết tài khoản', formats.get('header_format'))
         sheet.merge_range(4, 0, 4, len(data.get('titles')) - 1, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
@@ -181,9 +181,31 @@ where aml.id in (select id from account_move_lines)
             sheet.write(row, 13, value.get('so_lsx'), formats.get('normal_format'))
             row += 1
 
+        sheet.merge_range(row + 2, 1, row + 2, 2, 'Kế toán ghi sổ', formats.get('bold_format_center'))
+        sheet.merge_range(row + 3, 1, row + 3, 2, '(Ký, họ tên)', formats.get('italic_format'))
+        sheet.merge_range(row + 1, len(TITLES) - 2, row + 1, len(TITLES) - 1, '........Ngày.....tháng.....năm........', formats.get('italic_format'))
+        sheet.merge_range(row + 2, len(TITLES) - 2, row + 2, len(TITLES) - 1, 'Kế toán trưởng', formats.get('bold_format_center'))
+        sheet.merge_range(row + 3, len(TITLES) - 2, row + 3, len(TITLES) - 1, '(Ký, họ tên)', formats.get('italic_format'))
+
     @api.model
     def get_format_workbook(self, workbook):
         res = dict(super().get_format_workbook(workbook))
+        bold_format_center = {
+            'bold': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+        }
+        bold_format_left = {
+            'bold': 1,
+            'align': 'left',
+            'valign': 'vcenter',
+        }
+        bold_format_center = workbook.add_format(bold_format_center)
+        bold_format_left = workbook.add_format(bold_format_left)
         res.get('header_format').set_align('center')
         res.get('italic_format').set_align('center')
+        res.update({
+            'bold_format_center': bold_format_center,
+            'bold_format_left': bold_format_left
+        })
         return res
