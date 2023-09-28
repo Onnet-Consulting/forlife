@@ -17,6 +17,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_change_product = this.is_change_product || false;
             this.listOrderLineRefundSelected = [];
             this.finished_programs = [];
+            this.source_store_id = this.source_store_id || 0;
         }
 
 
@@ -26,6 +27,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.is_refund_product = json.is_refund_product || false;
             this.is_change_product = json.is_change_product || false;
             this.finished_programs = json.finished_programs || [];
+            this.source_store_id = json.source_store_id || 0;
         }
 
         clone() {
@@ -33,6 +35,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             order.approved = this.approved;
             order.is_refund_product = this.is_refund_product;
             order.is_change_product = this.is_change_product;
+            order.source_store_id = this.source_store_id;
             return order;
         }
 
@@ -42,6 +45,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.is_refund_product = this.is_refund_product || false;
             json.is_change_product = this.is_change_product || false;
             json.finished_programs = this.finished_programs || [];
+            json.source_store_id = this.source_store_id || 0;
             return json;
         }
 
@@ -136,6 +140,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.quantity_canbe_refund = this.quantity_canbe_refund || 0;
             if (!this.reason_refund_id && this.order.pos.pos_reason_refund) {
                 this.reason_refund_id = this.order.pos.pos_reason_refund[0].id || 0;
+                this.is_refund_points = this.order.pos.pos_reason_refund[0].is_refund_points || false;
             }
             // manhld
             this.approvalStatus = this.approvalStatus || false;
@@ -162,12 +167,16 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.expire_change_refund_date = json.expire_change_refund_date || '';
             this.quantity_canbe_refund = json.quantity_canbe_refund || 0;
             let reason_refund_id = 0;
+            let is_refund_points = false;
             if (json.reason_refund_id && json.reason_refund_id !== 'pos.reason.refund()') {
                 reason_refund_id = json.reason_refund_id;
+                is_refund_points = json.is_refund_points;
             } else if (this.order.pos.pos_reason_refund) {
                 reason_refund_id = this.order.pos.pos_reason_refund[0].id || 0;
+                is_refund_points = this.order.pos.pos_reason_refund[0].is_refund_points || false;
             }
             this.reason_refund_id = reason_refund_id;
+            this.is_refund_points = is_refund_points;
             // manhld
             this.approvalStatus = json.approvalStatus || false;
             this.beStatus = json.beStatus || false;
@@ -193,6 +202,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.expire_change_refund_date = this.expire_change_refund_date;
             orderline.quantity_canbe_refund = this.quantity_canbe_refund;
             orderline.reason_refund_id = this.reason_refund_id;
+            orderline.is_refund_points = this.is_refund_points;
             // manhld
             orderline.approvalStatus = this.approvalStatus;
             orderline.beStatus = this.beStatus;
@@ -217,6 +227,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.expire_change_refund_date = this.expire_change_refund_date || '';
             json.quantity_canbe_refund = this.quantity_canbe_refund || 0;
             json.reason_refund_id = this.reason_refund_id;
+            json.is_refund_points = this.is_refund_points;
             // manhld
             json.approvalStatus = this.approvalStatus || false;
             json.beStatus = this.beStatus || false;
