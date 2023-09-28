@@ -4,7 +4,8 @@
         <field name="model">forlife.other.in.out.request</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Forlife Other In Out Request">
+            <tree string="Forlife Other In Out Request" decoration-info="status=='draft'"
+                      decoration-danger="status not in ('draft','done')" decoration-muted="status in ('cancel','reject')">
                 <field name="name"/>
                 <field name="user_id"/>
                 <field name="department_id"/>
