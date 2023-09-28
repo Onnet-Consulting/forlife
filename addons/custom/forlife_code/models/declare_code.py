@@ -11,7 +11,7 @@ class DeclareCode(models.Model):
     name = fields.Char('Tên', required=True, tracking=True)
     active = fields.Boolean(default=True,string='Trạng thái')
     category_id = fields.Many2one('declare.category', string='Nhóm mã CT', required=True, tracking=True)
-    company_id = fields.Many2one('res.company',string='Công ty',tracking=True)
+    company_id = fields.Many2one('res.company',string='Công ty', required=True,tracking=True)
 
     is_journal = fields.Boolean('Sinh mã theo sổ nhật ký', tracking=True)
     journal_id = fields.Many2one('account.journal', string='Sổ nhật ký', tracking=True)
