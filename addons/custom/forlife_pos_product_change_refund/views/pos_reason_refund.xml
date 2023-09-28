@@ -10,6 +10,7 @@
                     <group>
                         <field name="name"/>
                         <field name="brand_id"/>
+                        <field name="is_refund_points" widget="boolean_toggle"/>
                     </group>
                 </sheet>
             </form>
@@ -23,6 +24,7 @@
             <tree string="Reason Refund">
                 <field name="name"/>
                 <field name="brand_id"/>
+                <field name="is_refund_points"/>
             </tree>
         </field>
     </record>

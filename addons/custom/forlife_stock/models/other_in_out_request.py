@@ -126,13 +126,19 @@ class ForlifeOtherInOutRequest(models.Model):
         for record in self:
             if record.type_other_id.code == 'N01' and record.location_id.code in ['N0101', 'N0102']:
                 line_productions = record.other_in_out_request_line_ids.filtered(lambda x: x.production_id)
+                validation_error_msg = ''
                 for rec in line_productions:
                     production_line_ids = rec.production_id.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == rec.product_id.id)
                     if not production_line_ids:
-                        raise ValidationError('Sản phẩm "%s" không tồn tại trong lệnh sản xuất [%s]' % (rec.product_id.display_name, rec.production_id.name))
+                        validation_error_msg += 'Sản phẩm "%s" không tồn tại trong lệnh sản xuất [%s]\n' % (rec.product_id.display_name, rec.production_id.name)
+                        # raise ValidationError('Sản phẩm "%s" không tồn tại trong lệnh sản xuất [%s]' % (rec.product_id.display_name, rec.production_id.name))
                     remaining_qty = production_line_ids.remaining_qty or 0
                     if rec.production_id and rec.quantity > remaining_qty:
-                        raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
+                        validation_error_msg += 'Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!\n' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name)
+                        # raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
+                    
+                if validation_error_msg or validation_error_msg != '':
+                    raise ValidationError("Cảnh báo!\n"+validation_error_msg)
 
             record.write({'status': 'wait_approve'})
 
