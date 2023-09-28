@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num46_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num46</field>
+        <field name="arch" type="xml">
+            <form string="report_num46_form" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <label for="partner_ids" string="Đối tượng"/>
+                            <div class="o_row">
+                                <button name="btn_choice_values" type="object" string="Đối tượng" class="btn-secondary"
+                                        context="{'action_xml_id': 'report_num46_window_action_choice_partner'}">
+                                    <field name="partner_count" string="Đối tượng"/>
+                                </button>
+                                được chọn
+                            </div>
+                        </group>
+                        <group>
+                            <field name="ref_no"/>
+                            <label for="account_ids" string="Tk đối ứng"/>
+                            <div class="o_row">
+                                <button name="btn_choice_values" type="object" string="Tk đối ứng" class="btn-secondary"
+                                        context="{'action_xml_id': 'report_num46_window_action_choice_account'}">
+                                    <field name="account_count" string="Tk đối ứng"/>
+                                </button>
+                                được chọn
+                            </div>
+                        </group>
+                    </group>
+                    <field name="partner_ids" invisible="1" force_save="1"/>
+                    <field name="account_ids" invisible="1" force_save="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num46_window_action" model="ir.actions.act_window">
+        <field name="name">Sổ chi tiết tài khoản</field>
+        <field name="res_model">report.num46</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num46_menu"
+              action="report_num46_window_action"
+              parent="report_menu_accounting"
+              sequence="46"/>
+
+    <record id="report_num46_form_choice_partner" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num46</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form string="Chọn đối tượng" create="0">
+                <sheet>
+                    <separator string="Đối tượng"/>
+                    <field name="partner_ids">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="ref"/>
+                            <field name="name"/>
+                        </tree>
+                        <form create="0" edit="0" delete="0">
+                            <group>
+                                <field name="ref" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num46_window_action_choice_partner" model="ir.actions.act_window">
+        <field name="name">Chọn đối tượng</field>
+        <field name="res_model">report.num46</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="report_num46_form_choice_partner"/>
+    </record>
+
+    <record id="report_num46_form_choice_account" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num46</field>
+        <field name="priority">1005</field>
+        <field name="arch" type="xml">
+            <form string="Chọn tài khoản đối ứng" create="0">
+                <sheet>
+                    <separator string="Tài khoản đối ứng"/>
+                    <field name="account_ids">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="code"/>
+                            <field name="name"/>
+                        </tree>
+                        <form create="0" edit="0" delete="0">
+                            <group>
+                                <field name="code" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num46_window_action_choice_account" model="ir.actions.act_window">
+        <field name="name">Chọn tài khoản</field>
+        <field name="res_model">report.num46</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="report_num46_form_choice_account"/>
+    </record>
+</odoo>

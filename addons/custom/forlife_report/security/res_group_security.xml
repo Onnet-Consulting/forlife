@@ -239,5 +239,9 @@
             <field name="name">Báo cáo chi tiết phiếu lỗi</field>
             <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
         </record>
+        <record id="group_report_num46" model="res.groups">
+            <field name="name">Sổ chi tiết tài khoản</field>
+            <field name="category_id" ref="forlife_report.module_category_forlife_report"/>
+        </record>
     </data>
 </odoo>
