@@ -1,0 +1,1641 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nhanh_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-09-29 03:41+0000\n"
+"PO-Revision-Date: 2023-09-29 03:41+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nhanh_connector
+#: model:ir.actions.report,print_report_name:nhanh_connector.action_report_transport
+msgid "'In giao vận'"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "<i>(Ký, họ tên)</i>"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "<strong>Nhận hàng</strong>"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "<strong>Thủ kho</strong>"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "<strong>Vận chuyển</strong>"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_access_code
+msgid "Access Code"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_access_token
+msgid "Access Token"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_access_token_expired
+msgid "Access Token Expired"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__active
+msgid "Active"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__event_type__order_add
+msgid "Add Order"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__res_partner__type_customer__agents
+msgid "Agents"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_app_id
+msgid "App Id"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_form
+msgid "Are you sure to remove Nhanh's configuration"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__barcode
+msgid "Barcode"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__brand_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__brand_id
+msgid "Brand"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_business_id
+msgid "Business Id"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Báo giá/Đã gửi"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_campaign__is_for_nhanh
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__is_for_nhanh
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_program__is_for_nhanh
+msgid "CTKM cho nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__campaign_id
+msgid "Campaign"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__state
+msgid "Campaign State"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.disable_nhanh_product_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_form
+msgid "Check Connection"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_product__check_data_odoo
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_template__check_data_odoo
+msgid "Check dữ liệu từ odoo or Nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_transportation_session_line
+msgid "Chi tiết phiên giao vận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__no_picking
+msgid "Chưa tạo phiếu kho"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid ""
+"Chọn company trước khi đồng bộ đơn hàng từ Nhanh.Vn, Vui lòng vào Thiết lập "
+"-> Kế toán để chọn company"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__customerconfirming
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Chờ khách xác nhận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__pickup
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Chờ thu gom"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__code
+msgid "Code"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_category__code_category
+msgid "Code Category"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_partner__code_current_customers
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_users__code_current_customers
+msgid "Code Current Customers"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_config_settings__nhanh_company_id
+msgid "Compnay"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cài đặt cấu hình"
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Connect failed!"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Connect to NhanhVn successfully!"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_res_partner
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_category__content_category
+msgid "Content Category"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Create Invoice"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.actions.act_window,help:nhanh_connector.action_orders_nhanh
+msgid "Create a new quotation, the first step of a new sale!"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Create sale order success"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__create_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__create_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_customer_shipping_fee
+msgid "Customer Shipping fee"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/wizards/import_transport.py:0
+#, python-format
+msgid "Các mã %s này không tồn tại đơn hàng trong hệ thống."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__company_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__company_id
+msgid "Công ty"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__event_type__order_delete
+msgid "Delete Order"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.delivery_carrier_view_action
+#: model:ir.model,name:nhanh_connector.model_delivery_carrier
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__delivery_carrier_id
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.delivery_carrier_view_tree
+msgid "Delivery Carrier"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.constraint,message:nhanh_connector.constraint_delivery_carrier_nhanh_id_uniq
+msgid "Delivery Carrier Nhanh Id already exists !"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.constraint,message:nhanh_connector.constraint_delivery_carrier_name_uniq
+msgid "Delivery Carrier name already exists !"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_disable_nhanh_product
+msgid "Disable nhanh.vn product"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__display_name
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__state__done
+msgid "Done"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session__status__draft
+msgid "Dự thảo"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__error
+msgid "Error"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__event_type
+msgid "Event Type"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__event_value
+msgid "Event Value"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__state__fail
+msgid "Fail"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Failed"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__file
+msgid "File excel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__brand__92411
+msgid "Format"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__from_date
+msgid "From Date"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_partner__source_record
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_users__source_record
+msgid "From nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_form
+msgid "Get Access Token"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Get access_token from NhanhVn failed!"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Get access_token from NhanhVn successfully!"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__note
+msgid "Ghi chú"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__note_customer
+msgid "Ghi chú khách hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "Ghi chú:"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__x_voucher
+msgid "Giá trị voucher (Nhanh)"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Group By"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session__status__done
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Hoàn thành"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "HÃNG VẬN CHUYỂN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__carriercanceled
+msgid "Hãng vận chuyển hủy đơn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__soldout
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Hết hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__aborted
+msgid "Hệ thống hủy"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.import_transport_from_excel_view_form
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Hủy"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__id
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__id
+msgid "ID"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_utm_source__x_nhanh_id
+msgid "ID Nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_category__nhanh_product_category_id
+msgid "Id Category From Nhanh.Vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_product__nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_template__nhanh_id
+msgid "Id Nhanh.Vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_stock_picking__nhanh_id
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_webhook_view_search_inherit
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.view_picking_internal_search
+msgid "Id Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_partner__customer_nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_users__customer_nhanh_id
+msgid "Id khách hàng bên Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_origin_id
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Id đơn gốc Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_return_id
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Id đơn trả Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__message_has_error
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__image_1920
+msgid "Image"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__image_1024
+msgid "Image 1024"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__image_128
+msgid "Image 128"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__image_256
+msgid "Image 256"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__image_512
+msgid "Image 512"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.disable_nhanh_product_view_form
+msgid "Import"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__import_file_name
+msgid "Import File Name"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.report,name:nhanh_connector.action_report_transport
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_form
+msgid "In giao vận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_promotion_pricelist_item__barcode
+msgid "International Article Number used for product identification."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_stock_location
+msgid "Inventory Locations"
+msgstr "Địa điểm Kiểm kê"
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__is_transfer_payment
+msgid "Is Transfer Payment?"
+msgstr "Chuyển khoản"
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__partner_id
+msgid "Khách Hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__order_partner_id
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Khách Order"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__canceled
+msgid "Khách hủy"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__order_404
+msgid "Không có đơn hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Không lấy được thông tin đơn hàng từ Nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__error
+msgid "Không thành công"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__not_enough
+msgid "Không đủ tồn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Kiểm tra khuyến mãi"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__sale_channel_id
+msgid "Kênh / Sàn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.sale_channel_source_action
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__channel
+#: model:ir.ui.menu,name:nhanh_connector.menu_sale_channel_nhanh
+msgid "Kênh/Sàn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session____last_update
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__write_uid
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__write_date
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__link_get_access_code
+msgid "Link Get access code"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__type
+msgid "Loại giao vận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.ui.menu,name:nhanh_connector.nhanh_webhook_value_menu
+msgid "Lịch sử đồng bộ Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "MÃ ĐƠN HÀNG"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "MÃ ĐƠN SÀN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__code_coupon
+msgid "Mã coupon"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__warehouse_code
+msgid "Mã kho"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__x_code_voucher
+msgid "Mã voucher/code (Nhanh)"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__x_transfer_code
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__transport_code
+msgid "Mã vận đơn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__nhanh_id
+msgid "Mã đơn hàng NhanhVN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__order_id
+msgid "Mã đơn hàng odoo"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Mở link Nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__name
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__name
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__name
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__name
+msgid "Name"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__date
+msgid "Ngày thực hiện"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__user_id
+msgid "Người thực hiện"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.nhanh_brand_config_action
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_form
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_tree
+msgid "Nhanh Config"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.res_config_settings_view_form_nhanh_connector
+msgid "Nhanh Config Parameter"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_stock_location__nhanh_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_stock_warehouse__nhanh_id
+msgid "Nhanh ID"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__nhanh_id
+msgid "Nhanh Id"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.nhanh_webhook_value_action
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_webhook_value_view_form
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_webhook_value_view_tree
+msgid "Nhanh Webhook Value"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.ui.menu,name:nhanh_connector.nhanh_brand_config_menu
+#: model:ir.ui.menu,name:nhanh_connector.nhanh_sale_brand_config_menu
+msgid "Nhanh config"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_nhanh_brand_config
+msgid "Nhanh config for per brand"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_order_status
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Nhanh status"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_nhanh_webhook_value
+msgid "Nhanh webhook value for re-sync"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session__type__in
+msgid "Nhập kho"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__in_success
+msgid "Nhập kho thành công"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-javascript
+#: code:addons/nhanh_connector/static/src/xml/import_button.xml:0
+#: model:ir.actions.act_window,name:nhanh_connector.import_transport_from_excel_action
+#, python-format
+msgid "Nhập từ excel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.actions.act_window,help:nhanh_connector.sale_channel_source_action
+msgid "No Sources yet!"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__numb_action_confirm
+msgid "Numb Action Confirm"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.import_transport_from_excel_view_form
+msgid "Nạp dữ liệu"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.actions.act_window,help:nhanh_connector.action_orders_nhanh
+msgid ""
+"Once the quotation is confirmed, it becomes a sales order.<br> You will be "
+"able to create an invoice and collect the payment."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__order_id
+msgid "Order"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Order confirmation is required"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "PHIẾU NHẬP GIAO VẬN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "PHIẾU XUẤT GIAO VẬN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_category__nhanh_parent_id
+msgid "Parent Category"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__session_id
+msgid "Phiên"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_transportation_session
+msgid "Phiên giao vận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__picking_id
+msgid "Phiếu kho"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__done
+msgid "Phiếu kho đã hoàn thành"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Phí ship báo khách hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Phí vận chuyển"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_product_template
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_product_attribute
+msgid "Product Attribute"
+msgstr "Thuộc tính sản phẩm"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_product_category
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order_line__categ_id
+msgid "Product Category"
+msgstr "Nhóm sản phẩm"
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__product_tmpl_id
+msgid "Product Template"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_product_template_attribute_line
+msgid "Product Template Attribute Line"
+msgstr "Dòng thuộc tính mẫu sản phẩm"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_promotion_campaign
+msgid "Promotion Campaign"
+msgstr "Chiến dịch khuyến mãi"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_promotion_pricelist_item
+msgid "Promotion Pricelist Item"
+msgstr "chi tiết bảng giá KM"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_promotion_program
+msgid "Promotion Program"
+msgstr "Chương trình Khuyến mãi"
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.transportation_management_action
+#: model:ir.ui.menu,name:nhanh_connector.transportation_management_menu
+msgid "Quản lý giao vận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__re_confirm
+msgid "Re Confirm"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_brand_config_view_form
+msgid "Remove Nhanh Configuration"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__res_partner__type_customer__retail_customers
+msgid "Retail customers"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_webhook_value_view_form
+msgid "Retry"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_return_link
+msgid "Return Link"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_customer_phone
+msgid "SDT Khách hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "STT"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Sale Channel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_channel_source_view_form
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_channel_source_view_tree
+msgid "Sale channel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_sale_channel_id
+msgid "Sale channel id"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_sale_order
+msgid "Sales Order"
+msgstr "Đơn bán hàng"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_sale_order_cancel
+msgid "Sales Order Cancel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Chi tiết đơn hàng"
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.nhanh_webhook_view_search_inherit
+msgid "Search Nhanh Webhook"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_brand_config__nhanh_secret_key
+msgid "Secret Key"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_delivery_carrier__service_name
+msgid "Service Name"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__nhanh_shipping_fee
+msgid "Shipping fee"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_transportation_session__warehouse_code
+msgid "Short name used to identify your warehouse"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Source Document"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.ui.menu,name:nhanh_connector.menu_utm_source_nhanh
+msgid "Sources"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__state
+msgid "State"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Status"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Success"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#: code:addons/nhanh_connector/models/nhanh_brand_config.py:0
+#, python-format
+msgid "Successfully!"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.server,name:nhanh_connector.ir_cron_sync_nhanhvn_customer_ir_actions_server
+#: model:ir.cron,cron_name:nhanh_connector.ir_cron_sync_nhanhvn_customer
+msgid "Sync Customer Nhanhvn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.server,name:nhanh_connector.ir_cron_sync_nhanhvn_order_ir_actions_server
+#: model:ir.cron,cron_name:nhanh_connector.ir_cron_sync_nhanhvn_order
+msgid "Sync Order Nhanhvn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.server,name:nhanh_connector.ir_cron_sync_update_price_product_nhanhvn_ir_actions_server
+#: model:ir.cron,cron_name:nhanh_connector.ir_cron_sync_update_price_product_nhanhvn
+msgid "Sync Update price poduct Nhanhvn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "SÀN TMĐT"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__is_tmdt
+msgid "Sàn TMĐT"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__order_line
+msgid "Số SP"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__template_excel
+msgid "Template"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__file_template
+msgid "Template default"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__success
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Thành công"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Thông tin Nhanh.vn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__brand
+msgid "Thương hiệu"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__failed
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Thất bại"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_promotion_pricelist_item__to_date
+msgid "To Date"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__brand__92405
+msgid "Tokyo Life"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_stock_picking
+msgid "Transfer"
+msgstr "Điều chuyển"
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_import_transport_from_excel
+msgid "Transport import"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_partner__property_account_cost_center_id
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_users__property_account_cost_center_id
+msgid "Trung tâm chi phí"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__status
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__status
+msgid "Trạng thái"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_nhanh_webhook_value__state_nhanh
+msgid "Trạng thái Nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__nhanh_status
+msgid "Trạng thái NhanhVN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__order_status
+msgid "Trạng thái đơn hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_partner__type_customer
+#: model:ir.model.fields,field_description:nhanh_connector.field_res_users__type_customer
+msgid "Type Customer"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_product_category_type
+msgid "Type of Product Category"
+msgstr "Loại nhóm sản phẩm"
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_import_transport_from_excel__file_name
+msgid "Tên file"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__warehouse_id
+msgid "Tên kho"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__name_customer
+msgid "Tên khách hàng mới"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.import_transport_from_excel_view_form
+msgid "Tải file mẫu"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__order_count
+msgid "Tổng số đơn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.print_report_transport
+msgid "Tổng đơn:"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_utm_source
+msgid "UTM Source"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.actions.act_window,help:nhanh_connector.sale_channel_source_action
+msgid ""
+"UTM Sources track where traffic comes from  (e.g. \"May Newsletter\", \"\", "
+"...)."
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.disable_nhanh_product_view_form
+msgid "Update File"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__nhanh_webhook_value__event_type__order_update
+msgid "Update Order"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Update sale order false"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Update sale order success"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_disable_nhanh_product__import_file
+msgid "Upload file"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_stock_warehouse
+msgid "Warehouse"
+msgstr "Kho"
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Webhook enable success"
+msgstr ""
+
+#. module: nhanh_connector
+#. odoo-python
+#: code:addons/nhanh_connector/controllers/main.py:0
+#: code:addons/nhanh_connector/controllers/main.py:0
+#, python-format
+msgid "Webhook to system odoo false"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_channel__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,help:nhanh_connector.field_sale_channel__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__res_partner__type_customer__wholesalers
+msgid "Wholesalers"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_form
+msgid "Xuất Excel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session__type__out
+msgid "Xuất kho"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__out_success
+msgid "Xuất kho thành công"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_form
+msgid "Xác nhận hoàn thành"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.import_transport_from_excel_view_form
+msgid "import_transport_from_excel_view_form"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model,name:nhanh_connector.model_sale_channel
+msgid "sale.channel"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transport_session_line_view_form
+msgid "transport_session_line_form"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_form
+msgid "transportation_management_form"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_tree
+msgid "transportation_management_tree"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__shipping
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đang chuyển"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__returning
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đang chuyển hoàn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__confirming
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đang xác nhận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__packing
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đang đóng gói"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__returned
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đã chuyển hoàn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__confirmed
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đã xác nhận"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__packed
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đã đóng gói"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đơn bán hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transportation_management_view_form
+msgid "Đơn giao hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order_line__odoo_price_unit
+msgid "Đơn giá (Odoo)"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order_line__discount_price_unit
+msgid "Đơn giá giảm"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__session_line
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.transport_session_line_view_form
+msgid "Đơn hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đơn hàng chưa hợp lệ"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.action_orders_nhanh
+#: model:ir.ui.menu,name:nhanh_connector.menu_sale_order_for_nhanh
+msgid "Đơn hàng nhanhvn"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__source_record
+#: model:ir.model.fields,field_description:nhanh_connector.field_stock_picking__sale_source_record
+msgid "Đơn hàng từ nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__transportation_session_line__status__order_cancel
+msgid "Đơn hàng đã hủy"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__new
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đơn mới"
+msgstr ""
+
+#. module: nhanh_connector
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đơn trả hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session_line__delivery_carrier_id
+#: model:ir.ui.menu,name:nhanh_connector.delivery_carrier_menu
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.form_view_sale_order
+msgid "Đơn vị vận chuyển"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_sale_order__x_is_change
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đơn đổi hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_transportation_session__location_id
+msgid "Địa điểm"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_attribute__x_sync_nhanh
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_template_attribute_line__x_sync_nhanh
+msgid "Đồng bộ lên Nhanh.VN"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields,field_description:nhanh_connector.field_product_category_type__x_sync_nhanh
+msgid "Đồng bộ lên nhanh"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.model.fields.selection,name:nhanh_connector.selection__sale_order__nhanh_order_status__changedepot
+#: model_terms:ir.ui.view,arch_db:nhanh_connector.sale_order_view_search_inherit_sale
+msgid "Đổi kho xuất hàng"
+msgstr ""
+
+#. module: nhanh_connector
+#: model:ir.actions.act_window,name:nhanh_connector.disable_nhanh_product_action
+#: model:ir.ui.menu,name:nhanh_connector.disable_nhanh_product_menu
+msgid "Ẩn sản phẩm Nhanh"
+msgstr ""
