@@ -16,7 +16,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
     line_ids = fields.One2many(comodel_name='stock.balance.difference.report.line', inverse_name='report_id')
     account_move_ids = fields.One2many(comodel_name='stock.balance.difference.report.account.move', inverse_name='report_id')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Order', copy=False)
+    purchase_order_ids = fields.Many2many('purchase.order', string='Đơn hàng', copy=False)
 
     @api.depends('period_start', 'period_end')
     def _compute_name(self):
@@ -57,35 +57,64 @@ class StockBalanceDifferenceReport(models.TransientModel):
         moves._post()
 
     def _generate_details(self, period_start, period_end):
-        self._cr.execute(
-            query='''
-                SELECT 
-                    pp.id product_id, 
-                    aa.id account_id,
-                    max(pp.default_code) product_code, 
-                    (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
-                    max(aa.code) account_code, 
-                    sum(aml.debit) debit, 
-                    sum(aml.credit) credit, 
-                    sum(aml.debit) - sum(aml.credit) difference
-                FROM account_move_line aml 
-                JOIN product_product pp on pp.id = aml.product_id 
-                JOIN product_template pt on pt.id = pp.product_tmpl_id
-                JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
-                JOIN account_account aa on 'account.account,' || aa.id = ip.value_reference
-                WHERE aml.company_id = %s AND aml.account_id = %s AND aml.product_id IS NOT NULL AND aml.date BETWEEN %s AND %s
-                GROUP BY pp.id, aa.id
-                ORDER BY pp.id
-            ''',
-            params=(
-                self._context.get('lang') or 'en_US',
-                self.env.company.id,
-                self.env.company.id,
-                self.account_id.id,
-                period_start,
-                period_end
+        lang = self._context.get('lang') or 'en_US'
+        company_id = self.env.company.id
+        account_id = self.account_id.id
+
+        if not self.purchase_order_ids:
+            self._cr.execute(
+                query='''
+                    SELECT 
+                        pp.id product_id, 
+                        aa.id account_id,
+                        max(pp.default_code) product_code, 
+                        (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
+                        max(aa.code) account_code, 
+                        sum(aml.debit) debit, 
+                        sum(aml.credit) credit, 
+                        sum(aml.debit) - sum(aml.credit) difference,
+                        CASE WHEN sum(aml.debit) != 0 THEN (sum(aml.debit) - sum(aml.credit)) * 100/sum(aml.debit) ELSE 0 END difference_percent
+                    FROM account_move_line aml 
+                    JOIN product_product pp on pp.id = aml.product_id 
+                    JOIN product_template pt on pt.id = pp.product_tmpl_id
+                    JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
+                    JOIN account_account aa on 'account.account,' || aa.id = ip.value_reference
+                    WHERE aml.company_id = %s AND aml.account_id = %s AND aml.product_id IS NOT NULL AND aml.date BETWEEN %s AND %s
+                    GROUP BY pp.id, aa.id
+                    ORDER BY pp.id
+                ''',
+                params=(lang, company_id, company_id, account_id, period_start, period_end)
             )
-        )
+        else:
+            self._cr.execute(
+                query='''
+                    SELECT 
+                        pp.id product_id, 
+                        aa.id account_id,
+                        max(pp.default_code) product_code, 
+                        (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
+                        max(aa.code) account_code, 
+                        sum(aml.debit) debit, 
+                        sum(aml.credit) credit, 
+                        sum(aml.debit) - sum(aml.credit) difference,
+                        CASE WHEN sum(aml.debit) != 0 THEN (sum(aml.debit) - sum(aml.credit)) * 100/sum(aml.debit) ELSE 0 END difference_percent,
+                        pol.order_id purchase_id
+                    FROM account_move_line aml 
+                    LEFT JOIN purchase_order_line pol on aml.purchase_line_id = pol.id
+                    JOIN product_product pp on pp.id = aml.product_id 
+                    JOIN product_template pt on pt.id = pp.product_tmpl_id
+                    JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
+                    JOIN account_account aa on 'account.account,' || aa.id = ip.value_reference
+                    WHERE aml.company_id = %s 
+                        AND aml.account_id = %s 
+                        AND aml.product_id IS NOT NULL 
+                        AND aml.date BETWEEN %s AND %s
+                        AND aml.purchase_line_id in %s
+                    GROUP BY pp.id, aa.id, pol.order_id
+                    ORDER BY pp.id
+                ''',
+                params=(lang, company_id, company_id, account_id, period_start, period_end, tuple(self.purchase_order_ids.order_line.ids))
+            )
         return self._cr.dictfetchall()
 
     def create_account_move(self):
@@ -139,6 +168,8 @@ class StockBalanceDifferenceReportLine(models.TransientModel):
     debit = fields.Float(string='Debit')
     credit = fields.Float(string='Credit')
     difference = fields.Float(string='Difference')
+    difference_percent = fields.Float(string='% Chênh lệch')
+    purchase_id = fields.Many2one(comodel_name='purchase.order', string='PO', ondelete='cascade')
     report_id = fields.Many2one(comodel_name='stock.balance.difference.report', ondelete='cascade')
 
 

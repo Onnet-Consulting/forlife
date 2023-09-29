@@ -17,7 +17,7 @@ class StockMove(models.Model):
             # trường hợp bán voucher
             if move.picking_type_id.code == 'outgoing':
                 voucher_ids = self.env['voucher.voucher'].search([
-                    ('name', 'in', lot_name), ('state', '=', 'new'),
+                    ('serial', 'in', lot_name), ('state', '=', 'new'),
                     ('product_voucher_id', '=', move.product_id.product_tmpl_id.id)
                 ])
                 voucher_vals = {
@@ -29,7 +29,7 @@ class StockMove(models.Model):
             # trường hợp mua voucher
             if move.picking_type_id.code == 'incoming':
                 voucher_ids = self.env['voucher.voucher'].search([
-                    ('name', 'in', lot_name), ('product_voucher_id', '=', move.product_id.product_tmpl_id.id)
+                    ('serial', 'in', lot_name), ('product_voucher_id', '=', move.product_id.product_tmpl_id.id)
                 ])
                 voucher_ids.update({
                     'purchase_id': move.purchase_line_id.order_id.id

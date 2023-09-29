@@ -59,9 +59,9 @@ class ImportPartnerCardRank(models.TransientModel):
             value_up_rank = int(line[5])
             order_date = line[6]
             if customer_id and not error:
-                if partner_cr_by_id.get(customer_id):
+                if partner_cr_by_id.get(str(customer_id)):
                     val = {
-                        'partner_card_rank_id': partner_cr_by_id[customer_id],
+                        'partner_card_rank_id': partner_cr_by_id[str(customer_id)],
                         'order_date': order_date,
                         'real_date': order_date,
                         'value_to_upper': value_to_upper,

@@ -6,6 +6,7 @@ class SaleOrder(models.Model):
     @api.model_create_multi
     def create(self, vals):
         result = super(SaleOrder, self).create(vals)
+        sequence = 0
         for res in result:
             if not res.x_is_return:
                 if res.x_sale_chanel == 'wholesale':
@@ -20,6 +21,7 @@ class SaleOrder(models.Model):
                     declare_code = '013' # DH tra tu Nhanh
             declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
             if declare_code_id:
-                res.name = declare_code_id.genarate_code('sale_order','name')
+                res.name = declare_code_id.genarate_code('sale_order','name',sequence)
+                sequence += 1
         return result
 

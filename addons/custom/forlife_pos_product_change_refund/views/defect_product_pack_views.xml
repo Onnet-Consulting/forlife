@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record id="product_defective_pack_tree_view" model="ir.ui.view">
+        <field name="name">product.defective.pack.tree.view</field>
+        <field name="model">product.defective.pack</field>
+        <field name="arch" type="xml">
+            <tree name="Defective Product Pack">
+                <field name="brand_id"/>
+                <field name="store_id"/>
+                <field name="user_id"/>
+                <field name="note"/>
+                <field name="create_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_defective_pack_form_view" model="ir.ui.view">
+        <field name="name">product.defective.pack.form.view</field>
+        <field name="model">product.defective.pack</field>
+        <field name="arch" type="xml">
+            <form name="Defective Product Pack">
+                <header>
+                    <button name="action_send_requests" string="Send Request" type="object" attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    <button name="action_refuse" string="Refuse" type="object" invisible="1"/>
+                    <button name="%(action_reason_refuse_product_defective)d" type="action"
+                            string="Refuse" states="waiting approve" context="{'active_model': 'product.defective.pack'}"/>
+                    <button name="action_approves" string="Approve" type="object" attrs="{'invisible': [('state', 'not in', ('waiting approve'))]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button string="Thêm sản phẩm" name="open_scan" type="object"
+                        attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group id="header_left_group">
+                            <field name="store_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="user_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="department_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="create_date"/>
+                            <field name="note"/>
+                        </group>
+                        <group id="header_right_group">
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết hàng lỗi">
+                            <field name="line_ids">
+                                <tree editable="top" create="0" edit="1" delete="1"
+                                    decoration-info="state == 'waiting approve'"
+                                    decoration-muted="state in ['cancel', 'refuse']"
+                                    decoration-success="state == 'approved'">
+                                    <field name="selected" widget="boolean_toggle" readonly="0"/>
+                                    <field name="department_id" invisible="1"/>
+                                    <field name="product_id" required="1" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                    <field name="quantity_require" string="Yêu cầu" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                    <field name="quantity_defective_approved" string="Đã duyệt"
+                                           attrs="{'readonly': [('state', 'not in', ('new', 'waiting approve'))]}"/>
+                                    <field name="quantity_inventory_store" string="Tồn"/>
+                                    <field name="defective_type_id" required="1" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
+                                    <field name="detail_defective" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
+                                    <field name="state" readonly="1" force_save="True"/>
+                                    <field name="price"/>
+                                    <field name="money_reduce" attrs="{'readonly': [('state', '!=', 'waiting approve')]}"/>
+                                    <field name="percent_reduce" attrs="{'readonly': [('state', '!=', 'waiting approve')]}"/>
+                                    <field name="total_reduce"/>
+                                    <field name="program_pricelist_item_id" context="{'show_price': True}" readonly="1"/>
+                                    <button name="view_request" class="btn-secondary" icon="fa-share-square-o" type="object"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="product_defective_pack_view_search" model="ir.ui.view">
+        <field name="name">product.defective.pack.view.search</field>
+        <field name="model">product.defective.pack</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="line_ids" string="Sản phẩm" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+                <field name="brand_id"/>
+                <field name="user_id"/>
+                <field name="state"/>
+                <filter string="My Request" name="my_request" domain="[('user_id', '=', uid)]"/>
+<!--                <filter string="New" name="new" domain="[('state', '=', 'new')]"/>-->
+<!--                <filter string="Waiting Approve" name="waiting_approve" domain="[('state', '=', 'waiting approve')]"/>-->
+<!--                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>-->
+<!--                <filter string="Cancel" name="cancel" domain="[('state', '=', 'cancel')]"/>-->
+
+                <group expand="1" string="Group By">
+                    <filter string="Status" name="groupby_status" context="{'group_by': 'state'}"/>
+                    <filter string="Brand" name="groupby_brand" context="{'group_by': 'brand_id'}"/>
+                    <filter string="Store" name="groupby_store" context="{'group_by': 'store_id'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+    <record id="product_defective_pack_action" model="ir.actions.act_window">
+        <field name="name">Tổng hơp hàng lỗi</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.defective.pack</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="product_defective_action_pack_menu"
+             name="Tổng hơp hàng lỗi"
+             parent="forlife_pos_product_change_refund.product_defective_menu"
+             action="product_defective_pack_action" sequence="2"/>
+</odoo>

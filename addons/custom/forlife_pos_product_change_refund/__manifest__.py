@@ -60,8 +60,10 @@
         'views/product_category_view.xml',
         'views/product_defective.xml',
         'views/defective_type.xml',
+        'views/defect_product_pack_views.xml',
         'views/templates.xml',
         'wirards/return_pos_order_line.xml',
+        'wirards/product_defective_scan_views.xml',
         # Menu
     ]
 }

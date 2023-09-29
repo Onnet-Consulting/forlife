@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='store_id']" position="before">
-                <field name="name" readonly="1" force_save="1" string="Mã phiếu"/>
+                <field name="name" readonly="1" force_save="1" string="Mã phiếu tổng hợp"/>
             </xpath>
         </field>
     </record>
@@ -17,7 +17,7 @@
         <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='store_id']" position="before">
-                <field name="name" readonly="1" force_save="1" string="Mã phiếu"/>
+                <field name="name" readonly="1" force_save="1" string="Mã phiếu tổng hợp"/>
             </xpath>
         </field>
     </record>

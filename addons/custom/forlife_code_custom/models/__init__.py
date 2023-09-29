@@ -10,5 +10,5 @@ from . import split_product
 from . import transfer_stock_inventory
 from . import stock_inventory
 from . import hr_asset_transfer
-from . import defective_product
+from . import product_defective_pack
 from . import account_move

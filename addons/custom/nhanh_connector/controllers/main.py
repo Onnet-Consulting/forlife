@@ -124,7 +124,7 @@ class MainController(http.Controller):
             odoo_order = n_client.get_sale_order(order_id)
             # luong return v2, khong tao SO tra hang chi tao phieu tra hang tu picking
             if odoo_order and data['status'] in ['Returned', 'Canceled']:
-                odoo_order.create_picking_return()
+                odoo_order.create_picking_return(nhanh_status=data['status'])
                 return self.result_request(200, 0, _('Update sale order success'))
             is_create_wh_in = False
             if odoo_order and data['status'] in ['Returned']:

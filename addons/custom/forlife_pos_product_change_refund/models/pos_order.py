@@ -39,7 +39,9 @@ class PosOrder(models.Model):
     def search_refund_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
         """Search for all orders that satisfy the given domain, limit and offset."""
         store_id = self.env['store'].sudo().search([('id', '=', store_id)], limit=1)
-        default_domain = [('brand_id', '=', brand_id), ('config_id.store_id', '=', store_id.id), '!', '|',
+        # Daihv: cho phép chọn đơn gốc khác cửa hàng để trả hàng
+        # khi thực hiện thanh toán sẽ kiểm tra nếu không phải lý do trả hàng hoàn điểm thì chặn không được thanh toán
+        default_domain = [('brand_id', '=', brand_id), '!', '|',
                           ('state', '=', 'draft'), ('state', '=', 'cancelled')]
         if store_id.number_month != 0 and search_details.get('fieldName', False) == 'PHONE':
             start_date = fields.Date.today() - relativedelta(months=store_id.number_month)
@@ -90,7 +92,7 @@ class PosOrder(models.Model):
                     if pos.program_store_point_id and store is not None:
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
                                                           store)
-            if pos.pay_point > 0:
+            if pos.pay_point > 0 or pos.refund_point > 0:
                 pos.action_point_refund()
 
         # create voucher
@@ -128,12 +130,12 @@ class PosOrder(models.Model):
                 })
         return values
 
-    @api.depends('lines.refunded_orderline_id', 'is_refund_order')
+    @api.depends('lines.refunded_orderline_id', 'is_refund_order', 'is_change_order')
     def _compute_refund_point(self):
         for item in self:
             item.refund_point = 0
             total = 0
-            if item.is_refund_order:
+            if item.is_refund_order or item.is_change_order:
                 for line in item.lines:
                     qty_refund = abs(line.qty)
                     for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(
@@ -292,42 +294,65 @@ class PosOrder(models.Model):
 
     def action_point_refund(self):
 
-        total_point = self.pay_point
         refunded_order_id = self.refunded_order_ids
         if len(self.refunded_order_ids) > 1:
             refunded_order_id = self.refunded_order_ids[0]
-        elif not self.refunded_order_ids or not total_point:
+        elif not self.refunded_order_ids or (not self.pay_point and not self.refund_point):
             return True
 
         point_journal_id = refunded_order_id.program_store_point_id.account_journal_id
         if not point_journal_id:
             raise UserError(_('Cấu hình Sổ điểm cho chương trình điểm: %s',
                               self.refunded_order_ids.program_store_point_id.name or ''))
-        if total_point > 0:
+        defaul_val = {
+            'pos_order_id': self.id,
+            'move_type': 'entry',
+            'date': self.date_order,
+            'journal_id': point_journal_id.id,
+            'company_id': self.company_id.id,
+            'ref': self.name + ' - Trả điểm',
+        }
+        if self.pay_point > 0:
             return_point_move_val = {
-                'pos_order_id': self.id,
-                'move_type': 'entry',
-                'date': self.date_order,
-                'journal_id': point_journal_id.id,
-                'company_id': self.company_id.id,
+                **defaul_val,
                 'ref': self.name + ' - Trả điểm',
                 'line_ids': [
-                    # debit line
                     (0, 0, {
                         'account_id': refunded_order_id.program_store_point_id.acc_accumulate_points_id.id,
                         'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
                         'debit': 0.0,
-                        'credit': total_point*1000,
+                        'credit': self.pay_point*1000,
                     }),
-                    # credit line
                     (0, 0, {
                         'account_id': refunded_order_id.program_store_point_id.point_customer_id.property_account_receivable_id.id,
                         'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
-                        'debit': total_point*1000,
+                        'debit': self.pay_point*1000,
                         'credit': 0.0,
                     }),
                 ]
             }
             move = self.env['account.move'].create(return_point_move_val)._post()
             self.point_refund_move_ids |= move
+        if self.refund_point > 0:
+            return_point_move_val = {
+                **defaul_val,
+                'ref': self.name + ' - Hoàn điểm',
+                'line_ids': [
+                    (0, 0, {
+                        'account_id': refunded_order_id.program_store_point_id.acc_accumulate_points_id.id,
+                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
+                        'debit': self.refund_point*1000,
+                        'credit': 0,
+                    }),
+                    (0, 0, {
+                        'account_id': refunded_order_id.program_store_point_id.point_customer_id.property_account_receivable_id.id,
+                        'partner_id': refunded_order_id.program_store_point_id.point_customer_id.id,
+                        'debit': 0,
+                        'credit': self.refund_point*1000,
+                    }),
+                ]
+            }
+            move = self.env['account.move'].create(return_point_move_val)._post()
+            self.point_addition_move_ids |= move
+
         return True

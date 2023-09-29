@@ -38,6 +38,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
+        ('close', 'CLose'),
     ], string='Inventory Status', default='not_received', compute='compute_inventory_status', store=1, copy=False)
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Hợp đồng khung?')
@@ -102,14 +103,16 @@ class PurchaseOrder(models.Model):
     department_id = fields.Many2one('hr.department', string='Department', default=_get_department_default)
     team_id = fields.Many2one('hr.team', string='Team', default=_get_team_default)
     invoice_status = fields.Selection([
-        ('no', 'Nothing to Bill'),
-        ('to invoice', 'Waiting Bills'),
-        ('invoiced', 'Fully Billed'),
-    ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
+        ('no', 'Chưa nhận'),
+        ('to invoice', 'Dở dang'),
+        ('invoiced', 'Hoàn thành'),
+        ('close', 'Đóng'),
+    ], string='Trạng thái hóa đơn', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
     invoice_status_fake = fields.Selection([
         ('no', 'Chưa nhận'),
         ('to invoice', 'Dở dang'),
         ('invoiced', 'Hoàn thành'),
+        ('close', 'Đóng'),
     ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
     date_order = fields.Datetime('Order Deadline', states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
@@ -309,17 +312,53 @@ class PurchaseOrder(models.Model):
 
     @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
-        for item in self:
-            item.inventory_status = 'not_received'
-            picking_ids = item.picking_ids.filtered(lambda x: not x.x_is_check_return)
-            if picking_ids:
-                all_equal_parent_done = all(x == 'done' for x in picking_ids.mapped('state'))
-                if all_equal_parent_done:
-                    item.inventory_status = 'done'
-                elif 'done' in picking_ids.mapped('state'):
-                    item.inventory_status = 'incomplete'
+        for order in self:
+            if order.custom_state == 'close':
+                order.inventory_status = 'close'
+            else:
+                if order.purchase_type in ['service', 'asset']:
+                    order.inventory_status = 'done'
                 else:
-                    item.inventory_status = 'not_received'
+                    picking_ids = order.picking_ids.filtered(lambda x: not x.x_is_check_return and x.state == 'done')
+                    if picking_ids:
+                        if any(order.order_line.filtered(lambda x: x.product_qty != x.qty_received)):
+                            order.inventory_status = 'incomplete'
+                        else:
+                            order.inventory_status = 'done'
+                    else:
+                        order.inventory_status = 'not_received'
+
+    @api.depends('state', 'order_line.qty_to_invoice', 'order_line.invoice_lines', 'custom_state')
+    def _get_invoiced(self):
+        for order in self:
+            if order.custom_state == 'close':
+                order.invoice_status = 'close'
+            else:
+                if order.purchase_type == 'product':
+                    if all(order.order_line.filtered(lambda x: x.qty_received == 0)) and order.order_line.filtered(lambda x: x.qty_received == 0):
+                        order.invoice_status = 'no'
+                    elif all(order.order_line.filtered(lambda x: x.qty_invoiced == x.qty_received)) and order.order_line.filtered(lambda x: x.qty_invoiced == x.qty_received):
+                        order.invoice_status = 'invoiced'
+                    elif any(order.order_line.filtered(lambda x: x.qty_invoiced != 0)):
+                        order.invoice_status = 'to invoice'
+                    else:
+                        order.invoice_status = 'no'
+                else:
+                    count_not_invoice_lines = 0
+                    for line_id in order.order_line:
+                        if not line_id.invoice_lines or 'posted' not in line_id.invoice_lines.mapped('parent_state'):
+                            count_not_invoice_lines += 1
+                        else:
+                            invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
+                            total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
+                            if line_id.price_total != total_invoice_line:
+                                order.invoice_status = 'to invoice'
+                                return True
+
+                    if count_not_invoice_lines == len(order.order_line):
+                        order.invoice_status = 'no'
+                    else:
+                        order.invoice_status = 'invoiced'
 
     def compute_is_done_picking(self):
         for record in self:
@@ -613,7 +652,7 @@ class PurchaseOrder(models.Model):
                         'inventory_status': 'done',
                     })
                     invoice = self.action_create_invoice()
-                    invoice.x_root = 'other'
+                    invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
                     invoice.action_post()
             else:
                 raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
@@ -624,7 +663,7 @@ class PurchaseOrder(models.Model):
                 'inventory_status': 'done',
             })
             invoice = self.action_create_invoice()
-            invoice.x_root = 'other'
+            invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
             invoice.action_post()
 
         sale_id = self.sudo()._create_sale_order_another_company()
@@ -726,11 +765,22 @@ class PurchaseOrder(models.Model):
 
     def action_close(self):
         for rec in self:
-            for line in rec.order_line:
-                if line.received != 0 and line.received > line.billed:
-                    message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
-                    raise ValidationError(message)
-        # self.button_cancel()
+            if rec.purchase_type == 'product':
+                for line in rec.order_line:
+                    if line.received != 0 and line.received > line.billed:
+                        message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+                        raise ValidationError(message)
+            else:
+                for line_id in rec.order_line:
+                    if not line_id.invoice_lines or 'posted' not in line_id.invoice_lines.mapped('parent_state'):
+                        message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+                        raise ValidationError(message)
+                    else:
+                        invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
+                        total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
+                        if line_id.price_total != total_invoice_line:
+                            message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+                            raise ValidationError(message)
         self.write({'custom_state': 'close'})
 
     @api.model

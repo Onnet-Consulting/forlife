@@ -33,7 +33,7 @@ select
     row_number() over ()    as num,
     ppg.name                as program_name,
     pc.name                 as code,
-    po.pos_reference        as invoice_num,
+    po.name                 as invoice_num,
     ''                      as invoice_num_online,
     rp.name                 as customer_name,
     pp.default_code         as product_code,

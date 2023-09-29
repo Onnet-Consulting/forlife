@@ -57,6 +57,7 @@ class SaleOrderNhanh(models.Model):
     nhanh_return_id = fields.Char(string='Id đơn trả Nhanh.vn', copy=False)
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
+    is_transfer_payment = fields.Boolean(string='Is Transfer Payment?', readonly=True, default=False, copy=False)
 
     def open_nhanh(self):
         storeId = self.x_location_id.warehouse_id.brand_id.code == 'FMT' and '92411' or '92405'
@@ -707,29 +708,36 @@ class SaleOrderNhanh(models.Model):
                 pr.with_context(super=True).confirm_from_so(True)
         self.state = 'sale'
 
-    def create_picking_return(self):
+    def create_picking_return(self, nhanh_status=None):
         so_id = self
         pick_picking_ids = so_id.picking_ids.filtered(
             lambda p: p.state == 'done' and p.picking_type_id.sequence_code == 'PICK')
+        pick_picking_not_done_ids = so_id.picking_ids.filtered(
+            lambda p: p.state != 'done' and p.picking_type_id.sequence_code == 'PICK')
         out_picking_ids = so_id.picking_ids.filtered(lambda p: p.picking_type_id.sequence_code != 'PICK')
+
+        for opicking in pick_picking_not_done_ids:
+            opicking.action_cancel()
         for opicking in out_picking_ids:
             opicking.action_cancel()
-        for picking_id in pick_picking_ids:
-            ctx = {
-                'active_id': picking_id.id,
-                'active_ids': picking_id.ids,
-                'active_model': 'stock.picking',
-                'picking_id': picking_id.id,
-                'so_return': self.id,
-                'allowed_company_ids': [picking_id.company_id.id],
-                'validate_analytic': True,
-                'x_return': True
-            }
 
-            stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
-            return_wiz = stock_return_picking_form.save()
-            return_wiz.location_id = picking_id.location_id
-            stock_return_picking_action = return_wiz.with_context(ctx)._create_returns()
-            picking_return_created = self.env['stock.picking'].browse(stock_return_picking_action[0])
-            picking_return_created.with_context(super=True).confirm_from_so(True)
+        if nhanh_status and nhanh_status == 'Returned':
+            for picking_id in pick_picking_ids:
+                ctx = {
+                    'active_id': picking_id.id,
+                    'active_ids': picking_id.ids,
+                    'active_model': 'stock.picking',
+                    'picking_id': picking_id.id,
+                    'so_return': self.id,
+                    'allowed_company_ids': [picking_id.company_id.id],
+                    'validate_analytic': True,
+                    'x_return': True
+                }
+
+                stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
+                return_wiz = stock_return_picking_form.save()
+                return_wiz.location_id = picking_id.location_id
+                stock_return_picking_action = return_wiz.with_context(ctx)._create_returns()
+                picking_return_created = self.env['stock.picking'].browse(stock_return_picking_action[0])
+                picking_return_created.with_context(super=True).confirm_from_so(True)
 
