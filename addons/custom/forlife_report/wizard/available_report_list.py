@@ -272,4 +272,9 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum46Template',
         'reportPager': True,
     },
+    'report.num47': {
+        'module': 'Kế toán',
+        'name': 'Bảng kê Doanh thu',
+        'reportTemplate': 'ReportNum47Template',
+    },
 }
