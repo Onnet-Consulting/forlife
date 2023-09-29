@@ -132,10 +132,11 @@ class ForlifeOtherInOutRequest(models.Model):
                     if not production_line_ids:
                         validation_error_msg += 'Sản phẩm "%s" không tồn tại trong lệnh sản xuất [%s]\n' % (rec.product_id.display_name, rec.production_id.name)
                         # raise ValidationError('Sản phẩm "%s" không tồn tại trong lệnh sản xuất [%s]' % (rec.product_id.display_name, rec.production_id.name))
-                    remaining_qty = production_line_ids.remaining_qty or 0
-                    if rec.production_id and rec.quantity > remaining_qty:
-                        validation_error_msg += 'Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!\n' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name)
-                        # raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
+                    else:
+                        remaining_qty = production_line_ids.remaining_qty or 0
+                        if rec.production_id and rec.quantity > remaining_qty:
+                            validation_error_msg += 'Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!\n' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name)
+                            # raise ValidationError('Số lượng sản phẩm "%s" lớn hơn số lượng còn lại (%s) trong lệnh sản xuất %s!' % (rec.product_id.display_name, str(remaining_qty), rec.production_id.name))
                     
                 if validation_error_msg or validation_error_msg != '':
                     raise ValidationError("Cảnh báo!\n"+validation_error_msg)
