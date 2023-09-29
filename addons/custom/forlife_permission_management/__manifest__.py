@@ -67,5 +67,6 @@
         'views/defective_type_view.xml',
         'views/product_supplierinfo_views.xml',
         'views/account_move_views.xml',
+        'views/production_view.xml',
     ],
 }

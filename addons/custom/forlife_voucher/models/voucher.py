@@ -65,6 +65,7 @@ class Voucher(models.Model):
 
     value_remain_account_move_id = fields.Many2one('account.move', 'Hạch toán giá trị còn lại')
     value_expired_account_move_id = fields.Many2one('account.move', 'Hạch toán giá trị hết hạn')
+    serial = fields.Char(string='Serial', readonly=True)
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
