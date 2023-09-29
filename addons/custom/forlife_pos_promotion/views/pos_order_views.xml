@@ -22,6 +22,8 @@
                             <field name="new_price"/>
                             <field name="qty"/>
                             <field name="discount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                            <field name="program_from_date"/>
+                            <field name="program_to_date"/>
                             <field name="registering_tax" />
                         </tree>
                         <form>

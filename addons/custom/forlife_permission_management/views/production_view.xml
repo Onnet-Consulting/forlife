@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="permission_forlife_production_form" model="ir.ui.view">
+            <field name="name">forlife.production</field>
+            <field name="model">forlife.production</field>
+            <field name="inherit_id" ref="forlife_purchase.forlife_production_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_approved']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_button_accept_production</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
