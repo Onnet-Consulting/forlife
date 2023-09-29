@@ -646,7 +646,7 @@ class PurchaseOrder(models.Model):
                         'inventory_status': 'done',
                     })
                     invoice = self.action_create_invoice()
-                    invoice.x_root = 'other'
+                    invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
                     invoice.action_post()
             else:
                 raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
@@ -657,7 +657,7 @@ class PurchaseOrder(models.Model):
                 'inventory_status': 'done',
             })
             invoice = self.action_create_invoice()
-            invoice.x_root = 'other'
+            invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
             invoice.action_post()
 
         sale_id = self.sudo()._create_sale_order_another_company()

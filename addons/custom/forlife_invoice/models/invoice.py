@@ -20,6 +20,28 @@ def check_length_255(val):
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    @api.model
+    def get_default_x_root(self):
+        active_model = self._context.get('active_model')
+        active_id = self._context.get('active_id')
+        record = self.env[active_model].browse(active_id) if (active_model and active_id) else False
+        params = self._context.get('params') or {}
+        model = params.get('model') or ''
+        # Khác công ty sản xuất mặc định là other
+        if self.env.company.code != '1300':
+            return 'other'
+        # Tạo hóa đơn cho đơn liên công ty từ sale.order
+        elif active_model == 'sale.order':
+            if record and record.x_sale_chanel == 'intercompany':
+                return 'IC'
+        # Tạo hóa đơn cho đơn liên công ty từ purchase.order
+        elif self._context.get('default_is_inter_company') or (active_model == 'purchase.order' and (record and record.is_inter_company)):
+            return 'IC'
+        # Tạo hóa đơn không phải từ purchase.order khác
+        elif ('params' in self._context and model != 'purchase.order') or ('active_model' in self._context and active_model != 'purchase.order'):
+            return 'other'
+        return False
+
     invoice_description = fields.Char(string="Invoce Description")
     purchase_type = fields.Selection([
         ('product', 'Hàng hóa'),
@@ -80,10 +102,8 @@ class AccountMove(models.Model):
     is_check = fields.Boolean()
     # lấy id để search ghi lại ref cho bút toán phát sinh
     e_in_check = fields.Integer(index=True)
-    # todo: bỏ trường x_asset_fin sau golive. giữ lại để backup cho trường is_tc = true if x_asset_fin == 'TC'
-    x_asset_fin = fields.Selection([('TC', 'TC'), ('QT', 'QT'),], string='Phân loại tài chính remove')
     is_tc = fields.Boolean('Phân loại tài chính', default=False)
-    x_root = fields.Selection([('Intel', 'INT'), ('Winning', 'WIN'), ('other', 'Khác'),], string='Phân loại nguồn')
+    x_root = fields.Selection([('Intel', 'INT'), ('Winning', 'WIN'), ('IC', 'IC'), ('other', 'Khác')], string='Phân loại nguồn', default=get_default_x_root)
     domain_receiving_warehouse_id = fields.Char(compute='_compute_domain_receiving_warehouse_id', store=1)
     is_purchase_internal = fields.Boolean(compute='compute_is_purchase_internal')
 
