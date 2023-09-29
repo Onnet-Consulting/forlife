@@ -27,7 +27,7 @@
     </record>
 
     <record id="report_num26_window_action" model="ir.actions.act_window">
-        <field name="name">Báo cáo danh sách điều chuyển</field>
+        <field name="name">Báo cáo danh sách phiếu điều chuyển</field>
         <field name="res_model">report.num26</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

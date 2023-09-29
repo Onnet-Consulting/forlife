@@ -80,6 +80,7 @@
         'wizard/report_num44_views.xml',
         'wizard/report_num45_views.xml',
         'wizard/report_num46_views.xml',
+        'wizard/report_num47_views.xml',
 
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',
