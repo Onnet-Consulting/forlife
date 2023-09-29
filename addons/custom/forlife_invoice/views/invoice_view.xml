@@ -149,9 +149,9 @@
                                 attrs="{'invisible': ['|', ('state', '=', 'posted'), ('receiving_warehouse_id', '=', False)]}"
                                 icon="fa-plus-square" class="btn btn-primary"/>
                     </div>
-                    <!--<field name="x_asset_fin" widget="radio"/> todo: bỏ trường này sau golive. giữ lại để backup cho trường is_tc-->
                     <field name="is_tc"/>
-                    <field name="x_root" widget="radio" options="{'horizontal': True}" invisible="context.get('default_move_type', False) == 'out_invoice'" required="context.get('default_move_type', False) != 'out_invoice'"/>
+                    <!--Chỉ required với hóa đơn nhà cung cấp-->
+                    <field name="x_root" widget="radio" options="{'horizontal': True}" attrs="{'required': [('move_type', '=', 'in_invoice')]}"/>
                     <field name="is_check" invisible="1"/>
                     <field name="is_passersby" invisible="1"/>
                 </xpath>
