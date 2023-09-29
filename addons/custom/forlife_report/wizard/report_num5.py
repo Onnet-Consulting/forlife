@@ -54,7 +54,7 @@ with order_line_data as (
         pol.employee_id																			    as employee_id,
         emp.name 																				    as employee_name,
         emp.code  																		 		    as employee_code,
-        po.pos_reference  																		    as pos_reference,
+        po.name           																		    as pos_reference,
         rp.name  																				    as customer_name,
         rp.ref  																				    as customer_code,
         rp.phone  																				    as customer_phone,

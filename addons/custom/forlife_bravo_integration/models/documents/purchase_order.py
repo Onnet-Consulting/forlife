@@ -65,7 +65,7 @@ class AccountMovePurchaseAsset(models.Model):
             "IsTransfer": 1 if self.is_tc else 0,
             "CreditAccount": payable_account_code or None,
             "DueDate": self.invoice_date_due or None,
-            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or (self.x_root == "other" and 3) or None,
+            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):

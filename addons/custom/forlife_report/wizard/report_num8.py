@@ -54,7 +54,7 @@ select row_number() over ()                                                 as n
     hd.name 																as department,
     pv.name 																as program_name,
     pv.details         														as purpose,
-    po.pos_reference 														as order_name,
+    po.name         														as order_name,
     to_char(po.date_order + interval '7 hours', 'DD/MM/YYYY')				as date,
     pv_line.price_used														as value
 from pos_order po

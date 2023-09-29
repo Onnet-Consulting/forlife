@@ -6,6 +6,7 @@ class PurchaseOrder(models.Model):
     @api.model_create_multi
     def create(self, vals):
         result = super(PurchaseOrder, self).create(vals)
+        sequence = 0
         for res in result:
             if not res.is_return:
                 if not res.is_inter_company:
@@ -21,6 +22,7 @@ class PurchaseOrder(models.Model):
                 declare_code = '010' #Don tra hang ncc
             declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
             if declare_code_id:
-                res.name = declare_code_id.genarate_code('purchase_order','name')
+                res.name = declare_code_id.genarate_code('purchase_order','name',sequence)
+                sequence += 1
         return result
 
