@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 class SplitProduct(models.Model):
     _inherit = 'split.product'
 
+    company_id = fields.Many2one('res.company', string="Công ty", default=lambda self: self.env.company)
+
     @api.model_create_multi
     def create(self, vals):
         result = super(SplitProduct, self).create(vals)
