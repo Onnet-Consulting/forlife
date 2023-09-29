@@ -17,6 +17,6 @@
         'forlife_splip_product',
     ],
     'data': [
-        'views/defective_product.xml',
+        'views/product_defective.xml',
     ]
 }
