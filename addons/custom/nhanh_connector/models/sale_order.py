@@ -57,6 +57,7 @@ class SaleOrderNhanh(models.Model):
     nhanh_return_id = fields.Char(string='Id đơn trả Nhanh.vn', copy=False)
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
     sale_channel_id = fields.Many2one('sale.channel', 'Kênh / Sàn')
+    is_transfer_payment = fields.Boolean(string='Is Transfer Payment?', readonly=True, default=False, copy=False)
 
     def open_nhanh(self):
         storeId = self.x_location_id.warehouse_id.brand_id.code == 'FMT' and '92411' or '92405'

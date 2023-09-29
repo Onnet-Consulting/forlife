@@ -211,9 +211,6 @@
                 <xpath expr="//field[@name='origin']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-<!--                <xpath expr="//field[@name='invoice_status']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
                 <xpath expr="//field[@name='incoterm_id']" position="attributes">
                     <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
                 </xpath>
