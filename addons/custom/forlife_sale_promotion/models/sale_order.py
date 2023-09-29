@@ -125,6 +125,14 @@ class SaleOrder(models.Model):
                             })
                             return action
 
+                    # Kiểm tra có phải là thanh toán chuyển khoản
+                    if rec.source_record:
+                        ck_pattern_re = re.compile('#(C|c)(K|k)')
+                        if ck_pattern_re.search(rec.note):
+                            rec.is_transfer_payment = True
+                        else:
+                            rec.is_transfer_payment = False
+
                     has_vip = False
                     if len(self.find_mn_index(note)) >= 0:
                         for mn in self.find_mn_index(note):
