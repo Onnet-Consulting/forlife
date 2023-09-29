@@ -37,5 +37,23 @@
             <field name="auto_delete" eval="True"/>
         </record>
 
+        <record id="email_template_handle_defective_product_pack" model="mail.template">
+            <field name="name">HÀNG LỖI</field>
+            <field name="model_id" ref="forlife_pos_product_change_refund.model_product_defective_pack"/>
+            <field name="subject">XỬ LÝ HÀNG LỖI</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Kính gửi anh/chị
+        <br/><br/>
+        Cửa hàng <strong><t t-out="object.store_id.name"/></strong> vừa có một yêu cầu phê duyệt giá hàng lỗi
+        Anh/chị vui lòng bấm vào <a t-att-href="ctx['redirectUrl']">đây</a> để vào đường dẫn phê duyệt.
+        <br/><br/>
+        Xin cảm ơn!
+    </p>
+</div></field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
     </data>
 </odoo>
