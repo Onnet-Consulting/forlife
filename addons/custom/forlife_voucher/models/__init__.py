@@ -16,3 +16,4 @@ from . import pos_payment_method
 from . import pos_order_line
 from . import product_program_import
 from . import quick_config_voucher
+from . import account_payment
