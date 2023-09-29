@@ -44,7 +44,7 @@ class ReportNum20(models.TransientModel):
         attr_value = self.env['res.utility'].get_attribute_code_config()
 
         customer_condition = f"and (rp.ref ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')" if self.customer else ''
-        order_filter_condition = f"""and (po.pos_reference ilike '%%{self.order_filter}%%'
+        order_filter_condition = f"""and (po.name ilike '%%{self.order_filter}%%'
              or po.id in (select order_id from pos_order_line where product_id in (
                 select id from product_product where default_code ilike '%%{self.order_filter}%%'))
              or po.id in (select order_id from promotion_usage_line where code_id in(
@@ -83,7 +83,7 @@ select
     sto.name                                                                    as ten_cn,
     to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')           as ngay_lap_phieu,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')            as ngay_hd,
-    po.pos_reference                                                            as so_hd,
+    po.name                                                            as so_hd,
     rp.ref                                                                      as ma_kh,
     rp.name                                                                     as ten_kh,
     pp.barcode                                                                  as ma_vach,
@@ -121,7 +121,7 @@ select
             select voucher_id from pos_voucher_line where pos_order_id = po.id
             )) as xx)                                                           as voucher,
     emp.name                                                                    as nhan_vien,        
-    (select array[pos_reference, to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')]
+    (select array[name, to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')]
      from pos_order where id in (
         select order_id from pos_order_line
          where id = pol.refunded_orderline_id

@@ -45,7 +45,7 @@ class ReportNum17(models.TransientModel):
         store_key = 'format' if self.brand_id.code == 'FMT' else 'forlife'
         customer_join = f"""join res_partner rp on rp.id = po.partner_id and (rp.ref ilike '%%{self.customer}%%' or
             rp.name ilike '%%{self.customer}%%' or rp.phone ilike '%%{self.customer}%%')""" if self.customer else ''
-        order_filter_condition = f"""and (po.pos_reference ilike '%%{self.order_filter}%%'
+        order_filter_condition = f"""and (po.name ilike '%%{self.order_filter}%%'
              or po.id in (select order_id from pos_order_line where product_id in (
                 select id from product_product where default_code ilike '%%{self.order_filter}%%'))
              or po.id in (select order_id from promotion_usage_line where code_id in(
@@ -178,7 +178,7 @@ with po_datas as (select po.id                  as po_id,
        sto.code                                                                              as ma_cn,
        sto.name                                                                              as ten_cn,
        to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')                      as ngay,
-       po.pos_reference                                                                      as so_ct,
+       po.name                                                                               as so_ct,
        rp.ref                                                                                as ma_kh,
        rp.phone                                                                              as sdt,
        rp.name                                                                               as ten_kh,
@@ -260,7 +260,7 @@ with po_datas as (select po.id                  as po_id,
        to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')                     as ngay_lap,
        ''                                                                                    as nguoi_sua,
        ''                                                                                    as ngay_sua,
-       (select array_agg(pos_reference)
+       (select array_agg(name)
         from pos_order
         where id in (select order_id
                      from pos_order_line
@@ -310,7 +310,7 @@ data_final_tl as ("""
               sto.code                                                          as ma_cn,
               sto.name                                                          as ten_cn,
               to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')  as ngay,
-              po.pos_reference                                                  as so_ct,
+              po.name                                                  as so_ct,
               rp.ref                                                            as ma_kh,
               rp.phone                                                          as sdt,
               rp.name                                                           as ten_kh,
@@ -340,7 +340,7 @@ data_final_tl as ("""
               to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY') as ngay_lap,
               ''                                                                as nguoi_sua,
               ''                                                                as ngay_sua,
-              (select array_agg(pos_reference)
+              (select array_agg(name)
                from pos_order
                where id in (select order_id
                             from pos_order_line
