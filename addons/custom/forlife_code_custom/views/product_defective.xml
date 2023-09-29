@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_defective_tree_view_code" model="ir.ui.view">
+        <field name="name">product.defective.tree</field>
+        <field name="model">product.defective</field>
+        <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='store_id']" position="before">
+                <field name="name" readonly="1" force_save="1" string="Mã phiếu tổng hợp"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_defective_form_view_code" model="ir.ui.view">
+        <field name="name">product.defective.form</field>
+        <field name="model">product.defective</field>
+        <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='store_id']" position="before">
+                <field name="name" readonly="1" force_save="1" string="Mã phiếu tổng hợp"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
