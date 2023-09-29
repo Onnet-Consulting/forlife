@@ -166,7 +166,7 @@ class AccountMove(models.Model):
                                            and bool(
                 m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
         if journal_data == "journal_entry_payroll":
-            return self.filtered(lambda am: am.journal_id.code == '971')
+            return self.filtered(lambda am: am.journal_id.code == 'EX01')
         if journal_data == "order_exist_bkav":
             return self.filtered(lambda am: am.exists_bkav and am.stock_move_id and am.stock_move_id.picking_id and
                                             ((am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return) or
