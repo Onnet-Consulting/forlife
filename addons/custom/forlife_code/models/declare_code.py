@@ -149,8 +149,9 @@ class DeclareCode(models.Model):
         except ValueError:
             raise UserError('Có vấn đề trong quá trình tính toán mã phiếu. Vui lòng liên hệ quản trị viên')
     
-    def genarate_code(self, model_code, field_code, location_code='', location_des_code=''):
+    def genarate_code(self, model_code, field_code, sequence = 0, location_code='', location_des_code=''):
         code, len_sequence = self._get_code(field_code, location_code, location_des_code)
+        company_id = self.company_id.id
         try:
             param_code = code+'%'
             start_code = '0'*len_sequence
@@ -162,6 +163,7 @@ class DeclareCode(models.Model):
                     (SELECT RIGHT({field_code},{len_sequence}) as code
                     FROM {model_code}
                     WHERE {field_code} like '{param_code}'
+                    AND company_id = {company_id}
                     ORDER BY {field_code} desc
                     LIMIT 1)) as c
                 ORDER BY code desc LIMIT 1
@@ -170,9 +172,12 @@ class DeclareCode(models.Model):
             result = self._cr.fetchall()
             for list_code in result:
                 if list_code[0] == start_code:
-                    code+='0'*(len_sequence - 1)+'1'
+                    pre = '1'
+                    if sequence != 0:
+                        pre = str(sequence+1)
+                    code+='0'*(len_sequence - 1)+pre
                 else:
-                    code_int = int(list_code[0])+1
+                    code_int = int(list_code[0])+1+sequence
                     code+='0'*(len_sequence-len(str(code_int)))+str(code_int)
             return code
         except ValueError:
