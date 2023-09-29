@@ -302,7 +302,7 @@ class SalaryRecord(models.Model):
             raise ValidationError(_("Bút toán không được phép nhiều nợ - nhiều có!"))
 
     def get_default_journal_id_for_salary_move(self):
-        JOURNAL_CODE = '971'
+        JOURNAL_CODE = 'EX01'
         salary_journal = self.env['account.journal'].search([
             ('code', '=', JOURNAL_CODE),
             ('company_id', '=', self.company_id.id)
