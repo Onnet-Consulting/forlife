@@ -10,6 +10,17 @@
             <field name="number_next">1</field>
             <field name="number_increment">001</field>
         </record>
+
+        <record id="voucher_voucher_serial_sequence_2" model="ir.sequence">
+            <field name="name">Serial Voucher</field>
+            <field name="code">voucher.voucher.serial</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">%s%(y)s</field>
+            <field name="padding">10</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">001</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 
 </odoo>

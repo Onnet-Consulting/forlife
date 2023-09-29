@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="serial"/>
                     <field name="state"/>
                     <field name="program_voucher_id" required="1"/>
                     <field name="type"/>
@@ -44,38 +45,42 @@
                     </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="currency_id" invisible="1"/>
-                            <field name="program_voucher_id" required="1"/>
-                            <field name="type" readonly="True"/>
-                            <field name="purpose_id" required="1" readonly="True"/>
-                            <field name="derpartment_id" readonly="True"/>
-                            <field name="apply_many_times" readonly="True"/>
-                            <field name="apply_contemp_time" readonly="True"/>
-                            <field name="is_full_price_applies" readonly="True"/>
-                            <field name="brand_id" required="1" readonly="True"/>
-                            <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]" readonly="True"/>
-                            <field name="using_limit"/>
-                            <field name="product_voucher_id" readonly="True"/>
-                            <field name="status_latest"/>
-                            <field name="value_remain_account_move_id" readonly="True"/>
-                            <field name="value_expired_account_move_id" readonly="True"/>
-                        </group>
-                        <group>
-                            <field name="start_date" required="1"/>
-                            <field name="end_date" required="1"/>
-                            <field name="partner_id"/>
-                            <field name="price" readonly="True"/>
-                            <field name="price_used" readonly="1"/>
-                            <field name="price_residual" readonly="1"/>
-                            <field name="sale_id" readonly="1"/>
-                            <field name="order_pos" readonly="1"/>
-                            <field name="purchase_id" readonly="1"/>
-                            <field name="order_use_ids" widget="many2many_tags" readonly="1"/>
-                            <field name="sale_order_use_ids" widget="many2many_tags" readonly="1"/>
-                            <field name="state_app"/>
-                            <field name="phone_number"/>
-                            <field name="notification_id"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="serial"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="program_voucher_id" required="1"/>
+                                <field name="type" readonly="True"/>
+                                <field name="purpose_id" required="1" readonly="True"/>
+                                <field name="derpartment_id" readonly="True"/>
+                                <field name="apply_many_times" readonly="True"/>
+                                <field name="apply_contemp_time" readonly="True"/>
+                                <field name="is_full_price_applies" readonly="True"/>
+                                <field name="brand_id" required="1" readonly="True"/>
+                                <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"
+                                       readonly="True"/>
+                                <field name="using_limit"/>
+                                <field name="product_voucher_id" readonly="True"/>
+                                <field name="status_latest"/>
+                                <field name="value_remain_account_move_id" readonly="True"/>
+                                <field name="value_expired_account_move_id" readonly="True"/>
+                            </group>
+                            <group>
+                                <field name="start_date" required="1"/>
+                                <field name="end_date" required="1"/>
+                                <field name="partner_id"/>
+                                <field name="price" readonly="True"/>
+                                <field name="price_used" readonly="1"/>
+                                <field name="price_residual" readonly="1"/>
+                                <field name="sale_id" readonly="1"/>
+                                <field name="order_pos" readonly="1"/>
+                                <field name="purchase_id" readonly="1"/>
+                                <field name="order_use_ids" widget="many2many_tags" readonly="1"/>
+                                <field name="sale_order_use_ids" widget="many2many_tags" readonly="1"/>
+                                <field name="state_app"/>
+                                <field name="phone_number"/>
+                                <field name="notification_id"/>
+                            </group>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
