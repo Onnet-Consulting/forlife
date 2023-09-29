@@ -114,7 +114,7 @@ with account_move_lines as (select id,
                                  select id, expense_name
                                  from aml_miss_expense_item2) as x2)
 
-select row_number() over (order by aml.move_id desc)                             as stt,
+select row_number() over (order by aml.move_id desc, aml.debit desc)             as stt,
        to_char(aml.date, 'DD/MM/YYYY')                                           as ngay_ct,
        aml.move_name                                                             as so_ct,
        rp.ref                                                                    as ma_dt,
