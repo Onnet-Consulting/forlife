@@ -248,7 +248,12 @@ class InheritPosOrder(models.Model):
                 if not is_reward_line:
                     is_reward_line = p.disc_percent == 100 or p.reward_type in ('code_buy_x_get_y', 'code_buy_x_get_cheapest', 'cart_get_x_free')
                 if is_reward_line and not with_purchase_condition:
-                    with_purchase_condition = p.product_count > 0 or p.order_amount_min > 0
+                    with_purchase_condition = not (
+                         (p.reward_type == 'combo_percent' and p.combo_line_ids and p.disc_percent == 100 and not p.disc_max_amount)
+                         or (p.reward_type == 'code_percent' and p.disc_percent == 100 and not p.disc_max_amount)
+                         or (p.reward_type == 'cart_discount_percent' and not p.order_amount_min and not p.product_count and p.disc_percent == 100 and not p.disc_max_amount and p.reward_product_ids)
+                         or (p.reward_type == 'cart_get_x_free' and not p.product_count and not p.order_amount_min and p.reward_product_ids)
+                        )
         return is_reward_line, with_purchase_condition
 
     # Thêm đối tượng cửa hàng vào dòng Debit của bút toán Invoice Payment
