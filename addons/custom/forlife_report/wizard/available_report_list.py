@@ -276,6 +276,5 @@ AVAILABLE_REPORT = {
         'module': 'Kế toán',
         'name': 'Bảng kê Doanh thu',
         'reportTemplate': 'ReportNum47Template',
-        'reportPager': True,
     },
 }

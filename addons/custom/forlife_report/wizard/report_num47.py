@@ -6,7 +6,7 @@ import calendar
 
 class ReportNum47(models.TransientModel):
     _name = 'report.num47'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'export.excel.client']
     _description = 'Bảng kê Doanh thu'
 
     @api.model
