@@ -39,7 +39,7 @@ select
     )                                                                   as store_name,
     hd.name                                                             as department,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')    as date,
-    po.pos_reference                                                    as invoice_num,
+    po.name                                                    as invoice_num,
     rp.name                                                             as customer_name,
     vv.name                                                             as voucher,
     pv.name                                                             as program_name,
