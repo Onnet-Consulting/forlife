@@ -19,3 +19,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__delivery_status
 msgid "Delivery Status"
 msgstr "Trạng thái giao hàng"
+
+#. module: sale_stock
+#: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__full
+msgid "Fully Delivered"
+msgstr "Hoàn thành"
+
+#. module: sale_stock
+#: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__pending
+msgid "Not Delivered"
+msgstr "Chưa giao hàng"
+
+#. module: sale_stock
+#: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__partial
+msgid "Partially Delivered"
+msgstr "Giao một phần"

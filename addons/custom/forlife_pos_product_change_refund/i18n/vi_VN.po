@@ -92,7 +92,7 @@ msgstr ""
 #. module: forlife_pos_product_change_refund
 #: model:ir.actions.act_window,name:forlife_pos_product_change_refund.action_warning_popup
 msgid "Action Warning Popup"
-msgstr "Hành độn cảnh báo"
+msgstr "Hành động cảnh báo"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_defective__active
@@ -1722,7 +1722,7 @@ msgstr ""
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.ui.menu,name:forlife_pos_product_change_refund.product_defective_action_pack_menu
-msgid "Tổng hơp hàng lỗi"
+msgid "Tổng hợp hàng lỗi"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
