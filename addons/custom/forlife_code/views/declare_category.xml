@@ -1,35 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="declare_category_form" model="ir.ui.view">
-        <field name="name">Nhóm mã CT</field>
-        <field name="model">declare.category</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="code"/>
-                            <field name="name"/>
-                        </group>
-                        <group>
-                            <field name="description"/>
-                        </group>
-                    </group>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="activity_ids" widget="mail_activity"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
-            </form>
-        </field>
-    </record>
-
     <record id="declare_category_tree" model="ir.ui.view">
         <field name="name">Nhóm mã CT</field>
         <field name="model">declare.category</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="top" default_order="code" >
                 <field name="code" readonly="1"/>
                 <field name="name" readonly="1"/>
                 <field name="description" readonly="1"/>
@@ -42,7 +17,7 @@
     <record id="declare_category_action" model="ir.actions.act_window">
         <field name="name">Nhóm mã CT</field>
         <field name="res_model">declare.category</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
     </record>
 
     <menuitem id="config_declare_menu" parent="forlife_base.menu_master_data_root" sequence="20" name="Quy tắc mã CT"/>
