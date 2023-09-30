@@ -42,8 +42,8 @@ class PosSession(models.Model):
         payment_method_receivable_line = result.filtered(
             lambda l: l.payment_id.pos_payment_method_id.id == payment_method.id and not l.partner_id)
         if payment_method_receivable_line:
-            if self.config_id.accounting_voucher_partner_id and payment_method_receivable_line.payment_id.pos_payment_method_id.is_voucher:
-                payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = self.config_id.accounting_voucher_partner_id
+            if self.company_id.accounting_voucher_partner_id and payment_method_receivable_line.payment_id.pos_payment_method_id.is_voucher:
+                payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = self.company_id.accounting_voucher_partner_id
             elif store_partner:
                 payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = store_partner
         return result
