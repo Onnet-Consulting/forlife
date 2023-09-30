@@ -61,7 +61,7 @@ class PurchaseOrder(models.Model):
             ('cancel', 'Cancel'),
             ('close', 'Close'),
         ])
-    select_type_inv = fields.Selection(copy=False, string="Loại hóa đơn", required=True,
+    select_type_inv = fields.Selection(copy=False, string="Loại hóa đơn", default='normal', required=True,
         selection=[
             ('expense', 'Hóa đơn chi phí mua hàng'),
             ('labor', 'Hóa đơn chi phí nhân công'),
