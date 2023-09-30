@@ -69,8 +69,8 @@
                             <field name="request_date"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
                             <field name="date_planned"  required="1" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
                             <field name="company_id" readonly="1"/>
-                            <field name="location_id" domain="[('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="location_dest_id" domain="[('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_id" domain="[('virtual_location_inter_company', '=', False),('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_dest_id" domain="[('virtual_location_inter_company', '=', False),('usage', '=', 'internal'),('company_id', '=', company_id)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>

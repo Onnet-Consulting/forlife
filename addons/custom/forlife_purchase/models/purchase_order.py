@@ -61,7 +61,7 @@ class PurchaseOrder(models.Model):
             ('cancel', 'Cancel'),
             ('close', 'Close'),
         ])
-    select_type_inv = fields.Selection(copy=False, string="Loại hóa đơn", required=True,
+    select_type_inv = fields.Selection(copy=False, string="Loại hóa đơn", default='normal', required=True,
         selection=[
             ('expense', 'Hóa đơn chi phí mua hàng'),
             ('labor', 'Hóa đơn chi phí nhân công'),
@@ -623,8 +623,8 @@ class PurchaseOrder(models.Model):
                     'show_operations': True
                 })
                 record.write({'custom_state': 'approved'})
-                if record.is_return:
-                    self.auto_return_with_inter_company()
+                # if record.is_return:
+                #     self.auto_return_with_inter_company()
             else:
                 if not record.is_return:
                     record.action_approve_inter_company()
@@ -652,7 +652,7 @@ class PurchaseOrder(models.Model):
                         'inventory_status': 'done',
                     })
                     invoice = self.action_create_invoice()
-                    invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
+                    invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'IC'})
                     invoice.action_post()
             else:
                 raise UserError('Phiếu nhập kho chưa được hoàn thành, vui lòng kiểm tra lại!')
@@ -663,7 +663,7 @@ class PurchaseOrder(models.Model):
                 'inventory_status': 'done',
             })
             invoice = self.action_create_invoice()
-            invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'TC'})
+            invoice.filtered(lambda f: not f.x_root and f.company_id.code == '1300').write({'x_root': 'IC'})
             invoice.action_post()
 
         sale_id = self.sudo()._create_sale_order_another_company()
@@ -1467,8 +1467,10 @@ class PurchaseOrder(models.Model):
         # Invoice values.
         invoice_vals = self._prepare_invoice_purchases()
         purchase_type = self[0].purchase_type
+        journal_code = ''
         if select_type_inv in ('expense', 'labor'):
             purchase_type = 'service'
+            journal_code = 'EX02'
         invoice_vals.update({
             'purchase_type': purchase_type,
             'invoice_date': datetime.now(),
@@ -1476,6 +1478,10 @@ class PurchaseOrder(models.Model):
             'currency_id': currency_id.id if currency_id else self[0].currency_id.id,
             'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
         })
+        if journal_code:
+            journal_id = self.env['account.journal'].search([('code','=',journal_code),('company_id','=',self.company_id.id)])
+            if journal_id:
+                invoice_vals['journal_id'] = journal_id.id
         # Invoice line values (keep only necessary sections).
         if select_type_inv == 'normal':
             if 'product' in self.mapped('purchase_type'):
