@@ -112,7 +112,11 @@ class StockPicking(models.Model):
         return po
 
     def create_order_inter_company(self):
-        company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
+        location_mapping = self.env['stock.location.mapping'].search([
+            ('location_id', '=', self.location_dest_id.id),
+            ('location_id.virtual_location_inter_company', '=', True)
+        ], limit=1)
+        company_dest_id = location_mapping.sudo().location_map_id.company_id
         purchase_model = self.env['purchase.order']
         po_inter_company = purchase_model.with_company(company_dest_id).search(
             [('create_from_picking', '=', self.id)], limit=1)
