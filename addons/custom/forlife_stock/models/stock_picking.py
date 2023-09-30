@@ -102,7 +102,11 @@ class StockPicking(models.Model):
                 'purchase_quantity': line.quantity_done,
                 'product_qty': line.quantity_done * (data[0].amount_conversion or line.quantity_change),
                 'taxes_id': [(6, 0, self.env['account.tax'].with_company(company_dest_id).search([
-                    ('code', 'in', line.purchase_line_id.taxes_id.mapped('code')), ('company_id', '=', company_dest_id.id)]).ids)],
+                    ('code', 'in', ["V10","V05","V08"]),
+                    ('company_id', '=', company_dest_id.id),
+                    ('type_tax_use', '=', 'purchase'),
+                    ('amount', 'in', line.product_id.taxes_id.mapped('amount')),
+                ]).ids)],
                 'vendor_price': data[0].price,
                 'exchange_quantity': data[0].amount_conversion,
                 'location_id': location_mapping.location_map_id.id,
