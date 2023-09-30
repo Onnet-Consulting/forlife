@@ -99,7 +99,7 @@
         <field name="name">Quy tắc mã CT</field>
         <field name="model">declare.code</field>
         <field name="arch" type="xml">
-            <tree>
+            <search>
                 <field name="name"/>
                 <field name="prefix_1"/>
                 <field name="category_id"/>
@@ -107,7 +107,7 @@
                 <group expand="0" string="Group By">
                     <filter name="group_by_company" string="Công ty" context="{'group_by': 'company_id'}"/>
                 </group>
-            </tree>
+            </search>
         </field>
     </record>
 
