@@ -14,8 +14,8 @@ class StockTransfer(models.Model):
     _order = "write_date desc"
 
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
-    location_id = fields.Many2one('stock.location', string="Whs From", required=1, domain=[('virtual_location_ch', '=', False)])
-    location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1, domain=[('virtual_location_ch', '=', False)])
+    location_id = fields.Many2one('stock.location', string="Whs From", required=1)
+    location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1)
     work_from = fields.Many2one('forlife.production', string="LSX From",
                                 domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     work_to = fields.Many2one('forlife.production', string="LSX To",

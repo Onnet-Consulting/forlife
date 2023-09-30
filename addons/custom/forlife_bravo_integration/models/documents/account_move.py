@@ -131,12 +131,10 @@ class AccountMove(models.Model):
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
                 lambda m: len(m.line_ids.mapped('purchase_line_id')) > 0 and len(m.vendor_back_ids) > 0)
-        # FIXME: switch ^CD -> ^972
         if journal_data == "purchase_product_cost_picking":
             initial_records = self.env['account.move']
             for move in self:
-                # if not re.match('^972', move.name)
-                if not re.match('^CD', move.name):
+                if not re.match('^972', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
                 if not stock_picking or stock_picking.x_is_check_return:
@@ -144,12 +142,10 @@ class AccountMove(models.Model):
                 initial_records |= move
             return initial_records
 
-        # FIXME: switch ^CD -> ^972
         if journal_data == "purchase_product_cost_picking_reversed":
             initial_records = self.env['account.move']
             for move in self:
-                # if not re.match('^972', move.name)
-                if not re.match('^CD', move.name):
+                if not re.match('^972', move.name):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
                 if not stock_picking or not stock_picking.x_is_check_return:
