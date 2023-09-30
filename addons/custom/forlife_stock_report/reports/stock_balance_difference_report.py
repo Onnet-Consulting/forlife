@@ -3,6 +3,7 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from ..tools import convert_to_utc_datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.exceptions import ValidationError
 
 
 class StockBalanceDifferenceReport(models.TransientModel):
@@ -85,6 +86,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
                 ''',
                 params=(lang, company_id, company_id, account_id, period_start, period_end)
             )
+            return self._cr.dictfetchall()
         else:
             self._cr.execute(
                 query='''
@@ -95,12 +97,42 @@ class StockBalanceDifferenceReport(models.TransientModel):
                         (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
                         max(aa.code) account_code, 
                         sum(aml.debit) debit, 
-                        sum(aml.credit) credit, 
-                        sum(aml.debit) - sum(aml.credit) difference,
-                        CASE WHEN sum(aml.debit) != 0 THEN (sum(aml.debit) - sum(aml.credit)) * 100/sum(aml.debit) ELSE 0 END difference_percent,
+                        sum(aml.credit) credit,
+                        pol.order_id purchase_id
+                    FROM account_move_line aml
+                    JOIN account_move am on aml.move_id = am.id
+                    JOIN stock_move sm on sm.id = am.stock_move_id 
+                    JOIN purchase_order_line pol on sm.purchase_line_id = pol.id
+                    JOIN product_product pp on pp.id = aml.product_id 
+                    JOIN product_template pt on pt.id = pp.product_tmpl_id
+                    JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
+                    JOIN account_account aa on 'account.account,' || aa.id = ip.value_reference
+                    WHERE am.company_id = %s 
+                        AND aml.account_id = %s 
+                        AND aml.product_id IS NOT NULL
+                        AND pol.order_id in %s
+                        AND am.state = 'posted'
+                    GROUP BY pp.id, aa.id, pol.order_id
+                    ORDER BY pol.order_id, pp.id
+                ''',
+                params=(lang, company_id, company_id, account_id, tuple(self.purchase_order_ids.ids))
+            )
+
+            inventory_datas = self._cr.dictfetchall()
+
+            self._cr.execute(
+                query='''
+                    SELECT 
+                        pp.id product_id, 
+                        aa.id account_id,
+                        max(pp.default_code) product_code, 
+                        (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
+                        max(aa.code) account_code, 
+                        sum(aml.debit) debit, 
+                        sum(aml.credit) credit,
                         pol.order_id purchase_id
                     FROM account_move_line aml 
-                    LEFT JOIN purchase_order_line pol on aml.purchase_line_id = pol.id
+                    JOIN purchase_order_line pol on aml.purchase_line_id = pol.id
                     JOIN product_product pp on pp.id = aml.product_id 
                     JOIN product_template pt on pt.id = pp.product_tmpl_id
                     JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
@@ -108,14 +140,32 @@ class StockBalanceDifferenceReport(models.TransientModel):
                     WHERE aml.company_id = %s 
                         AND aml.account_id = %s 
                         AND aml.product_id IS NOT NULL 
-                        AND aml.date BETWEEN %s AND %s
-                        AND aml.purchase_line_id in %s
+                        AND pol.order_id in %s
+                        AND aml.parent_state = 'posted'
                     GROUP BY pp.id, aa.id, pol.order_id
-                    ORDER BY pp.id
+                    ORDER BY pol.order_id, pp.id
                 ''',
-                params=(lang, company_id, company_id, account_id, period_start, period_end, tuple(self.purchase_order_ids.order_line.ids))
+                params=(lang, company_id, company_id, account_id, tuple(self.purchase_order_ids.ids))
             )
-        return self._cr.dictfetchall()
+
+            invoice_datas = self._cr.dictfetchall()
+
+            data = []
+            for inventory_line in inventory_datas:
+                vals = inventory_line
+                debit = 0
+                for invoice_line in invoice_datas:
+                    if invoice_line.get('purchase_id') == vals.get('purchase_id') and invoice_line.get('purchase_id'):
+                        debit += invoice_line.get('debit')
+                if vals.get('credit') != debit:
+                    difference = debit - vals.get('credit')
+                    vals.update({
+                        'debit': debit,
+                        'difference': difference,
+                        'difference_percent': difference * 100/debit if debit != 0 else 0,
+                    })
+                    data.append(vals)
+            return data
 
     def create_account_move(self):
         self.generate_details()
@@ -151,6 +201,8 @@ class StockBalanceDifferenceReport(models.TransientModel):
             ).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         )
         results = self._generate_details(period_start, period_end)
+        if not results:
+            raise ValidationError("Không có bút toán chênh lệch")
         self.line_ids = None
         self.account_move_ids = None
         self.line_ids = [(0, 0, line) for line in results if int(line['difference']) != 0]
