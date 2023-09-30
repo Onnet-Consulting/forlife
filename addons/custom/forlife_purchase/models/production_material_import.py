@@ -35,6 +35,8 @@ class ForlifeProduction(models.Model):
                 if (material.product_finish_id.id in product.mapped('product_id.id') or not material.product_finish_id) and (
                         not material.size and not material.color):
                     bom_material_values.update(common_data)
+                elif (material.size and material.size == product.size.name and material.color and material.color == product.color.name):
+                    bom_material_values.update(common_data)
                 elif (material.size == product.size.name or material.color == product.color.name or (not material.size and not material.color)) and not material.product_finish_id:
                     bom_material_values.update(common_data)
 
