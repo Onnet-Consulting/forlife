@@ -73,6 +73,11 @@ class StockPicking(models.Model):
                 'sale_line_ids': [(4, line.sale_line_id.id)]
             }
             invoice_line_ids.append((0, 0, invoice_line))
+        if sale_order.x_sale_chanel == 'online':
+            code = 'BI02'
+        else:
+            code = 'BI01'
+        journal_id = self.env['account.journal'].search([('code','=',code),('company_id','=',sale_order.company_id.id)])
         vals = {
             'partner_id': self[0].partner_id.id,
             'move_type': 'out_refund',
@@ -82,6 +87,8 @@ class StockPicking(models.Model):
         }
         if line.sale_line_id.order_id.source_record:
             vals['company_id'] = line.sale_line_id.order_id.company_id.id
+        if journal_id:
+            vals['journal_id'] = journal_id.id
 
         invoice_id = self.env['account.move'].sudo().create(vals)
         for line in invoice_id.invoice_line_ids:

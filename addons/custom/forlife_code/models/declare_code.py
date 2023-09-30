@@ -49,7 +49,7 @@ class DeclareCode(models.Model):
     select_prefix_5 = fields.Selection([('domain', 'Miền'),
                                         ('sequence', 'Số tự tăng'),
                                         ('location_src', 'Mã kho nguồn'),
-                                        ('location_des', 'Mã kho đích')],string='(4) - Lựa chọn tiền tố', default='sequence', tracking=True)
+                                        ('location_des', 'Mã kho đích')],string='(5) - Lựa chọn tiền tố', default='sequence', tracking=True)
     prefix_5 = fields.Char('(5) - Mã, Miền',tracking=True)
     prefix_sequence_5 = fields.Integer('(5) - Độ dài',tracking=True)
 
