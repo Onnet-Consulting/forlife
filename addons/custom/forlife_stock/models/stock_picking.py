@@ -50,19 +50,23 @@ class StockPicking(models.Model):
 
     def compute_check_inter_company(self):
         for rec in self:
-            location_inter_company = rec.location_dest_id.virtual_location_ch
-            company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
-            po_inter_company = self.env['purchase.order'].with_company(company_dest_id).search([('create_from_picking', '=', rec.id)], limit=1)
-            if location_inter_company and not po_inter_company and rec.state == 'done':
+            location_inter_company = rec.location_dest_id.virtual_location_inter_company
+            po_inter_company = self.env['purchase.order'].sudo().search([('create_from_picking', '=', rec.id)], limit=1)
+            if location_inter_company and not po_inter_company and rec.state == 'done' and not rec.create_from_po_inter_company:
                 rec.check_inter_company = True
             else:
                 rec.check_inter_company = False
 
     def prepare_po_values(self):
-        company_id = self.env['res.company'].search([('code', '=', '1300')], limit=1)
-        company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
+        location_mapping = self.env['stock.location.mapping'].search([
+            ('location_id', '=', self.location_dest_id.id),
+            ('location_id.virtual_location_inter_company', '=', True)
+        ], limit=1)
+        if not location_mapping:
+            raise ValidationError(_('Chưa cấu hình kho liên công ty không thể tạo!.'))
+        company_id = location_mapping.sudo().location_id.company_id
+        company_dest_id = location_mapping.sudo().location_map_id.company_id
         occasion_code_id = self.move_line_ids.mapped('occasion_code_id')
-        location_mapping = self.env['stock.location.mapping'].search([('location_id', '=', self.location_dest_id.id)], limit=1)
         picking_type = self.env['purchase.order'].with_context({'company_id': company_dest_id.id}).with_company(company_dest_id)._default_picking_type()
         po = {
             'partner_id': company_id.partner_id.id,

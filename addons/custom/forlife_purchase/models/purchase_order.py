@@ -623,8 +623,8 @@ class PurchaseOrder(models.Model):
                     'show_operations': True
                 })
                 record.write({'custom_state': 'approved'})
-                if record.is_return:
-                    self.auto_return_with_inter_company()
+                # if record.is_return:
+                #     self.auto_return_with_inter_company()
             else:
                 if not record.is_return:
                     record.action_approve_inter_company()
