@@ -89,7 +89,6 @@ class StockPicking(models.Model):
                     ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
                     ('product_id', '=', line.product_id.id if line.product_id else False),
                     ('partner_id', '=', company_id.partner_id.id),
-                    ('currency_id', '=', line.purchase_line_id.currency_id.id),
                     ('product_uom', '=', line.product_uom.id),
                     ('min_qty', '<=', line.quantity_done),
                     ('date_start', '<=', datetime.now()),
