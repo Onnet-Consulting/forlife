@@ -4,7 +4,7 @@ class ReasonRefuse(models.TransientModel):
     _name = 'reason.refuse.product'
     _description = 'Reason Resufe for Product Defective'
 
-    name = fields.Text('Lí do')
+    name = fields.Text('Lí do', required=True)
 
     def action_confirm(self):
         context = self.env.context
