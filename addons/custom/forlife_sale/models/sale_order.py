@@ -482,6 +482,17 @@ class SaleOrder(models.Model):
             'views': [(False, 'form')],
             'target': 'new'
         }
+    
+    def _prepare_invoice(self):
+        vals = super()._prepare_invoice()
+        if self.x_sale_chanel == 'online':
+            code = 'BI02'
+        else:
+            code = 'BI01'
+        journal_id = self.env['account.journal'].search([('code','=',code),('company_id','=',self.company_id.id)])
+        if journal_id:
+            vals['journal_id'] = journal_id.id
+        return vals
 
 
 class SaleOrderLine(models.Model):

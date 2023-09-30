@@ -87,8 +87,26 @@
                 <field name="company_id"/>
                 <field name="select_prefix"/>
                 <field name="draft_prefix"/>
+                <field name="is_journal"/>
+                <field name="journal_id"/>
                 <field name="create_uid"/>
                 <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="declare_code_search_view" model="ir.ui.view">
+        <field name="name">Quy tắc mã CT</field>
+        <field name="model">declare.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="prefix_1"/>
+                <field name="category_id"/>
+                <field name="draft_prefix"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_company" string="Công ty" context="{'group_by': 'company_id'}"/>
+                </group>
             </tree>
         </field>
     </record>
@@ -97,6 +115,8 @@
         <field name="name">Quy tắc mã CT</field>
         <field name="res_model">declare.code</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="declare_code_search_view"/>
+         <field name="context">{'search_default_group_by_company': 1}</field>
     </record>
 
     <menuitem id="declare_code_menu" parent="forlife_code.config_declare_menu" action="declare_code_action" sequence="6" name="Quy tắc mã CT"/>
