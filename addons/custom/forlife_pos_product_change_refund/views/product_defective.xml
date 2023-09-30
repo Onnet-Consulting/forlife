@@ -79,6 +79,7 @@
             <field name="model">product.defective</field>
             <field name="arch" type="xml">
                 <search>
+                    <field name="pack_id"/>
                     <field name="product_id"/>
                     <separator/>
                     <filter name="active" string="Đã lưu" domain="[('active', '=', False)]"/>

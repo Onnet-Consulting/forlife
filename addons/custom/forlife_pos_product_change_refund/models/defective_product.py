@@ -30,7 +30,7 @@ class ProductDefective(models.Model):
         ('cancel','Cancel')
     ], string='Trạng thái', default='new', tracking=True)
     is_already_in_use = fields.Boolean(default=False)
-    program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá")
+    program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá (CT giá)")
     from_date = fields.Datetime(readonly=True, string='Hiệu lực', related='program_pricelist_item_id.program_id.campaign_id.from_date')
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
     reason_refuse_product = fields.Char('Lí do từ chối', readonly=True)
@@ -109,7 +109,7 @@ class ProductDefective(models.Model):
             except (ValidationError, UserError) as e:
                 except_records.append((request, e))
         if except_records:
-            message = (_('Have exception while sending the request approve: \n')
+            message = (_('Lỗi xảy ra khi gửi yêu cầu duyệt: \n')
                        + '\n'.join([('- ' + str(e)) for rec, e in except_records]))
             action = self.env['ir.actions.actions']._for_xml_id('forlife_pos_product_change_refund.action_warning_popup')
             action['context'] = {
@@ -130,13 +130,13 @@ class ProductDefective(models.Model):
 
     def action_approves(self):
         except_records = []
-        for request in self.filtered(lambda r: r.state == 'waiting approve'):
+        for request in self:
             try:
                 request.action_approve()
             except (ValidationError, UserError) as e:
                 except_records.append((request, e))
         if except_records:
-            message = (_('Have exception while approving the request: \n')
+            message = (_('Lỗi xảy ra khi duyệt: \n')
                        + '\n'.join([(f'- {rec.display_name}: ' + str(e)) for rec, e in except_records]))
             action = self.env['ir.actions.actions']._for_xml_id('forlife_pos_product_change_refund.action_warning_popup')
             action['context'] = {

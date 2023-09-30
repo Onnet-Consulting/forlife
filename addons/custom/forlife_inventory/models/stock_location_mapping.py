@@ -6,8 +6,10 @@ class StockLocationMapping(models.Model):
     _description = 'Cấu hình vị trí tương ứng các công ty'
     _rec_names_search = ['location_id', 'location_map_id']
 
-    location_id = fields.Many2one('stock.location', 'Địa điểm (Công ty sản xuất)', domain=[('company_id.code', '=', '1300')])
-    location_map_id = fields.Many2one('stock.location', 'Địa điểm tương ứng(Công ty bán lẻ)', compute='_compute_location_mapping', store=True)
+    company_location_id = fields.Many2one('res.company', string='Công ty xuất bán')
+    location_id = fields.Many2one('stock.location', 'Địa điểm xuất bán', domain="[('company_id', '=', company_location_id)]")
+    company_location_map_id = fields.Many2one('res.company', string='Công ty nhập mua')
+    location_map_id = fields.Many2one('stock.location', 'Địa điểm nhập mua', compute='_compute_location_mapping', store=True)
     inter_company = fields.Boolean(string='Địa điểm ảo liên công ty', default=False)
 
     def name_get(self):
@@ -20,12 +22,11 @@ class StockLocationMapping(models.Model):
             if location_exits:
                 raise ValidationError(_('Đã tồn tại liên kết này !'))
 
-    @api.depends('location_id')
+    @api.depends('company_location_map_id')
     def _compute_location_mapping(self):
         for rec in self:
             if rec.location_id.code:
-                company = self.env['res.company'].search([('code','=','1400')])
-                location_map_id = self.env['stock.location'].sudo().search([('code','=',rec.location_id.code),('company_id','=', company.id)], limit=1)
+                location_map_id = self.env['stock.location'].sudo().search([('code','=',rec.location_id.code),('company_id','=', rec.company_location_map_id.id)], limit=1)
                 if location_map_id:
                     rec.location_map_id = location_map_id.id
                 else:
