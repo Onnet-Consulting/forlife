@@ -77,7 +77,7 @@ export class CartPromotionButton extends PosComponent {
         console.log('clickButton pos:', this.env.pos);
         const order = this.env.pos.get_order();
         // Reset Cart Program
-        // order._resetCartPromotionPrograms();
+        order._resetCartPromotionPrograms();
         let orderLines = order.get_orderlines_to_check();
         let programs = order.verifyCardProgramOnOrder(orderLines);
         for (let programOption of programs) {

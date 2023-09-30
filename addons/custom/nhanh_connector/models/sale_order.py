@@ -687,6 +687,7 @@ class SaleOrderNhanh(models.Model):
     def create_stock_picking_so_from_nhanh_with_return_so(self):
         so_id = self.x_origin
         picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done' and p.picking_type_id.sequence_code != 'PICK')
+        picking_return = so_id.picking_ids.filtered(lambda p: p.state == 'done' and p.picking_type_id.sequence_code == 'PICK')
         for picking_id in picking_ids:
             ctx = {
                 'active_id':picking_id.id, 
@@ -697,6 +698,8 @@ class SaleOrderNhanh(models.Model):
                 'allowed_company_ids': [picking_id.company_id.id],
                 'validate_analytic': True,
                 'x_return': True,
+                'location_id': picking_return.location_id,
+                'default_location_id': picking_return.location_id,
             }
 
             stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))

@@ -22,7 +22,7 @@
             </xpath>
 
             <field name="next_inventory_date" position="after">
-                <field name="virtual_location_ch"/>
+                <field name="virtual_location_inter_company"/>
             </field>
         </field>
     </record>
