@@ -314,7 +314,7 @@ msgstr "Được tạo bởi"
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_reason_refuse_product__create_date
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_warning_popup__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ngày tạo"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__currency_id

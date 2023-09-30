@@ -73,13 +73,17 @@ class ProductDefectivePack(models.Model):
     def open_scan(self):
         view_id_form = self.env.ref('forlife_pos_product_change_refund.product_defective_scan_form_view')
         ctx = {'active_id': self.id}
-        # self.env['product.defective.scan']
+        record = self.env['product.defective.scan'].create({
+            'pack_id': self.id,
+
+        })
         return {
             'name': _('Thêm sản phẩm lỗi'),
             'res_model': 'product.defective.scan',
             'type': 'ir.actions.act_window',
             'views': [(view_id_form.id, 'form')],
             'target': 'new',
+            'res_id': record.id,
             'view_mode': 'form',
             'context': ctx,
         }
