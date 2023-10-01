@@ -130,8 +130,9 @@ class PurchaseOrder(models.Model):
             # Invoice values.
             journal_code = ''
             if self.select_type_inv in ('expense', 'labor'):
-                purchase_type = 'service'
-                journal_code = 'EX02'
+                journal_code = 'EX01'
+                if self.select_type_inv == 'expense':
+                    journal_code = 'EX02'
             invoice_vals = self._prepare_invoice()
             invoice_vals.update({
                 'purchase_type': self.purchase_type,
