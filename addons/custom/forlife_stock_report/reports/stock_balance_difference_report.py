@@ -54,7 +54,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
                 'product_id': line.product_id,
                 'company_id': self.env.company.id
             })]
-        } for line in self.line_ids if line.difference != 0])
+        } for line in self.line_ids.filtered(lambda x: x.account_id) if line.difference != 0])
         moves._post()
 
     def _generate_details(self, period_start, period_end):
@@ -179,7 +179,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
             'credit_account_id': self.account_id.id if line.difference > 0 else line.account_id,
             'credit_account_code': self.account_id.code if line.difference > 0 else line.account_code,
             'amount_total': line.difference,
-        } for line in self.line_ids]).ids)]
+        } for line in self.line_ids.filtered(lambda x: x.account_id)]).ids)]
 
     def generate_details(self):
         current_tz = pytz.timezone(self._context.get('tz'))
@@ -205,14 +205,75 @@ class StockBalanceDifferenceReport(models.TransientModel):
             raise ValidationError("Không có bút toán chênh lệch")
         self.line_ids = None
         self.account_move_ids = None
-        self.line_ids = [(0, 0, line) for line in results if int(line['difference']) != 0]
+        if not self.purchase_order_ids:
+            self.line_ids = [(0, 0, line) for line in results if int(line['difference']) != 0]
+        else:
+            po_names = { purchase.id: purchase.name for purchase in self.purchase_order_ids }
+            line_vals = []
+            total_debit = 0
+            total_credit = 0
+            purchase_id = None
+            index = 1
+            for line in results:
+                if not purchase_id:
+                    purchase_id = line.get('purchase_id')
+                    total_debit += line.get('debit')
+                    total_credit += line.get('credit')
+                    line_vals.append((0, 0, line))
+                    if index == len(results):
+                        # Thêm line tổng
+                        line_vals.append((0, 0, {
+                            'product_name': 'Cong ' + po_names.get(purchase_id),
+                            'debit': total_debit,
+                            'credit': total_credit,
+                            'difference': total_debit - total_credit,
+                        }))
+                else:
+                    if line.get('purchase_id') == purchase_id:
+                        total_debit += line.get('debit')
+                        total_credit += line.get('credit')
+                        line_vals.append((0, 0, line))
+
+                        if index == len(results):
+                            # Thêm line tổng
+                            line_vals.append((0, 0, {
+                                'product_name': 'Cong ' + po_names.get(purchase_id),
+                                'debit': total_debit,
+                                'credit': total_credit,
+                                'difference': total_debit - total_credit,
+                            }))
+                    else:
+                        # Thêm line tổng
+                        line_vals.append((0, 0, {
+                            'product_name': 'Cong ' +  po_names.get(purchase_id),
+                            'debit': total_debit,
+                            'credit': total_credit,
+                            'difference': total_debit - total_credit,
+                        }))
+
+                        # Reset lại giá trị tổng và PO
+                        line_vals.append((0, 0, line))
+                        if index == len(results):
+                            # Thêm line tổng
+                            line_vals.append((0, 0, {
+                                'product_name': 'Cong ' +  po_names.get(line.get('purchase_id')),
+                                'debit': line.get('debit'),
+                                'credit': line.get('credit'),
+                                'difference': line.get('debit') - line.get('credit'),
+                            }))
+                        else:
+                            purchase_id = line.get('purchase_id')
+                            total_debit = line.get('debit')
+                            total_credit = line.get('credit')
+                index += 1
+            self.line_ids = line_vals
 
 
 class StockBalanceDifferenceReportLine(models.TransientModel):
     _name = 'stock.balance.difference.report.line'
     _description = 'Stock Balance Difference Report Line'
 
-    product_id = fields.Integer(string='Product ID', required=True)
+    product_id = fields.Integer(string='Product ID')
     product_code = fields.Char(string='Product Code')
     product_name = fields.Char(string='Product')
     account_id = fields.Integer(string='Stock Valuation Account ID')
