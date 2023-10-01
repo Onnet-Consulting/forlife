@@ -64,7 +64,7 @@ class ProductDefectivePack(models.Model):
         selected_lines.action_refuse()
 
     def action_approves(self):
-        return self.line_ids.action_approves()
+        return self.line_ids.filtered(lambda l: l.state not in ('cancel', 'refuse')).action_approves()
 
     def action_cancel(self):
         selected_lines = self.line_ids.filtered(lambda l: l.selected)
