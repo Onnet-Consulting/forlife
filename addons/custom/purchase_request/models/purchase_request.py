@@ -275,6 +275,7 @@ class PurchaseRequest(models.Model):
                     'location_id': self.location_id.id if len(self) == 1 else '',
                     'date_planned': self[0].date_planned if len(self) == 1 else False,
                     'currency_id': lines[0].currency_id.id if lines[0].currency_id else self[0].env.company.currency_id.id,
+                    'select_type_inv': 'normal',
                 }
                 purchase_order |= purchase_order.with_context(create_from_pr=True).create(po_data)
         return {

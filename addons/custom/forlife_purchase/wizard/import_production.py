@@ -175,7 +175,13 @@ class ImportProductionFromExcel(models.TransientModel):
                     }
                     if (m[1].strip() == order[11] or m[1] == '') and (m[3].strip() == '' and m[4].strip() == ''):
                         list_material.append((0, 0, common_data))
-                    elif (m[3].strip() in product_variant or m[4].strip() in product_variant or (not m[3] and not m[4]) and not m[1]):
+                    elif(m[3] and m[3].strip() in product_variant and m[4] and m[4].strip() in product_variant):
+                        list_material.append((0, 0, common_data))
+                    elif (m[3].strip() in product_variant) and (not m[4] or m[4].strip() == ''):
+                        list_material.append((0, 0, common_data))
+                    elif (m[4].strip() in product_variant) and (not m[3] or m[3].strip() == ''):
+                        list_material.append((0, 0, common_data))
+                    elif (not m[3] and not m[4]) and not m[1]:
                         list_material.append((0, 0, common_data))
 
                     create_material_vals.append((0, 0, {

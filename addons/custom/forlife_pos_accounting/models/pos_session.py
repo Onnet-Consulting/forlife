@@ -41,8 +41,11 @@ class PosSession(models.Model):
         store_partner = self.config_id.store_id.contact_id
         payment_method_receivable_line = result.filtered(
             lambda l: l.payment_id.pos_payment_method_id.id == payment_method.id and not l.partner_id)
-        if store_partner and payment_method_receivable_line:
-            payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = store_partner
+        if payment_method_receivable_line:
+            if self.company_id.accounting_voucher_partner_id and payment_method_receivable_line.payment_id.pos_payment_method_id.is_voucher:
+                payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = self.company_id.accounting_voucher_partner_id
+            elif store_partner:
+                payment_method_receivable_line.payment_id.move_id.line_ids.partner_id = store_partner
         return result
 
     # 2. Trường hợp tách các giao dịch thanh toán ngân hàng

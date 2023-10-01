@@ -176,7 +176,7 @@ class ProgramVoucher(models.Model):
                                     'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
                                                         self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
                                 })
-                            self.env['voucher.voucher'].create()
+                            self.env['voucher.voucher'].create(vals)
                     self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
                 if not rec.partner_ids:
                     for i in range(rec.count):
@@ -188,15 +188,13 @@ class ProgramVoucher(models.Model):
                             'price_used': 0,
                             'price_residual': rec.price - 0,
                             'end_date': self.end_date,
-                            'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
-                                                self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
                         }
                         if self.type == 'v':
                             vals.update({
                                 'serial': '%s%s' % (self.brand_id == 'TKL' and '1' or '2',
                                                     self.env['ir.sequence'].next_by_code('voucher.voucher.serial'))
                             })
-                        self.env['voucher.voucher'].create()
+                        self.env['voucher.voucher'].create(vals)
                     self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))

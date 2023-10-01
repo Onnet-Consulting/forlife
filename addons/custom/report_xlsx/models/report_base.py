@@ -11,17 +11,27 @@ class ReportBase(models.AbstractModel):
     _description = 'Report Base'
 
     def print_xlsx(self):
-        filename = self.get_filename()
+        filename = self.get_filename_standardized(self.get_filename())
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename or self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename, self._name, self.id, self._context.get('allowed_company_ids', [])),
             'target': 'current'
 
         }
 
+    @api.model
+    def get_filename_standardized(self, filename):
+        ky_tu_db_excel = '\\/:*?"<>|.'
+        ky_tu_db_url = '%!#$&\'()+,'
+        for c in ky_tu_db_url:
+            filename = filename.replace(c, '')
+        for c in ky_tu_db_excel:
+            filename = filename.replace(c, '_')
+        return filename
+
     def get_filename(self):
-        return self._description
+        return self._description or self._name
 
     def view_report(self):
         ...

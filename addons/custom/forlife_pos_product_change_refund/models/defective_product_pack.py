@@ -9,10 +9,11 @@ class ProductDefectivePack(models.Model):
     _order = 'create_date desc'
     _description = 'Product Defective Pack'
     _rec_name = 'store_id'
+    _rec_names_search = ['name']
 
     name = fields.Char(string='Name', default=_('New'))
-    store_id = fields.Many2one('store', 'Cửa hàng', required=True)
-    brand_id = fields.Many2one('res.brand', string='Brand', related='store_id.brand_id', store=True)
+    brand_id = fields.Many2one('res.brand', string='Brand', store=True)
+    store_id = fields.Many2one('store', 'Cửa hàng', required=True, domain="[('brand_id', '=', brand_id)]")
     user_id = fields.Many2one('res.users', 'Request User', default=lambda self: self.env.user.id)
     department_id = fields.Many2one('hr.department', 'Bộ phận')
     note = fields.Text(tracking=True)
@@ -23,7 +24,7 @@ class ProductDefectivePack(models.Model):
         ('waiting approve', 'Waiting Approve'),
         ('done', 'Done'),
         ('cancel', 'Cancel')
-    ], string='Status', readonly=True, compute='_compute_state')
+    ], string='Status', readonly=True, compute='_compute_state', store=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company.id)
 
     @api.depends('line_ids', 'line_ids.state')
@@ -40,6 +41,8 @@ class ProductDefectivePack(models.Model):
 
     def action_send_requests(self):
         self._send_mail_approve(self.id)
+        if not self.line_ids:
+            raise UserError('Vui lòng thêm sản phẩm lỗi cần gửi duyệt!')
         return self.line_ids.with_context(active_model=self._name).action_send_request_approves()
 
     def _send_mail_approve(self, res_id):
@@ -57,7 +60,8 @@ class ProductDefectivePack(models.Model):
             mailTmplObj.with_context(**ctx).send_mail(res_id, force_send=True)
 
     def action_refuse(self):
-        self.line_ids.action_refuse()
+        selected_lines = self.line_ids.filtered(lambda l: l.selected)
+        selected_lines.action_refuse()
 
     def action_approves(self):
         return self.line_ids.action_approves()
@@ -69,12 +73,17 @@ class ProductDefectivePack(models.Model):
     def open_scan(self):
         view_id_form = self.env.ref('forlife_pos_product_change_refund.product_defective_scan_form_view')
         ctx = {'active_id': self.id}
+        record = self.env['product.defective.scan'].create({
+            'pack_id': self.id,
+
+        })
         return {
             'name': _('Thêm sản phẩm lỗi'),
             'res_model': 'product.defective.scan',
             'type': 'ir.actions.act_window',
             'views': [(view_id_form.id, 'form')],
             'target': 'new',
+            'res_id': record.id,
             'view_mode': 'form',
             'context': ctx,
         }

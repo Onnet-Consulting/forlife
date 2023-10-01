@@ -89,7 +89,6 @@ class StockPicking(models.Model):
                     ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
                     ('product_id', '=', line.product_id.id if line.product_id else False),
                     ('partner_id', '=', company_id.partner_id.id),
-                    ('currency_id', '=', line.purchase_line_id.currency_id.id),
                     ('product_uom', '=', line.product_uom.id),
                     ('min_qty', '<=', line.quantity_done),
                     ('date_start', '<=', datetime.now()),
@@ -103,7 +102,11 @@ class StockPicking(models.Model):
                 'purchase_quantity': line.quantity_done,
                 'product_qty': line.quantity_done * (data[0].amount_conversion or line.quantity_change),
                 'taxes_id': [(6, 0, self.env['account.tax'].with_company(company_dest_id).search([
-                    ('code', 'in', line.purchase_line_id.taxes_id.mapped('code')), ('company_id', '=', company_dest_id.id)]).ids)],
+                    ('code', 'in', ["V10","V05","V08"]),
+                    ('company_id', '=', company_dest_id.id),
+                    ('type_tax_use', '=', 'purchase'),
+                    ('amount', 'in', line.product_id.taxes_id.mapped('amount')),
+                ]).ids)],
                 'vendor_price': data[0].price,
                 'exchange_quantity': data[0].amount_conversion,
                 'location_id': location_mapping.location_map_id.id,
@@ -113,7 +116,11 @@ class StockPicking(models.Model):
         return po
 
     def create_order_inter_company(self):
-        company_dest_id = self.env['res.company'].search([('code', '=', '1400')], limit=1)
+        location_mapping = self.env['stock.location.mapping'].search([
+            ('location_id', '=', self.location_dest_id.id),
+            ('location_id.virtual_location_inter_company', '=', True)
+        ], limit=1)
+        company_dest_id = location_mapping.sudo().location_map_id.company_id
         purchase_model = self.env['purchase.order']
         po_inter_company = purchase_model.with_company(company_dest_id).search(
             [('create_from_picking', '=', self.id)], limit=1)

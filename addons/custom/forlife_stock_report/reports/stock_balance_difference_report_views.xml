@@ -16,7 +16,8 @@
                     <group>
                         <group>
                             <field name="account_id"/>
-                            <field name="purchase_order_ids" domain="[('invoice_status', '=', 'invoiced')]" widget="many2many_tags"/>
+                            <field name="purchase_order_ids"  widget="many2many_tags"
+                                   domain="[('invoice_status', 'in', ['invoiced', 'close']), ('date_approve', '>=', period_start), ('date_approve', '&lt;=', period_end)]"/>
                         </group>
                     </group>
                     <div>

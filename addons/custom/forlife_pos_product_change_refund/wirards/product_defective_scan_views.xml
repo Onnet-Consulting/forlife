@@ -6,6 +6,17 @@
         <field name="arch" type="xml">
             <form string="Thêm sản phẩm lỗi">
                 <sheet>
+                    <field name="pack_id" invisible="1"/>
+                    <field name="department_id" invisible="1"/>
+                    <field name="on_value" invisible="1"/>
+                    <group>
+                        <group>
+                            <label for="defective_type_id"/>
+                            <div class="o_row">
+                                <field name="defective_type_id"/>
+                            </div>
+                        </group>
+                    </group>
                     <div class="oe_title">
                         <h3>
                             <field name="barcode" default_focus="1" placeholder="Nhập barcode cần quét"/>
@@ -16,17 +27,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div><br/></div>
-                    <group>
-                        <group>
-                            <field name="pack_id" invisible="1"/>
-                            <field name="department_id" invisible="1"/>
-                            <label for="defective_type_id"/>
-                            <div class="o_row">
-                                <field name="defective_type_id"/>
-                            </div>
-                        </group>
-                    </group>
+
 
                     <notebook>
                         <page string="Hàng lỗi">
@@ -35,7 +36,7 @@
                                     <field name="department_id" invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="barcode"/>
-                                    <field name="quantity"/>
+                                    <field name="quantity" readonly="1" force_save="1"/>
                                     <field name="uom_id"/>
                                     <field name="defective_type_id" required="1"/>
                                     <field name="detail_defective"/>

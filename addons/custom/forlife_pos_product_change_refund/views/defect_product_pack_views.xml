@@ -5,6 +5,7 @@
         <field name="model">product.defective.pack</field>
         <field name="arch" type="xml">
             <tree name="Defective Product Pack">
+                <field name="name"/>
                 <field name="brand_id"/>
                 <field name="store_id"/>
                 <field name="user_id"/>
@@ -41,8 +42,8 @@
                     </div>
                     <group>
                         <group id="header_left_group">
-                            <field name="store_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="store_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="user_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="department_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="create_date"/>
@@ -73,6 +74,7 @@
                                     <field name="percent_reduce" attrs="{'readonly': [('state', '!=', 'waiting approve')]}"/>
                                     <field name="total_reduce"/>
                                     <field name="program_pricelist_item_id" context="{'show_price': True}" readonly="1"/>
+                                    <field name="reason_refuse_product" readonly="1"/>
                                     <button name="view_request" class="btn-secondary" icon="fa-share-square-o" type="object"/>
                                 </tree>
                             </field>
@@ -93,10 +95,11 @@
         <field name="model">product.defective.pack</field>
         <field name="arch" type="xml">
             <search>
+                <field name="name" string="Mã phiếu"/>
                 <field name="line_ids" string="Sản phẩm" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
                 <field name="brand_id"/>
                 <field name="user_id"/>
-                <field name="state"/>
+<!--                <field name="state"/>-->
                 <filter string="My Request" name="my_request" domain="[('user_id', '=', uid)]"/>
 <!--                <filter string="New" name="new" domain="[('state', '=', 'new')]"/>-->
 <!--                <filter string="Waiting Approve" name="waiting_approve" domain="[('state', '=', 'waiting approve')]"/>-->
@@ -114,14 +117,14 @@
     </record>
 
     <record id="product_defective_pack_action" model="ir.actions.act_window">
-        <field name="name">Tổng hơp hàng lỗi</field>
+        <field name="name">Tổng hợp hàng lỗi</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.defective.pack</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem id="product_defective_action_pack_menu"
-             name="Tổng hơp hàng lỗi"
+             name="Tổng hợp hàng lỗi"
              parent="forlife_pos_product_change_refund.product_defective_menu"
              action="product_defective_pack_action" sequence="2"/>
 </odoo>
