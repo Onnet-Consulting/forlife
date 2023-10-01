@@ -120,6 +120,7 @@
         <field name="name">Tổng hợp hàng lỗi</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.defective.pack</field>
+        <field name="context">{'show_price':True}</field>
         <field name="view_mode">tree,form</field>
     </record>
 
