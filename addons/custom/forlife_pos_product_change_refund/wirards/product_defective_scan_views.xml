@@ -8,6 +8,7 @@
                 <sheet>
                     <field name="pack_id" invisible="1"/>
                     <field name="department_id" invisible="1"/>
+                    <field name="on_value" invisible="1"/>
                     <group>
                         <group>
                             <label for="defective_type_id"/>
@@ -35,7 +36,7 @@
                                     <field name="department_id" invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="barcode"/>
-                                    <field name="quantity"/>
+                                    <field name="quantity" readonly="1" force_save="1"/>
                                     <field name="uom_id"/>
                                     <field name="defective_type_id" required="1"/>
                                     <field name="detail_defective"/>
