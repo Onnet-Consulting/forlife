@@ -12,6 +12,7 @@ from . import account_move
 from . import stock_move
 from . import pos_session
 from . import pos_payment
+from . import stock_picking
 
 from odoo.addons.account.models.account_move_line import AccountMoveLine as AccountMoveLineInherit
 
