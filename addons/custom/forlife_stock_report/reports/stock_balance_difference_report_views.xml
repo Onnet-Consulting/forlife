@@ -29,16 +29,16 @@
                     <notebook>
                         <page id="detail" string="Detail">
                             <field name="line_ids" readonly="1">
-                                <tree limit="1000">
+                                <tree limit="1000" decoration-bf="account_id == False">
                                     <field name="product_id" invisible="1"/>
                                     <field name="account_id" invisible="1"/>
                                     <field name="purchase_id"/>
                                     <field name="product_code"/>
                                     <field name="product_name"/>
                                     <field name="account_code"/>
-                                    <field name="debit" sum="Debit Total"/>
-                                    <field name="credit" sum="Credit Total"/>
-                                    <field name="difference" sum="Difference Total"/>
+                                    <field name="debit"/>
+                                    <field name="credit"/>
+                                    <field name="difference"/>
                                     <field name="difference_percent"/>
                                 </tree>
                             </field>
