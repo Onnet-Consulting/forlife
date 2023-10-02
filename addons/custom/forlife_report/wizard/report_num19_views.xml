@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num19</field>
         <field name="arch" type="xml">
-            <form string="Stock Transfer Request Report" create="0">
+            <form string="Báo cáo tình hình thực hiện yêu cầu chuyển kho" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -31,7 +31,7 @@
     </record>
 
     <record id="report_num19_window_action" model="ir.actions.act_window">
-        <field name="name">Stock Transfer Request Report</field>
+        <field name="name">Báo cáo tình hình thực hiện yêu cầu chuyển kho</field>
         <field name="res_model">report.num19</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

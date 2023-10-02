@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num7</field>
         <field name="arch" type="xml">
-            <form string="Report in-store revenue by product line" create="0">
+            <form string="Báo cáo doanh thu tại cửa hàng theo dòng hàng" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -33,7 +33,7 @@
     </record>
 
     <record id="report_num7_window_action" model="ir.actions.act_window">
-        <field name="name">Report in-store revenue by product line</field>
+        <field name="name">Báo cáo doanh thu tại cửa hàng theo dòng hàng</field>
         <field name="res_model">report.num7</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
