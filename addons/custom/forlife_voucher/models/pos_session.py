@@ -70,7 +70,10 @@ class PosSession(models.Model):
                     }),
                 ]
             }
-            AccountMove.sudo().create(move_vals)._post()
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name = '/':
+                    line.move_name = move.name
             for v in vouchers:
                 v.voucher_id.has_accounted = True
         else:
@@ -110,7 +113,10 @@ class PosSession(models.Model):
                     }),
                 ]
             }
-            AccountMove.sudo().create(move_vals)._post()
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name = '/':
+                    line.move_name = move.name
             for v in vouchers:
                 v.voucher_id.has_accounted = True
         else:
