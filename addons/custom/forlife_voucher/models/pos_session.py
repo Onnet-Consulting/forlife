@@ -16,15 +16,69 @@ class PosSession(models.Model):
     def action_pos_session_closing_control(self, balancing_account=False, amount_to_balance=0, bank_payment_method_diffs=None):
         res = super(PosSession, self).action_pos_session_closing_control(balancing_account, amount_to_balance, bank_payment_method_diffs)
         for session in self:
-            vouchers = session.order_ids.pos_voucher_line_ids.filtered(lambda v: v.voucher_id.purpose_id.purpose_voucher == 'gift' and v.voucher_id.has_accounted == False)
+            vouchers_gift = session.order_ids.pos_voucher_line_ids.filtered(lambda v: v.voucher_id.purpose_id.purpose_voucher == 'gift' and v.voucher_id.has_accounted == False)
             department_ids = []
-            if vouchers:
-                for v in vouchers:
+            if vouchers_gift:
+                for v in vouchers_gift:
                     department_ids.append(v.derpartment_id)
                 for d in department_ids:
-                    vouchers_follow_department = vouchers.filtered(lambda v: v.derpartment_id.id == d.id)
+                    vouchers_follow_department = vouchers_gift.filtered(lambda v: v.derpartment_id.id == d.id)
                     session.create_jn_entry_voucher_gift(vouchers_follow_department, d)
+
+            vouchers_pay = session.order_ids.pos_voucher_line_ids.filtered(
+                lambda v: v.voucher_id.purpose_id.purpose_voucher == 'pay' and v.voucher_id.has_accounted == False)
+            department_pay_ids = []
+            if vouchers_pay:
+                for v in vouchers_pay:
+                    department_pay_ids.append(v.derpartment_id)
+                for d in department_pay_ids:
+                    vouchers_follow_department_pay = vouchers_pay.filtered(lambda v: v.derpartment_id.id == d.id)
+                    session.create_jn_entry_voucher_pay(vouchers_follow_department_pay, d)
         return res
+
+    def create_jn_entry_voucher_pay(self, vouchers, d):
+        payment_mothod = self.env['pos.payment.method'].search(
+            [('is_voucher', '=', True), ('company_id', '=', self.env.company.id)], limit=1)
+        AccountMove = self.env['account.move']
+        if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_other_fee:
+            move_vals = {
+                'ref': 'Hạch toán voucher bán',
+                'date': datetime.now(),
+                'journal_id': payment_mothod.journal_id.id,
+                'company_id': payment_mothod.company_id.id,
+                'move_type': 'entry',
+                'ss_id': self.id,
+                'line_ids': [
+                    # credit line
+                    (0, 0, {
+                        # 'name': vouchers[0].pos_order_id.name,
+                        'display_type': 'product',
+                        'account_id': payment_mothod.company_id.account_default_pos_receivable_account_id.id,
+                        'debit': 0.0,
+                        'credit': sum(vouchers.mapped('price_used')),
+                        'partner_id': self.config_id.store_id.contact_id.id
+                    }),
+                    # debit line
+                    (0, 0, {
+                        # 'name': vouchers[0].pos_order_id.name,
+                        'display_type': 'product',
+                        'account_id': payment_mothod.journal_id.default_account_id.id,
+                        'debit': sum(vouchers.mapped('price_used')),
+                        'credit': 0.0,
+                        'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {},
+                        'partner_id': self.company_id.accounting_voucher_partner_id.id
+                    }),
+                ]
+            }
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name = '/':
+                    line.move_name = move.name
+            for v in vouchers:
+                v.voucher_id.has_accounted = True
+        else:
+            _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
+        return True
 
     def create_jn_entry_voucher_gift(self, vouchers, d):
         payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True), ('company_id', '=', self.env.company.id)], limit=1)
@@ -40,24 +94,29 @@ class PosSession(models.Model):
                 'line_ids': [
                     # credit line
                     (0, 0, {
-                        'name': vouchers[0].pos_order_id.name,
+                        # 'name': vouchers[0].pos_order_id.name,
                         'display_type': 'product',
-                        'account_id': payment_mothod.journal_id.default_account_id.id,
+                        'account_id': payment_mothod.company_id.account_default_pos_receivable_account_id.id,
                         'debit': 0.0,
                         'credit': sum(vouchers.mapped('price_used')),
+                        'partner_id': self.config_id.store_id.contact_id.id
                     }),
                     # debit line
                     (0, 0, {
-                        'name': vouchers[0].pos_order_id.name,
+                        # 'name': vouchers[0].pos_order_id.name,
                         'display_type': 'product',
                         'account_id': payment_mothod.account_other_fee.id,
                         'debit': sum(vouchers.mapped('price_used')),
                         'credit': 0.0,
-                        'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {}
+                        'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {},
+                        'partner_id': self.company_id.accounting_voucher_partner_id.id
                     }),
                 ]
             }
-            AccountMove.sudo().create(move_vals)._post()
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name = '/':
+                    line.move_name = move.name
             for v in vouchers:
                 v.voucher_id.has_accounted = True
         else:

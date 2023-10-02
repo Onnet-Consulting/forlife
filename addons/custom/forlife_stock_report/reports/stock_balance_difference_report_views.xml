@@ -32,6 +32,7 @@
                                 <tree limit="1000" decoration-bf="account_id == False">
                                     <field name="product_id" invisible="1"/>
                                     <field name="account_id" invisible="1"/>
+                                    <field name="purchase_line_id" invisible="1"/>
                                     <field name="purchase_id"/>
                                     <field name="product_code"/>
                                     <field name="product_name"/>
