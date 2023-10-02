@@ -25,9 +25,11 @@ class StockBalanceDifferenceReport(models.TransientModel):
             rec.name = _('Stock Balance Difference Report %s - %s') % (rec.period_start.strftime('%d/%m/%Y'), rec.period_end.strftime('%d/%m/%Y'))
 
     def _create_account_move(self):
+        journal_id = self.env['account.journal'].search([('code', '=', 'ST01'), ('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
         moves = self.env['account.move'].create([{
             'date': self.period_end,
             'ref': self.name,
+            'journal_id': journal_id.id or False,
             'line_ids': [
                 (0, 0, {
                     'name': self.name,
