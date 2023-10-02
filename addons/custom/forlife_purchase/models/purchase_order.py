@@ -1116,12 +1116,8 @@ class PurchaseOrder(models.Model):
                 # Invoice values.
                 invoice_vals = order._prepare_invoice()
                 purchase_type = order.purchase_type
-                journal_code = ''
                 if order.select_type_inv in ('expense', 'labor'):
                     purchase_type = 'service'
-                    journal_code = 'EX01'
-                    if order.select_type_inv == 'expense':
-                        journal_code = 'EX02'
                 invoice_vals.update({
                     'purchase_type': purchase_type,
                     'invoice_date': datetime.now(),
@@ -1129,10 +1125,6 @@ class PurchaseOrder(models.Model):
                     'currency_id': currency_id.id if currency_id else order.currency_id.id,
                     'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
                 })
-                if journal_code:
-                    journal_id = self.env['account.journal'].search([('code','=',journal_code),('company_id','=',self.company_id.id)])
-                    if journal_id:
-                        invoice_vals['journal_id'] = journal_id.id
                 # Invoice line values (keep only necessary sections).
 
                 if order.select_type_inv == 'labor':
@@ -1475,12 +1467,8 @@ class PurchaseOrder(models.Model):
         # Invoice values.
         invoice_vals = self._prepare_invoice_purchases()
         purchase_type = self[0].purchase_type
-        journal_code = ''
         if select_type_inv in ('expense', 'labor'):
             purchase_type = 'service'
-            journal_code = 'EX01'
-            if select_type_inv == 'expense':
-                journal_code = 'EX02'
         invoice_vals.update({
             'purchase_type': purchase_type,
             'invoice_date': datetime.now(),
@@ -1488,10 +1476,6 @@ class PurchaseOrder(models.Model):
             'currency_id': currency_id.id if currency_id else self[0].currency_id.id,
             'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
         })
-        if journal_code:
-            journal_id = self.env['account.journal'].search([('code','=',journal_code),('company_id','=',self.company_id.id)])
-            if journal_id:
-                invoice_vals['journal_id'] = journal_id.id
         # Invoice line values (keep only necessary sections).
         if select_type_inv == 'normal':
             if 'product' in self.mapped('purchase_type'):
