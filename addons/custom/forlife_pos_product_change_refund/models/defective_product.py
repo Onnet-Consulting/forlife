@@ -176,7 +176,7 @@ class ProductDefective(models.Model):
     def action_cancel(self):
         self.write({
             'state': 'cancel',
-            'active': False,
+            # 'active': False,
             'approval_uid': False,
             'approval_date': False,
         })
