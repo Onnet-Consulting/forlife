@@ -1,21 +1,18 @@
-from odoo import models, _
+from odoo import models, _, fields
 from odoo.exceptions import ValidationError
 
 
 class InheritStockMove(models.Model):
     _inherit = 'stock.move'
 
+    pos_order_line_id = fields.Many2one('pos.order.line', readonly=True)
+
     def _prepare_account_move_vals(
             self, credit_account_id, debit_account_id, journal_id, qty, description, svl_id, cost
     ):
-        context = self._context
-        if context.get('pos_order_id'):
-            if self.env['pos.order.line'].sudo().search([
-                ('order_id', '=', context['pos_order_id']),
-                ('product_id', '=', self.product_id.id),
-                ('with_purchase_condition', '!=', True),
-                ('is_reward_line', '=', True)
-            ]):
+        if self.pos_order_line_id:
+            if (not self.pos_order_line_id.with_purchase_condition and self.pos_order_line_id.is_reward_line
+                    and self.pos_order_line_id.product_id.id == self.product_id.id):
                 gift_account = self.product_id.get_product_gift_account()
                 if not gift_account:
                     raise ValidationError(_(
