@@ -12,6 +12,7 @@ class SetVoucher(models.Model):
     applicable_object = fields.Char('Đối tượng', required=True)
 
     ref = fields.Char('Mã viết tắt', required=True)
+    is_gift = fields.Boolean(string='Tặng dùng dịch vụ')
 
     def name_get(self):
         if not self._context.get('get_name'):
