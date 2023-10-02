@@ -12,7 +12,7 @@ class ResConfigSettings(models.TransientModel):
     def bravo_get_domain_model(self):
         return [('model', 'in', ('res.brand', 'uom.uom', 'account.analytic.account', 'product.attribute.value', 'product.category',
                                  'res.currency.rate', 'warehouse.group', 'stock.warehouse', 'stock.location', 'product.product',
-                                 'asset.location', 'assets.assets', 'expense.category', 'expense.item', 'forlife.production',
+                                 'asset.location', 'assets.assets', 'expense.category', 'expense.item',
                                  'hr.employee', 'occasion.group', 'occasion.code', 'res.partner.group', 'res.partner'))]
 
     mssql_driver = fields.Char(string='Driver Name', config_parameter="mssql.driver",
