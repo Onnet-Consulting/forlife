@@ -300,8 +300,7 @@
                         <field name="purchase_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
                         <field name="request_purchases" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
-                        <field name="free_good"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="free_good" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="product_qty"
                                attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                sum="discounted subtotal"
