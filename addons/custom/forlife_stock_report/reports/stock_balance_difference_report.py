@@ -104,7 +104,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
                         (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
                         max(aa.code) account_code, 
                         0 debit, 
-                        sum(aml.balance) credit,
+                        abs(sum(aml.balance)) credit,
                         pol.order_id purchase_id,
                         pol.id purchase_line_id
                     FROM account_move_line aml
