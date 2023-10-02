@@ -20,7 +20,7 @@ class AccountMove(models.Model):
             if not highest_name and move == self[0] and not move.posted_before and move.date and (not move.name or move.name == '/'):
                 # In the form view, we need to compute a default sequence so that the user can edit
                 # it. We only check the first move as an approximation (enough for new in form view)
-                declare_code_id = move._get_declare_code('',move.journal_id.id)
+                declare_code_id = move._get_declare_code()
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
@@ -28,7 +28,7 @@ class AccountMove(models.Model):
                     sequence += 1
             elif move.quick_edit_mode and not move.posted_before:
                 # We always suggest the next sequence as the default name of the new move
-                declare_code_id = move._get_declare_code('',move.journal_id.id)
+                declare_code_id = move._get_declare_code()
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
@@ -40,7 +40,7 @@ class AccountMove(models.Model):
                     # The name matches the date: we don't recompute
                 except ValidationError:
                     # Has never been posted and the name doesn't match the date: recompute it
-                    declare_code_id = move._get_declare_code('',move.journal_id.id)
+                    declare_code_id = move._get_declare_code()
                     if not declare_code_id:
                         move._set_next_sequence()
                     else:
@@ -48,7 +48,7 @@ class AccountMove(models.Model):
                         sequence += 1
             else:
                 # The name is not set yet and it is posted
-                declare_code_id = move._get_declare_code('',move.journal_id.id)
+                declare_code_id = move._get_declare_code()
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
