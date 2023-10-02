@@ -1172,4 +1172,7 @@ msgstr "Tên lệnh sản xuất"
 msgid "Confirm"
 msgstr "Chờ duyệt"
 
-
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_product_supplierinfo__product_uom
+msgid "Unit of Measure"
+msgstr "Đơn vị mua"

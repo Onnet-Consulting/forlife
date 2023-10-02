@@ -189,7 +189,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
     def create_account_move(self):
         self.generate_details()
         self._create_account_move()
-        self.account_move_ids = [(6, 0, self.env['stock.balance.difference.report.account.move'].create([{
+        account_move_ids = self.env['stock.balance.difference.report.account.move'].create([{
             'product_id': line.product_id,
             'product_code': line.product_code,
             'product_name': line.product_name,
@@ -198,7 +198,8 @@ class StockBalanceDifferenceReport(models.TransientModel):
             'credit_account_id': self.account_id.id if line.difference > 0 else line.account_id,
             'credit_account_code': self.account_id.code if line.difference > 0 else line.account_code,
             'amount_total': line.difference,
-        } for line in self.line_ids.filtered(lambda x: x.account_id)]).ids)]
+            'report_id': self.id,
+        } for line in self.line_ids.filtered(lambda x: x.account_id)])
 
     def generate_details(self):
         current_tz = pytz.timezone(self._context.get('tz'))
