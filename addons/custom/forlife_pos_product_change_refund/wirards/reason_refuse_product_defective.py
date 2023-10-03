@@ -1,18 +1,32 @@
 from odoo import api, fields, models, _
 
+
 class ReasonRefuse(models.TransientModel):
     _name = 'reason.refuse.product'
     _description = 'Reason Resufe for Product Defective'
 
     name = fields.Text('Lí do', required=True)
+    pack_id = fields.Many2one('product.defective.pack', default=lambda self: self.env.context.get('active_id'))
+    warehouse_id = fields.Many2one('stock.warehouse', related='pack_id.store_id.warehouse_id')
+    is_transferred = fields.Boolean(default=False)
+    from_location_id = fields.Many2one(
+        'stock.location', domain="[('warehouse_id', '=', warehouse_id)]")
+    to_location_id = fields.Many2one('stock.location')
 
     def action_confirm(self):
-        context = self.env.context
         active_model = self.env.context.get('active_model', 'product.defective')
         object_id = self.env[active_model].browse(self._context.get('active_id'))
         if object_id.exists() and active_model == 'product.defective.pack':
-            object_id.line_ids.reason_refuse_product = self.name
-            object_id.action_refuse()
+            line_ids = object_id.line_ids.filtered(
+                lambda l: l.selected and l.state not in ('new', 'cancel') and not l.is_transferred)
+            line_ids.reason_refuse_product = self.name
+            if self.is_transferred:
+                line_ids.write({
+                    'from_location_id': self.from_location_id.id,
+                    'to_location_id': self.to_location_id.id,
+                    'is_transferred': True
+                })
+            line_ids.action_refuse()
         elif object_id.exists() and active_model == 'product.defective':
             object_id.reason_refuse_product = self.name
             object_id.action_refuse()

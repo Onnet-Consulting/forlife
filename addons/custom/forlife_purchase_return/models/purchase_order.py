@@ -128,10 +128,6 @@ class PurchaseOrder(models.Model):
             if self.custom_state != 'approved':
                 raise UserError(_('Tạo hóa đơn không hợp lệ!'))
             # Invoice values.
-            journal_code = ''
-            if self.select_type_inv in ('expense', 'labor'):
-                purchase_type = 'service'
-                journal_code = 'EX02'
             invoice_vals = self._prepare_invoice()
             invoice_vals.update({
                 'purchase_type': self.purchase_type,
@@ -140,13 +136,8 @@ class PurchaseOrder(models.Model):
                 'currency_id': self.currency_id.id,
                 'move_type': 'in_refund',
             })
-            if journal_code:
-                journal_id = self.env['account.journal'].search([('code','=',journal_code),('company_id','=',self.company_id.id)])
-                if journal_id:
-                    invoice_vals['journal_id'] = journal_id.id
             invoice_vals_list = []
             sequence = 10
-
             order = self.with_company(self.company_id)
             pending_section = None
             picking_ids = []

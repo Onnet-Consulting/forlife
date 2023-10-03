@@ -90,6 +90,7 @@
             <field name="name">Nhóm quyền</field>
             <field name="res_model">res.group.report</field>
             <field name="view_mode">tree,form</field>
+            <field name="target">main</field>
             <field name="context">{'report_permission': 1}</field>
         </record>
 

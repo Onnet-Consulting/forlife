@@ -837,7 +837,7 @@ class PurchaseOrder(models.Model):
         if "import_file" in self.env.context:
             pr_names = [val['order_line'][0][2].get('request_purchases') for val in vals_list if val.get('order_line') and len(val.get('order_line')[0]) == 3 and val['order_line'][0][2].get('request_purchases') and val['order_line'][0][2].get('sequence')]
             if pr_names:
-                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names)])
+                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names), ('company_id', '=', self.env.company.id)])
                 for val in vals_list:
                     request_ids = []
                     if not val.get('order_line'):
@@ -1467,10 +1467,8 @@ class PurchaseOrder(models.Model):
         # Invoice values.
         invoice_vals = self._prepare_invoice_purchases()
         purchase_type = self[0].purchase_type
-        journal_code = ''
         if select_type_inv in ('expense', 'labor'):
             purchase_type = 'service'
-            journal_code = 'EX02'
         invoice_vals.update({
             'purchase_type': purchase_type,
             'invoice_date': datetime.now(),
@@ -1478,10 +1476,6 @@ class PurchaseOrder(models.Model):
             'currency_id': currency_id.id if currency_id else self[0].currency_id.id,
             'partner_id': partner_id.id if partner_id else invoice_vals['partner_id'],
         })
-        if journal_code:
-            journal_id = self.env['account.journal'].search([('code','=',journal_code),('company_id','=',self.company_id.id)])
-            if journal_id:
-                invoice_vals['journal_id'] = journal_id.id
         # Invoice line values (keep only necessary sections).
         if select_type_inv == 'normal':
             if 'product' in self.mapped('purchase_type'):
@@ -2508,7 +2502,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
-        for line in self:
+        for line in self.filtered(lambda x: x.order_id.purchase_type == 'product'):
             if line.product_qty != line.purchase_quantity * line.exchange_quantity:
                 line.product_qty = line.purchase_quantity * line.exchange_quantity
 

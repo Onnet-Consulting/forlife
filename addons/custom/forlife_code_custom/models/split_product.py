@@ -13,7 +13,7 @@ class SplitProduct(models.Model):
         for res in result:
             declare_code_id = self.env['declare.code']._get_declare_code('021', self.env.company.id)
             if declare_code_id:
-                res.name = declare_code_id.genarate_code('split_product','name',sequence)
+                res.name = declare_code_id.genarate_code(res.company_id.id,'split.product','name',sequence)
                 sequence += 1
         return result
 

@@ -75,6 +75,9 @@ class StockPicking(models.Model):
     def prepare_move_values(self, line, amount, product_tax):
         qty_po_origin = line.product_qty
         move_values = []
+        journal_id = self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id
+        if not journal_id:
+            raise ValidationError("Không tìm thấy sổ nhật ký có mã 'EX02'. Vui lòng cấu hình thêm!")
         moves = self.move_ids.filtered(lambda x: x.purchase_line_id.id == line.id)
         for move in moves:
             qty_po_done = sum(move.mapped('quantity_done'))
@@ -85,7 +88,7 @@ class StockPicking(models.Model):
                 'move_type': 'entry',
                 'reference': po.name,
                 'stock_move_id': move.id,
-                'journal_id': self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id,
+                'journal_id': journal_id,
                 'exchange_rate': po.exchange_rate,
                 'date': datetime.now(),
                 'invoice_payment_term_id': po.payment_term_id.id,
@@ -135,6 +138,9 @@ class StockPicking(models.Model):
     def prepare_move_value_with_cost(self, po):
         self.ensure_one()
         entries_values = []
+        journal_id = self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id
+        if not journal_id:
+            raise ValidationError("Không tìm thấy sổ nhật ký có mã 'EX02'. Vui lòng cấu hình thêm!")
         for move in self.move_ids:
             if move.product_id.type not in ('product', 'consu'):
                 continue
@@ -156,6 +162,7 @@ class StockPicking(models.Model):
                     'ref': f"{self.name}",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
+                    'journal_id': journal_id,
                     'x_entry_types': 'entry_cost',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,
@@ -284,6 +291,9 @@ class StockPicking(models.Model):
     def create_return_valuation_entries(self):
         list_allowcation_npls = []
         cost_labor_internal_costs = []
+        journal_id = self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id
+        if not journal_id:
+            raise ValidationError("Không tìm thấy sổ nhật ký có mã 'EX02'. Vui lòng cấu hình thêm!")
         po = self.purchase_id
         if not po:
             return
@@ -391,6 +401,7 @@ class StockPicking(models.Model):
                     'ref': f"{self.name} - Chi phí nhân công thuê ngoài/nội bộ - {target_items}",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
+                    'journal_id': journal_id,
                     'x_entry_types': 'entry_cost_labor',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,
@@ -442,6 +453,7 @@ class StockPicking(models.Model):
                     'ref': f"{self.name} - Phân bổ nguyên phụ liệu",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
+                    'journal_id': journal_id,
                     # 'x_entry_types': 'entry_material',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,

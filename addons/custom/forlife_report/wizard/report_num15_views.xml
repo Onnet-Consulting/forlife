@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num15</field>
         <field name="arch" type="xml">
-            <form string="Search Voucher Used" create="0">
+            <form string="Tra cứu mã Voucher đã sử dụng" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -30,7 +30,7 @@
     </record>
 
     <record id="report_num15_window_action" model="ir.actions.act_window">
-        <field name="name">Search Voucher Used</field>
+        <field name="name">Tra cứu mã Voucher đã sử dụng</field>
         <field name="res_model">report.num15</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
