@@ -172,7 +172,7 @@ order by num
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Chi tiết hóa đơn bán - đổi - trả')
+        sheet = workbook.add_worksheet('Bảng kê chi tiết hóa đơn bán - đổi - trả')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Bảng kê chi tiết hóa đơn bán - đổi - trả', formats.get('header_format'))
         sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))

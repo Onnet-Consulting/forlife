@@ -149,9 +149,8 @@ class DeclareCode(models.Model):
         except ValueError:
             raise UserError('Có vấn đề trong quá trình tính toán mã phiếu. Vui lòng liên hệ quản trị viên')
     
-    def genarate_code(self, model_code, field_code, sequence = 0, location_code='', location_des_code=''):
+    def genarate_code(self, company_id, model_code, field_code, sequence = 0, location_code='', location_des_code=''):
         code, len_sequence = self._get_code(field_code, location_code, location_des_code)
-        company_id = self.company_id.id
         try:
             param_code = code+'%'
             start_code = '0'*len_sequence

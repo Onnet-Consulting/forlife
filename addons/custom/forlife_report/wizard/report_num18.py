@@ -6,7 +6,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'Nhà cung cấp', 'Chú ý', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Sản phẩm', 'Mô tả', 'Loại hàng hóa', 'Số phiếu yêu cầu',
-    'Số dòng trên phiếu yêu cầu', 'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng đã nhận', 'Đơn vị mua', 'Tỷ lệ quy đổi',
+    'Số dòng trên phiếu yêu cầu', 'Mô tả tài sản', 'Số lượng đặt mua', 'Số lượng đã đặt', 'Số lượng đã nhận', 'Tỷ lệ quy đổi',
     'Số lượng tồn kho quy đổi', 'Đơn vị tính', 'Trung tâm chi phí', 'Lệnh sản xuất', 'Mã vụ việc', 'Ngày dự kiến nhận hàng', 'Trạng thái'
 ]
 
@@ -114,7 +114,6 @@ select
     coalesce(prl.purchase_quantity, 0)                                                      as sl_dat_mua,
     coalesce(prl.order_quantity, 0)                                                         as sl_da_dat,
     coalesce(plq.qty, 0)                                                                    as sl_da_nhan,
-    coalesce(p_uom.name::json ->> '{user_lang_code}', p_uom.name::json ->> 'en_US')         as don_vi_mua,
     prl.exchange_quantity                                                                   as ty_le_quy_doi,
     prl.product_qty                                                                         as sl_ton_kho_quy_doi,
     coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')             as don_vi_tinh,
@@ -129,7 +128,6 @@ from purchase_request_line prl
     join purchase_request_line_x polx on polx.req_line_id = prl.id
     left join product_template pt on pt.id = pp.product_tmpl_id
     left join uom_uom uom on uom.id = pt.uom_id
-    left join uom_uom p_uom on p_uom.id = prl.purchase_uom
     left join account_analytic_account aaa on aaa.id = prl.account_analytic_id
     left join forlife_production fp on fp.id = prl.production_id
     left join occasion_code oc on oc.id = polx.occasion_code_id
@@ -185,13 +183,12 @@ from purchase_request_line prl
             sheet.write(row, 11, value.get('sl_dat_mua'), formats.get('int_number_format'))
             sheet.write(row, 12, value.get('sl_da_dat'), formats.get('int_number_format'))
             sheet.write(row, 13, value.get('sl_da_nhan'), formats.get('int_number_format'))
-            sheet.write(row, 14, value.get('don_vi_mua'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('ty_le_quy_doi'), formats.get('float_number_format'))
-            sheet.write(row, 16, value.get('sl_ton_kho_quy_doi'), formats.get('float_number_format'))
-            sheet.write(row, 17, value.get('don_vi_tinh'), formats.get('normal_format'))
-            sheet.write(row, 18, value.get('tt_chi_phi'), formats.get('normal_format'))
-            sheet.write(row, 19, value.get('lenh_sx'), formats.get('normal_format'))
-            sheet.write(row, 20, value.get('ma_vu_viec'), formats.get('normal_format'))
-            sheet.write(row, 21, value.get('ngay_du_kien'), formats.get('center_format'))
-            sheet.write(row, 22, value.get('trang_thai'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('ty_le_quy_doi'), formats.get('float_number_format'))
+            sheet.write(row, 15, value.get('sl_ton_kho_quy_doi'), formats.get('float_number_format'))
+            sheet.write(row, 16, value.get('don_vi_tinh'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('tt_chi_phi'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('lenh_sx'), formats.get('normal_format'))
+            sheet.write(row, 29, value.get('ma_vu_viec'), formats.get('normal_format'))
+            sheet.write(row, 20, value.get('ngay_du_kien'), formats.get('center_format'))
+            sheet.write(row, 21, value.get('trang_thai'), formats.get('normal_format'))
             row += 1
