@@ -284,6 +284,8 @@ class AccountingInventoryDifferenceWizard(models.TransientModel):
 
     @api.model
     def synchronize_accounting_inventory_difference(self, **kwargs):
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return False
         date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y')) or fields.Datetime.now()
         begin_date = (date + timedelta(days=-1)).replace(hour=17, second=0, minute=0)
         end_date = date.replace(hour=17, second=0, minute=0)
