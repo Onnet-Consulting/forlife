@@ -14,7 +14,7 @@ class TransferStockInventory(models.Model):
                 declare_code = '023'
             declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
             if declare_code_id:
-                res.code = declare_code_id.genarate_code('transfer_stock_inventory','code',sequence)
+                res.code = declare_code_id.genarate_code(res.company_id.id,'transfer_stock_inventory','code',sequence)
                 sequence += 1
         return result
 

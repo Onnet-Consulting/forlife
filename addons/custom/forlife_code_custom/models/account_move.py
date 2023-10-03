@@ -15,7 +15,7 @@ class AccountMove(models.Model):
     def _compute_name(self):
         self = self.sorted(lambda m: (m.date, m.ref or '', m.id))
         highest_name = self[0]._get_last_sequence(lock=False) if self else False
-
+        sequence = 0
         for move in self:
             if not highest_name and move == self[0] and not move.posted_before and move.date and (not move.name or move.name == '/'):
                 # In the form view, we need to compute a default sequence so that the user can edit
@@ -24,14 +24,16 @@ class AccountMove(models.Model):
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code('account_move','name')
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    sequence += 1
             elif move.quick_edit_mode and not move.posted_before:
                 # We always suggest the next sequence as the default name of the new move
                 declare_code_id = move._get_declare_code()
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code('account_move','name')
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    sequence += 1
             elif (move.name and move.name != '/') or move.state != 'posted':
                 try:
                     move._constrains_date_sequence()
@@ -42,14 +44,16 @@ class AccountMove(models.Model):
                     if not declare_code_id:
                         move._set_next_sequence()
                     else:
-                        move.name = declare_code_id.genarate_code('account_move','name')
+                        move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                        sequence += 1
             else:
                 # The name is not set yet and it is posted
                 declare_code_id = move._get_declare_code()
                 if not declare_code_id:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code('account_move','name')
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    sequence += 1
 
         self.filtered(lambda m: not m.name).name = '/'
 

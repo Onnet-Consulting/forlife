@@ -150,7 +150,7 @@ order by num
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo tồn kho')
+        sheet = workbook.add_worksheet('Báo cáo tồn kho theo sản phẩm')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tồn kho theo sản phẩm', formats.get('header_format'))
         sheet.write(2, 0, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))

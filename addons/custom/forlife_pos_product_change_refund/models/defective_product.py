@@ -229,6 +229,7 @@ class ProductDefective(models.Model):
         for line, values in zip(self, data_list):
             values['money_reduce'] = 0
             values['percent_reduce'] = 0
+            values['active'] = True
         return data_list
 
     def view_request(self):

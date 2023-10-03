@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num11</field>
         <field name="arch" type="xml">
-            <form string="About to rank up" create="0">
+            <form string="Sắp lên hạng" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -28,7 +28,7 @@
     </record>
 
     <record id="report_num11_window_action" model="ir.actions.act_window">
-        <field name="name">About to rank up</field>
+        <field name="name">Sắp lên hạng</field>
         <field name="res_model">report.num11</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
