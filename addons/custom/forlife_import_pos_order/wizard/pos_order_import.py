@@ -70,8 +70,8 @@ class PosOrderImport(models.TransientModel):
 
     def create_pos_session(self, config_id):
         query = '''
-                    INSERT INTO pos_session(config_id, user_id, name, state, start_at, stop_at, company_id)
-                    VALUES(%(config_id)s, 2, %(name)s, 'closed', '2023-10-02 00:00:00', '2023-10-02 10:00:00', 5)
+                    INSERT INTO pos_session(config_id, user_id, name, state, start_at, stop_at)
+                    VALUES(%(config_id)s, 2, %(name)s, 'closed', '2023-10-02 00:00:00', '2023-10-02 10:00:00')
                     RETURNING id
                 '''
         self.env.cr.execute(query, {'config_id': config_id, 'name': 'old-session-' + str(config_id)})
