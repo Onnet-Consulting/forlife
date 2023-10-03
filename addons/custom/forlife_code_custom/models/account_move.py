@@ -27,7 +27,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence)
                     sequence += 1
             elif move.quick_edit_mode and not move.posted_before:
                 # We always suggest the next sequence as the default name of the new move
@@ -35,7 +35,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence)
                     sequence += 1
             elif (move.name and move.name != '/') or move.state != 'posted':
                 try:
@@ -47,7 +47,7 @@ class AccountMove(models.Model):
                     if not declare_code_id or check_origin_entry:
                         move._set_next_sequence()
                     else:
-                        move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                        move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence)
                         sequence += 1
             else:
                 # The name is not set yet and it is posted
@@ -55,7 +55,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account_move','name',sequence)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence)
                     sequence += 1
 
         self.filtered(lambda m: not m.name).name = '/'

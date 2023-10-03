@@ -11,7 +11,7 @@ class HRAssetTransfer(models.Model):
         for res in result:
             declare_code_id = self.env['declare.code']._get_declare_code('025', self.env.company.id)
             if declare_code_id:
-                res.name = declare_code_id.genarate_code(res.company_id.id,'hr_asset_transfer','name',sequence)
+                res.name = declare_code_id.genarate_code(res.company_id.id,'hr.asset.transfer','name',sequence)
                 sequence += 1
         return result
 
