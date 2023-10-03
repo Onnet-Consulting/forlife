@@ -254,7 +254,7 @@ class PurchaseOrder(models.Model):
         res = super().onchange_partner_id_warning()
         if self.purchase_type == 'product':
             if self.partner_id and self.order_line and self.currency_id and not self.partner_id.is_passersby:
-                date_now = datetime.now().date()
+                date_now = (self.date_order + timedelta(hours=7)).date() if self.date_order else datetime.now().date()
                 domain = [
                     '|', ('product_id', 'in', self.order_line.product_id.ids),
                     ('product_tmpl_id', '=', self.order_line.product_id.product_tmpl_id.ids),
@@ -2310,7 +2310,7 @@ class PurchaseOrderLine(models.Model):
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
     def compute_vendor_price_ncc(self):
-        today = datetime.now().date()
+        date_order = (self.order_id.date_order + timedelta(hours=7)).date() if self.order_id.date_order else datetime.now().date()
         for rec in self:
             if rec.free_good:
                 rec.vendor_price = 0
@@ -2331,8 +2331,8 @@ class PurchaseOrderLine(models.Model):
                 ('currency_id', '=', rec.order_id.currency_id.id),
                 ('product_uom', '=', rec.purchase_uom.id),
                 ('min_qty', '<=', rec.product_qty),
-                ('date_start', '<=', today),
-                ('date_end', '>=', today)
+                ('date_start', '<=', date_order),
+                ('date_end', '>=', date_order)
             ])
             for line in data.sorted(lambda s: (s.sequence, -s.min_qty, s.price, s.id)):
                 if rec.product_qty >= line.min_qty:

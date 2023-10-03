@@ -216,9 +216,9 @@ class PosOrder(models.Model):
 
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
-        valid_money_payment_method = 0  # X
-        valid_money_product = 0  # Y
         for rec in self:
+            valid_money_payment_method = 0  # X
+            valid_money_product = 0  # Y
             if not rec.partner_id:
                 rec.point_order = 0
                 rec.point_event_order = 0
