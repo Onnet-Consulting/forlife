@@ -54,3 +54,12 @@ class SupplierInfo(models.Model):
             'label': _('Nhập bảng giá nhà cung cấp'),
             'template': '/forlife_purchase/static/src/xlsx/banggianhacungcap.xlsx'
         }]
+
+    @api.model
+    def load(self, fields, data):
+        if "import_file" in self.env.context:
+            line_number = 1
+            for mouse in data:
+                if fields.index('product_uom') and not mouse[fields.index('product_uom')]:
+                    raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở dòng - {}".format(line_number)))
+                line_number += 1
