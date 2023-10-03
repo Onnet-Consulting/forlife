@@ -150,9 +150,9 @@ from stock_product stp
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo tồn kho - giá bán')
+        sheet = workbook.add_worksheet('Báo cáo tồn kho theo giá bán')
         sheet.set_row(0, 25)
-        sheet.write(0, 0, 'Báo cáo tồn kho - giá bán', formats.get('header_format'))
+        sheet.write(0, 0, 'Báo cáo tồn kho theo giá bán', formats.get('header_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(2, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])

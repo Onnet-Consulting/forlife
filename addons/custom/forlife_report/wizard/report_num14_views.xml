@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num14</field>
         <field name="arch" type="xml">
-            <form string="Search Code Used" create="0">
+            <form string="Tra cứu mã Code đã sử dụng" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
@@ -30,7 +30,7 @@
     </record>
 
     <record id="report_num14_window_action" model="ir.actions.act_window">
-        <field name="name">Search Code Used</field>
+        <field name="name">Tra cứu mã Code đã sử dụng</field>
         <field name="res_model">report.num14</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
