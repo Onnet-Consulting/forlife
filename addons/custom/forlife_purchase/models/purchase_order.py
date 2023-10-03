@@ -837,7 +837,7 @@ class PurchaseOrder(models.Model):
         if "import_file" in self.env.context:
             pr_names = [val['order_line'][0][2].get('request_purchases') for val in vals_list if val.get('order_line') and len(val.get('order_line')[0]) == 3 and val['order_line'][0][2].get('request_purchases') and val['order_line'][0][2].get('sequence')]
             if pr_names:
-                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names)])
+                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names), ('company_id', '=', self.env.company.id)])
                 for val in vals_list:
                     request_ids = []
                     if not val.get('order_line'):
