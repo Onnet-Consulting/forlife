@@ -2502,7 +2502,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
-        for line in self:
+        for line in self.filtered(lambda x: x.order_id.purchase_type == 'product'):
             if line.product_qty != line.purchase_quantity * line.exchange_quantity:
                 line.product_qty = line.purchase_quantity * line.exchange_quantity
 
