@@ -25,6 +25,9 @@
             <xpath expr="//field[@name='lines']/form/group/field[@name='full_product_name']" position="before">
                 <field name="product_id" groups="base.group_no_one"/>
             </xpath>
+            <xpath expr="//button[@name='refund']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

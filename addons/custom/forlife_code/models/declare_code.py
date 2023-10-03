@@ -152,32 +152,17 @@ class DeclareCode(models.Model):
     def genarate_code(self, company_id, model_code, field_code, sequence = 0, location_code='', location_des_code=''):
         code, len_sequence = self._get_code(field_code, location_code, location_des_code)
         try:
-            param_code = code+'%'
-            start_code = '0'*len_sequence
-            query = f""" 
-                SELECT code
-                FROM (
-                    (SELECT '{start_code}' as code)
-                    UNION ALL
-                    (SELECT RIGHT({field_code},{len_sequence}) as code
-                    FROM {model_code}
-                    WHERE {field_code} like '{param_code}'
-                    AND company_id = {company_id}
-                    ORDER BY {field_code} desc
-                    LIMIT 1)) as c
-                ORDER BY code desc LIMIT 1
-            """
-            self._cr.execute(query)
-            result = self._cr.fetchall()
-            for list_code in result:
-                if list_code[0] == start_code:
-                    pre = '1'
-                    if sequence != 0:
-                        pre = str(sequence+1)
-                    code+='0'*(len_sequence - 1)+pre
-                else:
-                    code_int = int(list_code[0])+1+sequence
-                    code+='0'*(len_sequence-len(str(code_int)))+str(code_int)
+            domain = [(field_code,'like',code),('company_id','=',company_id)]
+            record_id = self.env[model_code].search(domain,order=field_code+' desc',limit=1)
+            if not record_id:
+                pre = '1'
+                if sequence != 0:
+                    pre = str(sequence+1)
+                code+='0'*(len_sequence - 1)+pre
+            else:
+                right_code = record_id[field_code][-len_sequence:]
+                code_int = int(right_code)+1+sequence
+                code+='0'*(len_sequence-len(str(code_int)))+str(code_int)
             return code
         except ValueError:
             raise UserError('Có vấn đề trong quá trình tính toán mã phiếu. Vui lòng liên hệ quản trị viên')

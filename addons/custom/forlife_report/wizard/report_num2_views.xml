@@ -30,7 +30,7 @@
     </record>
 
     <record id="report_num2_window_action" model="ir.actions.act_window">
-        <field name="name">Report stock with sale price by warehouse</field>
+        <field name="name">Báo cáo tồn kho theo giá bán</field>
         <field name="res_model">report.num2</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

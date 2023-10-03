@@ -837,7 +837,7 @@ class PurchaseOrder(models.Model):
         if "import_file" in self.env.context:
             pr_names = [val['order_line'][0][2].get('request_purchases') for val in vals_list if val.get('order_line') and len(val.get('order_line')[0]) == 3 and val['order_line'][0][2].get('request_purchases') and val['order_line'][0][2].get('sequence')]
             if pr_names:
-                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names)])
+                purchase_request_ids = self.env['purchase.request'].search([('name', 'in', pr_names), ('company_id', '=', self.env.company.id)])
                 for val in vals_list:
                     request_ids = []
                     if not val.get('order_line'):
@@ -2502,7 +2502,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('purchase_quantity', 'exchange_quantity', 'order_id.purchase_type')
     def _compute_product_qty(self):
-        for line in self:
+        for line in self.filtered(lambda x: x.order_id.purchase_type == 'product'):
             if line.product_qty != line.purchase_quantity * line.exchange_quantity:
                 line.product_qty = line.purchase_quantity * line.exchange_quantity
 

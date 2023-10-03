@@ -82,6 +82,8 @@
         'wizard/report_num46_views.xml',
         'wizard/report_num47_views.xml',
 
+        'imports/permission_report_import_view.xml',
+
         'report/report_paperformat.xml',
         'report/print_purchase_request.xml',
         'report/print_purchase_order.xml',

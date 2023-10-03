@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from . import stock_transfer
+
 from . import pos_order
 from . import store
 from . import pos_order_line

@@ -22,18 +22,23 @@
         <field name="arch" type="xml">
             <form name="Defective Product Pack">
                 <header>
+                    <field name="show_create_transfer" invisible="1"/>
                     <button name="action_send_requests" string="Send Request" type="object" attrs="{'invisible': [('state', '!=', 'new')]}"/>
                     <button name="action_refuse" string="Refuse" type="object" invisible="1"/>
                     <button name="%(action_reason_refuse_product_defective)d" type="action"
                             string="Refuse" states="waiting approve" context="{'active_model': 'product.defective.pack'}"/>
                     <button name="action_approves" string="Approve" type="object" attrs="{'invisible': [('state', 'not in', ('waiting approve'))]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}"/>
+                    <button name="action_create_transfer" string="Create Transfer" type="object" attrs="{'invisible': [('show_create_transfer', '=', False)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
                         <button string="Thêm sản phẩm" name="open_scan" type="object"
                         attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    <button name="open_transfers" type="object" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('transfer_count', '=', 0)]}">
+                        <field name="transfer_count" widget="statinfo" string="Transfers"/>
+                    </button>
                     </div>
                     <div class="oe_title">
                         <h1>
@@ -47,6 +52,7 @@
                             <field name="user_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="department_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="create_date"/>
+                            <field name="show_transfer_state_col" invisible="1"/>
                             <field name="note"/>
                         </group>
                         <group id="header_right_group">
@@ -69,6 +75,7 @@
                                     <field name="defective_type_id" required="1" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
                                     <field name="detail_defective" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
                                     <field name="state" readonly="1" force_save="True"/>
+                                    <field name="transfer_state" attrs="{'column_invisible': [('parent.show_transfer_state_col', '=', False)]}"/>
                                     <field name="price"/>
                                     <field name="money_reduce" attrs="{'readonly': [('state', '!=', 'waiting approve')]}"/>
                                     <field name="percent_reduce" attrs="{'readonly': [('state', '!=', 'waiting approve')]}"/>
