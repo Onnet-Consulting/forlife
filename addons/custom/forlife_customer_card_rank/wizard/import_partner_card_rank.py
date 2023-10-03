@@ -16,6 +16,7 @@ class ImportPartnerCardRank(models.TransientModel):
     import_file_name = fields.Char()
     error_file = fields.Binary(attachment=False, string='Error file')
     error_file_name = fields.Char(default='Error.txt')
+    with_queue = fields.Selection(string='Cách nhập', selection=[('queue', 'Nhập qua queue job'), ('normal', 'Nhập thủ công')])
 
     def download_template_file(self):
         attachment_id = self.env.ref(f'forlife_customer_card_rank.template_partner_card_rank_import')
@@ -34,6 +35,8 @@ class ImportPartnerCardRank(models.TransientModel):
         self.ensure_one()
         if not self.import_file or not self.brand_id:
             raise ValidationError(_("Please choose brand and upload file template before click Import button !"))
+        if not self.with_queue:
+            raise ValidationError("Vui lòng chọn cách nhập liệu !")
         workbook = xlrd.open_workbook(file_contents=base64.decodebytes(self.import_file))
         self._cr.execute(f"""
             select (select json_object_agg(rp.phone, rp.id) from res_partner rp
@@ -96,14 +99,20 @@ class ImportPartnerCardRank(models.TransientModel):
                 number_split = min(500, len(final_new_data))
                 split_data = final_new_data[:number_split]
                 final_new_data = final_new_data[number_split:]
-                queue_job = self.with_delay(description='Import partner card rank (create)').create_partner_card_rank(split_data)
-                list_uuid.append(queue_job.uuid)
+                if self.with_queue == 'normal':
+                    self.create_partner_card_rank(split_data)
+                else:
+                    queue_job = self.with_delay(description='Import partner card rank (create)').create_partner_card_rank(split_data)
+                    list_uuid.append(queue_job.uuid)
         while len(add_data) > 0:
             number_split = min(1000, len(add_data))
             split_data = add_data[:number_split]
             add_data = add_data[number_split:]
-            queue_job = self.with_delay(description='Import partner card rank (update)').create_partner_card_rank_line(split_data)
-            list_uuid.append(queue_job.uuid)
+            if self.with_queue == 'normal':
+                self.create_partner_card_rank_line(split_data)
+            else:
+                queue_job = self.with_delay(description='Import partner card rank (update)').create_partner_card_rank_line(split_data)
+                list_uuid.append(queue_job.uuid)
         action = True
         if list_uuid:
             action = self.env.ref('queue_job.action_queue_job').read()[0]

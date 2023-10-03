@@ -8,9 +8,11 @@
             <field name="arch" type="xml">
                 <form string="import_store_first_order_form">
                     <sheet>
+                        <div class="alert alert-success">Với lượng dữ liệu lớn ta nên chọn nhập qua queue job, điều đó giúp ta không phải chờ đợi trong lúc hệ thống thực hiện tiến trình</div>
                         <group>
                             <field name="brand_id" class="oe_inline"/>
                             <field name="row_start" class="oe_inline"/>
+                            <field name="with_queue" class="oe_inline"/>
                             <field name="import_file" filename="import_file_name"/>
                             <field name="import_file_name" invisible="1"/>
                         </group>
@@ -22,7 +24,8 @@
                     <footer>
                         <button special="cancel" string="Cancel"/>
                         <button name="download_template_file" type="object" string="Download Template" class="oe_highlight"/>
-                        <button name="action_import" type="object" string="Import" class="oe_highlight" attrs="{'invisible': ['|', ('import_file', '=', False), ('brand_id', '=', False)]}"/>
+                        <button name="action_import" type="object" string="Import" class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('import_file', '=', False), ('brand_id', '=', False), ('with_queue', '=', False)]}"/>
                     </footer>
                 </form>
             </field>
