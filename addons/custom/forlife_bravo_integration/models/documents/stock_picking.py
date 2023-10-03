@@ -76,11 +76,11 @@ class StockPicking(models.Model):
             return self.filtered(
                 lambda p: p.move_ids.mapped('purchase_line_id') and not p.x_is_check_return)
         if picking_data == PICKING_OTHER_IMPORT_VALUE:
-            return self.filtered(lambda m: m.other_import)
+            return self.filtered(lambda m: m.other_import and m.reason_type_id.code != 'N09')
         if picking_data == PICKING_TRANSFER_BKAV:
             return self.filtered(lambda m: m.origin and m.transfer_id and m.transfer_id.exists_bkav and m.origin == m.transfer_id.name and not m.other_export and not m.other_import)
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
-            return self.filtered(lambda m: m.other_export)
+            return self.filtered(lambda m: m.other_export and m.reason_type_id.code != 'X09')
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
             return self.filtered(
                 lambda p: p.move_ids.mapped('purchase_line_id') and (p.x_is_check_return or any(p.mapped('move_ids.purchase_line_id.order_id.is_return'))))

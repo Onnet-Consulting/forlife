@@ -13,7 +13,7 @@ TITLES = [
 class ReportNum24(models.TransientModel):
     _name = 'report.num24'
     _inherit = 'report.base'
-    _description = 'Báo cáo tích - tiêu điểm theo cửa hàng'
+    _description = 'Báo cáo tích, tiêu điểm theo cửa hàng'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date(string='From date', required=True)
@@ -84,9 +84,9 @@ order by stt
     def generate_xlsx_report(self, workbook, allowed_company):
         data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo tích - tiêu điểm theo cửa hàng')
+        sheet = workbook.add_worksheet('Báo cáo tích, tiêu điểm theo cửa hàng')
         sheet.set_row(0, 25)
-        sheet.write(0, 0, 'Báo cáo tích - tiêu điểm theo cửa hàng', formats.get('header_format'))
+        sheet.write(0, 0, 'Báo cáo tích, tiêu điểm theo cửa hàng', formats.get('header_format'))
         sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
         sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 04:08+0000\n"
-"PO-Revision-Date: 2023-09-29 04:08+0000\n"
+"POT-Creation-Date: 2023-10-02 11:59+0000\n"
+"PO-Revision-Date: 2023-10-02 11:59+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -79,13 +79,6 @@ msgid "<br/>Địa điểm giao hàng:"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num11_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num11_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num11_form
-msgid "About to rank up"
-msgstr "Sắp lên hạng"
-
-#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num46__account_count
 msgid "Account count"
 msgstr ""
@@ -93,7 +86,7 @@ msgstr ""
 #. module: forlife_report
 #: model:res.groups,name:forlife_report.accountant_print_stock_group
 msgid "Accountant Print Stock"
-msgstr "In phiếu kho (kế toán)"
+msgstr "Kho.In phiếu kho (kế toán)"
 
 #. module: forlife_report
 #: model:ir.actions.report,name:forlife_report.accountant_print_stock_picking_outgoing
@@ -263,23 +256,32 @@ msgid "Báo cáo ForLife"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num6_window_action
 #: model:ir.model,name:forlife_report.model_report_num6
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
 msgid "Báo cáo bán - trưng hàng"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num18_window_action
 #: model:ir.model,name:forlife_report.model_report_num18
+#: model:ir.ui.menu,name:forlife_report.report_num18_menu
 #: model:res.groups,name:forlife_report.group_report_num18
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
 msgid "Báo cáo chi tiết PR"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num21_window_action
 #: model:ir.model,name:forlife_report.model_report_num21
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num21_form
 msgid "Báo cáo chi tiết hàng hóa luân chuyển"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num8_window_action
 #: model:ir.model,name:forlife_report.model_report_num8
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
 msgid "Báo cáo chi tiết hóa đơn áp dụng voucher"
 msgstr ""
 
@@ -298,6 +300,13 @@ msgstr ""
 #: model:res.groups,name:forlife_report.group_report_num45
 msgid "Báo cáo chi tiết phiếu lỗi"
 msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num16_window_action
+#: model:ir.model,name:forlife_report.model_report_num16
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num16_form
+msgid "Báo cáo chi tiết xuất nhập hàng"
+msgstr "Chi tiết xuất nhập hàng"
 
 #. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num44_window_action
@@ -352,13 +361,13 @@ msgid "Báo cáo danh sách phiếu nhập_xuất khác"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num26_window_action
 #: model:ir.model,name:forlife_report.model_report_num26
 #: model:res.groups,name:forlife_report.group_report_num26
 msgid "Báo cáo danh sách phiếu điều chuyển"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num26_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num26_menu
 msgid "Báo cáo danh sách điều chuyển"
 msgstr ""
@@ -370,7 +379,9 @@ msgid "Báo cáo doanh thu sản phẩm"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num5_window_action
 #: model:ir.model,name:forlife_report.model_report_num5
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num5_form
 msgid "Báo cáo doanh thu theo nhân viên"
 msgstr ""
 
@@ -382,19 +393,26 @@ msgid "Báo cáo doanh thu theo sản phẩm"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num7_window_action
 #: model:ir.model,name:forlife_report.model_report_num7
+#: model:ir.ui.menu,name:forlife_report.report_num7_menu
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
 msgid "Báo cáo doanh thu tại cửa hàng theo dòng hàng"
 msgstr ""
 
 #. module: forlife_report
 #: model:ir.model,name:forlife_report.model_report_num25
+#: model:ir.ui.menu,name:forlife_report.report_num25_menu
 #: model:res.groups,name:forlife_report.group_report_num25
 msgid "Báo cáo dự tính thu nhập nhân viên bán hàng theo doanh thu"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num23_window_action
 #: model:ir.model,name:forlife_report.model_report_num23
+#: model:ir.ui.menu,name:forlife_report.report_num23_menu
 #: model:res.groups,name:forlife_report.group_report_num23
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num23_form
 msgid "Báo cáo giá trị chiết khấu hạng thẻ"
 msgstr ""
 
@@ -405,7 +423,10 @@ msgid "Báo cáo hình thức thanh toán trên POS"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num12_window_action
 #: model:ir.model,name:forlife_report.model_report_num12
+#: model:ir.ui.menu,name:forlife_report.report_num12_menu
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num12_form
 msgid "Báo cáo khách hàng không mua hàng"
 msgstr ""
 
@@ -441,8 +462,11 @@ msgid "Báo cáo template import PO"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num22_window_action
 #: model:ir.model,name:forlife_report.model_report_num22
+#: model:ir.ui.menu,name:forlife_report.report_num22_menu
 #: model:res.groups,name:forlife_report.group_report_num22
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num22_form
 msgid "Báo cáo thu chi tiền mặt tại cửa hàng"
 msgstr ""
 
@@ -464,13 +488,17 @@ msgid "Báo cáo tài sản công cụ dụng cụ"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num19_window_action
 #: model:ir.model,name:forlife_report.model_report_num19
 #: model:res.groups,name:forlife_report.group_report_num19
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
 msgid "Báo cáo tình hình thực hiện yêu cầu chuyển kho"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num13_window_action
 #: model:ir.model,name:forlife_report.model_report_num13
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
 msgid "Báo cáo tình hình thực hiện đơn hàng mua"
 msgstr ""
 
@@ -482,28 +510,42 @@ msgid "Báo cáo tình hình thực hiện đơn hàng mua (Kho)"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.model,name:forlife_report.model_report_num24
+#: model:ir.ui.menu,name:forlife_report.report_num24_menu
 #: model:res.groups,name:forlife_report.group_report_num24
 msgid "Báo cáo tích - tiêu điểm theo cửa hàng"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.model,name:forlife_report.model_report_num3
-msgid "Báo cáo tồn kho theo chi nhánh_khu vực"
-msgstr ""
+#: model:ir.actions.act_window,name:forlife_report.report_num24_window_action
+#: model:ir.model,name:forlife_report.model_report_num24
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num24_form
+msgid "Báo cáo tích, tiêu điểm theo cửa hàng"
+msgstr "Báo cáo tích - tiêu điểm theo cửa hàng"
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num3_window_action
+#: model:ir.model,name:forlife_report.model_report_num3
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
+msgid "Báo cáo tồn kho theo chi nhánh_khu vực"
+msgstr "Báo cáo tồn kho theo chi nhánh/khu vực"
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num2_window_action
 #: model:ir.model,name:forlife_report.model_report_num2
 msgid "Báo cáo tồn kho theo giá bán"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num4_window_action
 #: model:ir.model,name:forlife_report.model_report_num4
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num4_form
 msgid "Báo cáo tồn kho theo sản phẩm"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num9_window_action
 #: model:ir.model,name:forlife_report.model_report_num9
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num9_form
 msgid "Báo cáo voucher phát hành"
 msgstr ""
 
@@ -525,8 +567,11 @@ msgid "Bảng kê chi tiết hóa đơn TMĐT"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num20_window_action
 #: model:ir.model,name:forlife_report.model_report_num20
+#: model:ir.ui.menu,name:forlife_report.report_num20_menu
 #: model:res.groups,name:forlife_report.group_report_num20
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num20_form
 msgid "Bảng kê chi tiết hóa đơn bán - đổi - trả"
 msgstr ""
 
@@ -557,20 +602,6 @@ msgid "CCCD:"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num23_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num23_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num23_form
-msgid "Card rank discount report"
-msgstr "Báo cáo giá trị chiết khấu hạng thẻ"
-
-#. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num22_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num22_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num22_form
-msgid "Cash receipts report"
-msgstr "Báo cáo thu chi tiền mặt tại cửa hàng"
-
-#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_num32.xml:0
 #, python-format
@@ -595,7 +626,6 @@ msgid "Chi tiết hóa đơn áp dụng voucher"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.model,name:forlife_report.model_report_num16
 #: model:res.groups,name:forlife_report.group_report_num16
 msgid "Chi tiết xuất nhập hàng"
 msgstr ""
@@ -690,6 +720,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_report.field_import_inventory_session_wizard__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_import_tax_info_wizard__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_net_promoter_score_report__company_id
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_base__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__company_id
@@ -745,6 +776,7 @@ msgid "Config Settings"
 msgstr "Cài đặt cấu hình"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__create_uid
@@ -799,6 +831,7 @@ msgid "Created by"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__create_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__create_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__create_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__create_date
@@ -859,11 +892,6 @@ msgid "Customer"
 msgstr "Khách hàng"
 
 #. module: forlife_report
-#: model:ir.ui.menu,name:forlife_report.report_menu_card_rank
-msgid "Customer Rank Management"
-msgstr "Quản lý hạng khách"
-
-#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num17__customer
 #: model:ir.model.fields,field_description:forlife_report.field_report_num34__customer
 #: model:ir.model.fields,field_description:forlife_report.field_report_num35__customer
@@ -910,8 +938,10 @@ msgid "Danh sách hóa đơn TMĐT"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num17_window_action
 #: model:ir.model,name:forlife_report.model_report_num17
 #: model:res.groups,name:forlife_report.group_report_num17
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num17_form
 msgid "Danh sách hóa đơn bán - đổi - trả"
 msgstr ""
 
@@ -983,6 +1013,7 @@ msgid "Detail"
 msgstr "Chi tiết"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__display_name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__display_name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__display_name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__display_name
@@ -1161,8 +1192,12 @@ msgid "End time"
 msgstr "Giờ kết thúc"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__error_file_name
+msgid "Error File Name"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num25_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num25_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num25_form
 msgid "Estimated income by revenue report"
 msgstr "Báo cáo dự tính thu nhập nhân viên bán hàng theo doanh thu"
@@ -1353,6 +1388,12 @@ msgid "Họ tên:"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.permission_report_import_view_form
+msgid "Hủy"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__id
@@ -1407,6 +1448,11 @@ msgid "ID"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__import_file_name
+msgid "Import File Name"
+msgstr ""
+
+#. module: forlife_report
 #. odoo-python
 #: code:addons/forlife_report/wizard/report_num16.py:0
 #: model:ir.model.fields.selection,name:forlife_report.selection__report_num16__move_type__in
@@ -1439,12 +1485,6 @@ msgstr "Khung giờ không hợp lệ"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num8__order_id
 msgid "Invoice Num"
 msgstr "Số hóa đơn"
-
-#. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num20_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num20_menu
-msgid "Invoice detail sales and refund"
-msgstr "Bảng kê chi tiết hóa đơn bán - đổi - trả"
 
 #. module: forlife_report
 #. odoo-javascript
@@ -1527,6 +1567,7 @@ msgid "Kết cấu"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import____last_update
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10____last_update
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11____last_update
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12____last_update
@@ -1581,6 +1622,7 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__write_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__write_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__write_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__write_uid
@@ -1635,6 +1677,7 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__write_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__write_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__write_date
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__write_date
@@ -1797,8 +1840,10 @@ msgid "Lệnh sản xuất"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num10_window_action
 #: model:ir.model,name:forlife_report.model_report_num10
 #: model:res.groups,name:forlife_report.group_report_num10
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
 msgid "Lịch sử nâng hạng"
 msgstr ""
 
@@ -1807,6 +1852,11 @@ msgstr ""
 #: code:addons/forlife_report/static/src/xml/report_num32.xml:0
 #, python-format
 msgid "Lịch sử tích lũy"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.permission_report_import_view_form
+msgid "Lỗi nhập liệu"
 msgstr ""
 
 #. module: forlife_report
@@ -1901,6 +1951,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_report.field_import_inventory_session_wizard__name
 #: model:ir.model.fields,field_description:forlife_report.field_import_tax_info_wizard__name
 #: model:ir.model.fields,field_description:forlife_report.field_net_promoter_score_report__name
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__name
 #: model:ir.model.fields,field_description:forlife_report.field_report_base__name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__name
@@ -2120,6 +2171,11 @@ msgid "Nhận hàng"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.permission_report_import_view_form
+msgid "Nhập"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model,name:forlife_report.model_report_num36
 msgid "Nhập kho thành phẩm sản xuất"
 msgstr ""
@@ -2127,6 +2183,13 @@ msgstr ""
 #. module: forlife_report
 #: model:ir.model.fields.selection,name:forlife_report.selection__report_num27__type__import
 msgid "Nhập khác"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.permission_report_import_action
+#: model:ir.model,name:forlife_report.model_permission_report_import
+#: model:ir.ui.menu,name:forlife_report.permission_report_import_menu
+msgid "Nhập quyền dữ liệu báo cáo"
 msgstr ""
 
 #. module: forlife_report
@@ -2250,13 +2313,6 @@ msgid "Phân quyền trường dữ liệu"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num24_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num24_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num24_form
-msgid "Point customer report"
-msgstr "Báo cáo tích - tiêu điểm theo cửa hàng"
-
-#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num30__is_pos_order
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num30_form
 msgid "Pos Order"
@@ -2340,16 +2396,14 @@ msgid "Purchase"
 msgstr "Mua hàng"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num18_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num18_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
-msgid "Purchase Request Detail Report"
-msgstr "Báo cáo chi tiết PR"
-
-#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_res_group_report__data_permission_ids
 #: model_terms:ir.ui.view,arch_db:forlife_report.res_group_report_view_form
 msgid "Quyền dữ liệu"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.ui.menu,name:forlife_report.report_menu_card_rank
+msgid "Quản lý hạng khách"
 msgstr ""
 
 #. module: forlife_report
@@ -2387,30 +2441,12 @@ msgid "Report by"
 msgstr "Xem theo"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num12_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num12_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num12_form
-msgid "Report customers not buying"
-msgstr "Báo cáo khách hàng không mua hàng"
-
-#. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num7_window_action
-#: model:ir.ui.menu,name:forlife_report.report_num7_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
-msgid "Report in-store revenue by product line"
-msgstr "Báo cáo doanh thu tại cửa hàng theo dòng hàng"
-
-#. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num13_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num13_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
 msgid "Report on the status of PO"
 msgstr "Báo cáo tình hình thực hiện đơn hàng mua"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num5_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num5_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num5_form
 msgid "Report revenue by employee"
 msgstr "Báo cáo doanh thu theo nhân viên"
 
@@ -2420,64 +2456,47 @@ msgid "Report revenue by product"
 msgstr "Báo cáo doanh thu theo sản phẩm"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num6_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num6_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
 msgid "Report sale and stock"
 msgstr "Báo cáo bán - trưng hàng"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num17_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num17_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num17_form
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num20_form
 msgid "Report sales and refund"
 msgstr "Danh sách hóa đơn bán - đổi - trả"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num4_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num4_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num4_form
 msgid "Report stock by product"
 msgstr "Báo cáo tồn kho theo sản phẩm"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num3_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num3_menu
 msgid "Report stock in time range by branch/area"
 msgstr "Báo cáo tồn kho theo chi nhánh/khu vực"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num16_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num16_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num16_form
 msgid "Report stock move"
 msgstr "Chi tiết xuất nhập hàng"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num21_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num21_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num21_form
 msgid "Report stock transfer"
 msgstr "Báo cáo chi tiết hàng hóa luân chuyển"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num2_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num2_menu
 msgid "Report stock with sale price by warehouse"
 msgstr "Báo cáo tồn kho theo giá bán"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num8_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num8_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
 msgid "Report voucher detail"
 msgstr "Báo cáo chi tiết hóa đơn áp dụng voucher"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num9_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num9_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num9_form
 msgid "Report voucher published"
 msgstr "Báo cáo voucher phát hành"
 
@@ -2555,16 +2574,12 @@ msgid "Sales"
 msgstr "Bán hàng"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num14_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num14_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num14_form
 msgid "Search Code Used"
 msgstr "Tra cứu mã Code đã sử dụng"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num15_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num15_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 msgid "Search Voucher Used"
 msgstr "Tra cứu mã Voucher đã sử dụng"
 
@@ -2632,16 +2647,9 @@ msgid "Stock"
 msgstr "Kho"
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num19_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num19_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
 msgid "Stock Transfer Request Report"
 msgstr "Báo cáo tình hình thực hiện yêu cầu chuyển kho"
-
-#. module: forlife_report
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
-msgid "Stock in time range by branch/area"
-msgstr "Tồn kho theo chi nhánh/khu vực"
 
 #. module: forlife_report
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
@@ -2686,8 +2694,11 @@ msgid "Sản xuất"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num11_window_action
 #: model:ir.model,name:forlife_report.model_report_num11
+#: model:ir.ui.menu,name:forlife_report.report_num11_menu
 #: model:res.groups,name:forlife_report.group_report_num11
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num11_form
 msgid "Sắp lên hạng"
 msgstr ""
 
@@ -2883,6 +2894,7 @@ msgstr "Khung giờ"
 #: model:ir.model.fields,field_description:forlife_report.field_import_inventory_session_wizard__tz
 #: model:ir.model.fields,field_description:forlife_report.field_import_tax_info_wizard__tz
 #: model:ir.model.fields,field_description:forlife_report.field_net_promoter_score_report__tz
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__tz
 #: model:ir.model.fields,field_description:forlife_report.field_report_base__tz
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__tz
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__tz
@@ -2939,6 +2951,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_report.field_import_inventory_session_wizard__tz_offset
 #: model:ir.model.fields,field_description:forlife_report.field_import_tax_info_wizard__tz_offset
 #: model:ir.model.fields,field_description:forlife_report.field_net_promoter_score_report__tz_offset
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__tz_offset
 #: model:ir.model.fields,field_description:forlife_report.field_report_base__tz_offset
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__tz_offset
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__tz_offset
@@ -2995,6 +3008,7 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_report.field_import_inventory_session_wizard__tz_offset
 #: model:ir.model.fields,help:forlife_report.field_import_tax_info_wizard__tz_offset
 #: model:ir.model.fields,help:forlife_report.field_net_promoter_score_report__tz_offset
+#: model:ir.model.fields,help:forlife_report.field_permission_report_import__tz_offset
 #: model:ir.model.fields,help:forlife_report.field_report_base__tz_offset
 #: model:ir.model.fields,help:forlife_report.field_report_num10__tz_offset
 #: model:ir.model.fields,help:forlife_report.field_report_num11__tz_offset
@@ -3051,6 +3065,7 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_report.field_import_inventory_session_wizard__tz
 #: model:ir.model.fields,help:forlife_report.field_import_tax_info_wizard__tz
 #: model:ir.model.fields,help:forlife_report.field_net_promoter_score_report__tz
+#: model:ir.model.fields,help:forlife_report.field_permission_report_import__tz
 #: model:ir.model.fields,help:forlife_report.field_report_base__tz
 #: model:ir.model.fields,help:forlife_report.field_report_num10__tz
 #: model:ir.model.fields,help:forlife_report.field_report_num11__tz
@@ -3180,14 +3195,18 @@ msgid "Tp chức năng"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num14_window_action
 #: model:ir.model,name:forlife_report.model_report_num14
 #: model:res.groups,name:forlife_report.group_report_num14
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num14_form
 msgid "Tra cứu mã Code đã sử dụng"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num15_window_action
 #: model:ir.model,name:forlife_report.model_report_num15
 #: model:res.groups,name:forlife_report.group_report_num15
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 msgid "Tra cứu mã Voucher đã sử dụng"
 msgstr ""
 
@@ -3312,6 +3331,16 @@ msgid "Tích lũy hiện có:"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__import_file
+msgid "Tải lên tệp"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.permission_report_import_view_form
+msgid "Tải mẫu"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.model.fields.selection,name:forlife_report.selection__report_num31__status__all
 msgid "Tất cả"
 msgstr ""
@@ -3333,6 +3362,11 @@ msgstr ""
 #: code:addons/forlife_report/static/src/xml/report_num33.xml:0
 #, python-format
 msgid "Tặng hàng không điều kiện"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_permission_report_import__error_file
+msgid "Tệp lỗi"
 msgstr ""
 
 #. module: forlife_report
@@ -3435,9 +3469,7 @@ msgid "Từ ngày"
 msgstr ""
 
 #. module: forlife_report
-#: model:ir.actions.act_window,name:forlife_report.report_num10_window_action
 #: model:ir.ui.menu,name:forlife_report.report_num10_menu
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
 msgid "Up Rank History"
 msgstr "Lịch sử nâng hạng"
 
@@ -3710,6 +3742,11 @@ msgstr "từ"
 #. module: forlife_report
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num47_form
 msgid "năm"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.permission_report_import_view_form
+msgid "permission_report_import_form"
 msgstr ""
 
 #. module: forlife_report
