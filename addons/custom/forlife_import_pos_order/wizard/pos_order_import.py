@@ -83,7 +83,7 @@ class PosOrderImport(models.TransientModel):
         query = '''
                     INSERT INTO pos_order(date_order, store_id, pos_reference, session_id, partner_id, company_id, pricelist_id, name,
                                           amount_tax, amount_total, amount_paid, amount_return, issue_invoice_type, brand_id)
-                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s, %(company_id)s, 2, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s)
+                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s, %(company_id)s, 1, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s)
                     RETURNING id
                 '''
         self.env.cr.execute(query, data)
@@ -118,8 +118,8 @@ class PosOrderImport(models.TransientModel):
         mess = ''
         for draw_order in draw_orders:
             if orders.get(draw_order[2], False):
-                orders[draw_order[2]]['amount_paid'] += draw_order[8]
-                orders[draw_order[2]]['amount_total'] += draw_order[8]
+                orders[draw_order[2]]['amount_paid'] += int(draw_order[8])
+                orders[draw_order[2]]['amount_total'] += int(draw_order[8])
                 orders[draw_order[2]]['lines'].append({
                     'product_id': self.get_product_id(draw_order[4]),
                     'qty': draw_order[5],
@@ -135,8 +135,8 @@ class PosOrderImport(models.TransientModel):
                     'store_id': self.get_store_id(draw_order[1]),
                     'pos_reference': draw_order[2],
                     'partner_id': self.get_partner_id(draw_order[3]),
-                    'amount_paid': draw_order[8],
-                    'amount_total': draw_order[8],
+                    'amount_paid': int(draw_order[8]),
+                    'amount_total': int(draw_order[8]),
                     'brand_id': draw_order[11],
                     'company_id': draw_order[12],
                     'lines': [{
@@ -170,8 +170,8 @@ class PosOrderImport(models.TransientModel):
                         'qty': line['qty'],
                         'original_price': line['original_price'],
                         'price_unit': line['original_price'],
-                        'price_subtotal': line['subtotal_paid'],
-                        'price_subtotal_incl': line['subtotal_paid'],
+                        'price_subtotal': int(line['qty']) * int(line['original_price']),
+                        'price_subtotal_incl': int(line['qty']) * int(line['original_price']),
                         'name': line['name'],
                         'employee_id': line['employee_id']
                     }
