@@ -168,7 +168,7 @@
         <field name="arch" type="xml">
             <search string="Lead Search">
                 <field name="name" string="Reference"/>
-                <field name="employee_id"/>
+                <field name="user_id"/>
                 <field name="department_id"/>
                 <field name="request_date"/>
                 <field name="date_planned"/>

@@ -14,7 +14,7 @@ class ForlifeOtherInOutRequest(models.Model):
                 declare_code = '016' # YC Xuat khac
             declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
             if declare_code_id:
-                res.name = declare_code_id.genarate_code(res.company_id.id,'forlife_other_in_out_request','name',sequence)
+                res.name = declare_code_id.genarate_code(res.company_id.id,'forlife.other.in.out.request','name',sequence)
                 sequence += 1
         return result
 

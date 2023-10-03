@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import pytz
+import re
 
 from odoo import api, fields, models, _
 from datetime import timedelta
@@ -19,6 +21,34 @@ class PosOrder(models.Model):
     refund_point = fields.Integer('Refund Point', compute="_compute_refund_point", store=True)
     pay_point = fields.Integer('Pay Point', compute="_compute_pay_point", store=True)
     voucher_id = fields.Many2one('voucher.voucher', string='Voucher Exchange', copy=False)
+
+    def _export_for_ui(self, order):
+        timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
+        return {
+            'lines': [[0, 0, line] for line in order.lines.export_for_ui()],
+            'statement_ids': [[0, 0, payment] for payment in order.payment_ids.export_for_ui()],
+            'name': order.pos_reference,
+            'uid': re.search('([0-9-]){14}', order.pos_reference).group(0) if re.search('([0-9-]){14}', order.pos_reference) else order.pos_reference,
+            'amount_paid': order.amount_paid,
+            'amount_total': order.amount_total,
+            'amount_tax': order.amount_tax,
+            'amount_return': order.amount_return,
+            'pos_session_id': order.session_id.id,
+            'pricelist_id': order.pricelist_id.id,
+            'partner_id': order.partner_id.id,
+            'user_id': order.user_id.id,
+            'sequence_number': order.sequence_number,
+            'creation_date': order.date_order.astimezone(timezone),
+            'fiscal_position_id': order.fiscal_position_id.id,
+            'to_invoice': order.to_invoice,
+            'to_ship': order.to_ship,
+            'state': order.state,
+            'account_move': order.account_move.id,
+            'id': order.id,
+            'is_tipped': order.is_tipped,
+            'tip_amount': order.tip_amount,
+            'access_token': order.access_token,
+        }
 
     @api.model
     def search_change_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
