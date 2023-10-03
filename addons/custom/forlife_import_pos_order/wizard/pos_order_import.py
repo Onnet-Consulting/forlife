@@ -109,6 +109,15 @@ class PosOrderImport(models.TransientModel):
         data = self.env.cr.fetchall()
         return data[0]
 
+    def create_account_tax_pos_order_line_rel(self, data):
+
+        query = '''
+                    INSERT INTO account_tax_pos_order_line_rel (pos_order_line_id, account_tax_id) VALUES (%(pos_order_line_id)s, %(account_tax_id)s) RETURNING id;
+                '''
+        self.env.cr.execute(query, data)
+        data = self.env.cr.fetchall()
+        return data[0]
+
     def apply(self):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
         data = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=0))
@@ -127,7 +136,8 @@ class PosOrderImport(models.TransientModel):
                     'money_is_reduced': draw_order[7],
                     'subtotal_paid': draw_order[8],
                     'employee_id': draw_order[9],
-                    'name': draw_order[10]
+                    'name': draw_order[10],
+                    'tax_id': draw_order[13]
                 })
             else:
                 orders[draw_order[2]] = {
@@ -146,7 +156,8 @@ class PosOrderImport(models.TransientModel):
                         'money_is_reduced': draw_order[7],
                         'subtotal_paid': draw_order[8],
                         'employee_id': draw_order[9],
-                        'name': draw_order[10]
+                        'name': draw_order[10],
+                        'tax_id': draw_order[13]
                     }]
                 }
 
@@ -181,6 +192,10 @@ class PosOrderImport(models.TransientModel):
                         'money_reduced': line['money_is_reduced'],
                     }
                     pos_order_line_discount_id = self.create_pos_order_line_discount(pos_order_line_discount_data)
+                    self.create_account_tax_pos_order_line_rel({
+                        'pos_order_line_id': pos_order_line_discount_id,
+                        'account_tax_id': line['tax_id']
+                    })
             except Exception as ex:
                 mess += '\n '+order_key+' :\n'+ex
 
