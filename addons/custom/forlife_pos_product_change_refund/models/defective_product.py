@@ -12,6 +12,7 @@ class ProductDefective(models.Model):
     store_id = fields.Many2one('store', 'Cửa hàng')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     product_id = fields.Many2one('product.product', 'Sản phẩm')
+    uom_id = fields.Many2one('uom.uom', related='product_id.uom_id')
     quantity_defective_approved = fields.Integer('Số lượng lỗi đã duyệt')
     quantity_inventory_store = fields.Integer('Số lượng tồn theo cửa hàng', readonly=True, store=True, compute='compute_quantity_inventory_store')
     quantity_can_be_sale = fields.Integer('Số lượng lỗi có thể bán', tracking=True)
@@ -42,6 +43,26 @@ class ProductDefective(models.Model):
     department_id = fields.Many2one('hr.department', 'Bộ phận', related='pack_id.department_id')
     pack_id = fields.Many2one('product.defective.pack', 'Defective Pack', ondelete='cascade')
     selected = fields.Boolean('Selected', default=False)
+    is_transferred = fields.Boolean()
+    transfer_state = fields.Selection([
+        ('none', 'None'),
+        ('to_transfer', 'To Transfer'),
+        ('in_transfer', 'In Transfer')
+    ], string='Transfer State', compute='_compute_transfer_state')
+    transfer_line_ids = fields.One2many(
+        'stock.transfer.line', 'defective_product_id')  # compute='_compute_transfer_line_ids')
+    from_location_id = fields.Many2one(
+        'stock.location', string='From Location')
+    to_location_id = fields.Many2one('stock.location', string='To Location')
+
+    @api.depends('transfer_line_ids', 'is_transferred')
+    def _compute_transfer_state(self):
+        for record in self:
+            record.transfer_state = 'none'
+            if record.is_transferred and not self.transfer_line_ids:
+                record.transfer_state = 'to_transfer'
+            elif record.transfer_line_ids:
+                record.transfer_state = 'in_transfer'
 
     @api.onchange('product_id')
     def change_product(self):
