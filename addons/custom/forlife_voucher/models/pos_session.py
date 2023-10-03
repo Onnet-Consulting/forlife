@@ -20,7 +20,8 @@ class PosSession(models.Model):
             department_ids = []
             if vouchers_gift:
                 for v in vouchers_gift:
-                    department_ids.append(v.derpartment_id)
+                    if v.derpartment_id not in department_ids:
+                        department_ids.append(v.derpartment_id)
                 for d in department_ids:
                     vouchers_follow_department = vouchers_gift.filtered(lambda v: v.derpartment_id.id == d.id)
                     session.create_jn_entry_voucher_gift(vouchers_follow_department, d)
@@ -30,7 +31,8 @@ class PosSession(models.Model):
             department_pay_ids = []
             if vouchers_pay:
                 for v in vouchers_pay:
-                    department_pay_ids.append(v.derpartment_id)
+                    if v.derpartment_id not in department_pay_ids:
+                        department_pay_ids.append(v.derpartment_id)
                 for d in department_pay_ids:
                     vouchers_follow_department_pay = vouchers_pay.filtered(lambda v: v.derpartment_id.id == d.id)
                     session.create_jn_entry_voucher_pay(vouchers_follow_department_pay, d)
@@ -70,7 +72,10 @@ class PosSession(models.Model):
                     }),
                 ]
             }
-            AccountMove.sudo().create(move_vals)._post()
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name == '/':
+                    line.move_name = move.name
             for v in vouchers:
                 v.voucher_id.has_accounted = True
         else:
@@ -110,7 +115,10 @@ class PosSession(models.Model):
                     }),
                 ]
             }
-            AccountMove.sudo().create(move_vals)._post()
+            move = AccountMove.sudo().create(move_vals)._post()
+            for line in move.line_ids:
+                if line.move_name == '/':
+                    line.move_name = move.name
             for v in vouchers:
                 v.voucher_id.has_accounted = True
         else:

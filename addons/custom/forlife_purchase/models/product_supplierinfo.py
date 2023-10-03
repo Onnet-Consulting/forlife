@@ -10,6 +10,7 @@ class SupplierInfo(models.Model):
 
     date_start = fields.Date('Start Date', help="Start date for this vendor price", required=False)
     date_end = fields.Date('End Date', help="End date for this vendor price", required=False)
+    product_uom = fields.Many2one('uom.uom', 'Đơn vị mua', related='product_tmpl_id.uom_po_id')
 
     @api.constrains('partner_id', 'product_tmpl_id', 'product_id', 'date_start', 'date_end', 'amount_conversion', 'price', 'product_uom')
     def constrains_supplier(self):
