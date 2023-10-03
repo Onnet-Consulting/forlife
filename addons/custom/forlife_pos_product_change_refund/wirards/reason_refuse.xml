@@ -6,7 +6,13 @@
             <form>
                 <sheet>
                     <group>
+                            <field name="warehouse_id" invisible="1"/>
+                            <field name="pack_id" invisible="1"/>
                             <field name="name"/>
+                            <field name="is_transferred"/>
+                            <field name="from_location_id"
+                                   attrs="{'invisible': [('is_transferred', '=', False)], 'required': [('is_transferred', '=', True)]}"/>
+                            <field name="to_location_id" attrs="{'invisible': [('is_transferred', '=', False)], 'required': [('is_transferred', '=', True)]}"/>
                     </group>
                     <footer>
                         <button name="action_confirm" string="Đồng ý" type="object" class="btn-primary"/>
