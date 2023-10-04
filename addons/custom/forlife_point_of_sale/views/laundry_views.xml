@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="pos_laundry_view_search" model="ir.ui.view">
+            <field name="name">Search</field>
+            <field name="model">pos.laundry</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="store_id"/>
+                    <field name="voucher"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="pos_laundry_view_tree" model="ir.ui.view">
+            <field name="name">laundry_view_tree</field>
+            <field name="model">pos.laundry</field>
+            <field name="arch" type="xml">
+                <tree string="laundry_tree">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="store_id"/>
+                    <field name="date"/>
+                    <field name="due_date"/>
+                    <field name="amount_total"/>
+                    <field name="voucher"/>
+                    <field name="first_value" optional="show"/>
+                    <field name="reject_value" optional="show"/>
+                    <field name="approved_value" optional="show"/>
+                    <field name="type"/>
+                    <field name="description" optional="show"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pos_laundry_view_form" model="ir.ui.view">
+            <field name="name">pos_laundry_view_form</field>
+            <field name="model">pos.laundry</field>
+            <field name="arch" type="xml">
+                <form string="pos_laundry_form">
+                    <header>
+                        <button name="approve" type="object" string="Xác nhận" states="draft" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group string="Thông tin phiếu" col="3">
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="name" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="amount_total" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="customer_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="date" autocomplete="off" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="store_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="due_date" autocomplete="off" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+
+                        <group col="3">
+                            <group>
+                                <field name="voucher" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="reject_value" />
+                            </group>
+                            <group>
+                                <field name="first_value"/>
+                            </group>
+                            <group>
+                                <field name="approved_value"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Chi tiết dịch vụ" name="line">
+                                <field name="lines">
+                                    <tree editable="bottom" decoration-danger="repair_status_refund == True">
+                                        <field name="repair_status_refund" invisible="1"/>
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="product_name" x_width="15%"/>
+                                        <field name="status_id" x_width="10%"/>
+                                        <field name="service_id" x_width="10%"/>
+                                        <field name="request_note" x_width="10%"/>
+                                        <field name="amount" x_width="10%"/>
+                                        <field name="first_amount" x_width="10%"/>
+                                        <field name="send_date" x_width="10%"/>
+                                        <field name="receive_date" x_width="10%"/>
+                                        <field name="repair_status_id" x_width="10%"/>
+                                        <field name="delivery_date" x_width="10%"/>
+                                        <field name="note" x_width="10%"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="pos_laundry_view_action" model="ir.actions.act_window">
+            <field name="name">Phiếu giặt là</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.laundry</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type', '=', 'laundry')]</field>
+            <field name="context">{'default_type': 'laundry'}</field>
+        </record>
+
+        <record id="pos_laundry_repair_view_action" model="ir.actions.act_window">
+            <field name="name">Phiếu sửa đồ</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.laundry</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type', '=', 'repair')]</field>
+            <field name="context">{'default_type': 'repair'}</field>
+        </record>
+
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="laundry_root" name="Phiếu dịch vụ" parent="point_of_sale.menu_point_root"/>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="pos_laundry_menu" parent="laundry_root" action="pos_laundry_view_action"/>
+        <menuitem id="pos_laundry_repair_menu" parent="laundry_root" action="pos_laundry_repair_view_action"/>
+    </data>
+</odoo>

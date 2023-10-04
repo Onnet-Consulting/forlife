@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="laundry_product_status_view_tree" model="ir.ui.view">
+            <field name="name">laundry_product_status_view_tree</field>
+            <field name="model">laundry.product.status</field>
+            <field name="arch" type="xml">
+                <tree string="laundry_product_status_tree" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="laundry_service_view_tree" model="ir.ui.view">
+            <field name="name">laundry.service_view_tree</field>
+            <field name="model">laundry.service</field>
+            <field name="arch" type="xml">
+                <tree string="laundry.service_tree" editable="bottom">
+                    <field name="name" width="50%"/>
+                    <field name="amount" width="50%"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="laundry_repair_status_view_tree" model="ir.ui.view">
+            <field name="name">laundry_repair_status_view_tree</field>
+            <field name="model">laundry.repair.status</field>
+            <field name="arch" type="xml">
+                <tree string="laundry_repair_status_tree" editable="bottom">
+                    <field name="name"/>
+                    <field name="rank"/>
+                    <field name="refund"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="laundry_product_status_action" model="ir.actions.act_window">
+            <field name="name">Tình trạng hàng sửa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">laundry.product.status</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="laundry_service_action" model="ir.actions.act_window">
+            <field name="name">Dịch vụ sửa đồ</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">laundry.service</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="laundry_repair_status_action" model="ir.actions.act_window">
+            <field name="name">Tình trạng sửa chữa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">laundry.repair.status</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="laundry_product_status_action_menu" parent="point_of_sale.menu_point_config_product" action="laundry_product_status_action" />
+        <menuitem id="laundry_service_action_menu" parent="point_of_sale.menu_point_config_product" action="laundry_service_action" />
+        <menuitem id="laundry_repair_status_action_menu" parent="point_of_sale.menu_point_config_product" action="laundry_repair_status_action" />
+    </data>
+</odoo>
