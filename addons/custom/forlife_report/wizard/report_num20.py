@@ -5,10 +5,10 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = [
-    'STT', 'Mã CN', 'Tên CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã vạch', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
-    'Kích cỡ', 'Màu sắc', 'Đơn vị', 'Dòng hàng', 'Kết cấu', 'Bộ sưu tập', 'SL Bán', 'SL Trả', 'Giá', 'Giảm giá', 'Giảm trên HĐ', 'Thành tiền',
-    'Thành tiền NTL', 'Mô tả', 'Hạng', 'Chương trình khuyến mại', 'Mã thẻ GG', 'Voucher', 'Nhân viên', 'Đơn hàng gốc', 'Ngày đơn hàng gốc',
-    'Mã loại', 'Kênh bán'
+    'STT', 'Mã CN', 'Tên CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Số điện thoại', 'Tên Khách', 'Mã vạch', 'Tên hàng',
+    'Nhóm hàng', 'Nhãn hiệu', 'Kích cỡ', 'Màu sắc', 'Đơn vị', 'Dòng hàng', 'Kết cấu', 'Bộ sưu tập', 'SL Bán', 'SL Trả', 'Giá', 'Giảm giá',
+    'Giảm trên HĐ', 'Thành tiền', 'Thành tiền NTL', 'Mô tả', 'Hạng', 'Chương trình khuyến mại', 'Mã thẻ GG', 'Voucher', 'Nhân viên',
+    'Đơn hàng gốc', 'Ngày đơn hàng gốc', 'Mã loại', 'Kênh bán'
 ]
 
 
@@ -83,8 +83,9 @@ select
     sto.name                                                                    as ten_cn,
     to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')           as ngay_lap_phieu,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')            as ngay_hd,
-    po.name                                                            as so_hd,
+    po.name                                                                     as so_hd,
     rp.ref                                                                      as ma_kh,
+    rp.phone                                                                    as sdt,
     rp.name                                                                     as ten_kh,
     pp.barcode                                                                  as ma_vach,
     pol.full_product_name                                                       as ten_hang,
@@ -92,7 +93,7 @@ select
     ad.attrs::json -> '{attr_value.get('nhan_hieu', '')}'                       as nhan_hieu,
     ad.attrs::json -> '{attr_value.get('size', '')}'                            as kich_co,
     ad.attrs::json -> '{attr_value.get('mau_sac', '')}'                         as mau_sac,
-    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US')   as don_vi,
+    coalesce(uom.name::json ->> '{user_lang_code}', uom.name::json ->> 'en_US') as don_vi,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
     pt.collection                                                               as bo_suu_tap,
@@ -189,33 +190,34 @@ order by num
             sheet.write(row, 4, value.get('ngay_hd'), formats.get('center_format'))
             sheet.write(row, 5, value.get('so_hd'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('ma_kh'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('ten_kh'), formats.get('normal_format'))
-            sheet.write(row, 8, value.get('ma_vach'), formats.get('normal_format'))
-            sheet.write(row, 9, value.get('ten_hang'), formats.get('normal_format'))
-            sheet.write(row, 10, value.get('nhom_hang'), formats.get('normal_format'))
-            sheet.write(row, 11, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
-            sheet.write(row, 12, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
-            sheet.write(row, 13, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('don_vi'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('dong_hang'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('ket_cau'), formats.get('normal_format'))
-            sheet.write(row, 17, value.get('bo_suu_tap'), formats.get('normal_format'))
-            sheet.write(row, 18, value.get('sl_ban', 0), formats.get('int_number_format'))
-            sheet.write(row, 19, value.get('sl_tra', 0), formats.get('int_number_format'))
-            sheet.write(row, 20, value.get('gia', 0), formats.get('int_number_format'))
-            sheet.write(row, 21, value.get('giam_gia', 0), formats.get('int_number_format'))
-            sheet.write(row, 22, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
-            sheet.write(row, 23, value.get('gia', 0) * value.get('sl_ban', 0) - (value.get('giam_gia', 0) if value.get('sl_ban', 0) else 0), formats.get('int_number_format'))
-            sheet.write(row, 24, value.get('gia', 0) * value.get('sl_tra', 0) - (value.get('giam_gia', 0) if value.get('sl_tra', 0) else 0), formats.get('int_number_format'))
-            sheet.write(row, 25, value.get('mo_ta'), formats.get('normal_format'))
-            sheet.write(row, 26, value.get('hang'), formats.get('normal_format'))
-            sheet.write(row, 27, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
-            sheet.write(row, 28, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
-            sheet.write(row, 29, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
-            sheet.write(row, 30, value.get('nhan_vien'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('sdt'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('ten_kh'), formats.get('normal_format'))
+            sheet.write(row, 9, value.get('ma_vach'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('ten_hang'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('nhom_hang'), formats.get('normal_format'))
+            sheet.write(row, 12, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
+            sheet.write(row, 13, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
+            sheet.write(row, 14, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('don_vi'), formats.get('normal_format'))
+            sheet.write(row, 16, value.get('dong_hang'), formats.get('normal_format'))
+            sheet.write(row, 17, value.get('ket_cau'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('bo_suu_tap'), formats.get('normal_format'))
+            sheet.write(row, 19, value.get('sl_ban', 0), formats.get('int_number_format'))
+            sheet.write(row, 20, value.get('sl_tra', 0), formats.get('int_number_format'))
+            sheet.write(row, 21, value.get('gia', 0), formats.get('int_number_format'))
+            sheet.write(row, 22, value.get('giam_gia', 0), formats.get('int_number_format'))
+            sheet.write(row, 23, value.get('giam_tren_hd', 0), formats.get('int_number_format'))
+            sheet.write(row, 24, value.get('gia', 0) * value.get('sl_ban', 0) - (value.get('giam_gia', 0) if value.get('sl_ban', 0) else 0), formats.get('int_number_format'))
+            sheet.write(row, 25, value.get('gia', 0) * value.get('sl_tra', 0) - (value.get('giam_gia', 0) if value.get('sl_tra', 0) else 0), formats.get('int_number_format'))
+            sheet.write(row, 26, value.get('mo_ta'), formats.get('normal_format'))
+            sheet.write(row, 27, value.get('hang'), formats.get('normal_format'))
+            sheet.write(row, 28, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
+            sheet.write(row, 29, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
+            sheet.write(row, 30, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
+            sheet.write(row, 31, value.get('nhan_vien'), formats.get('normal_format'))
             don_hang_goc = value.get('don_hang_goc') or ['', '']
-            sheet.write(row, 31, don_hang_goc[0], formats.get('normal_format'))
-            sheet.write(row, 32, don_hang_goc[1], formats.get('normal_format'))
-            sheet.write(row, 33, value.get('ma_loai'), formats.get('normal_format'))
-            sheet.write(row, 34, value.get('kenh_ban'), formats.get('normal_format'))
+            sheet.write(row, 32, don_hang_goc[0], formats.get('normal_format'))
+            sheet.write(row, 33, don_hang_goc[1], formats.get('normal_format'))
+            sheet.write(row, 34, value.get('ma_loai'), formats.get('normal_format'))
+            sheet.write(row, 35, value.get('kenh_ban'), formats.get('normal_format'))
             row += 1

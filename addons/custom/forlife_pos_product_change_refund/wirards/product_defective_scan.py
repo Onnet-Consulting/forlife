@@ -66,7 +66,8 @@ class ProductDefectiveScan(models.TransientModel):
             'product_id': line.product_id.id,
             'quantity_require': scan_value.get(str(line.id), 1),
             'defective_type_id': line.defective_type_id.id or False,
-            'detail_defective': line.detail_defective
+            'detail_defective': line.detail_defective,
+            'image_1920': line.image_1920
         } for line in self.line_ids]
 
         self.pack_id.write({
@@ -88,6 +89,7 @@ class ProductDefectiveScanLine(models.TransientModel):
     defective_type_id = fields.Many2one(
         'defective.type', 'Defective Type', domain="[('department_id', 'in', [False, department_id])]")
     detail_defective = fields.Char('Chi tiết lỗi')
+    image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
 
     @api.depends('wizard_id.on_value', 'wizard_id')
     def _compute_scan_quantity(self):

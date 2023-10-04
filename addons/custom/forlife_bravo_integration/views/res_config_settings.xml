@@ -65,6 +65,7 @@
                         <field name="model_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="record_per_job"/>
                         <field name="with_multi_company"/>
+                        <field name="with_domain" widget="ace" options="{'mode': 'python'}"/>
                     </group>
                 </sheet>
                 <footer>

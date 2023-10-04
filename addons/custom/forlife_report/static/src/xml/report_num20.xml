@@ -20,6 +20,7 @@
                         <td><t t-esc="line.ngay_hd"/></td>
                         <td><t t-esc="line.so_hd"/></td>
                         <td class="column_nowrap"><t t-esc="line.ma_kh"/></td>
+                        <td class="column_nowrap"><t t-esc="line.sdt"/></td>
                         <td><t t-esc="line.ten_kh"/></td>
                         <td class="column_nowrap"><t t-esc="line.ma_vach"/></td>
                         <td><t t-esc="line.ten_hang"/></td>

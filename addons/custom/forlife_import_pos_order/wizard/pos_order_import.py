@@ -112,10 +112,9 @@ class PosOrderImport(models.TransientModel):
     def create_account_tax_pos_order_line_rel(self, data):
 
         query = '''
-                    INSERT INTO account_tax_pos_order_line_rel (pos_order_line_id, account_tax_id) VALUES (%(pos_order_line_id)s, %(account_tax_id)s) RETURNING id;
+                    INSERT INTO account_tax_pos_order_line_rel (pos_order_line_id, account_tax_id) VALUES (%(pos_order_line_id)s, %(account_tax_id)s);
                 '''
         self.env.cr.execute(query, data)
-        data = self.env.cr.fetchall()
         return data[0]
 
     def apply(self):
@@ -192,10 +191,11 @@ class PosOrderImport(models.TransientModel):
                         'money_reduced': line['money_is_reduced'],
                     }
                     pos_order_line_discount_id = self.create_pos_order_line_discount(pos_order_line_discount_data)
-                    self.create_account_tax_pos_order_line_rel({
-                        'pos_order_line_id': pos_order_line_discount_id,
+                    create_account_tax_pos_order_line_rel_data = {
+                        'pos_order_line_id': pos_order_line_id,
                         'account_tax_id': line['tax_id']
-                    })
+                    }
+                    self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
             except Exception as ex:
                 mess += '\n '+order_key+' :\n'+ex
 
