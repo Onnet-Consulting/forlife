@@ -33,40 +33,52 @@ class PosOrderImport(models.TransientModel):
                             SELECT id FROM product_product WHERE barcode = %(barcode)s LIMIT 1
                         '''
         self.env.cr.execute(query, {'barcode': barcode})
-        data = self.env.cr.fetchall()
-        return data[0]
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co product: '+ barcode)
 
     def get_store_id(self, name):
         query = '''
                             SELECT id FROM store WHERE name = %(name)s LIMIT 1
                         '''
         self.env.cr.execute(query, {'name': name})
-        data = self.env.cr.fetchall()
-        return data[0]
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co store: ' + name)
 
     def get_partner_id(self, phone):
         query = '''
                             SELECT id FROM res_partner WHERE phone = %(phone)s LIMIT 1
                         '''
         self.env.cr.execute(query, {'phone': phone})
-        data = self.env.cr.fetchall()
-        return data[0]
+        data = self.env.cr.fetchone()
+        return data[0] if data else 6801233
 
     def get_pos_config_id(self, store_id):
         query = '''
                             SELECT id FROM pos_config WHERE store_id = %(store_id)s LIMIT 1
                         '''
         self.env.cr.execute(query, {'store_id': store_id})
-        data = self.env.cr.fetchall()
-        return data[0]
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co pos_config: '+store_id)
 
     def get_pos_session_id(self, config_id):
         query = '''
                             SELECT id FROM pos_session WHERE config_id = %(config_id)s AND name = %(name)s LIMIT 1
                         '''
         self.env.cr.execute(query, {'config_id': config_id, 'name': 'old-session-' + str(config_id)})
-        data = self.env.cr.fetchall()
-        return data[0] if data else False
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            return False
 
     def create_pos_session(self, config_id):
         query = '''
@@ -75,7 +87,7 @@ class PosOrderImport(models.TransientModel):
                     RETURNING id
                 '''
         self.env.cr.execute(query, {'config_id': config_id, 'name': 'old-session-' + str(config_id)})
-        data = self.env.cr.fetchall()
+        data = self.env.cr.fetchone()
         return data[0]
 
     def create_pos_order(self, data):
@@ -87,7 +99,7 @@ class PosOrderImport(models.TransientModel):
                     RETURNING id
                 '''
         self.env.cr.execute(query, data)
-        data = self.env.cr.fetchall()
+        data = self.env.cr.fetchone()
         return data[0]
 
     def create_pos_order_line(self, data):
@@ -97,7 +109,7 @@ class PosOrderImport(models.TransientModel):
                     VALUES (%(order_id)s, %(product_id)s, %(qty)s, %(original_price)s, %(price_unit)s, %(price_subtotal)s, %(price_subtotal_incl)s, %(name)s, %(employee_id)s) RETURNING id;
                 '''
         self.env.cr.execute(query, data)
-        data = self.env.cr.fetchall()
+        data = self.env.cr.fetchone()
         return data[0]
 
     def create_pos_order_line_discount(self, data):
@@ -106,7 +118,7 @@ class PosOrderImport(models.TransientModel):
                     INSERT INTO pos_order_line_discount_details (pos_order_line_id, money_reduced) VALUES (%(pos_order_line_id)s, %(money_reduced)s) RETURNING id;
                 '''
         self.env.cr.execute(query, data)
-        data = self.env.cr.fetchall()
+        data = self.env.cr.fetchone()
         return data[0]
 
     def create_account_tax_pos_order_line_rel(self, data):
@@ -115,7 +127,7 @@ class PosOrderImport(models.TransientModel):
                     INSERT INTO account_tax_pos_order_line_rel (pos_order_line_id, account_tax_id) VALUES (%(pos_order_line_id)s, %(account_tax_id)s);
                 '''
         self.env.cr.execute(query, data)
-        return data[0]
+        return True
 
     def apply(self):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
@@ -129,7 +141,7 @@ class PosOrderImport(models.TransientModel):
                 orders[draw_order[2]]['amount_paid'] += int(draw_order[8])
                 orders[draw_order[2]]['amount_total'] += int(draw_order[8])
                 orders[draw_order[2]]['lines'].append({
-                    'product_id': self.get_product_id(draw_order[4]),
+                    'product_id': draw_order[4],
                     'qty': draw_order[5],
                     'original_price': draw_order[6],
                     'money_is_reduced': draw_order[7],
@@ -141,7 +153,7 @@ class PosOrderImport(models.TransientModel):
             else:
                 orders[draw_order[2]] = {
                     'date_order': draw_order[0],
-                    'store_id': self.get_store_id(draw_order[1]),
+                    'store_id': draw_order[1],
                     'pos_reference': draw_order[2],
                     'partner_id': self.get_partner_id(draw_order[3]),
                     'amount_paid': int(draw_order[8]),
@@ -149,7 +161,7 @@ class PosOrderImport(models.TransientModel):
                     'brand_id': draw_order[11],
                     'company_id': draw_order[12],
                     'lines': [{
-                        'product_id': self.get_product_id(draw_order[4]),
+                        'product_id': draw_order[4],
                         'qty': draw_order[5],
                         'original_price': draw_order[6],
                         'money_is_reduced': draw_order[7],
@@ -163,11 +175,12 @@ class PosOrderImport(models.TransientModel):
         for order_key in orders:
             try:
                 order = orders.get(order_key)
-                config_id = self.get_pos_config_id(order['store_id'])
+                store_id = self.get_store_id(order['store_id'])
+                config_id = self.get_pos_config_id(store_id)
                 session_id = self.get_pos_session_id(config_id)
                 if not session_id:
                     session_id = self.create_pos_session(config_id)
-                data_order = {'date_order': order['date_order'], 'store_id': order['store_id'],
+                data_order = {'date_order': order['date_order'], 'store_id': store_id,
                               'pos_reference': order['pos_reference'],
                               'session_id': session_id, 'partner_id': order['partner_id'],
                               'amount_paid': order['amount_paid'], 'amount_total': order['amount_total'],
@@ -176,7 +189,7 @@ class PosOrderImport(models.TransientModel):
                 for line in order['lines']:
                     data_order_line = {
                         'order_id': pos_order_id,
-                        'product_id': line['product_id'],
+                        'product_id': self.get_product_id(line['product_id']),
                         'qty': line['qty'],
                         'original_price': line['original_price'],
                         'price_unit': line['original_price'],
@@ -197,10 +210,10 @@ class PosOrderImport(models.TransientModel):
                     }
                     self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
             except Exception as ex:
-                mess += '\n '+order_key+' :\n'+ex
+                mess += '\n '+order_key+' :\n'+ str(ex)
 
-            if mess:
-                raise ValidationError(mess)
+        if mess:
+            raise ValidationError(mess)
 
         return
 
