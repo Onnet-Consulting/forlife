@@ -696,6 +696,16 @@ class StockTransfer(models.Model):
             }
         }
 
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        if len(self.stock_transfer_line) != len(set(self.stock_transfer_line.mapped('sequence'))):
+            sequence = 1
+            for line in self.stock_transfer_line:
+                line.sequence = sequence
+                sequence += 1
+        return super().copy(default)
+
 
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
