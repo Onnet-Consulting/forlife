@@ -576,10 +576,10 @@ class StockTransfer(models.Model):
 
     def action_cancel(self):
         for record in self:
+            record.write({'state': 'cancel'})
             if record.stock_request_id:
                 record.update_quantity_reality_transfer_request()
                 record.update_quantity_reality_receive_transfer_request()
-            record.write({'state': 'cancel'})
 
     def action_done(self):
         self.write({
