@@ -242,7 +242,13 @@ class StockTransferRequest(models.Model):
 
     def compute_count_stock_transfer(self):
         for item in self:
-            item.count_stock_transfer = len(item.stock_transfer_ids)
+            self._cr.execute("""
+                SELECT 
+                    count(st.id) as qty
+                FROM stock_transfer st where stock_request_id = %s;
+            """ % item.id)
+            data = self._cr.dictfetchone()
+            item.count_stock_transfer = data.get('qty', 0)
 
     @api.depends('request_lines', 'request_lines.quantity_remaining', 'stock_transfer_ids', 'stock_transfer_ids.state')
     def compute_is_no_more_quantity(self):
