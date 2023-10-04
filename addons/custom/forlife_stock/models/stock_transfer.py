@@ -667,6 +667,12 @@ class StockTransfer(models.Model):
                     else:
                         rec[line_id] = \
                         stock.stock_transfer_line[int(rec[line_id]) - 1].export_data(['id']).get('datas')[0][0]
+            else:
+                fields.append('stock_transfer_line/sequence')
+                sequence = 1
+                for record in data:
+                    record.append(sequence)
+                    sequence += 1
         return super().load(fields, data)
 
     def mass_export_confirmation(self):
@@ -715,7 +721,7 @@ class StockTransferLine(models.Model):
     qty_plan_tsq = fields.Float(default=0, string='Quantity Plan Tsq')
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
     check_id = fields.Integer(string="")
-    sequence = fields.Integer(string="STT dòng")
+    sequence = fields.Integer(string="STT dòng", default=1)
     is_readonly_qty = fields.Boolean(default=False, compute='_compute_readonly_qty_in_out')
     parent_state = fields.Selection(
         string="Status",
