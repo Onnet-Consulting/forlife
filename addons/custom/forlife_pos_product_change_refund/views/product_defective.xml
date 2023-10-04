@@ -39,7 +39,7 @@
                     </header>
                     <sheet>
                         <group>
-                            <group>
+<!--                            <group>-->
                                 <field name="active" invisible="1"/>
                                 <field name="department_id" invisible="1"/>
                                 <field name="store_id" required="1" attrs="{'readonly': [('state','!=','new')]}"/>
@@ -65,8 +65,13 @@
                                 <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="reason_refuse_product" states="refuse" readonly="True"/>
-                            </group>
+<!--                            </group>-->
                         </group>
+                        <notebook>
+                          <page string="Ảnh chi tiết">
+                            <field name="image_1920" widget="image" options="{'image_preview': 'image_1920'}" attrs="{'readonly': [('state','in',['refuse','approved','cancel'])]}"/>
+                          </page>
+                        </notebook>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
