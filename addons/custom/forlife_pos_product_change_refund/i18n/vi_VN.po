@@ -2109,3 +2109,10 @@ msgstr ""
 #, python-format
 msgid "Đổi hàng"
 msgstr ""
+
+#. module: base
+#. odoo-python
+#: code:addons/image.py:0 code:addons/image.py:0 code:addons/image.py:0
+#, python-format
+msgid "This file could not be decoded as an image file."
+msgstr "Tệp này không hỗ trợ như tệp hình ảnh."
