@@ -127,7 +127,7 @@ class Voucher(models.Model):
                     'value': False,
                 })
             else:
-                vourcher = self.sudo().search([('name', '=', code['value'])], limit=1)
+                vourcher = self.sudo().search([('name', '=', code['value']), ('purpose_id.is_gift', '=', False)], limit=1)
                 if vourcher:
                     sql = f"SELECT product_product_id FROM product_product_program_voucher_rel WHERE program_voucher_id = {vourcher.program_voucher_id.id}"
                     self._cr.execute(sql)
