@@ -69,7 +69,8 @@
                         </group>
                         <notebook>
                           <page string="Ảnh chi tiết">
-                            <field name="image_1920" widget="image" options="{'image_preview': 'image_1920'}" attrs="{'readonly': [('state','in',['refuse','approved','cancel'])]}"/>
+                            <field name="image_1920" widget="image" options="{'image_preview': 'image_1920'}"
+                                   attrs="{'readonly': [('state','in',['waiting approve', 'refuse','approved','cancel'])]}"/>
                           </page>
                         </notebook>
                     </sheet>
