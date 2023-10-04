@@ -300,7 +300,7 @@ msgstr "Công ty"
 #. module: forlife_pos_product_change_refund
 #: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.product_defective_pack_form_view
 msgid "Create Transfer"
-msgstr "Tạo điều chuyển kho lỗi"
+msgstr "Xác nhận chuyển hàng kho lỗi"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_defective_type__create_uid

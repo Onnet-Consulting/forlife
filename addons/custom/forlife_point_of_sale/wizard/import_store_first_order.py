@@ -16,6 +16,7 @@ class ImportStoreFirstOrder(models.TransientModel):
     import_file_name = fields.Char()
     error_file = fields.Binary(attachment=False, string='Error file')
     error_file_name = fields.Char(default='Error.txt')
+    with_queue = fields.Selection(string='Cách nhập', selection=[('queue', 'Nhập qua queue job'), ('normal', 'Nhập thủ công')])
 
     def download_template_file(self):
         attachment_id = self.env.ref(f'forlife_point_of_sale.template_import_store_first_order')
@@ -34,6 +35,8 @@ class ImportStoreFirstOrder(models.TransientModel):
         self.ensure_one()
         if not self.import_file or not self.brand_id:
             raise ValidationError(_("Please choose brand and upload file template before click Import button !"))
+        if not self.with_queue:
+            raise ValidationError("Vui lòng chọn cách nhập liệu !")
         workbook = xlrd.open_workbook(file_contents=base64.decodebytes(self.import_file))
         self._cr.execute(f"""
 select (select json_object_agg(code, id) from store where brand_id = {self.brand_id.id})                   as stores,
@@ -73,11 +76,14 @@ select (select json_object_agg(code, id) from store where brand_id = {self.brand
         if error:
             return self.return_error_log('\n'.join(error))
         if values:
-            x = self.env['store.first.order'].sudo().with_delay(description='Import store first order').create(values)
-            action = self.env.ref('queue_job.action_queue_job').read()[0]
-            action['domain'] = [('uuid', '=', x.uuid)]
-            action['context'] = '{}'
-            return action
+            if self.with_queue == 'normal':
+                self.env['store.first.order'].sudo().create(values)
+            else:
+                x = self.env['store.first.order'].sudo().with_delay(description='Import store first order').create(values)
+                action = self.env.ref('queue_job.action_queue_job').read()[0]
+                action['domain'] = [('uuid', '=', x.uuid)]
+                action['context'] = '{}'
+                return action
         return True
 
     def return_error_log(self, error=''):

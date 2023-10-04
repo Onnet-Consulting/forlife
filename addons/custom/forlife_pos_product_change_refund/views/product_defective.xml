@@ -77,6 +77,49 @@
             </field>
         </record>
 
+<!--        <record id="product_defective_view_kanban_preview" model="ir.ui.view">-->
+<!--            <field name="name">product.defective.view.kanban</field>-->
+<!--            <field name="model">product.defective</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <kanban string="Product Defective" edit="0" create="0">-->
+<!--                    <field name="id"/>-->
+<!--                    <field name="detail_defective"/>-->
+<!--                    <field name="image_1920"/>-->
+<!--                    <templates>-->
+<!--                        <t t-name="kanban-box">-->
+<!--                            <div class="card oe_kanban_global_click p-0" style="width: 1500px; height: 600px;">-->
+<!--                                <div class="o_squared_image">-->
+<!--                                    <img class="card-img-top" t-att-src="kanban_image('product.defective', 'image_1920', record.id.raw_value)" t-att-alt="record.detail_defective.value"/>-->
+<!--                                </div>-->
+<!--                                <div class="card-body p-0">-->
+<!--                                    <h4 class="card-title p-2 m-0 bg-200">-->
+<!--                                        <small><field name="detail_defective"/></small>-->
+<!--                                    </h4>-->
+<!--                                </div>-->
+<!--                                <t>-->
+<!--                                    <t t-set="size_status" t-value="'text-bg-success'"/>-->
+<!--                                    <t t-set="message">Product Image</t>-->
+<!--                                </t>-->
+<!--                                <span t-attf-class="badge #{size_status} o_product_image_size" t-esc="record.image_1920.value" t-att-title="message"/>-->
+<!--                            </div>-->
+<!--                        </t>-->
+<!--                    </templates>-->
+<!--                </kanban>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="product_defective_view_form_preview" model="ir.ui.view">
+            <field name="name">product.defective.view.form.preview</field>
+            <field name="model">product.defective</field>
+            <field name="arch" type="xml">
+                <form edit="0" create="0">
+                    <div>
+                        <field name="image_1920" widget="image" options="{'image_preview': 'image_1920'}"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
         <record id="product_defective_view_search" model="ir.ui.view">
             <field name="name">product.defective.view.search</field>
             <field name="model">product.defective</field>
