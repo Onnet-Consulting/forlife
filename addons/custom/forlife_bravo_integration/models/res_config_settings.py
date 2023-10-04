@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
-import json
+from odoo.osv import expression
 import ast
 
 
@@ -25,12 +25,15 @@ class ResConfigSettings(models.TransientModel):
     model_ids = fields.Many2many('ir.model', string='Đối tượng đồng bộ', domain=bravo_get_domain_model)
     record_per_job = fields.Integer('Số bản ghi trên 1 queue job', default=500, help='Max: 500, Min: 1')
     with_multi_company = fields.Boolean('Trên nhiều công ty', default=False, help='Nếu tích chọn hệ thống tự động chạy tất cả dữ liệu của tất cả công ty')
+    with_domain = fields.Char('Bộ lọc', default='[]')
 
     def sync_master_data_for_bravo(self):
         record_per_job = max(1, min(500, self.record_per_job))
         companies = self.env['res.company'].search([('code', '!=', False)])
         for model in self.model_ids:
+            with_domain = ast.literal_eval(self.with_domain or '[]')
             domain = self.env[model.model].bravo_get_filter_domain()
+            domain = expression.AND([domain, with_domain]) if (domain or with_domain) else []
             if self.with_multi_company:
                 for company in companies:
                     records = self.env[model.model].sudo().with_company(company).search(domain + [('company_id', '=', company.id)])
@@ -44,7 +47,10 @@ class ResConfigSettings(models.TransientModel):
                     record = records[:min(record_per_job, len(records))]
                     record.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
                     records = records - record
-        self.model_ids = [(5, 0, 0)]
+        self.update({
+            'model_ids': [(5, 0, 0)],
+            'with_domain': '[]'
+        })
         action = self.env['ir.actions.act_window']._for_xml_id('forlife_bravo_integration.sync_master_data_for_bravo_action')
         action['res_id'] = self.id
         return action
